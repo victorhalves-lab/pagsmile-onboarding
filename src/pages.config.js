@@ -52,6 +52,11 @@ import CompliancePixOnly from './pages/CompliancePixOnly';
 import ComplianceFullKYC from './pages/ComplianceFullKYC';
 import DocumentUploadPix from './pages/DocumentUploadPix';
 import DocumentUploadFull from './pages/DocumentUploadFull';
+import LivenessFacematchStep from './pages/LivenessFacematchStep';
+import LivenessSimulation from './pages/LivenessSimulation';
+import OnboardingCompletion from './pages/OnboardingCompletion';
+import AdminDashboard from './pages/AdminDashboard';
+import GenerateOnboardingLink from './pages/GenerateOnboardingLink';
 import __Layout from './Layout.jsx';
 
 
@@ -61,6 +66,11 @@ export const PAGES = {
     "ComplianceFullKYC": ComplianceFullKYC,
     "DocumentUploadPix": DocumentUploadPix,
     "DocumentUploadFull": DocumentUploadFull,
+    "LivenessFacematchStep": LivenessFacematchStep,
+    "LivenessSimulation": LivenessSimulation,
+    "OnboardingCompletion": OnboardingCompletion,
+    "AdminDashboard": AdminDashboard,
+    "GenerateOnboardingLink": GenerateOnboardingLink,
 }
 
 export const pagesConfig = {
