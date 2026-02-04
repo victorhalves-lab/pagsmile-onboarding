@@ -48,11 +48,19 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import ComplianceOnboardingStart from './pages/ComplianceOnboardingStart';
+import CompliancePixOnly from './pages/CompliancePixOnly';
+import ComplianceFullKYC from './pages/ComplianceFullKYC';
+import DocumentUploadPix from './pages/DocumentUploadPix';
+import DocumentUploadFull from './pages/DocumentUploadFull';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "ComplianceOnboardingStart": ComplianceOnboardingStart,
+    "CompliancePixOnly": CompliancePixOnly,
+    "ComplianceFullKYC": ComplianceFullKYC,
+    "DocumentUploadPix": DocumentUploadPix,
+    "DocumentUploadFull": DocumentUploadFull,
 }
 
 export const pagesConfig = {
