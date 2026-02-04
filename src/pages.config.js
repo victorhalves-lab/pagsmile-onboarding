@@ -47,8 +47,24 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
+import ComplianceOnboardingStart from './pages/ComplianceOnboardingStart';
+import MerchantTypeSelection from './pages/MerchantTypeSelection';
+import OnboardingDashboard from './pages/OnboardingDashboard';
+import QuestionnaireTemplatesList from './pages/QuestionnaireTemplatesList';
+import ComplianceSettings from './pages/ComplianceSettings';
+import __Layout from './Layout.jsx';
 
-export const pagesConfig = {
-	Pages: {}
+
+export const PAGES = {
+    "ComplianceOnboardingStart": ComplianceOnboardingStart,
+    "MerchantTypeSelection": MerchantTypeSelection,
+    "OnboardingDashboard": OnboardingDashboard,
+    "QuestionnaireTemplatesList": QuestionnaireTemplatesList,
+    "ComplianceSettings": ComplianceSettings,
 }
 
+export const pagesConfig = {
+    mainPage: "ComplianceOnboardingStart",
+    Pages: PAGES,
+    Layout: __Layout,
+};
