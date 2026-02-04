@@ -57,6 +57,10 @@ import LivenessSimulation from './pages/LivenessSimulation';
 import OnboardingCompletion from './pages/OnboardingCompletion';
 import AdminDashboard from './pages/AdminDashboard';
 import GenerateOnboardingLink from './pages/GenerateOnboardingLink';
+import QuestionnaireTemplates from './pages/QuestionnaireTemplates';
+import AdminSettings from './pages/AdminSettings';
+import OnboardingCaseDetails from './pages/OnboardingCaseDetails';
+import QuestionnaireEditor from './pages/QuestionnaireEditor';
 import __Layout from './Layout.jsx';
 
 
@@ -71,6 +75,10 @@ export const PAGES = {
     "OnboardingCompletion": OnboardingCompletion,
     "AdminDashboard": AdminDashboard,
     "GenerateOnboardingLink": GenerateOnboardingLink,
+    "QuestionnaireTemplates": QuestionnaireTemplates,
+    "AdminSettings": AdminSettings,
+    "OnboardingCaseDetails": OnboardingCaseDetails,
+    "QuestionnaireEditor": QuestionnaireEditor,
 }
 
 export const pagesConfig = {
