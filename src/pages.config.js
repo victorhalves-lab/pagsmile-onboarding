@@ -47,11 +47,11 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
+import ComplianceFullKYC from './pages/ComplianceFullKYC';
 import ComplianceOnboardingStart from './pages/ComplianceOnboardingStart';
 import CompliancePixOnly from './pages/CompliancePixOnly';
-import ComplianceFullKYC from './pages/ComplianceFullKYC';
-import DocumentUploadPix from './pages/DocumentUploadPix';
 import DocumentUploadFull from './pages/DocumentUploadFull';
+import DocumentUploadPix from './pages/DocumentUploadPix';
 import LivenessFacematchStep from './pages/LivenessFacematchStep';
 import LivenessSimulation from './pages/LivenessSimulation';
 import OnboardingCompletion from './pages/OnboardingCompletion';
@@ -65,11 +65,11 @@ import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
+    "ComplianceFullKYC": ComplianceFullKYC,
     "ComplianceOnboardingStart": ComplianceOnboardingStart,
     "CompliancePixOnly": CompliancePixOnly,
-    "ComplianceFullKYC": ComplianceFullKYC,
-    "DocumentUploadPix": DocumentUploadPix,
     "DocumentUploadFull": DocumentUploadFull,
+    "DocumentUploadPix": DocumentUploadPix,
     "LivenessFacematchStep": LivenessFacematchStep,
     "LivenessSimulation": LivenessSimulation,
     "OnboardingCompletion": OnboardingCompletion,

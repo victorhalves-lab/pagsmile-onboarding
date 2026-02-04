@@ -1,17 +1,138 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
+import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { 
-  Settings, FileText, AlertTriangle, Save,
-  CheckCircle2, XCircle, Info
+  Settings, FileText, AlertTriangle, Save, Shield,
+  CheckCircle2, XCircle, Info, Plus, Trash2, Edit,
+  Loader2, Users, Key, Globe, Mail, Bell
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function AdminSettings() {
+  const queryClient = useQueryClient();
+  
+  // Estado das configurações
+  const [generalSettings, setGeneralSettings] = useState({
+    emailNotifications: true,
+    autoApproval: true,
+    autoRejection: false,
+    approvalThreshold: 75,
+    manualThreshold: 40
+  });
+
+  const [documentSettings, setDocumentSettings] = useState({
+    maxFileSizeMB: 10,
+    allowedFormats: ['PDF', 'JPG', 'JPEG', 'PNG']
+  });
+
+  // Tipos de documento
+  const { data: documentTypes = [], isLoading: loadingDocTypes } = useQuery({
+    queryKey: ['documentTypes'],
+    queryFn: () => base44.entities.DocumentType.list()
+  });
+
+  const [showDocTypeDialog, setShowDocTypeDialog] = useState(false);
+  const [editingDocType, setEditingDocType] = useState(null);
+  const [docTypeForm, setDocTypeForm] = useState({
+    name: '',
+    description: '',
+    allowedFormats: ['PDF', 'JPG', 'JPEG', 'PNG'],
+    maxSizeMB: 10,
+    merchantType: 'BOTH',
+    isRequired: true,
+    instructions: ''
+  });
+
+  const saveDocTypeMutation = useMutation({
+    mutationFn: async (data) => {
+      if (editingDocType) {
+        return base44.entities.DocumentType.update(editingDocType.id, data);
+      }
+      return base44.entities.DocumentType.create(data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['documentTypes'] });
+      toast.success(editingDocType ? 'Tipo de documento atualizado!' : 'Tipo de documento criado!');
+      setShowDocTypeDialog(false);
+      setEditingDocType(null);
+      resetDocTypeForm();
+    },
+    onError: (error) => {
+      toast.error('Erro: ' + error.message);
+    }
+  });
+
+  const deleteDocTypeMutation = useMutation({
+    mutationFn: (id) => base44.entities.DocumentType.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['documentTypes'] });
+      toast.success('Tipo de documento excluído!');
+    }
+  });
+
+  const resetDocTypeForm = () => {
+    setDocTypeForm({
+      name: '',
+      description: '',
+      allowedFormats: ['PDF', 'JPG', 'JPEG', 'PNG'],
+      maxSizeMB: 10,
+      merchantType: 'BOTH',
+      isRequired: true,
+      instructions: ''
+    });
+  };
+
+  const handleEditDocType = (docType) => {
+    setEditingDocType(docType);
+    setDocTypeForm({
+      name: docType.name || '',
+      description: docType.description || '',
+      allowedFormats: docType.allowedFormats || ['PDF', 'JPG', 'JPEG', 'PNG'],
+      maxSizeMB: docType.maxSizeMB || 10,
+      merchantType: docType.merchantType || 'BOTH',
+      isRequired: docType.isRequired !== false,
+      instructions: docType.instructions || ''
+    });
+    setShowDocTypeDialog(true);
+  };
+
+  const handleSaveSettings = (section) => {
+    // Aqui você salvaria em uma entidade de configurações
+    toast.success(`Configurações de ${section} salvas!`);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -22,7 +143,7 @@ export default function AdminSettings() {
 
       {/* Tabs */}
       <Tabs defaultValue="general" className="space-y-6">
-        <TabsList className="bg-white border border-slate-200">
+        <TabsList className="bg-white border border-slate-200 flex-wrap h-auto p-1">
           <TabsTrigger value="general" className="gap-2">
             <Settings className="w-4 h-4" />
             Geral
@@ -34,6 +155,14 @@ export default function AdminSettings() {
           <TabsTrigger value="risk" className="gap-2">
             <AlertTriangle className="w-4 h-4" />
             Regras de Risco
+          </TabsTrigger>
+          <TabsTrigger value="integrations" className="gap-2">
+            <Globe className="w-4 h-4" />
+            Integrações
+          </TabsTrigger>
+          <TabsTrigger value="notifications" className="gap-2">
+            <Bell className="w-4 h-4" />
+            Notificações
           </TabsTrigger>
         </TabsList>
 
@@ -48,27 +177,39 @@ export default function AdminSettings() {
                   <Label className="font-medium">Notificações por E-mail</Label>
                   <p className="text-sm text-slate-500">Enviar e-mails automáticos sobre status do onboarding</p>
                 </div>
-                <Switch defaultChecked />
+                <Switch 
+                  checked={generalSettings.emailNotifications}
+                  onCheckedChange={(checked) => setGeneralSettings(prev => ({...prev, emailNotifications: checked}))}
+                />
               </div>
 
               <div className="flex items-center justify-between p-4 rounded-lg border border-slate-200">
                 <div>
                   <Label className="font-medium">Aprovação Automática</Label>
-                  <p className="text-sm text-slate-500">Aprovar automaticamente casos com score acima do threshold</p>
+                  <p className="text-sm text-slate-500">Aprovar automaticamente casos com score ≥ {generalSettings.approvalThreshold}</p>
                 </div>
-                <Switch defaultChecked />
+                <Switch 
+                  checked={generalSettings.autoApproval}
+                  onCheckedChange={(checked) => setGeneralSettings(prev => ({...prev, autoApproval: checked}))}
+                />
               </div>
 
               <div className="flex items-center justify-between p-4 rounded-lg border border-slate-200">
                 <div>
                   <Label className="font-medium">Rejeição Automática</Label>
-                  <p className="text-sm text-slate-500">Rejeitar automaticamente casos com score abaixo do threshold</p>
+                  <p className="text-sm text-slate-500">Rejeitar automaticamente casos com score &lt; {generalSettings.manualThreshold}</p>
                 </div>
-                <Switch />
+                <Switch 
+                  checked={generalSettings.autoRejection}
+                  onCheckedChange={(checked) => setGeneralSettings(prev => ({...prev, autoRejection: checked}))}
+                />
               </div>
             </div>
 
-            <Button className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90">
+            <Button 
+              onClick={() => handleSaveSettings('geral')}
+              className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90"
+            >
               <Save className="w-4 h-4 mr-2" />
               Salvar Configurações
             </Button>
@@ -77,40 +218,148 @@ export default function AdminSettings() {
 
         {/* Tab: Documentos */}
         <TabsContent value="documents">
-          <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6">
-            <h2 className="text-lg font-semibold text-slate-800">Configurações de Documentos</h2>
-            
-            <Alert className="bg-blue-50 border-blue-200">
-              <Info className="h-4 w-4 text-blue-600" />
-              <AlertDescription className="text-blue-800">
-                Configure os tipos de documentos aceitos e suas regras de validação.
-              </AlertDescription>
-            </Alert>
+          <div className="space-y-6">
+            {/* Configurações Gerais de Documentos */}
+            <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6">
+              <h2 className="text-lg font-semibold text-slate-800">Configurações de Upload</h2>
+              
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label>Tamanho Máximo de Arquivo (MB)</Label>
+                  <Input 
+                    type="number" 
+                    value={documentSettings.maxFileSizeMB}
+                    onChange={(e) => setDocumentSettings(prev => ({...prev, maxFileSizeMB: parseInt(e.target.value)}))}
+                    className="w-full"
+                  />
+                </div>
 
-            <div className="space-y-4">
-              <div className="p-4 rounded-lg border border-slate-200">
-                <Label className="font-medium">Tamanho Máximo de Arquivo</Label>
-                <p className="text-sm text-slate-500 mb-3">Limite máximo em MB para upload de documentos</p>
-                <Input type="number" defaultValue={10} className="w-32" />
-              </div>
-
-              <div className="p-4 rounded-lg border border-slate-200">
-                <Label className="font-medium">Formatos Aceitos</Label>
-                <p className="text-sm text-slate-500 mb-3">Extensões de arquivo permitidas</p>
-                <div className="flex gap-2 flex-wrap">
-                  {['PDF', 'JPG', 'JPEG', 'PNG'].map(format => (
-                    <span key={format} className="px-3 py-1 bg-slate-100 rounded-full text-sm">
-                      {format}
-                    </span>
-                  ))}
+                <div className="space-y-2">
+                  <Label>Formatos Aceitos</Label>
+                  <div className="flex gap-2 flex-wrap">
+                    {['PDF', 'JPG', 'JPEG', 'PNG'].map(format => (
+                      <Badge 
+                        key={format} 
+                        variant={documentSettings.allowedFormats.includes(format) ? 'default' : 'outline'}
+                        className="cursor-pointer"
+                        onClick={() => {
+                          setDocumentSettings(prev => ({
+                            ...prev,
+                            allowedFormats: prev.allowedFormats.includes(format)
+                              ? prev.allowedFormats.filter(f => f !== format)
+                              : [...prev.allowedFormats, format]
+                          }));
+                        }}
+                      >
+                        {format}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
               </div>
+
+              <Button 
+                onClick={() => handleSaveSettings('documentos')}
+                className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                Salvar Configurações
+              </Button>
             </div>
 
-            <Button className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90">
-              <Save className="w-4 h-4 mr-2" />
-              Salvar Configurações
-            </Button>
+            {/* Tipos de Documento */}
+            <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h2 className="text-lg font-semibold text-slate-800">Tipos de Documento</h2>
+                  <p className="text-sm text-slate-500">Gerencie os tipos de documentos aceitos no onboarding</p>
+                </div>
+                <Button 
+                  onClick={() => {
+                    resetDocTypeForm();
+                    setEditingDocType(null);
+                    setShowDocTypeDialog(true);
+                  }}
+                  className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Novo Tipo
+                </Button>
+              </div>
+
+              {loadingDocTypes ? (
+                <div className="flex justify-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin text-[var(--pagsmile-green)]" />
+                </div>
+              ) : documentTypes.length === 0 ? (
+                <div className="text-center py-8">
+                  <FileText className="w-12 h-12 mx-auto text-slate-300 mb-4" />
+                  <p className="text-slate-500">Nenhum tipo de documento cadastrado</p>
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Nome</TableHead>
+                      <TableHead>Tipo Merchant</TableHead>
+                      <TableHead>Formatos</TableHead>
+                      <TableHead>Obrigatório</TableHead>
+                      <TableHead className="text-right">Ações</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {documentTypes.map((docType) => (
+                      <TableRow key={docType.id}>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium text-slate-800">{docType.name}</p>
+                            {docType.description && (
+                              <p className="text-sm text-slate-500 truncate max-w-xs">{docType.description}</p>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">
+                            {docType.merchantType === 'BOTH' ? 'PF & PJ' : docType.merchantType}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex gap-1 flex-wrap">
+                            {docType.allowedFormats?.map(f => (
+                              <Badge key={f} variant="secondary" className="text-xs">{f}</Badge>
+                            ))}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {docType.isRequired ? (
+                            <CheckCircle2 className="w-5 h-5 text-green-500" />
+                          ) : (
+                            <XCircle className="w-5 h-5 text-slate-300" />
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            onClick={() => handleEditDocType(docType)}
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            className="text-red-500 hover:text-red-700"
+                            onClick={() => deleteDocTypeMutation.mutate(docType.id)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </div>
           </div>
         </TabsContent>
 
@@ -127,9 +376,15 @@ export default function AdminSettings() {
                     <Label className="font-medium">Threshold de Aprovação</Label>
                     <p className="text-sm text-slate-500">Score mínimo para aprovação automática</p>
                   </div>
-                  <span className="text-2xl font-bold text-green-600">75</span>
+                  <span className="text-2xl font-bold text-green-600">{generalSettings.approvalThreshold}</span>
                 </div>
-                <Slider defaultValue={[75]} max={100} step={1} className="w-full" />
+                <Slider 
+                  value={[generalSettings.approvalThreshold]} 
+                  onValueChange={(value) => setGeneralSettings(prev => ({...prev, approvalThreshold: value[0]}))}
+                  max={100} 
+                  step={1} 
+                  className="w-full" 
+                />
                 <div className="flex justify-between text-xs text-slate-400 mt-2">
                   <span>0</span>
                   <span>100</span>
@@ -143,9 +398,15 @@ export default function AdminSettings() {
                     <Label className="font-medium">Threshold de Revisão Manual</Label>
                     <p className="text-sm text-slate-500">Score mínimo para enviar à revisão manual</p>
                   </div>
-                  <span className="text-2xl font-bold text-orange-600">40</span>
+                  <span className="text-2xl font-bold text-orange-600">{generalSettings.manualThreshold}</span>
                 </div>
-                <Slider defaultValue={[40]} max={100} step={1} className="w-full" />
+                <Slider 
+                  value={[generalSettings.manualThreshold]} 
+                  onValueChange={(value) => setGeneralSettings(prev => ({...prev, manualThreshold: value[0]}))}
+                  max={100} 
+                  step={1} 
+                  className="w-full" 
+                />
                 <div className="flex justify-between text-xs text-slate-400 mt-2">
                   <span>0</span>
                   <span>100</span>
@@ -159,29 +420,297 @@ export default function AdminSettings() {
                   <div className="flex items-center gap-3">
                     <CheckCircle2 className="w-5 h-5 text-green-600" />
                     <div className="flex-1 h-3 bg-green-500 rounded-full"></div>
-                    <span className="text-sm text-slate-600 w-32">≥ 75: Aprovado</span>
+                    <span className="text-sm text-slate-600 w-40">≥ {generalSettings.approvalThreshold}: Aprovado</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <AlertTriangle className="w-5 h-5 text-orange-600" />
                     <div className="flex-1 h-3 bg-orange-500 rounded-full"></div>
-                    <span className="text-sm text-slate-600 w-32">40-74: Manual</span>
+                    <span className="text-sm text-slate-600 w-40">{generalSettings.manualThreshold}-{generalSettings.approvalThreshold - 1}: Manual</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <XCircle className="w-5 h-5 text-red-600" />
                     <div className="flex-1 h-3 bg-red-500 rounded-full"></div>
-                    <span className="text-sm text-slate-600 w-32">≤ 39: Recusado</span>
+                    <span className="text-sm text-slate-600 w-40">&lt; {generalSettings.manualThreshold}: Recusado</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            <Button className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90">
+            <Button 
+              onClick={() => handleSaveSettings('risco')}
+              className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90"
+            >
+              <Save className="w-4 h-4 mr-2" />
+              Salvar Configurações
+            </Button>
+          </div>
+        </TabsContent>
+
+        {/* Tab: Integrações */}
+        <TabsContent value="integrations">
+          <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6">
+            <h2 className="text-lg font-semibold text-slate-800">Integrações Externas</h2>
+            
+            <Alert className="bg-blue-50 border-blue-200">
+              <Info className="h-4 w-4 text-blue-600" />
+              <AlertDescription className="text-blue-800">
+                Configure as chaves de API para as integrações de validação externa.
+              </AlertDescription>
+            </Alert>
+
+            <div className="space-y-4">
+              {/* Big Data Corp */}
+              <div className="p-4 rounded-lg border border-slate-200">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-blue-100">
+                      <Shield className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div>
+                      <Label className="font-medium">Big Data Corp</Label>
+                      <p className="text-sm text-slate-500">Validação de CNPJ/CPF e dados empresariais</p>
+                    </div>
+                  </div>
+                  <Badge variant="outline" className="text-yellow-600 border-yellow-300">Pendente</Badge>
+                </div>
+                <div className="flex gap-2">
+                  <Input type="password" placeholder="API Key" className="flex-1" />
+                  <Button variant="outline">
+                    <Key className="w-4 h-4 mr-2" />
+                    Configurar
+                  </Button>
+                </div>
+              </div>
+
+              {/* CAF */}
+              <div className="p-4 rounded-lg border border-slate-200">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-purple-100">
+                      <Users className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <Label className="font-medium">CAF (Combate à Fraude)</Label>
+                      <p className="text-sm text-slate-500">KYC, Liveness e Facematch</p>
+                    </div>
+                  </div>
+                  <Badge variant="outline" className="text-yellow-600 border-yellow-300">Pendente</Badge>
+                </div>
+                <div className="flex gap-2">
+                  <Input type="password" placeholder="API Key" className="flex-1" />
+                  <Input type="text" placeholder="Policy ID" className="w-40" />
+                  <Button variant="outline">
+                    <Key className="w-4 h-4 mr-2" />
+                    Configurar
+                  </Button>
+                </div>
+              </div>
+
+              {/* Doc */}
+              <div className="p-4 rounded-lg border border-slate-200">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-teal-100">
+                      <FileText className="w-5 h-5 text-teal-600" />
+                    </div>
+                    <div>
+                      <Label className="font-medium">Doc</Label>
+                      <p className="text-sm text-slate-500">OCR e validação de documentos</p>
+                    </div>
+                  </div>
+                  <Badge variant="outline" className="text-yellow-600 border-yellow-300">Pendente</Badge>
+                </div>
+                <div className="flex gap-2">
+                  <Input type="password" placeholder="API Key" className="flex-1" />
+                  <Button variant="outline">
+                    <Key className="w-4 h-4 mr-2" />
+                    Configurar
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* Tab: Notificações */}
+        <TabsContent value="notifications">
+          <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6">
+            <h2 className="text-lg font-semibold text-slate-800">Configurações de Notificações</h2>
+            
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 rounded-lg border border-slate-200">
+                <div className="flex items-center gap-3">
+                  <Mail className="w-5 h-5 text-slate-400" />
+                  <div>
+                    <Label className="font-medium">Novo Caso Recebido</Label>
+                    <p className="text-sm text-slate-500">Notificar quando um novo caso de onboarding for criado</p>
+                  </div>
+                </div>
+                <Switch defaultChecked />
+              </div>
+
+              <div className="flex items-center justify-between p-4 rounded-lg border border-slate-200">
+                <div className="flex items-center gap-3">
+                  <Mail className="w-5 h-5 text-slate-400" />
+                  <div>
+                    <Label className="font-medium">Caso Requer Revisão Manual</Label>
+                    <p className="text-sm text-slate-500">Notificar quando um caso for encaminhado para revisão manual</p>
+                  </div>
+                </div>
+                <Switch defaultChecked />
+              </div>
+
+              <div className="flex items-center justify-between p-4 rounded-lg border border-slate-200">
+                <div className="flex items-center gap-3">
+                  <Mail className="w-5 h-5 text-slate-400" />
+                  <div>
+                    <Label className="font-medium">Caso Aprovado/Recusado</Label>
+                    <p className="text-sm text-slate-500">Notificar merchant sobre a decisão final</p>
+                  </div>
+                </div>
+                <Switch defaultChecked />
+              </div>
+
+              <div className="flex items-center justify-between p-4 rounded-lg border border-slate-200">
+                <div className="flex items-center gap-3">
+                  <Mail className="w-5 h-5 text-slate-400" />
+                  <div>
+                    <Label className="font-medium">Erro em Validação Externa</Label>
+                    <p className="text-sm text-slate-500">Notificar quando uma integração falhar</p>
+                  </div>
+                </div>
+                <Switch />
+              </div>
+            </div>
+
+            <Button 
+              onClick={() => handleSaveSettings('notificações')}
+              className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90"
+            >
               <Save className="w-4 h-4 mr-2" />
               Salvar Configurações
             </Button>
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Dialog de Tipo de Documento */}
+      <Dialog open={showDocTypeDialog} onOpenChange={setShowDocTypeDialog}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>
+              {editingDocType ? 'Editar Tipo de Documento' : 'Novo Tipo de Documento'}
+            </DialogTitle>
+            <DialogDescription>
+              Configure os detalhes do tipo de documento aceito no onboarding.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Nome <span className="text-red-500">*</span></Label>
+              <Input 
+                value={docTypeForm.name}
+                onChange={(e) => setDocTypeForm(prev => ({...prev, name: e.target.value}))}
+                placeholder="Ex: RG Frente"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Descrição</Label>
+              <Textarea 
+                value={docTypeForm.description}
+                onChange={(e) => setDocTypeForm(prev => ({...prev, description: e.target.value}))}
+                placeholder="Descrição do documento..."
+                rows={2}
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Tipo de Merchant</Label>
+                <Select 
+                  value={docTypeForm.merchantType}
+                  onValueChange={(value) => setDocTypeForm(prev => ({...prev, merchantType: value}))}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="BOTH">PF & PJ</SelectItem>
+                    <SelectItem value="PF">Pessoa Física</SelectItem>
+                    <SelectItem value="PJ">Pessoa Jurídica</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Tamanho Máximo (MB)</Label>
+                <Input 
+                  type="number"
+                  value={docTypeForm.maxSizeMB}
+                  onChange={(e) => setDocTypeForm(prev => ({...prev, maxSizeMB: parseInt(e.target.value)}))}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Formatos Aceitos</Label>
+              <div className="flex gap-2 flex-wrap">
+                {['PDF', 'JPG', 'JPEG', 'PNG'].map(format => (
+                  <Badge 
+                    key={format} 
+                    variant={docTypeForm.allowedFormats.includes(format) ? 'default' : 'outline'}
+                    className="cursor-pointer"
+                    onClick={() => {
+                      setDocTypeForm(prev => ({
+                        ...prev,
+                        allowedFormats: prev.allowedFormats.includes(format)
+                          ? prev.allowedFormats.filter(f => f !== format)
+                          : [...prev.allowedFormats, format]
+                      }));
+                    }}
+                  >
+                    {format}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Instruções para o Merchant</Label>
+              <Textarea 
+                value={docTypeForm.instructions}
+                onChange={(e) => setDocTypeForm(prev => ({...prev, instructions: e.target.value}))}
+                placeholder="Instruções de como enviar o documento..."
+                rows={2}
+              />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Switch 
+                checked={docTypeForm.isRequired}
+                onCheckedChange={(checked) => setDocTypeForm(prev => ({...prev, isRequired: checked}))}
+              />
+              <Label>Documento obrigatório</Label>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowDocTypeDialog(false)}>
+              Cancelar
+            </Button>
+            <Button 
+              onClick={() => saveDocTypeMutation.mutate(docTypeForm)}
+              disabled={saveDocTypeMutation.isPending || !docTypeForm.name}
+              className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90"
+            >
+              {saveDocTypeMutation.isPending && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
+              {editingDocType ? 'Atualizar' : 'Criar'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
