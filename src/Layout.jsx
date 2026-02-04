@@ -9,12 +9,13 @@ import {
   Settings, 
   LogOut,
   Menu,
-  X
+  X,
+  Link as LinkIcon,
+  Users
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function Layout({ children, currentPageName }) {
-  const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   const { data: authData } = useQuery({
@@ -33,37 +34,41 @@ export default function Layout({ children, currentPageName }) {
   const isAuthenticated = authData?.isAuthenticated;
   const isAdmin = user?.role === 'admin';
 
-  // Páginas públicas (merchant onboarding)
+  // Páginas públicas (fluxo de onboarding do merchant via link)
   const publicPages = [
     'ComplianceOnboardingStart',
-    'MerchantTypeSelection',
-    'QuestionnaireForm',
-    'PaymentServiceSelection',
-    'SummaryAndConsent',
+    'CompliancePixOnly',
+    'ComplianceFullKYC',
+    'DocumentUploadPix',
+    'DocumentUploadFull',
+    'LivenessFacematchStep',
+    'LivenessSimulation',
     'OnboardingCompletion'
   ];
 
   const isPublicPage = publicPages.includes(currentPageName);
 
-  // Se for página pública, layout simples
+  // Layout público para fluxo de onboarding (via link)
   if (isPublicPage) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
         <style>{`
           :root {
-            --primary: #10b981;
-            --primary-dark: #059669;
-            --secondary: #3b82f6;
-            --accent: #8b5cf6;
+            --pagsmile-green: #2bc196;
+            --pagsmile-green-light: #5cf7cf;
+            --pagsmile-blue: #002443;
+            --pagsmile-blue-light: #003366;
+            --pagsmile-gray: #f4f4f4;
           }
         `}</style>
-        <header className="bg-white border-b border-slate-200">
+        <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">P</span>
-              </div>
-              <span className="text-2xl font-bold text-slate-800">Pagsmile</span>
+              <img 
+                src="https://pagsmile.com/images/header/pagsmile_logo.svg" 
+                alt="Pagsmile" 
+                className="h-8"
+              />
             </div>
           </div>
         </header>
@@ -72,55 +77,62 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
-  // Layout do backoffice
+  // Layout do backoffice administrativo
   const adminNavItems = [
-    { label: 'Dashboard', path: 'OnboardingDashboard', icon: LayoutDashboard },
-    { label: 'Configurações', path: 'ComplianceSettings', icon: Settings },
-    { label: 'Questionários', path: 'QuestionnaireTemplatesList', icon: FileCheck }
+    { label: 'Dashboard', path: 'AdminDashboard', icon: LayoutDashboard },
+    { label: 'Gerar Link', path: 'GenerateOnboardingLink', icon: LinkIcon },
+    { label: 'Questionários', path: 'QuestionnaireTemplates', icon: FileCheck },
+    { label: 'Configurações', path: 'AdminSettings', icon: Settings }
   ];
 
   return (
     <div className="min-h-screen bg-slate-50">
       <style>{`
         :root {
-          --primary: #10b981;
-          --primary-dark: #059669;
-          --secondary: #3b82f6;
-          --accent: #8b5cf6;
+          --pagsmile-green: #2bc196;
+          --pagsmile-green-light: #5cf7cf;
+          --pagsmile-blue: #002443;
+          --pagsmile-blue-light: #003366;
+          --pagsmile-gray: #f4f4f4;
         }
       `}</style>
 
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 py-4">
+      <header className="bg-[var(--pagsmile-blue)] border-b border-slate-700 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex justify-between items-center">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden"
+                className="lg:hidden text-white"
               >
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
-              <div className="w-10 h-10 bg-gradient-to-br from-[var(--primary)] to-[var(--secondary)] rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">P</span>
-              </div>
-              <div>
-                <span className="text-2xl font-bold text-slate-800">Pagsmile</span>
-                <span className="text-xs text-slate-500 ml-2">Compliance</span>
+              <div className="flex items-center gap-3">
+                <img 
+                  src="https://pagsmile.com/images/header/pagsmile_logo.svg" 
+                  alt="Pagsmile" 
+                  className="h-7 brightness-0 invert"
+                />
+                <div className="hidden sm:block">
+                  <span className="text-xs font-medium text-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/10 px-2 py-1 rounded">
+                    Compliance
+                  </span>
+                </div>
               </div>
             </div>
 
             {isAuthenticated && (
               <div className="flex items-center gap-4">
                 <div className="text-right hidden sm:block">
-                  <div className="text-sm font-medium text-slate-800">{user?.full_name}</div>
-                  <div className="text-xs text-slate-500">{isAdmin ? 'Administrador' : 'Usuário'}</div>
+                  <div className="text-sm font-medium text-white">{user?.full_name}</div>
+                  <div className="text-xs text-slate-400">{isAdmin ? 'Administrador' : 'Usuário'}</div>
                 </div>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => base44.auth.logout()}
-                  className="text-slate-600"
+                  className="text-slate-300 hover:text-white hover:bg-white/10"
                 >
                   <LogOut className="w-4 h-4 mr-2" />
                   Sair
@@ -133,8 +145,8 @@ export default function Layout({ children, currentPageName }) {
 
       <div className="flex max-w-7xl mx-auto">
         {/* Sidebar - Desktop */}
-        {isAuthenticated && isAdmin && (
-          <aside className="hidden lg:block w-64 bg-white border-r border-slate-200 min-h-[calc(100vh-73px)]">
+        {isAuthenticated && (
+          <aside className="hidden lg:block w-64 bg-white border-r border-slate-200 min-h-[calc(100vh-57px)]">
             <nav className="p-4 space-y-1">
               {adminNavItems.map((item) => {
                 const Icon = item.icon;
@@ -145,7 +157,7 @@ export default function Layout({ children, currentPageName }) {
                     to={createPageUrl(item.path)}
                     className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                       isActive
-                        ? 'bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white'
+                        ? 'bg-[var(--pagsmile-green)] text-white'
                         : 'text-slate-600 hover:bg-slate-100'
                     }`}
                   >
@@ -159,10 +171,10 @@ export default function Layout({ children, currentPageName }) {
         )}
 
         {/* Mobile Sidebar */}
-        {isAuthenticated && isAdmin && mobileMenuOpen && (
+        {isAuthenticated && mobileMenuOpen && (
           <div className="lg:hidden fixed inset-0 bg-black/50 z-40" onClick={() => setMobileMenuOpen(false)}>
             <aside className="w-64 bg-white h-full" onClick={(e) => e.stopPropagation()}>
-              <nav className="p-4 space-y-1 mt-16">
+              <nav className="p-4 space-y-1 mt-4">
                 {adminNavItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = currentPageName === item.path;
@@ -173,7 +185,7 @@ export default function Layout({ children, currentPageName }) {
                       onClick={() => setMobileMenuOpen(false)}
                       className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                         isActive
-                          ? 'bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white'
+                          ? 'bg-[var(--pagsmile-green)] text-white'
                           : 'text-slate-600 hover:bg-slate-100'
                       }`}
                     >
