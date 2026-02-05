@@ -14,14 +14,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -29,23 +21,25 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { 
-  FileText, Search, Download, RefreshCw, Loader2,
-  Eye, Filter, ChevronLeft, ChevronRight,
-  CheckCircle2, XCircle, Clock, ExternalLink,
-  Image, File, FileCheck
+  FileText, Search, RefreshCw, Loader2,
+  Eye, Filter, CheckCircle2, XCircle, Clock,
+  Image, File, FileCheck, Building2, User, ChevronRight
 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function AdminComplianceDocs() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [typeFilter, setTypeFilter] = useState('all');
-  const [currentPage, setCurrentPage] = useState(1);
   const [selectedDoc, setSelectedDoc] = useState(null);
   const [rejectReason, setRejectReason] = useState('');
   const [showRejectDialog, setShowRejectDialog] = useState(false);
-  const itemsPerPage = 15;
   const queryClient = useQueryClient();
 
   const { data: documents = [], isLoading, refetch } = useQuery({
@@ -74,6 +68,57 @@ export default function AdminComplianceDocs() {
     onboardingCases.forEach(c => { map[c.id] = c; });
     return map;
   }, [onboardingCases]);
+
+  // Agrupar documentos por merchant
+  const merchantsWithDocs = React.useMemo(() => {
+    const grouped = {};
+    
+    documents.forEach(doc => {
+      const onboardingCase = caseMap[doc.onboardingCaseId];
+      const merchantId = onboardingCase?.merchantId;
+      
+      if (!merchantId) return;
+      
+      if (!grouped[merchantId]) {
+        const merchant = merchantMap[merchantId];
+        grouped[merchantId] = {
+          merchant,
+          documents: [],
+          stats: { total: 0, pendente: 0, validado: 0, rejeitado: 0 }
+        };
+      }
+      
+      grouped[merchantId].documents.push(doc);
+      grouped[merchantId].stats.total++;
+      
+      if (!doc.validationStatus || doc.validationStatus === 'Pendente') {
+        grouped[merchantId].stats.pendente++;
+      } else if (doc.validationStatus === 'Validado') {
+        grouped[merchantId].stats.validado++;
+      } else if (doc.validationStatus === 'Rejeitado') {
+        grouped[merchantId].stats.rejeitado++;
+      }
+    });
+    
+    return Object.values(grouped);
+  }, [documents, caseMap, merchantMap]);
+
+  // Filtrar merchants
+  const filteredMerchants = React.useMemo(() => {
+    return merchantsWithDocs.filter(item => {
+      const matchesSearch = !searchTerm || 
+        item.merchant?.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.merchant?.cpfCnpj?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.merchant?.companyName?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesStatus = statusFilter === 'all' || 
+        (statusFilter === 'Pendente' && item.stats.pendente > 0) ||
+        (statusFilter === 'Validado' && item.stats.validado > 0) ||
+        (statusFilter === 'Rejeitado' && item.stats.rejeitado > 0);
+      
+      return matchesSearch && matchesStatus;
+    });
+  }, [merchantsWithDocs, searchTerm, statusFilter]);
 
   const updateDocMutation = useMutation({
     mutationFn: async ({ docId, data }) => {
@@ -109,14 +154,13 @@ export default function AdminComplianceDocs() {
     });
   };
 
-  const stats = React.useMemo(() => ({
+  const globalStats = React.useMemo(() => ({
     total: documents.length,
     pendente: documents.filter(d => d.validationStatus === 'Pendente' || !d.validationStatus).length,
     validado: documents.filter(d => d.validationStatus === 'Validado').length,
     rejeitado: documents.filter(d => d.validationStatus === 'Rejeitado').length,
-  }), [documents]);
-
-  const documentTypes = [...new Set(documents.map(d => d.documentName).filter(Boolean))];
+    merchants: merchantsWithDocs.length
+  }), [documents, merchantsWithDocs]);
 
   const getStatusBadge = (status) => {
     const config = {
@@ -140,31 +184,11 @@ export default function AdminComplianceDocs() {
     return <File className="w-5 h-5 text-slate-500" />;
   };
 
-  const filteredDocs = React.useMemo(() => {
-    return documents.filter(doc => {
-      const onboardingCase = caseMap[doc.onboardingCaseId];
-      const merchant = onboardingCase ? merchantMap[onboardingCase.merchantId] : null;
-      
-      const matchesSearch = !searchTerm || 
-        doc.documentName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        doc.fileName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        merchant?.fullName?.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesStatus = statusFilter === 'all' || 
-        (statusFilter === 'Pendente' && (!doc.validationStatus || doc.validationStatus === 'Pendente')) ||
-        doc.validationStatus === statusFilter;
-      
-      const matchesType = typeFilter === 'all' || doc.documentName === typeFilter;
-      
-      return matchesSearch && matchesStatus && matchesType;
-    });
-  }, [documents, searchTerm, statusFilter, typeFilter, caseMap, merchantMap]);
-
-  const totalPages = Math.ceil(filteredDocs.length / itemsPerPage);
-  const paginatedDocs = filteredDocs.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const getMerchantStatusColor = (stats) => {
+    if (stats.pendente > 0) return 'border-l-yellow-500';
+    if (stats.rejeitado > 0) return 'border-l-red-500';
+    return 'border-l-green-500';
+  };
 
   return (
     <div className="space-y-6">
@@ -176,7 +200,7 @@ export default function AdminComplianceDocs() {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-slate-800">Gestão de Documentos</h1>
-            <p className="text-slate-500">Todos os documentos enviados pelos merchants</p>
+            <p className="text-slate-500">Documentos organizados por merchant</p>
           </div>
         </div>
         <Button variant="outline" onClick={() => refetch()}>
@@ -186,15 +210,22 @@ export default function AdminComplianceDocs() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <button
           onClick={() => setStatusFilter('all')}
           className={`bg-white rounded-xl border p-4 text-left transition-all hover:shadow-md ${
             statusFilter === 'all' ? 'border-[var(--pagsmile-green)] ring-2 ring-[var(--pagsmile-green)]/20' : 'border-slate-200'
           }`}
         >
-          <p className="text-2xl font-bold text-slate-800">{stats.total}</p>
-          <p className="text-xs text-slate-500">Total</p>
+          <p className="text-2xl font-bold text-slate-800">{globalStats.merchants}</p>
+          <p className="text-xs text-slate-500">Merchants</p>
+        </button>
+        <button
+          onClick={() => setStatusFilter('all')}
+          className={`bg-white rounded-xl border p-4 text-left transition-all hover:shadow-md border-slate-200`}
+        >
+          <p className="text-2xl font-bold text-blue-600">{globalStats.total}</p>
+          <p className="text-xs text-slate-500">Total Docs</p>
         </button>
         <button
           onClick={() => setStatusFilter('Pendente')}
@@ -202,7 +233,7 @@ export default function AdminComplianceDocs() {
             statusFilter === 'Pendente' ? 'border-yellow-500 ring-2 ring-yellow-500/20' : 'border-slate-200'
           }`}
         >
-          <p className="text-2xl font-bold text-yellow-600">{stats.pendente}</p>
+          <p className="text-2xl font-bold text-yellow-600">{globalStats.pendente}</p>
           <p className="text-xs text-slate-500">Pendentes</p>
         </button>
         <button
@@ -211,7 +242,7 @@ export default function AdminComplianceDocs() {
             statusFilter === 'Validado' ? 'border-green-500 ring-2 ring-green-500/20' : 'border-slate-200'
           }`}
         >
-          <p className="text-2xl font-bold text-green-600">{stats.validado}</p>
+          <p className="text-2xl font-bold text-green-600">{globalStats.validado}</p>
           <p className="text-xs text-slate-500">Validados</p>
         </button>
         <button
@@ -220,7 +251,7 @@ export default function AdminComplianceDocs() {
             statusFilter === 'Rejeitado' ? 'border-red-500 ring-2 ring-red-500/20' : 'border-slate-200'
           }`}
         >
-          <p className="text-2xl font-bold text-red-600">{stats.rejeitado}</p>
+          <p className="text-2xl font-bold text-red-600">{globalStats.rejeitado}</p>
           <p className="text-xs text-slate-500">Rejeitados</p>
         </button>
       </div>
@@ -231,28 +262,25 @@ export default function AdminComplianceDocs() {
           <div className="flex gap-2 flex-wrap items-center">
             <Filter className="w-4 h-4 text-slate-400" />
             
-            <Select value={typeFilter} onValueChange={setTypeFilter}>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-48">
-                <SelectValue placeholder="Tipo de Documento" />
+                <SelectValue placeholder="Filtrar por status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos os Tipos</SelectItem>
-                {documentTypes.map(type => (
-                  <SelectItem key={type} value={type}>{type}</SelectItem>
-                ))}
+                <SelectItem value="all">Todos os Status</SelectItem>
+                <SelectItem value="Pendente">Com Pendentes</SelectItem>
+                <SelectItem value="Validado">Com Validados</SelectItem>
+                <SelectItem value="Rejeitado">Com Rejeitados</SelectItem>
               </SelectContent>
             </Select>
 
-            {(statusFilter !== 'all' || typeFilter !== 'all') && (
+            {statusFilter !== 'all' && (
               <Button 
                 variant="ghost" 
                 size="sm"
-                onClick={() => {
-                  setStatusFilter('all');
-                  setTypeFilter('all');
-                }}
+                onClick={() => setStatusFilter('all')}
               >
-                Limpar filtros
+                Limpar filtro
               </Button>
             )}
           </div>
@@ -260,7 +288,7 @@ export default function AdminComplianceDocs() {
           <div className="relative w-full md:w-80">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <Input
-              placeholder="Buscar por nome do documento ou merchant..."
+              placeholder="Buscar por nome ou CPF/CNPJ..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-9"
@@ -269,129 +297,134 @@ export default function AdminComplianceDocs() {
         </div>
       </div>
 
-      {/* Tabela */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      {/* Lista de Merchants com Documentos */}
+      <div className="space-y-4">
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
+          <div className="flex items-center justify-center py-12 bg-white rounded-xl border">
             <Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" />
           </div>
-        ) : paginatedDocs.length === 0 ? (
-          <div className="text-center py-12">
+        ) : filteredMerchants.length === 0 ? (
+          <div className="text-center py-12 bg-white rounded-xl border">
             <FileCheck className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-            <p className="text-slate-500">Nenhum documento encontrado</p>
+            <p className="text-slate-500">Nenhum merchant encontrado</p>
           </div>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-slate-50">
-                <TableHead>Documento</TableHead>
-                <TableHead>Merchant</TableHead>
-                <TableHead>Tipo</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Data Upload</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {paginatedDocs.map((doc) => {
-                const onboardingCase = caseMap[doc.onboardingCaseId];
-                const merchant = onboardingCase ? merchantMap[onboardingCase.merchantId] : null;
-                return (
-                  <TableRow key={doc.id} className="hover:bg-slate-50">
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-slate-100 rounded-lg">
-                          {getFileIcon(doc.fileType)}
-                        </div>
-                        <div>
-                          <p className="font-medium text-slate-800">{doc.documentName || 'Documento'}</p>
-                          <p className="text-xs text-slate-500">{doc.fileName}</p>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <p className="font-medium text-slate-800">{merchant?.fullName || '-'}</p>
-                      <p className="text-xs text-slate-500">{merchant?.cpfCnpj || ''}</p>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="font-normal text-xs">
-                        {doc.fileType || '-'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{getStatusBadge(doc.validationStatus)}</TableCell>
-                    <TableCell className="text-sm text-slate-500">
-                      {doc.uploadDate ? new Date(doc.uploadDate).toLocaleDateString('pt-BR') : 
-                       doc.created_date ? new Date(doc.created_date).toLocaleDateString('pt-BR') : '-'}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        {doc.fileUrl && (
-                          <Button variant="ghost" size="sm" asChild>
-                            <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer">
-                              <Eye className="w-4 h-4" />
-                            </a>
-                          </Button>
-                        )}
-                        {(!doc.validationStatus || doc.validationStatus === 'Pendente') && (
-                          <>
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              onClick={() => handleApprove(doc)}
-                              className="text-green-600 hover:text-green-700 hover:bg-green-50"
-                            >
-                              <CheckCircle2 className="w-4 h-4" />
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              onClick={() => {
-                                setSelectedDoc(doc);
-                                setShowRejectDialog(true);
-                              }}
-                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                            >
-                              <XCircle className="w-4 h-4" />
-                            </Button>
-                          </>
+          <Accordion type="multiple" className="space-y-3">
+            {filteredMerchants.map((item) => (
+              <AccordionItem 
+                key={item.merchant?.id || 'unknown'} 
+                value={item.merchant?.id || 'unknown'}
+                className={`bg-white rounded-xl border border-slate-200 border-l-4 ${getMerchantStatusColor(item.stats)} overflow-hidden`}
+              >
+                <AccordionTrigger className="px-4 py-4 hover:no-underline hover:bg-slate-50">
+                  <div className="flex items-center justify-between w-full pr-4">
+                    <div className="flex items-center gap-4">
+                      <div className="p-2 rounded-lg bg-slate-100">
+                        {item.merchant?.type === 'PJ' ? (
+                          <Building2 className="w-5 h-5 text-slate-600" />
+                        ) : (
+                          <User className="w-5 h-5 text-slate-600" />
                         )}
                       </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        )}
-
-        {/* Paginação */}
-        {filteredDocs.length > 0 && (
-          <div className="px-4 py-3 border-t border-slate-200 flex items-center justify-between">
-            <p className="text-sm text-slate-500">
-              Mostrando {((currentPage - 1) * itemsPerPage) + 1} a {Math.min(currentPage * itemsPerPage, filteredDocs.length)} de {filteredDocs.length} documentos
-            </p>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                disabled={currentPage === 1}
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </Button>
-              <span className="text-sm text-slate-600">
-                Página {currentPage} de {totalPages || 1}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                disabled={currentPage === totalPages || totalPages === 0}
-              >
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
+                      <div className="text-left">
+                        <p className="font-semibold text-slate-800">
+                          {item.merchant?.fullName || 'Merchant Desconhecido'}
+                        </p>
+                        <p className="text-sm text-slate-500">
+                          {item.merchant?.cpfCnpj || '-'} 
+                          {item.merchant?.type && <span className="ml-2">• {item.merchant.type}</span>}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="text-slate-500">{item.stats.total} docs</span>
+                        {item.stats.pendente > 0 && (
+                          <Badge className="bg-yellow-100 text-yellow-800 border-0">
+                            {item.stats.pendente} pendente{item.stats.pendente > 1 ? 's' : ''}
+                          </Badge>
+                        )}
+                        {item.stats.rejeitado > 0 && (
+                          <Badge className="bg-red-100 text-red-800 border-0">
+                            {item.stats.rejeitado} rejeitado{item.stats.rejeitado > 1 ? 's' : ''}
+                          </Badge>
+                        )}
+                        {item.stats.pendente === 0 && item.stats.rejeitado === 0 && (
+                          <Badge className="bg-green-100 text-green-800 border-0">
+                            <CheckCircle2 className="w-3 h-3 mr-1" />
+                            Completo
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                
+                <AccordionContent className="px-4 pb-4">
+                  <div className="border-t border-slate-100 pt-4 space-y-3">
+                    {item.documents.map((doc) => (
+                      <div 
+                        key={doc.id} 
+                        className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-white rounded-lg border">
+                            {getFileIcon(doc.fileType)}
+                          </div>
+                          <div>
+                            <p className="font-medium text-slate-800">{doc.documentName || 'Documento'}</p>
+                            <p className="text-xs text-slate-500">
+                              {doc.fileName} • {doc.uploadDate ? new Date(doc.uploadDate).toLocaleDateString('pt-BR') : 
+                               doc.created_date ? new Date(doc.created_date).toLocaleDateString('pt-BR') : '-'}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-3">
+                          {getStatusBadge(doc.validationStatus)}
+                          
+                          <div className="flex items-center gap-1">
+                            {doc.fileUrl && (
+                              <Button variant="ghost" size="sm" asChild>
+                                <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer">
+                                  <Eye className="w-4 h-4" />
+                                </a>
+                              </Button>
+                            )}
+                            {(!doc.validationStatus || doc.validationStatus === 'Pendente') && (
+                              <>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm"
+                                  onClick={() => handleApprove(doc)}
+                                  disabled={updateDocMutation.isPending}
+                                  className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                                >
+                                  <CheckCircle2 className="w-4 h-4" />
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm"
+                                  onClick={() => {
+                                    setSelectedDoc(doc);
+                                    setShowRejectDialog(true);
+                                  }}
+                                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                >
+                                  <XCircle className="w-4 h-4" />
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         )}
       </div>
 
