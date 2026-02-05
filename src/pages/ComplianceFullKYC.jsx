@@ -29,6 +29,7 @@ import Step8PLDSancoes from '../components/compliance/steps/Step8PLDSancoes';
 import Step9PLDRiscos from '../components/compliance/steps/Step9PLDRiscos';
 import Step10PLDOperacao from '../components/compliance/steps/Step10PLDOperacao';
 import Step11Confirmacao from '../components/compliance/steps/Step11Confirmacao';
+import Step8CompliancePLD from '../components/compliance/steps/Step8CompliancePLD';
 
 const STEPS = [
   { id: 'identificacao', title: 'Identificação', icon: Building2 },

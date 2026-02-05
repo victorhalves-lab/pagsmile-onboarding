@@ -68,6 +68,7 @@ import OnboardingCaseDetails from './pages/OnboardingCaseDetails';
 import OnboardingCompletion from './pages/OnboardingCompletion';
 import QuestionnaireEditor from './pages/QuestionnaireEditor';
 import QuestionnaireTemplates from './pages/QuestionnaireTemplates';
+import Home from './pages/Home';
 import __Layout from './Layout.jsx';
 
 
@@ -93,6 +94,7 @@ export const PAGES = {
     "OnboardingCompletion": OnboardingCompletion,
     "QuestionnaireEditor": QuestionnaireEditor,
     "QuestionnaireTemplates": QuestionnaireTemplates,
+    "Home": Home,
 }
 
 export const pagesConfig = {
