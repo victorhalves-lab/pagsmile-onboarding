@@ -153,11 +153,11 @@ export default function EditorQuestionario() {
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">
+            <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">
               {isEditing ? 'Editar Questionário' : 'Novo Questionário'}
             </h1>
             {isEditing && template && (
-              <p className="text-slate-500">{template.name}</p>
+              <p className="text-[var(--pagsmile-blue)]/70">{template.name}</p>
             )}
           </div>
         </div>
@@ -240,7 +240,7 @@ export default function EditorQuestionario() {
             <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
               <div>
                 <Label className="text-base">Questionário Ativo</Label>
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-[var(--pagsmile-blue)]/70">
                   Questionários inativos não podem ser usados em novos onboardings
                 </p>
               </div>
@@ -292,8 +292,8 @@ export default function EditorQuestionario() {
         <TabsContent value="risk" className="space-y-6">
           <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-8">
             <div>
-              <h3 className="text-lg font-semibold text-slate-800 mb-2">Limiares de Decisão Automática</h3>
-              <p className="text-sm text-slate-500">
+              <h3 className="text-lg font-semibold text-[var(--pagsmile-blue)] mb-2">Limiares de Decisão Automática</h3>
+              <p className="text-sm text-[var(--pagsmile-blue)]/70">
                 Configure os limites de score para aprovação/rejeição automática e revisão manual.
               </p>
             </div>

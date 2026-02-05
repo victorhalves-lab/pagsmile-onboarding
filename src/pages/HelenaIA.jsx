@@ -233,8 +233,8 @@ export default function HelenaIA() {
             <Brain className="w-6 h-6 text-purple-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">Helena IA</h1>
-            <p className="text-slate-500">Inteligência Artificial para Análise de Compliance</p>
+            <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Helena IA</h1>
+            <p className="text-[var(--pagsmile-blue)]/70">Inteligência Artificial para Análise de Compliance</p>
           </div>
         </div>
         <Button variant="outline" onClick={() => queryClient.invalidateQueries()}>
@@ -323,7 +323,7 @@ export default function HelenaIA() {
               subtitle="aguardando processamento"
               icon={Clock}
               iconBg="bg-slate-100"
-              iconColor="text-slate-600"
+              iconColor="text-[var(--pagsmile-blue)]/80"
             />
           </div>
 
@@ -464,7 +464,7 @@ export default function HelenaIA() {
                     step={5}
                     className="w-full"
                   />
-                  <p className="text-xs text-slate-500 mt-1">Casos com score ≥ {thresholds.auto_approve} serão aprovados automaticamente</p>
+                  <p className="text-xs text-[var(--pagsmile-blue)]/70 mt-1">Casos com score ≥ {thresholds.auto_approve} serão aprovados automaticamente</p>
                 </div>
 
                 <div>
@@ -480,7 +480,7 @@ export default function HelenaIA() {
                     step={5}
                     className="w-full"
                   />
-                  <p className="text-xs text-slate-500 mt-1">Casos com score ≤ {thresholds.auto_reject} serão recusados automaticamente</p>
+                  <p className="text-xs text-[var(--pagsmile-blue)]/70 mt-1">Casos com score ≤ {thresholds.auto_reject} serão recusados automaticamente</p>
                 </div>
               </div>
 
@@ -507,7 +507,7 @@ export default function HelenaIA() {
                   { id: 'external', label: 'Validações Externas (CAF/BDC)', icon: Activity },
                 ].map(factor => (
                   <div key={factor.id} className="flex items-center gap-4 p-3 border rounded-lg">
-                    <factor.icon className="w-5 h-5 text-slate-400" />
+                    <factor.icon className="w-5 h-5 text-[var(--pagsmile-blue)]/50" />
                     <div className="flex-1">
                       <p className="font-medium text-sm">{factor.label}</p>
                     </div>
@@ -520,7 +520,7 @@ export default function HelenaIA() {
                         step={5}
                       />
                     </div>
-                    <span className="text-sm font-medium text-slate-700 w-12 text-right">{factorWeights[factor.id]}%</span>
+                    <span className="text-sm font-medium text-[var(--pagsmile-blue)]/90 w-12 text-right">{factorWeights[factor.id]}%</span>
                   </div>
                 ))}
                 <div className="pt-3 border-t flex justify-between items-center">
@@ -547,7 +547,7 @@ export default function HelenaIA() {
             <CardContent>
               {isLoading ? (
                 <div className="flex justify-center py-8">
-                  <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+                  <Loader2 className="w-6 h-6 animate-spin text-[var(--pagsmile-blue)]/50" />
                 </div>
               ) : (
                 <Table>
@@ -581,7 +581,7 @@ export default function HelenaIA() {
                         <TableCell>
                           {analysis.decision && getDecisionBadge(analysis.decision)}
                         </TableCell>
-                        <TableCell className="text-sm text-slate-500">
+                        <TableCell className="text-sm text-[var(--pagsmile-blue)]/70">
                           {analysis.processing_time_ms ? `${analysis.processing_time_ms}ms` : '-'}
                         </TableCell>
                         <TableCell>
@@ -617,28 +617,28 @@ export default function HelenaIA() {
               <CardContent className="pt-6 text-center">
                 <ThumbsUp className="w-8 h-8 text-green-600 mx-auto mb-2" />
                 <p className="text-2xl font-bold">{stats.agreedCount}</p>
-                <p className="text-sm text-slate-500">Concordâncias</p>
+                <p className="text-sm text-[var(--pagsmile-blue)]/70">Concordâncias</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="pt-6 text-center">
                 <ThumbsDown className="w-8 h-8 text-red-600 mx-auto mb-2" />
                 <p className="text-2xl font-bold">{stats.disagreedCount}</p>
-                <p className="text-sm text-slate-500">Discordâncias</p>
+                <p className="text-sm text-[var(--pagsmile-blue)]/70">Discordâncias</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="pt-6 text-center">
                 <MessageSquare className="w-8 h-8 text-blue-600 mx-auto mb-2" />
                 <p className="text-2xl font-bold">{stats.withCommentsCount}</p>
-                <p className="text-sm text-slate-500">Com Comentários</p>
+                <p className="text-sm text-[var(--pagsmile-blue)]/70">Com Comentários</p>
               </CardContent>
             </Card>
             <Card>
               <CardContent className="pt-6 text-center">
                 <Target className="w-8 h-8 text-purple-600 mx-auto mb-2" />
                 <p className="text-2xl font-bold">{stats.accuracyRate}%</p>
-                <p className="text-sm text-slate-500">Taxa de Acerto</p>
+                <p className="text-sm text-[var(--pagsmile-blue)]/70">Taxa de Acerto</p>
               </CardContent>
             </Card>
           </div>
@@ -691,7 +691,7 @@ OUTPUT ESPERADO:
             <CardContent>
               {isLoading ? (
                 <div className="flex justify-center py-8">
-                  <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+                  <Loader2 className="w-6 h-6 animate-spin text-[var(--pagsmile-blue)]/50" />
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -700,7 +700,7 @@ OUTPUT ESPERADO:
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-3">
                           {analysis.decision && getDecisionBadge(analysis.decision)}
-                          <span className="text-sm text-slate-500">
+                          <span className="text-sm text-[var(--pagsmile-blue)]/70">
                             {analysis.created_date ? new Date(analysis.created_date).toLocaleString('pt-BR') : '-'}
                           </span>
                         </div>
@@ -714,8 +714,8 @@ OUTPUT ESPERADO:
                       
                       {analysis.justification && (
                         <div className="bg-slate-50 rounded-lg p-3 mb-3">
-                          <p className="text-sm font-medium text-slate-700 mb-1">Justificativa:</p>
-                          <p className="text-sm text-slate-600">{analysis.justification}</p>
+                          <p className="text-sm font-medium text-[var(--pagsmile-blue)]/90 mb-1">Justificativa:</p>
+                          <p className="text-sm text-[var(--pagsmile-blue)]/80">{analysis.justification}</p>
                         </div>
                       )}
 
@@ -723,7 +723,7 @@ OUTPUT ESPERADO:
                         {analysis.positive_factors?.length > 0 && (
                           <div>
                             <p className="text-xs font-medium text-green-700 mb-1">Fatores Positivos:</p>
-                            <ul className="text-xs text-slate-600 list-disc list-inside">
+                            <ul className="text-xs text-[var(--pagsmile-blue)]/80 list-disc list-inside">
                               {analysis.positive_factors.slice(0, 3).map((f, i) => (
                                 <li key={i}>{f}</li>
                               ))}
@@ -733,7 +733,7 @@ OUTPUT ESPERADO:
                         {analysis.risk_factors?.length > 0 && (
                           <div>
                             <p className="text-xs font-medium text-red-700 mb-1">Fatores de Risco:</p>
-                            <ul className="text-xs text-slate-600 list-disc list-inside">
+                            <ul className="text-xs text-[var(--pagsmile-blue)]/80 list-disc list-inside">
                               {analysis.risk_factors.slice(0, 3).map((f, i) => (
                                 <li key={i}>{f}</li>
                               ))}
@@ -754,7 +754,7 @@ OUTPUT ESPERADO:
                       )}
 
                       {analysis.processing_time_ms && (
-                        <p className="text-xs text-slate-400 mt-2">
+                        <p className="text-xs text-[var(--pagsmile-blue)]/50 mt-2">
                           Processado em {analysis.processing_time_ms}ms
                         </p>
                       )}

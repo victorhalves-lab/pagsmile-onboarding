@@ -422,7 +422,7 @@ export default function AdminDashboard() {
           subtitle={`+${stats.pendente + stats.processando} pendentes`}
           icon={Users}
           iconBg="bg-slate-100"
-          iconColor="text-slate-600"
+          iconColor="text-[var(--pagsmile-blue)]/80"
           trend="up"
           trendValue="+12%"
           trendLabel="vs mês anterior"
@@ -584,7 +584,7 @@ export default function AdminDashboard() {
             </div>
             
             <div className="relative w-full md:w-80">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/50" />
               <Input
                 placeholder="Buscar por nome, CPF/CNPJ ou e-mail..."
                 value={searchTerm}
@@ -604,9 +604,9 @@ export default function AdminDashboard() {
           </div>
         ) : filteredCases.length === 0 ? (
           <div className="text-center py-12">
-            <FileCheck className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-            <p className="text-slate-500 font-medium">Nenhum caso encontrado</p>
-            <p className="text-sm text-slate-400 mt-1">Ajuste os filtros ou aguarde novas submissões</p>
+            <FileCheck className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/40 mb-4" />
+            <p className="text-[var(--pagsmile-blue)]/70 font-medium">Nenhum caso encontrado</p>
+            <p className="text-sm text-[var(--pagsmile-blue)]/50 mt-1">Ajuste os filtros ou aguarde novas submissões</p>
           </div>
         ) : (
           <Table>
@@ -667,7 +667,7 @@ export default function AdminDashboard() {
                         </div>
                         <div>
                           <p className="font-medium text-[#002443]">{merchant?.fullName || 'N/A'}</p>
-                          <p className="text-sm text-slate-500">{merchant?.cpfCnpj || '-'}</p>
+                          <p className="text-sm text-[var(--pagsmile-blue)]/70">{merchant?.cpfCnpj || '-'}</p>
                         </div>
                       </div>
                     </TableCell>
@@ -683,7 +683,7 @@ export default function AdminDashboard() {
                         }`}>
                           {c.riskScore}
                         </span>
-                      ) : <span className="text-slate-400">-</span>}
+                      ) : <span className="text-[var(--pagsmile-blue)]/50">-</span>}
                     </TableCell>
                     <TableCell>
                       {c.iaDecision ? (
@@ -694,9 +694,9 @@ export default function AdminDashboard() {
                         }`}>
                           {c.iaDecision}
                         </Badge>
-                      ) : <span className="text-slate-400">-</span>}
+                      ) : <span className="text-[var(--pagsmile-blue)]/50">-</span>}
                     </TableCell>
-                    <TableCell className="text-slate-500 text-sm">
+                    <TableCell className="text-[var(--pagsmile-blue)]/70 text-sm">
                       {c.created_date ? new Date(c.created_date).toLocaleDateString('pt-BR', {
                         day: '2-digit', month: 'short'
                       }) : '-'}
@@ -740,7 +740,7 @@ export default function AdminDashboard() {
         
         {filteredCases.length > 0 && (
           <div className="px-4 py-3 border-t border-slate-200 flex items-center justify-between">
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-[var(--pagsmile-blue)]/70">
               Mostrando {Math.min(filteredCases.length, 20)} de {filteredCases.length} casos
             </p>
           </div>

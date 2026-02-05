@@ -50,7 +50,7 @@ export default function Auditoria() {
     'CREATE': { color: 'bg-blue-100 text-blue-800', icon: Plus, label: 'Criação' },
     'UPDATE': { color: 'bg-yellow-100 text-yellow-800', icon: Edit, label: 'Atualização' },
     'DELETE': { color: 'bg-red-100 text-red-800', icon: Trash2, label: 'Exclusão' },
-    'VIEW': { color: 'bg-slate-100 text-slate-800', icon: Eye, label: 'Visualização' },
+    'VIEW': { color: 'bg-slate-100 text-[var(--pagsmile-blue)]', icon: Eye, label: 'Visualização' },
     'APPROVAL': { color: 'bg-green-100 text-green-800', icon: CheckCircle2, label: 'Aprovação' },
     'REJECTION': { color: 'bg-red-100 text-red-800', icon: XCircle, label: 'Rejeição' },
     'VALIDATION': { color: 'bg-purple-100 text-purple-800', icon: AlertTriangle, label: 'Validação' },
@@ -76,7 +76,7 @@ export default function Auditoria() {
   const getActorIcon = (actorType) => {
     const config = actorTypeConfig[actorType] || actorTypeConfig['user'];
     const Icon = config.icon;
-    return <Icon className="w-4 h-4 text-slate-400" />;
+    return <Icon className="w-4 h-4 text-[var(--pagsmile-blue)]/50" />;
   };
 
   // Filtrar logs
@@ -147,11 +147,11 @@ export default function Auditoria() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-lg bg-slate-100">
-            <History className="w-6 h-6 text-slate-600" />
+            <History className="w-6 h-6 text-[var(--pagsmile-blue)]/80" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">Auditoria de Compliance</h1>
-            <p className="text-slate-500">Registro completo de todas as ações do sistema</p>
+            <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Auditoria de Compliance</h1>
+            <p className="text-[var(--pagsmile-blue)]/70">Registro completo de todas as ações do sistema</p>
           </div>
         </div>
         <div className="flex gap-2">
@@ -169,14 +169,14 @@ export default function Auditoria() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Total de Registros', value: auditLogs.length, color: 'bg-slate-100', textColor: 'text-slate-800' },
+          { label: 'Total de Registros', value: auditLogs.length, color: 'bg-slate-100', textColor: 'text-[var(--pagsmile-blue)]' },
           { label: 'Aprovações', value: auditLogs.filter(l => l.actionType === 'APPROVAL').length, color: 'bg-green-100', textColor: 'text-green-800' },
           { label: 'Rejeições', value: auditLogs.filter(l => l.actionType === 'REJECTION').length, color: 'bg-red-100', textColor: 'text-red-800' },
           { label: 'Ações Helena IA', value: auditLogs.filter(l => l.changedBy === 'HELENA_AI').length, color: 'bg-purple-100', textColor: 'text-purple-800' },
         ].map((stat, idx) => (
           <div key={idx} className={`${stat.color} rounded-xl p-4`}>
             <p className={`text-2xl font-bold ${stat.textColor}`}>{stat.value}</p>
-            <p className="text-sm text-slate-600">{stat.label}</p>
+            <p className="text-sm text-[var(--pagsmile-blue)]/80">{stat.label}</p>
           </div>
         ))}
       </div>
@@ -185,7 +185,7 @@ export default function Auditoria() {
       <div className="bg-white rounded-xl border border-slate-200 p-4">
         <div className="flex flex-col md:flex-row gap-4 justify-between">
           <div className="flex gap-2 flex-wrap items-center">
-            <Filter className="w-4 h-4 text-slate-400" />
+            <Filter className="w-4 h-4 text-[var(--pagsmile-blue)]/50" />
             
             <Select value={actionFilter} onValueChange={setActionFilter}>
               <SelectTrigger className="w-40">
@@ -241,7 +241,7 @@ export default function Auditoria() {
           </div>
           
           <div className="relative w-full md:w-80">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/50" />
             <Input
               placeholder="Buscar por descrição, ator ou ID..."
               value={searchTerm}
@@ -260,8 +260,8 @@ export default function Auditoria() {
           </div>
         ) : paginatedLogs.length === 0 ? (
           <div className="text-center py-12">
-            <History className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-            <p className="text-slate-500">Nenhum registro encontrado</p>
+            <History className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/40 mb-4" />
+            <p className="text-[var(--pagsmile-blue)]/70">Nenhum registro encontrado</p>
           </div>
         ) : (
           <Table>
@@ -283,7 +283,7 @@ export default function Auditoria() {
                       <p className="font-medium">
                         {log.changeDate ? new Date(log.changeDate).toLocaleDateString('pt-BR') : '-'}
                       </p>
-                      <p className="text-xs text-slate-400">
+                      <p className="text-xs text-[var(--pagsmile-blue)]/50">
                         {log.changeDate ? new Date(log.changeDate).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : ''}
                       </p>
                     </div>
@@ -321,7 +321,7 @@ export default function Auditoria() {
         {/* Paginação */}
         {filteredLogs.length > 0 && (
           <div className="px-4 py-3 border-t border-slate-200 flex items-center justify-between">
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-[var(--pagsmile-blue)]/70">
               Mostrando {((currentPage - 1) * itemsPerPage) + 1} a {Math.min(currentPage * itemsPerPage, filteredLogs.length)} de {filteredLogs.length} registros
             </p>
             <div className="flex items-center gap-2">
@@ -333,7 +333,7 @@ export default function Auditoria() {
               >
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <span className="text-sm text-slate-600">
+              <span className="text-sm text-[var(--pagsmile-blue)]/80">
                 Página {currentPage} de {totalPages || 1}
               </span>
               <Button
@@ -359,35 +359,35 @@ export default function Auditoria() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-slate-500">Data/Hora</p>
+                  <p className="text-sm text-[var(--pagsmile-blue)]/70">Data/Hora</p>
                   <p className="font-medium">
                     {selectedLog.changeDate ? new Date(selectedLog.changeDate).toLocaleString('pt-BR') : '-'}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-slate-500">Tipo de Ação</p>
+                  <p className="text-sm text-[var(--pagsmile-blue)]/70">Tipo de Ação</p>
                   {getActionBadge(selectedLog.actionType)}
                 </div>
                 <div>
-                  <p className="text-sm text-slate-500">Ator</p>
+                  <p className="text-sm text-[var(--pagsmile-blue)]/70">Ator</p>
                   <p className="font-medium">{selectedLog.changedBy}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-slate-500">Entidade</p>
+                  <p className="text-sm text-[var(--pagsmile-blue)]/70">Entidade</p>
                   <p className="font-medium">{selectedLog.entityName}</p>
                 </div>
               </div>
               <div>
-                <p className="text-sm text-slate-500">Descrição</p>
+                <p className="text-sm text-[var(--pagsmile-blue)]/70">Descrição</p>
                 <p className="font-medium">{selectedLog.actionDescription}</p>
               </div>
               <div>
-                <p className="text-sm text-slate-500">ID da Entidade</p>
+                <p className="text-sm text-[var(--pagsmile-blue)]/70">ID da Entidade</p>
                 <p className="font-mono text-sm bg-slate-50 p-2 rounded">{selectedLog.entityId}</p>
               </div>
               {selectedLog.details && (
                 <div>
-                  <p className="text-sm text-slate-500 mb-2">Detalhes Adicionais</p>
+                  <p className="text-sm text-[var(--pagsmile-blue)]/70 mb-2">Detalhes Adicionais</p>
                   <pre className="bg-slate-50 p-3 rounded text-xs overflow-auto max-h-40">
                     {JSON.stringify(selectedLog.details, null, 2)}
                   </pre>
@@ -395,7 +395,7 @@ export default function Auditoria() {
               )}
               {selectedLog.ipAddress && (
                 <div>
-                  <p className="text-sm text-slate-500">Endereço IP</p>
+                  <p className="text-sm text-[var(--pagsmile-blue)]/70">Endereço IP</p>
                   <p className="font-mono text-sm">{selectedLog.ipAddress}</p>
                 </div>
               )}

@@ -181,7 +181,7 @@ export default function GestaoDocumentos() {
   const getFileIcon = (fileType) => {
     if (fileType?.includes('image')) return <Image className="w-5 h-5 text-purple-500" />;
     if (fileType?.includes('pdf')) return <FileText className="w-5 h-5 text-red-500" />;
-    return <File className="w-5 h-5 text-slate-500" />;
+    return <File className="w-5 h-5 text-[var(--pagsmile-blue)]/70" />;
   };
 
   const getMerchantStatusColor = (stats) => {
@@ -199,8 +199,8 @@ export default function GestaoDocumentos() {
             <FileText className="w-6 h-6 text-purple-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">Gestão de Documentos</h1>
-            <p className="text-slate-500">Documentos organizados por merchant</p>
+            <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Gestão de Documentos</h1>
+            <p className="text-[var(--pagsmile-blue)]/70">Documentos organizados por merchant</p>
           </div>
         </div>
         <Button variant="outline" onClick={() => refetch()}>
@@ -217,15 +217,15 @@ export default function GestaoDocumentos() {
             statusFilter === 'all' ? 'border-[var(--pagsmile-green)] ring-2 ring-[var(--pagsmile-green)]/20' : 'border-slate-200'
           }`}
         >
-          <p className="text-2xl font-bold text-slate-800">{globalStats.merchants}</p>
-          <p className="text-xs text-slate-500">Merchants</p>
+          <p className="text-2xl font-bold text-[var(--pagsmile-blue)]">{globalStats.merchants}</p>
+          <p className="text-xs text-[var(--pagsmile-blue)]/70">Merchants</p>
         </button>
         <button
           onClick={() => setStatusFilter('all')}
           className={`bg-white rounded-xl border p-4 text-left transition-all hover:shadow-md border-slate-200`}
         >
           <p className="text-2xl font-bold text-blue-600">{globalStats.total}</p>
-          <p className="text-xs text-slate-500">Total Docs</p>
+          <p className="text-xs text-[var(--pagsmile-blue)]/70">Total Docs</p>
         </button>
         <button
           onClick={() => setStatusFilter('Pendente')}
@@ -234,7 +234,7 @@ export default function GestaoDocumentos() {
           }`}
         >
           <p className="text-2xl font-bold text-yellow-600">{globalStats.pendente}</p>
-          <p className="text-xs text-slate-500">Pendentes</p>
+          <p className="text-xs text-[var(--pagsmile-blue)]/70">Pendentes</p>
         </button>
         <button
           onClick={() => setStatusFilter('Validado')}
@@ -243,7 +243,7 @@ export default function GestaoDocumentos() {
           }`}
         >
           <p className="text-2xl font-bold text-green-600">{globalStats.validado}</p>
-          <p className="text-xs text-slate-500">Validados</p>
+          <p className="text-xs text-[var(--pagsmile-blue)]/70">Validados</p>
         </button>
         <button
           onClick={() => setStatusFilter('Rejeitado')}
@@ -252,7 +252,7 @@ export default function GestaoDocumentos() {
           }`}
         >
           <p className="text-2xl font-bold text-red-600">{globalStats.rejeitado}</p>
-          <p className="text-xs text-slate-500">Rejeitados</p>
+          <p className="text-xs text-[var(--pagsmile-blue)]/70">Rejeitados</p>
         </button>
       </div>
 
@@ -260,7 +260,7 @@ export default function GestaoDocumentos() {
       <div className="bg-white rounded-xl border border-slate-200 p-4">
         <div className="flex flex-col md:flex-row gap-4 justify-between">
           <div className="flex gap-2 flex-wrap items-center">
-            <Filter className="w-4 h-4 text-slate-400" />
+            <Filter className="w-4 h-4 text-[var(--pagsmile-blue)]/50" />
             
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-48">
@@ -286,7 +286,7 @@ export default function GestaoDocumentos() {
           </div>
           
           <div className="relative w-full md:w-80">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/50" />
             <Input
               placeholder="Buscar por nome ou CPF/CNPJ..."
               value={searchTerm}
@@ -305,8 +305,8 @@ export default function GestaoDocumentos() {
           </div>
         ) : filteredMerchants.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-xl border">
-            <FileCheck className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-            <p className="text-slate-500">Nenhum merchant encontrado</p>
+            <FileCheck className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/40 mb-4" />
+            <p className="text-[var(--pagsmile-blue)]/70">Nenhum merchant encontrado</p>
           </div>
         ) : (
           <Accordion type="multiple" className="space-y-3">
@@ -321,16 +321,16 @@ export default function GestaoDocumentos() {
                     <div className="flex items-center gap-4">
                       <div className="p-2 rounded-lg bg-slate-100">
                         {item.merchant?.type === 'PJ' ? (
-                          <Building2 className="w-5 h-5 text-slate-600" />
+                          <Building2 className="w-5 h-5 text-[var(--pagsmile-blue)]/80" />
                         ) : (
-                          <User className="w-5 h-5 text-slate-600" />
+                          <User className="w-5 h-5 text-[var(--pagsmile-blue)]/80" />
                         )}
                       </div>
                       <div className="text-left">
-                        <p className="font-semibold text-slate-800">
+                        <p className="font-semibold text-[var(--pagsmile-blue)]">
                           {item.merchant?.fullName || 'Merchant Desconhecido'}
                         </p>
-                        <p className="text-sm text-slate-500">
+                        <p className="text-sm text-[var(--pagsmile-blue)]/70">
                           {item.merchant?.cpfCnpj || '-'} 
                           {item.merchant?.type && <span className="ml-2">• {item.merchant.type}</span>}
                         </p>
@@ -339,7 +339,7 @@ export default function GestaoDocumentos() {
                     
                     <div className="flex items-center gap-3">
                       <div className="flex items-center gap-2 text-sm">
-                        <span className="text-slate-500">{item.stats.total} docs</span>
+                        <span className="text-[var(--pagsmile-blue)]/70">{item.stats.total} docs</span>
                         {item.stats.pendente > 0 && (
                           <Badge className="bg-yellow-100 text-yellow-800 border-0">
                             {item.stats.pendente} pendente{item.stats.pendente > 1 ? 's' : ''}
@@ -373,8 +373,8 @@ export default function GestaoDocumentos() {
                             {getFileIcon(doc.fileType)}
                           </div>
                           <div>
-                            <p className="font-medium text-slate-800">{doc.documentName || 'Documento'}</p>
-                            <p className="text-xs text-slate-500">
+                            <p className="font-medium text-[var(--pagsmile-blue)]">{doc.documentName || 'Documento'}</p>
+                            <p className="text-xs text-[var(--pagsmile-blue)]/70">
                               {doc.fileName} • {doc.uploadDate ? new Date(doc.uploadDate).toLocaleDateString('pt-BR') : 
                                doc.created_date ? new Date(doc.created_date).toLocaleDateString('pt-BR') : '-'}
                             </p>

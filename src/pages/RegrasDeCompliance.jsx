@@ -189,8 +189,8 @@ export default function RegrasDeCompliance() {
             <Settings className="w-6 h-6 text-blue-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">Regras de Compliance</h1>
-            <p className="text-slate-500">Configure automações e fluxos de trabalho</p>
+            <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Regras de Compliance</h1>
+            <p className="text-[var(--pagsmile-blue)]/70">Configure automações e fluxos de trabalho</p>
           </div>
         </div>
         <div className="flex gap-2">
@@ -215,20 +215,20 @@ export default function RegrasDeCompliance() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="pt-6">
-            <p className="text-2xl font-bold text-slate-800">{rules.length}</p>
-            <p className="text-sm text-slate-500">Total de Regras</p>
+            <p className="text-2xl font-bold text-[var(--pagsmile-blue)]">{rules.length}</p>
+            <p className="text-sm text-[var(--pagsmile-blue)]/70">Total de Regras</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
             <p className="text-2xl font-bold text-green-600">{rules.filter(r => r.isActive).length}</p>
-            <p className="text-sm text-slate-500">Ativas</p>
+            <p className="text-sm text-[var(--pagsmile-blue)]/70">Ativas</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <p className="text-2xl font-bold text-slate-600">{rules.filter(r => !r.isActive).length}</p>
-            <p className="text-sm text-slate-500">Inativas</p>
+            <p className="text-2xl font-bold text-[var(--pagsmile-blue)]/80">{rules.filter(r => !r.isActive).length}</p>
+            <p className="text-sm text-[var(--pagsmile-blue)]/70">Inativas</p>
           </CardContent>
         </Card>
         <Card>
@@ -236,7 +236,7 @@ export default function RegrasDeCompliance() {
             <p className="text-2xl font-bold text-purple-600">
               {rules.reduce((sum, r) => sum + (r.executionCount || 0), 0)}
             </p>
-            <p className="text-sm text-slate-500">Execuções Total</p>
+            <p className="text-sm text-[var(--pagsmile-blue)]/70">Execuções Total</p>
           </CardContent>
         </Card>
       </div>
@@ -249,9 +249,9 @@ export default function RegrasDeCompliance() {
       ) : rules.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
-            <Settings className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-            <h3 className="text-lg font-medium text-slate-800 mb-2">Nenhuma regra configurada</h3>
-            <p className="text-slate-500 mb-6">Crie sua primeira regra de automação.</p>
+            <Settings className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/40 mb-4" />
+            <h3 className="text-lg font-medium text-[var(--pagsmile-blue)] mb-2">Nenhuma regra configurada</h3>
+            <p className="text-[var(--pagsmile-blue)]/70 mb-6">Crie sua primeira regra de automação.</p>
             <Button 
               onClick={() => {
                 resetForm();
@@ -272,18 +272,18 @@ export default function RegrasDeCompliance() {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-lg font-semibold text-slate-800">{rule.name}</h3>
+                      <h3 className="text-lg font-semibold text-[var(--pagsmile-blue)]">{rule.name}</h3>
                       {getTypeBadge(rule.type)}
                       <Badge variant="outline" className="font-normal">
                         Prioridade: {rule.priority}
                       </Badge>
                     </div>
-                    <p className="text-sm text-slate-500 mb-3">{rule.description || 'Sem descrição'}</p>
+                    <p className="text-sm text-[var(--pagsmile-blue)]/70 mb-3">{rule.description || 'Sem descrição'}</p>
                     
                     {/* Condições resumidas */}
                     {rule.conditions && rule.conditions.length > 0 && (
                       <div className="flex flex-wrap gap-2 mb-3">
-                        <span className="text-xs text-slate-500">Condições:</span>
+                        <span className="text-xs text-[var(--pagsmile-blue)]/70">Condições:</span>
                         {rule.conditions.map((cond, idx) => (
                           <Badge key={idx} variant="outline" className="text-xs font-mono">
                             {cond.field} {cond.operator} {String(cond.value)}
@@ -293,7 +293,7 @@ export default function RegrasDeCompliance() {
                     )}
 
                     {/* Estatísticas */}
-                    <div className="flex gap-4 text-sm text-slate-500">
+                    <div className="flex gap-4 text-sm text-[var(--pagsmile-blue)]/70">
                       <span className="flex items-center gap-1">
                         <Zap className="w-3 h-3" />
                         {rule.executionCount || 0} execuções
@@ -308,7 +308,7 @@ export default function RegrasDeCompliance() {
 
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm text-slate-500">Ativa</span>
+                      <span className="text-sm text-[var(--pagsmile-blue)]/70">Ativa</span>
                       <Switch
                         checked={rule.isActive}
                         onCheckedChange={(checked) => 
@@ -400,7 +400,7 @@ export default function RegrasDeCompliance() {
                   min={1}
                   max={100}
                 />
-                <p className="text-xs text-slate-500">Maior = executada primeiro</p>
+                <p className="text-xs text-[var(--pagsmile-blue)]/70">Maior = executada primeiro</p>
               </div>
               <div className="space-y-2">
                 <Label>Operador Lógico</Label>
@@ -508,7 +508,7 @@ export default function RegrasDeCompliance() {
             <div className="flex items-center justify-between p-4 rounded-lg border border-slate-200">
               <div>
                 <Label className="font-medium">Regra Ativa</Label>
-                <p className="text-sm text-slate-500">Regras inativas não serão executadas</p>
+                <p className="text-sm text-[var(--pagsmile-blue)]/70">Regras inativas não serão executadas</p>
               </div>
               <Switch
                 checked={formData.isActive}

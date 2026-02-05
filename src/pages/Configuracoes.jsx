@@ -138,8 +138,8 @@ export default function Configuracoes() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-800">Configurações</h1>
-        <p className="text-slate-500">Configure as regras e parâmetros do sistema de compliance</p>
+        <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Configurações</h1>
+        <p className="text-[var(--pagsmile-blue)]/70">Configure as regras e parâmetros do sistema de compliance</p>
       </div>
 
       {/* Tabs */}
@@ -170,13 +170,13 @@ export default function Configuracoes() {
         {/* Tab: Geral */}
         <TabsContent value="general">
           <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6">
-            <h2 className="text-lg font-semibold text-slate-800">Configurações Gerais</h2>
+            <h2 className="text-lg font-semibold text-[var(--pagsmile-blue)]">Configurações Gerais</h2>
             
             <div className="space-y-4">
               <div className="flex items-center justify-between p-4 rounded-lg border border-slate-200">
                 <div>
                   <Label className="font-medium">Notificações por E-mail</Label>
-                  <p className="text-sm text-slate-500">Enviar e-mails automáticos sobre status do onboarding</p>
+                  <p className="text-sm text-[var(--pagsmile-blue)]/70">Enviar e-mails automáticos sobre status do onboarding</p>
                 </div>
                 <Switch 
                   checked={generalSettings.emailNotifications}
@@ -187,7 +187,7 @@ export default function Configuracoes() {
               <div className="flex items-center justify-between p-4 rounded-lg border border-slate-200">
                 <div>
                   <Label className="font-medium">Aprovação Automática</Label>
-                  <p className="text-sm text-slate-500">Aprovar automaticamente casos com score ≥ {generalSettings.approvalThreshold}</p>
+                  <p className="text-sm text-[var(--pagsmile-blue)]/70">Aprovar automaticamente casos com score ≥ {generalSettings.approvalThreshold}</p>
                 </div>
                 <Switch 
                   checked={generalSettings.autoApproval}
@@ -198,7 +198,7 @@ export default function Configuracoes() {
               <div className="flex items-center justify-between p-4 rounded-lg border border-slate-200">
                 <div>
                   <Label className="font-medium">Rejeição Automática</Label>
-                  <p className="text-sm text-slate-500">Rejeitar automaticamente casos com score &lt; {generalSettings.manualThreshold}</p>
+                  <p className="text-sm text-[var(--pagsmile-blue)]/70">Rejeitar automaticamente casos com score &lt; {generalSettings.manualThreshold}</p>
                 </div>
                 <Switch 
                   checked={generalSettings.autoRejection}
@@ -222,7 +222,7 @@ export default function Configuracoes() {
           <div className="space-y-6">
             {/* Configurações Gerais de Documentos */}
             <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6">
-              <h2 className="text-lg font-semibold text-slate-800">Configurações de Upload</h2>
+              <h2 className="text-lg font-semibold text-[var(--pagsmile-blue)]">Configurações de Upload</h2>
               
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
@@ -272,8 +272,8 @@ export default function Configuracoes() {
             <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6">
               <div className="flex justify-between items-center">
                 <div>
-                  <h2 className="text-lg font-semibold text-slate-800">Tipos de Documento</h2>
-                  <p className="text-sm text-slate-500">Gerencie os tipos de documentos aceitos no onboarding</p>
+                  <h2 className="text-lg font-semibold text-[var(--pagsmile-blue)]">Tipos de Documento</h2>
+                  <p className="text-sm text-[var(--pagsmile-blue)]/70">Gerencie os tipos de documentos aceitos no onboarding</p>
                 </div>
                 <Button 
                   onClick={() => {
@@ -294,8 +294,8 @@ export default function Configuracoes() {
                 </div>
               ) : documentTypes.length === 0 ? (
                 <div className="text-center py-8">
-                  <FileText className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-                  <p className="text-slate-500">Nenhum tipo de documento cadastrado</p>
+                  <FileText className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/40 mb-4" />
+                  <p className="text-[var(--pagsmile-blue)]/70">Nenhum tipo de documento cadastrado</p>
                 </div>
               ) : (
                 <Table>
@@ -313,9 +313,9 @@ export default function Configuracoes() {
                       <TableRow key={docType.id}>
                         <TableCell>
                           <div>
-                            <p className="font-medium text-slate-800">{docType.name}</p>
+                            <p className="font-medium text-[var(--pagsmile-blue)]">{docType.name}</p>
                             {docType.description && (
-                              <p className="text-sm text-slate-500 truncate max-w-xs">{docType.description}</p>
+                              <p className="text-sm text-[var(--pagsmile-blue)]/70 truncate max-w-xs">{docType.description}</p>
                             )}
                           </div>
                         </TableCell>
@@ -335,7 +335,7 @@ export default function Configuracoes() {
                           {docType.isRequired ? (
                             <CheckCircle2 className="w-5 h-5 text-green-500" />
                           ) : (
-                            <XCircle className="w-5 h-5 text-slate-300" />
+                            <XCircle className="w-5 h-5 text-[var(--pagsmile-blue)]/40" />
                           )}
                         </TableCell>
                         <TableCell className="text-right">
@@ -367,7 +367,7 @@ export default function Configuracoes() {
         {/* Tab: Regras de Risco */}
         <TabsContent value="risk">
           <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6">
-            <h2 className="text-lg font-semibold text-slate-800">Regras de Risco e Scoring</h2>
+            <h2 className="text-lg font-semibold text-[var(--pagsmile-blue)]">Regras de Risco e Scoring</h2>
             
             <div className="space-y-6">
               {/* Threshold de Aprovação */}
@@ -375,7 +375,7 @@ export default function Configuracoes() {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <Label className="font-medium">Threshold de Aprovação</Label>
-                    <p className="text-sm text-slate-500">Score mínimo para aprovação automática</p>
+                    <p className="text-sm text-[var(--pagsmile-blue)]/70">Score mínimo para aprovação automática</p>
                   </div>
                   <span className="text-2xl font-bold text-green-600">{generalSettings.approvalThreshold}</span>
                 </div>
@@ -386,7 +386,7 @@ export default function Configuracoes() {
                   step={1} 
                   className="w-full" 
                 />
-                <div className="flex justify-between text-xs text-slate-400 mt-2">
+                <div className="flex justify-between text-xs text-[var(--pagsmile-blue)]/50 mt-2">
                   <span>0</span>
                   <span>100</span>
                 </div>
@@ -397,7 +397,7 @@ export default function Configuracoes() {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <Label className="font-medium">Threshold de Revisão Manual</Label>
-                    <p className="text-sm text-slate-500">Score mínimo para enviar à revisão manual</p>
+                    <p className="text-sm text-[var(--pagsmile-blue)]/70">Score mínimo para enviar à revisão manual</p>
                   </div>
                   <span className="text-2xl font-bold text-orange-600">{generalSettings.manualThreshold}</span>
                 </div>
@@ -408,7 +408,7 @@ export default function Configuracoes() {
                   step={1} 
                   className="w-full" 
                 />
-                <div className="flex justify-between text-xs text-slate-400 mt-2">
+                <div className="flex justify-between text-xs text-[var(--pagsmile-blue)]/50 mt-2">
                   <span>0</span>
                   <span>100</span>
                 </div>
@@ -421,17 +421,17 @@ export default function Configuracoes() {
                   <div className="flex items-center gap-3">
                     <CheckCircle2 className="w-5 h-5 text-green-600" />
                     <div className="flex-1 h-3 bg-green-500 rounded-full"></div>
-                    <span className="text-sm text-slate-600 w-40">≥ {generalSettings.approvalThreshold}: Aprovado</span>
+                    <span className="text-sm text-[var(--pagsmile-blue)]/80 w-40">≥ {generalSettings.approvalThreshold}: Aprovado</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <AlertTriangle className="w-5 h-5 text-orange-600" />
                     <div className="flex-1 h-3 bg-orange-500 rounded-full"></div>
-                    <span className="text-sm text-slate-600 w-40">{generalSettings.manualThreshold}-{generalSettings.approvalThreshold - 1}: Manual</span>
+                    <span className="text-sm text-[var(--pagsmile-blue)]/80 w-40">{generalSettings.manualThreshold}-{generalSettings.approvalThreshold - 1}: Manual</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <XCircle className="w-5 h-5 text-red-600" />
                     <div className="flex-1 h-3 bg-red-500 rounded-full"></div>
-                    <span className="text-sm text-slate-600 w-40">&lt; {generalSettings.manualThreshold}: Recusado</span>
+                    <span className="text-sm text-[var(--pagsmile-blue)]/80 w-40">&lt; {generalSettings.manualThreshold}: Recusado</span>
                   </div>
                 </div>
               </div>
@@ -450,7 +450,7 @@ export default function Configuracoes() {
         {/* Tab: Integrações */}
         <TabsContent value="integrations">
           <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6">
-            <h2 className="text-lg font-semibold text-slate-800">Integrações Externas</h2>
+            <h2 className="text-lg font-semibold text-[var(--pagsmile-blue)]">Integrações Externas</h2>
             
             <Alert className="bg-blue-50 border-blue-200">
               <Info className="h-4 w-4 text-blue-600" />
@@ -469,7 +469,7 @@ export default function Configuracoes() {
                     </div>
                     <div>
                       <Label className="font-medium">Big Data Corp</Label>
-                      <p className="text-sm text-slate-500">Validação de CNPJ/CPF e dados empresariais</p>
+                      <p className="text-sm text-[var(--pagsmile-blue)]/70">Validação de CNPJ/CPF e dados empresariais</p>
                     </div>
                   </div>
                   <Badge variant="outline" className="text-yellow-600 border-yellow-300">Pendente</Badge>
@@ -492,7 +492,7 @@ export default function Configuracoes() {
                     </div>
                     <div>
                       <Label className="font-medium">CAF (Combate à Fraude)</Label>
-                      <p className="text-sm text-slate-500">KYC, Liveness e Facematch</p>
+                      <p className="text-sm text-[var(--pagsmile-blue)]/70">KYC, Liveness e Facematch</p>
                     </div>
                   </div>
                   <Badge variant="outline" className="text-yellow-600 border-yellow-300">Pendente</Badge>
@@ -516,7 +516,7 @@ export default function Configuracoes() {
                     </div>
                     <div>
                       <Label className="font-medium">Doc</Label>
-                      <p className="text-sm text-slate-500">OCR e validação de documentos</p>
+                      <p className="text-sm text-[var(--pagsmile-blue)]/70">OCR e validação de documentos</p>
                     </div>
                   </div>
                   <Badge variant="outline" className="text-yellow-600 border-yellow-300">Pendente</Badge>
@@ -536,15 +536,15 @@ export default function Configuracoes() {
         {/* Tab: Notificações */}
         <TabsContent value="notifications">
           <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6">
-            <h2 className="text-lg font-semibold text-slate-800">Configurações de Notificações</h2>
+            <h2 className="text-lg font-semibold text-[var(--pagsmile-blue)]">Configurações de Notificações</h2>
             
             <div className="space-y-4">
               <div className="flex items-center justify-between p-4 rounded-lg border border-slate-200">
                 <div className="flex items-center gap-3">
-                  <Mail className="w-5 h-5 text-slate-400" />
+                  <Mail className="w-5 h-5 text-[var(--pagsmile-blue)]/50" />
                   <div>
                     <Label className="font-medium">Novo Caso Recebido</Label>
-                    <p className="text-sm text-slate-500">Notificar quando um novo caso de onboarding for criado</p>
+                    <p className="text-sm text-[var(--pagsmile-blue)]/70">Notificar quando um novo caso de onboarding for criado</p>
                   </div>
                 </div>
                 <Switch defaultChecked />
@@ -552,10 +552,10 @@ export default function Configuracoes() {
 
               <div className="flex items-center justify-between p-4 rounded-lg border border-slate-200">
                 <div className="flex items-center gap-3">
-                  <Mail className="w-5 h-5 text-slate-400" />
+                  <Mail className="w-5 h-5 text-[var(--pagsmile-blue)]/50" />
                   <div>
                     <Label className="font-medium">Caso Requer Revisão Manual</Label>
-                    <p className="text-sm text-slate-500">Notificar quando um caso for encaminhado para revisão manual</p>
+                    <p className="text-sm text-[var(--pagsmile-blue)]/70">Notificar quando um caso for encaminhado para revisão manual</p>
                   </div>
                 </div>
                 <Switch defaultChecked />
@@ -563,10 +563,10 @@ export default function Configuracoes() {
 
               <div className="flex items-center justify-between p-4 rounded-lg border border-slate-200">
                 <div className="flex items-center gap-3">
-                  <Mail className="w-5 h-5 text-slate-400" />
+                  <Mail className="w-5 h-5 text-[var(--pagsmile-blue)]/50" />
                   <div>
                     <Label className="font-medium">Caso Aprovado/Recusado</Label>
-                    <p className="text-sm text-slate-500">Notificar merchant sobre a decisão final</p>
+                    <p className="text-sm text-[var(--pagsmile-blue)]/70">Notificar merchant sobre a decisão final</p>
                   </div>
                 </div>
                 <Switch defaultChecked />
@@ -574,10 +574,10 @@ export default function Configuracoes() {
 
               <div className="flex items-center justify-between p-4 rounded-lg border border-slate-200">
                 <div className="flex items-center gap-3">
-                  <Mail className="w-5 h-5 text-slate-400" />
+                  <Mail className="w-5 h-5 text-[var(--pagsmile-blue)]/50" />
                   <div>
                     <Label className="font-medium">Erro em Validação Externa</Label>
-                    <p className="text-sm text-slate-500">Notificar quando uma integração falhar</p>
+                    <p className="text-sm text-[var(--pagsmile-blue)]/70">Notificar quando uma integração falhar</p>
                   </div>
                 </div>
                 <Switch />

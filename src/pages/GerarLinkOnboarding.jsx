@@ -162,8 +162,8 @@ export default function GerarLinkOnboarding() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">Links de Onboarding</h1>
-            <p className="text-slate-500">Gere e gerencie links para novos merchants</p>
+            <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Links de Onboarding</h1>
+            <p className="text-[var(--pagsmile-blue)]/70">Gere e gerencie links para novos merchants</p>
           </div>
         </div>
         <Button variant="outline" onClick={() => refetch()}>
@@ -176,8 +176,8 @@ export default function GerarLinkOnboarding() {
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Card>
           <CardContent className="pt-4">
-            <p className="text-2xl font-bold text-slate-800">{stats.totalLinks}</p>
-            <p className="text-xs text-slate-500">Links Criados</p>
+            <p className="text-2xl font-bold text-[var(--pagsmile-blue)]">{stats.totalLinks}</p>
+            <p className="text-xs text-[var(--pagsmile-blue)]/70">Links Criados</p>
           </CardContent>
         </Card>
         <Card>
@@ -186,7 +186,7 @@ export default function GerarLinkOnboarding() {
               <MousePointer className="w-4 h-4 text-blue-500" />
               <p className="text-2xl font-bold text-blue-600">{stats.totalClicks}</p>
             </div>
-            <p className="text-xs text-slate-500">Total de Cliques</p>
+            <p className="text-xs text-[var(--pagsmile-blue)]/70">Total de Cliques</p>
           </CardContent>
         </Card>
         <Card>
@@ -195,7 +195,7 @@ export default function GerarLinkOnboarding() {
               <FileCheck className="w-4 h-4 text-purple-500" />
               <p className="text-2xl font-bold text-purple-600">{stats.totalSubmissions}</p>
             </div>
-            <p className="text-xs text-slate-500">Submissões</p>
+            <p className="text-xs text-[var(--pagsmile-blue)]/70">Submissões</p>
           </CardContent>
         </Card>
         <Card>
@@ -204,7 +204,7 @@ export default function GerarLinkOnboarding() {
               <Check className="w-4 h-4 text-green-500" />
               <p className="text-2xl font-bold text-green-600">{stats.totalCompleted}</p>
             </div>
-            <p className="text-xs text-slate-500">Completados</p>
+            <p className="text-xs text-[var(--pagsmile-blue)]/70">Completados</p>
           </CardContent>
         </Card>
         <Card>
@@ -213,7 +213,7 @@ export default function GerarLinkOnboarding() {
               <TrendingUp className="w-4 h-4 text-teal-500" />
               <p className="text-2xl font-bold text-teal-600">{stats.conversionRate}%</p>
             </div>
-            <p className="text-xs text-slate-500">Taxa de Conversão</p>
+            <p className="text-xs text-[var(--pagsmile-blue)]/70">Taxa de Conversão</p>
           </CardContent>
         </Card>
       </div>
@@ -302,7 +302,7 @@ export default function GerarLinkOnboarding() {
               {showAdvanced && (
                 <>
                   <div className="border-t pt-4">
-                    <p className="text-sm font-medium text-slate-700 mb-3">Parâmetros UTM</p>
+                    <p className="text-sm font-medium text-[var(--pagsmile-blue)]/90 mb-3">Parâmetros UTM</p>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                       <div className="space-y-2">
                         <Label className="text-xs">Source</Label>
@@ -382,12 +382,12 @@ export default function GerarLinkOnboarding() {
             <CardContent>
               {linksLoading ? (
                 <div className="flex justify-center py-8">
-                  <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+                  <Loader2 className="w-6 h-6 animate-spin text-[var(--pagsmile-blue)]/50" />
                 </div>
               ) : links.length === 0 ? (
                 <div className="text-center py-8">
-                  <LinkIcon className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-                  <p className="text-slate-500">Nenhum link personalizado criado</p>
+                  <LinkIcon className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/40 mb-4" />
+                  <p className="text-[var(--pagsmile-blue)]/70">Nenhum link personalizado criado</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -408,9 +408,9 @@ export default function GerarLinkOnboarding() {
                             <div className="flex items-center gap-4">
                               <Badge variant="outline" className="font-mono text-sm">{link.uniqueCode}</Badge>
                               {link.commercialAgentName && (
-                                <span className="text-sm text-slate-600">{link.commercialAgentName}</span>
+                                <span className="text-sm text-[var(--pagsmile-blue)]/80">{link.commercialAgentName}</span>
                               )}
-                              <span className="text-xs text-slate-400">
+                              <span className="text-xs text-[var(--pagsmile-blue)]/50">
                                 {link.created_date ? new Date(link.created_date).toLocaleDateString('pt-BR') : ''}
                               </span>
                             </div>
@@ -485,7 +485,7 @@ export default function GerarLinkOnboarding() {
                         {/* Analytics Dashboard Expandido */}
                         {isExpanded && (
                           <div className="border-t border-slate-200 bg-slate-50 p-4">
-                            <h4 className="text-sm font-semibold text-slate-700 mb-4 flex items-center gap-2">
+                            <h4 className="text-sm font-semibold text-[var(--pagsmile-blue)]/90 mb-4 flex items-center gap-2">
                               <BarChart3 className="w-4 h-4" />
                               Analytics Detalhado - Funil de Conversão
                             </h4>

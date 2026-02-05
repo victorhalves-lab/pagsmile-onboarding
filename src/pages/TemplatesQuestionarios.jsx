@@ -61,8 +61,8 @@ export default function TemplatesQuestionarios() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Questionários</h1>
-          <p className="text-slate-500">Gerencie os templates de questionário de compliance</p>
+          <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Questionários</h1>
+          <p className="text-[var(--pagsmile-blue)]/70">Gerencie os templates de questionário de compliance</p>
         </div>
         <Link to={createPageUrl('EditorQuestionario')}>
           <Button className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90">
@@ -75,11 +75,11 @@ export default function TemplatesQuestionarios() {
       {/* Lista de Templates */}
       {templates.length === 0 ? (
         <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-          <FileText className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-          <h3 className="text-lg font-medium text-slate-800 mb-2">
+          <FileText className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/40 mb-4" />
+          <h3 className="text-lg font-medium text-[var(--pagsmile-blue)] mb-2">
             Nenhum questionário criado
           </h3>
-          <p className="text-slate-500 mb-6">
+          <p className="text-[var(--pagsmile-blue)]/70 mb-6">
             Crie seu primeiro template de questionário para começar.
           </p>
           <Link to={createPageUrl('EditorQuestionario')}>
@@ -110,17 +110,17 @@ export default function TemplatesQuestionarios() {
                     )}
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-slate-800">
+                    <h3 className="text-lg font-semibold text-[var(--pagsmile-blue)]">
                       {template.name}
                     </h3>
-                    <p className="text-sm text-slate-500 mt-1">
+                    <p className="text-sm text-[var(--pagsmile-blue)]/70 mt-1">
                       {template.description || 'Sem descrição'}
                     </p>
                     <div className="flex items-center gap-2 mt-3">
                       <Badge variant="outline">
                         {template.merchantType === 'PF' ? 'Pessoa Física' : 'Pessoa Jurídica'}
                       </Badge>
-                      <Badge className={template.isActive ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-slate-600'}>
+                      <Badge className={template.isActive ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-[var(--pagsmile-blue)]/80'}>
                         {template.isActive ? 'Ativo' : 'Inativo'}
                       </Badge>
                     </div>
@@ -129,7 +129,7 @@ export default function TemplatesQuestionarios() {
 
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-slate-500">Ativo</span>
+                    <span className="text-sm text-[var(--pagsmile-blue)]/70">Ativo</span>
                     <Switch
                       checked={template.isActive}
                       onCheckedChange={(checked) => 

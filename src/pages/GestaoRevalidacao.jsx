@@ -137,7 +137,7 @@ export default function GestaoRevalidacao() {
       'pending': { color: 'bg-yellow-100 text-yellow-800', icon: Clock, label: 'Pendente' },
       'in_progress': { color: 'bg-blue-100 text-blue-800', icon: Play, label: 'Em Andamento' },
       'completed': { color: 'bg-green-100 text-green-800', icon: CheckCircle2, label: 'Concluído' },
-      'cancelled': { color: 'bg-slate-100 text-slate-800', icon: XCircle, label: 'Cancelado' },
+      'cancelled': { color: 'bg-slate-100 text-[var(--pagsmile-blue)]', icon: XCircle, label: 'Cancelado' },
     };
     const c = config[status] || config['pending'];
     const Icon = c.icon;
@@ -205,8 +205,8 @@ export default function GestaoRevalidacao() {
             <RefreshCw className="w-6 h-6 text-teal-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">Revalidação de Clientes</h1>
-            <p className="text-slate-500">Gerencie a recertificação periódica de merchants</p>
+            <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Revalidação de Clientes</h1>
+            <p className="text-[var(--pagsmile-blue)]/70">Gerencie a recertificação periódica de merchants</p>
           </div>
         </div>
         <div className="flex gap-2">
@@ -228,38 +228,38 @@ export default function GestaoRevalidacao() {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <Card>
           <CardContent className="pt-4">
-            <p className="text-2xl font-bold text-slate-800">{stats.total}</p>
-            <p className="text-xs text-slate-500">Total</p>
+            <p className="text-2xl font-bold text-[var(--pagsmile-blue)]">{stats.total}</p>
+            <p className="text-xs text-[var(--pagsmile-blue)]/70">Total</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-4">
             <p className="text-2xl font-bold text-yellow-600">{stats.pending}</p>
-            <p className="text-xs text-slate-500">Pendentes</p>
+            <p className="text-xs text-[var(--pagsmile-blue)]/70">Pendentes</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-4">
             <p className="text-2xl font-bold text-blue-600">{stats.inProgress}</p>
-            <p className="text-xs text-slate-500">Em Andamento</p>
+            <p className="text-xs text-[var(--pagsmile-blue)]/70">Em Andamento</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-4">
             <p className="text-2xl font-bold text-green-600">{stats.completed}</p>
-            <p className="text-xs text-slate-500">Concluídas</p>
+            <p className="text-xs text-[var(--pagsmile-blue)]/70">Concluídas</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-4">
             <p className="text-2xl font-bold text-purple-600">{stats.thisMonth}</p>
-            <p className="text-xs text-slate-500">Este Mês</p>
+            <p className="text-xs text-[var(--pagsmile-blue)]/70">Este Mês</p>
           </CardContent>
         </Card>
         <Card className={stats.overdue > 0 ? 'border-red-200 bg-red-50' : ''}>
           <CardContent className="pt-4">
             <p className="text-2xl font-bold text-red-600">{stats.overdue}</p>
-            <p className="text-xs text-slate-500">Atrasadas</p>
+            <p className="text-xs text-[var(--pagsmile-blue)]/70">Atrasadas</p>
           </CardContent>
         </Card>
       </div>
@@ -268,7 +268,7 @@ export default function GestaoRevalidacao() {
       <div className="bg-white rounded-xl border border-slate-200 p-4">
         <div className="flex flex-col md:flex-row gap-4 justify-between">
           <div className="flex gap-2 flex-wrap items-center">
-            <Filter className="w-4 h-4 text-slate-400" />
+            <Filter className="w-4 h-4 text-[var(--pagsmile-blue)]/50" />
             
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-36">
@@ -285,7 +285,7 @@ export default function GestaoRevalidacao() {
           </div>
           
           <div className="relative w-full md:w-80">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/50" />
             <Input
               placeholder="Buscar por merchant..."
               value={searchTerm}
@@ -304,8 +304,8 @@ export default function GestaoRevalidacao() {
           </div>
         ) : paginatedSchedules.length === 0 ? (
           <div className="text-center py-12">
-            <Calendar className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-            <p className="text-slate-500">Nenhuma revalidação agendada</p>
+            <Calendar className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/40 mb-4" />
+            <p className="text-[var(--pagsmile-blue)]/70">Nenhuma revalidação agendada</p>
           </div>
         ) : (
           <Table>
@@ -337,14 +337,14 @@ export default function GestaoRevalidacao() {
                           )}
                         </div>
                         <div>
-                          <p className="font-medium text-slate-800">{merchant?.fullName || '-'}</p>
-                          <p className="text-xs text-slate-500">{merchant?.cpfCnpj || ''}</p>
+                          <p className="font-medium text-[var(--pagsmile-blue)]">{merchant?.fullName || '-'}</p>
+                          <p className="text-xs text-[var(--pagsmile-blue)]/70">{merchant?.cpfCnpj || ''}</p>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-slate-400" />
+                        <Calendar className="w-4 h-4 text-[var(--pagsmile-blue)]/50" />
                         <span className={isOverdue ? 'text-red-600 font-medium' : ''}>
                           {schedule.scheduledDate ? new Date(schedule.scheduledDate).toLocaleDateString('pt-BR') : '-'}
                         </span>
@@ -352,7 +352,7 @@ export default function GestaoRevalidacao() {
                       </div>
                     </TableCell>
                     <TableCell>{getTypeBadge(schedule.revalidationType)}</TableCell>
-                    <TableCell className="text-sm text-slate-600">
+                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
                       {getFrequencyLabel(schedule.frequency)}
                     </TableCell>
                     <TableCell>{getStatusBadge(schedule.status)}</TableCell>
@@ -372,7 +372,7 @@ export default function GestaoRevalidacao() {
                               variant="ghost" 
                               size="sm"
                               onClick={() => updateStatusMutation.mutate({ id: schedule.id, status: 'cancelled' })}
-                              className="text-slate-600"
+                              className="text-[var(--pagsmile-blue)]/80"
                             >
                               <XCircle className="w-4 h-4" />
                             </Button>
@@ -400,7 +400,7 @@ export default function GestaoRevalidacao() {
         {/* Paginação */}
         {filteredSchedules.length > 0 && (
           <div className="px-4 py-3 border-t border-slate-200 flex items-center justify-between">
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-[var(--pagsmile-blue)]/70">
               Mostrando {((currentPage - 1) * itemsPerPage) + 1} a {Math.min(currentPage * itemsPerPage, filteredSchedules.length)} de {filteredSchedules.length}
             </p>
             <div className="flex items-center gap-2">
@@ -412,7 +412,7 @@ export default function GestaoRevalidacao() {
               >
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <span className="text-sm text-slate-600">
+              <span className="text-sm text-[var(--pagsmile-blue)]/80">
                 Página {currentPage} de {totalPages || 1}
               </span>
               <Button

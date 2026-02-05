@@ -136,8 +136,8 @@ export default function IntegracoesExternas() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Integrações Externas</h1>
-          <p className="text-slate-500">Configure e monitore as integrações com CAF e BigDataCorp</p>
+          <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Integrações Externas</h1>
+          <p className="text-[var(--pagsmile-blue)]/70">Configure e monitore as integrações com CAF e BigDataCorp</p>
         </div>
         <Button variant="outline" onClick={() => queryClient.invalidateQueries()}>
           <RefreshCw className="w-4 h-4 mr-2" />
@@ -171,7 +171,7 @@ export default function IntegracoesExternas() {
                       <CardDescription>Verificação de identidade e documentos</CardDescription>
                     </div>
                   </div>
-                  <Badge className={cafConfig?.is_active ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-slate-600'}>
+                  <Badge className={cafConfig?.is_active ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-[var(--pagsmile-blue)]/80'}>
                     {cafConfig?.is_active ? 'Ativo' : 'Inativo'}
                   </Badge>
                 </div>
@@ -179,11 +179,11 @@ export default function IntegracoesExternas() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <p className="text-slate-500">Ambiente</p>
+                    <p className="text-[var(--pagsmile-blue)]/70">Ambiente</p>
                     <p className="font-medium">{cafConfig?.environment || 'Não configurado'}</p>
                   </div>
                   <div>
-                    <p className="text-slate-500">Último Teste</p>
+                    <p className="text-[var(--pagsmile-blue)]/70">Último Teste</p>
                     <p className="font-medium">{cafConfig?.last_test_at ? new Date(cafConfig.last_test_at).toLocaleDateString('pt-BR') : '-'}</p>
                   </div>
                 </div>
@@ -217,7 +217,7 @@ export default function IntegracoesExternas() {
                       <CardDescription>Dados empresariais e KYC</CardDescription>
                     </div>
                   </div>
-                  <Badge className={bdcConfig?.is_active ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-slate-600'}>
+                  <Badge className={bdcConfig?.is_active ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-[var(--pagsmile-blue)]/80'}>
                     {bdcConfig?.is_active ? 'Ativo' : 'Inativo'}
                   </Badge>
                 </div>
@@ -225,11 +225,11 @@ export default function IntegracoesExternas() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <p className="text-slate-500">Ambiente</p>
+                    <p className="text-[var(--pagsmile-blue)]/70">Ambiente</p>
                     <p className="font-medium">{bdcConfig?.environment || 'Não configurado'}</p>
                   </div>
                   <div>
-                    <p className="text-slate-500">Último Teste</p>
+                    <p className="text-[var(--pagsmile-blue)]/70">Último Teste</p>
                     <p className="font-medium">{bdcConfig?.last_test_at ? new Date(bdcConfig.last_test_at).toLocaleDateString('pt-BR') : '-'}</p>
                   </div>
                 </div>
@@ -259,28 +259,28 @@ export default function IntegracoesExternas() {
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="text-center p-4 bg-slate-50 rounded-lg">
-                  <p className="text-2xl font-bold text-slate-800">
+                  <p className="text-2xl font-bold text-[var(--pagsmile-blue)]">
                     {integrationLogs.filter(l => l.status === 'success').length}
                   </p>
-                  <p className="text-sm text-slate-500">Sucesso (24h)</p>
+                  <p className="text-sm text-[var(--pagsmile-blue)]/70">Sucesso (24h)</p>
                 </div>
                 <div className="text-center p-4 bg-slate-50 rounded-lg">
-                  <p className="text-2xl font-bold text-slate-800">
+                  <p className="text-2xl font-bold text-[var(--pagsmile-blue)]">
                     {integrationLogs.filter(l => l.status === 'failed').length}
                   </p>
-                  <p className="text-sm text-slate-500">Falhas (24h)</p>
+                  <p className="text-sm text-[var(--pagsmile-blue)]/70">Falhas (24h)</p>
                 </div>
                 <div className="text-center p-4 bg-slate-50 rounded-lg">
-                  <p className="text-2xl font-bold text-slate-800">
+                  <p className="text-2xl font-bold text-[var(--pagsmile-blue)]">
                     {integrationLogs.filter(l => l.provider === 'CAF').length}
                   </p>
-                  <p className="text-sm text-slate-500">Chamadas CAF</p>
+                  <p className="text-sm text-[var(--pagsmile-blue)]/70">Chamadas CAF</p>
                 </div>
                 <div className="text-center p-4 bg-slate-50 rounded-lg">
-                  <p className="text-2xl font-bold text-slate-800">
+                  <p className="text-2xl font-bold text-[var(--pagsmile-blue)]">
                     {integrationLogs.filter(l => l.provider === 'BigDataCorp').length}
                   </p>
-                  <p className="text-sm text-slate-500">Chamadas BDC</p>
+                  <p className="text-sm text-[var(--pagsmile-blue)]/70">Chamadas BDC</p>
                 </div>
               </div>
             </CardContent>
@@ -326,7 +326,7 @@ export default function IntegracoesExternas() {
                     <TableCell className="font-medium">Contrato Social / MEI</TableCell>
                     <TableCell><Badge variant="outline">UploadDocs</Badge></TableCell>
                     <TableCell className="font-mono text-xs">/v1/documents/analyze</TableCell>
-                    <TableCell className="text-sm text-slate-600">
+                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
                       Extração de Razão Social, CNPJ, Quadro Societário e validação de autenticidade (documentoscopy).
                     </TableCell>
                     <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
@@ -335,7 +335,7 @@ export default function IntegracoesExternas() {
                     <TableCell className="font-medium">RG/CNH dos Sócios</TableCell>
                     <TableCell><Badge variant="outline">UploadDocs</Badge></TableCell>
                     <TableCell className="font-mono text-xs">/v1/documents/analyze</TableCell>
-                    <TableCell className="text-sm text-slate-600">
+                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
                       OCR de dados (Nome, CPF, RG, Filiação), validação de template e verificação de face no documento.
                     </TableCell>
                     <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
@@ -344,7 +344,7 @@ export default function IntegracoesExternas() {
                     <TableCell className="font-medium">Comprovante de Endereço</TableCell>
                     <TableCell><Badge variant="outline">UploadDocs</Badge></TableCell>
                     <TableCell className="font-mono text-xs">/v1/documents/analyze</TableCell>
-                    <TableCell className="text-sm text-slate-600">
+                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
                       Extração de Logradouro, Número, CEP e Data de Emissão (validação &lt; 90 dias).
                     </TableCell>
                     <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
@@ -353,7 +353,7 @@ export default function IntegracoesExternas() {
                     <TableCell className="font-medium">Selfie (Liveness)</TableCell>
                     <TableCell><Badge variant="outline">LivenessStep</Badge></TableCell>
                     <TableCell className="font-mono text-xs">/v1/liveness/sessions</TableCell>
-                    <TableCell className="text-sm text-slate-600">
+                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
                       Prova de vida ativa (movimentos) ou passiva. Gera score de vivacidade e imagem para Facematch.
                     </TableCell>
                     <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
@@ -362,7 +362,7 @@ export default function IntegracoesExternas() {
                     <TableCell className="font-medium">Facematch (Selfie vs RG)</TableCell>
                     <TableCell><Badge variant="outline">LivenessStep</Badge></TableCell>
                     <TableCell className="font-mono text-xs">/v1/facematch</TableCell>
-                    <TableCell className="text-sm text-slate-600">
+                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
                       Comparação 1:1 entre a Selfie do Liveness e a foto extraída do RG/CNH enviado. Gera Similarity Score.
                     </TableCell>
                     <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
@@ -397,7 +397,7 @@ export default function IntegracoesExternas() {
                       <Eye className="w-4 h-4" />
                     </Button>
                   </div>
-                  <p className="text-xs text-slate-500">Configurado via variáveis de ambiente (CAF_API_TOKEN)</p>
+                  <p className="text-xs text-[var(--pagsmile-blue)]/70">Configurado via variáveis de ambiente (CAF_API_TOKEN)</p>
                 </div>
                 <div className="space-y-2">
                   <Label>Template ID (Transaction)</Label>
@@ -439,7 +439,7 @@ export default function IntegracoesExternas() {
                           <p className="font-medium text-sm">{service.name}</p>
                           <Switch />
                         </div>
-                        <p className="text-xs text-slate-500 mt-1">{service.desc}</p>
+                        <p className="text-xs text-[var(--pagsmile-blue)]/70 mt-1">{service.desc}</p>
                       </div>
                     </div>
                   );
@@ -455,20 +455,20 @@ export default function IntegracoesExternas() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <a href="https://docs.caf.io/caf-api" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 border rounded-lg hover:bg-slate-50 transition-colors">
-                  <FileText className="w-5 h-5 text-slate-600" />
+                  <FileText className="w-5 h-5 text-[var(--pagsmile-blue)]/80" />
                   <div>
                     <p className="font-medium">CAF API Reference</p>
-                    <p className="text-sm text-slate-500">Documentação completa da API</p>
+                    <p className="text-sm text-[var(--pagsmile-blue)]/70">Documentação completa da API</p>
                   </div>
-                  <ExternalLink className="w-4 h-4 ml-auto text-slate-400" />
+                  <ExternalLink className="w-4 h-4 ml-auto text-[var(--pagsmile-blue)]/50" />
                 </a>
                 <a href="https://docs.caf.io/caf-sdk" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 border rounded-lg hover:bg-slate-50 transition-colors">
-                  <Plug className="w-5 h-5 text-slate-600" />
+                  <Plug className="w-5 h-5 text-[var(--pagsmile-blue)]/80" />
                   <div>
                     <p className="font-medium">CAF SDKs</p>
-                    <p className="text-sm text-slate-500">Web, iOS e Android</p>
+                    <p className="text-sm text-[var(--pagsmile-blue)]/70">Web, iOS e Android</p>
                   </div>
-                  <ExternalLink className="w-4 h-4 ml-auto text-slate-400" />
+                  <ExternalLink className="w-4 h-4 ml-auto text-[var(--pagsmile-blue)]/50" />
                 </a>
               </div>
             </CardContent>
@@ -504,7 +504,7 @@ export default function IntegracoesExternas() {
                 <TableBody>
                   {/* Dados Básicos */}
                   <TableRow className="bg-slate-50/50">
-                    <TableCell colSpan={5} className="font-semibold text-xs text-slate-500 uppercase tracking-wider py-2">
+                    <TableCell colSpan={5} className="font-semibold text-xs text-[var(--pagsmile-blue)]/70 uppercase tracking-wider py-2">
                       Dados Cadastrais da Empresa
                     </TableCell>
                   </TableRow>
@@ -514,7 +514,7 @@ export default function IntegracoesExternas() {
                     <TableCell className="font-mono text-xs text-blue-700 break-all">
                       /empresas/basic_data
                     </TableCell>
-                    <TableCell className="text-sm text-slate-600">
+                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
                       <span className="font-semibold text-blue-600">Valida:</span> Existência e Status Ativo.<br/>
                       <span className="font-semibold text-green-600">Preenche:</span> Razão Social, Nome Fantasia, Data Abertura.
                     </TableCell>
@@ -526,7 +526,7 @@ export default function IntegracoesExternas() {
                     <TableCell className="font-mono text-xs text-blue-700 break-all">
                       /empresas/addresses_extended
                     </TableCell>
-                    <TableCell className="text-sm text-slate-600">
+                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
                       <span className="font-semibold text-green-600">Preenche:</span> Logradouro, Número, Bairro, Cidade, UF, CEP.<br/>
                       Confirma se o endereço bate com o cadastro na Receita.
                     </TableCell>
@@ -538,7 +538,7 @@ export default function IntegracoesExternas() {
                     <TableCell className="font-mono text-xs text-blue-700 break-all">
                       /empresas/domains_extended
                     </TableCell>
-                    <TableCell className="text-sm text-slate-600">
+                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
                       Identifica domínios registrados em nome do CNPJ para sugerir site oficial.
                     </TableCell>
                     <TableCell><Badge className="bg-yellow-100 text-yellow-800">Em Análise</Badge></TableCell>
@@ -549,7 +549,7 @@ export default function IntegracoesExternas() {
                     <TableCell className="font-mono text-xs text-blue-700 break-all">
                       /empresas/merchant_category_data
                     </TableCell>
-                    <TableCell className="text-sm text-slate-600">
+                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
                       Valida se o MCC da empresa é compatível com o que ela declara vender (Risco de Forbidden Business).
                     </TableCell>
                     <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
@@ -557,7 +557,7 @@ export default function IntegracoesExternas() {
 
                   {/* Sócios e Contatos */}
                   <TableRow className="bg-slate-50/50">
-                    <TableCell colSpan={5} className="font-semibold text-xs text-slate-500 uppercase tracking-wider py-2">
+                    <TableCell colSpan={5} className="font-semibold text-xs text-[var(--pagsmile-blue)]/70 uppercase tracking-wider py-2">
                       Sócios, Contatos e UBO
                     </TableCell>
                   </TableRow>
@@ -567,7 +567,7 @@ export default function IntegracoesExternas() {
                     <TableCell className="font-mono text-xs text-blue-700 break-all">
                       /empresas/relationships
                     </TableCell>
-                    <TableCell className="text-sm text-slate-600">
+                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
                       Lista quem são os sócios, administradores e representantes legais para validação cruzada.
                     </TableCell>
                     <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
@@ -579,7 +579,7 @@ export default function IntegracoesExternas() {
                       /empresas/phones_extended<br/>
                       /empresas/emails_extended
                     </TableCell>
-                    <TableCell className="text-sm text-slate-600">
+                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
                       Enriquece dados de contato da empresa e sócios para o cadastro.
                     </TableCell>
                     <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
@@ -590,7 +590,7 @@ export default function IntegracoesExternas() {
                     <TableCell className="font-mono text-xs text-blue-700 break-all">
                       /marketplace/partner_ultimate_beneficial_owners
                     </TableCell>
-                    <TableCell className="text-sm text-slate-600">
+                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
                       Identifica pessoas físicas que controlam a empresa (compliance regulatório 3978).
                     </TableCell>
                     <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
@@ -598,7 +598,7 @@ export default function IntegracoesExternas() {
 
                   {/* Risco e Compliance */}
                   <TableRow className="bg-slate-50/50">
-                    <TableCell colSpan={5} className="font-semibold text-xs text-slate-500 uppercase tracking-wider py-2">
+                    <TableCell colSpan={5} className="font-semibold text-xs text-[var(--pagsmile-blue)]/70 uppercase tracking-wider py-2">
                       Risco Operacional e PLD
                     </TableCell>
                   </TableRow>
@@ -608,7 +608,7 @@ export default function IntegracoesExternas() {
                     <TableCell className="font-mono text-xs text-blue-700 break-all">
                       /empresas/activity_indicators
                     </TableCell>
-                    <TableCell className="text-sm text-slate-600">
+                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
                       Compara faturamento declarado vs. estimado de mercado. Alerta se divergência > 50%.
                     </TableCell>
                     <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
@@ -619,7 +619,7 @@ export default function IntegracoesExternas() {
                     <TableCell className="font-mono text-xs text-blue-700 break-all">
                       /empresas/kyc
                     </TableCell>
-                    <TableCell className="text-sm text-slate-600">
+                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
                       Processos, Dívidas, Protestos, Listas Restritivas (OFAC/ONU). Gera Score de Risco.
                     </TableCell>
                     <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
@@ -630,7 +630,7 @@ export default function IntegracoesExternas() {
                     <TableCell className="font-mono text-xs text-blue-700 break-all">
                       /empresas/owners_kyc
                     </TableCell>
-                    <TableCell className="text-sm text-slate-600">
+                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
                       PEP (Pessoa Exposta Politicamente), Mídia Negativa, Antecedentes Criminais dos sócios.
                     </TableCell>
                     <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
@@ -656,7 +656,7 @@ export default function IntegracoesExternas() {
                       <Eye className="w-4 h-4" />
                     </Button>
                   </div>
-                  <p className="text-xs text-slate-500">Configurado via variáveis de ambiente (BIGDATACORP_TOKEN)</p>
+                  <p className="text-xs text-[var(--pagsmile-blue)]/70">Configurado via variáveis de ambiente (BIGDATACORP_TOKEN)</p>
                 </div>
                 <div className="space-y-2">
                   <Label>Webhook Callback Key</Label>
@@ -698,7 +698,7 @@ export default function IntegracoesExternas() {
                           <p className="font-medium text-sm">{service.name}</p>
                           <Switch />
                         </div>
-                        <p className="text-xs text-slate-500 mt-1">{service.desc}</p>
+                        <p className="text-xs text-[var(--pagsmile-blue)]/70 mt-1">{service.desc}</p>
                       </div>
                     </div>
                   );
@@ -714,20 +714,20 @@ export default function IntegracoesExternas() {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <a href="https://docs.bigdatacorp.com.br/plataforma/reference/empresas_kyc" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 border rounded-lg hover:bg-slate-50 transition-colors">
-                  <Building2 className="w-5 h-5 text-slate-600" />
+                  <Building2 className="w-5 h-5 text-[var(--pagsmile-blue)]/80" />
                   <div>
                     <p className="font-medium">KYC Empresas</p>
-                    <p className="text-sm text-slate-500">Compliance empresarial</p>
+                    <p className="text-sm text-[var(--pagsmile-blue)]/70">Compliance empresarial</p>
                   </div>
-                  <ExternalLink className="w-4 h-4 ml-auto text-slate-400" />
+                  <ExternalLink className="w-4 h-4 ml-auto text-[var(--pagsmile-blue)]/50" />
                 </a>
                 <a href="https://docs.bigdatacorp.com.br/app/reference/onboarding-web" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 border rounded-lg hover:bg-slate-50 transition-colors">
-                  <ScanFace className="w-5 h-5 text-slate-600" />
+                  <ScanFace className="w-5 h-5 text-[var(--pagsmile-blue)]/80" />
                   <div>
                     <p className="font-medium">Onboarding Web</p>
-                    <p className="text-sm text-slate-500">Liveness e Biometria</p>
+                    <p className="text-sm text-[var(--pagsmile-blue)]/70">Liveness e Biometria</p>
                   </div>
-                  <ExternalLink className="w-4 h-4 ml-auto text-slate-400" />
+                  <ExternalLink className="w-4 h-4 ml-auto text-[var(--pagsmile-blue)]/50" />
                 </a>
               </div>
             </CardContent>
@@ -812,7 +812,7 @@ export default function IntegracoesExternas() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <p className="font-medium text-sm">CAF</p>
-                  <ul className="text-sm text-slate-600 space-y-1">
+                  <ul className="text-sm text-[var(--pagsmile-blue)]/80 space-y-1">
                     <li>• transaction.completed</li>
                     <li>• transaction.approved</li>
                     <li>• transaction.reproved</li>
@@ -822,7 +822,7 @@ export default function IntegracoesExternas() {
                 </div>
                 <div className="space-y-2">
                   <p className="font-medium text-sm">BigDataCorp</p>
-                  <ul className="text-sm text-slate-600 space-y-1">
+                  <ul className="text-sm text-[var(--pagsmile-blue)]/80 space-y-1">
                     <li>• onboarding.ok (STATUS_CODE: 2)</li>
                     <li>• onboarding.timeout (STATUS_CODE: -201)</li>
                     <li>• onboarding.max_retries (STATUS_CODE: -202)</li>
@@ -849,10 +849,10 @@ export default function IntegracoesExternas() {
             <CardContent>
               {logsLoading ? (
                 <div className="flex justify-center py-8">
-                  <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+                  <Loader2 className="w-6 h-6 animate-spin text-[var(--pagsmile-blue)]/50" />
                 </div>
               ) : integrationLogs.length === 0 ? (
-                <div className="text-center py-8 text-slate-500">
+                <div className="text-center py-8 text-[var(--pagsmile-blue)]/70">
                   <Activity className="w-12 h-12 mx-auto mb-4 text-slate-300" />
                   <p>Nenhum log de integração encontrado</p>
                 </div>
@@ -891,7 +891,7 @@ export default function IntegracoesExternas() {
                             </Badge>
                           )}
                         </TableCell>
-                        <TableCell className="text-sm text-slate-500">
+                        <TableCell className="text-sm text-[var(--pagsmile-blue)]/70">
                           {log.duration_ms ? `${log.duration_ms}ms` : '-'}
                         </TableCell>
                         <TableCell>

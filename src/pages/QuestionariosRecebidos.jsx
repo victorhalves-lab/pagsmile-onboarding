@@ -136,7 +136,7 @@ export default function QuestionariosRecebidos() {
 
   const getScoreBadge = (score) => {
     if (score === undefined || score === null) {
-      return <span className="text-slate-400">-</span>;
+      return <span className="text-[var(--pagsmile-blue)]/50">-</span>;
     }
     
     let colorClass = 'text-red-600 bg-red-50';
@@ -159,7 +159,7 @@ export default function QuestionariosRecebidos() {
   };
 
   const getIADecisionBadge = (decision) => {
-    if (!decision) return <span className="text-slate-400">-</span>;
+    if (!decision) return <span className="text-[var(--pagsmile-blue)]/50">-</span>;
     
     const config = {
       'Aprovado': { color: 'bg-green-100 text-green-700', icon: CheckCircle2 },
@@ -289,8 +289,8 @@ export default function QuestionariosRecebidos() {
               <Inbox className="w-6 h-6 text-[var(--pagsmile-green)]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-800">Questionários Recebidos</h1>
-              <p className="text-slate-500">Todas as submissões de compliance dos merchants</p>
+              <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Questionários Recebidos</h1>
+              <p className="text-[var(--pagsmile-blue)]/70">Todas as submissões de compliance dos merchants</p>
             </div>
           </div>
         </div>
@@ -314,8 +314,8 @@ export default function QuestionariosRecebidos() {
             statusFilter === 'all' ? 'border-[var(--pagsmile-green)] ring-2 ring-[var(--pagsmile-green)]/20' : 'border-slate-200'
           }`}
         >
-          <p className="text-2xl font-bold text-slate-800">{stats.total}</p>
-          <p className="text-xs text-slate-500">Total</p>
+          <p className="text-2xl font-bold text-[var(--pagsmile-blue)]">{stats.total}</p>
+          <p className="text-xs text-[var(--pagsmile-blue)]/70">Total</p>
         </button>
         <button 
           onClick={() => setStatusFilter('Pendente')}
@@ -324,7 +324,7 @@ export default function QuestionariosRecebidos() {
           }`}
         >
           <p className="text-2xl font-bold text-yellow-600">{stats.pendente}</p>
-          <p className="text-xs text-slate-500">Pendentes</p>
+          <p className="text-xs text-[var(--pagsmile-blue)]/70">Pendentes</p>
         </button>
         <button 
           onClick={() => setStatusFilter('Em Processamento')}
@@ -333,7 +333,7 @@ export default function QuestionariosRecebidos() {
           }`}
         >
           <p className="text-2xl font-bold text-blue-600">{stats.processando}</p>
-          <p className="text-xs text-slate-500">Processando</p>
+          <p className="text-xs text-[var(--pagsmile-blue)]/70">Processando</p>
         </button>
         <button 
           onClick={() => setStatusFilter('Manual')}
@@ -342,7 +342,7 @@ export default function QuestionariosRecebidos() {
           }`}
         >
           <p className="text-2xl font-bold text-orange-600">{stats.manual}</p>
-          <p className="text-xs text-slate-500">Revisão Manual</p>
+          <p className="text-xs text-[var(--pagsmile-blue)]/70">Revisão Manual</p>
         </button>
         <button 
           onClick={() => setStatusFilter('Aprovado')}
@@ -351,7 +351,7 @@ export default function QuestionariosRecebidos() {
           }`}
         >
           <p className="text-2xl font-bold text-green-600">{stats.aprovado}</p>
-          <p className="text-xs text-slate-500">Aprovados</p>
+          <p className="text-xs text-[var(--pagsmile-blue)]/70">Aprovados</p>
         </button>
         <button 
           onClick={() => setStatusFilter('Recusado')}
@@ -360,7 +360,7 @@ export default function QuestionariosRecebidos() {
           }`}
         >
           <p className="text-2xl font-bold text-red-600">{stats.recusado}</p>
-          <p className="text-xs text-slate-500">Recusados</p>
+          <p className="text-xs text-[var(--pagsmile-blue)]/70">Recusados</p>
         </button>
       </div>
 
@@ -368,7 +368,7 @@ export default function QuestionariosRecebidos() {
       <div className="bg-white rounded-xl border border-slate-200 p-4">
         <div className="flex flex-col md:flex-row gap-4 justify-between">
           <div className="flex gap-2 flex-wrap items-center">
-            <Filter className="w-4 h-4 text-slate-400" />
+            <Filter className="w-4 h-4 text-[var(--pagsmile-blue)]/50" />
             
             <Select value={merchantTypeFilter} onValueChange={setMerchantTypeFilter}>
               <SelectTrigger className="w-36">
@@ -444,7 +444,7 @@ export default function QuestionariosRecebidos() {
                   setAnalystFilter('all');
                   setPriorityFilter('all');
                 }}
-                className="text-slate-500"
+                className="text-[var(--pagsmile-blue)]/70"
               >
                 Limpar filtros
               </Button>
@@ -452,7 +452,7 @@ export default function QuestionariosRecebidos() {
           </div>
           
           <div className="relative w-full md:w-80">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/50" />
             <Input
               placeholder="Buscar por nome, CPF/CNPJ, e-mail ou ID..."
               value={searchTerm}
@@ -471,9 +471,9 @@ export default function QuestionariosRecebidos() {
           </div>
         ) : paginatedCases.length === 0 ? (
           <div className="text-center py-12">
-            <FileCheck className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-            <p className="text-slate-500 font-medium">Nenhum questionário encontrado</p>
-            <p className="text-sm text-slate-400 mt-1">Ajuste os filtros ou aguarde novas submissões</p>
+            <FileCheck className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/40 mb-4" />
+            <p className="text-[var(--pagsmile-blue)]/70 font-medium">Nenhum questionário encontrado</p>
+            <p className="text-sm text-[var(--pagsmile-blue)]/50 mt-1">Ajuste os filtros ou aguarde novas submissões</p>
           </div>
         ) : (
           <Table>
@@ -481,7 +481,7 @@ export default function QuestionariosRecebidos() {
               <TableRow className="bg-slate-50">
                 <TableHead className="w-[280px]">
                   <button 
-                    className="flex items-center gap-1 hover:text-slate-800 font-semibold"
+                    className="flex items-center gap-1 hover:text-[var(--pagsmile-blue)] font-semibold"
                     onClick={() => {
                       if (sortField === 'merchant') {
                         setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
@@ -501,7 +501,7 @@ export default function QuestionariosRecebidos() {
                 <TableHead className="text-center">Fase 2 (SVE)</TableHead>
                 <TableHead className="text-center">
                   <button 
-                    className="flex items-center gap-1 hover:text-slate-800 font-semibold mx-auto"
+                    className="flex items-center gap-1 hover:text-[var(--pagsmile-blue)] font-semibold mx-auto"
                     onClick={() => {
                       if (sortField === 'riskScore') {
                         setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
@@ -520,7 +520,7 @@ export default function QuestionariosRecebidos() {
                 <TableHead>Analista</TableHead>
                 <TableHead>
                   <button 
-                    className="flex items-center gap-1 hover:text-slate-800 font-semibold"
+                    className="flex items-center gap-1 hover:text-[var(--pagsmile-blue)] font-semibold"
                     onClick={() => {
                       if (sortField === 'created_date') {
                         setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
@@ -554,10 +554,10 @@ export default function QuestionariosRecebidos() {
                           )}
                         </div>
                         <div>
-                          <p className="font-medium text-slate-800">
+                          <p className="font-medium text-[var(--pagsmile-blue)]">
                             {merchant?.fullName || 'N/A'}
                           </p>
-                          <p className="text-sm text-slate-500">
+                          <p className="text-sm text-[var(--pagsmile-blue)]/70">
                             {merchant?.cpfCnpj || '-'}
                           </p>
                         </div>
@@ -572,12 +572,12 @@ export default function QuestionariosRecebidos() {
                     
                     {/* Scores Columns */}
                     <TableCell className="text-center">
-                      <span className="text-sm font-medium text-slate-600">
+                      <span className="text-sm font-medium text-[var(--pagsmile-blue)]/80">
                         {scoresMap[c.id]?.score_questionario || '-'}
                       </span>
                     </TableCell>
                     <TableCell className="text-center">
-                      <span className="text-sm font-medium text-slate-600">
+                      <span className="text-sm font-medium text-[var(--pagsmile-blue)]/80">
                         {scoresMap[c.id]?.score_validacao_externa || '-'}
                       </span>
                     </TableCell>
@@ -588,22 +588,22 @@ export default function QuestionariosRecebidos() {
                     </TableCell>
                     <TableCell>
                       <span className={`text-sm font-medium ${
-                        getTimeInQueue(c.created_date).includes('d') ? 'text-orange-600' : 'text-slate-600'
+                        getTimeInQueue(c.created_date).includes('d') ? 'text-orange-600' : 'text-[var(--pagsmile-blue)]/80'
                       }`}>
                         {getTimeInQueue(c.created_date)}
                       </span>
                     </TableCell>
                     <TableCell>
-                      <span className="text-sm text-slate-600">
+                      <span className="text-sm text-[var(--pagsmile-blue)]/80">
                         {c.assignedAnalystName || '-'}
                       </span>
                     </TableCell>
                     <TableCell>
                       <div>
-                        <p className="text-slate-800 text-sm">
+                        <p className="text-[var(--pagsmile-blue)] text-sm">
                           {c.created_date ? new Date(c.created_date).toLocaleDateString('pt-BR') : '-'}
                         </p>
-                        <p className="text-xs text-slate-400">
+                        <p className="text-xs text-[var(--pagsmile-blue)]/50">
                           {c.created_date ? new Date(c.created_date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : ''}
                         </p>
                       </div>
@@ -657,7 +657,7 @@ export default function QuestionariosRecebidos() {
         {/* Paginação */}
         {filteredCases.length > 0 && (
           <div className="px-4 py-3 border-t border-slate-200 flex items-center justify-between">
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-[var(--pagsmile-blue)]/70">
               Mostrando {((currentPage - 1) * itemsPerPage) + 1} a {Math.min(currentPage * itemsPerPage, filteredCases.length)} de {filteredCases.length} questionários
             </p>
             <div className="flex items-center gap-2">
@@ -669,7 +669,7 @@ export default function QuestionariosRecebidos() {
               >
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <span className="text-sm text-slate-600">
+              <span className="text-sm text-[var(--pagsmile-blue)]/80">
                 Página {currentPage} de {totalPages || 1}
               </span>
               <Button
