@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 import { 
   Building2, FileText, MapPin, Briefcase, TrendingUp, 
-  Users, UserCircle, ShieldAlert, AlertTriangle, ShieldCheck, CheckCircle,
-  UserCheck, Scale, Store, Lock
+  Users, UserCircle, ShieldAlert, CheckCircle,
+  UserCheck, Scale, Store, Lock, ShieldCheck
 } from 'lucide-react';
 
 import ProgressBar from '../components/compliance/ProgressBar';
@@ -18,34 +18,31 @@ import Step2TipoEmpresa from '../components/compliance/steps/Step2TipoEmpresa';
 import Step3Endereco from '../components/compliance/steps/Step3Endereco';
 import Step4AtividadeNegocios from '../components/compliance/steps/Step4AtividadeNegocios';
 import Step5PerfilOperacional from '../components/compliance/steps/Step5PerfilOperacional';
-import Step6PerfilClientes from '../components/compliance/steps/Step6PerfilClientes';
 import Step7Responsaveis from '../components/compliance/steps/Step7Responsaveis';
 import Section4UBO from '../components/compliance/steps/Section4UBO';
 import Section5Socios from '../components/compliance/steps/Section5Socios';
 import Section6Licenciamento from '../components/compliance/steps/Section6Licenciamento';
 import Section7Marketplace from '../components/compliance/steps/Section7Marketplace';
 import Section8SegurancaCartao from '../components/compliance/steps/Section8SegurancaCartao';
-import Step8PLDSancoes from '../components/compliance/steps/Step8PLDSancoes';
-import Step9PLDRiscos from '../components/compliance/steps/Step9PLDRiscos';
+import Step8CompliancePLD from '../components/compliance/steps/Step8CompliancePLD';
 import Step10PLDOperacao from '../components/compliance/steps/Step10PLDOperacao';
 import Step11Confirmacao from '../components/compliance/steps/Step11Confirmacao';
-import Step8CompliancePLD from '../components/compliance/steps/Step8CompliancePLD';
 
 const STEPS = [
-  { id: 'identificacao', title: 'Identificação', icon: Building2 },
-  { id: 'tipo_empresa', title: 'Tipo Empresa', icon: FileText },
-  { id: 'endereco', title: 'Endereço', icon: MapPin },
-  { id: 'atividade_negocios', title: 'Detalhes do Negócio', icon: Briefcase },
-  { id: 'perfil_operacional', title: 'Operação', icon: TrendingUp },
-  { id: 'perfil_clientes', title: 'Clientes', icon: Users },
-  { id: 'responsaveis', title: 'Responsáveis', icon: UserCircle },
-  { id: 'ubo', title: 'Beneficiários', icon: Users },
-  { id: 'socios', title: 'Sócios', icon: UserCheck },
-  { id: 'licenciamento', title: 'Licenciamento', icon: Scale },
-  { id: 'marketplace', title: 'Marketplace', icon: Store },
-  { id: 'seguranca_cartao', title: 'Segurança', icon: Lock },
-  { id: 'compliance_pld', title: 'Compliance & PLD', icon: ShieldAlert },
-  { id: 'confirmacao', title: 'Confirmação', icon: CheckCircle }
+  { id: 'identificacao', title: '1. Identificação', icon: Building2 },
+  { id: 'tipo_empresa', title: '1. Tipo Empresa', icon: FileText },
+  { id: 'endereco', title: '1. Endereço', icon: MapPin },
+  { id: 'atividade', title: '2. Atividade', icon: Briefcase },
+  { id: 'licenciamento', title: '3. Licenciamento', icon: Scale },
+  { id: 'ubo', title: '4. Beneficiários', icon: Users },
+  { id: 'socios', title: '5. Sócios', icon: UserCheck },
+  { id: 'responsaveis', title: '6. Responsáveis', icon: UserCircle },
+  { id: 'compliance', title: '7. Compliance', icon: ShieldAlert },
+  { id: 'pld', title: '8. PLD/FT', icon: ShieldCheck },
+  { id: 'operacao', title: '9. Operação', icon: TrendingUp },
+  { id: 'marketplace', title: '10. Marketplace', icon: Store },
+  { id: 'seguranca', title: '11. Segurança', icon: Lock },
+  { id: 'confirmacao', title: '12. Confirmação', icon: CheckCircle }
 ];
 
 export default function ComplianceFullKYC() {
@@ -53,7 +50,12 @@ export default function ComplianceFullKYC() {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     ubos: [],
-    socios: []
+    socios: [],
+    topProdutos: [],
+    divisaoPercentual: [],
+    topClientes: [],
+    canaisAtendimentoLista: [],
+    canaisVenda: []
   });
 
   const linkCode = localStorage.getItem('onboarding_link_code');
@@ -73,7 +75,12 @@ export default function ComplianceFullKYC() {
       setFormData({
         ...parsed,
         ubos: parsed.ubos || [],
-        socios: parsed.socios || []
+        socios: parsed.socios || [],
+        topProdutos: parsed.topProdutos || [],
+        divisaoPercentual: parsed.divisaoPercentual || [],
+        topClientes: parsed.topClientes || [],
+        canaisAtendimentoLista: parsed.canaisAtendimentoLista || [],
+        canaisVenda: parsed.canaisVenda || []
       });
     }
   }, []);
@@ -89,6 +96,7 @@ export default function ComplianceFullKYC() {
   const handleArrayChange = (fieldId, index, subField, value) => {
     setFormData(prev => {
       const newArray = [...(prev[fieldId] || [])];
+      if (!newArray[index]) return prev;
       newArray[index] = { ...newArray[index], [subField]: value };
       return { ...prev, [fieldId]: newArray };
     });
@@ -137,15 +145,15 @@ export default function ComplianceFullKYC() {
       case 2: return <Step2TipoEmpresa {...baseProps} />;
       case 3: return <Step3Endereco {...baseProps} />;
       case 4: return <Step4AtividadeNegocios {...arrayProps} />;
-      case 5: return <Step5PerfilOperacional {...baseProps} />;
-      case 6: return <Step6PerfilClientes {...baseProps} />;
-      case 7: return <Step7Responsaveis {...baseProps} />;
-      case 8: return <Section4UBO {...arrayProps} />;
-      case 9: return <Section5Socios {...arrayProps} />;
-      case 10: return <Section6Licenciamento {...baseProps} />;
-      case 11: return <Section7Marketplace {...baseProps} />;
-      case 12: return <Section8SegurancaCartao {...baseProps} />;
-      case 13: return <Step8CompliancePLD {...baseProps} />;
+      case 5: return <Section6Licenciamento {...baseProps} />;
+      case 6: return <Section4UBO {...arrayProps} />;
+      case 7: return <Section5Socios {...arrayProps} />;
+      case 8: return <Step7Responsaveis {...arrayProps} />;
+      case 9: return <Step8CompliancePLD {...baseProps} />;
+      case 10: return <Step10PLDOperacao {...baseProps} />;
+      case 11: return <Step5PerfilOperacional {...baseProps} />;
+      case 12: return <Section7Marketplace {...baseProps} />;
+      case 13: return <Section8SegurancaCartao {...baseProps} />;
       case 14: return <Step11Confirmacao {...baseProps} />;
       default: return null;
     }

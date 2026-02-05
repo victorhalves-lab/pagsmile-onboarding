@@ -8,18 +8,6 @@ import DocumentUploadCard from '@/components/compliance/DocumentUploadCard';
 
 const DOCUMENTS_FULL = [
   { 
-    id: 'contrato_social', 
-    name: 'Contrato Social / Estatuto', 
-    description: 'Última alteração consolidada ou estatuto com ata de eleição.', 
-    required: true 
-  },
-  { 
-    id: 'cartao_cnpj', 
-    name: 'Cartão CNPJ', 
-    description: 'Comprovante de inscrição emitido pela Receita Federal.', 
-    required: true 
-  },
-  { 
     id: 'identificacao_socios', 
     name: 'RG ou CNH dos Sócios', 
     description: 'Documento legível de todos os sócios e administradores.', 
@@ -33,8 +21,20 @@ const DOCUMENTS_FULL = [
   },
   { 
     id: 'comprovante_endereco_socios', 
-    name: 'Comprovante Endereço (Sócios)', 
-    description: 'Comprovante de residência dos sócios principais.', 
+    name: 'Comprovante Endereço (Representante)', 
+    description: 'Comprovante de residência do representante legal (max 90 dias).', 
+    required: true 
+  },
+  { 
+    id: 'cartao_cnpj', 
+    name: 'Cartão CNPJ', 
+    description: 'Comprovante de inscrição emitido pela Receita Federal.', 
+    required: true 
+  },
+  { 
+    id: 'contrato_social', 
+    name: 'Contrato Social e Última Alteração', 
+    description: 'Contrato social consolidado ou estatuto com ata de eleição.', 
     required: true 
   },
   { 
@@ -50,16 +50,34 @@ const DOCUMENTS_FULL = [
     required: true 
   },
   { 
-    id: 'faturamento', 
-    name: 'Declaração de Faturamento', 
-    description: 'Faturamento dos últimos 12 meses, assinado pelo contador.', 
+    id: 'politica_kyc', 
+    name: 'Política de KYC', 
+    description: 'Manual ou política interna de Conheça seu Cliente.', 
+    required: true 
+  },
+  { 
+    id: 'demos_financeiros_3anos', 
+    name: 'Demos Financeiros (3 anos)', 
+    description: 'Demonstrativos dos últimos 3 exercícios (preferencialmente auditados).', 
+    required: true 
+  },
+  { 
+    id: 'balancete_recente', 
+    name: 'Balancete mais recente', 
+    description: 'Balancete contábil do mês/trimestre mais recente.', 
+    required: true 
+  },
+  { 
+    id: 'selfie_socios', 
+    name: 'Selfie dos Sócios', 
+    description: 'Foto do rosto segurando o documento de identificação.', 
     required: true 
   },
   { 
     id: 'politica_pld', 
     name: 'Política de PLD/FT', 
     description: 'Manual ou política interna de prevenção à lavagem de dinheiro.', 
-    required: false 
+    required: true 
   }
 ];
 
