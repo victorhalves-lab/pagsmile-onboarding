@@ -69,6 +69,13 @@ import OnboardingCaseDetails from './pages/OnboardingCaseDetails';
 import OnboardingCompletion from './pages/OnboardingCompletion';
 import QuestionnaireEditor from './pages/QuestionnaireEditor';
 import QuestionnaireTemplates from './pages/QuestionnaireTemplates';
+import QuestionariosRecebidos from './pages/QuestionariosRecebidos';
+import AnaliseDeCasos from './pages/AnaliseDeCasos';
+import GestaoDocumentos from './pages/GestaoDocumentos';
+import GestaoRevalidacao from './pages/GestaoRevalidacao';
+import GerarLinkOnboarding from './pages/GerarLinkOnboarding';
+import TemplatesQuestionarios from './pages/TemplatesQuestionarios';
+import EditorQuestionario from './pages/EditorQuestionario';
 import __Layout from './Layout.jsx';
 
 
@@ -95,6 +102,13 @@ export const PAGES = {
     "OnboardingCompletion": OnboardingCompletion,
     "QuestionnaireEditor": QuestionnaireEditor,
     "QuestionnaireTemplates": QuestionnaireTemplates,
+    "QuestionariosRecebidos": QuestionariosRecebidos,
+    "AnaliseDeCasos": AnaliseDeCasos,
+    "GestaoDocumentos": GestaoDocumentos,
+    "GestaoRevalidacao": GestaoRevalidacao,
+    "GerarLinkOnboarding": GerarLinkOnboarding,
+    "TemplatesQuestionarios": TemplatesQuestionarios,
+    "EditorQuestionario": EditorQuestionario,
 }
 
 export const pagesConfig = {

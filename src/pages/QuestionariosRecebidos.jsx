@@ -1,0 +1,689 @@
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '../utils';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { 
+  Search, RefreshCw, Eye, Clock, CheckCircle2, 
+  AlertTriangle, XCircle, FileCheck,
+  Loader2, MoreHorizontal, Mail, Download,
+  ArrowUpDown, Building2, User, Filter,
+  ChevronLeft, ChevronRight, Brain, FileText,
+  Inbox
+} from 'lucide-react';
+
+export default function QuestionariosRecebidos() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [merchantTypeFilter, setMerchantTypeFilter] = useState('all');
+  const [dateFilter, setDateFilter] = useState('all');
+  const [scoreFilter, setScoreFilter] = useState('all');
+  const [analystFilter, setAnalystFilter] = useState('all');
+  const [priorityFilter, setPriorityFilter] = useState('all');
+  const [sortField, setSortField] = useState('created_date');
+  const [sortOrder, setSortOrder] = useState('desc');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 15;
+
+  const { data: onboardingCases = [], isLoading: casesLoading, refetch: refetchCases } = useQuery({
+    queryKey: ['onboardingCases'],
+    queryFn: () => base44.entities.OnboardingCase.list('-created_date', 500)
+  });
+
+  // Fetch Compliance Scores
+  const { data: complianceScores = [] } = useQuery({
+    queryKey: ['complianceScores'],
+    queryFn: () => base44.entities.ComplianceScore.list()
+  });
+
+  const { data: merchants = [], isLoading: merchantsLoading } = useQuery({
+    queryKey: ['merchants'],
+    queryFn: () => base44.entities.Merchant.list()
+  });
+
+  const { data: users = [] } = useQuery({
+    queryKey: ['users'],
+    queryFn: () => base44.entities.User.list()
+  });
+
+  const merchantMap = React.useMemo(() => {
+    const map = {};
+    merchants.forEach(m => { map[m.id] = m; });
+    return map;
+  }, [merchants]);
+
+  const scoresMap = React.useMemo(() => {
+    const map = {};
+    complianceScores.forEach(s => { map[s.onboarding_case_id] = s; });
+    return map;
+  }, [complianceScores]);
+
+  // Estatísticas rápidas
+  const stats = React.useMemo(() => {
+    const now = new Date();
+    return {
+      total: onboardingCases.length,
+      pendente: onboardingCases.filter(c => c.status === 'Pendente').length,
+      processando: onboardingCases.filter(c => c.status === 'Em Processamento').length,
+      manual: onboardingCases.filter(c => c.status === 'Manual').length,
+      aprovado: onboardingCases.filter(c => c.status === 'Aprovado').length,
+      recusado: onboardingCases.filter(c => c.status === 'Recusado').length,
+      docsSolicitados: onboardingCases.filter(c => c.status === 'Docs Solicitados').length,
+      slaAtRisk: onboardingCases.filter(c => c.slaDeadline && new Date(c.slaDeadline) < now && c.status !== 'Aprovado' && c.status !== 'Recusado').length,
+    };
+  }, [onboardingCases]);
+
+  // Lista de analistas únicos
+  const analysts = React.useMemo(() => {
+    const uniqueAnalysts = [...new Set(onboardingCases.map(c => c.assignedAnalystName).filter(Boolean))];
+    return uniqueAnalysts;
+  }, [onboardingCases]);
+
+  // Calcular tempo em fila
+  const getTimeInQueue = (createdDate) => {
+    if (!createdDate) return '-';
+    const now = new Date();
+    const created = new Date(createdDate);
+    const diffMs = now - created;
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffHours / 24);
+    
+    if (diffDays > 0) return `${diffDays}d ${diffHours % 24}h`;
+    if (diffHours > 0) return `${diffHours}h`;
+    return '< 1h';
+  };
+
+  const getStatusBadge = (status) => {
+    const config = {
+      'Pendente': { color: 'bg-yellow-100 text-yellow-800 border-yellow-200', icon: Clock },
+      'Em Processamento': { color: 'bg-blue-100 text-blue-800 border-blue-200', icon: Loader2 },
+      'Aprovado': { color: 'bg-green-100 text-green-800 border-green-200', icon: CheckCircle2 },
+      'Manual': { color: 'bg-orange-100 text-orange-800 border-orange-200', icon: AlertTriangle },
+      'Recusado': { color: 'bg-red-100 text-red-800 border-red-200', icon: XCircle }
+    };
+    const { color, icon: Icon } = config[status] || config['Pendente'];
+    return (
+      <Badge className={`${color} gap-1 border`}>
+        <Icon className="w-3 h-3" />
+        {status}
+      </Badge>
+    );
+  };
+
+  const getScoreBadge = (score) => {
+    if (score === undefined || score === null) {
+      return <span className="text-slate-400">-</span>;
+    }
+    
+    let colorClass = 'text-red-600 bg-red-50';
+    let label = 'Crítico';
+    
+    if (score >= 80) {
+      colorClass = 'text-green-600 bg-green-50';
+      label = 'Baixo Risco';
+    } else if (score >= 50) {
+      colorClass = 'text-orange-600 bg-orange-50';
+      label = 'Médio Risco';
+    }
+    
+    return (
+      <div className="flex items-center gap-2">
+        <span className={`font-bold text-lg ${colorClass.split(' ')[0]}`}>{score}</span>
+        <span className={`text-xs px-2 py-0.5 rounded-full ${colorClass}`}>{label}</span>
+      </div>
+    );
+  };
+
+  const getIADecisionBadge = (decision) => {
+    if (!decision) return <span className="text-slate-400">-</span>;
+    
+    const config = {
+      'Aprovado': { color: 'bg-green-100 text-green-700', icon: CheckCircle2 },
+      'Manual': { color: 'bg-orange-100 text-orange-700', icon: AlertTriangle },
+      'Recusado': { color: 'bg-red-100 text-red-700', icon: XCircle }
+    };
+    const { color, icon: Icon } = config[decision] || { color: 'bg-slate-100 text-slate-700', icon: Brain };
+    
+    return (
+      <Badge className={`${color} gap-1 border-0`}>
+        <Icon className="w-3 h-3" />
+        {decision}
+      </Badge>
+    );
+  };
+
+  // Filtrar casos
+  const filteredCases = React.useMemo(() => {
+    return onboardingCases.filter(c => {
+      const merchant = merchantMap[c.merchantId];
+      
+      // Busca
+      const matchesSearch = !searchTerm || 
+        merchant?.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        merchant?.cpfCnpj?.includes(searchTerm) ||
+        merchant?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        c.id?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      // Status
+      const matchesStatus = statusFilter === 'all' || c.status === statusFilter;
+      
+      // Tipo de merchant
+      const matchesMerchantType = merchantTypeFilter === 'all' || merchant?.type === merchantTypeFilter;
+      
+      // Analista
+      const matchesAnalyst = analystFilter === 'all' || c.assignedAnalystName === analystFilter;
+      
+      // Prioridade
+      const matchesPriority = priorityFilter === 'all' || c.priority === priorityFilter;
+      
+      // Score
+      let matchesScore = true;
+      if (scoreFilter !== 'all' && c.riskScore !== undefined) {
+        if (scoreFilter === 'high') matchesScore = c.riskScore >= 80;
+        else if (scoreFilter === 'medium') matchesScore = c.riskScore >= 50 && c.riskScore < 80;
+        else if (scoreFilter === 'low') matchesScore = c.riskScore < 50;
+      } else if (scoreFilter !== 'all' && c.riskScore === undefined) {
+        matchesScore = false;
+      }
+      
+      // Data
+      let matchesDate = true;
+      if (dateFilter !== 'all') {
+        const caseDate = new Date(c.created_date);
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        
+        if (dateFilter === 'today') {
+          matchesDate = caseDate >= today;
+        } else if (dateFilter === 'week') {
+          const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+          matchesDate = caseDate >= weekAgo;
+        } else if (dateFilter === 'month') {
+          const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+          matchesDate = caseDate >= monthStart;
+        }
+      }
+      
+      return matchesSearch && matchesStatus && matchesMerchantType && matchesScore && matchesDate && matchesAnalyst && matchesPriority;
+    }).sort((a, b) => {
+      let aValue = a[sortField];
+      let bValue = b[sortField];
+      
+      if (sortField === 'merchant') {
+        aValue = merchantMap[a.merchantId]?.fullName || '';
+        bValue = merchantMap[b.merchantId]?.fullName || '';
+      }
+      
+      if (sortOrder === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      }
+      return aValue < bValue ? 1 : -1;
+    });
+  }, [onboardingCases, merchantMap, searchTerm, statusFilter, merchantTypeFilter, scoreFilter, dateFilter, analystFilter, priorityFilter, sortField, sortOrder]);
+
+  // Paginação
+  const totalPages = Math.ceil(filteredCases.length / itemsPerPage);
+  const paginatedCases = filteredCases.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handleExport = () => {
+    const csvContent = [
+      ['ID', 'Merchant', 'CNPJ/CPF', 'Tipo', 'Status', 'Score Helena', 'Decisão IA', 'Data Submissão'].join(','),
+      ...filteredCases.map(c => {
+        const merchant = merchantMap[c.merchantId];
+        return [
+          c.id,
+          `"${merchant?.fullName || 'N/A'}"`,
+          merchant?.cpfCnpj || '',
+          merchant?.type || '',
+          c.status,
+          c.riskScore || '',
+          c.iaDecision || '',
+          c.created_date ? new Date(c.created_date).toLocaleDateString('pt-BR') : ''
+        ].join(',');
+      })
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `questionarios_compliance_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+  };
+
+  const isLoading = casesLoading || merchantsLoading;
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-[var(--pagsmile-green)]/10">
+              <Inbox className="w-6 h-6 text-[var(--pagsmile-green)]" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-slate-800">Questionários Recebidos</h1>
+              <p className="text-slate-500">Todas as submissões de compliance dos merchants</p>
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleExport}>
+            <Download className="w-4 h-4 mr-2" />
+            Exportar
+          </Button>
+          <Button variant="outline" onClick={() => refetchCases()}>
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Atualizar
+          </Button>
+        </div>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <button 
+          onClick={() => setStatusFilter('all')}
+          className={`bg-white rounded-xl border p-4 text-left transition-all hover:shadow-md ${
+            statusFilter === 'all' ? 'border-[var(--pagsmile-green)] ring-2 ring-[var(--pagsmile-green)]/20' : 'border-slate-200'
+          }`}
+        >
+          <p className="text-2xl font-bold text-slate-800">{stats.total}</p>
+          <p className="text-xs text-slate-500">Total</p>
+        </button>
+        <button 
+          onClick={() => setStatusFilter('Pendente')}
+          className={`bg-white rounded-xl border p-4 text-left transition-all hover:shadow-md ${
+            statusFilter === 'Pendente' ? 'border-yellow-500 ring-2 ring-yellow-500/20' : 'border-slate-200'
+          }`}
+        >
+          <p className="text-2xl font-bold text-yellow-600">{stats.pendente}</p>
+          <p className="text-xs text-slate-500">Pendentes</p>
+        </button>
+        <button 
+          onClick={() => setStatusFilter('Em Processamento')}
+          className={`bg-white rounded-xl border p-4 text-left transition-all hover:shadow-md ${
+            statusFilter === 'Em Processamento' ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-slate-200'
+          }`}
+        >
+          <p className="text-2xl font-bold text-blue-600">{stats.processando}</p>
+          <p className="text-xs text-slate-500">Processando</p>
+        </button>
+        <button 
+          onClick={() => setStatusFilter('Manual')}
+          className={`bg-white rounded-xl border p-4 text-left transition-all hover:shadow-md ${
+            statusFilter === 'Manual' ? 'border-orange-500 ring-2 ring-orange-500/20' : 'border-slate-200'
+          }`}
+        >
+          <p className="text-2xl font-bold text-orange-600">{stats.manual}</p>
+          <p className="text-xs text-slate-500">Revisão Manual</p>
+        </button>
+        <button 
+          onClick={() => setStatusFilter('Aprovado')}
+          className={`bg-white rounded-xl border p-4 text-left transition-all hover:shadow-md ${
+            statusFilter === 'Aprovado' ? 'border-green-500 ring-2 ring-green-500/20' : 'border-slate-200'
+          }`}
+        >
+          <p className="text-2xl font-bold text-green-600">{stats.aprovado}</p>
+          <p className="text-xs text-slate-500">Aprovados</p>
+        </button>
+        <button 
+          onClick={() => setStatusFilter('Recusado')}
+          className={`bg-white rounded-xl border p-4 text-left transition-all hover:shadow-md ${
+            statusFilter === 'Recusado' ? 'border-red-500 ring-2 ring-red-500/20' : 'border-slate-200'
+          }`}
+        >
+          <p className="text-2xl font-bold text-red-600">{stats.recusado}</p>
+          <p className="text-xs text-slate-500">Recusados</p>
+        </button>
+      </div>
+
+      {/* Filtros */}
+      <div className="bg-white rounded-xl border border-slate-200 p-4">
+        <div className="flex flex-col md:flex-row gap-4 justify-between">
+          <div className="flex gap-2 flex-wrap items-center">
+            <Filter className="w-4 h-4 text-slate-400" />
+            
+            <Select value={merchantTypeFilter} onValueChange={setMerchantTypeFilter}>
+              <SelectTrigger className="w-36">
+                <SelectValue placeholder="Tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os Tipos</SelectItem>
+                <SelectItem value="PF">Pessoa Física</SelectItem>
+                <SelectItem value="PJ">Pessoa Jurídica</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={scoreFilter} onValueChange={setScoreFilter}>
+              <SelectTrigger className="w-36">
+                <SelectValue placeholder="Score Helena" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os Scores</SelectItem>
+                <SelectItem value="high">≥ 80 (Baixo Risco)</SelectItem>
+                <SelectItem value="medium">50-79 (Médio Risco)</SelectItem>
+                <SelectItem value="low">&lt; 50 (Alto Risco)</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={dateFilter} onValueChange={setDateFilter}>
+              <SelectTrigger className="w-36">
+                <SelectValue placeholder="Período" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todo período</SelectItem>
+                <SelectItem value="today">Hoje</SelectItem>
+                <SelectItem value="week">Esta semana</SelectItem>
+                <SelectItem value="month">Este mês</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {analysts.length > 0 && (
+              <Select value={analystFilter} onValueChange={setAnalystFilter}>
+                <SelectTrigger className="w-40">
+                  <SelectValue placeholder="Analista" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos Analistas</SelectItem>
+                  {analysts.map(a => (
+                    <SelectItem key={a} value={a}>{a}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+
+            <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder="Prioridade" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas</SelectItem>
+                <SelectItem value="critical">Crítica</SelectItem>
+                <SelectItem value="high">Alta</SelectItem>
+                <SelectItem value="medium">Média</SelectItem>
+                <SelectItem value="low">Baixa</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {(statusFilter !== 'all' || merchantTypeFilter !== 'all' || scoreFilter !== 'all' || dateFilter !== 'all' || analystFilter !== 'all' || priorityFilter !== 'all') && (
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => {
+                  setStatusFilter('all');
+                  setMerchantTypeFilter('all');
+                  setScoreFilter('all');
+                  setDateFilter('all');
+                  setAnalystFilter('all');
+                  setPriorityFilter('all');
+                }}
+                className="text-slate-500"
+              >
+                Limpar filtros
+              </Button>
+            )}
+          </div>
+          
+          <div className="relative w-full md:w-80">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Input
+              placeholder="Buscar por nome, CPF/CNPJ, e-mail ou ID..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Tabela */}
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" />
+          </div>
+        ) : paginatedCases.length === 0 ? (
+          <div className="text-center py-12">
+            <FileCheck className="w-12 h-12 mx-auto text-slate-300 mb-4" />
+            <p className="text-slate-500 font-medium">Nenhum questionário encontrado</p>
+            <p className="text-sm text-slate-400 mt-1">Ajuste os filtros ou aguarde novas submissões</p>
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-slate-50">
+                <TableHead className="w-[280px]">
+                  <button 
+                    className="flex items-center gap-1 hover:text-slate-800 font-semibold"
+                    onClick={() => {
+                      if (sortField === 'merchant') {
+                        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                      } else {
+                        setSortField('merchant');
+                        setSortOrder('asc');
+                      }
+                    }}
+                  >
+                    Merchant
+                    <ArrowUpDown className="w-3 h-3" />
+                  </button>
+                </TableHead>
+                <TableHead>Tipo</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-center">Fase 1 (SQ)</TableHead>
+                <TableHead className="text-center">Fase 2 (SVE)</TableHead>
+                <TableHead className="text-center">
+                  <button 
+                    className="flex items-center gap-1 hover:text-slate-800 font-semibold mx-auto"
+                    onClick={() => {
+                      if (sortField === 'riskScore') {
+                        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                      } else {
+                        setSortField('riskScore');
+                        setSortOrder('desc');
+                      }
+                    }}
+                  >
+                    <Brain className="w-4 h-4 mr-1" />
+                    Final (SGC)
+                    <ArrowUpDown className="w-3 h-3" />
+                  </button>
+                </TableHead>
+                <TableHead>Tempo na Fila</TableHead>
+                <TableHead>Analista</TableHead>
+                <TableHead>
+                  <button 
+                    className="flex items-center gap-1 hover:text-slate-800 font-semibold"
+                    onClick={() => {
+                      if (sortField === 'created_date') {
+                        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+                      } else {
+                        setSortField('created_date');
+                        setSortOrder('desc');
+                      }
+                    }}
+                  >
+                    Submissão
+                    <ArrowUpDown className="w-3 h-3" />
+                  </button>
+                </TableHead>
+                <TableHead className="text-right">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {paginatedCases.map((c) => {
+                const merchant = merchantMap[c.merchantId];
+                return (
+                  <TableRow key={c.id} className="hover:bg-slate-50">
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <div className={`p-2 rounded-lg ${
+                          merchant?.type === 'PF' ? 'bg-blue-100' : 'bg-purple-100'
+                        }`}>
+                          {merchant?.type === 'PF' ? (
+                            <User className="w-4 h-4 text-blue-600" />
+                          ) : (
+                            <Building2 className="w-4 h-4 text-purple-600" />
+                          )}
+                        </div>
+                        <div>
+                          <p className="font-medium text-slate-800">
+                            {merchant?.fullName || 'N/A'}
+                          </p>
+                          <p className="text-sm text-slate-500">
+                            {merchant?.cpfCnpj || '-'}
+                          </p>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="font-normal">
+                        {merchant?.type || 'N/A'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{getStatusBadge(c.status)}</TableCell>
+                    
+                    {/* Scores Columns */}
+                    <TableCell className="text-center">
+                      <span className="text-sm font-medium text-slate-600">
+                        {scoresMap[c.id]?.score_questionario || '-'}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <span className="text-sm font-medium text-slate-600">
+                        {scoresMap[c.id]?.score_validacao_externa || '-'}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex justify-center">
+                        {getScoreBadge(scoresMap[c.id]?.score_geral_composto || c.riskScore)}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className={`text-sm font-medium ${
+                        getTimeInQueue(c.created_date).includes('d') ? 'text-orange-600' : 'text-slate-600'
+                      }`}>
+                        {getTimeInQueue(c.created_date)}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm text-slate-600">
+                        {c.assignedAnalystName || '-'}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <div>
+                        <p className="text-slate-800 text-sm">
+                          {c.created_date ? new Date(c.created_date).toLocaleDateString('pt-BR') : '-'}
+                        </p>
+                        <p className="text-xs text-slate-400">
+                          {c.created_date ? new Date(c.created_date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : ''}
+                        </p>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`}>
+                          <Button variant="ghost" size="sm" className="text-[var(--pagsmile-green)] hover:text-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/10">
+                            <Eye className="w-4 h-4 mr-1" />
+                            Analisar
+                          </Button>
+                        </Link>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MoreHorizontal className="w-4 h-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem asChild>
+                              <Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`}>
+                                <Eye className="w-4 h-4 mr-2" />
+                                Ver Detalhes
+                              </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                              <Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`}>
+                                <FileText className="w-4 h-4 mr-2" />
+                                Ver Respostas
+                              </Link>
+                            </DropdownMenuItem>
+                            {merchant?.email && (
+                              <DropdownMenuItem asChild>
+                                <a href={`mailto:${merchant.email}`}>
+                                  <Mail className="w-4 h-4 mr-2" />
+                                  Enviar E-mail
+                                </a>
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        )}
+        
+        {/* Paginação */}
+        {filteredCases.length > 0 && (
+          <div className="px-4 py-3 border-t border-slate-200 flex items-center justify-between">
+            <p className="text-sm text-slate-500">
+              Mostrando {((currentPage - 1) * itemsPerPage) + 1} a {Math.min(currentPage * itemsPerPage, filteredCases.length)} de {filteredCases.length} questionários
+            </p>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </Button>
+              <span className="text-sm text-slate-600">
+                Página {currentPage} de {totalPages || 1}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages || totalPages === 0}
+              >
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
