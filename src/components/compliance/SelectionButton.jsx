@@ -125,7 +125,7 @@ export default function SelectionButton({
                   {option.description && (
                     <p className={cn(
                       "text-xs mt-0.5 truncate transition-colors",
-                      isSelected ? "text-white/80" : "text-slate-500"
+                      isSelected ? "text-white/80" : "text-[var(--pagsmile-blue)]/60"
                     )}>
                       {option.description}
                     </p>
