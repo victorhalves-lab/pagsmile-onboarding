@@ -105,6 +105,8 @@ export default function Layout({ children, currentPageName }) {
         { label: 'Dashboard', path: 'AdminDashboard', icon: LayoutDashboard },
         { label: 'Questionários Recebidos', path: 'ComplianceSubmissions', icon: FileCheck, highlight: true },
         { label: 'Análise de Casos', path: 'OnboardingCaseDetails', icon: ClipboardList, hidden: true },
+        { label: 'Gestão de Documentos', path: 'AdminComplianceDocs', icon: FileText },
+        { label: 'Revalidação', path: 'AdminRevalidationManager', icon: History },
       ]
     },
     {
@@ -114,6 +116,7 @@ export default function Layout({ children, currentPageName }) {
       items: [
         { label: 'Gerar Link', path: 'GenerateOnboardingLink', icon: LinkIcon },
         { label: 'Templates', path: 'QuestionnaireTemplates', icon: FileText },
+        { label: 'Regras & Workflows', path: 'AdminComplianceRules', icon: Settings },
       ]
     },
     {
@@ -131,6 +134,7 @@ export default function Layout({ children, currentPageName }) {
       icon: Settings,
       items: [
         { label: 'Configurações', path: 'AdminSettings', icon: Settings },
+        { label: 'Auditoria', path: 'AdminComplianceAudit', icon: History },
       ]
     }
   ];
