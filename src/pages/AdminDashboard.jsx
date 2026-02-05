@@ -211,6 +211,48 @@ export default function AdminDashboard() {
       ? Math.round((onboardingCases.filter(c => c.iaDecision === 'Manual' || c.status === 'Manual').length / onboardingCases.length) * 100)
       : 0;
 
+    // Top causas de reprovação
+    const rejectionReasons = {};
+    helenaAnalyses.forEach(a => {
+      if (a.decision === 'REJECTED' || a.decision === 'MANUAL_REVIEW') {
+        (a.red_flags || []).forEach(flag => {
+          rejectionReasons[flag] = (rejectionReasons[flag] || 0) + 1;
+        });
+        (a.risk_factors || []).forEach(factor => {
+          rejectionReasons[factor] = (rejectionReasons[factor] || 0) + 1;
+        });
+      }
+    });
+    const topRejectionReasons = Object.entries(rejectionReasons)
+      .map(([reason, count]) => ({ reason, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
+    // Score Stats (SQ, SVE, SGC)
+    const scores = complianceScores.filter(s => s.score_geral_composto !== undefined);
+    const avgSQ = scores.length > 0 ? Math.round(scores.reduce((sum, s) => sum + (s.score_questionario || 0), 0) / scores.length) : 0;
+    const avgSVE = scores.length > 0 ? Math.round(scores.reduce((sum, s) => sum + (s.score_validacao_externa || 0), 0) / scores.length) : 0;
+    const avgSGC = scores.length > 0 ? Math.round(scores.reduce((sum, s) => sum + (s.score_geral_composto || 0), 0) / scores.length) : 0;
+
+    // Score Distribution
+    const distBuckets = { '0-199': 0, '200-399': 0, '400-649': 0, '650-849': 0, '850-1000': 0 };
+    scores.forEach(s => {
+      const val = s.score_geral_composto || 0;
+      if (val < 200) distBuckets['0-199']++;
+      else if (val < 400) distBuckets['200-399']++;
+      else if (val < 650) distBuckets['400-649']++;
+      else if (val < 850) distBuckets['650-849']++;
+      else distBuckets['850-1000']++;
+    });
+    
+    const distData = [
+      { range: '0-199', count: distBuckets['0-199'], fill: '#ef4444' },
+      { range: '200-399', count: distBuckets['200-399'], fill: '#f97316' },
+      { range: '400-649', count: distBuckets['400-649'], fill: '#eab308' },
+      { range: '650-849', count: distBuckets['650-849'], fill: '#84cc16' },
+      { range: '850-1000', count: distBuckets['850-1000'], fill: '#22c55e' }
+    ];
+
     return {
       total: onboardingCases.length,
       pendente: onboardingCases.filter(c => c.status === 'Pendente').length,
@@ -256,61 +298,6 @@ export default function AdminDashboard() {
       scoreDistribution: distData
     };
   }, [onboardingCases, helenaAnalyses, documentUploads, analytics, complianceScores]);
-      if (a.decision === 'REJECTED' || a.decision === 'MANUAL_REVIEW') {
-        (a.red_flags || []).forEach(flag => {
-          rejectionReasons[flag] = (rejectionReasons[flag] || 0) + 1;
-        });
-        (a.risk_factors || []).forEach(factor => {
-          rejectionReasons[factor] = (rejectionReasons[factor] || 0) + 1;
-        });
-      }
-    });
-    const topRejectionReasons = Object.entries(rejectionReasons)
-      .map(([reason, count]) => ({ reason, count }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 5);
-
-    return {
-      total: onboardingCases.length,
-      pendente: onboardingCases.filter(c => c.status === 'Pendente').length,
-      processando: onboardingCases.filter(c => c.status === 'Em Processamento').length,
-      manual: onboardingCases.filter(c => c.status === 'Manual').length,
-      aprovado: onboardingCases.filter(c => c.status === 'Aprovado').length,
-      recusado: onboardingCases.filter(c => c.status === 'Recusado').length,
-      docsSolicitados: onboardingCases.filter(c => c.status === 'Docs Solicitados').length,
-      
-      approvedByHelena: approvedByHelena.length,
-      rejectedByHelena: rejectedByHelena.length,
-      manualReviewByHelena: manualReviewByHelena.length,
-      totalHelenaAnalyses: completedAnalyses.length,
-      
-      avgTimeIA: `${avgTimeIA}s`,
-      avgTimeManual: `${avgTimeManual}h`,
-      avgScore,
-      pendingDocs,
-      accuracyRate,
-      manualRate,
-      
-      approvalRateTrend,
-      pendingManualOver24h,
-      criticalScoresToday,
-      
-      lowRisk,
-      mediumRisk,
-      highRisk,
-      criticalRisk,
-      
-      topRejectionReasons,
-      
-      // New Metrics
-      conversionRate: `${conversionRate}%`,
-      avgCompletionTimeLabel,
-      rejectionRate: `${rejectionRate}%`,
-      helenaAutoApprovalRate: helenaAnalyses.length > 0 
-        ? ((approvedByHelena.length / helenaAnalyses.length) * 100).toFixed(1) 
-        : 0
-    };
-  }, [onboardingCases, helenaAnalyses, documentUploads, analytics]);
 
   // Dados para gráfico de funil
   const funnelData = React.useMemo(() => [
