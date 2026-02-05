@@ -1,11 +1,28 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, ArrowRight, Clock, Mail, Shield } from 'lucide-react';
+import { useOnboardingAnalytics } from '../components/analytics/useOnboardingAnalytics';
 
 export default function OnboardingCompletion() {
   const navigate = useNavigate();
+  const linkCode = localStorage.getItem('onboarding_link_code');
+  const flowType = localStorage.getItem('payment_method_type') === 'pix' ? 'pix_only' : 'full_kyc';
+  
+  const { trackOnboardingComplete } = useOnboardingAnalytics({
+    pageName: 'OnboardingCompletion',
+    flowType,
+    linkCode
+  });
+
+  useEffect(() => {
+    // Rastreia conclusão do onboarding
+    trackOnboardingComplete();
+    
+    // Limpa dados de sessão
+    sessionStorage.removeItem('onboarding_session_id');
+  }, []);
 
   return (
     <div className="min-h-[calc(100vh-73px)] bg-gradient-to-br from-[#002443] to-[#001020] flex items-center justify-center p-6">
