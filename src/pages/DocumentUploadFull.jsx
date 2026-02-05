@@ -1,42 +1,99 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { 
-  ArrowLeft, ArrowRight, FileText, CheckCircle2, 
-  Upload, X, FileUp 
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { ArrowLeft, ArrowRight, FileUp, ShieldCheck, Lock } from 'lucide-react';
+import DocumentUploadCard from '@/components/compliance/DocumentUploadCard';
 
 const DOCUMENTS_FULL = [
-  { id: 'partners_id', name: 'RG/CNH Sócios', description: 'Identificação' },
-  { id: 'company_address_proof', name: 'Endereço Empresa', description: 'Comprovante' },
-  { id: 'representative_address_proof', name: 'Endereço Repres.', description: 'Comprovante' },
-  { id: 'cnpj_card', name: 'Cartão CNPJ', description: 'Receita Federal' },
-  { id: 'social_contract', name: 'Contrato Social', description: 'Constituição' },
-  { id: 'balance_sheet', name: 'Balanço Patrimonial', description: 'Último exercício' },
-  { id: 'dre', name: 'DRE', description: 'Resultado' },
-  { id: 'kyc_policy', name: 'Política KYC', description: 'Know Your Customer' },
-  { id: 'financial_statements', name: 'Dem. Financeiros', description: 'Últimos 3 anos' },
-  { id: 'balancete', name: 'Balancete', description: 'Recente' },
-  { id: 'partners_selfie', name: 'Selfie com Doc', description: 'Opcional' },
-  { id: 'pld_policy', name: 'Política PLD/FT', description: 'Prevenção' }
+  { 
+    id: 'contrato_social', 
+    name: 'Contrato Social / Estatuto', 
+    description: 'Última alteração consolidada ou estatuto com ata de eleição.', 
+    required: true 
+  },
+  { 
+    id: 'cartao_cnpj', 
+    name: 'Cartão CNPJ', 
+    description: 'Comprovante de inscrição emitido pela Receita Federal.', 
+    required: true 
+  },
+  { 
+    id: 'identificacao_socios', 
+    name: 'RG ou CNH dos Sócios', 
+    description: 'Documento legível de todos os sócios e administradores.', 
+    required: true 
+  },
+  { 
+    id: 'comprovante_endereco_empresa', 
+    name: 'Comprovante Endereço (Empresa)', 
+    description: 'Conta de consumo em nome da empresa (max 90 dias).', 
+    required: true 
+  },
+  { 
+    id: 'comprovante_endereco_socios', 
+    name: 'Comprovante Endereço (Sócios)', 
+    description: 'Comprovante de residência dos sócios principais.', 
+    required: true 
+  },
+  { 
+    id: 'balanco_patrimonial', 
+    name: 'Balanço Patrimonial', 
+    description: 'Balanço do último exercício fiscal encerrado, assinado.', 
+    required: true 
+  },
+  { 
+    id: 'dre', 
+    name: 'DRE (Dem. Resultado)', 
+    description: 'Demonstração do Resultado do Exercício correspondente.', 
+    required: true 
+  },
+  { 
+    id: 'faturamento', 
+    name: 'Declaração de Faturamento', 
+    description: 'Faturamento dos últimos 12 meses, assinado pelo contador.', 
+    required: true 
+  },
+  { 
+    id: 'politica_pld', 
+    name: 'Política de PLD/FT', 
+    description: 'Manual ou política interna de prevenção à lavagem de dinheiro.', 
+    required: false 
+  }
 ];
 
 export default function DocumentUploadFull() {
   const navigate = useNavigate();
   const [uploadedDocs, setUploadedDocs] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleFileSelect = (docId) => {
-    // Simulação de upload
+  // Load saved state
+  useEffect(() => {
+    const savedDocs = localStorage.getItem('docs_full_upload_state');
+    if (savedDocs) {
+      setUploadedDocs(JSON.parse(savedDocs));
+    }
+  }, []);
+
+  // Save state on change
+  useEffect(() => {
+    localStorage.setItem('docs_full_upload_state', JSON.stringify(uploadedDocs));
+  }, [uploadedDocs]);
+
+  const handleUpload = (docId, file) => {
     setUploadedDocs(prev => ({
       ...prev,
-      [docId]: { name: `documento_${docId}.pdf`, uploaded: true }
+      [docId]: { 
+        name: file.name, 
+        size: file.size,
+        type: file.type,
+        uploadedAt: new Date().toISOString()
+      }
     }));
   };
 
-  const handleRemoveFile = (docId) => {
+  const handleRemove = (docId) => {
     setUploadedDocs(prev => {
       const newDocs = { ...prev };
       delete newDocs[docId];
@@ -44,126 +101,102 @@ export default function DocumentUploadFull() {
     });
   };
 
+  const requiredDocs = DOCUMENTS_FULL.filter(d => d.required);
   const uploadedCount = Object.keys(uploadedDocs).length;
-  const totalDocs = DOCUMENTS_FULL.length;
-  const progress = Math.round((uploadedCount / totalDocs) * 100);
+  const progress = Math.round((uploadedCount / DOCUMENTS_FULL.length) * 100);
+  
+  const canContinue = requiredDocs.every(doc => uploadedDocs[doc.id]);
 
   const handleContinue = () => {
-    navigate(createPageUrl('LivenessFacematchStep'));
+    if (!canContinue) return;
+    setIsSubmitting(true);
+    
+    setTimeout(() => {
+      navigate(createPageUrl('LivenessFacematchStep'));
+    }, 800);
   };
 
   return (
-    <div className="min-h-[calc(100vh-73px)] bg-slate-50">
-      {/* Header */}
-      <div className="sticky top-[57px] z-40 bg-white border-b border-slate-200 px-4 py-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between mb-4">
+    <div className="min-h-screen bg-slate-50 pb-20">
+      {/* Header Fixo */}
+      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-200">
+        <div className="max-w-6xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between mb-2">
             <div>
-              <h1 className="text-xl font-bold text-slate-800">Envio de Documentos (Completo)</h1>
-              <p className="text-sm text-slate-500">
-                {uploadedCount} de {totalDocs} documentos enviados
-              </p>
+              <h1 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                <FileUp className="w-5 h-5 text-[var(--pagsmile-green)]" />
+                Envio de Documentos (Full KYC)
+              </h1>
             </div>
             <div className="text-right">
-              <span className="text-2xl font-bold text-[var(--pagsmile-green)]">{progress}%</span>
+              <span className="text-sm font-semibold text-[var(--pagsmile-green)]">{progress}% Concluído</span>
             </div>
           </div>
-          <Progress value={progress} className="h-2" />
+          <Progress value={progress} className="h-1.5" />
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 py-6">
-        {/* Grid de documentos */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-          {DOCUMENTS_FULL.map((doc) => {
-            const isUploaded = uploadedDocs[doc.id];
-            
-            return (
-              <div
-                key={doc.id}
-                className={cn(
-                  "p-4 rounded-xl border-2 transition-all",
-                  isUploaded 
-                    ? "border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5" 
-                    : "border-slate-200 bg-white hover:border-slate-300"
-                )}
-              >
-                <div className="flex items-start gap-3">
-                  <div className={cn(
-                    "p-2 rounded-lg flex-shrink-0",
-                    isUploaded 
-                      ? "bg-[var(--pagsmile-green)] text-white" 
-                      : "bg-slate-100 text-slate-500"
-                  )}>
-                    {isUploaded ? <CheckCircle2 className="w-5 h-5" /> : <FileText className="w-5 h-5" />}
-                  </div>
-                  
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-slate-800 text-sm">{doc.name}</h3>
-                    <p className="text-xs text-slate-500">{doc.description}</p>
-                    
-                    {isUploaded ? (
-                      <div className="flex items-center gap-1 mt-2">
-                        <span className="text-xs text-slate-500 truncate flex-1">
-                          {uploadedDocs[doc.id].name}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleRemoveFile(doc.id)}
-                          className="text-red-500 hover:text-red-700 hover:bg-red-50 h-6 w-6 p-0"
-                        >
-                          <X className="w-3 h-3" />
-                        </Button>
-                      </div>
-                    ) : (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleFileSelect(doc.id)}
-                        className="mt-2 h-8 text-xs"
-                      >
-                        <Upload className="w-3 h-3 mr-1" />
-                        Enviar
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+      <div className="max-w-5xl mx-auto px-4 py-8">
+        
+        <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-8 flex gap-3 animate-in fade-in slide-in-from-top-4">
+          <ShieldCheck className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" />
+          <div>
+            <h3 className="font-semibold text-blue-900 text-sm">Documentação Obrigatória</h3>
+            <p className="text-sm text-blue-700 leading-relaxed">
+              Para a análise completa do seu perfil, precisamos dos documentos abaixo. Certifique-se de que estão legíveis e assinados quando necessário.
+            </p>
+          </div>
         </div>
 
-        {/* Área de instrução */}
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+          {DOCUMENTS_FULL.map((doc) => (
+            <DocumentUploadCard
+              key={doc.id}
+              doc={doc}
+              isUploaded={!!uploadedDocs[doc.id]}
+              fileName={uploadedDocs[doc.id]?.name}
+              onUpload={handleUpload}
+              onRemove={handleRemove}
+            />
+          ))}
+        </div>
+
+        <div className="bg-white border border-slate-200 rounded-xl p-4 mb-8">
           <div className="flex items-start gap-3">
-            <FileUp className="w-5 h-5 text-blue-600 mt-0.5" />
+            <div className="p-2 bg-slate-100 rounded-lg">
+              <Lock className="w-4 h-4 text-slate-600" />
+            </div>
             <div>
-              <h4 className="font-medium text-blue-800">Formatos aceitos</h4>
-              <p className="text-sm text-blue-700">
-                PDF, JPG, JPEG, PNG. Tamanho máximo: 10MB por arquivo.
-              </p>
+              <h4 className="font-medium text-slate-800 text-sm">Requisitos e Segurança</h4>
+              <ul className="text-sm text-slate-500 mt-1 space-y-1 list-disc pl-4">
+                <li>Formatos aceitos: <strong>PDF, JPG, PNG</strong></li>
+                <li>Tamanho máximo: <strong>10MB</strong> por arquivo</li>
+                <li>Balanços e DRE devem estar assinados pelo contador responsável</li>
+              </ul>
             </div>
           </div>
         </div>
 
-        {/* Navegação */}
-        <div className="flex justify-between gap-4">
-          <Button
-            variant="outline"
-            onClick={() => navigate(createPageUrl('ComplianceFullKYC'))}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Voltar ao Questionário
-          </Button>
-          
-          <Button
-            onClick={handleContinue}
-            className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white"
-          >
-            Continuar
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-slate-200 md:static md:bg-transparent md:border-0 md:p-0">
+          <div className="max-w-5xl mx-auto flex gap-4">
+            <Button
+              variant="outline"
+              onClick={() => navigate(createPageUrl('ComplianceFullKYC'))}
+              className="flex-1 md:flex-none h-12"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Voltar
+            </Button>
+            
+            <Button
+              onClick={handleContinue}
+              disabled={!canContinue || isSubmitting}
+              className="flex-1 h-12 bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white shadow-lg shadow-green-500/20"
+            >
+              {isSubmitting ? 'Processando...' : 'Continuar para Biometria'}
+              {!isSubmitting && <ArrowRight className="w-4 h-4 ml-2" />}
+            </Button>
+          </div>
         </div>
       </div>
     </div>
