@@ -8,7 +8,8 @@ export default function SelectionButton({
   onChange, 
   className,
   columns = 2,
-  isMulti = false 
+  isMulti = false,
+  helperText = "Clique para selecionar"
 }) {
   const gridCols = {
     1: 'grid-cols-1',
@@ -30,97 +31,110 @@ export default function SelectionButton({
   };
 
   return (
-    <div className={cn(`grid gap-3 ${gridCols[columns] || 'grid-cols-1 md:grid-cols-2'}`, className)}>
-      {options.map((option) => {
-        const isSelected = isMulti 
-          ? (Array.isArray(value) && value.includes(option.value)) 
-          : (value === option.value);
-        
-        const isCardLayout = !!option.icon;
+    <div className={cn("flex flex-col gap-2", className)}>
+      {helperText && (
+        <span className="text-xs font-medium text-slate-400 uppercase tracking-wider ml-1 mb-1">
+          {helperText}
+        </span>
+      )}
+      <div className={cn(`grid gap-3 ${gridCols[columns] || 'grid-cols-1 md:grid-cols-2'}`)}>
+        {options.map((option) => {
+          const isSelected = isMulti 
+            ? (Array.isArray(value) && value.includes(option.value)) 
+            : (value === option.value);
+          
+          const isCardLayout = !!option.icon;
 
-        if (isCardLayout) {
+          if (isCardLayout) {
+            return (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => handleClick(option.value)}
+                className={cn(
+                  "group relative p-6 rounded-2xl text-left transition-all duration-300 ease-out",
+                  "border-2 flex flex-col h-full",
+                  isSelected 
+                    ? "border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)] shadow-[0_8px_30px_rgba(43,193,150,0.3)] transform -translate-y-1" 
+                    : "border-slate-200 bg-white hover:border-[var(--pagsmile-green-light)] hover:shadow-lg hover:-translate-y-1"
+                )}
+              >
+                <div className="flex justify-between items-start w-full mb-4">
+                  <div className={cn(
+                    "p-3 rounded-xl transition-colors duration-300",
+                    isSelected 
+                      ? "bg-white/20 text-white" 
+                      : "bg-slate-50 text-slate-400 group-hover:text-[var(--pagsmile-green)] group-hover:bg-[var(--pagsmile-green)]/10"
+                  )}>
+                    {option.icon}
+                  </div>
+                  
+                  {isSelected && (
+                    <div className="transition-colors duration-300 text-white">
+                      <CheckCircle2 className="w-6 h-6" />
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-auto">
+                  <h3 className={cn(
+                    "font-bold text-lg mb-2 transition-colors",
+                    isSelected ? "text-white" : "text-[var(--pagsmile-blue)]"
+                  )}>
+                    {option.label}
+                  </h3>
+                  {option.description && (
+                    <p className={cn(
+                      "text-sm leading-relaxed transition-colors",
+                      isSelected ? "text-white/90" : "text-slate-500"
+                    )}>
+                      {option.description}
+                    </p>
+                  )}
+                </div>
+              </button>
+            );
+          }
+
           return (
             <button
               key={option.value}
               type="button"
               onClick={() => handleClick(option.value)}
               className={cn(
-                "group relative p-6 rounded-2xl text-left transition-all duration-300 ease-out",
-                "border-2 flex flex-col h-full",
+                "group relative px-4 py-3 rounded-xl text-left transition-all duration-200",
+                "border flex items-center gap-3",
                 isSelected 
-                  ? "border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5 shadow-[0_8px_30px_rgba(43,193,150,0.15)] transform -translate-y-1" 
-                  : "border-slate-200 bg-white hover:border-[var(--pagsmile-green-light)] hover:shadow-lg hover:-translate-y-1"
+                  ? "border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)] shadow-md transform scale-[1.01]" 
+                  : "border-slate-200 bg-white hover:border-[var(--pagsmile-green)]/50 hover:bg-slate-50"
               )}
             >
-              <div className="flex justify-between items-start w-full mb-4">
-                <div className={cn(
-                  "p-3 rounded-xl transition-colors duration-300",
-                  isSelected 
-                    ? "bg-[var(--pagsmile-green)] text-white" 
-                    : "bg-slate-50 text-slate-400 group-hover:text-[var(--pagsmile-green)] group-hover:bg-[var(--pagsmile-green)]/10"
-                )}>
-                  {option.icon}
-                </div>
-                
-                {isSelected && (
-                  <div className="transition-colors duration-300 text-[var(--pagsmile-green)]">
-                    <CheckCircle2 className="w-6 h-6" />
-                  </div>
-                )}
-              </div>
+               {isSelected && (
+                 <div className="transition-colors duration-200 shrink-0 text-white">
+                   <CheckCircle2 className="w-5 h-5" />
+                 </div>
+               )}
 
-              <div className="mt-auto">
-                <h3 className={cn(
-                  "font-bold text-lg mb-2 transition-colors",
-                  isSelected ? "text-[var(--pagsmile-blue)]" : "text-slate-700"
-                )}>
-                  {option.label}
-                </h3>
-                {option.description && (
-                  <p className="text-sm text-slate-500 leading-relaxed">
-                    {option.description}
-                  </p>
-                )}
-              </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className={cn(
+                    "font-medium text-sm transition-colors",
+                    isSelected ? "text-white" : "text-slate-700"
+                  )}>
+                    {option.label}
+                  </h3>
+                  {option.description && (
+                    <p className={cn(
+                      "text-xs mt-0.5 truncate transition-colors",
+                      isSelected ? "text-white/80" : "text-slate-500"
+                    )}>
+                      {option.description}
+                    </p>
+                  )}
+                </div>
             </button>
           );
-        }
-
-        return (
-          <button
-            key={option.value}
-            type="button"
-            onClick={() => handleClick(option.value)}
-            className={cn(
-              "group relative px-4 py-3 rounded-xl text-left transition-all duration-200",
-              "border flex items-center gap-3",
-              isSelected 
-                ? "border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/10 ring-1 ring-[var(--pagsmile-green)] shadow-sm" 
-                : "border-slate-200 bg-white hover:border-[var(--pagsmile-green)]/50 hover:bg-slate-50"
-            )}
-          >
-             {isSelected && (
-               <div className="transition-colors duration-200 shrink-0 text-[var(--pagsmile-green)]">
-                 <CheckCircle2 className="w-5 h-5" />
-               </div>
-             )}
-
-              <div className="flex-1 min-w-0">
-                <h3 className={cn(
-                  "font-medium text-sm transition-colors",
-                  isSelected ? "text-[var(--pagsmile-blue)]" : "text-slate-700"
-                )}>
-                  {option.label}
-                </h3>
-                {option.description && (
-                  <p className="text-xs text-slate-500 mt-0.5 truncate">
-                    {option.description}
-                  </p>
-                )}
-              </div>
-          </button>
-        );
-      })}
+        })}
+      </div>
     </div>
   );
 }

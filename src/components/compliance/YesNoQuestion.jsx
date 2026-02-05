@@ -14,7 +14,8 @@ export default function YesNoQuestion({
   detailPlaceholder = "Digite aqui mais informações...",
   required = false,
   showDetailOn = true,
-  className 
+  className,
+  helperText = "Selecione uma opção"
 }) {
   return (
     <div className={cn(
@@ -29,34 +30,41 @@ export default function YesNoQuestion({
           </p>
         </div>
         
-        <div className="flex gap-3 flex-shrink-0 w-full md:w-auto">
-          <button
-            type="button"
-            onClick={() => onChange(true)}
-            className={cn(
-              "flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 border shadow-sm",
-              value === true 
-                ? "border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)] text-white shadow-md transform -translate-y-0.5" 
-                : "border-slate-200 bg-white text-slate-600 hover:border-[var(--pagsmile-green)] hover:text-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/5"
-            )}
-          >
-            <Check className="w-4 h-4" />
-            Sim
-          </button>
-          
-          <button
-            type="button"
-            onClick={() => onChange(false)}
-            className={cn(
-              "flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 border shadow-sm",
-              value === false 
-                ? "border-red-500 bg-red-500 text-white shadow-md transform -translate-y-0.5" 
-                : "border-slate-200 bg-white text-slate-600 hover:border-red-300 hover:text-red-600 hover:bg-red-50"
-            )}
-          >
-            <X className="w-4 h-4" />
-            Não
-          </button>
+        <div className="flex flex-col items-end gap-1 flex-shrink-0 w-full md:w-auto">
+          {helperText && (
+            <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wider mr-1">
+              {helperText}
+            </span>
+          )}
+          <div className="flex gap-3 w-full md:w-auto">
+            <button
+              type="button"
+              onClick={() => onChange(true)}
+              className={cn(
+                "flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 border shadow-sm",
+                value === true 
+                  ? "border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)] text-white shadow-md transform -translate-y-0.5" 
+                  : "border-slate-200 bg-white text-slate-600 hover:border-[var(--pagsmile-green)] hover:text-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/5"
+              )}
+            >
+              <Check className="w-4 h-4" />
+              Sim
+            </button>
+            
+            <button
+              type="button"
+              onClick={() => onChange(false)}
+              className={cn(
+                "flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 border shadow-sm",
+                value === false 
+                  ? "border-red-500 bg-red-500 text-white shadow-md transform -translate-y-0.5" 
+                  : "border-slate-200 bg-white text-slate-600 hover:border-red-300 hover:text-red-600 hover:bg-red-50"
+              )}
+            >
+              <X className="w-4 h-4" />
+              Não
+            </button>
+          </div>
         </div>
       </div>
       
