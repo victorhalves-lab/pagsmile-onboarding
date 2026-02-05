@@ -1,257 +1,153 @@
-import React from 'react';
-import { UserCircle, Phone, Mail, MessageSquare, Star, ShieldCheck, Calculator, Headphones } from 'lucide-react';
+import React, { useState } from 'react';
+import { UserCircle, Plus, Trash2, MessageSquare, Star } from 'lucide-react';
 import FormSection from '../FormSection';
 import FormField from '../FormField';
 import SelectionButton from '../SelectionButton';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-export default function Step7Responsaveis({ formData, handleChange }) {
+export default function Step7Responsaveis({ formData, handleChange, handleArrayChange, handleAddArrayItem, handleRemoveArrayItem }) {
   
-  const handleCanalChange = (canalId, checked) => {
-    const currentCanais = formData.canaisAtendimento || [];
-    if (checked) {
-      handleChange('canaisAtendimento', [...currentCanais, canalId]);
-    } else {
-      handleChange('canaisAtendimento', currentCanais.filter(c => c !== canalId));
+  // Ensure arrays exist
+  const canaisAtendimento = formData.canaisAtendimentoLista || [];
+
+  const addCanal = () => {
+    if (handleAddArrayItem) handleAddArrayItem('canaisAtendimentoLista', { tipo: '', contato: '' });
+    else {
+        const newC = [...canaisAtendimento, { tipo: '', contato: '' }];
+        handleChange('canaisAtendimentoLista', newC);
+    }
+  };
+  
+  const removeCanal = (idx) => {
+    if (handleRemoveArrayItem) handleRemoveArrayItem('canaisAtendimentoLista', idx);
+    else {
+        const newC = canaisAtendimento.filter((_, i) => i !== idx);
+        handleChange('canaisAtendimentoLista', newC);
     }
   };
 
-  const canaisOptions = [
-    { id: 'email', label: 'E-mail' },
-    { id: 'telefone', label: 'Telefone' },
-    { id: 'chat', label: 'Chat Online' },
-    { id: 'whatsapp', label: 'WhatsApp' },
-    { id: 'ouvidoria', label: 'Ouvidoria' },
-    { id: 'redes_sociais', label: 'Redes Sociais' }
-  ];
+  const updateCanal = (idx, field, val) => {
+    if (handleArrayChange) handleArrayChange('canaisAtendimentoLista', idx, field, val);
+    else {
+        const newC = [...canaisAtendimento];
+        newC[idx] = { ...newC[idx], [field]: val };
+        handleChange('canaisAtendimentoLista', newC);
+    }
+  };
 
   return (
     <div className="space-y-8">
       <FormSection
-        title="Responsáveis e Contatos"
-        subtitle="Dados dos responsáveis operacionais e técnicos da empresa."
+        title="Responsáveis e Canais de Atendimento"
+        subtitle="Informe os responsáveis por cada área da empresa e os canais de atendimento."
         icon={UserCircle}
       >
-        {/* Representante Legal (Já existente, mantido como principal) */}
+        {/* 1. Responsável Contábil */}
         <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
-          <div className="flex items-center gap-2 mb-4">
-            <UserCircle className="w-5 h-5 text-[var(--pagsmile-blue)]" />
-            <h3 className="font-bold text-slate-800">Representante Legal (Principal)</h3>
-          </div>
-          
-          <FormField
-            label="Nome Completo"
-            required
-            value={formData.responsavelNome}
-            onChange={(value) => handleChange('responsavelNome', value)}
-            placeholder="Nome completo do representante"
-          />
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField
-              label="CPF"
-              required
-              value={formData.responsavelCPF}
-              onChange={(value) => handleChange('responsavelCPF', value)}
-              placeholder="000.000.000-00"
-            />
-            <FormField
-              label="Telefone Celular"
-              required
-              value={formData.responsavelTelefone}
-              onChange={(value) => handleChange('responsavelTelefone', value)}
-              placeholder="(00) 00000-0000"
-            />
-          </div>
-          <FormField
-            label="E-mail"
-            required
-            type="email"
-            value={formData.responsavelEmail}
-            onChange={(value) => handleChange('responsavelEmail', value)}
-            placeholder="email@empresa.com"
-          />
+           <h3 className="font-bold text-slate-800 mb-4">1. Responsável pela Contabilidade e Faturamento</h3>
+           <FormField label="Nome Completo" required value={formData.contabilNome} onChange={(v) => handleChange('contabilNome', v)} placeholder="Nome" />
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField label="Email" required type="email" value={formData.contabilEmail} onChange={(v) => handleChange('contabilEmail', v)} placeholder="email@..." />
+              <FormField label="Telefone" required value={formData.contabilTelefone} onChange={(v) => handleChange('contabilTelefone', v)} placeholder="(00) 00000-0000" />
+           </div>
+           <FormField label="CRC (Registro Conselho Contabilidade)" value={formData.contabilCRC} onChange={(v) => handleChange('contabilCRC', v)} placeholder="Opcional" />
         </div>
 
-        {/* Contábil / Financeiro */}
+        {/* 2. Responsável SAC */}
         <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
-          <div className="flex items-center gap-2 mb-4">
-            <Calculator className="w-5 h-5 text-[var(--pagsmile-blue)]" />
-            <h3 className="font-bold text-slate-800">Responsável Contábil / Financeiro</h3>
-          </div>
-          
-          <FormField
-            label="Nome Completo"
-            required
-            value={formData.financeiroNome}
-            onChange={(value) => handleChange('financeiroNome', value)}
-            placeholder="Nome do responsável"
-          />
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField
-              label="E-mail"
-              required
-              type="email"
-              value={formData.financeiroEmail}
-              onChange={(value) => handleChange('financeiroEmail', value)}
-              placeholder="financeiro@empresa.com"
-            />
-            <FormField
-              label="Telefone"
-              required
-              value={formData.financeiroTelefone}
-              onChange={(value) => handleChange('financeiroTelefone', value)}
-              placeholder="(00) 00000-0000"
-            />
-          </div>
-          
-          <FormField
-            label="CRC (Conselho Regional de Contabilidade)"
-            value={formData.financeiroCRC}
-            onChange={(value) => handleChange('financeiroCRC', value)}
-            placeholder="Opcional se interno, obrigatório se terceirizado"
-          />
+           <h3 className="font-bold text-slate-800 mb-4">2. Responsável pelo Atendimento ao Cliente (SAC)</h3>
+           <FormField label="Nome Completo" required value={formData.sacNome} onChange={(v) => handleChange('sacNome', v)} placeholder="Nome" />
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField label="Email" required type="email" value={formData.sacEmail} onChange={(v) => handleChange('sacEmail', v)} placeholder="email@..." />
+              <FormField label="Telefone Celular" required value={formData.sacCelular} onChange={(v) => handleChange('sacCelular', v)} placeholder="(00) 00000-0000" />
+           </div>
         </div>
 
-        {/* Compliance */}
+        {/* 3. Responsável Compliance */}
         <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
-          <div className="flex items-center gap-2 mb-4">
-            <ShieldCheck className="w-5 h-5 text-[var(--pagsmile-blue)]" />
-            <h3 className="font-bold text-slate-800">Responsável pelo Compliance / PLD</h3>
-          </div>
-          
-          <FormField
-            label="Nome Completo"
-            required
-            value={formData.complianceNome}
-            onChange={(value) => handleChange('complianceNome', value)}
-            placeholder="Nome do responsável pelo Compliance"
-          />
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <FormField
-              label="CPF"
-              required
-              value={formData.complianceCPF}
-              onChange={(value) => handleChange('complianceCPF', value)}
-              placeholder="000.000.000-00"
-            />
-            <FormField
-              label="E-mail"
-              required
-              type="email"
-              value={formData.complianceEmail}
-              onChange={(value) => handleChange('complianceEmail', value)}
-              placeholder="compliance@empresa.com"
-            />
-            <FormField
-              label="Telefone"
-              required
-              value={formData.complianceTelefone}
-              onChange={(value) => handleChange('complianceTelefone', value)}
-              placeholder="(00) 00000-0000"
-            />
-          </div>
-        </div>
-
-        {/* SAC */}
-        <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
-          <div className="flex items-center gap-2 mb-4">
-            <Headphones className="w-5 h-5 text-[var(--pagsmile-blue)]" />
-            <h3 className="font-bold text-slate-800">Responsável pelo SAC (Atendimento)</h3>
-          </div>
-          
-          <FormField
-            label="Nome Completo"
-            required
-            value={formData.sacNome}
-            onChange={(value) => handleChange('sacNome', value)}
-            placeholder="Nome do responsável pelo SAC"
-          />
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField
-              label="E-mail"
-              required
-              type="email"
-              value={formData.sacEmail}
-              onChange={(value) => handleChange('sacEmail', value)}
-              placeholder="sac@empresa.com"
-            />
-            <FormField
-              label="Telefone"
-              required
-              value={formData.sacTelefone}
-              onChange={(value) => handleChange('sacTelefone', value)}
-              placeholder="(00) 00000-0000"
-            />
-          </div>
-        </div>
-      </FormSection>
-
-      {/* Canais de Atendimento e Reputação */}
-      <FormSection
-        title="Canais de Atendimento e Reputação"
-        subtitle="Como seus clientes entram em contato e sua reputação online."
-        icon={MessageSquare}
-      >
-        <div className="space-y-3">
-          <Label className="text-sm font-medium text-slate-700">Quais canais de atendimento sua empresa oferece? <span className="text-red-500">*</span></Label>
-          <SelectionButton
-            options={canaisOptions.map(c => ({ value: c.id, label: c.label }))}
-            value={formData.canaisAtendimento || []}
-            onChange={(val) => handleChange('canaisAtendimento', val)}
-            isMulti={true}
-            columns={3}
-          />
+           <h3 className="font-bold text-slate-800 mb-4">3. Responsável pela Área de Compliance</h3>
+           <p className="text-xs text-slate-500 mb-4">Todos os campos são obrigatórios, mesmo que a empresa não tenha área de compliance formalizada.</p>
+           <FormField label="Nome Completo" required value={formData.complianceNome} onChange={(v) => handleChange('complianceNome', v)} placeholder="Nome" />
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <FormField label="CPF" required value={formData.complianceCPF} onChange={(v) => handleChange('complianceCPF', v)} placeholder="000.000.000-00" />
+              <FormField label="Email" required type="email" value={formData.complianceEmail} onChange={(v) => handleChange('complianceEmail', v)} placeholder="email@..." />
+              <FormField label="Telefone Celular" required value={formData.complianceCelular} onChange={(v) => handleChange('complianceCelular', v)} placeholder="(00) 00000-0000" />
+           </div>
         </div>
 
         <Separator className="my-6" />
 
+        {/* 4. Canais de Atendimento */}
         <div className="space-y-4">
-          <div className="flex items-center gap-2 mb-2">
-            <Star className="w-5 h-5 text-yellow-500" />
-            <h3 className="font-bold text-slate-800">Reputação Online</h3>
-          </div>
-          
-          <div className="space-y-2">
-             <Label className="text-sm font-medium text-slate-700">Possui página no Reclame Aqui? <span className="text-red-500">*</span></Label>
-             <SelectionButton
-                options={[
-                  { value: true, label: 'Sim' },
-                  { value: false, label: 'Não' }
-                ]}
-                value={formData.possuiReclameAqui}
-                onChange={(value) => handleChange('possuiReclameAqui', value)}
-                columns={2}
-              />
-          </div>
-
-          {formData.possuiReclameAqui === true && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 animate-in slide-in-from-top-2">
-              <div className="md:col-span-2">
-                <FormField
-                  label="Link da Página no Reclame Aqui"
-                  value={formData.linkReclameAqui}
-                  onChange={(value) => handleChange('linkReclameAqui', value)}
-                  placeholder="https://www.reclameaqui.com.br/empresa/..."
-                />
+           <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                 <MessageSquare className="w-5 h-5 text-[var(--pagsmile-blue)]" />
+                 <h3 className="font-bold text-slate-800">4. Canais de Atendimento</h3>
               </div>
-              <div className="md:col-span-1">
-                <FormField
-                  label="Nota Atual (0-10)"
-                  type="number"
-                  value={formData.notaReclameAqui}
-                  onChange={(value) => handleChange('notaReclameAqui', value)}
-                  placeholder="Ex: 8.5"
-                />
+              <Button type="button" variant="outline" size="sm" onClick={addCanal} className="text-[var(--pagsmile-green)] border-[var(--pagsmile-green)]">
+                <Plus className="w-4 h-4 mr-1" /> Adicionar
+              </Button>
+           </div>
+           
+           {canaisAtendimento.map((canal, idx) => (
+              <div key={idx} className="flex gap-2 items-center">
+                 <Select value={canal.tipo} onValueChange={(v) => updateCanal(idx, 'tipo', v)}>
+                    <SelectTrigger className="w-[150px]"><SelectValue placeholder="Tipo" /></SelectTrigger>
+                    <SelectContent>
+                       <SelectItem value="email">Email</SelectItem>
+                       <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                       <SelectItem value="telefone">Telefone</SelectItem>
+                       <SelectItem value="chat">Chat</SelectItem>
+                    </SelectContent>
+                 </Select>
+                 <Input 
+                    placeholder="Contato (email, número, link...)" 
+                    value={canal.contato}
+                    onChange={(e) => updateCanal(idx, 'contato', e.target.value)}
+                    className="flex-1"
+                 />
+                 <Button type="button" variant="ghost" size="icon" onClick={() => removeCanal(idx)} className="text-red-500">
+                    <Trash2 className="w-4 h-4" />
+                 </Button>
               </div>
-            </div>
-          )}
+           ))}
+           {canaisAtendimento.length === 0 && <p className="text-xs text-red-500">Adicione pelo menos um canal de atendimento válido.</p>}
         </div>
+
+        <Separator className="my-6" />
+
+        {/* 5. Reputação Online */}
+        <div className="space-y-4">
+           <div className="flex items-center gap-2">
+              <Star className="w-5 h-5 text-yellow-500" />
+              <h3 className="font-bold text-slate-800">5. Reputação Online</h3>
+           </div>
+           
+           <div className="space-y-2">
+              <Label className="text-sm font-medium text-slate-700">A empresa possui canal no Reclame Aqui? <span className="text-red-500">*</span></Label>
+              <SelectionButton
+                 options={[{ value: true, label: 'Sim' }, { value: false, label: 'Não' }]}
+                 value={formData.possuiReclameAqui}
+                 onChange={(v) => handleChange('possuiReclameAqui', v)}
+                 columns={2}
+              />
+           </div>
+
+           {formData.possuiReclameAqui === true && (
+              <FormField 
+                 label="Link do canal no Reclame Aqui" 
+                 required 
+                 value={formData.linkReclameAqui} 
+                 onChange={(v) => handleChange('linkReclameAqui', v)} 
+                 placeholder="https://www.reclameaqui.com.br/empresa/..." 
+              />
+           )}
+        </div>
+
       </FormSection>
     </div>
   );

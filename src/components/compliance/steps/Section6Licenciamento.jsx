@@ -8,18 +8,18 @@ import { Label } from '@/components/ui/label';
 export default function Section6Licenciamento({ formData, handleChange }) {
   return (
     <FormSection
-      title="Licenciamento"
-      subtitle="Licenças e regulamentações pertinentes à sua atividade."
+      title="Licenciamento e Regulação"
+      subtitle="Informe sobre licenças e regulamentações aplicáveis."
       icon={Scale}
     >
       <div className="space-y-2">
         <Label className="text-sm font-medium text-slate-700">
-          Necessita de licença para operar? <span className="text-red-500">*</span>
+          A empresa necessita de licença para operar no Brasil em razão do seu ramo de atividade? <span className="text-red-500">*</span>
         </Label>
         <SelectionButton
           options={[
-            { value: true, label: 'Sim', description: 'Atividade regulamentada' },
-            { value: false, label: 'Não', description: 'Não requer licença' }
+            { value: true, label: 'Sim' },
+            { value: false, label: 'Não' }
           ]}
           value={formData.necessitaLicenca}
           onChange={(value) => handleChange('necessitaLicenca', value)}
@@ -30,19 +30,19 @@ export default function Section6Licenciamento({ formData, handleChange }) {
       {formData.necessitaLicenca === true && (
         <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-4">
           <FormField
-            label="Órgão Regulador"
+            label="Nome do Órgão Regulador/Supervisor"
             required
             value={formData.orgaoRegulador}
             onChange={(value) => handleChange('orgaoRegulador', value)}
-            placeholder="Ex: CVM, BACEN"
+            placeholder="Ex: ANVISA, CVM, BACEN, etc."
           />
 
           <FormField
-            label="Número de Registro"
+            label="Número de Registro/Licença"
             required
             value={formData.numeroRegistro}
             onChange={(value) => handleChange('numeroRegistro', value)}
-            placeholder="Número"
+            placeholder="Número do registro ou licença"
           />
 
           <FormField

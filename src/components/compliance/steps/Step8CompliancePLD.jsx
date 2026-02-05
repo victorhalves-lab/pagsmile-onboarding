@@ -1,187 +1,121 @@
 import React from 'react';
-import { ShieldAlert, AlertTriangle, FileText, Activity, Lock } from 'lucide-react';
+import { ShieldAlert } from 'lucide-react';
 import FormSection from '../FormSection';
 import YesNoQuestion from '../YesNoQuestion';
-import SelectionButton from '../SelectionButton';
-import { Label } from '@/components/ui/label';
 
 export default function Step8CompliancePLD({ formData, handleChange }) {
   return (
-    <div className="space-y-8">
-      {/* Seção 7: Compliance e Integridade */}
-      <FormSection
-        title="Compliance e Integridade"
-        subtitle="Questões regulatórias e de integridade corporativa."
-        icon={ShieldAlert}
-      >
-        <YesNoQuestion
-          question="A empresa, sócios ou diretores possuem vínculos com países ou regiões sancionadas (OFAC, ONU, UE)?"
-          value={formData.compliance_sancoes_paises}
-          onChange={(value) => handleChange('compliance_sancoes_paises', value)}
-          detailValue={formData.compliance_sancoes_paises_detalhe}
-          onDetailChange={(value) => handleChange('compliance_sancoes_paises_detalhe', value)}
-          detailLabel="Quais países e qual a natureza do vínculo?"
-          detailPlaceholder="Descreva os países e o tipo de relacionamento..."
-          showDetailOn={true}
-          required
-        />
+    <FormSection
+      title="Compliance"
+      subtitle="Perguntas de risco e conformidade regulatória."
+      icon={ShieldAlert}
+    >
+      <YesNoQuestion
+        question="1. Algum sócio, acionista (direto ou indireto), administrador, diretor ou beneficiário final da empresa está incluído em listas de sanções nacionais ou internacionais?"
+        value={formData.comp_q1}
+        onChange={(v) => handleChange('comp_q1', v)}
+        detailValue={formData.comp_q1_detalhe}
+        onDetailChange={(v) => handleChange('comp_q1_detalhe', v)}
+        detailLabel="Especifique"
+        required
+      />
 
-        <YesNoQuestion
-          question="A empresa é de propriedade ou controlada por indivíduos/entidades listadas em listas de sanções?"
-          value={formData.compliance_sancoes_lista}
-          onChange={(value) => handleChange('compliance_sancoes_lista', value)}
-          detailValue={formData.compliance_sancoes_lista_detalhe}
-          onDetailChange={(value) => handleChange('compliance_sancoes_lista_detalhe', value)}
-          detailLabel="Detalhes da listagem"
-          detailPlaceholder="Informe os nomes e as listas específicas..."
-          showDetailOn={true}
-          required
-        />
+      <YesNoQuestion
+        question="2. A empresa, ou qualquer um de seus diretores, acionistas (diretos ou indiretos) ou beneficiários finais, mantém vínculos com países, regiões ou territórios sujeitos a sanções internacionais abrangentes?"
+        value={formData.comp_q2}
+        onChange={(v) => handleChange('comp_q2', v)}
+        detailValue={formData.comp_q2_detalhe}
+        onDetailChange={(v) => handleChange('comp_q2_detalhe', v)}
+        detailLabel="Especifique"
+        required
+      />
 
-        <YesNoQuestion
-          question="Nos últimos 12 meses, a empresa ou sócios foram alvo de investigação criminal ou administrativa?"
-          value={formData.compliance_investigacao}
-          onChange={(value) => handleChange('compliance_investigacao', value)}
-          detailValue={formData.compliance_investigacao_detalhe}
-          onDetailChange={(value) => handleChange('compliance_investigacao_detalhe', value)}
-          detailLabel="Detalhes da investigação"
-          detailPlaceholder="Descreva o motivo, órgão responsável e status atual..."
-          showDetailOn={true}
-          required
-        />
+      <YesNoQuestion
+        question="3. A empresa é de propriedade ou está, direta ou indiretamente, sob controle de pessoa ou entidade incluída em listas de sanções, atuando em nome próprio ou representando interesses de terceiros sancionados?"
+        value={formData.comp_q3}
+        onChange={(v) => handleChange('comp_q3', v)}
+        detailValue={formData.comp_q3_detalhe}
+        onDetailChange={(v) => handleChange('comp_q3_detalhe', v)}
+        detailLabel="Especifique"
+        required
+      />
 
-        <YesNoQuestion
-          question="A empresa já teve contas encerradas por instituições financeiras devido a questões de compliance/PLD?"
-          value={formData.compliance_contas_encerradas}
-          onChange={(value) => handleChange('compliance_contas_encerradas', value)}
-          detailValue={formData.compliance_contas_encerradas_detalhe}
-          onDetailChange={(value) => handleChange('compliance_contas_encerradas_detalhe', value)}
-          detailLabel="Motivo do encerramento"
-          detailPlaceholder="Qual instituição e qual o motivo alegado..."
-          showDetailOn={true}
-          required
-        />
+      <YesNoQuestion
+        question="4. Nos últimos 12 meses, a empresa ou algum de seus diretores, conselheiros, acionistas (diretos ou indiretos) ou beneficiários finais esteve sob investigação criminal por qualquer motivo?"
+        value={formData.comp_q4}
+        onChange={(v) => handleChange('comp_q4', v)}
+        detailValue={formData.comp_q4_detalhe}
+        onDetailChange={(v) => handleChange('comp_q4_detalhe', v)}
+        detailLabel="Especifique"
+        required
+      />
 
-        <YesNoQuestion
-          question="A empresa opera ou transaciona com Criptomoedas, Jogos de Azar, Apostas Esportivas ou Cassino?"
-          value={formData.compliance_atividade_risco}
-          onChange={(value) => handleChange('compliance_atividade_risco', value)}
-          detailValue={formData.compliance_atividade_risco_detalhe}
-          onDetailChange={(value) => handleChange('compliance_atividade_risco_detalhe', value)}
-          detailLabel="Detalhes da operação"
-          detailPlaceholder="Descreva o tipo de operação e licenças possuídas..."
-          showDetailOn={true}
-          required
-        />
+      <YesNoQuestion
+        question="5. Nos últimos 12 meses, a empresa ou algum de seus diretores, conselheiros, acionistas (diretos ou indiretos) ou beneficiários finais teve contas bancárias ou de pagamento encerradas por motivos de compliance?"
+        value={formData.comp_q5}
+        onChange={(v) => handleChange('comp_q5', v)}
+        detailValue={formData.comp_q5_detalhe}
+        onDetailChange={(v) => handleChange('comp_q5_detalhe', v)}
+        detailLabel="Especifique"
+        required
+      />
 
-        <YesNoQuestion
-          question="A empresa possui relacionamento comercial ou financeiro com Paraísos Fiscais ou jurisdições de alto risco?"
-          value={formData.compliance_paraisos_fiscais}
-          onChange={(value) => handleChange('compliance_paraisos_fiscais', value)}
-          detailValue={formData.compliance_paraisos_fiscais_detalhe}
-          onDetailChange={(value) => handleChange('compliance_paraisos_fiscais_detalhe', value)}
-          detailLabel="Países e motivo"
-          detailPlaceholder="Liste as jurisdições e a natureza do relacionamento..."
-          showDetailOn={true}
-          required
-        />
-      </FormSection>
+      <YesNoQuestion
+        question="6. A empresa opera com criptomoedas, criptoativos, tokens ou assimilados?"
+        value={formData.comp_q6}
+        onChange={(v) => handleChange('comp_q6', v)}
+        detailValue={formData.comp_q6_detalhe}
+        onDetailChange={(v) => handleChange('comp_q6_detalhe', v)}
+        detailLabel="Detalhe a operação"
+        required
+      />
 
-      {/* Seção 8: Prevenção à Lavagem de Dinheiro (PLD/FT) */}
-      <FormSection
-        title="Prevenção à Lavagem de Dinheiro (PLD/FT)"
-        subtitle="Políticas, controles e governança de prevenção."
-        icon={Activity}
-      >
-        <div className="space-y-2">
-          <Label className="text-sm font-medium text-slate-700">A empresa possui Política de PLD/FT formalizada? <span className="text-red-500">*</span></Label>
-          <SelectionButton
-            options={[
-              { value: true, label: 'Sim' },
-              { value: false, label: 'Não' }
-            ]}
-            value={formData.pld_possui_politica}
-            onChange={(value) => handleChange('pld_possui_politica', value)}
-            columns={2}
-          />
-        </div>
+      <YesNoQuestion
+        question="7. A empresa opera com jogos, apostas, cassino ou atividades similares?"
+        value={formData.comp_q7}
+        onChange={(v) => handleChange('comp_q7', v)}
+        detailValue={formData.comp_q7_detalhe}
+        onDetailChange={(v) => handleChange('comp_q7_detalhe', v)}
+        detailLabel="Nº da Licença"
+        required
+      />
 
-        {formData.pld_possui_politica === true && (
-          <YesNoQuestion
-            question="A política foi revisada e aprovada nos últimos 12 meses?"
-            value={formData.pld_politica_revisada}
-            onChange={(value) => handleChange('pld_politica_revisada', value)}
-            required
-          />
-        )}
+      <YesNoQuestion
+        question="8. A empresa atua em alguma atividade que possa ser considerada proibida ou ilegal?"
+        value={formData.comp_q8}
+        onChange={(v) => handleChange('comp_q8', v)}
+        required
+      />
 
-        <div className="space-y-2">
-          <Label className="text-sm font-medium text-slate-700">Frequência de Treinamento de PLD para funcionários <span className="text-red-500">*</span></Label>
-          <SelectionButton
-            options={[
-              { value: 'admissional', label: 'Apenas na admissão' },
-              { value: 'anual', label: 'Anual' },
-              { value: 'semestral', label: 'Semestral' },
-              { value: 'nao_realiza', label: 'Não realiza' }
-            ]}
-            value={formData.pld_frequencia_treinamento}
-            onChange={(value) => handleChange('pld_frequencia_treinamento', value)}
-            columns={2}
-          />
-        </div>
+      <YesNoQuestion
+        question="9. A empresa atua em alguma atividade considerada de alto risco ou que requer aprovação especial (ex: nutra, viagens, leilões, etc.)?"
+        value={formData.comp_q9}
+        onChange={(v) => handleChange('comp_q9', v)}
+        detailValue={formData.comp_q9_detalhe}
+        onDetailChange={(v) => handleChange('comp_q9_detalhe', v)}
+        detailLabel="Qual atividade?"
+        required
+      />
 
-        <YesNoQuestion
-          question="Realiza procedimentos de KYC (Conheça seu Cliente) e KYB (Conheça seu Parceiro) antes de iniciar relacionamentos?"
-          value={formData.pld_realiza_kyc}
-          onChange={(value) => handleChange('pld_realiza_kyc', value)}
-          detailValue={formData.pld_kyc_escopo}
-          onDetailChange={(value) => handleChange('pld_kyc_escopo', value)}
-          detailLabel="Escopo das verificações"
-          detailPlaceholder="Quais documentos e listas são verificados..."
-          showDetailOn={true}
-          required
-        />
+      <YesNoQuestion
+        question="10. Algum beneficiário final (UBO) ou administrador é Pessoa Politicamente Exposta (PEP) ou possui relacionamento próximo com PEP?"
+        value={formData.comp_q10}
+        onChange={(v) => handleChange('comp_q10', v)}
+        detailValue={formData.comp_q10_detalhe}
+        onDetailChange={(v) => handleChange('comp_q10_detalhe', v)}
+        detailLabel="Detalhes"
+        required
+      />
 
-        <YesNoQuestion
-          question="A empresa verifica se clientes/parceiros são Pessoas Politicamente Expostas (PEPs)?"
-          value={formData.pld_verifica_pep}
-          onChange={(value) => handleChange('pld_verifica_pep', value)}
-          required
-        />
-
-        <div className="space-y-2">
-          <Label className="text-sm font-medium text-slate-700">Possui sistema de monitoramento de transações? <span className="text-red-500">*</span></Label>
-          <SelectionButton
-            options={[
-              { value: 'automatizado', label: 'Sim, sistema automatizado' },
-              { value: 'manual', label: 'Sim, análise manual' },
-              { value: 'nao_possui', label: 'Não possui' }
-            ]}
-            value={formData.pld_monitoramento}
-            onChange={(value) => handleChange('pld_monitoramento', value)}
-            columns={3}
-          />
-        </div>
-
-        <YesNoQuestion
-          question="Existe uma área ou pessoa dedicada exclusivamente ao Compliance/PLD?"
-          value={formData.pld_area_dedicada}
-          onChange={(value) => handleChange('pld_area_dedicada', value)}
-          required
-        />
-
-        <YesNoQuestion
-          question="A empresa passa por auditorias internas ou externas de PLD/FT?"
-          value={formData.pld_auditoria}
-          onChange={(value) => handleChange('pld_auditoria', value)}
-          detailValue={formData.pld_auditoria_frequencia}
-          onDetailChange={(value) => handleChange('pld_auditoria_frequencia', value)}
-          detailLabel="Qual a frequência e tipo?"
-          detailPlaceholder="Ex: Auditoria externa anual..."
-          showDetailOn={true}
-          required
-        />
-      </FormSection>
-    </div>
+      <YesNoQuestion
+        question="11. A empresa possui relacionamento comercial ou financeiro com terceiros localizados em jurisdições offshore ou consideradas paraísos fiscais?"
+        value={formData.comp_q11}
+        onChange={(v) => handleChange('comp_q11', v)}
+        detailValue={formData.comp_q11_detalhe}
+        onDetailChange={(v) => handleChange('comp_q11_detalhe', v)}
+        detailLabel="Especifique"
+        required
+      />
+    </FormSection>
   );
 }
