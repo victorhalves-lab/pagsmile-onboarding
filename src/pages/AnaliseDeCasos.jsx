@@ -23,9 +23,10 @@ import {
   Loader2, Eye, Download, RefreshCw, Mail, History,
   ExternalLink, Phone, MapPin, Calendar, CreditCard,
   FileCheck, UserCheck, Building, Briefcase, Scale,
-  Users, Globe, Receipt
+  Users, Globe, Receipt, Brain
 } from 'lucide-react';
 import { toast } from 'sonner';
+import IAAnalysisPanel from '../components/compliance/IAAnalysisPanel';
 
 export default function AnaliseDeCasos() {
   const navigate = useNavigate();
@@ -77,7 +78,7 @@ export default function AnaliseDeCasos() {
 
   const { data: complianceScore } = useQuery({
     queryKey: ['complianceScore', caseId],
-    queryFn: () => base44.entities.ComplianceScore.filter({ onboardingCaseId: caseId }),
+    queryFn: () => base44.entities.ComplianceScore.filter({ onboarding_case_id: caseId }),
     enabled: !!caseId,
     select: (data) => data[0]
   });
@@ -321,47 +322,15 @@ export default function AnaliseDeCasos() {
         </div>
       </div>
 
-      {/* Decisão da IA */}
-      {complianceScore && (
-        <div className={`rounded-xl border p-6 ${
-          complianceScore.decision === 'Aprovado' ? 'bg-green-50 border-green-200' :
-          complianceScore.decision === 'Manual' ? 'bg-orange-50 border-orange-200' :
-          'bg-red-50 border-red-200'
-        }`}>
-          <div className="flex items-start gap-4">
-            <div className={`p-3 rounded-xl ${
-              complianceScore.decision === 'Aprovado' ? 'bg-green-100' :
-              complianceScore.decision === 'Manual' ? 'bg-orange-100' : 'bg-red-100'
-            }`}>
-              {complianceScore.decision === 'Aprovado' ? (
-                <CheckCircle2 className="w-6 h-6 text-green-600" />
-              ) : complianceScore.decision === 'Manual' ? (
-                <AlertTriangle className="w-6 h-6 text-orange-600" />
-              ) : (
-                <XCircle className="w-6 h-6 text-red-600" />
-              )}
-            </div>
-            <div className="flex-1">
-              <h3 className="font-bold text-[var(--pagsmile-blue)]">Decisão da IA: {complianceScore.decision}</h3>
-              <p className="text-sm text-[var(--pagsmile-blue)]/80 font-medium mt-1">{complianceScore.iaExplanation}</p>
-              {complianceScore.factorsAnalyzed?.riskFactors?.length > 0 && (
-                <div className="mt-3">
-                  <p className="text-sm font-semibold text-[var(--pagsmile-blue)]">Fatores de Risco:</p>
-                  <ul className="list-disc list-inside text-sm text-[var(--pagsmile-blue)]/80 font-medium mt-1">
-                    {complianceScore.factorsAnalyzed.riskFactors.map((f, i) => (
-                      <li key={i}>{f}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+
 
       {/* Tabs */}
-      <Tabs defaultValue="info" className="space-y-6">
+      <Tabs defaultValue="ia-analysis" className="space-y-6">
         <TabsList className="bg-white border border-slate-200 flex-wrap h-auto p-1">
+          <TabsTrigger value="ia-analysis" className="gap-1">
+            <Brain className="w-4 h-4" />
+            Análise IA
+          </TabsTrigger>
           <TabsTrigger value="info" className="gap-1">
             <User className="w-4 h-4" />
             Merchant
@@ -387,6 +356,13 @@ export default function AnaliseDeCasos() {
             Revisão
           </TabsTrigger>
         </TabsList>
+
+        {/* Análise da IA */}
+        <TabsContent value="ia-analysis">
+          <div className="bg-white rounded-xl border border-slate-200 p-6">
+            <IAAnalysisPanel complianceScore={complianceScore} onboardingCase={onboardingCase} />
+          </div>
+        </TabsContent>
 
         {/* Dados do Merchant */}
         <TabsContent value="info">
