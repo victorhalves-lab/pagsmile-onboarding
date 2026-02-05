@@ -66,7 +66,7 @@ export default function Layout({ children, currentPageName }) {
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <div className="flex items-center gap-3">
               <img 
-                src="https://pagsmile.com/images/header/pagsmile_logo.svg" 
+                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/9bd38c4f7_Logo-modo-claro.png" 
                 alt="Pagsmile" 
                 className="h-8"
               />
@@ -112,9 +112,9 @@ export default function Layout({ children, currentPageName }) {
               </button>
               <div className="flex items-center gap-3">
                 <img 
-                  src="https://pagsmile.com/images/header/pagsmile_logo.svg" 
+                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/a4a9954bb_Logo-modo-escuro.png" 
                   alt="Pagsmile" 
-                  className="h-7 brightness-0 invert"
+                  className="h-7"
                 />
                 <div className="hidden sm:block">
                   <span className="text-xs font-medium text-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/10 px-2 py-1 rounded">
