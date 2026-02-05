@@ -48,53 +48,53 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import AdminDashboard from './pages/AdminDashboard';
+import AnaliseDeCasos from './pages/AnaliseDeCasos';
+import Auditoria from './pages/Auditoria';
 import ComplianceFullKYC from './pages/ComplianceFullKYC';
 import ComplianceOnboardingStart from './pages/ComplianceOnboardingStart';
 import CompliancePixOnly from './pages/CompliancePixOnly';
+import Configuracoes from './pages/Configuracoes';
 import DocumentUploadFull from './pages/DocumentUploadFull';
 import DocumentUploadPix from './pages/DocumentUploadPix';
+import EditorQuestionario from './pages/EditorQuestionario';
+import GerarLinkOnboarding from './pages/GerarLinkOnboarding';
+import GestaoDocumentos from './pages/GestaoDocumentos';
+import GestaoRevalidacao from './pages/GestaoRevalidacao';
+import HelenaIA from './pages/HelenaIA';
 import Home from './pages/Home';
+import IntegracoesExternas from './pages/IntegracoesExternas';
 import LivenessFacematchStep from './pages/LivenessFacematchStep';
 import LivenessSimulation from './pages/LivenessSimulation';
 import OnboardingCompletion from './pages/OnboardingCompletion';
 import QuestionariosRecebidos from './pages/QuestionariosRecebidos';
-import AnaliseDeCasos from './pages/AnaliseDeCasos';
-import GestaoDocumentos from './pages/GestaoDocumentos';
-import GestaoRevalidacao from './pages/GestaoRevalidacao';
-import GerarLinkOnboarding from './pages/GerarLinkOnboarding';
-import TemplatesQuestionarios from './pages/TemplatesQuestionarios';
-import EditorQuestionario from './pages/EditorQuestionario';
 import RegrasDeCompliance from './pages/RegrasDeCompliance';
-import IntegracoesExternas from './pages/IntegracoesExternas';
-import HelenaIA from './pages/HelenaIA';
-import Configuracoes from './pages/Configuracoes';
-import Auditoria from './pages/Auditoria';
+import TemplatesQuestionarios from './pages/TemplatesQuestionarios';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "AdminDashboard": AdminDashboard,
+    "AnaliseDeCasos": AnaliseDeCasos,
+    "Auditoria": Auditoria,
     "ComplianceFullKYC": ComplianceFullKYC,
     "ComplianceOnboardingStart": ComplianceOnboardingStart,
     "CompliancePixOnly": CompliancePixOnly,
+    "Configuracoes": Configuracoes,
     "DocumentUploadFull": DocumentUploadFull,
     "DocumentUploadPix": DocumentUploadPix,
+    "EditorQuestionario": EditorQuestionario,
+    "GerarLinkOnboarding": GerarLinkOnboarding,
+    "GestaoDocumentos": GestaoDocumentos,
+    "GestaoRevalidacao": GestaoRevalidacao,
+    "HelenaIA": HelenaIA,
     "Home": Home,
+    "IntegracoesExternas": IntegracoesExternas,
     "LivenessFacematchStep": LivenessFacematchStep,
     "LivenessSimulation": LivenessSimulation,
     "OnboardingCompletion": OnboardingCompletion,
     "QuestionariosRecebidos": QuestionariosRecebidos,
-    "AnaliseDeCasos": AnaliseDeCasos,
-    "GestaoDocumentos": GestaoDocumentos,
-    "GestaoRevalidacao": GestaoRevalidacao,
-    "GerarLinkOnboarding": GerarLinkOnboarding,
-    "TemplatesQuestionarios": TemplatesQuestionarios,
-    "EditorQuestionario": EditorQuestionario,
     "RegrasDeCompliance": RegrasDeCompliance,
-    "IntegracoesExternas": IntegracoesExternas,
-    "HelenaIA": HelenaIA,
-    "Configuracoes": Configuracoes,
-    "Auditoria": Auditoria,
+    "TemplatesQuestionarios": TemplatesQuestionarios,
 }
 
 export const pagesConfig = {
