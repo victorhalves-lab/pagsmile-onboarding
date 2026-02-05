@@ -10,6 +10,7 @@ import {
 
 import ProgressBar from '../components/compliance/ProgressBar';
 import StepNavigation from '../components/compliance/StepNavigation';
+import { useOnboardingAnalytics } from '../components/analytics/useOnboardingAnalytics';
 
 import Step1Identificacao from '../components/compliance/steps/Step1Identificacao';
 import Step2TipoEmpresa from '../components/compliance/steps/Step2TipoEmpresa';
@@ -42,6 +43,16 @@ export default function CompliancePixOnly() {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({});
 
+  const linkCode = localStorage.getItem('onboarding_link_code');
+  
+  const { trackPageComplete } = useOnboardingAnalytics({
+    pageName: 'CompliancePixOnly',
+    stepNumber: currentStep,
+    totalSteps: STEPS.length,
+    flowType: 'pix_only',
+    linkCode
+  });
+
   useEffect(() => {
     const savedData = localStorage.getItem('compliance_data_pix');
     if (savedData) {
@@ -59,6 +70,7 @@ export default function CompliancePixOnly() {
 
   const handleNext = () => {
     if (currentStep < STEPS.length) {
+      trackPageComplete({ stepNumber: currentStep });
       setCurrentStep(currentStep + 1);
       window.scrollTo(0, 0);
     }
