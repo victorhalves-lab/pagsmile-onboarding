@@ -44,7 +44,6 @@ import { toast } from 'sonner';
 export default function Configuracoes() {
   const queryClient = useQueryClient();
   
-  // Estado das configurações
   const [generalSettings, setGeneralSettings] = useState({
     emailNotifications: true,
     autoApproval: true,
@@ -58,7 +57,6 @@ export default function Configuracoes() {
     allowedFormats: ['PDF', 'JPG', 'JPEG', 'PNG']
   });
 
-  // Tipos de documento
   const { data: documentTypes = [], isLoading: loadingDocTypes } = useQuery({
     queryKey: ['documentTypes'],
     queryFn: () => base44.entities.DocumentType.list()
@@ -130,7 +128,6 @@ export default function Configuracoes() {
   };
 
   const handleSaveSettings = (section) => {
-    // Aqui você salvaria em uma entidade de configurações
     toast.success(`Configurações de ${section} salvas!`);
   };
 
@@ -139,29 +136,29 @@ export default function Configuracoes() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Configurações</h1>
-        <p className="text-[var(--pagsmile-blue)]/70">Configure as regras e parâmetros do sistema de compliance</p>
+        <p className="text-[var(--pagsmile-blue)]/70 font-medium">Configure as regras e parâmetros do sistema de compliance</p>
       </div>
 
       {/* Tabs */}
       <Tabs defaultValue="general" className="space-y-6">
         <TabsList className="bg-white border border-slate-200 flex-wrap h-auto p-1">
-          <TabsTrigger value="general" className="gap-2">
+          <TabsTrigger value="general" className="gap-2 font-semibold text-[var(--pagsmile-blue)]/70 data-[state=active]:text-[var(--pagsmile-blue)]">
             <Settings className="w-4 h-4" />
             Geral
           </TabsTrigger>
-          <TabsTrigger value="documents" className="gap-2">
+          <TabsTrigger value="documents" className="gap-2 font-semibold text-[var(--pagsmile-blue)]/70 data-[state=active]:text-[var(--pagsmile-blue)]">
             <FileText className="w-4 h-4" />
             Documentos
           </TabsTrigger>
-          <TabsTrigger value="risk" className="gap-2">
+          <TabsTrigger value="risk" className="gap-2 font-semibold text-[var(--pagsmile-blue)]/70 data-[state=active]:text-[var(--pagsmile-blue)]">
             <AlertTriangle className="w-4 h-4" />
             Regras de Risco
           </TabsTrigger>
-          <TabsTrigger value="integrations" className="gap-2">
+          <TabsTrigger value="integrations" className="gap-2 font-semibold text-[var(--pagsmile-blue)]/70 data-[state=active]:text-[var(--pagsmile-blue)]">
             <Globe className="w-4 h-4" />
             Integrações
           </TabsTrigger>
-          <TabsTrigger value="notifications" className="gap-2">
+          <TabsTrigger value="notifications" className="gap-2 font-semibold text-[var(--pagsmile-blue)]/70 data-[state=active]:text-[var(--pagsmile-blue)]">
             <Bell className="w-4 h-4" />
             Notificações
           </TabsTrigger>
@@ -170,13 +167,13 @@ export default function Configuracoes() {
         {/* Tab: Geral */}
         <TabsContent value="general">
           <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6">
-            <h2 className="text-lg font-semibold text-[var(--pagsmile-blue)]">Configurações Gerais</h2>
+            <h2 className="text-lg font-bold text-[var(--pagsmile-blue)]">Configurações Gerais</h2>
             
             <div className="space-y-4">
               <div className="flex items-center justify-between p-4 rounded-lg border border-slate-200">
                 <div>
-                  <Label className="font-medium">Notificações por E-mail</Label>
-                  <p className="text-sm text-[var(--pagsmile-blue)]/70">Enviar e-mails automáticos sobre status do onboarding</p>
+                  <Label className="font-semibold">Notificações por E-mail</Label>
+                  <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium">Enviar e-mails automáticos sobre status do onboarding</p>
                 </div>
                 <Switch 
                   checked={generalSettings.emailNotifications}
@@ -186,8 +183,8 @@ export default function Configuracoes() {
 
               <div className="flex items-center justify-between p-4 rounded-lg border border-slate-200">
                 <div>
-                  <Label className="font-medium">Aprovação Automática</Label>
-                  <p className="text-sm text-[var(--pagsmile-blue)]/70">Aprovar automaticamente casos com score ≥ {generalSettings.approvalThreshold}</p>
+                  <Label className="font-semibold">Aprovação Automática</Label>
+                  <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium">Aprovar automaticamente casos com score ≥ {generalSettings.approvalThreshold}</p>
                 </div>
                 <Switch 
                   checked={generalSettings.autoApproval}
@@ -197,8 +194,8 @@ export default function Configuracoes() {
 
               <div className="flex items-center justify-between p-4 rounded-lg border border-slate-200">
                 <div>
-                  <Label className="font-medium">Rejeição Automática</Label>
-                  <p className="text-sm text-[var(--pagsmile-blue)]/70">Rejeitar automaticamente casos com score &lt; {generalSettings.manualThreshold}</p>
+                  <Label className="font-semibold">Rejeição Automática</Label>
+                  <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium">Rejeitar automaticamente casos com score &lt; {generalSettings.manualThreshold}</p>
                 </div>
                 <Switch 
                   checked={generalSettings.autoRejection}
@@ -220,9 +217,8 @@ export default function Configuracoes() {
         {/* Tab: Documentos */}
         <TabsContent value="documents">
           <div className="space-y-6">
-            {/* Configurações Gerais de Documentos */}
             <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6">
-              <h2 className="text-lg font-semibold text-[var(--pagsmile-blue)]">Configurações de Upload</h2>
+              <h2 className="text-lg font-bold text-[var(--pagsmile-blue)]">Configurações de Upload</h2>
               
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
@@ -268,12 +264,11 @@ export default function Configuracoes() {
               </Button>
             </div>
 
-            {/* Tipos de Documento */}
             <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6">
               <div className="flex justify-between items-center">
                 <div>
-                  <h2 className="text-lg font-semibold text-[var(--pagsmile-blue)]">Tipos de Documento</h2>
-                  <p className="text-sm text-[var(--pagsmile-blue)]/70">Gerencie os tipos de documentos aceitos no onboarding</p>
+                  <h2 className="text-lg font-bold text-[var(--pagsmile-blue)]">Tipos de Documento</h2>
+                  <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium">Gerencie os tipos de documentos aceitos no onboarding</p>
                 </div>
                 <Button 
                   onClick={() => {
@@ -295,17 +290,17 @@ export default function Configuracoes() {
               ) : documentTypes.length === 0 ? (
                 <div className="text-center py-8">
                   <FileText className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/40 mb-4" />
-                  <p className="text-[var(--pagsmile-blue)]/70">Nenhum tipo de documento cadastrado</p>
+                  <p className="text-[var(--pagsmile-blue)]/70 font-medium">Nenhum tipo de documento cadastrado</p>
                 </div>
               ) : (
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Nome</TableHead>
-                      <TableHead>Tipo Merchant</TableHead>
-                      <TableHead>Formatos</TableHead>
-                      <TableHead>Obrigatório</TableHead>
-                      <TableHead className="text-right">Ações</TableHead>
+                      <TableHead className="font-semibold text-[var(--pagsmile-blue)]">Nome</TableHead>
+                      <TableHead className="font-semibold text-[var(--pagsmile-blue)]">Tipo Merchant</TableHead>
+                      <TableHead className="font-semibold text-[var(--pagsmile-blue)]">Formatos</TableHead>
+                      <TableHead className="font-semibold text-[var(--pagsmile-blue)]">Obrigatório</TableHead>
+                      <TableHead className="text-right font-semibold text-[var(--pagsmile-blue)]">Ações</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -313,14 +308,14 @@ export default function Configuracoes() {
                       <TableRow key={docType.id}>
                         <TableCell>
                           <div>
-                            <p className="font-medium text-[var(--pagsmile-blue)]">{docType.name}</p>
+                            <p className="font-semibold text-[var(--pagsmile-blue)]">{docType.name}</p>
                             {docType.description && (
-                              <p className="text-sm text-[var(--pagsmile-blue)]/70 truncate max-w-xs">{docType.description}</p>
+                              <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium truncate max-w-xs">{docType.description}</p>
                             )}
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline">
+                          <Badge variant="outline" className="font-medium text-[var(--pagsmile-blue)]/80">
                             {docType.merchantType === 'BOTH' ? 'PF & PJ' : docType.merchantType}
                           </Badge>
                         </TableCell>
@@ -367,15 +362,14 @@ export default function Configuracoes() {
         {/* Tab: Regras de Risco */}
         <TabsContent value="risk">
           <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6">
-            <h2 className="text-lg font-semibold text-[var(--pagsmile-blue)]">Regras de Risco e Scoring</h2>
+            <h2 className="text-lg font-bold text-[var(--pagsmile-blue)]">Regras de Risco e Scoring</h2>
             
             <div className="space-y-6">
-              {/* Threshold de Aprovação */}
               <div className="p-4 rounded-lg border border-slate-200">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <Label className="font-medium">Threshold de Aprovação</Label>
-                    <p className="text-sm text-[var(--pagsmile-blue)]/70">Score mínimo para aprovação automática</p>
+                    <Label className="font-semibold">Threshold de Aprovação</Label>
+                    <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium">Score mínimo para aprovação automática</p>
                   </div>
                   <span className="text-2xl font-bold text-green-600">{generalSettings.approvalThreshold}</span>
                 </div>
@@ -386,18 +380,17 @@ export default function Configuracoes() {
                   step={1} 
                   className="w-full" 
                 />
-                <div className="flex justify-between text-xs text-[var(--pagsmile-blue)]/50 mt-2">
+                <div className="flex justify-between text-xs text-[var(--pagsmile-blue)]/60 font-medium mt-2">
                   <span>0</span>
                   <span>100</span>
                 </div>
               </div>
 
-              {/* Threshold de Revisão Manual */}
               <div className="p-4 rounded-lg border border-slate-200">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <Label className="font-medium">Threshold de Revisão Manual</Label>
-                    <p className="text-sm text-[var(--pagsmile-blue)]/70">Score mínimo para enviar à revisão manual</p>
+                    <Label className="font-semibold">Threshold de Revisão Manual</Label>
+                    <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium">Score mínimo para enviar à revisão manual</p>
                   </div>
                   <span className="text-2xl font-bold text-orange-600">{generalSettings.manualThreshold}</span>
                 </div>
@@ -408,30 +401,29 @@ export default function Configuracoes() {
                   step={1} 
                   className="w-full" 
                 />
-                <div className="flex justify-between text-xs text-[var(--pagsmile-blue)]/50 mt-2">
+                <div className="flex justify-between text-xs text-[var(--pagsmile-blue)]/60 font-medium mt-2">
                   <span>0</span>
                   <span>100</span>
                 </div>
               </div>
 
-              {/* Visualização das Faixas */}
               <div className="p-4 rounded-lg bg-slate-50 border border-slate-200">
-                <Label className="font-medium mb-4 block">Faixas de Decisão</Label>
+                <Label className="font-semibold mb-4 block">Faixas de Decisão</Label>
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
                     <CheckCircle2 className="w-5 h-5 text-green-600" />
                     <div className="flex-1 h-3 bg-green-500 rounded-full"></div>
-                    <span className="text-sm text-[var(--pagsmile-blue)]/80 w-40">≥ {generalSettings.approvalThreshold}: Aprovado</span>
+                    <span className="text-sm text-[var(--pagsmile-blue)]/80 font-medium w-40">≥ {generalSettings.approvalThreshold}: Aprovado</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <AlertTriangle className="w-5 h-5 text-orange-600" />
                     <div className="flex-1 h-3 bg-orange-500 rounded-full"></div>
-                    <span className="text-sm text-[var(--pagsmile-blue)]/80 w-40">{generalSettings.manualThreshold}-{generalSettings.approvalThreshold - 1}: Manual</span>
+                    <span className="text-sm text-[var(--pagsmile-blue)]/80 font-medium w-40">{generalSettings.manualThreshold}-{generalSettings.approvalThreshold - 1}: Manual</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <XCircle className="w-5 h-5 text-red-600" />
                     <div className="flex-1 h-3 bg-red-500 rounded-full"></div>
-                    <span className="text-sm text-[var(--pagsmile-blue)]/80 w-40">&lt; {generalSettings.manualThreshold}: Recusado</span>
+                    <span className="text-sm text-[var(--pagsmile-blue)]/80 font-medium w-40">&lt; {generalSettings.manualThreshold}: Recusado</span>
                   </div>
                 </div>
               </div>
@@ -450,17 +442,16 @@ export default function Configuracoes() {
         {/* Tab: Integrações */}
         <TabsContent value="integrations">
           <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6">
-            <h2 className="text-lg font-semibold text-[var(--pagsmile-blue)]">Integrações Externas</h2>
+            <h2 className="text-lg font-bold text-[var(--pagsmile-blue)]">Integrações Externas</h2>
             
             <Alert className="bg-blue-50 border-blue-200">
               <Info className="h-4 w-4 text-blue-600" />
-              <AlertDescription className="text-blue-800">
+              <AlertDescription className="text-[var(--pagsmile-blue)]/80 font-medium">
                 Configure as chaves de API para as integrações de validação externa.
               </AlertDescription>
             </Alert>
 
             <div className="space-y-4">
-              {/* Big Data Corp */}
               <div className="p-4 rounded-lg border border-slate-200">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
@@ -468,11 +459,11 @@ export default function Configuracoes() {
                       <Shield className="w-5 h-5 text-blue-600" />
                     </div>
                     <div>
-                      <Label className="font-medium">Big Data Corp</Label>
-                      <p className="text-sm text-[var(--pagsmile-blue)]/70">Validação de CNPJ/CPF e dados empresariais</p>
+                      <Label className="font-semibold">Big Data Corp</Label>
+                      <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium">Validação de CNPJ/CPF e dados empresariais</p>
                     </div>
                   </div>
-                  <Badge variant="outline" className="text-yellow-600 border-yellow-300">Pendente</Badge>
+                  <Badge variant="outline" className="text-yellow-600 border-yellow-300 font-medium">Pendente</Badge>
                 </div>
                 <div className="flex gap-2">
                   <Input type="password" placeholder="API Key" className="flex-1" />
@@ -483,7 +474,6 @@ export default function Configuracoes() {
                 </div>
               </div>
 
-              {/* CAF */}
               <div className="p-4 rounded-lg border border-slate-200">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
@@ -491,11 +481,11 @@ export default function Configuracoes() {
                       <Users className="w-5 h-5 text-purple-600" />
                     </div>
                     <div>
-                      <Label className="font-medium">CAF (Combate à Fraude)</Label>
-                      <p className="text-sm text-[var(--pagsmile-blue)]/70">KYC, Liveness e Facematch</p>
+                      <Label className="font-semibold">CAF (Combate à Fraude)</Label>
+                      <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium">KYC, Liveness e Facematch</p>
                     </div>
                   </div>
-                  <Badge variant="outline" className="text-yellow-600 border-yellow-300">Pendente</Badge>
+                  <Badge variant="outline" className="text-yellow-600 border-yellow-300 font-medium">Pendente</Badge>
                 </div>
                 <div className="flex gap-2">
                   <Input type="password" placeholder="API Key" className="flex-1" />
@@ -507,7 +497,6 @@ export default function Configuracoes() {
                 </div>
               </div>
 
-              {/* Doc */}
               <div className="p-4 rounded-lg border border-slate-200">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
@@ -515,11 +504,11 @@ export default function Configuracoes() {
                       <FileText className="w-5 h-5 text-teal-600" />
                     </div>
                     <div>
-                      <Label className="font-medium">Doc</Label>
-                      <p className="text-sm text-[var(--pagsmile-blue)]/70">OCR e validação de documentos</p>
+                      <Label className="font-semibold">Doc</Label>
+                      <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium">OCR e validação de documentos</p>
                     </div>
                   </div>
-                  <Badge variant="outline" className="text-yellow-600 border-yellow-300">Pendente</Badge>
+                  <Badge variant="outline" className="text-yellow-600 border-yellow-300 font-medium">Pendente</Badge>
                 </div>
                 <div className="flex gap-2">
                   <Input type="password" placeholder="API Key" className="flex-1" />
@@ -536,15 +525,15 @@ export default function Configuracoes() {
         {/* Tab: Notificações */}
         <TabsContent value="notifications">
           <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6">
-            <h2 className="text-lg font-semibold text-[var(--pagsmile-blue)]">Configurações de Notificações</h2>
+            <h2 className="text-lg font-bold text-[var(--pagsmile-blue)]">Configurações de Notificações</h2>
             
             <div className="space-y-4">
               <div className="flex items-center justify-between p-4 rounded-lg border border-slate-200">
                 <div className="flex items-center gap-3">
                   <Mail className="w-5 h-5 text-[var(--pagsmile-blue)]/50" />
                   <div>
-                    <Label className="font-medium">Novo Caso Recebido</Label>
-                    <p className="text-sm text-[var(--pagsmile-blue)]/70">Notificar quando um novo caso de onboarding for criado</p>
+                    <Label className="font-semibold">Novo Caso Recebido</Label>
+                    <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium">Notificar quando um novo caso de onboarding for criado</p>
                   </div>
                 </div>
                 <Switch defaultChecked />
@@ -554,8 +543,8 @@ export default function Configuracoes() {
                 <div className="flex items-center gap-3">
                   <Mail className="w-5 h-5 text-[var(--pagsmile-blue)]/50" />
                   <div>
-                    <Label className="font-medium">Caso Requer Revisão Manual</Label>
-                    <p className="text-sm text-[var(--pagsmile-blue)]/70">Notificar quando um caso for encaminhado para revisão manual</p>
+                    <Label className="font-semibold">Caso Requer Revisão Manual</Label>
+                    <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium">Notificar quando um caso for encaminhado para revisão manual</p>
                   </div>
                 </div>
                 <Switch defaultChecked />
@@ -565,8 +554,8 @@ export default function Configuracoes() {
                 <div className="flex items-center gap-3">
                   <Mail className="w-5 h-5 text-[var(--pagsmile-blue)]/50" />
                   <div>
-                    <Label className="font-medium">Caso Aprovado/Recusado</Label>
-                    <p className="text-sm text-[var(--pagsmile-blue)]/70">Notificar merchant sobre a decisão final</p>
+                    <Label className="font-semibold">Caso Aprovado/Recusado</Label>
+                    <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium">Notificar merchant sobre a decisão final</p>
                   </div>
                 </div>
                 <Switch defaultChecked />
@@ -576,8 +565,8 @@ export default function Configuracoes() {
                 <div className="flex items-center gap-3">
                   <Mail className="w-5 h-5 text-[var(--pagsmile-blue)]/50" />
                   <div>
-                    <Label className="font-medium">Erro em Validação Externa</Label>
-                    <p className="text-sm text-[var(--pagsmile-blue)]/70">Notificar quando uma integração falhar</p>
+                    <Label className="font-semibold">Erro em Validação Externa</Label>
+                    <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium">Notificar quando uma integração falhar</p>
                   </div>
                 </div>
                 <Switch />
@@ -602,14 +591,14 @@ export default function Configuracoes() {
             <DialogTitle>
               {editingDocType ? 'Editar Tipo de Documento' : 'Novo Tipo de Documento'}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-[var(--pagsmile-blue)]/70 font-medium">
               Configure os detalhes do tipo de documento aceito no onboarding.
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label>Nome <span className="text-red-500">*</span></Label>
+              <Label>Nome <span className="text-red-600">*</span></Label>
               <Input 
                 value={docTypeForm.name}
                 onChange={(e) => setDocTypeForm(prev => ({...prev, name: e.target.value}))}
