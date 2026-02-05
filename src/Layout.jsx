@@ -122,7 +122,7 @@ export default function Layout({ children, currentPageName }) {
       icon: Plug,
       items: [
         { label: 'CAF & BigDataCorp', path: 'AdminIntegrations', icon: Plug },
-        { label: 'Helena IA', path: 'AdminDashboard', icon: Brain, badge: 'Em breve' },
+        { label: 'Helena IA', path: 'AdminHelenaIA', icon: Brain },
       ]
     },
     {
