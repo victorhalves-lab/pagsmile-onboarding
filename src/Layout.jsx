@@ -11,7 +11,8 @@ import {
   Menu,
   X,
   Link as LinkIcon,
-  Users
+  Users,
+  Inbox
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -80,8 +81,9 @@ export default function Layout({ children, currentPageName }) {
   // Layout do backoffice administrativo
   const adminNavItems = [
     { label: 'Dashboard', path: 'AdminDashboard', icon: LayoutDashboard },
+    { label: 'Questionários Recebidos', path: 'ComplianceSubmissions', icon: FileCheck, highlight: true },
     { label: 'Gerar Link', path: 'GenerateOnboardingLink', icon: LinkIcon },
-    { label: 'Questionários', path: 'QuestionnaireTemplates', icon: FileCheck },
+    { label: 'Templates', path: 'QuestionnaireTemplates', icon: Settings },
     { label: 'Configurações', path: 'AdminSettings', icon: Settings }
   ];
 
@@ -158,11 +160,16 @@ export default function Layout({ children, currentPageName }) {
                     className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                       isActive
                         ? 'bg-[var(--pagsmile-green)] text-white'
+                        : item.highlight && !isActive
+                        ? 'text-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5 hover:bg-[var(--pagsmile-green)]/10 border border-[var(--pagsmile-green)]/20'
                         : 'text-slate-600 hover:bg-slate-100'
                     }`}
                   >
                     <Icon className="w-5 h-5" />
                     <span className="font-medium">{item.label}</span>
+                    {item.highlight && !isActive && (
+                      <span className="ml-auto w-2 h-2 rounded-full bg-[var(--pagsmile-green)] animate-pulse"></span>
+                    )}
                   </Link>
                 );
               })}
@@ -186,11 +193,16 @@ export default function Layout({ children, currentPageName }) {
                       className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                         isActive
                           ? 'bg-[var(--pagsmile-green)] text-white'
+                          : item.highlight && !isActive
+                          ? 'text-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5 hover:bg-[var(--pagsmile-green)]/10 border border-[var(--pagsmile-green)]/20'
                           : 'text-slate-600 hover:bg-slate-100'
                       }`}
                     >
                       <Icon className="w-5 h-5" />
                       <span className="font-medium">{item.label}</span>
+                      {item.highlight && !isActive && (
+                        <span className="ml-auto w-2 h-2 rounded-full bg-[var(--pagsmile-green)] animate-pulse"></span>
+                      )}
                     </Link>
                   );
                 })}

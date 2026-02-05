@@ -47,38 +47,40 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
+import AdminDashboard from './pages/AdminDashboard';
+import AdminSettings from './pages/AdminSettings';
 import ComplianceFullKYC from './pages/ComplianceFullKYC';
 import ComplianceOnboardingStart from './pages/ComplianceOnboardingStart';
 import CompliancePixOnly from './pages/CompliancePixOnly';
 import DocumentUploadFull from './pages/DocumentUploadFull';
 import DocumentUploadPix from './pages/DocumentUploadPix';
+import GenerateOnboardingLink from './pages/GenerateOnboardingLink';
 import LivenessFacematchStep from './pages/LivenessFacematchStep';
 import LivenessSimulation from './pages/LivenessSimulation';
-import OnboardingCompletion from './pages/OnboardingCompletion';
-import AdminDashboard from './pages/AdminDashboard';
-import GenerateOnboardingLink from './pages/GenerateOnboardingLink';
-import QuestionnaireTemplates from './pages/QuestionnaireTemplates';
-import AdminSettings from './pages/AdminSettings';
 import OnboardingCaseDetails from './pages/OnboardingCaseDetails';
+import OnboardingCompletion from './pages/OnboardingCompletion';
 import QuestionnaireEditor from './pages/QuestionnaireEditor';
+import QuestionnaireTemplates from './pages/QuestionnaireTemplates';
+import ComplianceSubmissions from './pages/ComplianceSubmissions';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
+    "AdminDashboard": AdminDashboard,
+    "AdminSettings": AdminSettings,
     "ComplianceFullKYC": ComplianceFullKYC,
     "ComplianceOnboardingStart": ComplianceOnboardingStart,
     "CompliancePixOnly": CompliancePixOnly,
     "DocumentUploadFull": DocumentUploadFull,
     "DocumentUploadPix": DocumentUploadPix,
+    "GenerateOnboardingLink": GenerateOnboardingLink,
     "LivenessFacematchStep": LivenessFacematchStep,
     "LivenessSimulation": LivenessSimulation,
-    "OnboardingCompletion": OnboardingCompletion,
-    "AdminDashboard": AdminDashboard,
-    "GenerateOnboardingLink": GenerateOnboardingLink,
-    "QuestionnaireTemplates": QuestionnaireTemplates,
-    "AdminSettings": AdminSettings,
     "OnboardingCaseDetails": OnboardingCaseDetails,
+    "OnboardingCompletion": OnboardingCompletion,
     "QuestionnaireEditor": QuestionnaireEditor,
+    "QuestionnaireTemplates": QuestionnaireTemplates,
+    "ComplianceSubmissions": ComplianceSubmissions,
 }
 
 export const pagesConfig = {
