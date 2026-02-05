@@ -75,6 +75,29 @@ export default function AdminDashboard() {
     const casesThisWeek = onboardingCases.filter(c => new Date(c.created_date) >= thisWeek);
     const casesThisMonth = onboardingCases.filter(c => new Date(c.created_date) >= thisMonth);
 
+    // Tempo médio de análise (para casos concluídos)
+    const completedCases = onboardingCases.filter(c => 
+      (c.status === 'Aprovado' || c.status === 'Recusado') && c.finalDecisionDate && c.created_date
+    );
+    const avgAnalysisTime = completedCases.length > 0
+      ? Math.round(completedCases.reduce((sum, c) => {
+          const created = new Date(c.created_date);
+          const completed = new Date(c.finalDecisionDate);
+          return sum + (completed - created) / (1000 * 60 * 60); // em horas
+        }, 0) / completedCases.length)
+      : 0;
+
+    // Casos com SLA em risco
+    const slaAtRisk = onboardingCases.filter(c => 
+      c.slaDeadline && new Date(c.slaDeadline) < now && 
+      c.status !== 'Aprovado' && c.status !== 'Recusado'
+    ).length;
+
+    // Taxa de encaminhamento para manual
+    const manualRate = onboardingCases.length > 0
+      ? Math.round((onboardingCases.filter(c => c.status === 'Manual').length / onboardingCases.length) * 100)
+      : 0;
+
     return {
       total: onboardingCases.length,
       pendente: onboardingCases.filter(c => c.status === 'Pendente').length,
@@ -90,7 +113,10 @@ export default function AdminDashboard() {
         : 0,
       avgScore: onboardingCases.filter(c => c.riskScore).length > 0
         ? Math.round(onboardingCases.filter(c => c.riskScore).reduce((sum, c) => sum + c.riskScore, 0) / onboardingCases.filter(c => c.riskScore).length)
-        : 0
+        : 0,
+      avgAnalysisTime,
+      slaAtRisk,
+      manualRate
     };
   }, [onboardingCases]);
 
@@ -332,8 +358,37 @@ export default function AdminDashboard() {
               </div>
               <span className="font-bold text-blue-600">{stats.avgScore}</span>
             </div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4 text-purple-500" />
+                <span className="text-sm text-slate-600">Tempo Médio Análise</span>
+              </div>
+              <span className="font-bold text-purple-600">{stats.avgAnalysisTime}h</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-orange-500" />
+                <span className="text-sm text-slate-600">Taxa Manual</span>
+              </div>
+              <span className="font-bold text-orange-600">{stats.manualRate}%</span>
+            </div>
           </div>
         </div>
+
+        {/* Alertas de SLA */}
+        {stats.slaAtRisk > 0 && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-red-100">
+                <AlertTriangle className="w-5 h-5 text-red-600" />
+              </div>
+              <div>
+                <p className="font-bold text-red-800">{stats.slaAtRisk} casos com SLA em risco</p>
+                <p className="text-sm text-red-600">Estes casos precisam de atenção urgente</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Gráfico de Área */}
         <div className="bg-white rounded-xl border border-slate-200 p-6">
