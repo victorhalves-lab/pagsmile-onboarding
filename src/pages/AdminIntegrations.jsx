@@ -380,8 +380,6 @@ export default function AdminIntegrations() {
               </Table>
             </CardContent>
           </Card>
-
-        <TabsContent value="caf" className="space-y-6">
           <Alert>
             <AlertTriangle className="h-4 w-4" />
             <AlertTitle>Importante</AlertTitle>
@@ -650,8 +648,6 @@ export default function AdminIntegrations() {
               </Table>
             </CardContent>
           </Card>
-
-        <TabsContent value="bigdatacorp" className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Configuração BigDataCorp</CardTitle>
@@ -757,8 +753,6 @@ export default function AdminIntegrations() {
                Utilizamos webhooks para receber atualizações assíncronas (ex: análise de documentos concluída, score de fraude atualizado) sem travar a experiência do usuário.
              </AlertDescription>
           </Alert>
-
-        <TabsContent value="webhooks" className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Configuração de Webhooks</CardTitle>
