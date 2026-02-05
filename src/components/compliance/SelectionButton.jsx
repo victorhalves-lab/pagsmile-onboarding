@@ -55,8 +55,8 @@ export default function SelectionButton({
                   "group relative p-6 rounded-2xl text-left transition-all duration-300 ease-out",
                   "border-2 flex flex-col h-full",
                   isSelected 
-                    ? "border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)] shadow-[0_8px_30px_rgba(43,193,150,0.3)] transform -translate-y-1" 
-                    : "border-slate-200 bg-white hover:border-[var(--pagsmile-green-light)] hover:shadow-lg hover:-translate-y-1"
+                    ? "border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)] shadow-[0_4px_15px_rgba(43,193,150,0.4)] transform -translate-y-1" 
+                    : "border-[var(--pagsmile-blue)]/10 bg-white hover:border-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/5 hover:shadow-md hover:-translate-y-1"
                 )}
               >
                 <div className="flex justify-between items-start w-full mb-4">
@@ -105,8 +105,8 @@ export default function SelectionButton({
                 "group relative px-4 py-3 rounded-xl text-left transition-all duration-200",
                 "border flex items-center gap-3",
                 isSelected 
-                  ? "border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)] shadow-md transform scale-[1.01]" 
-                  : "border-slate-200 bg-white hover:border-[var(--pagsmile-green)]/50 hover:bg-slate-50"
+                ? "border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)] shadow-md transform scale-[1.01]" 
+                : "border-[var(--pagsmile-blue)]/10 bg-white hover:border-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/5"
               )}
             >
                {isSelected && (

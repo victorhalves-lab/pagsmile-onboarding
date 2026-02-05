@@ -15,10 +15,18 @@ import { useOnboardingAnalytics } from '../components/analytics/useOnboardingAna
 
 import Step1Identificacao from '../components/compliance/steps/Step1Identificacao';
 import Step2TipoEmpresa from '../components/compliance/steps/Step2TipoEmpresa';
-import Step3Endereco from '../components/compliance/steps/Step3Endereco';
-import Step4AtividadeNegocios from '../components/compliance/steps/Step4AtividadeNegocios';
+import Step3aEnderecoPrincipal from '../components/compliance/steps/Step3aEnderecoPrincipal';
+import Step3bOutrosEnderecos from '../components/compliance/steps/Step3bOutrosEnderecos';
+import Step4aAtividadePrincipal from '../components/compliance/steps/Step4aAtividadePrincipal';
+import Step4bEscopoNegocio from '../components/compliance/steps/Step4bEscopoNegocio';
+import Step4cProdutosServicos from '../components/compliance/steps/Step4cProdutosServicos';
+import Step4dVolumetria from '../components/compliance/steps/Step4dVolumetria';
+import Step4eURLsClientes from '../components/compliance/steps/Step4eURLsClientes';
+import Step4fCanaisVenda from '../components/compliance/steps/Step4fCanaisVenda';
 import Step5PerfilOperacional from '../components/compliance/steps/Step5PerfilOperacional';
-import Step7Responsaveis from '../components/compliance/steps/Step7Responsaveis';
+import Step7aResponsaveis from '../components/compliance/steps/Step7aResponsaveis';
+import Step7bCompliance from '../components/compliance/steps/Step7bCompliance';
+import Step7cCanaisReputacao from '../components/compliance/steps/Step7cCanaisReputacao';
 import Section4UBO from '../components/compliance/steps/Section4UBO';
 import Section5Socios from '../components/compliance/steps/Section5Socios';
 import Section6Licenciamento from '../components/compliance/steps/Section6Licenciamento';
@@ -30,19 +38,27 @@ import Step11Confirmacao from '../components/compliance/steps/Step11Confirmacao'
 
 const STEPS = [
   { id: 'identificacao', title: '1. Identificação', icon: Building2 },
-  { id: 'tipo_empresa', title: '1. Tipo Empresa', icon: FileText },
-  { id: 'endereco', title: '1. Endereço', icon: MapPin },
-  { id: 'atividade', title: '2. Atividade', icon: Briefcase },
-  { id: 'licenciamento', title: '3. Licenciamento', icon: Scale },
-  { id: 'ubo', title: '4. Beneficiários', icon: Users },
-  { id: 'socios', title: '5. Sócios', icon: UserCheck },
-  { id: 'responsaveis', title: '6. Responsáveis', icon: UserCircle },
-  { id: 'compliance', title: '7. Compliance', icon: ShieldAlert },
-  { id: 'pld', title: '8. PLD/FT', icon: ShieldCheck },
-  { id: 'operacao', title: '9. Operação', icon: TrendingUp },
-  { id: 'marketplace', title: '10. Marketplace', icon: Store },
-  { id: 'seguranca', title: '11. Segurança', icon: Lock },
-  { id: 'confirmacao', title: '12. Confirmação', icon: CheckCircle }
+  { id: 'tipo_empresa', title: '2. Tipo Empresa', icon: FileText },
+  { id: 'endereco_principal', title: '3. Endereço', icon: MapPin },
+  { id: 'endereco_outros', title: '3. Outros Endereços', icon: MapPin },
+  { id: 'atividade_principal', title: '4. Atividade Principal', icon: Briefcase },
+  { id: 'atividade_escopo', title: '4. Escopo do Negócio', icon: Briefcase },
+  { id: 'atividade_produtos', title: '4. Produtos/Serviços', icon: Briefcase },
+  { id: 'atividade_volumetria', title: '4. Volumetria', icon: TrendingUp },
+  { id: 'atividade_urls', title: '4. Presença Digital', icon: Briefcase },
+  { id: 'atividade_canais', title: '4. Canais de Venda', icon: Store },
+  { id: 'licenciamento', title: '5. Licenciamento', icon: Scale },
+  { id: 'ubo', title: '6. Beneficiários', icon: Users },
+  { id: 'socios', title: '7. Sócios', icon: UserCheck },
+  { id: 'responsaveis_contato', title: '8. Responsáveis', icon: UserCircle },
+  { id: 'responsaveis_compliance', title: '8. Compliance', icon: ShieldAlert },
+  { id: 'canais_reputacao', title: '8. Canais & Reputação', icon: UserCircle },
+  { id: 'compliance', title: '9. Compliance Check', icon: ShieldAlert },
+  { id: 'pld', title: '10. PLD/FT', icon: ShieldCheck },
+  { id: 'operacao', title: '11. Operação', icon: TrendingUp },
+  { id: 'marketplace', title: '12. Marketplace', icon: Store },
+  { id: 'seguranca', title: '13. Segurança', icon: Lock },
+  { id: 'confirmacao', title: '14. Confirmação', icon: CheckCircle }
 ];
 
 export default function ComplianceFullKYC() {
@@ -143,18 +159,26 @@ export default function ComplianceFullKYC() {
     switch (currentStep) {
       case 1: return <Step1Identificacao {...baseProps} />;
       case 2: return <Step2TipoEmpresa {...baseProps} />;
-      case 3: return <Step3Endereco {...baseProps} />;
-      case 4: return <Step4AtividadeNegocios {...arrayProps} />;
-      case 5: return <Section6Licenciamento {...baseProps} />;
-      case 6: return <Section4UBO {...arrayProps} />;
-      case 7: return <Section5Socios {...arrayProps} />;
-      case 8: return <Step7Responsaveis {...arrayProps} />;
-      case 9: return <Step8CompliancePLD {...baseProps} />;
-      case 10: return <Step10PLDOperacao {...baseProps} />;
-      case 11: return <Step5PerfilOperacional {...baseProps} />;
-      case 12: return <Section7Marketplace {...baseProps} />;
-      case 13: return <Section8SegurancaCartao {...baseProps} />;
-      case 14: return <Step11Confirmacao {...baseProps} />;
+      case 3: return <Step3aEnderecoPrincipal {...baseProps} />;
+      case 4: return <Step3bOutrosEnderecos {...baseProps} />;
+      case 5: return <Step4aAtividadePrincipal {...baseProps} />;
+      case 6: return <Step4bEscopoNegocio {...baseProps} />;
+      case 7: return <Step4cProdutosServicos {...arrayProps} />;
+      case 8: return <Step4dVolumetria {...baseProps} />;
+      case 9: return <Step4eURLsClientes {...arrayProps} />;
+      case 10: return <Step4fCanaisVenda {...baseProps} />;
+      case 11: return <Section6Licenciamento {...baseProps} />;
+      case 12: return <Section4UBO {...arrayProps} />;
+      case 13: return <Section5Socios {...arrayProps} />;
+      case 14: return <Step7aResponsaveis {...baseProps} />;
+      case 15: return <Step7bCompliance {...baseProps} />;
+      case 16: return <Step7cCanaisReputacao {...arrayProps} />;
+      case 17: return <Step8CompliancePLD {...baseProps} />;
+      case 18: return <Step10PLDOperacao {...baseProps} />;
+      case 19: return <Step5PerfilOperacional {...baseProps} />;
+      case 20: return <Section7Marketplace {...baseProps} />;
+      case 21: return <Section8SegurancaCartao {...baseProps} />;
+      case 22: return <Step11Confirmacao {...baseProps} />;
       default: return null;
     }
   };
@@ -194,34 +218,38 @@ export default function ComplianceFullKYC() {
         <div className="bg-white rounded-3xl p-6 md:p-10 shadow-sm border border-slate-100 modern-shadow">
           {renderStep()}
 
-          {/* Botões de Ação */}
-          <div className="flex justify-between items-center mt-12 pt-8 border-t border-slate-100">
-            <Button
-              variant="ghost"
-              onClick={currentStep === 1 ? () => navigate(createPageUrl('ComplianceOnboardingStart')) : handlePrevious}
-              className="text-slate-500 hover:text-[var(--pagsmile-blue)] hover:bg-slate-50"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              {currentStep === 1 ? 'Início' : 'Voltar'}
-            </Button>
-            
-            <Button
-              onClick={isLastStep ? handleSubmit : handleNext}
-              className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white px-8 h-12 rounded-xl shadow-lg shadow-green-500/20"
-            >
-              {isLastStep ? (
-                <>
-                  Concluir
-                  <Check className="w-4 h-4 ml-2" />
-                </>
-              ) : (
-                <>
-                  Continuar
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </>
-              )}
-            </Button>
+          {/* Botões de Ação - Fixos no Rodapé */}
+          <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-md border-t border-slate-100 z-40 lg:pl-[340px] transition-all duration-300">
+            <div className="max-w-4xl mx-auto flex justify-between items-center">
+              <Button
+                variant="ghost"
+                onClick={currentStep === 1 ? () => navigate(createPageUrl('ComplianceOnboardingStart')) : handlePrevious}
+                className="text-[var(--pagsmile-blue)] hover:text-[var(--pagsmile-blue)]/80 hover:bg-[var(--pagsmile-blue)]/5 px-6"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                {currentStep === 1 ? 'Início' : 'Voltar'}
+              </Button>
+              
+              <Button
+                onClick={isLastStep ? handleSubmit : handleNext}
+                className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white px-10 h-11 rounded-full shadow-lg shadow-[var(--pagsmile-green)]/20 transition-transform active:scale-95"
+              >
+                {isLastStep ? (
+                  <>
+                    Concluir
+                    <Check className="w-4 h-4 ml-2" />
+                  </>
+                ) : (
+                  <>
+                    Continuar
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
+          {/* Espaçador para o conteúdo não ficar escondido atrás do footer fixo */}
+          <div className="h-24"></div>
         </div>
       </div>
     </div>
