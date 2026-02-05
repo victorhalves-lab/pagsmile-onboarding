@@ -42,6 +42,8 @@ export default function ComplianceSubmissions() {
   const [merchantTypeFilter, setMerchantTypeFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
   const [scoreFilter, setScoreFilter] = useState('all');
+  const [analystFilter, setAnalystFilter] = useState('all');
+  const [priorityFilter, setPriorityFilter] = useState('all');
   const [sortField, setSortField] = useState('created_date');
   const [sortOrder, setSortOrder] = useState('desc');
   const [currentPage, setCurrentPage] = useState(1);
@@ -57,6 +59,11 @@ export default function ComplianceSubmissions() {
     queryFn: () => base44.entities.Merchant.list()
   });
 
+  const { data: users = [] } = useQuery({
+    queryKey: ['users'],
+    queryFn: () => base44.entities.User.list()
+  });
+
   const merchantMap = React.useMemo(() => {
     const map = {};
     merchants.forEach(m => { map[m.id] = m; });
@@ -65,6 +72,7 @@ export default function ComplianceSubmissions() {
 
   // Estatísticas rápidas
   const stats = React.useMemo(() => {
+    const now = new Date();
     return {
       total: onboardingCases.length,
       pendente: onboardingCases.filter(c => c.status === 'Pendente').length,
@@ -72,8 +80,30 @@ export default function ComplianceSubmissions() {
       manual: onboardingCases.filter(c => c.status === 'Manual').length,
       aprovado: onboardingCases.filter(c => c.status === 'Aprovado').length,
       recusado: onboardingCases.filter(c => c.status === 'Recusado').length,
+      docsSolicitados: onboardingCases.filter(c => c.status === 'Docs Solicitados').length,
+      slaAtRisk: onboardingCases.filter(c => c.slaDeadline && new Date(c.slaDeadline) < now && c.status !== 'Aprovado' && c.status !== 'Recusado').length,
     };
   }, [onboardingCases]);
+
+  // Lista de analistas únicos
+  const analysts = React.useMemo(() => {
+    const uniqueAnalysts = [...new Set(onboardingCases.map(c => c.assignedAnalystName).filter(Boolean))];
+    return uniqueAnalysts;
+  }, [onboardingCases]);
+
+  // Calcular tempo em fila
+  const getTimeInQueue = (createdDate) => {
+    if (!createdDate) return '-';
+    const now = new Date();
+    const created = new Date(createdDate);
+    const diffMs = now - created;
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffHours / 24);
+    
+    if (diffDays > 0) return `${diffDays}d ${diffHours % 24}h`;
+    if (diffHours > 0) return `${diffHours}h`;
+    return '< 1h';
+  };
 
   const getStatusBadge = (status) => {
     const config = {
@@ -152,6 +182,12 @@ export default function ComplianceSubmissions() {
       // Tipo de merchant
       const matchesMerchantType = merchantTypeFilter === 'all' || merchant?.type === merchantTypeFilter;
       
+      // Analista
+      const matchesAnalyst = analystFilter === 'all' || c.assignedAnalystName === analystFilter;
+      
+      // Prioridade
+      const matchesPriority = priorityFilter === 'all' || c.priority === priorityFilter;
+      
       // Score
       let matchesScore = true;
       if (scoreFilter !== 'all' && c.riskScore !== undefined) {
@@ -180,7 +216,7 @@ export default function ComplianceSubmissions() {
         }
       }
       
-      return matchesSearch && matchesStatus && matchesMerchantType && matchesScore && matchesDate;
+      return matchesSearch && matchesStatus && matchesMerchantType && matchesScore && matchesDate && matchesAnalyst && matchesPriority;
     }).sort((a, b) => {
       let aValue = a[sortField];
       let bValue = b[sortField];
@@ -195,7 +231,7 @@ export default function ComplianceSubmissions() {
       }
       return aValue < bValue ? 1 : -1;
     });
-  }, [onboardingCases, merchantMap, searchTerm, statusFilter, merchantTypeFilter, scoreFilter, dateFilter, sortField, sortOrder]);
+  }, [onboardingCases, merchantMap, searchTerm, statusFilter, merchantTypeFilter, scoreFilter, dateFilter, analystFilter, priorityFilter, sortField, sortOrder]);
 
   // Paginação
   const totalPages = Math.ceil(filteredCases.length / itemsPerPage);
@@ -357,7 +393,34 @@ export default function ComplianceSubmissions() {
               </SelectContent>
             </Select>
 
-            {(statusFilter !== 'all' || merchantTypeFilter !== 'all' || scoreFilter !== 'all' || dateFilter !== 'all') && (
+            {analysts.length > 0 && (
+              <Select value={analystFilter} onValueChange={setAnalystFilter}>
+                <SelectTrigger className="w-40">
+                  <SelectValue placeholder="Analista" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos Analistas</SelectItem>
+                  {analysts.map(a => (
+                    <SelectItem key={a} value={a}>{a}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+
+            <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder="Prioridade" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas</SelectItem>
+                <SelectItem value="critical">Crítica</SelectItem>
+                <SelectItem value="high">Alta</SelectItem>
+                <SelectItem value="medium">Média</SelectItem>
+                <SelectItem value="low">Baixa</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {(statusFilter !== 'all' || merchantTypeFilter !== 'all' || scoreFilter !== 'all' || dateFilter !== 'all' || analystFilter !== 'all' || priorityFilter !== 'all') && (
               <Button 
                 variant="ghost" 
                 size="sm"
@@ -366,6 +429,8 @@ export default function ComplianceSubmissions() {
                   setMerchantTypeFilter('all');
                   setScoreFilter('all');
                   setDateFilter('all');
+                  setAnalystFilter('all');
+                  setPriorityFilter('all');
                 }}
                 className="text-slate-500"
               >
@@ -438,6 +503,8 @@ export default function ComplianceSubmissions() {
                   </button>
                 </TableHead>
                 <TableHead>Decisão IA</TableHead>
+                <TableHead>Tempo na Fila</TableHead>
+                <TableHead>Analista</TableHead>
                 <TableHead>
                   <button 
                     className="flex items-center gap-1 hover:text-slate-800 font-semibold"
@@ -491,6 +558,18 @@ export default function ComplianceSubmissions() {
                     <TableCell>{getStatusBadge(c.status)}</TableCell>
                     <TableCell>{getScoreBadge(c.riskScore)}</TableCell>
                     <TableCell>{getIADecisionBadge(c.iaDecision)}</TableCell>
+                    <TableCell>
+                      <span className={`text-sm font-medium ${
+                        getTimeInQueue(c.created_date).includes('d') ? 'text-orange-600' : 'text-slate-600'
+                      }`}>
+                        {getTimeInQueue(c.created_date)}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm text-slate-600">
+                        {c.assignedAnalystName || '-'}
+                      </span>
+                    </TableCell>
                     <TableCell>
                       <div>
                         <p className="text-slate-800 text-sm">
