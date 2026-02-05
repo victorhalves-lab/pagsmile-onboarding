@@ -62,12 +62,11 @@ export default function ComplianceOnboardingStart() {
           <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-gradient-to-br from-[var(--pagsmile-green)] to-[var(--pagsmile-blue)] text-white mb-6 shadow-xl shadow-green-900/10">
             <ShieldCheck className="w-10 h-10" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-[var(--pagsmile-blue)] mb-6 tracking-tight">
-            Compliance Inteligente
+          <h1 className="text-3xl md:text-4xl font-bold text-[var(--pagsmile-blue)] mb-6 tracking-tight">
+            Bem-vindo ao Processo de Onboarding da PagSmile
           </h1>
-          <p className="text-lg md:text-xl text-[var(--pagsmile-blue)]/70 max-w-2xl mx-auto leading-relaxed">
-            Bem-vindo ao processo de onboarding da Pagsmile. 
-            Selecione como deseja operar para iniciarmos a configuração personalizada do seu perfil.
+          <p className="text-lg text-[var(--pagsmile-blue)]/70 max-w-2xl mx-auto leading-relaxed">
+            Selecione como deseja operar para iniciarmos a análise de compliance personalizada do seu perfil.
           </p>
         </div>
 

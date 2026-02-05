@@ -19,11 +19,11 @@ export default function Step1Identificacao({ formData, handleChange }) {
       />
       
       <FormField
-        label="Data de Início da Atividade"
+        label="Data de Constituição"
         required
         type="date"
-        value={formData.dataInicioAtividade}
-        onChange={(value) => handleChange('dataInicioAtividade', value)}
+        value={formData.dataConstituicao}
+        onChange={(value) => handleChange('dataConstituicao', value)}
       />
       
       <FormField
@@ -39,6 +39,13 @@ export default function Step1Identificacao({ formData, handleChange }) {
         value={formData.nomeFantasia}
         onChange={(value) => handleChange('nomeFantasia', value)}
         placeholder="Nome comercial pelo qual sua empresa é conhecida"
+      />
+      
+      <FormField
+        label="Site ou Redes Sociais"
+        value={formData.siteUrl}
+        onChange={(value) => handleChange('siteUrl', value)}
+        placeholder="https://www.suaempresa.com.br"
       />
     </FormSection>
   );
