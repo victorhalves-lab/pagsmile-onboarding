@@ -1,12 +1,53 @@
 import React from 'react';
-import { Truck } from 'lucide-react';
+import { Truck, AlertCircle } from 'lucide-react';
 import FormSection from '../FormSection';
 import YesNoQuestion from '../YesNoQuestion';
 import FormField from '../FormField';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 export default function Step19cEntregaLogistica({ formData, handleChange }) {
+  // Se nada foi selecionado nas etapas anteriores
+  if (formData.vendeFisico !== true && formData.vendeDigitalServico !== true) {
+      return (
+        <FormSection
+          title="Operação - Entrega e Logística"
+          subtitle="Detalhes sobre a entrega de produtos e serviços."
+          icon={Truck}
+        >
+            <Alert variant="destructive" className="bg-yellow-50 border-yellow-200 text-yellow-800">
+                <AlertCircle className="h-4 w-4 text-yellow-800" />
+                <AlertTitle className="text-yellow-800">Atenção</AlertTitle>
+                <AlertDescription className="text-yellow-700">
+                    Você não selecionou nenhum tipo de venda (Físico ou Digital) na etapa anterior. 
+                    Por favor, retorne e indique se vende produtos físicos, digitais ou serviços.
+                </AlertDescription>
+            </Alert>
+            
+            <div className="mt-6 p-4 border border-[var(--pagsmile-blue)]/10 rounded-lg bg-white">
+                <Label className="text-sm font-medium text-[var(--pagsmile-blue)] mb-3 block">Deseja corrigir agora?</Label>
+                <div className="flex flex-col gap-3">
+                   <div className="flex items-center justify-between p-2 bg-slate-50 rounded">
+                      <span className="text-sm">Vende produto físico?</span>
+                      <div className="flex gap-2">
+                         <button onClick={() => handleChange('vendeFisico', true)} className="px-3 py-1 text-xs bg-white border rounded hover:bg-slate-50">Sim</button>
+                         <button onClick={() => handleChange('vendeFisico', false)} className="px-3 py-1 text-xs bg-white border rounded hover:bg-slate-50">Não</button>
+                      </div>
+                   </div>
+                   <div className="flex items-center justify-between p-2 bg-slate-50 rounded">
+                      <span className="text-sm">Vende digital/serviço?</span>
+                      <div className="flex gap-2">
+                         <button onClick={() => handleChange('vendeDigitalServico', true)} className="px-3 py-1 text-xs bg-white border rounded hover:bg-slate-50">Sim</button>
+                         <button onClick={() => handleChange('vendeDigitalServico', false)} className="px-3 py-1 text-xs bg-white border rounded hover:bg-slate-50">Não</button>
+                      </div>
+                   </div>
+                </div>
+            </div>
+        </FormSection>
+      );
+  }
+
   return (
     <FormSection
       title="Operação - Entrega e Logística"
@@ -16,12 +57,12 @@ export default function Step19cEntregaLogistica({ formData, handleChange }) {
       {/* Entrega Física */}
       {formData.vendeFisico === true && (
         <div className="space-y-4 p-4 bg-[var(--pagsmile-blue)]/5 rounded-xl border border-[var(--pagsmile-blue)]/10">
-           <h3 className="font-semibold text-[var(--pagsmile-blue)]">B2F. Entrega Física</h3>
+           <h3 className="font-semibold text-[var(--pagsmile-blue)] text-sm uppercase tracking-wide">Entrega Física</h3>
            
-           <div className="space-y-2">
-             <Label className="text-sm font-medium text-[var(--pagsmile-blue)]">Quem realiza a entrega? <span className="text-red-500">*</span></Label>
+           <div className="space-y-1.5">
+             <Label className="text-xs font-medium text-[var(--pagsmile-blue)]">Quem realiza a entrega? <span className="text-red-500">*</span></Label>
              <Select value={formData.quemEntrega} onValueChange={(val) => handleChange('quemEntrega', val)}>
-               <SelectTrigger className="border-[var(--pagsmile-blue)]/20 text-[var(--pagsmile-blue)]"><SelectValue placeholder="Selecione" /></SelectTrigger>
+               <SelectTrigger className="h-9 text-xs border-[var(--pagsmile-blue)]/20 text-[var(--pagsmile-blue)] bg-white"><SelectValue placeholder="Selecione" /></SelectTrigger>
                <SelectContent>
                  <SelectItem value="proprio">Próprio</SelectItem>
                  <SelectItem value="transportadora">Transportadora</SelectItem>
@@ -50,7 +91,13 @@ export default function Step19cEntregaLogistica({ formData, handleChange }) {
              required
            />
            {formData.comprovaEntregaFisica === true && (
-              <FormField label="Como comprova?" value={formData.comoComprovaEntregaFisica} onChange={(val) => handleChange('comoComprovaEntregaFisica', val)} placeholder="Ex: Rastreamento, AR..." />
+              <FormField 
+                label="Como comprova?" 
+                value={formData.comoComprovaEntregaFisica} 
+                onChange={(val) => handleChange('comoComprovaEntregaFisica', val)} 
+                placeholder="Ex: Rastreamento, AR..."
+                className="h-9 text-xs" 
+              />
            )}
         </div>
       )}
@@ -58,7 +105,7 @@ export default function Step19cEntregaLogistica({ formData, handleChange }) {
       {/* Entrega Digital/Serviço */}
       {formData.vendeDigitalServico === true && (
         <div className="space-y-4 p-4 bg-[var(--pagsmile-blue)]/5 rounded-xl border border-[var(--pagsmile-blue)]/10 mt-4">
-           <h3 className="font-semibold text-[var(--pagsmile-blue)]">B2D. Entrega Digital/Serviço</h3>
+           <h3 className="font-semibold text-[var(--pagsmile-blue)] text-sm uppercase tracking-wide">Entrega Digital/Serviço</h3>
            
            <YesNoQuestion
              question="Consegue comprovar entrega/prestação?"
@@ -67,7 +114,13 @@ export default function Step19cEntregaLogistica({ formData, handleChange }) {
              required
            />
            {formData.comprovaEntregaDigital === true && (
-             <FormField label="Como comprova?" value={formData.comoComprovaEntregaDigital} onChange={(val) => handleChange('comoComprovaEntregaDigital', val)} placeholder="Ex: Logs, Certificado..." />
+             <FormField 
+                label="Como comprova?" 
+                value={formData.comoComprovaEntregaDigital} 
+                onChange={(val) => handleChange('comoComprovaEntregaDigital', val)} 
+                placeholder="Ex: Logs, Certificado..." 
+                className="h-9 text-xs"
+             />
            )}
 
            <YesNoQuestion
@@ -86,12 +139,12 @@ export default function Step19cEntregaLogistica({ formData, handleChange }) {
       {/* Prazos */}
       {formData.prazoEntregaMaior7 === true && (
          <div className="space-y-4 p-4 bg-[var(--pagsmile-blue)]/5 rounded-xl border border-[var(--pagsmile-blue)]/10 mt-4">
-           <h3 className="font-semibold text-[var(--pagsmile-blue)]">B3. Prazos</h3>
+           <h3 className="font-semibold text-[var(--pagsmile-blue)] text-sm uppercase tracking-wide">Prazos</h3>
            
-           <div className="space-y-2">
-             <Label className="text-sm font-medium text-[var(--pagsmile-blue)]">Prazo típico de entrega <span className="text-red-500">*</span></Label>
+           <div className="space-y-1.5">
+             <Label className="text-xs font-medium text-[var(--pagsmile-blue)]">Prazo típico de entrega <span className="text-red-500">*</span></Label>
              <Select value={formData.prazoTipicoEntrega} onValueChange={(val) => handleChange('prazoTipicoEntrega', val)}>
-               <SelectTrigger className="border-[var(--pagsmile-blue)]/20 text-[var(--pagsmile-blue)]"><SelectValue placeholder="Selecione" /></SelectTrigger>
+               <SelectTrigger className="h-9 text-xs border-[var(--pagsmile-blue)]/20 text-[var(--pagsmile-blue)] bg-white"><SelectValue placeholder="Selecione" /></SelectTrigger>
                <SelectContent>
                  <SelectItem value="imediato">Imediato</SelectItem>
                  <SelectItem value="d1">D+1</SelectItem>
@@ -110,8 +163,8 @@ export default function Step19cEntregaLogistica({ formData, handleChange }) {
            />
            {formData.existePreVenda === true && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField label="Prazo máximo prometido" value={formData.prazoMaximoPreVenda} onChange={(val) => handleChange('prazoMaximoPreVenda', val)} placeholder="Ex: Até 60 dias" />
-                <FormField label="Como é comunicado?" value={formData.comunicacaoPreVenda} onChange={(val) => handleChange('comunicacaoPreVenda', val)} placeholder="Ex: No checkout" />
+                <FormField label="Prazo máximo prometido" value={formData.prazoMaximoPreVenda} onChange={(val) => handleChange('prazoMaximoPreVenda', val)} placeholder="Ex: Até 60 dias" className="h-9 text-xs" />
+                <FormField label="Como é comunicado?" value={formData.comunicacaoPreVenda} onChange={(val) => handleChange('comunicacaoPreVenda', val)} placeholder="Ex: No checkout" className="h-9 text-xs" />
               </div>
            )}
          </div>

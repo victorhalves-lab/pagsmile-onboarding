@@ -103,26 +103,14 @@ export default function Layout({ children, currentPageName }) {
         <div className="fixed left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[var(--pagsmile-blue)] via-[var(--pagsmile-green)] to-[var(--pagsmile-green-light)] z-[60]" />
         <div className="fixed top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[var(--pagsmile-blue)] via-[var(--pagsmile-green)] to-[var(--pagsmile-green-light)] z-[60]" />
 
-        <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/90 backdrop-blur-md border-b border-[var(--pagsmile-blue)]/5 shadow-sm">
-          <div className="max-w-7xl mx-auto px-6 h-14 flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <img 
-                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/9bd38c4f7_Logo-modo-claro.png" 
-                alt="Pagsmile" 
-                className="h-7"
-              />
-            </div>
-          </div>
-        </header>
-
-        <main className="pt-16 pb-12 px-4 md:px-8 max-w-7xl mx-auto min-h-screen">
+        <main className="pt-8 pb-8 px-4 md:px-8 max-w-7xl mx-auto min-h-screen">
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
             {children}
           </div>
         </main>
 
-        <footer className="py-8 text-center text-sm text-[var(--pagsmile-blue)]/60">
-          <p>&copy; {new Date().getFullYear()} Pagsmile. Inovação e Segurança em Pagamentos.</p>
+        <footer className="py-4 text-center text-xs text-[var(--pagsmile-blue)]/40">
+          <p>&copy; {new Date().getFullYear()} Pagsmile.</p>
         </footer>
       </div>
     );

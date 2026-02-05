@@ -243,9 +243,17 @@ export default function ComplianceFullKYC() {
   return (
     <div className="flex gap-8 items-start">
       {/* Sidebar de Navegação */}
-      <div className="hidden lg:block w-80 sticky top-24 space-y-8">
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-[var(--pagsmile-blue)]/10">
-          <h3 className="font-bold text-[var(--pagsmile-blue)] mb-2">Progresso</h3>
+      <div className="hidden lg:block w-80 sticky top-8 space-y-6">
+        <div className="mb-6">
+          <img 
+            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/9bd38c4f7_Logo-modo-claro.png" 
+            alt="Pagsmile" 
+            className="h-8 mb-6"
+          />
+        </div>
+
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-[var(--pagsmile-blue)]/10">
+          <h3 className="font-bold text-[var(--pagsmile-blue)] mb-2 text-sm">Progresso</h3>
           <div className="h-2 bg-[var(--pagsmile-blue)]/5 rounded-full overflow-hidden mb-4">
             <div 
               className="h-full bg-[var(--pagsmile-green)] transition-all duration-500 ease-out"
@@ -273,30 +281,32 @@ export default function ComplianceFullKYC() {
           {renderStep()}
 
           {/* Botões de Ação - Fixos no Rodapé */}
-          <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-md border-t border-[var(--pagsmile-blue)]/5 z-40 lg:pl-[340px] transition-all duration-300">
+          <div className="fixed bottom-0 left-0 right-0 p-3 bg-white/95 backdrop-blur-md border-t border-[var(--pagsmile-blue)]/5 z-40 lg:pl-[340px] transition-all duration-300">
             <div className="max-w-4xl mx-auto flex justify-between items-center">
               <Button
                 variant="ghost"
+                size="sm"
                 onClick={currentStep === 1 ? () => navigate(createPageUrl('ComplianceOnboardingStart')) : handlePrevious}
-                className="text-[var(--pagsmile-blue)] hover:text-[var(--pagsmile-blue)]/80 hover:bg-[var(--pagsmile-blue)]/5 px-6"
+                className="text-[var(--pagsmile-blue)] hover:text-[var(--pagsmile-blue)]/80 hover:bg-[var(--pagsmile-blue)]/5 h-9 px-4 text-xs"
               >
-                <ArrowLeft className="w-4 h-4 mr-2" />
+                <ArrowLeft className="w-3 h-3 mr-2" />
                 {currentStep === 1 ? 'Início' : 'Voltar'}
               </Button>
               
               <Button
+                size="sm"
                 onClick={isLastStep ? handleSubmit : handleNext}
-                className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white px-10 h-11 rounded-full shadow-lg shadow-[var(--pagsmile-green)]/20 transition-transform active:scale-95"
+                className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white px-6 h-9 rounded-full shadow-md shadow-[var(--pagsmile-green)]/20 transition-transform active:scale-95 text-xs font-semibold"
               >
                 {isLastStep ? (
                   <>
                     Concluir
-                    <Check className="w-4 h-4 ml-2" />
+                    <Check className="w-3 h-3 ml-2" />
                   </>
                 ) : (
                   <>
                     Continuar
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                    <ArrowRight className="w-3 h-3 ml-2" />
                   </>
                 )}
               </Button>
