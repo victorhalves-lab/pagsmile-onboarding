@@ -34,10 +34,10 @@ export default function YesNoQuestion({
             type="button"
             onClick={() => onChange(true)}
             className={cn(
-              "flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 border-2",
+              "flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 border shadow-sm",
               value === true 
                 ? "border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)] text-white shadow-md transform -translate-y-0.5" 
-                : "border-slate-100 bg-slate-50 text-slate-600 hover:border-[var(--pagsmile-green)] hover:text-[var(--pagsmile-green)]"
+                : "border-slate-200 bg-white text-slate-600 hover:border-[var(--pagsmile-green)] hover:text-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/5"
             )}
           >
             <Check className="w-4 h-4" />
@@ -48,10 +48,10 @@ export default function YesNoQuestion({
             type="button"
             onClick={() => onChange(false)}
             className={cn(
-              "flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 border-2",
+              "flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 border shadow-sm",
               value === false 
-                ? "border-slate-600 bg-slate-600 text-white shadow-md transform -translate-y-0.5" 
-                : "border-slate-100 bg-slate-50 text-slate-600 hover:border-slate-400 hover:text-slate-800"
+                ? "border-red-500 bg-red-500 text-white shadow-md transform -translate-y-0.5" 
+                : "border-slate-200 bg-white text-slate-600 hover:border-red-300 hover:text-red-600 hover:bg-red-50"
             )}
           >
             <X className="w-4 h-4" />

@@ -200,18 +200,13 @@ export default function Step7Responsaveis({ formData, handleChange }) {
       >
         <div className="space-y-3">
           <Label className="text-sm font-medium text-slate-700">Quais canais de atendimento sua empresa oferece? <span className="text-red-500">*</span></Label>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {canaisOptions.map(canal => (
-              <div key={canal.id} className="flex items-center space-x-2 p-3 border border-slate-200 rounded-xl bg-white">
-                <Checkbox 
-                  id={`canal-${canal.id}`}
-                  checked={(formData.canaisAtendimento || []).includes(canal.id)}
-                  onCheckedChange={(checked) => handleCanalChange(canal.id, checked)}
-                />
-                <Label htmlFor={`canal-${canal.id}`} className="cursor-pointer text-sm text-slate-700">{canal.label}</Label>
-              </div>
-            ))}
-          </div>
+          <SelectionButton
+            options={canaisOptions.map(c => ({ value: c.id, label: c.label }))}
+            value={formData.canaisAtendimento || []}
+            onChange={(val) => handleChange('canaisAtendimento', val)}
+            isMulti={true}
+            columns={3}
+          />
         </div>
 
         <Separator className="my-6" />
