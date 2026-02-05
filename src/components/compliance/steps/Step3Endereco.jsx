@@ -7,41 +7,87 @@ export default function Step3Endereco({ formData, handleChange }) {
   return (
     <FormSection
       title="Endereço Comercial"
-      subtitle="Endereço da sede e outras unidades."
+      subtitle="Endereço da sede conforme cartão CNPJ."
       icon={MapPin}
     >
-      <FormField
-        label="Endereço Registrado"
-        required
-        type="textarea"
-        value={formData.enderecoComercial}
-        onChange={(value) => handleChange('enderecoComercial', value)}
-        placeholder="Rua, número, complemento, bairro, cidade, estado"
-        rows={3}
-      />
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <FormField
-          label="CEP"
-          value={formData.cep}
-          onChange={(value) => handleChange('cep', value)}
-          placeholder="00000-000"
-        />
-        
-        <FormField
-          label="Estado"
-          value={formData.estado}
-          onChange={(value) => handleChange('estado', value)}
-          placeholder="Ex: São Paulo"
-        />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="md:col-span-1">
+          <FormField
+            label="CEP"
+            required
+            value={formData.cep}
+            onChange={(value) => handleChange('cep', value)}
+            placeholder="00000-000"
+          />
+        </div>
+        <div className="md:col-span-2">
+          <FormField
+            label="Logradouro"
+            required
+            value={formData.logradouro}
+            onChange={(value) => handleChange('logradouro', value)}
+            placeholder="Rua, Avenida, etc."
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="md:col-span-1">
+          <FormField
+            label="Número"
+            required
+            value={formData.numero}
+            onChange={(value) => handleChange('numero', value)}
+            placeholder="Nº"
+          />
+        </div>
+        <div className="md:col-span-2">
+          <FormField
+            label="Complemento"
+            value={formData.complemento}
+            onChange={(value) => handleChange('complemento', value)}
+            placeholder="Sala, Bloco, Andar (opcional)"
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="md:col-span-1">
+          <FormField
+            label="Bairro"
+            required
+            value={formData.bairro}
+            onChange={(value) => handleChange('bairro', value)}
+            placeholder="Bairro"
+          />
+        </div>
+        <div className="md:col-span-1">
+          <FormField
+            label="Cidade"
+            required
+            value={formData.cidade}
+            onChange={(value) => handleChange('cidade', value)}
+            placeholder="Cidade"
+          />
+        </div>
+        <div className="md:col-span-1">
+          <FormField
+            label="Estado (UF)"
+            required
+            value={formData.estado}
+            onChange={(value) => handleChange('estado', value)}
+            placeholder="UF"
+            maxLength={2}
+          />
+        </div>
       </div>
       
       <FormField
-        label="Outros Endereços/Unidades"
+        label="Outros Endereços / Filiais"
         type="textarea"
         value={formData.outrosEnderecos}
         onChange={(value) => handleChange('outrosEnderecos', value)}
-        placeholder="Informe se a empresa possui outros endereços ou filiais."
+        placeholder="Caso a empresa opere em outros endereços além da sede, liste-os aqui."
         rows={3}
       />
     </FormSection>
