@@ -72,6 +72,11 @@ export default function AdminDashboard() {
     queryFn: () => base44.entities.DocumentUpload.list()
   });
 
+  const { data: analytics = [] } = useQuery({
+    queryKey: ['onboardingAnalytics'],
+    queryFn: () => base44.entities.OnboardingAnalytics.list('-created_date', 1000)
+  });
+
   const merchantMap = React.useMemo(() => {
     const map = {};
     merchants.forEach(m => { map[m.id] = m; });
@@ -104,6 +109,24 @@ export default function AdminDashboard() {
       ? (completedAnalyses.reduce((sum, a) => sum + (a.processing_time_ms || 0), 0) / completedAnalyses.length / 1000).toFixed(1)
       : 0;
 
+    // Tempo médio de conclusão total (em horas)
+    const completedCases = onboardingCases.filter(c => 
+      (c.status === 'Aprovado' || c.status === 'Recusado') && 
+      c.finalDecisionDate && c.created_date
+    );
+    const avgCompletionTimeHours = completedCases.length > 0
+      ? (completedCases.reduce((sum, c) => {
+          const created = new Date(c.created_date);
+          const completed = new Date(c.finalDecisionDate);
+          return sum + (completed - created) / (1000 * 60 * 60);
+        }, 0) / completedCases.length)
+      : 0;
+
+    // Formatar tempo de conclusão (dias ou horas)
+    const avgCompletionTimeLabel = avgCompletionTimeHours > 24 
+      ? `${(avgCompletionTimeHours / 24).toFixed(1)} dias`
+      : `${avgCompletionTimeHours.toFixed(1)} h`;
+
     // Tempo médio de análise manual (em horas) - casos que passaram por revisão manual
     const manualCases = onboardingCases.filter(c => 
       (c.status === 'Aprovado' || c.status === 'Recusado') && 
@@ -112,10 +135,25 @@ export default function AdminDashboard() {
     );
     const avgTimeManual = manualCases.length > 0
       ? (manualCases.reduce((sum, c) => {
-          const created = new Date(c.created_date);
-          const completed = new Date(c.finalDecisionDate);
-          return sum + (completed - created) / (1000 * 60 * 60);
+          // Se tiver data de início de revisão manual seria melhor, mas usando created_date como proxy se não tiver
+          const start = c.manualReviewDate ? new Date(c.manualReviewDate) : new Date(c.created_date);
+          const end = new Date(c.finalDecisionDate);
+          return sum + (end - start) / (1000 * 60 * 60);
         }, 0) / manualCases.length).toFixed(1)
+      : 0;
+
+    // Taxa de Conversão (Analytics)
+    const linkClicks = analytics.filter(a => a.eventType === 'link_click').length;
+    const completedOnboardings = analytics.filter(a => a.eventType === 'onboarding_complete').length;
+    const conversionRate = linkClicks > 0 
+      ? ((completedOnboardings / linkClicks) * 100).toFixed(1)
+      : 0;
+
+    // Taxa de Rejeição
+    const finalizedCases = onboardingCases.filter(c => c.status === 'Aprovado' || c.status === 'Recusado');
+    const rejectedCases = finalizedCases.filter(c => c.status === 'Recusado');
+    const rejectionRate = finalizedCases.length > 0
+      ? ((rejectedCases.length / finalizedCases.length) * 100).toFixed(1)
       : 0;
 
     // Taxa de aprovação automática (esta semana vs semana passada)
@@ -212,9 +250,17 @@ export default function AdminDashboard() {
       highRisk,
       criticalRisk,
       
-      topRejectionReasons
+      topRejectionReasons,
+      
+      // New Metrics
+      conversionRate: `${conversionRate}%`,
+      avgCompletionTimeLabel,
+      rejectionRate: `${rejectionRate}%`,
+      helenaAutoApprovalRate: helenaAnalyses.length > 0 
+        ? ((approvedByHelena.length / helenaAnalyses.length) * 100).toFixed(1) 
+        : 0
     };
-  }, [onboardingCases, helenaAnalyses, documentUploads]);
+  }, [onboardingCases, helenaAnalyses, documentUploads, analytics]);
 
   // Dados para gráfico de funil
   const funnelData = React.useMemo(() => [
@@ -374,43 +420,35 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KPICardComparison
           title="Tempo de Conclusão"
-          beforeValue="7 dias"
-          afterValue="0.5 dias"
-          improvement="-92.9% de queda"
-          improvementLabel="Redução de 93% no tempo de onboarding"
-          target="0.25 dias"
+          afterValue={stats.avgCompletionTimeLabel}
+          improvementLabel="Média desde a criação até decisão final"
+          target="24 h"
           targetLabel="Meta"
           colorScheme="green"
         />
         <KPICardComparison
           title="Taxa de Conversão"
-          beforeValue="35%"
-          afterValue="85%"
-          improvement="+142.9% de melhoria"
-          improvementLabel="Aumento de 142% na conclusão"
-          target="90%"
+          afterValue={stats.conversionRate}
+          improvementLabel="Visitantes que completaram o fluxo"
+          target="40%"
           targetLabel="Meta"
-          colorScheme="green"
+          colorScheme="blue"
         />
         <KPICardComparison
-          title="NPS do Processo"
-          beforeValue="20 pts"
-          afterValue="82 pts"
-          improvement="+310.0% de melhoria"
-          improvementLabel="Satisfação excepcional"
-          target="80 pts"
-          targetLabel="Meta"
-          colorScheme="green"
+          title="Taxa de Rejeição"
+          afterValue={stats.rejectionRate}
+          improvementLabel="Casos finalizados como recusados"
+          target="15%"
+          targetLabel="Max"
+          colorScheme="red"
         />
         <KPICardComparison
-          title="Custo por Onboarding"
-          beforeValue="150 R$"
-          afterValue="5 R$"
-          improvement="-96.7% de queda"
-          improvementLabel="Redução de 96.7% em custos"
-          target="3 R$"
+          title="Aprovação Auto IA"
+          afterValue={`${stats.helenaAutoApprovalRate}%`}
+          improvementLabel="Decisões automáticas da Helena"
+          target="60%"
           targetLabel="Meta"
-          colorScheme="green"
+          colorScheme="purple"
         />
       </div>
 
