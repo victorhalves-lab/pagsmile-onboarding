@@ -211,7 +211,7 @@ export default function DocumentFormDialog({ open, onOpenChange, documentLink, t
             <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
               <div>
                 <Label>Documento Obrigatório</Label>
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-[var(--pagsmile-blue)]/70">
                   O merchant precisará enviar este documento
                 </p>
               </div>
@@ -321,7 +321,7 @@ export default function DocumentFormDialog({ open, onOpenChange, documentLink, t
             <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
               <div>
                 <Label>Documento Obrigatório por Padrão</Label>
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-[var(--pagsmile-blue)]/70">
                   Pode ser alterado em cada questionário
                 </p>
               </div>

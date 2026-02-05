@@ -65,8 +65,8 @@ export default function TemplateDocumentsList({ template, templateId, documentTy
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-slate-800">Documentos Exigidos</h3>
-          <p className="text-sm text-slate-500">
+          <h3 className="text-lg font-semibold text-[var(--pagsmile-blue)]">Documentos Exigidos</h3>
+          <p className="text-sm text-[var(--pagsmile-blue)]/70">
             Documentos que serão solicitados neste questionário. {requiredDocuments.length} documento(s).
           </p>
         </div>
@@ -79,11 +79,11 @@ export default function TemplateDocumentsList({ template, templateId, documentTy
       {/* Documents List */}
       {requiredDocuments.length === 0 ? (
         <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-          <FileText className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-          <h3 className="text-lg font-medium text-slate-800 mb-2">
+          <FileText className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/40 mb-4" />
+          <h3 className="text-lg font-medium text-[var(--pagsmile-blue)] mb-2">
             Nenhum documento vinculado
           </h3>
-          <p className="text-slate-500 mb-6">
+          <p className="text-[var(--pagsmile-blue)]/70 mb-6">
             Adicione documentos que serão solicitados durante o onboarding.
           </p>
           <Button onClick={onAddDocument} className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90">
@@ -116,7 +116,7 @@ export default function TemplateDocumentsList({ template, templateId, documentTy
                             {/* Drag Handle */}
                             <div
                               {...provided.dragHandleProps}
-                              className="mt-1 cursor-grab active:cursor-grabbing text-slate-400 hover:text-slate-600"
+                              className="mt-1 cursor-grab active:cursor-grabbing text-[var(--pagsmile-blue)]/50 hover:text-[var(--pagsmile-blue)]/80"
                             >
                               <GripVertical className="w-5 h-5" />
                             </div>
@@ -128,11 +128,11 @@ export default function TemplateDocumentsList({ template, templateId, documentTy
 
                             {/* Content */}
                             <div className="flex-1 min-w-0">
-                              <p className="text-slate-800 font-medium">
+                              <p className="text-[var(--pagsmile-blue)] font-medium">
                                 {docLink.label || docType?.name || 'Documento'}
                               </p>
                               {docType && (
-                                <p className="text-sm text-slate-500 mt-0.5">
+                                <p className="text-sm text-[var(--pagsmile-blue)]/70 mt-0.5">
                                   {docType.description}
                                 </p>
                               )}
