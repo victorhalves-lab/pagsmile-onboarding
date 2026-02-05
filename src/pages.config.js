@@ -63,6 +63,7 @@ import QuestionnaireEditor from './pages/QuestionnaireEditor';
 import QuestionnaireTemplates from './pages/QuestionnaireTemplates';
 import ComplianceSubmissions from './pages/ComplianceSubmissions';
 import AdminIntegrations from './pages/AdminIntegrations';
+import AdminHelenaIA from './pages/AdminHelenaIA';
 import __Layout from './Layout.jsx';
 
 
@@ -83,6 +84,7 @@ export const PAGES = {
     "QuestionnaireTemplates": QuestionnaireTemplates,
     "ComplianceSubmissions": ComplianceSubmissions,
     "AdminIntegrations": AdminIntegrations,
+    "AdminHelenaIA": AdminHelenaIA,
 }
 
 export const pagesConfig = {
