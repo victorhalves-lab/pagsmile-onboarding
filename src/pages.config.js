@@ -48,10 +48,13 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import AdminDashboard from './pages/AdminDashboard';
+import AdminHelenaIA from './pages/AdminHelenaIA';
+import AdminIntegrations from './pages/AdminIntegrations';
 import AdminSettings from './pages/AdminSettings';
 import ComplianceFullKYC from './pages/ComplianceFullKYC';
 import ComplianceOnboardingStart from './pages/ComplianceOnboardingStart';
 import CompliancePixOnly from './pages/CompliancePixOnly';
+import ComplianceSubmissions from './pages/ComplianceSubmissions';
 import DocumentUploadFull from './pages/DocumentUploadFull';
 import DocumentUploadPix from './pages/DocumentUploadPix';
 import GenerateOnboardingLink from './pages/GenerateOnboardingLink';
@@ -61,18 +64,22 @@ import OnboardingCaseDetails from './pages/OnboardingCaseDetails';
 import OnboardingCompletion from './pages/OnboardingCompletion';
 import QuestionnaireEditor from './pages/QuestionnaireEditor';
 import QuestionnaireTemplates from './pages/QuestionnaireTemplates';
-import ComplianceSubmissions from './pages/ComplianceSubmissions';
-import AdminIntegrations from './pages/AdminIntegrations';
-import AdminHelenaIA from './pages/AdminHelenaIA';
+import AdminComplianceAudit from './pages/AdminComplianceAudit';
+import AdminComplianceDocs from './pages/AdminComplianceDocs';
+import AdminComplianceRules from './pages/AdminComplianceRules';
+import AdminRevalidationManager from './pages/AdminRevalidationManager';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "AdminDashboard": AdminDashboard,
+    "AdminHelenaIA": AdminHelenaIA,
+    "AdminIntegrations": AdminIntegrations,
     "AdminSettings": AdminSettings,
     "ComplianceFullKYC": ComplianceFullKYC,
     "ComplianceOnboardingStart": ComplianceOnboardingStart,
     "CompliancePixOnly": CompliancePixOnly,
+    "ComplianceSubmissions": ComplianceSubmissions,
     "DocumentUploadFull": DocumentUploadFull,
     "DocumentUploadPix": DocumentUploadPix,
     "GenerateOnboardingLink": GenerateOnboardingLink,
@@ -82,9 +89,10 @@ export const PAGES = {
     "OnboardingCompletion": OnboardingCompletion,
     "QuestionnaireEditor": QuestionnaireEditor,
     "QuestionnaireTemplates": QuestionnaireTemplates,
-    "ComplianceSubmissions": ComplianceSubmissions,
-    "AdminIntegrations": AdminIntegrations,
-    "AdminHelenaIA": AdminHelenaIA,
+    "AdminComplianceAudit": AdminComplianceAudit,
+    "AdminComplianceDocs": AdminComplianceDocs,
+    "AdminComplianceRules": AdminComplianceRules,
+    "AdminRevalidationManager": AdminRevalidationManager,
 }
 
 export const pagesConfig = {
