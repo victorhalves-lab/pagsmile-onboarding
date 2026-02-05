@@ -143,10 +143,8 @@ export default function ComplianceFullKYC() {
       case 9: return <Section6Licenciamento {...baseProps} />;
       case 10: return <Section7Marketplace {...baseProps} />;
       case 11: return <Section8SegurancaCartao {...baseProps} />;
-      case 12: return <Step8PLDSancoes {...baseProps} />;
-      case 13: return <Step9PLDRiscos {...baseProps} />;
-      case 14: return <Step10PLDOperacao {...baseProps} />;
-      case 15: return <Step11Confirmacao {...baseProps} />;
+      case 12: return <Step8CompliancePLD {...baseProps} />;
+      case 13: return <Step11Confirmacao {...baseProps} />;
       default: return null;
     }
   };
