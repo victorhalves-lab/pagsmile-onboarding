@@ -39,15 +39,17 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   ArrowLeft, Link as LinkIcon, Copy, Check, ExternalLink, Info,
   Plus, QrCode, BarChart3, Eye, Trash2, Loader2, RefreshCw,
-  TrendingUp, MousePointer, FileCheck
+  TrendingUp, MousePointer, FileCheck, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { toast } from 'sonner';
+import LinkAnalyticsDashboard from '../components/analytics/LinkAnalyticsDashboard';
 
 export default function GenerateOnboardingLink() {
   const [copied, setCopied] = useState(false);
   const [copiedId, setCopiedId] = useState(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [activeTab, setActiveTab] = useState('generate');
+  const [expandedLinkId, setExpandedLinkId] = useState(null);
   const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState({
@@ -388,74 +390,112 @@ export default function GenerateOnboardingLink() {
                   <p className="text-slate-500">Nenhum link personalizado criado</p>
                 </div>
               ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Código</TableHead>
-                      <TableHead>Agente</TableHead>
-                      <TableHead>Cliques</TableHead>
-                      <TableHead>Submissões</TableHead>
-                      <TableHead>Conversão</TableHead>
-                      <TableHead>Criado em</TableHead>
-                      <TableHead className="text-right">Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {links.map((link) => {
-                      const conversion = link.clickCount > 0 
-                        ? ((link.submissionCount / link.clickCount) * 100).toFixed(1) 
-                        : 0;
-                      return (
-                        <TableRow key={link.id}>
-                          <TableCell>
-                            <Badge variant="outline" className="font-mono">{link.uniqueCode}</Badge>
-                          </TableCell>
-                          <TableCell className="text-sm">
-                            {link.commercialAgentName || '-'}
-                          </TableCell>
-                          <TableCell>
-                            <span className="font-medium text-blue-600">{link.clickCount || 0}</span>
-                          </TableCell>
-                          <TableCell>
-                            <span className="font-medium text-purple-600">{link.submissionCount || 0}</span>
-                          </TableCell>
-                          <TableCell>
-                            <span className="font-medium text-teal-600">{conversion}%</span>
-                          </TableCell>
-                          <TableCell className="text-sm text-slate-500">
-                            {link.created_date ? new Date(link.created_date).toLocaleDateString('pt-BR') : '-'}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex items-center justify-end gap-1">
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
-                                onClick={() => handleCopy(generateLinkUrl(link), link.id)}
-                              >
-                                {copiedId === link.id ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
-                              </Button>
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
-                                onClick={() => window.open(generateLinkUrl(link), '_blank')}
-                              >
-                                <ExternalLink className="w-4 h-4" />
-                              </Button>
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
-                                onClick={() => deleteLinkMutation.mutate(link.id)}
-                                className="text-red-500 hover:text-red-700"
-                              >
-                                <Trash2 className="w-4 h-4" />
+                <div className="space-y-4">
+                  {links.map((link) => {
+                    const conversion = link.clickCount > 0 
+                      ? ((link.submissionCount / link.clickCount) * 100).toFixed(1) 
+                      : 0;
+                    const isExpanded = expandedLinkId === link.id;
+                    
+                    return (
+                      <div key={link.id} className="border border-slate-200 rounded-lg overflow-hidden">
+                        {/* Link Header */}
+                        <div 
+                          className="p-4 bg-white hover:bg-slate-50 cursor-pointer transition-colors"
+                          onClick={() => setExpandedLinkId(isExpanded ? null : link.id)}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                              <Badge variant="outline" className="font-mono text-sm">{link.uniqueCode}</Badge>
+                              {link.commercialAgentName && (
+                                <span className="text-sm text-slate-600">{link.commercialAgentName}</span>
+                              )}
+                              <span className="text-xs text-slate-400">
+                                {link.created_date ? new Date(link.created_date).toLocaleDateString('pt-BR') : ''}
+                              </span>
+                            </div>
+                            
+                            <div className="flex items-center gap-6">
+                              {/* Métricas resumidas */}
+                              <div className="flex items-center gap-4 text-sm">
+                                <div className="flex items-center gap-1">
+                                  <MousePointer className="w-3 h-3 text-blue-500" />
+                                  <span className="font-medium text-blue-600">{link.clickCount || 0}</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <FileCheck className="w-3 h-3 text-purple-500" />
+                                  <span className="font-medium text-purple-600">{link.submissionCount || 0}</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <Check className="w-3 h-3 text-green-500" />
+                                  <span className="font-medium text-green-600">{link.completedCount || 0}</span>
+                                </div>
+                                <Badge variant="secondary" className="text-xs">
+                                  {conversion}% conv.
+                                </Badge>
+                              </div>
+
+                              {/* Ações */}
+                              <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm"
+                                  onClick={() => handleCopy(generateLinkUrl(link), link.id)}
+                                >
+                                  {copiedId === link.id ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm"
+                                  onClick={() => window.open(generateLinkUrl(link), '_blank')}
+                                >
+                                  <ExternalLink className="w-4 h-4" />
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm"
+                                  onClick={() => deleteLinkMutation.mutate(link.id)}
+                                  className="text-red-500 hover:text-red-700"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+
+                              {/* Expand/Collapse */}
+                              <Button variant="ghost" size="sm">
+                                {isExpanded ? (
+                                  <ChevronUp className="w-4 h-4" />
+                                ) : (
+                                  <ChevronDown className="w-4 h-4" />
+                                )}
                               </Button>
                             </div>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
+                          </div>
+
+                          {/* UTM Tags */}
+                          {(link.utmSource || link.utmMedium || link.utmCampaign) && (
+                            <div className="flex gap-2 mt-2">
+                              {link.utmSource && <Badge variant="outline" className="text-xs">source: {link.utmSource}</Badge>}
+                              {link.utmMedium && <Badge variant="outline" className="text-xs">medium: {link.utmMedium}</Badge>}
+                              {link.utmCampaign && <Badge variant="outline" className="text-xs">campaign: {link.utmCampaign}</Badge>}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Analytics Dashboard Expandido */}
+                        {isExpanded && (
+                          <div className="border-t border-slate-200 bg-slate-50 p-4">
+                            <h4 className="text-sm font-semibold text-slate-700 mb-4 flex items-center gap-2">
+                              <BarChart3 className="w-4 h-4" />
+                              Analytics Detalhado - Funil de Conversão
+                            </h4>
+                            <LinkAnalyticsDashboard linkId={link.id} linkCode={link.uniqueCode} />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               )}
             </CardContent>
           </Card>

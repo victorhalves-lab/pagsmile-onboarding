@@ -1,13 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { Button } from '@/components/ui/button';
 import { QrCode, CreditCard, Wallet, ArrowRight, ArrowLeft } from 'lucide-react';
 import SelectionButton from '../components/compliance/SelectionButton';
+import { trackLinkClick } from '../components/analytics/useOnboardingAnalytics';
 
 export default function ComplianceOnboardingStart() {
   const navigate = useNavigate();
   const [selectedMethod, setSelectedMethod] = useState(null);
+
+  // Rastreia clique no link ao carregar a página
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const refCode = urlParams.get('ref');
+    
+    // Salva o código do link no localStorage para uso posterior
+    if (refCode) {
+      localStorage.setItem('onboarding_link_code', refCode);
+      trackLinkClick(refCode);
+    }
+  }, []);
 
   const paymentMethods = [
     {
