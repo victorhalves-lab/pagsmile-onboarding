@@ -4,125 +4,165 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
-:root {
-  --pagsmile-green: #2bc196;
-  --pagsmile-blue: #002443;
-  
-  /* Override ALL Shadcn/Tailwind default colors */
-  --background: #ffffff;
-  --foreground: #002443;
-  --card: #ffffff;
-  --card-foreground: #002443;
-  --popover: #ffffff;
-  --popover-foreground: #002443;
-  --primary: #2bc196;
-  --primary-foreground: #ffffff;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #002443;
-  --muted: #f1f5f9;
-  --muted-foreground: #002443;
-  --accent: #2bc196;
-  --accent-foreground: #ffffff;
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #2bc196;
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 210 100% 13%;
+    --card: 0 0% 100%;
+    --card-foreground: 210 100% 13%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 100% 13%;
+    --primary: 160 62% 45%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 210 100% 13%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 210 100% 13%;
+    --accent: 160 62% 45%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 160 62% 45%;
+    --radius: 0.75rem;
+  }
 }
 
+@layer base {
+  * {
+    @apply border-border;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: #002443;
+  }
+}
+
+/* ===== FORÇA GLOBAL - SOBRESCREVE TUDO ===== */
+
+/* Todos os textos devem ser azul Pagsmile */
 * {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-}
-
-body {
-  font-family: 'Plus Jakarta Sans', sans-serif;
   color: #002443;
-  background-color: #f8f9fa;
 }
 
-/* FORCE all text to be Pagsmile blue - NO BLACK OR GRAY */
-h1, h2, h3, h4, h5, h6, p, span, label, div, a, li, td, th, input, textarea, select, button {
-  color: #002443 !important;
-}
-
-/* Exceptions for white text on colored backgrounds */
-.bg-\[\#2bc196\] *, 
+/* Exceções: textos brancos em fundos coloridos */
 .bg-\[\#2bc196\],
-.bg-\[var\(--pagsmile-green\)\] *,
-[data-state="checked"] *,
-.bg-green-500 *,
+.bg-\[\#2bc196\] *,
+.bg-\[\#002443\],
+.bg-\[\#002443\] *,
+[data-state="checked"],
+.bg-red-500,
 .bg-red-500 *,
-.bg-destructive * {
+.bg-green-500,
+.bg-green-500 * {
   color: #ffffff !important;
 }
 
-/* Fix muted/gray text classes */
-.text-muted-foreground,
-.text-gray-500,
-.text-gray-600,
-.text-gray-700,
-.text-slate-500,
-.text-slate-600,
-.text-slate-700 {
-  color: #002443 !important;
-  opacity: 0.7;
+/* Ícones herdam a cor do pai */
+svg {
+  color: inherit;
 }
 
-/* Fix black text classes */
-.text-black,
-.text-gray-900,
-.text-gray-800,
-.text-slate-900,
-.text-slate-800 {
-  color: #002443 !important;
-}
-
-/* Primary/accent colors */
-.text-primary {
-  color: #2bc196 !important;
-}
-
-.bg-primary {
-  background-color: #2bc196 !important;
-}
-
-/* Focus rings */
-.focus\:ring-ring:focus,
-.focus-visible\:ring-ring:focus-visible {
-  --tw-ring-color: #2bc196 !important;
-}
-
-/* Switch component - when checked use blue, unchecked use light gray */
-[data-state="checked"] {
-  background-color: #002443 !important;
-}
-
-[data-state="unchecked"] {
-  background-color: #e2e8f0 !important;
-}
-
-/* Badge default */
-.bg-primary {
-  background-color: #2bc196 !important;
-}
-
-/* Placeholder text */
+/* Placeholder */
 ::placeholder {
   color: #002443 !important;
   opacity: 0.5;
 }
 
-/* Icons should inherit color */
-svg {
-  color: inherit !important;
+/* Links */
+a {
+  color: #002443;
 }
 
-/* Tabs */
-[data-state="active"] {
+a:hover {
+  color: #2bc196;
+}
+
+/* Bordas padrão */
+.border {
+  border-color: #e2e8f0;
+}
+
+/* Remove qualquer cor preta/cinza residual */
+.text-black,
+.text-gray-900,
+.text-gray-800,
+.text-gray-700,
+.text-gray-600,
+.text-gray-500,
+.text-gray-400,
+.text-slate-900,
+.text-slate-800,
+.text-slate-700,
+.text-slate-600,
+.text-slate-500,
+.text-slate-400 {
   color: #002443 !important;
 }
 
-[data-state="inactive"] {
+/* Cores muted sempre em azul */
+.text-muted-foreground {
   color: #002443 !important;
   opacity: 0.7;
+}
+
+/* Botões primários */
+.bg-primary {
+  background-color: #2bc196 !important;
+}
+
+.text-primary {
+  color: #2bc196 !important;
+}
+
+.text-primary-foreground {
+  color: #ffffff !important;
+}
+
+/* Estados de foco */
+.focus\:ring-ring:focus,
+.focus-visible\:ring-ring:focus-visible {
+  --tw-ring-color: #2bc196;
+}
+
+/* Recharts (gráficos) */
+.recharts-text {
+  fill: #002443 !important;
+}
+
+.recharts-cartesian-axis-tick-value {
+  fill: #002443 !important;
+}
+
+.recharts-legend-item-text {
+  color: #002443 !important;
+}
+
+.recharts-tooltip-label,
+.recharts-tooltip-item {
+  color: #002443 !important;
+}
+
+/* Sonner toasts */
+[data-sonner-toast] {
+  background-color: #ffffff !important;
+  color: #002443 !important;
+  border-color: #e2e8f0 !important;
+}
+
+[data-sonner-toast] [data-title],
+[data-sonner-toast] [data-description] {
+  color: #002443 !important;
+}
+
+/* Forçar cor em elementos específicos do Radix */
+[data-radix-popper-content-wrapper] * {
+  color: #002443;
+}
+
+[data-radix-popper-content-wrapper] [data-state="checked"] {
+  color: #ffffff !important;
 }
