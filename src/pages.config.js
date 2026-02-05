@@ -62,13 +62,13 @@ import ComplianceSubmissions from './pages/ComplianceSubmissions';
 import DocumentUploadFull from './pages/DocumentUploadFull';
 import DocumentUploadPix from './pages/DocumentUploadPix';
 import GenerateOnboardingLink from './pages/GenerateOnboardingLink';
+import Home from './pages/Home';
 import LivenessFacematchStep from './pages/LivenessFacematchStep';
 import LivenessSimulation from './pages/LivenessSimulation';
 import OnboardingCaseDetails from './pages/OnboardingCaseDetails';
 import OnboardingCompletion from './pages/OnboardingCompletion';
 import QuestionnaireEditor from './pages/QuestionnaireEditor';
 import QuestionnaireTemplates from './pages/QuestionnaireTemplates';
-import Home from './pages/Home';
 import __Layout from './Layout.jsx';
 
 
@@ -88,13 +88,13 @@ export const PAGES = {
     "DocumentUploadFull": DocumentUploadFull,
     "DocumentUploadPix": DocumentUploadPix,
     "GenerateOnboardingLink": GenerateOnboardingLink,
+    "Home": Home,
     "LivenessFacematchStep": LivenessFacematchStep,
     "LivenessSimulation": LivenessSimulation,
     "OnboardingCaseDetails": OnboardingCaseDetails,
     "OnboardingCompletion": OnboardingCompletion,
     "QuestionnaireEditor": QuestionnaireEditor,
     "QuestionnaireTemplates": QuestionnaireTemplates,
-    "Home": Home,
 }
 
 export const pagesConfig = {

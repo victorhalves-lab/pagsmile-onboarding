@@ -43,6 +43,8 @@ import TrendLineChart from '../components/dashboard/TrendLineChart';
 import TopRejectionReasonsChart from '../components/dashboard/TopRejectionReasonsChart';
 import RiskDistributionCards from '../components/dashboard/RiskDistributionCards';
 import QuickMetricsCard from '../components/dashboard/QuickMetricsCard';
+import ScoreDistributionChart from '../components/dashboard/ScoreDistributionChart';
+import ComplianceScoresOverview from '../components/dashboard/ComplianceScoresOverview';
 
 export default function AdminDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -55,6 +57,12 @@ export default function AdminDashboard() {
   const { data: onboardingCases = [], isLoading: casesLoading, refetch: refetchCases } = useQuery({
     queryKey: ['onboardingCases'],
     queryFn: () => base44.entities.OnboardingCase.list('-created_date', 500)
+  });
+
+  // Fetch Compliance Scores
+  const { data: complianceScores = [] } = useQuery({
+    queryKey: ['complianceScores'],
+    queryFn: () => base44.entities.ComplianceScore.list()
   });
 
   const { data: merchants = [], isLoading: merchantsLoading } = useQuery({
@@ -203,9 +211,51 @@ export default function AdminDashboard() {
       ? Math.round((onboardingCases.filter(c => c.iaDecision === 'Manual' || c.status === 'Manual').length / onboardingCases.length) * 100)
       : 0;
 
-    // Top causas de reprovação
-    const rejectionReasons = {};
-    helenaAnalyses.forEach(a => {
+    return {
+      total: onboardingCases.length,
+      pendente: onboardingCases.filter(c => c.status === 'Pendente').length,
+      processando: onboardingCases.filter(c => c.status === 'Em Processamento').length,
+      manual: onboardingCases.filter(c => c.status === 'Manual').length,
+      aprovado: onboardingCases.filter(c => c.status === 'Aprovado').length,
+      recusado: onboardingCases.filter(c => c.status === 'Recusado').length,
+      docsSolicitados: onboardingCases.filter(c => c.status === 'Docs Solicitados').length,
+      
+      approvedByHelena: approvedByHelena.length,
+      rejectedByHelena: rejectedByHelena.length,
+      manualReviewByHelena: manualReviewByHelena.length,
+      totalHelenaAnalyses: completedAnalyses.length,
+      
+      avgTimeIA: `${avgTimeIA}s`,
+      avgTimeManual: `${avgTimeManual}h`,
+      avgScore,
+      pendingDocs,
+      accuracyRate,
+      manualRate,
+      
+      approvalRateTrend,
+      pendingManualOver24h,
+      criticalScoresToday,
+      
+      lowRisk,
+      mediumRisk,
+      highRisk,
+      criticalRisk,
+      
+      topRejectionReasons,
+      
+      // New Metrics
+      conversionRate: `${conversionRate}%`,
+      avgCompletionTimeLabel,
+      rejectionRate: `${rejectionRate}%`,
+      helenaAutoApprovalRate: helenaAnalyses.length > 0 
+        ? ((approvedByHelena.length / helenaAnalyses.length) * 100).toFixed(1) 
+        : 0,
+        
+      // Scores
+      scoreStats: { avgSQ, avgSVE, avgSGC },
+      scoreDistribution: distData
+    };
+  }, [onboardingCases, helenaAnalyses, documentUploads, analytics, complianceScores]);
       if (a.decision === 'REJECTED' || a.decision === 'MANUAL_REVIEW') {
         (a.red_flags || []).forEach(flag => {
           rejectionReasons[flag] = (rejectionReasons[flag] || 0) + 1;
@@ -460,6 +510,12 @@ export default function AdminDashboard() {
         pendingDocs={stats.pendingDocs}
       />
 
+      {/* Score Overview */}
+      <div className="mb-6">
+        <h2 className="text-lg font-bold text-slate-800 mb-3">Análise de Scores (SENTINEL)</h2>
+        <ComplianceScoresOverview scores={stats.scoreStats} />
+      </div>
+
       {/* Helena Insights & Alertas */}
       <HelenaInsightsAlerts
         pendingManualOver24h={stats.pendingManualOver24h}
@@ -485,6 +541,12 @@ export default function AdminDashboard() {
           title="Tendência de Análises (IA vs Manual)"
         />
         <TopRejectionReasonsChart data={stats.topRejectionReasons} />
+      </div>
+
+      {/* Distribuição de Scores */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <ScoreDistributionChart data={stats.scoreDistribution} />
+        {/* Placeholder for future chart or keep layout balanced */}
       </div>
 
       {/* Distribuição de Risco */}

@@ -54,6 +54,12 @@ export default function ComplianceSubmissions() {
     queryFn: () => base44.entities.OnboardingCase.list('-created_date', 500)
   });
 
+  // Fetch Compliance Scores
+  const { data: complianceScores = [] } = useQuery({
+    queryKey: ['complianceScores'],
+    queryFn: () => base44.entities.ComplianceScore.list()
+  });
+
   const { data: merchants = [], isLoading: merchantsLoading } = useQuery({
     queryKey: ['merchants'],
     queryFn: () => base44.entities.Merchant.list()
@@ -69,6 +75,12 @@ export default function ComplianceSubmissions() {
     merchants.forEach(m => { map[m.id] = m; });
     return map;
   }, [merchants]);
+
+  const scoresMap = React.useMemo(() => {
+    const map = {};
+    complianceScores.forEach(s => { map[s.onboarding_case_id] = s; });
+    return map;
+  }, [complianceScores]);
 
   // Estatísticas rápidas
   const stats = React.useMemo(() => {
@@ -485,9 +497,11 @@ export default function ComplianceSubmissions() {
                 </TableHead>
                 <TableHead>Tipo</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>
+                <TableHead className="text-center">Fase 1 (SQ)</TableHead>
+                <TableHead className="text-center">Fase 2 (SVE)</TableHead>
+                <TableHead className="text-center">
                   <button 
-                    className="flex items-center gap-1 hover:text-slate-800 font-semibold"
+                    className="flex items-center gap-1 hover:text-slate-800 font-semibold mx-auto"
                     onClick={() => {
                       if (sortField === 'riskScore') {
                         setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
@@ -498,11 +512,10 @@ export default function ComplianceSubmissions() {
                     }}
                   >
                     <Brain className="w-4 h-4 mr-1" />
-                    Score Helena
+                    Final (SGC)
                     <ArrowUpDown className="w-3 h-3" />
                   </button>
                 </TableHead>
-                <TableHead>Decisão IA</TableHead>
                 <TableHead>Tempo na Fila</TableHead>
                 <TableHead>Analista</TableHead>
                 <TableHead>
@@ -556,8 +569,23 @@ export default function ComplianceSubmissions() {
                       </Badge>
                     </TableCell>
                     <TableCell>{getStatusBadge(c.status)}</TableCell>
-                    <TableCell>{getScoreBadge(c.riskScore)}</TableCell>
-                    <TableCell>{getIADecisionBadge(c.iaDecision)}</TableCell>
+                    
+                    {/* Scores Columns */}
+                    <TableCell className="text-center">
+                      <span className="text-sm font-medium text-slate-600">
+                        {scoresMap[c.id]?.score_questionario || '-'}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <span className="text-sm font-medium text-slate-600">
+                        {scoresMap[c.id]?.score_validacao_externa || '-'}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex justify-center">
+                        {getScoreBadge(scoresMap[c.id]?.score_geral_composto || c.riskScore)}
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <span className={`text-sm font-medium ${
                         getTimeInQueue(c.created_date).includes('d') ? 'text-orange-600' : 'text-slate-600'
