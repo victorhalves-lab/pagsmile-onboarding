@@ -96,12 +96,11 @@ export default function CompliancePixOnly() {
       case 2: return <Step2TipoEmpresa {...props} />;
       case 3: return <Step3Endereco {...props} />;
       case 4: return <Step4AtividadeNegocios {...props} />;
-      case 5: return <Step6PerfilClientes {...props} />;
-      case 6: return <Step7Responsaveis {...props} />;
-      case 7: return <Step8PLDSancoes {...props} />;
-      case 8: return <Step9PLDRiscos {...props} />;
-      case 9: return <Step10PLDOperacao {...props} />;
-      case 10: return <Step11Confirmacao {...props} />;
+      case 5: return <Step5PerfilOperacional {...props} />;
+      case 6: return <Step6PerfilClientes {...props} />;
+      case 7: return <Step7Responsaveis {...props} />;
+      case 8: return <Step8CompliancePLD {...props} />;
+      case 9: return <Step11Confirmacao {...props} />;
       default: return null;
     }
   };

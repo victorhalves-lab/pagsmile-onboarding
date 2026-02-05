@@ -35,6 +35,7 @@ const STEPS = [
   { id: 'tipo_empresa', title: 'Tipo Empresa', icon: FileText },
   { id: 'endereco', title: 'Endereço', icon: MapPin },
   { id: 'atividade_negocios', title: 'Detalhes do Negócio', icon: Briefcase },
+  { id: 'perfil_operacional', title: 'Operação', icon: TrendingUp },
   { id: 'perfil_clientes', title: 'Clientes', icon: Users },
   { id: 'responsaveis', title: 'Responsáveis', icon: UserCircle },
   { id: 'ubo', title: 'Beneficiários', icon: Users },
@@ -42,9 +43,7 @@ const STEPS = [
   { id: 'licenciamento', title: 'Licenciamento', icon: Scale },
   { id: 'marketplace', title: 'Marketplace', icon: Store },
   { id: 'seguranca_cartao', title: 'Segurança', icon: Lock },
-  { id: 'pld_sancoes', title: 'Sanções', icon: ShieldAlert },
-  { id: 'pld_riscos', title: 'Riscos PLD', icon: AlertTriangle },
-  { id: 'pld_operacao', title: 'Operação', icon: ShieldCheck },
+  { id: 'compliance_pld', title: 'Compliance & PLD', icon: ShieldAlert },
   { id: 'confirmacao', title: 'Confirmação', icon: CheckCircle }
 ];
 
