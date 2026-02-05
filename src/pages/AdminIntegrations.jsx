@@ -296,7 +296,91 @@ export default function AdminIntegrations() {
           </Card>
         </TabsContent>
 
+        
         {/* CAF Tab */}
+        <TabsContent value="caf" className="space-y-6">
+          <Alert>
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Importante</AlertTitle>
+            <AlertDescription>
+              As integrações com a CAF devem ser feitas exclusivamente via backend. 
+              Nunca exponha as chaves de autenticação no frontend.
+            </AlertDescription>
+          </Alert>
+
+          {/* Mapeamento Microscópico de Integração - CAF */}
+          <Card className="border-purple-200 shadow-sm">
+            <CardHeader className="bg-purple-50/50">
+              <div className="flex items-center gap-2">
+                <FileText className="w-5 h-5 text-purple-600" />
+                <CardTitle className="text-purple-900">Mapeamento de Integração: Documentos</CardTitle>
+              </div>
+              <CardDescription className="text-purple-700">
+                Visão detalhada de como cada documento solicitado no questionário é processado pelos endpoints da CAF.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[200px]">Documento Solicitado</TableHead>
+                    <TableHead className="w-[150px]">Página/Step</TableHead>
+                    <TableHead className="w-[200px]">Endpoint CAF</TableHead>
+                    <TableHead>O que é gerado/validado?</TableHead>
+                    <TableHead className="w-[100px]">Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell className="font-medium">Contrato Social / MEI</TableCell>
+                    <TableCell><Badge variant="outline">UploadDocs</Badge></TableCell>
+                    <TableCell className="font-mono text-xs">/v1/documents/analyze</TableCell>
+                    <TableCell className="text-sm text-slate-600">
+                      Extração de Razão Social, CNPJ, Quadro Societário e validação de autenticidade (documentoscopy).
+                    </TableCell>
+                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">RG/CNH dos Sócios</TableCell>
+                    <TableCell><Badge variant="outline">UploadDocs</Badge></TableCell>
+                    <TableCell className="font-mono text-xs">/v1/documents/analyze</TableCell>
+                    <TableCell className="text-sm text-slate-600">
+                      OCR de dados (Nome, CPF, RG, Filiação), validação de template e verificação de face no documento.
+                    </TableCell>
+                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Comprovante de Endereço</TableCell>
+                    <TableCell><Badge variant="outline">UploadDocs</Badge></TableCell>
+                    <TableCell className="font-mono text-xs">/v1/documents/analyze</TableCell>
+                    <TableCell className="text-sm text-slate-600">
+                      Extração de Logradouro, Número, CEP e Data de Emissão (validação &lt; 90 dias).
+                    </TableCell>
+                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Selfie (Liveness)</TableCell>
+                    <TableCell><Badge variant="outline">LivenessStep</Badge></TableCell>
+                    <TableCell className="font-mono text-xs">/v1/liveness/sessions</TableCell>
+                    <TableCell className="text-sm text-slate-600">
+                      Prova de vida ativa (movimentos) ou passiva. Gera score de vivacidade e imagem para Facematch.
+                    </TableCell>
+                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Facematch (Selfie vs RG)</TableCell>
+                    <TableCell><Badge variant="outline">LivenessStep</Badge></TableCell>
+                    <TableCell className="font-mono text-xs">/v1/facematch</TableCell>
+                    <TableCell className="text-sm text-slate-600">
+                      Comparação 1:1 entre a Selfie do Liveness e a foto extraída do RG/CNH enviado. Gera Similarity Score.
+                    </TableCell>
+                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+
         <TabsContent value="caf" className="space-y-6">
           <Alert>
             <AlertTriangle className="h-4 w-4" />
@@ -402,7 +486,171 @@ export default function AdminIntegrations() {
           </Card>
         </TabsContent>
 
+        
         {/* BigDataCorp Tab */}
+        <TabsContent value="bigdatacorp" className="space-y-6">
+
+          {/* Mapeamento Microscópico de Integração - BigDataCorp */}
+          <Card className="border-blue-200 shadow-sm">
+            <CardHeader className="bg-blue-50/50">
+              <div className="flex items-center gap-2">
+                <Database className="w-5 h-5 text-blue-600" />
+                <CardTitle className="text-blue-900">Mapeamento de Integração: Dados & Validações</CardTitle>
+              </div>
+              <CardDescription className="text-blue-700">
+                Visão detalhada de cada pergunta do questionário conectada aos datasets da BigDataCorp.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[200px]">Pergunta / Campo</TableHead>
+                    <TableHead className="w-[150px]">Página/Step</TableHead>
+                    <TableHead className="w-[250px]">Endpoint / Dataset BDC</TableHead>
+                    <TableHead>Ação & Resultado Esperado</TableHead>
+                    <TableHead className="w-[100px]">Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {/* Dados Básicos */}
+                  <TableRow className="bg-slate-50/50">
+                    <TableCell colSpan={5} className="font-semibold text-xs text-slate-500 uppercase tracking-wider py-2">
+                      Dados Cadastrais da Empresa
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">CNPJ</TableCell>
+                    <TableCell>Step 1: Identificação</TableCell>
+                    <TableCell className="font-mono text-xs text-blue-700 break-all">
+                      /empresas/basic_data
+                    </TableCell>
+                    <TableCell className="text-sm text-slate-600">
+                      <span className="font-semibold text-blue-600">Valida:</span> Existência e Status Ativo.<br/>
+                      <span className="font-semibold text-green-600">Preenche:</span> Razão Social, Nome Fantasia, Data Abertura.
+                    </TableCell>
+                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Endereço Comercial</TableCell>
+                    <TableCell>Step 3: Endereço</TableCell>
+                    <TableCell className="font-mono text-xs text-blue-700 break-all">
+                      /empresas/addresses_extended
+                    </TableCell>
+                    <TableCell className="text-sm text-slate-600">
+                      <span className="font-semibold text-green-600">Preenche:</span> Logradouro, Número, Bairro, Cidade, UF, CEP.<br/>
+                      Confirma se o endereço bate com o cadastro na Receita.
+                    </TableCell>
+                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Site / Domínio</TableCell>
+                    <TableCell>Step 1: Identificação</TableCell>
+                    <TableCell className="font-mono text-xs text-blue-700 break-all">
+                      /empresas/domains_extended
+                    </TableCell>
+                    <TableCell className="text-sm text-slate-600">
+                      Identifica domínios registrados em nome do CNPJ para sugerir site oficial.
+                    </TableCell>
+                    <TableCell><Badge className="bg-yellow-100 text-yellow-800">Em Análise</Badge></TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Atividade (CNAE/MCC)</TableCell>
+                    <TableCell>Step 4: Atividade</TableCell>
+                    <TableCell className="font-mono text-xs text-blue-700 break-all">
+                      /empresas/merchant_category_data
+                    </TableCell>
+                    <TableCell className="text-sm text-slate-600">
+                      Valida se o MCC da empresa é compatível com o que ela declara vender (Risco de Forbidden Business).
+                    </TableCell>
+                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
+                  </TableRow>
+
+                  {/* Sócios e Contatos */}
+                  <TableRow className="bg-slate-50/50">
+                    <TableCell colSpan={5} className="font-semibold text-xs text-slate-500 uppercase tracking-wider py-2">
+                      Sócios, Contatos e UBO
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Quadro Societário</TableCell>
+                    <TableCell>Step 7 / Seção Sócios</TableCell>
+                    <TableCell className="font-mono text-xs text-blue-700 break-all">
+                      /empresas/relationships
+                    </TableCell>
+                    <TableCell className="text-sm text-slate-600">
+                      Lista quem são os sócios, administradores e representantes legais para validação cruzada.
+                    </TableCell>
+                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Contatos (Email/Tel)</TableCell>
+                    <TableCell>Step 7: Responsáveis</TableCell>
+                    <TableCell className="font-mono text-xs text-blue-700 break-all">
+                      /empresas/phones_extended<br/>
+                      /empresas/emails_extended
+                    </TableCell>
+                    <TableCell className="text-sm text-slate-600">
+                      Enriquece dados de contato da empresa e sócios para o cadastro.
+                    </TableCell>
+                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Beneficiário Final (UBO)</TableCell>
+                    <TableCell>Seção UBO</TableCell>
+                    <TableCell className="font-mono text-xs text-blue-700 break-all">
+                      /marketplace/partner_ultimate_beneficial_owners
+                    </TableCell>
+                    <TableCell className="text-sm text-slate-600">
+                      Identifica pessoas físicas que controlam a empresa (compliance regulatório 3978).
+                    </TableCell>
+                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
+                  </TableRow>
+
+                  {/* Risco e Compliance */}
+                  <TableRow className="bg-slate-50/50">
+                    <TableCell colSpan={5} className="font-semibold text-xs text-slate-500 uppercase tracking-wider py-2">
+                      Risco Operacional e PLD
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">Faturamento Estimado</TableCell>
+                    <TableCell>Step 5: Volumetria</TableCell>
+                    <TableCell className="font-mono text-xs text-blue-700 break-all">
+                      /empresas/activity_indicators
+                    </TableCell>
+                    <TableCell className="text-sm text-slate-600">
+                      Compara faturamento declarado vs. estimado de mercado. Alerta se divergência > 50%.
+                    </TableCell>
+                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">KYC Empresa</TableCell>
+                    <TableCell>Background Check</TableCell>
+                    <TableCell className="font-mono text-xs text-blue-700 break-all">
+                      /empresas/kyc
+                    </TableCell>
+                    <TableCell className="text-sm text-slate-600">
+                      Processos, Dívidas, Protestos, Listas Restritivas (OFAC/ONU). Gera Score de Risco.
+                    </TableCell>
+                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell className="font-medium">KYC Sócios</TableCell>
+                    <TableCell>Background Check</TableCell>
+                    <TableCell className="font-mono text-xs text-blue-700 break-all">
+                      /empresas/owners_kyc
+                    </TableCell>
+                    <TableCell className="text-sm text-slate-600">
+                      PEP (Pessoa Exposta Politicamente), Mídia Negativa, Antecedentes Criminais dos sócios.
+                    </TableCell>
+                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+
         <TabsContent value="bigdatacorp" className="space-y-6">
           <Card>
             <CardHeader>
@@ -499,7 +747,17 @@ export default function AdminIntegrations() {
           </Card>
         </TabsContent>
 
+        
         {/* Webhooks Tab */}
+        <TabsContent value="webhooks" className="space-y-6">
+          <Alert className="bg-blue-50 border-blue-200">
+             <Webhook className="h-4 w-4 text-blue-600" />
+             <AlertTitle className="text-blue-800">Arquitetura Orientada a Eventos</AlertTitle>
+             <AlertDescription className="text-blue-700">
+               Utilizamos webhooks para receber atualizações assíncronas (ex: análise de documentos concluída, score de fraude atualizado) sem travar a experiência do usuário.
+             </AlertDescription>
+          </Alert>
+
         <TabsContent value="webhooks" className="space-y-6">
           <Card>
             <CardHeader>
