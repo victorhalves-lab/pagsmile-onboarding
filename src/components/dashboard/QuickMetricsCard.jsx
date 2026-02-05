@@ -18,7 +18,7 @@ export default function QuickMetricsCard({
     {
       icon: Clock,
       iconBg: 'bg-slate-100',
-      iconColor: 'text-slate-600',
+      iconColor: 'text-[var(--pagsmile-blue)]/80',
       label: 'Tempo Médio (Manual)',
       value: avgTimeManual
     },
@@ -49,8 +49,8 @@ export default function QuickMetricsCard({
                 <Icon className={`w-4 h-4 ${metric.iconColor}`} />
               </div>
               <div>
-                <p className="text-xs text-slate-500">{metric.label}</p>
-                <p className="text-xl font-bold text-slate-800">{metric.value}</p>
+                <p className="text-xs text-[var(--pagsmile-blue)]/70">{metric.label}</p>
+                <p className="text-xl font-bold text-[var(--pagsmile-blue)]">{metric.value}</p>
               </div>
             </div>
           </div>

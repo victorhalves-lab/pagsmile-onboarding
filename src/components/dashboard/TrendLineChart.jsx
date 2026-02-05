@@ -12,7 +12,7 @@ export default function TrendLineChart({
 }) {
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 className="font-semibold text-slate-800 mb-4">{title}</h3>
+      <h3 className="font-semibold text-[var(--pagsmile-blue)] mb-4">{title}</h3>
 
       <ResponsiveContainer width="100%" height={height}>
         <LineChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
