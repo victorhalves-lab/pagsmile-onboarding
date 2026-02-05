@@ -11,73 +11,73 @@ const DOCUMENTS_FULL = [
     id: 'identificacao_socios', 
     name: 'RG ou CNH dos Sócios', 
     description: 'Documento legível de todos os sócios e administradores.', 
-    required: true 
+    required: false 
   },
   { 
     id: 'comprovante_endereco_empresa', 
     name: 'Comprovante Endereço (Empresa)', 
     description: 'Conta de consumo em nome da empresa (max 90 dias).', 
-    required: true 
+    required: false 
   },
   { 
     id: 'comprovante_endereco_socios', 
     name: 'Comprovante Endereço (Representante)', 
     description: 'Comprovante de residência do representante legal (max 90 dias).', 
-    required: true 
+    required: false 
   },
   { 
     id: 'cartao_cnpj', 
     name: 'Cartão CNPJ', 
     description: 'Comprovante de inscrição emitido pela Receita Federal.', 
-    required: true 
+    required: false 
   },
   { 
     id: 'contrato_social', 
     name: 'Contrato Social e Última Alteração', 
     description: 'Contrato social consolidado ou estatuto com ata de eleição.', 
-    required: true 
+    required: false 
   },
   { 
     id: 'balanco_patrimonial', 
     name: 'Balanço Patrimonial', 
     description: 'Balanço do último exercício fiscal encerrado, assinado.', 
-    required: true 
+    required: false 
   },
   { 
     id: 'dre', 
     name: 'DRE (Dem. Resultado)', 
     description: 'Demonstração do Resultado do Exercício correspondente.', 
-    required: true 
+    required: false 
   },
   { 
     id: 'politica_kyc', 
     name: 'Política de KYC', 
     description: 'Manual ou política interna de Conheça seu Cliente.', 
-    required: true 
+    required: false 
   },
   { 
     id: 'demos_financeiros_3anos', 
     name: 'Demos Financeiros (3 anos)', 
     description: 'Demonstrativos dos últimos 3 exercícios (preferencialmente auditados).', 
-    required: true 
+    required: false 
   },
   { 
     id: 'balancete_recente', 
     name: 'Balancete mais recente', 
     description: 'Balancete contábil do mês/trimestre mais recente.', 
-    required: true 
+    required: false 
   },
   { 
     id: 'selfie_socios', 
     name: 'Selfie dos Sócios', 
     description: 'Foto do rosto segurando o documento de identificação.', 
-    required: true 
+    required: false 
   },
   { 
     id: 'politica_pld', 
     name: 'Política de PLD/FT', 
     description: 'Manual ou política interna de prevenção à lavagem de dinheiro.', 
-    required: true 
+    required: false 
   }
 ];
 
@@ -123,7 +123,7 @@ export default function DocumentUploadFull() {
   const uploadedCount = Object.keys(uploadedDocs).length;
   const progress = Math.round((uploadedCount / DOCUMENTS_FULL.length) * 100);
   
-  const canContinue = requiredDocs.every(doc => uploadedDocs[doc.id]);
+  const canContinue = requiredDocs.length === 0 || requiredDocs.every(doc => uploadedDocs[doc.id]);
 
   const handleContinue = () => {
     if (!canContinue) return;

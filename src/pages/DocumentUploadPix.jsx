@@ -11,25 +11,25 @@ const DOCUMENTS_PIX = [
     id: 'contrato_social', 
     name: 'Contrato Social ou Estatuto', 
     description: 'Última alteração consolidada ou estatuto vigente.', 
-    required: true 
+    required: false 
   },
   { 
     id: 'cartao_cnpj', 
     name: 'Cartão CNPJ', 
     description: 'Comprovante de inscrição e situação cadastral.', 
-    required: true 
+    required: false 
   },
   { 
     id: 'identificacao_socios', 
     name: 'RG ou CNH dos Sócios', 
     description: 'Documento legível, frente e verso, de todos os sócios.', 
-    required: true 
+    required: false 
   },
   { 
     id: 'comprovante_endereco', 
     name: 'Comprovante de Endereço', 
     description: 'Conta de consumo (luz, água) ou boleto recente (max 90 dias).', 
-    required: true 
+    required: false 
   }
 ];
 
@@ -77,8 +77,8 @@ export default function DocumentUploadPix() {
   const uploadedCount = Object.keys(uploadedDocs).length;
   const progress = Math.round((uploadedCount / DOCUMENTS_PIX.length) * 100);
   
-  // Check if all required docs are uploaded
-  const canContinue = requiredDocs.every(doc => uploadedDocs[doc.id]);
+  // Check if all required docs are uploaded (or allow continue if none required)
+  const canContinue = requiredDocs.length === 0 || requiredDocs.every(doc => uploadedDocs[doc.id]);
 
   const handleContinue = () => {
     if (!canContinue) return;
