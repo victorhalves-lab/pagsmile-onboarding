@@ -20,12 +20,12 @@ export default function KPICard({
     <div className={`bg-white rounded-xl border border-slate-200 p-4 ${className}`}>
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <p className="text-xs text-[var(--pagsmile-blue)]/70 mb-1">{title}</p>
+          <p className="text-xs text-[var(--pagsmile-blue)]/70 font-semibold mb-1">{title}</p>
           <p className={`font-bold text-[var(--pagsmile-blue)] ${size === 'large' ? 'text-3xl' : 'text-2xl'}`}>
             {value}
           </p>
           {subtitle && (
-            <p className="text-xs text-[var(--pagsmile-blue)]/70 mt-1">{subtitle}</p>
+            <p className="text-xs text-[var(--pagsmile-blue)]/70 font-medium mt-1">{subtitle}</p>
           )}
           {trendValue !== undefined && (
             <div className={`flex items-center gap-1 mt-2 text-xs ${
@@ -80,7 +80,7 @@ export function KPICardComparison({
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-4">
-      <p className="text-xs text-[var(--pagsmile-blue)]/70 font-medium mb-3">{title}</p>
+      <p className="text-xs text-[var(--pagsmile-blue)]/70 font-semibold mb-3">{title}</p>
       
       <div className="flex items-center justify-center gap-3 mb-3">
         <div className="text-center">

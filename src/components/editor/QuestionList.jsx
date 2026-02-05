@@ -113,8 +113,8 @@ export default function QuestionList({ questions, templateId, onAddQuestion, onE
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-[var(--pagsmile-blue)]">Perguntas do Questionário</h3>
-          <p className="text-sm text-[var(--pagsmile-blue)]/70">
+          <h3 className="text-lg font-bold text-[var(--pagsmile-blue)]">Perguntas do Questionário</h3>
+          <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium">
             Arraste para reordenar. {questions.length} pergunta(s) cadastrada(s).
           </p>
         </div>
@@ -128,10 +128,10 @@ export default function QuestionList({ questions, templateId, onAddQuestion, onE
       {questions.length === 0 ? (
         <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
           <List className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/40 mb-4" />
-          <h3 className="text-lg font-medium text-[var(--pagsmile-blue)] mb-2">
+          <h3 className="text-lg font-bold text-[var(--pagsmile-blue)] mb-2">
             Nenhuma pergunta cadastrada
           </h3>
-          <p className="text-[var(--pagsmile-blue)]/70 mb-6">
+          <p className="text-[var(--pagsmile-blue)]/70 font-medium mb-6">
             Adicione perguntas para construir seu questionário.
           </p>
           <Button onClick={onAddQuestion} className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90">
@@ -176,7 +176,7 @@ export default function QuestionList({ questions, templateId, onAddQuestion, onE
 
                             {/* Question Content */}
                             <div className="flex-1 min-w-0">
-                              <p className="text-[var(--pagsmile-blue)] font-medium line-clamp-2">
+                              <p className="text-[var(--pagsmile-blue)] font-semibold line-clamp-2">
                                 {question.text}
                               </p>
                               <div className="flex items-center gap-2 mt-2 flex-wrap">

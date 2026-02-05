@@ -12,8 +12,8 @@ function ScoreCard({ title, value, subtext, icon: Icon, color }) {
           <span className={`text-2xl font-bold ${color.text}`}>{value}</span>
         )}
       </div>
-      <h3 className="text-sm font-medium text-slate-700">{title}</h3>
-      <p className="text-xs text-slate-500 mt-1">{subtext}</p>
+      <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)]">{title}</h3>
+      <p className="text-xs text-[var(--pagsmile-blue)]/70 font-medium mt-1">{subtext}</p>
     </div>
   );
 }

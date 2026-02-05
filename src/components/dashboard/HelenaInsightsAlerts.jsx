@@ -64,8 +64,8 @@ export default function HelenaInsightsAlerts({
           <Brain className="w-5 h-5 text-purple-600" />
         </div>
         <div>
-          <h3 className="font-semibold text-[var(--pagsmile-blue)]">Helena Insights & Alertas</h3>
-          <p className="text-xs text-[var(--pagsmile-blue)]/70">Alertas e recomendações em tempo real da IA</p>
+          <h3 className="font-bold text-[var(--pagsmile-blue)]">Helena Insights & Alertas</h3>
+          <p className="text-xs text-[var(--pagsmile-blue)]/70 font-medium">Alertas e recomendações em tempo real da IA</p>
         </div>
       </div>
 
@@ -81,11 +81,11 @@ export default function HelenaInsightsAlerts({
                 <div className={`p-1.5 rounded-lg ${alert.iconBg}`}>
                   <Icon className={`w-4 h-4 ${alert.iconColor}`} />
                 </div>
-                <p className="text-sm text-[var(--pagsmile-blue)]/80">{alert.message}</p>
+                <p className="text-sm text-[var(--pagsmile-blue)]/80 font-medium">{alert.message}</p>
               </div>
               <Link 
                 to={createPageUrl(alert.actionLink)}
-                className="flex items-center gap-1 text-sm text-[var(--pagsmile-blue)]/70 hover:text-slate-700 whitespace-nowrap"
+                className="flex items-center gap-1 text-sm text-[var(--pagsmile-blue)]/70 hover:text-[var(--pagsmile-blue)] font-medium whitespace-nowrap"
               >
                 {alert.action}
                 <ArrowRight className="w-3 h-3" />

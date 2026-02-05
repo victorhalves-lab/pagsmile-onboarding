@@ -191,7 +191,7 @@ export default function AnaliseDeCasos() {
   if (!onboardingCase) {
     return (
       <div className="text-center py-12">
-        <p className="text-slate-500">Caso não encontrado</p>
+        <p className="text-[var(--pagsmile-blue)]/70 font-medium">Caso não encontrado</p>
         <Button variant="outline" onClick={() => navigate(createPageUrl('AdminDashboard'))} className="mt-4">
           Voltar ao Dashboard
         </Button>
@@ -223,11 +223,11 @@ export default function AnaliseDeCasos() {
               )}
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-slate-800">
+              <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">
                 {merchant?.fullName || 'Merchant'}
               </h1>
-              <p className="text-slate-500">{merchant?.cpfCnpj || '-'}</p>
-              <p className="text-sm text-slate-400 mt-1">
+              <p className="text-[var(--pagsmile-blue)]/70 font-medium">{merchant?.cpfCnpj || '-'}</p>
+              <p className="text-sm text-[var(--pagsmile-blue)]/60 font-medium mt-1">
                 Criado em {onboardingCase.created_date ? new Date(onboardingCase.created_date).toLocaleDateString('pt-BR', {
                   day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
                 }) : '-'}
@@ -260,7 +260,7 @@ export default function AnaliseDeCasos() {
         <div className="bg-white rounded-xl border border-slate-200 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-slate-500">Score de Risco</p>
+              <p className="text-sm text-[var(--pagsmile-blue)]/70 font-semibold">Score de Risco</p>
               <p className={`text-3xl font-bold ${
                 (complianceScore?.score || onboardingCase.riskScore || 0) >= 75 ? 'text-green-600' :
                 (complianceScore?.score || onboardingCase.riskScore || 0) >= 40 ? 'text-orange-600' : 'text-red-600'
@@ -281,8 +281,8 @@ export default function AnaliseDeCasos() {
         <div className="bg-white rounded-xl border border-slate-200 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-slate-500">Validações</p>
-              <p className="text-3xl font-bold text-slate-800">
+              <p className="text-sm text-[var(--pagsmile-blue)]/70 font-semibold">Validações</p>
+              <p className="text-3xl font-bold text-[var(--pagsmile-blue)]">
                 {validations.filter(v => v.status === 'Sucesso').length}/{validations.length}
               </p>
             </div>
@@ -296,8 +296,8 @@ export default function AnaliseDeCasos() {
         <div className="bg-white rounded-xl border border-slate-200 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-slate-500">Documentos</p>
-              <p className="text-3xl font-bold text-slate-800">
+              <p className="text-sm text-[var(--pagsmile-blue)]/70 font-semibold">Documentos</p>
+              <p className="text-3xl font-bold text-[var(--pagsmile-blue)]">
                 {documents.filter(d => d.validationStatus === 'Validado').length}/{documents.length}
               </p>
             </div>
@@ -311,8 +311,8 @@ export default function AnaliseDeCasos() {
         <div className="bg-white rounded-xl border border-slate-200 p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-slate-500">Respostas</p>
-              <p className="text-3xl font-bold text-slate-800">{responses.length}</p>
+              <p className="text-sm text-[var(--pagsmile-blue)]/70 font-semibold">Respostas</p>
+              <p className="text-3xl font-bold text-[var(--pagsmile-blue)]">{responses.length}</p>
             </div>
             <div className="p-3 rounded-xl bg-teal-100">
               <FileCheck className="w-6 h-6 text-teal-600" />
@@ -342,12 +342,12 @@ export default function AnaliseDeCasos() {
               )}
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-slate-800">Decisão da IA: {complianceScore.decision}</h3>
-              <p className="text-sm text-slate-600 mt-1">{complianceScore.iaExplanation}</p>
+              <h3 className="font-bold text-[var(--pagsmile-blue)]">Decisão da IA: {complianceScore.decision}</h3>
+              <p className="text-sm text-[var(--pagsmile-blue)]/80 font-medium mt-1">{complianceScore.iaExplanation}</p>
               {complianceScore.factorsAnalyzed?.riskFactors?.length > 0 && (
                 <div className="mt-3">
-                  <p className="text-sm font-medium text-slate-700">Fatores de Risco:</p>
-                  <ul className="list-disc list-inside text-sm text-slate-600 mt-1">
+                  <p className="text-sm font-semibold text-[var(--pagsmile-blue)]">Fatores de Risco:</p>
+                  <ul className="list-disc list-inside text-sm text-[var(--pagsmile-blue)]/80 font-medium mt-1">
                     {complianceScore.factorsAnalyzed.riskFactors.map((f, i) => (
                       <li key={i}>{f}</li>
                     ))}
@@ -391,7 +391,7 @@ export default function AnaliseDeCasos() {
         {/* Dados do Merchant */}
         <TabsContent value="info">
           <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <h3 className="text-lg font-semibold text-slate-800 mb-6">Informações do Merchant</h3>
+            <h3 className="text-lg font-bold text-[var(--pagsmile-blue)] mb-6">Informações do Merchant</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {[
                 { label: 'Tipo', value: merchant?.type === 'PF' ? 'Pessoa Física' : 'Pessoa Jurídica', icon: merchant?.type === 'PF' ? User : Building2 },
@@ -410,10 +410,10 @@ export default function AnaliseDeCasos() {
                 return (
                   <div key={item.label} className="p-4 bg-slate-50 rounded-lg">
                     <div className="flex items-center gap-2 mb-1">
-                      <Icon className="w-4 h-4 text-slate-400" />
-                      <p className="text-sm text-slate-500">{item.label}</p>
+                      <Icon className="w-4 h-4 text-[var(--pagsmile-blue)]/50" />
+                      <p className="text-sm text-[var(--pagsmile-blue)]/70 font-semibold">{item.label}</p>
                     </div>
-                    <p className="font-medium text-slate-800">{item.value}</p>
+                    <p className="font-semibold text-[var(--pagsmile-blue)]">{item.value}</p>
                   </div>
                 );
               })}
@@ -424,26 +424,26 @@ export default function AnaliseDeCasos() {
         {/* Respostas do Questionário */}
         <TabsContent value="responses">
           <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <h3 className="text-lg font-semibold text-slate-800 mb-6">Respostas do Questionário</h3>
+            <h3 className="text-lg font-bold text-[var(--pagsmile-blue)] mb-6">Respostas do Questionário</h3>
             {responses.length === 0 ? (
               <div className="text-center py-12">
                 <FileCheck className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-                <p className="text-slate-500">Nenhuma resposta registrada</p>
+                <p className="text-[var(--pagsmile-blue)]/70 font-medium">Nenhuma resposta registrada</p>
               </div>
             ) : (
               <div className="space-y-6">
                 {Object.entries(groupedResponses).map(([section, sectionResponses]) => (
                   <div key={section} className="border border-slate-200 rounded-lg overflow-hidden">
                     <div className="bg-slate-50 px-4 py-3 border-b border-slate-200">
-                      <h4 className="font-medium text-slate-700">{section}</h4>
+                      <h4 className="font-semibold text-[var(--pagsmile-blue)]">{section}</h4>
                     </div>
                     <div className="divide-y divide-slate-100">
                       {sectionResponses.map((response, idx) => (
                         <div key={idx} className="p-4 hover:bg-slate-50">
-                          <p className="text-sm text-slate-500 mb-1">
+                          <p className="text-sm text-[var(--pagsmile-blue)]/70 font-semibold mb-1">
                             {response.questionText?.replace(`${section} - `, '') || `Pergunta ${idx + 1}`}
                           </p>
-                          <p className="font-medium text-slate-800">
+                          <p className="font-semibold text-[var(--pagsmile-blue)]">
                             {response.valueText || 
                              response.valueNumber || 
                              (response.valueBoolean !== undefined ? (response.valueBoolean ? 'Sim' : 'Não') : 
@@ -462,11 +462,11 @@ export default function AnaliseDeCasos() {
         {/* Documentos */}
         <TabsContent value="documents">
           <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <h3 className="text-lg font-semibold text-slate-800 mb-6">Documentos Enviados</h3>
+            <h3 className="text-lg font-bold text-[var(--pagsmile-blue)] mb-6">Documentos Enviados</h3>
             {documents.length === 0 ? (
               <div className="text-center py-12">
                 <FileText className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-                <p className="text-slate-500">Nenhum documento enviado</p>
+                <p className="text-[var(--pagsmile-blue)]/70 font-medium">Nenhum documento enviado</p>
               </div>
             ) : (
               <div className="grid gap-4">
@@ -474,15 +474,15 @@ export default function AnaliseDeCasos() {
                   <div key={idx} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200">
                     <div className="flex items-center gap-4">
                       <div className="p-3 bg-white rounded-lg border border-slate-200">
-                        <FileText className="w-6 h-6 text-slate-500" />
+                        <FileText className="w-6 h-6 text-[var(--pagsmile-blue)]/70" />
                       </div>
                       <div>
-                        <p className="font-medium text-slate-800">{doc.documentName || doc.fileName}</p>
-                        <p className="text-sm text-slate-500">
+                        <p className="font-semibold text-[var(--pagsmile-blue)]">{doc.documentName || doc.fileName}</p>
+                        <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium">
                           {doc.fileType} • {doc.fileSize ? `${(doc.fileSize / 1024).toFixed(1)} KB` : '-'}
                         </p>
                         {doc.uploadDate && (
-                          <p className="text-xs text-slate-400 mt-1">
+                          <p className="text-xs text-[var(--pagsmile-blue)]/60 font-medium mt-1">
                             Enviado em {new Date(doc.uploadDate).toLocaleDateString('pt-BR')}
                           </p>
                         )}
@@ -515,11 +515,11 @@ export default function AnaliseDeCasos() {
         {/* Validações Externas */}
         <TabsContent value="validations">
           <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <h3 className="text-lg font-semibold text-slate-800 mb-6">Validações Externas</h3>
+            <h3 className="text-lg font-bold text-[var(--pagsmile-blue)] mb-6">Validações Externas</h3>
             {validations.length === 0 ? (
               <div className="text-center py-12">
                 <Shield className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-                <p className="text-slate-500">Nenhuma validação realizada</p>
+                <p className="text-[var(--pagsmile-blue)]/70 font-medium">Nenhuma validação realizada</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -537,8 +537,8 @@ export default function AnaliseDeCasos() {
                           }`} />
                         </div>
                         <div>
-                          <span className="font-medium text-slate-800">{validation.provider}</span>
-                          <p className="text-sm text-slate-500">{validation.validationType}</p>
+                          <span className="font-semibold text-[var(--pagsmile-blue)]">{validation.provider}</span>
+                          <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium">{validation.validationType}</p>
                         </div>
                       </div>
                       {getValidationStatusBadge(validation.status)}
@@ -547,20 +547,20 @@ export default function AnaliseDeCasos() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3 pt-3 border-t border-slate-100">
                       {validation.score !== undefined && (
                         <div>
-                          <p className="text-xs text-slate-500">Score</p>
-                          <p className="font-medium text-slate-800">{validation.score}</p>
+                          <p className="text-xs text-[var(--pagsmile-blue)]/70 font-semibold">Score</p>
+                          <p className="font-semibold text-[var(--pagsmile-blue)]">{validation.score}</p>
                         </div>
                       )}
                       {validation.responseTime && (
                         <div>
-                          <p className="text-xs text-slate-500">Tempo de Resposta</p>
-                          <p className="font-medium text-slate-800">{validation.responseTime}ms</p>
+                          <p className="text-xs text-[var(--pagsmile-blue)]/70 font-semibold">Tempo de Resposta</p>
+                          <p className="font-semibold text-[var(--pagsmile-blue)]">{validation.responseTime}ms</p>
                         </div>
                       )}
                       {validation.timestamp && (
                         <div>
-                          <p className="text-xs text-slate-500">Data</p>
-                          <p className="font-medium text-slate-800">
+                          <p className="text-xs text-[var(--pagsmile-blue)]/70 font-semibold">Data</p>
+                          <p className="font-semibold text-[var(--pagsmile-blue)]">
                             {new Date(validation.timestamp).toLocaleDateString('pt-BR')}
                           </p>
                         </div>
@@ -585,11 +585,11 @@ export default function AnaliseDeCasos() {
         {/* Histórico */}
         <TabsContent value="history">
           <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <h3 className="text-lg font-semibold text-slate-800 mb-6">Histórico de Alterações</h3>
+            <h3 className="text-lg font-bold text-[var(--pagsmile-blue)] mb-6">Histórico de Alterações</h3>
             {auditLogs.length === 0 ? (
               <div className="text-center py-12">
                 <History className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-                <p className="text-slate-500">Nenhum registro de histórico</p>
+                <p className="text-[var(--pagsmile-blue)]/70 font-medium">Nenhum registro de histórico</p>
               </div>
             ) : (
               <div className="relative">
@@ -605,12 +605,12 @@ export default function AnaliseDeCasos() {
                       <div className="bg-slate-50 rounded-lg p-4">
                         <div className="flex items-start justify-between">
                           <div>
-                            <p className="font-medium text-slate-800">{log.actionDescription}</p>
-                            <p className="text-sm text-slate-500 mt-1">
+                            <p className="font-semibold text-[var(--pagsmile-blue)]">{log.actionDescription}</p>
+                            <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium mt-1">
                               Por {log.changedBy}
                             </p>
                           </div>
-                          <span className="text-xs text-slate-400">
+                          <span className="text-xs text-[var(--pagsmile-blue)]/60 font-medium">
                             {log.changeDate ? new Date(log.changeDate).toLocaleDateString('pt-BR', {
                               day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
                             }) : '-'}
@@ -628,15 +628,15 @@ export default function AnaliseDeCasos() {
         {/* Revisão Manual */}
         <TabsContent value="review">
           <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6">
-            <h3 className="text-lg font-semibold text-slate-800">Revisão Manual</h3>
+            <h3 className="text-lg font-bold text-[var(--pagsmile-blue)]">Revisão Manual</h3>
             
             {onboardingCase.manualReviewComments && (
               <Alert className="bg-slate-50 border-slate-200">
                 <AlertDescription>
-                  <p className="font-medium text-slate-800 mb-1">Comentário anterior:</p>
-                  <p className="text-slate-600">{onboardingCase.manualReviewComments}</p>
+                  <p className="font-semibold text-[var(--pagsmile-blue)] mb-1">Comentário anterior:</p>
+                  <p className="text-[var(--pagsmile-blue)]/80 font-medium">{onboardingCase.manualReviewComments}</p>
                   {onboardingCase.manualReviewerId && (
-                    <p className="text-xs text-slate-400 mt-2">
+                    <p className="text-xs text-[var(--pagsmile-blue)]/60 font-medium mt-2">
                       Por {onboardingCase.manualReviewerId} em {onboardingCase.manualReviewDate ? 
                         new Date(onboardingCase.manualReviewDate).toLocaleDateString('pt-BR') : '-'}
                     </p>

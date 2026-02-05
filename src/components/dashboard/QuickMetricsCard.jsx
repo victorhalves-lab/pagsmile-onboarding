@@ -49,7 +49,7 @@ export default function QuickMetricsCard({
                 <Icon className={`w-4 h-4 ${metric.iconColor}`} />
               </div>
               <div>
-                <p className="text-xs text-[var(--pagsmile-blue)]/70">{metric.label}</p>
+                <p className="text-xs text-[var(--pagsmile-blue)]/70 font-semibold">{metric.label}</p>
                 <p className="text-xl font-bold text-[var(--pagsmile-blue)]">{metric.value}</p>
               </div>
             </div>

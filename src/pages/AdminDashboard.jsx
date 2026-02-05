@@ -397,11 +397,11 @@ export default function AdminDashboard() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#002443]">Dashboard de Compliance</h1>
-          <p className="text-[#002443]/60">Visão executiva do processo de onboarding</p>
+          <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Dashboard de Compliance</h1>
+          <p className="text-[var(--pagsmile-blue)]/70 font-medium">Visão executiva do processo de onboarding</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => refetchCases()} className="text-[#002443] border-[#002443]/20 hover:bg-[#002443]/5">
+          <Button variant="outline" onClick={() => refetchCases()} className="text-[var(--pagsmile-blue)] border-[var(--pagsmile-blue)]/20 hover:bg-[var(--pagsmile-blue)]/5 font-semibold">
             <RefreshCw className="w-4 h-4 mr-2" />
             Atualizar
           </Button>
@@ -614,7 +614,7 @@ export default function AdminDashboard() {
               <TableRow>
                 <TableHead className="w-[300px]">
                   <button 
-                    className="flex items-center gap-1 hover:text-[#002443]"
+                    className="flex items-center gap-1 hover:text-[var(--pagsmile-blue)] font-semibold"
                     onClick={() => {
                       if (sortField === 'merchant') setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
                       else { setSortField('merchant'); setSortOrder('asc'); }
@@ -627,7 +627,7 @@ export default function AdminDashboard() {
                 <TableHead>Status</TableHead>
                 <TableHead>
                   <button 
-                    className="flex items-center gap-1 hover:text-[#002443]"
+                    className="flex items-center gap-1 hover:text-[var(--pagsmile-blue)] font-semibold"
                     onClick={() => {
                       if (sortField === 'riskScore') setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
                       else { setSortField('riskScore'); setSortOrder('desc'); }
@@ -639,7 +639,7 @@ export default function AdminDashboard() {
                 <TableHead>Decisão IA</TableHead>
                 <TableHead>
                   <button 
-                    className="flex items-center gap-1 hover:text-[#002443]"
+                    className="flex items-center gap-1 hover:text-[var(--pagsmile-blue)] font-semibold"
                     onClick={() => {
                       if (sortField === 'created_date') setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
                       else { setSortField('created_date'); setSortOrder('desc'); }
@@ -666,8 +666,8 @@ export default function AdminDashboard() {
                           )}
                         </div>
                         <div>
-                          <p className="font-medium text-[#002443]">{merchant?.fullName || 'N/A'}</p>
-                          <p className="text-sm text-[var(--pagsmile-blue)]/70">{merchant?.cpfCnpj || '-'}</p>
+                          <p className="font-semibold text-[var(--pagsmile-blue)]">{merchant?.fullName || 'N/A'}</p>
+                          <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium">{merchant?.cpfCnpj || '-'}</p>
                         </div>
                       </div>
                     </TableCell>
@@ -740,7 +740,7 @@ export default function AdminDashboard() {
         
         {filteredCases.length > 0 && (
           <div className="px-4 py-3 border-t border-slate-200 flex items-center justify-between">
-            <p className="text-sm text-[var(--pagsmile-blue)]/70">
+            <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium">
               Mostrando {Math.min(filteredCases.length, 20)} de {filteredCases.length} casos
             </p>
           </div>

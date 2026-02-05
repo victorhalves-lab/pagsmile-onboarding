@@ -209,7 +209,7 @@ export default function QuestionFormDialog({ open, onOpenChange, question, templ
                 placeholder="Digite uma opção por linha..."
                 rows={4}
               />
-              <p className="text-xs text-[var(--pagsmile-blue)]/70">
+              <p className="text-xs text-[var(--pagsmile-blue)]/70 font-medium">
                 Digite uma opção por linha. Cada linha será uma opção de resposta.
               </p>
             </div>
@@ -258,7 +258,7 @@ export default function QuestionFormDialog({ open, onOpenChange, question, templ
                   value={formData.riskWeight}
                   onChange={(e) => setFormData({ ...formData, riskWeight: parseInt(e.target.value) || 0 })}
                 />
-                <p className="text-xs text-[var(--pagsmile-blue)]/70">
+                <p className="text-xs text-[var(--pagsmile-blue)]/70 font-medium">
                   Define o impacto desta pergunta no score de risco geral.
                 </p>
               </div>
@@ -338,7 +338,7 @@ export default function QuestionFormDialog({ open, onOpenChange, question, templ
                 </Button>
               </CollapsibleTrigger>
               <CollapsibleContent className="space-y-4 pt-4">
-                <p className="text-sm text-[var(--pagsmile-blue)]/70">
+                <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium">
                   Exibir esta pergunta somente quando outra pergunta tiver uma resposta específica.
                 </p>
 

@@ -45,7 +45,7 @@ export default function RiskDistributionCards({
     <div className="bg-white rounded-xl border border-slate-200 p-5">
       <div className="flex items-center gap-2 mb-4">
         <Shield className="w-4 h-4 text-[var(--pagsmile-blue)]/70" />
-        <h3 className="font-semibold text-[var(--pagsmile-blue)]">Distribuição de Risco da Carteira</h3>
+        <h3 className="font-bold text-[var(--pagsmile-blue)]">Distribuição de Risco da Carteira</h3>
       </div>
 
       <div className="grid grid-cols-4 gap-3">
@@ -60,7 +60,7 @@ export default function RiskDistributionCards({
                   style={{ height: `${Math.max(heightPercentage, 10)}%` }}
                 />
               </div>
-              <p className="text-xs text-[var(--pagsmile-blue)]/80 mb-1">{cat.label}</p>
+              <p className="text-xs text-[var(--pagsmile-blue)]/80 font-semibold mb-1">{cat.label}</p>
               <p className={`text-xl font-bold ${cat.textColor}`}>
                 {cat.value.toLocaleString('pt-BR')}
               </p>
