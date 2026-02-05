@@ -33,7 +33,7 @@ export default function SelectionButton({
   return (
     <div className={cn("flex flex-col gap-2", className)}>
       {helperText && (
-        <span className="text-xs font-medium text-slate-400 uppercase tracking-wider ml-1 mb-1">
+        <span className="text-xs font-medium text-[var(--pagsmile-blue)]/60 uppercase tracking-wider ml-1 mb-1">
           {helperText}
         </span>
       )}

@@ -19,7 +19,7 @@ export default function FormSection({
         <div className="flex-1">
           <h2 className="text-lg font-bold text-[var(--pagsmile-blue)] tracking-tight">{title}</h2>
           {subtitle && (
-            <p className="text-[var(--pagsmile-blue)]/60 mt-1 text-sm max-w-2xl">{subtitle}</p>
+            <p className="text-[var(--pagsmile-blue)]/70 mt-1 text-sm max-w-2xl">{subtitle}</p>
           )}
         </div>
       </div>

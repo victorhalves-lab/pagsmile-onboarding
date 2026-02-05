@@ -28,7 +28,7 @@ export default function FormField({
   return (
     <div className={cn("space-y-2", className)}>
       <div className="flex items-center gap-2">
-        <Label htmlFor={id} className="text-sm font-medium text-slate-700">
+        <Label htmlFor={id} className="text-sm font-medium text-[var(--pagsmile-blue)]">
           {label}
           {required && <span className="text-red-500 ml-1">*</span>}
         </Label>
@@ -36,7 +36,7 @@ export default function FormField({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <HelpCircle className="w-4 h-4 text-slate-400 cursor-help" />
+                <HelpCircle className="w-4 h-4 text-[var(--pagsmile-blue)]/60 cursor-help" />
               </TooltipTrigger>
               <TooltipContent>
                 <p className="max-w-xs">{helpText}</p>

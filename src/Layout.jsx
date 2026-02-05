@@ -121,7 +121,7 @@ export default function Layout({ children, currentPageName }) {
           </div>
         </main>
 
-        <footer className="py-8 text-center text-sm text-slate-400">
+        <footer className="py-8 text-center text-sm text-[var(--pagsmile-blue)]/60">
           <p>&copy; {new Date().getFullYear()} Pagsmile. Inovação e Segurança em Pagamentos.</p>
         </footer>
       </div>
@@ -280,7 +280,7 @@ export default function Layout({ children, currentPageName }) {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-[#002443] truncate">{user?.full_name}</p>
-                <p className="text-xs text-slate-500 truncate">{isAdmin ? 'Administrador' : 'Usuário'}</p>
+                <p className="text-xs text-[var(--pagsmile-blue)]/70 truncate">{isAdmin ? 'Administrador' : 'Usuário'}</p>
               </div>
               </div>
               <Button
