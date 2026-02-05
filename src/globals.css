@@ -1,0 +1,128 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --pagsmile-green: #2bc196;
+  --pagsmile-blue: #002443;
+  
+  /* Override ALL Shadcn/Tailwind default colors */
+  --background: #ffffff;
+  --foreground: #002443;
+  --card: #ffffff;
+  --card-foreground: #002443;
+  --popover: #ffffff;
+  --popover-foreground: #002443;
+  --primary: #2bc196;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #002443;
+  --muted: #f1f5f9;
+  --muted-foreground: #002443;
+  --accent: #2bc196;
+  --accent-foreground: #ffffff;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #2bc196;
+}
+
+* {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: #002443;
+  background-color: #f8f9fa;
+}
+
+/* FORCE all text to be Pagsmile blue - NO BLACK OR GRAY */
+h1, h2, h3, h4, h5, h6, p, span, label, div, a, li, td, th, input, textarea, select, button {
+  color: #002443 !important;
+}
+
+/* Exceptions for white text on colored backgrounds */
+.bg-\[\#2bc196\] *, 
+.bg-\[\#2bc196\],
+.bg-\[var\(--pagsmile-green\)\] *,
+[data-state="checked"] *,
+.bg-green-500 *,
+.bg-red-500 *,
+.bg-destructive * {
+  color: #ffffff !important;
+}
+
+/* Fix muted/gray text classes */
+.text-muted-foreground,
+.text-gray-500,
+.text-gray-600,
+.text-gray-700,
+.text-slate-500,
+.text-slate-600,
+.text-slate-700 {
+  color: #002443 !important;
+  opacity: 0.7;
+}
+
+/* Fix black text classes */
+.text-black,
+.text-gray-900,
+.text-gray-800,
+.text-slate-900,
+.text-slate-800 {
+  color: #002443 !important;
+}
+
+/* Primary/accent colors */
+.text-primary {
+  color: #2bc196 !important;
+}
+
+.bg-primary {
+  background-color: #2bc196 !important;
+}
+
+/* Focus rings */
+.focus\:ring-ring:focus,
+.focus-visible\:ring-ring:focus-visible {
+  --tw-ring-color: #2bc196 !important;
+}
+
+/* Switch component - when checked use blue, unchecked use light gray */
+[data-state="checked"] {
+  background-color: #002443 !important;
+}
+
+[data-state="unchecked"] {
+  background-color: #e2e8f0 !important;
+}
+
+/* Badge default */
+.bg-primary {
+  background-color: #2bc196 !important;
+}
+
+/* Placeholder text */
+::placeholder {
+  color: #002443 !important;
+  opacity: 0.5;
+}
+
+/* Icons should inherit color */
+svg {
+  color: inherit !important;
+}
+
+/* Tabs */
+[data-state="active"] {
+  color: #002443 !important;
+}
+
+[data-state="inactive"] {
+  color: #002443 !important;
+  opacity: 0.7;
+}
