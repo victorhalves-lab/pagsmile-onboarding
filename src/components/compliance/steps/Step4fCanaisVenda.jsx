@@ -26,7 +26,7 @@ export default function Step4fCanaisVenda({ formData, handleChange }) {
         value={formData.canaisVenda}
         onChange={(val) => handleChange('canaisVenda', val)}
         isMulti={true}
-        columns={2}
+        columns={3}
         helperText="Selecione todos que se aplicam"
       />
     </FormSection>

@@ -52,19 +52,19 @@ export default function SelectionButton({
                 type="button"
                 onClick={() => handleClick(option.value)}
                 className={cn(
-                  "group relative p-6 rounded-2xl text-left transition-all duration-300 ease-out",
+                  "group relative p-4 rounded-xl text-left transition-all duration-300 ease-out",
                   "border-2 flex flex-col h-full",
                   isSelected 
-                    ? "border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)] shadow-[0_4px_15px_rgba(43,193,150,0.4)] transform -translate-y-1" 
-                    : "border-[var(--pagsmile-blue)]/10 bg-white hover:border-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/5 hover:shadow-md hover:-translate-y-1"
+                    ? "border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)] shadow-md" 
+                    : "border-[var(--pagsmile-blue)]/20 bg-white hover:border-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/5 hover:shadow-sm"
                 )}
               >
                 <div className="flex justify-between items-start w-full mb-4">
                   <div className={cn(
-                    "p-3 rounded-xl transition-colors duration-300",
+                    "p-2 rounded-lg transition-colors duration-300",
                     isSelected 
                       ? "bg-white/20 text-white" 
-                      : "bg-slate-50 text-slate-400 group-hover:text-[var(--pagsmile-green)] group-hover:bg-[var(--pagsmile-green)]/10"
+                      : "bg-[var(--pagsmile-blue)]/5 text-[var(--pagsmile-blue)] group-hover:text-[var(--pagsmile-blue)] group-hover:bg-[var(--pagsmile-blue)]/10"
                   )}>
                     {option.icon}
                   </div>
@@ -78,7 +78,7 @@ export default function SelectionButton({
 
                 <div className="mt-auto">
                   <h3 className={cn(
-                    "font-bold text-lg mb-2 transition-colors",
+                    "font-bold text-base mb-1 transition-colors",
                     isSelected ? "text-white" : "text-[var(--pagsmile-blue)]"
                   )}>
                     {option.label}
@@ -86,7 +86,7 @@ export default function SelectionButton({
                   {option.description && (
                     <p className={cn(
                       "text-sm leading-relaxed transition-colors",
-                      isSelected ? "text-white/90" : "text-slate-500"
+                      isSelected ? "text-white/90" : "text-[var(--pagsmile-blue)]/70"
                     )}>
                       {option.description}
                     </p>
@@ -102,11 +102,11 @@ export default function SelectionButton({
               type="button"
               onClick={() => handleClick(option.value)}
               className={cn(
-                "group relative px-4 py-3 rounded-xl text-left transition-all duration-200",
+                "group relative px-3 py-2 rounded-lg text-left transition-all duration-200",
                 "border flex items-center gap-3",
                 isSelected 
-                ? "border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)] shadow-md transform scale-[1.01]" 
-                : "border-[var(--pagsmile-blue)]/10 bg-white hover:border-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/5"
+                ? "border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)] shadow-sm" 
+                : "border-[var(--pagsmile-blue)]/20 bg-white hover:border-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/5"
               )}
             >
                {isSelected && (
@@ -118,7 +118,7 @@ export default function SelectionButton({
                 <div className="flex-1 min-w-0">
                   <h3 className={cn(
                     "font-medium text-sm transition-colors",
-                    isSelected ? "text-white" : "text-slate-700"
+                    isSelected ? "text-white" : "text-[var(--pagsmile-blue)]"
                   )}>
                     {option.label}
                   </h3>
