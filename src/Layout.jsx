@@ -133,10 +133,10 @@ export default function Layout({ children, currentPageName }) {
       icon: Shield,
       items: [
         { label: 'Dashboard', path: 'AdminDashboard', icon: LayoutDashboard },
-        { label: 'Questionários Recebidos', path: 'ComplianceSubmissions', icon: FileCheck, highlight: true },
-        { label: 'Análise de Casos', path: 'OnboardingCaseDetails', icon: ClipboardList, hidden: true },
-        { label: 'Gestão de Documentos', path: 'AdminComplianceDocs', icon: FileText },
-        { label: 'Revalidação', path: 'AdminRevalidationManager', icon: History },
+        { label: 'Questionários Recebidos', path: 'QuestionariosRecebidos', icon: FileCheck, highlight: true },
+        { label: 'Análise de Casos', path: 'AnaliseDeCasos', icon: ClipboardList, hidden: true },
+        { label: 'Gestão de Documentos', path: 'GestaoDocumentos', icon: FileText },
+        { label: 'Revalidação', path: 'GestaoRevalidacao', icon: History },
       ]
     },
     {
@@ -144,9 +144,9 @@ export default function Layout({ children, currentPageName }) {
       label: 'Ferramentas',
       icon: Settings,
       items: [
-        { label: 'Gerar Link', path: 'GenerateOnboardingLink', icon: LinkIcon },
-        { label: 'Templates', path: 'QuestionnaireTemplates', icon: FileText },
-        { label: 'Regras & Workflows', path: 'AdminComplianceRules', icon: Settings },
+        { label: 'Gerar Link', path: 'GerarLinkOnboarding', icon: LinkIcon },
+        { label: 'Templates', path: 'TemplatesQuestionarios', icon: FileText },
+        { label: 'Regras & Workflows', path: 'RegrasDeCompliance', icon: Settings },
       ]
     },
     {
@@ -154,8 +154,8 @@ export default function Layout({ children, currentPageName }) {
       label: 'Integrações',
       icon: Plug,
       items: [
-        { label: 'CAF & BigDataCorp', path: 'AdminIntegrations', icon: Plug },
-        { label: 'Helena IA', path: 'AdminHelenaIA', icon: Brain },
+        { label: 'CAF & BigDataCorp', path: 'IntegracoesExternas', icon: Plug },
+        { label: 'Helena IA', path: 'HelenaIA', icon: Brain },
       ]
     },
     {
@@ -163,8 +163,8 @@ export default function Layout({ children, currentPageName }) {
       label: 'Administração',
       icon: Settings,
       items: [
-        { label: 'Configurações', path: 'AdminSettings', icon: Settings },
-        { label: 'Auditoria', path: 'AdminComplianceAudit', icon: History },
+        { label: 'Configurações', path: 'Configuracoes', icon: Settings },
+        { label: 'Auditoria', path: 'Auditoria', icon: History },
       ]
     }
   ];
@@ -175,15 +175,15 @@ export default function Layout({ children, currentPageName }) {
       <Link
         to={createPageUrl(item.path)}
         onClick={onClick}
-        className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm ${
+        className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm font-medium ${
           isActive
-            ? 'bg-[var(--pagsmile-green)] text-white'
+            ? 'bg-[var(--pagsmile-green)] text-white shadow-md'
             : item.highlight && !isActive
             ? 'text-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5 hover:bg-[var(--pagsmile-green)]/10'
-            : 'text-[var(--pagsmile-blue)]/80 hover:text-[var(--pagsmile-blue)] hover:bg-[var(--pagsmile-blue)]/5'
+            : 'text-[#002443]/80 hover:text-[#002443] hover:bg-[#002443]/5'
             }`}
             >
-        <Icon className="w-4 h-4" />
+        <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-[#002443]/80'}`} />
         <span className="flex-1">{item.label}</span>
         {item.highlight && !isActive && (
           <span className="w-2 h-2 rounded-full bg-[var(--pagsmile-green)] animate-pulse"></span>
@@ -204,11 +204,11 @@ export default function Layout({ children, currentPageName }) {
       <div className="mb-2">
         <button
           onClick={() => toggleSection(section.id)}
-          className="flex items-center gap-2 w-full px-3 py-2 text-xs font-semibold text-[var(--pagsmile-blue)]/70 uppercase tracking-wider hover:text-[var(--pagsmile-blue)]"
+          className="flex items-center gap-2 w-full px-3 py-2 text-xs font-bold text-[#002443] uppercase tracking-wider hover:text-[#002443]/80 transition-colors"
         >
-          <SectionIcon className="w-4 h-4" />
+          <SectionIcon className="w-4 h-4 text-[#2bc196]" />
           <span className="flex-1 text-left">{section.label}</span>
-          {isExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+          {isExpanded ? <ChevronDown className="w-3 h-3 text-[#002443]/50" /> : <ChevronRight className="w-3 h-3 text-[#002443]/50" />}
         </button>
         {isExpanded && (
           <div className="mt-1 space-y-1 pl-2">
@@ -248,18 +248,15 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Sidebar - Desktop */}
       {isAuthenticated && (
-        <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-slate-200 min-h-screen fixed left-0 top-0">
+        <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-slate-200 min-h-screen fixed left-0 top-0 z-20">
           {/* Logo */}
-          <div className="p-4 border-b border-slate-200">
+          <div className="p-4 border-b border-slate-200 bg-white">
             <div className="flex items-center gap-3">
               <img 
                 src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/9bd38c4f7_Logo-modo-claro.png" 
                 alt="Pagsmile" 
-                className="h-7"
+                className="h-8 w-auto"
               />
-              <span className="text-xs font-medium text-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/10 px-2 py-1 rounded">
-                Compliance
-              </span>
             </div>
           </div>
 
@@ -271,23 +268,23 @@ export default function Layout({ children, currentPageName }) {
           </nav>
 
           {/* User Info & Logout */}
-          <div className="p-4 border-t border-slate-200">
+          <div className="p-4 border-t border-slate-200 bg-slate-50/50">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-8 h-8 rounded-full bg-[var(--pagsmile-green)]/10 flex items-center justify-center">
-                <span className="text-sm font-medium text-[var(--pagsmile-green)]">
+              <div className="w-9 h-9 rounded-full bg-[#002443] flex items-center justify-center text-white shadow-sm">
+                <span className="text-sm font-semibold">
                   {user?.full_name?.charAt(0) || 'U'}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-[var(--pagsmile-blue)] truncate">{user?.full_name}</p>
-                <p className="text-xs text-[var(--pagsmile-blue)]/60">{isAdmin ? 'Administrador' : 'Usuário'}</p>
+                <p className="text-sm font-semibold text-[#002443] truncate">{user?.full_name}</p>
+                <p className="text-xs text-slate-500 truncate">{isAdmin ? 'Administrador' : 'Usuário'}</p>
               </div>
               </div>
               <Button
               variant="ghost"
               size="sm"
               onClick={() => base44.auth.logout()}
-              className="w-full justify-start text-[var(--pagsmile-blue)]/70 hover:text-[var(--pagsmile-blue)]"
+              className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 font-medium"
               >
               <LogOut className="w-4 h-4 mr-2" />
               Sair
@@ -303,7 +300,7 @@ export default function Layout({ children, currentPageName }) {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-slate-600"
+                className="text-[#002443]"
               >
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
@@ -317,7 +314,7 @@ export default function Layout({ children, currentPageName }) {
               variant="ghost"
               size="sm"
               onClick={() => base44.auth.logout()}
-              className="text-slate-600"
+              className="text-[#002443]"
             >
               <LogOut className="w-4 h-4" />
             </Button>
@@ -339,8 +336,8 @@ export default function Layout({ children, currentPageName }) {
       )}
 
       {/* Main Content */}
-      <main className={`flex-1 ${isAuthenticated ? 'lg:ml-64' : ''}`}>
-        <div className={`p-4 lg:p-6 ${isAuthenticated ? 'pt-20 lg:pt-6' : ''}`}>
+      <main className={`flex-1 ${isAuthenticated ? 'lg:ml-64' : ''} bg-[#f8f9fa] min-h-screen`}>
+        <div className={`p-4 lg:p-8 ${isAuthenticated ? 'pt-20 lg:pt-8' : ''}`}>
           {children}
         </div>
       </main>

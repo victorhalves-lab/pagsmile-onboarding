@@ -47,28 +47,16 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
-import AdminComplianceAudit from './pages/AdminComplianceAudit';
-import AdminComplianceDocs from './pages/AdminComplianceDocs';
-import AdminComplianceRules from './pages/AdminComplianceRules';
 import AdminDashboard from './pages/AdminDashboard';
-import AdminHelenaIA from './pages/AdminHelenaIA';
-import AdminIntegrations from './pages/AdminIntegrations';
-import AdminRevalidationManager from './pages/AdminRevalidationManager';
-import AdminSettings from './pages/AdminSettings';
 import ComplianceFullKYC from './pages/ComplianceFullKYC';
 import ComplianceOnboardingStart from './pages/ComplianceOnboardingStart';
 import CompliancePixOnly from './pages/CompliancePixOnly';
-import ComplianceSubmissions from './pages/ComplianceSubmissions';
 import DocumentUploadFull from './pages/DocumentUploadFull';
 import DocumentUploadPix from './pages/DocumentUploadPix';
-import GenerateOnboardingLink from './pages/GenerateOnboardingLink';
 import Home from './pages/Home';
 import LivenessFacematchStep from './pages/LivenessFacematchStep';
 import LivenessSimulation from './pages/LivenessSimulation';
-import OnboardingCaseDetails from './pages/OnboardingCaseDetails';
 import OnboardingCompletion from './pages/OnboardingCompletion';
-import QuestionnaireEditor from './pages/QuestionnaireEditor';
-import QuestionnaireTemplates from './pages/QuestionnaireTemplates';
 import QuestionariosRecebidos from './pages/QuestionariosRecebidos';
 import AnaliseDeCasos from './pages/AnaliseDeCasos';
 import GestaoDocumentos from './pages/GestaoDocumentos';
@@ -76,32 +64,25 @@ import GestaoRevalidacao from './pages/GestaoRevalidacao';
 import GerarLinkOnboarding from './pages/GerarLinkOnboarding';
 import TemplatesQuestionarios from './pages/TemplatesQuestionarios';
 import EditorQuestionario from './pages/EditorQuestionario';
+import RegrasDeCompliance from './pages/RegrasDeCompliance';
+import IntegracoesExternas from './pages/IntegracoesExternas';
+import HelenaIA from './pages/HelenaIA';
+import Configuracoes from './pages/Configuracoes';
+import Auditoria from './pages/Auditoria';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
-    "AdminComplianceAudit": AdminComplianceAudit,
-    "AdminComplianceDocs": AdminComplianceDocs,
-    "AdminComplianceRules": AdminComplianceRules,
     "AdminDashboard": AdminDashboard,
-    "AdminHelenaIA": AdminHelenaIA,
-    "AdminIntegrations": AdminIntegrations,
-    "AdminRevalidationManager": AdminRevalidationManager,
-    "AdminSettings": AdminSettings,
     "ComplianceFullKYC": ComplianceFullKYC,
     "ComplianceOnboardingStart": ComplianceOnboardingStart,
     "CompliancePixOnly": CompliancePixOnly,
-    "ComplianceSubmissions": ComplianceSubmissions,
     "DocumentUploadFull": DocumentUploadFull,
     "DocumentUploadPix": DocumentUploadPix,
-    "GenerateOnboardingLink": GenerateOnboardingLink,
     "Home": Home,
     "LivenessFacematchStep": LivenessFacematchStep,
     "LivenessSimulation": LivenessSimulation,
-    "OnboardingCaseDetails": OnboardingCaseDetails,
     "OnboardingCompletion": OnboardingCompletion,
-    "QuestionnaireEditor": QuestionnaireEditor,
-    "QuestionnaireTemplates": QuestionnaireTemplates,
     "QuestionariosRecebidos": QuestionariosRecebidos,
     "AnaliseDeCasos": AnaliseDeCasos,
     "GestaoDocumentos": GestaoDocumentos,
@@ -109,6 +90,11 @@ export const PAGES = {
     "GerarLinkOnboarding": GerarLinkOnboarding,
     "TemplatesQuestionarios": TemplatesQuestionarios,
     "EditorQuestionario": EditorQuestionario,
+    "RegrasDeCompliance": RegrasDeCompliance,
+    "IntegracoesExternas": IntegracoesExternas,
+    "HelenaIA": HelenaIA,
+    "Configuracoes": Configuracoes,
+    "Auditoria": Auditoria,
 }
 
 export const pagesConfig = {

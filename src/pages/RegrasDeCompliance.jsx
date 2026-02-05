@@ -46,7 +46,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-export default function AdminComplianceRules() {
+export default function RegrasDeCompliance() {
   const [showEditor, setShowEditor] = useState(false);
   const [editingRule, setEditingRule] = useState(null);
   const [deleteId, setDeleteId] = useState(null);

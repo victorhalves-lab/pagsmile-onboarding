@@ -41,7 +41,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-export default function AdminSettings() {
+export default function Configuracoes() {
   const queryClient = useQueryClient();
   
   // Estado das configurações

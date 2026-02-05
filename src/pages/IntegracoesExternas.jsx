@@ -15,15 +15,6 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from '@/components/ui/dialog';
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -71,7 +62,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-export default function AdminIntegrations() {
+export default function IntegracoesExternas() {
   const [activeTab, setActiveTab] = useState('overview');
   const [configDialog, setConfigDialog] = useState({ open: false, provider: null });
   const [testingProvider, setTestingProvider] = useState(null);

@@ -32,7 +32,7 @@ import {
   User, Bot, Settings
 } from 'lucide-react';
 
-export default function AdminComplianceAudit() {
+export default function Auditoria() {
   const [searchTerm, setSearchTerm] = useState('');
   const [actionFilter, setActionFilter] = useState('all');
   const [actorTypeFilter, setActorTypeFilter] = useState('all');

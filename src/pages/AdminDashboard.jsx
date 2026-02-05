@@ -397,16 +397,16 @@ export default function AdminDashboard() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Dashboard de Compliance</h1>
-          <p className="text-[var(--pagsmile-blue)]/60">Visão executiva do processo de onboarding</p>
+          <h1 className="text-2xl font-bold text-[#002443]">Dashboard de Compliance</h1>
+          <p className="text-[#002443]/60">Visão executiva do processo de onboarding</p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => refetchCases()}>
+          <Button variant="outline" onClick={() => refetchCases()} className="text-[#002443] border-[#002443]/20 hover:bg-[#002443]/5">
             <RefreshCw className="w-4 h-4 mr-2" />
             Atualizar
           </Button>
-          <Link to={createPageUrl('GenerateOnboardingLink')}>
-            <Button className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90">
+          <Link to={createPageUrl('GerarLinkOnboarding')}>
+            <Button className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white">
               <LinkIcon className="w-4 h-4 mr-2" />
               Gerar Link
             </Button>
@@ -499,7 +499,7 @@ export default function AdminDashboard() {
 
       {/* Score Overview */}
       <div className="mb-6">
-        <h2 className="text-lg font-bold text-slate-800 mb-3">Análise de Scores (SENTINEL)</h2>
+        <h2 className="text-lg font-bold text-[#002443] mb-3">Análise de Scores (SENTINEL)</h2>
         <ComplianceScoresOverview scores={stats.scoreStats} />
       </div>
 
@@ -600,12 +600,13 @@ export default function AdminDashboard() {
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" />
+            <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
           </div>
         ) : filteredCases.length === 0 ? (
           <div className="text-center py-12">
             <FileCheck className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-            <p className="text-slate-500">Nenhum caso encontrado</p>
+            <p className="text-slate-500 font-medium">Nenhum caso encontrado</p>
+            <p className="text-sm text-slate-400 mt-1">Ajuste os filtros ou aguarde novas submissões</p>
           </div>
         ) : (
           <Table>
@@ -613,7 +614,7 @@ export default function AdminDashboard() {
               <TableRow>
                 <TableHead className="w-[300px]">
                   <button 
-                    className="flex items-center gap-1 hover:text-slate-800"
+                    className="flex items-center gap-1 hover:text-[#002443]"
                     onClick={() => {
                       if (sortField === 'merchant') setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
                       else { setSortField('merchant'); setSortOrder('asc'); }
@@ -626,7 +627,7 @@ export default function AdminDashboard() {
                 <TableHead>Status</TableHead>
                 <TableHead>
                   <button 
-                    className="flex items-center gap-1 hover:text-slate-800"
+                    className="flex items-center gap-1 hover:text-[#002443]"
                     onClick={() => {
                       if (sortField === 'riskScore') setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
                       else { setSortField('riskScore'); setSortOrder('desc'); }
@@ -638,7 +639,7 @@ export default function AdminDashboard() {
                 <TableHead>Decisão IA</TableHead>
                 <TableHead>
                   <button 
-                    className="flex items-center gap-1 hover:text-slate-800"
+                    className="flex items-center gap-1 hover:text-[#002443]"
                     onClick={() => {
                       if (sortField === 'created_date') setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
                       else { setSortField('created_date'); setSortOrder('desc'); }
@@ -665,7 +666,7 @@ export default function AdminDashboard() {
                           )}
                         </div>
                         <div>
-                          <p className="font-medium text-slate-800">{merchant?.fullName || 'N/A'}</p>
+                          <p className="font-medium text-[#002443]">{merchant?.fullName || 'N/A'}</p>
                           <p className="text-sm text-slate-500">{merchant?.cpfCnpj || '-'}</p>
                         </div>
                       </div>
@@ -702,7 +703,7 @@ export default function AdminDashboard() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
-                        <Link to={createPageUrl('OnboardingCaseDetails') + `?id=${c.id}`}>
+                        <Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`}>
                           <Button variant="ghost" size="sm">
                             <Eye className="w-4 h-4 mr-1" /> Ver
                           </Button>
@@ -715,7 +716,7 @@ export default function AdminDashboard() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem asChild>
-                              <Link to={createPageUrl('OnboardingCaseDetails') + `?id=${c.id}`}>
+                              <Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`}>
                                 <Eye className="w-4 h-4 mr-2" /> Ver Detalhes
                               </Link>
                             </DropdownMenuItem>

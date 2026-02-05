@@ -64,7 +64,7 @@ import TrendLineChart from '../components/dashboard/TrendLineChart';
 import TopRejectionReasonsChart from '../components/dashboard/TopRejectionReasonsChart';
 import RiskDistributionCards from '../components/dashboard/RiskDistributionCards';
 
-export default function AdminHelenaIA() {
+export default function HelenaIA() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [thresholds, setThresholds] = useState({
     auto_approve: 80,
