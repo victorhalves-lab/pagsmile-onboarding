@@ -64,6 +64,13 @@ export default function AdminHelenaIA() {
     auto_approve: 80,
     auto_reject: 40
   });
+  const [factorWeights, setFactorWeights] = useState({
+    cadastral: 20,
+    financial: 20,
+    pld: 30,
+    documents: 15,
+    external: 15
+  });
   const queryClient = useQueryClient();
 
   const { data: helenaAnalyses = [], isLoading } = useQuery({
@@ -176,6 +183,7 @@ export default function AdminHelenaIA() {
           <TabsTrigger value="config">Configuração</TabsTrigger>
           <TabsTrigger value="history">Histórico</TabsTrigger>
           <TabsTrigger value="training">Treinamento</TabsTrigger>
+          <TabsTrigger value="logs">Logs da IA</TabsTrigger>
         </TabsList>
 
         {/* Dashboard Tab */}
@@ -384,16 +392,16 @@ export default function AdminHelenaIA() {
           <Card>
             <CardHeader>
               <CardTitle>Fatores de Análise</CardTitle>
-              <CardDescription>Peso de cada categoria na composição do score final</CardDescription>
+              <CardDescription>Peso de cada categoria na composição do score final (total deve ser 100%)</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {[
-                  { id: 'cadastral', label: 'Dados Cadastrais', icon: FileText, weight: 20 },
-                  { id: 'financial', label: 'Perfil Financeiro', icon: Scale, weight: 20 },
-                  { id: 'pld', label: 'PLD/FT e Sanções', icon: Shield, weight: 30 },
-                  { id: 'documents', label: 'Documentos', icon: FileText, weight: 15 },
-                  { id: 'external', label: 'Validações Externas (CAF/BDC)', icon: Activity, weight: 15 },
+                  { id: 'cadastral', label: 'Dados Cadastrais', icon: FileText },
+                  { id: 'financial', label: 'Perfil Financeiro', icon: Scale },
+                  { id: 'pld', label: 'PLD/FT e Sanções', icon: Shield },
+                  { id: 'documents', label: 'Documentos', icon: FileText },
+                  { id: 'external', label: 'Validações Externas (CAF/BDC)', icon: Activity },
                 ].map(factor => (
                   <div key={factor.id} className="flex items-center gap-4 p-3 border rounded-lg">
                     <factor.icon className="w-5 h-5 text-slate-400" />
@@ -401,17 +409,27 @@ export default function AdminHelenaIA() {
                       <p className="font-medium text-sm">{factor.label}</p>
                     </div>
                     <div className="w-32">
-                      <Input 
-                        type="number" 
-                        value={factor.weight} 
-                        className="text-center"
+                      <Slider
+                        value={[factorWeights[factor.id]]}
+                        onValueChange={(v) => setFactorWeights(prev => ({ ...prev, [factor.id]: v[0] }))}
                         min={0}
-                        max={100}
+                        max={50}
+                        step={5}
                       />
                     </div>
-                    <span className="text-sm text-slate-500 w-8">%</span>
+                    <span className="text-sm font-medium text-slate-700 w-12 text-right">{factorWeights[factor.id]}%</span>
                   </div>
                 ))}
+                <div className="pt-3 border-t flex justify-between items-center">
+                  <span className="text-sm font-medium">Total:</span>
+                  <span className={`text-lg font-bold ${
+                    Object.values(factorWeights).reduce((a, b) => a + b, 0) === 100 
+                      ? 'text-green-600' 
+                      : 'text-red-600'
+                  }`}>
+                    {Object.values(factorWeights).reduce((a, b) => a + b, 0)}%
+                  </span>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -549,6 +567,91 @@ OUTPUT ESPERADO:
                   Restaurar Padrão
                 </Button>
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Logs Tab */}
+        <TabsContent value="logs" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Logs de Execução da Helena</CardTitle>
+              <CardDescription>Detalhes das análises realizadas pela IA</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <div className="flex justify-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {helenaAnalyses.slice(0, 10).map(analysis => (
+                    <div key={analysis.id} className="border rounded-lg p-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          {analysis.decision && getDecisionBadge(analysis.decision)}
+                          <span className="text-sm text-slate-500">
+                            {analysis.created_date ? new Date(analysis.created_date).toLocaleString('pt-BR') : '-'}
+                          </span>
+                        </div>
+                        <span className={`text-2xl font-bold ${
+                          analysis.score >= 80 ? 'text-green-600' :
+                          analysis.score >= 40 ? 'text-orange-600' : 'text-red-600'
+                        }`}>
+                          {analysis.score || '-'}
+                        </span>
+                      </div>
+                      
+                      {analysis.justification && (
+                        <div className="bg-slate-50 rounded-lg p-3 mb-3">
+                          <p className="text-sm font-medium text-slate-700 mb-1">Justificativa:</p>
+                          <p className="text-sm text-slate-600">{analysis.justification}</p>
+                        </div>
+                      )}
+
+                      <div className="grid grid-cols-2 gap-4">
+                        {analysis.positive_factors?.length > 0 && (
+                          <div>
+                            <p className="text-xs font-medium text-green-700 mb-1">Fatores Positivos:</p>
+                            <ul className="text-xs text-slate-600 list-disc list-inside">
+                              {analysis.positive_factors.slice(0, 3).map((f, i) => (
+                                <li key={i}>{f}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        {analysis.risk_factors?.length > 0 && (
+                          <div>
+                            <p className="text-xs font-medium text-red-700 mb-1">Fatores de Risco:</p>
+                            <ul className="text-xs text-slate-600 list-disc list-inside">
+                              {analysis.risk_factors.slice(0, 3).map((f, i) => (
+                                <li key={i}>{f}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+
+                      {analysis.red_flags?.length > 0 && (
+                        <div className="mt-3 p-2 bg-red-50 rounded border border-red-200">
+                          <p className="text-xs font-medium text-red-700 mb-1">Red Flags:</p>
+                          <div className="flex flex-wrap gap-1">
+                            {analysis.red_flags.map((flag, i) => (
+                              <Badge key={i} className="bg-red-100 text-red-800 text-xs">{flag}</Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {analysis.processing_time_ms && (
+                        <p className="text-xs text-slate-400 mt-2">
+                          Processado em {analysis.processing_time_ms}ms
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
