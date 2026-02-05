@@ -83,11 +83,11 @@ export default function Step3Endereco({ formData, handleChange }) {
       </div>
       
       <FormField
-        label="Outros Endereços / Filiais"
+        label="Endereço de Demais Escritórios (opcional)"
         type="textarea"
         value={formData.outrosEnderecos}
         onChange={(value) => handleChange('outrosEnderecos', value)}
-        placeholder="Caso a empresa opere em outros endereços além da sede, liste-os aqui."
+        placeholder="Caso possua outros escritórios, informe os endereços"
         rows={3}
       />
     </FormSection>

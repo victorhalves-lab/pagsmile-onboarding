@@ -15,10 +15,11 @@ export default function Step2TipoEmpresa({ formData, handleChange }) {
   ];
 
   const qtdColaboradoresOptions = [
-    { value: '1-5', label: '1-5', description: 'Micro empresa' },
-    { value: '6-10', label: '6-10', description: 'Pequena empresa' },
-    { value: '11-50', label: '11-50', description: 'Média empresa' },
-    { value: '50+', label: '50+', description: 'Grande empresa' }
+    { value: '1-10', label: '1 a 10' },
+    { value: '11-50', label: '11 a 50' },
+    { value: '51-200', label: '51 a 200' },
+    { value: '201-500', label: '201 a 500' },
+    { value: '500+', label: 'Mais de 500' }
   ];
 
   return (

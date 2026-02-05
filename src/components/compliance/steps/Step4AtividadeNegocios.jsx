@@ -1,309 +1,320 @@
 import React, { useEffect } from 'react';
-import { Briefcase, Plus, Trash2, ShoppingBag, TrendingUp, Users } from 'lucide-react';
+import { Briefcase, Plus, Trash2, ShoppingBag, TrendingUp, DollarSign } from 'lucide-react';
 import FormSection from '../FormSection';
 import FormField from '../FormField';
 import SelectionButton from '../SelectionButton';
+import YesNoQuestion from '../YesNoQuestion';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function Step4AtividadeNegocios({ formData, handleChange, handleArrayChange, handleAddArrayItem, handleRemoveArrayItem }) {
   
-  // Cálculo automático do Volume Mensal
+  // Cálculo automático do Volume de Transações/Mês
   useEffect(() => {
+    const volume = parseFloat(formData.volumeMensalEstimado || '0');
     const ticket = parseFloat(formData.ticketMedio || '0');
-    const qtd = parseFloat(formData.qtdTransacoesMensal || '0');
-    if (!isNaN(ticket) && !isNaN(qtd)) {
-      const volume = ticket * qtd;
-      handleChange('volumeMensalEstimado', volume.toFixed(2));
+    if (!isNaN(volume) && !isNaN(ticket) && ticket > 0) {
+      const qtd = Math.round(volume / ticket);
+      handleChange('qtdTransacoesMensalCalculado', qtd.toString());
     }
-  }, [formData.ticketMedio, formData.qtdTransacoesMensal]);
+  }, [formData.volumeMensalEstimado, formData.ticketMedio]);
 
-  const canaisVendaOptions = [
-    { id: 'site_proprio', label: 'Site Próprio / E-commerce' },
-    { id: 'marketplace', label: 'Marketplace (Ex: ML, Amazon)' },
-    { id: 'redes_sociais', label: 'Redes Sociais / WhatsApp' },
-    { id: 'televendas', label: 'Televendas / Call Center' },
-    { id: 'loja_fisica', label: 'Loja Física / Presencial' },
-    { id: 'aplicativo', label: 'Aplicativo Mobile' }
+  // Ensure arrays exist
+  const topProdutos = formData.topProdutos || [
+    { nome: '', percentual: '' },
+    { nome: '', percentual: '' },
+    { nome: '', percentual: '' }
   ];
-
-  const handleCanalChange = (canalId, checked) => {
-    const currentCanais = formData.canaisVenda || [];
-    if (checked) {
-      handleChange('canaisVenda', [...currentCanais, canalId]);
-    } else {
-      handleChange('canaisVenda', currentCanais.filter(id => id !== canalId));
-    }
-  };
-
-  // Garante que arrays existam
-  const topProdutos = formData.topProdutos || [];
+  
+  const divisaoPercentual = formData.divisaoPercentual || [];
   const topClientes = formData.topClientes || [];
 
-  const addProduto = () => {
-    // Se a função handleAddArrayItem não for passada (fluxo Pix simplificado), usamos uma lógica local ou fallback
-    if (handleAddArrayItem) {
-      handleAddArrayItem('topProdutos', { nome: '', percentual: '' });
-    } else {
-      // Fallback para fluxo simplificado se necessário, ou assumimos que sempre será passado
-      const newProds = [...topProdutos, { nome: '', percentual: '' }];
-      handleChange('topProdutos', newProds);
-    }
+  const updateTopProduto = (index, value) => {
+    const newProds = [...topProdutos];
+    newProds[index] = { ...newProds[index], nome: value };
+    handleChange('topProdutos', newProds);
   };
 
-  const removeProduto = (index) => {
-    if (handleRemoveArrayItem) {
-      handleRemoveArrayItem('topProdutos', index);
-    } else {
-      const newProds = topProdutos.filter((_, i) => i !== index);
-      handleChange('topProdutos', newProds);
-    }
+  const addDivisao = () => {
+    if (handleAddArrayItem) handleAddArrayItem('divisaoPercentual', { nome: '', percentual: '' });
+  };
+  const removeDivisao = (idx) => {
+    if (handleRemoveArrayItem) handleRemoveArrayItem('divisaoPercentual', idx);
+  };
+  const updateDivisao = (idx, field, val) => {
+    if (handleArrayChange) handleArrayChange('divisaoPercentual', idx, field, val);
   };
 
-  const updateProduto = (index, field, value) => {
-    if (handleArrayChange) {
-      handleArrayChange('topProdutos', index, field, value);
-    } else {
-      const newProds = [...topProdutos];
-      newProds[index] = { ...newProds[index], [field]: value };
-      handleChange('topProdutos', newProds);
-    }
-  };
-  
   const addCliente = () => {
-    if (handleAddArrayItem) {
-      handleAddArrayItem('topClientes', { nome: '', documento: '' });
-    } else {
-      const newCli = [...topClientes, { nome: '', documento: '' }];
-      handleChange('topClientes', newCli);
-    }
+    if (handleAddArrayItem) handleAddArrayItem('topClientes', { nome: '', cnpj: '', ramo: '' });
+  };
+  const removeCliente = (idx) => {
+    if (handleRemoveArrayItem) handleRemoveArrayItem('topClientes', idx);
+  };
+  const updateCliente = (idx, field, val) => {
+    if (handleArrayChange) handleArrayChange('topClientes', idx, field, val);
   };
 
-  const removeCliente = (index) => {
-    if (handleRemoveArrayItem) {
-      handleRemoveArrayItem('topClientes', index);
-    } else {
-      const newCli = topClientes.filter((_, i) => i !== index);
-      handleChange('topClientes', newCli);
-    }
-  };
+  const canaisVendaOptions = [
+    { id: 'site_proprio', label: 'Site Próprio' },
+    { id: 'app_mobile', label: 'Aplicativo móvel' },
+    { id: 'whatsapp', label: 'WhatsApp' },
+    { id: 'link_pagamento', label: 'Link de pagamento' },
+    { id: 'loja_fisica', label: 'PDV / Loja física' },
+    { id: 'marketplace', label: 'Marketplace' },
+    { id: 'televendas', label: 'Televendas' },
+    { id: 'outro', label: 'Outro' }
+  ];
 
-  const updateCliente = (index, field, value) => {
-    if (handleArrayChange) {
-      handleArrayChange('topClientes', index, field, value);
-    } else {
-      const newCli = [...topClientes];
-      newCli[index] = { ...newCli[index], [field]: value };
-      handleChange('topClientes', newCli);
-    }
+  const handleCanalChange = (id, checked) => {
+    const current = formData.canaisVenda || [];
+    if (checked) handleChange('canaisVenda', [...current, id]);
+    else handleChange('canaisVenda', current.filter(c => c !== id));
   };
 
   return (
     <div className="space-y-8">
-      {/* Seção de Atividade */}
+      {/* Seção 2: Atividade e Negócios */}
       <FormSection
-        title="Atividade e Produtos"
-        subtitle="Detalhe o que sua empresa faz e vende."
+        title="Atividade e Negócios"
+        subtitle="Descreva a atividade da empresa"
         icon={Briefcase}
       >
-        <FormField
-          label="CNAE Principal"
-          required
-          value={formData.cnaePrincipal}
-          onChange={(value) => handleChange('cnaePrincipal', value)}
-          placeholder="Ex: 47.72-5-00"
-          helpText="Código Nacional de Atividade Econômica principal."
-        />
-        
-        <FormField
-          label="CNAEs Secundários"
-          type="textarea"
-          value={formData.cnaesSecundarios}
-          onChange={(value) => handleChange('cnaesSecundarios', value)}
-          placeholder="Liste os CNAEs secundários, se houver."
-          rows={2}
-        />
-        
-        <FormField
-          label="Descrição Detalhada do Negócio"
-          required
-          type="textarea"
-          value={formData.descricaoAtividade}
-          onChange={(value) => handleChange('descricaoAtividade', value)}
-          placeholder="Descreva detalhadamente como sua empresa opera, como capta clientes e como entrega o produto/serviço. (Mínimo 50 caracteres)"
-          rows={4}
-          minLength={50}
-        />
+        {/* 1. O que você vende? */}
+        <div className="space-y-4">
+          <Label className="text-sm font-medium text-slate-700">Qual o principal tipo de produto/serviço? <span className="text-red-500">*</span></Label>
+          <Select 
+            value={formData.tipoProdutoPrincipal} 
+            onValueChange={(val) => handleChange('tipoProdutoPrincipal', val)}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Selecione o tipo principal" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="software_saas">Software (SaaS)</SelectItem>
+              <SelectItem value="ecommerce">E-commerce (Varejo Online)</SelectItem>
+              <SelectItem value="servicos_digitais">Serviços Digitais (Consultoria, Marketing)</SelectItem>
+              <SelectItem value="hardware">Hardware/Eletrônicos</SelectItem>
+              <SelectItem value="financeiro">Serviços Financeiros</SelectItem>
+              <SelectItem value="conteudo">Mídia/Conteúdo Digital</SelectItem>
+              <SelectItem value="educacao">Educação/Cursos Online</SelectItem>
+              <SelectItem value="games">Jogos/Games</SelectItem>
+              <SelectItem value="turismo">Turismo/Viagens</SelectItem>
+              <SelectItem value="saude">Saúde/Bem-estar</SelectItem>
+              <SelectItem value="alimentacao">Alimentação/Delivery</SelectItem>
+              <SelectItem value="logistica">Logística/Transporte</SelectItem>
+              <SelectItem value="outros">Outros</SelectItem>
+            </SelectContent>
+          </Select>
 
-        <div className="space-y-3">
-          <Label className="text-sm font-medium text-slate-700">O que você vende? <span className="text-red-500">*</span></Label>
-          <SelectionButton
-            options={[
-              { value: 'produto_fisico', label: 'Produto Físico' },
-              { value: 'produto_digital', label: 'Produto Digital / Infoproduto' },
-              { value: 'servico', label: 'Serviço' },
-              { value: 'misto', label: 'Misto / Híbrido' }
-            ]}
-            value={formData.tipoProdutoPrincipal}
-            onChange={(value) => handleChange('tipoProdutoPrincipal', value)}
-            columns={2}
+          <FormField
+            label="Descreva brevemente todos os produtos/serviços comercializados"
+            required
+            type="textarea"
+            value={formData.descricaoProdutos}
+            onChange={(val) => handleChange('descricaoProdutos', val)}
+            placeholder="Ex: Vendemos roupas masculinas e femininas, incluindo camisetas, calças jeans..."
+            minLength={20}
+            rows={3}
+            helpText="Mínimo 20 caracteres"
           />
-        </div>
 
-        <div className="space-y-4 pt-4 border-t border-slate-100">
-          <div className="flex items-center justify-between">
-            <Label className="text-sm font-medium text-slate-700">Top 3 Produtos/Serviços (Curva A)</Label>
-            <Button type="button" variant="outline" size="sm" onClick={addProduto} className="text-[var(--pagsmile-green)] border-[var(--pagsmile-green)]">
-              <Plus className="w-4 h-4 mr-1" /> Adicionar
-            </Button>
+          <div className="space-y-2">
+             <Label className="text-sm font-medium text-slate-700">Top 3 produtos/serviços mais relevantes <span className="text-red-500">*</span></Label>
+             {[0, 1, 2].map(i => (
+               <Input
+                 key={i}
+                 placeholder={`${i+1}º produto/serviço mais vendido`}
+                 value={topProdutos[i]?.nome || ''}
+                 onChange={(e) => updateTopProduto(i, e.target.value)}
+                 className="mb-2"
+               />
+             ))}
           </div>
-          
-          {topProdutos.map((prod, index) => (
-            <div key={index} className="flex gap-3 items-start">
-              <div className="flex-1">
-                <Input 
-                  placeholder="Nome do Produto/Serviço" 
-                  value={prod.nome} 
-                  onChange={(e) => updateProduto(index, 'nome', e.target.value)}
-                />
-              </div>
-              <div className="w-24">
-                <Input 
-                  placeholder="% Rec." 
-                  type="number" 
-                  value={prod.percentual} 
-                  onChange={(e) => updateProduto(index, 'percentual', e.target.value)}
-                />
-              </div>
-              <Button type="button" variant="ghost" size="icon" onClick={() => removeProduto(index)} className="text-red-500 hover:bg-red-50">
-                <Trash2 className="w-4 h-4" />
+
+          <div className="space-y-2">
+            <div className="flex justify-between items-center">
+              <Label className="text-sm font-medium text-slate-700">Divisão Percentual dos Volumes <span className="text-red-500">*</span></Label>
+              <Button type="button" variant="outline" size="sm" onClick={addDivisao} className="text-[var(--pagsmile-green)] border-[var(--pagsmile-green)]">
+                <Plus className="w-4 h-4 mr-1" /> Adicionar
               </Button>
             </div>
-          ))}
-          {topProdutos.length === 0 && <p className="text-xs text-slate-400 italic">Nenhum produto listado.</p>}
-        </div>
-      </FormSection>
-
-      {/* Seção de Canais e Operação */}
-      <FormSection
-        title="Canais de Venda e Clientes"
-        subtitle="Onde você vende e para quem."
-        icon={ShoppingBag}
-      >
-        <div className="space-y-3">
-          <Label className="text-sm font-medium text-slate-700">Canais de Venda <span className="text-red-500">*</span></Label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {canaisVendaOptions.map(canal => (
-              <div key={canal.id} className="flex items-center space-x-2 p-3 border border-slate-200 rounded-xl bg-white">
-                <Checkbox 
-                  id={canal.id} 
-                  checked={(formData.canaisVenda || []).includes(canal.id)}
-                  onCheckedChange={(checked) => handleCanalChange(canal.id, checked)}
+            {divisaoPercentual.map((item, idx) => (
+              <div key={idx} className="flex gap-2 mb-2">
+                <Input 
+                  placeholder="Nome do produto/serviço" 
+                  value={item.nome}
+                  onChange={(e) => updateDivisao(idx, 'nome', e.target.value)}
+                  className="flex-1"
                 />
-                <Label htmlFor={canal.id} className="cursor-pointer text-sm text-slate-700">{canal.label}</Label>
+                <Input 
+                  placeholder="%" 
+                  type="number"
+                  value={item.percentual}
+                  onChange={(e) => updateDivisao(idx, 'percentual', e.target.value)}
+                  className="w-24"
+                />
+                <Button type="button" variant="ghost" size="icon" onClick={() => removeDivisao(idx)} className="text-red-500">
+                  <Trash2 className="w-4 h-4" />
+                </Button>
               </div>
             ))}
+            <p className="text-xs text-slate-500">A soma deve ser 100%.</p>
           </div>
         </div>
 
+        {/* 2. Escopo do Negócio */}
         <FormField
-          label="URL do Site / Aplicativo"
-          value={formData.urlSite}
-          onChange={(value) => handleChange('urlSite', value)}
-          placeholder="https://www.seusite.com.br"
-          helpText="Onde seu cliente realiza a compra ou contratação."
+          label="Escopo do Negócio"
+          required
+          type="textarea"
+          value={formData.escopoNegocio}
+          onChange={(val) => handleChange('escopoNegocio', val)}
+          placeholder="Descreva detalhadamente o que a empresa faz, seus produtos/serviços, público-alvo, etc. (mínimo 50 caracteres)"
+          minLength={50}
+          rows={4}
         />
 
-        <div className="space-y-4 pt-4 border-t border-slate-100">
-          <div className="flex items-center justify-between">
-            <Label className="text-sm font-medium text-slate-700">Top 5 Maiores Clientes/Sellers (opcional)</Label>
-            <Button type="button" variant="outline" size="sm" onClick={addCliente} className="text-[var(--pagsmile-green)] border-[var(--pagsmile-green)]">
-              <Plus className="w-4 h-4 mr-1" /> Adicionar
-            </Button>
-          </div>
-          
-          {topClientes.map((cli, index) => (
-            <div key={index} className="flex gap-3 items-start">
-              <div className="flex-1">
-                <Input 
-                  placeholder="Nome do Cliente" 
-                  value={cli.nome} 
-                  onChange={(e) => updateCliente(index, 'nome', e.target.value)}
-                />
-              </div>
-              <div className="flex-1">
-                <Input 
-                  placeholder="CNPJ/CPF (opcional)" 
-                  value={cli.documento} 
-                  onChange={(e) => updateCliente(index, 'documento', e.target.value)}
-                />
-              </div>
-              <Button type="button" variant="ghost" size="icon" onClick={() => removeCliente(index)} className="text-red-500 hover:bg-red-50">
-                <Trash2 className="w-4 h-4" />
-              </Button>
-            </div>
-          ))}
-          {topClientes.length === 0 && <p className="text-xs text-slate-400 italic">Nenhum cliente listado.</p>}
-        </div>
-      </FormSection>
-
-      {/* Seção de Volumetria */}
-      <FormSection
-        title="Volumetria e Financeiro"
-        subtitle="Projeções financeiras da operação."
-        icon={TrendingUp}
-      >
+        {/* 3, 4, 5. Volumes */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
-            label="Quantidade Transações/Mês"
+            label="Estimativa de Volume/Mês (R$)"
             required
             type="number"
-            value={formData.qtdTransacoesMensal}
-            onChange={(value) => handleChange('qtdTransacoesMensal', value)}
-            placeholder="Ex: 1000"
+            value={formData.volumeMensalEstimado}
+            onChange={(val) => handleChange('volumeMensalEstimado', val)}
+            placeholder="Ex: 100000"
+            icon={DollarSign}
           />
           <FormField
             label="Ticket Médio (R$)"
             required
             type="number"
             value={formData.ticketMedio}
-            onChange={(value) => handleChange('ticketMedio', value)}
-            placeholder="0.00"
+            onChange={(val) => handleChange('ticketMedio', val)}
+            placeholder="Ex: 150"
+            icon={DollarSign}
+          />
+          <FormField
+            label="Volume de Transações/Mês"
+            value={formData.qtdTransacoesMensalCalculado}
+            readOnly
+            className="bg-slate-50 cursor-not-allowed"
+            placeholder="Calculado automaticamente"
+            helpText="Baseado em Volume / Ticket Médio"
           />
         </div>
 
+        {/* 6, 7. URLs */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
-            label="Volume Mensal Estimado (R$)"
-            value={formData.volumeMensalEstimado}
-            readOnly
-            placeholder="Calculado automaticamente..."
-            className="bg-slate-50 text-slate-500 cursor-not-allowed"
+            label="Site Corporativo"
+            required
+            value={formData.siteCorporativo}
+            onChange={(val) => handleChange('siteCorporativo', val)}
+            placeholder="https://www.empresa.com.br"
           />
           <FormField
-            label="Faturamento Anual (R$)"
-            value={formData.faturamentoAnual}
-            onChange={(value) => handleChange('faturamentoAnual', value)}
-            placeholder="Ex: 1.000.000,00"
+            label="URL do Produto/App/Checkout"
+            value={formData.urlProduto}
+            onChange={(val) => handleChange('urlProduto', val)}
+            placeholder="https://... (opcional)"
           />
         </div>
 
+        {/* 8. Gateway/Marketplace */}
+        <YesNoQuestion
+          question="Sua operação é de gateway, marketplace, plataforma de infoprodutos ou plataforma que tem sellers?"
+          value={formData.operaMarketplace}
+          onChange={(val) => handleChange('operaMarketplace', val)}
+          required
+          helperText="Controle de Seção"
+        />
+
+        {/* 9. Top 5 Sellers (Condicional) */}
+        {formData.operaMarketplace === true && (
+           <div className="space-y-2 p-4 bg-slate-50 rounded-xl border border-slate-200">
+             <div className="flex justify-between items-center mb-2">
+               <Label className="text-sm font-medium text-slate-700">Top 5 Maiores Clientes/Sellers</Label>
+               <Button type="button" variant="outline" size="sm" onClick={addCliente} disabled={topClientes.length >= 5} className="text-[var(--pagsmile-green)] border-[var(--pagsmile-green)]">
+                 <Plus className="w-4 h-4 mr-1" /> Adicionar
+               </Button>
+             </div>
+             {topClientes.map((cli, idx) => (
+               <div key={idx} className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2 items-center bg-white p-2 rounded border border-slate-100">
+                 <Input 
+                   placeholder="Nome" 
+                   value={cli.nome} 
+                   onChange={(e) => updateCliente(idx, 'nome', e.target.value)}
+                 />
+                 <Input 
+                   placeholder="CNPJ" 
+                   value={cli.cnpj} 
+                   onChange={(e) => updateCliente(idx, 'cnpj', e.target.value)}
+                 />
+                 <div className="flex gap-2">
+                    <Input 
+                      placeholder="Ramo de Atividade" 
+                      value={cli.ramo} 
+                      onChange={(e) => updateCliente(idx, 'ramo', e.target.value)}
+                    />
+                    <Button type="button" variant="ghost" size="icon" onClick={() => removeCliente(idx)} className="text-red-500">
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                 </div>
+               </div>
+             ))}
+             {topClientes.length === 0 && <p className="text-xs text-slate-400">Nenhum cliente adicionado.</p>}
+           </div>
+        )}
+
+        {/* 10. Canais de Venda */}
+        <div className="space-y-3">
+          <Label className="text-sm font-medium text-slate-700">Canais de Venda <span className="text-red-500">*</span></Label>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+            {canaisVendaOptions.map(opt => (
+              <div key={opt.id} className="flex items-center space-x-2">
+                <Checkbox 
+                  id={opt.id}
+                  checked={(formData.canaisVenda || []).includes(opt.id)}
+                  onCheckedChange={(chk) => handleCanalChange(opt.id, chk)}
+                />
+                <Label htmlFor={opt.id} className="text-sm font-normal cursor-pointer">{opt.label}</Label>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 11. Expectativa de Crescimento */}
         <div className="space-y-2">
           <Label className="text-sm font-medium text-slate-700">Expectativa de Crescimento (12 meses)</Label>
-          <SelectionButton
-            options={[
-              { value: 'estavel', label: 'Estável (0-10%)' },
-              { value: 'moderado', label: 'Moderado (10-30%)' },
-              { value: 'alto', label: 'Alto (30-100%)' },
-              { value: 'exponencial', label: 'Exponencial (>100%)' }
-            ]}
-            value={formData.expectativaCrescimento}
-            onChange={(value) => handleChange('expectativaCrescimento', value)}
-            columns={2}
-          />
+          <Select 
+            value={formData.expectativaCrescimento} 
+            onValueChange={(val) => handleChange('expectativaCrescimento', val)}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Selecione (opcional)" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ate_10">Até 10%</SelectItem>
+              <SelectItem value="11_25">11% a 25%</SelectItem>
+              <SelectItem value="26_50">26% a 50%</SelectItem>
+              <SelectItem value="51_100">51% a 100%</SelectItem>
+              <SelectItem value="mais_100">Mais de 100%</SelectItem>
+              <SelectItem value="nao_sabe">Não sabe informar</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
+
       </FormSection>
     </div>
   );

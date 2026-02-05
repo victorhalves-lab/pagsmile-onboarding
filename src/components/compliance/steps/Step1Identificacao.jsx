@@ -27,6 +27,14 @@ export default function Step1Identificacao({ formData, handleChange }) {
       />
       
       <FormField
+        label="Data Início da Atividade"
+        required
+        type="date"
+        value={formData.dataInicioAtividade}
+        onChange={(value) => handleChange('dataInicioAtividade', value)}
+      />
+      
+      <FormField
         label="Razão Social"
         required
         value={formData.razaoSocial}
@@ -41,12 +49,7 @@ export default function Step1Identificacao({ formData, handleChange }) {
         placeholder="Nome comercial pelo qual sua empresa é conhecida"
       />
       
-      <FormField
-        label="Site ou Redes Sociais"
-        value={formData.siteUrl}
-        onChange={(value) => handleChange('siteUrl', value)}
-        placeholder="https://www.suaempresa.com.br"
-      />
+
     </FormSection>
   );
 }
