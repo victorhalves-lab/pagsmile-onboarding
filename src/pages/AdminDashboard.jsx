@@ -360,8 +360,8 @@ export default function AdminDashboard() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Dashboard de Compliance</h1>
-          <p className="text-slate-500">Visão executiva do processo de onboarding</p>
+          <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Dashboard de Compliance</h1>
+          <p className="text-[var(--pagsmile-blue)]/60">Visão executiva do processo de onboarding</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => refetchCases()}>

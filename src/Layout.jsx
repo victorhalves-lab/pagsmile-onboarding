@@ -180,9 +180,9 @@ export default function Layout({ children, currentPageName }) {
             ? 'bg-[var(--pagsmile-green)] text-white'
             : item.highlight && !isActive
             ? 'text-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5 hover:bg-[var(--pagsmile-green)]/10'
-            : 'text-slate-600 hover:bg-slate-100'
-        }`}
-      >
+            : 'text-[var(--pagsmile-blue)]/80 hover:text-[var(--pagsmile-blue)] hover:bg-[var(--pagsmile-blue)]/5'
+            }`}
+            >
         <Icon className="w-4 h-4" />
         <span className="flex-1">{item.label}</span>
         {item.highlight && !isActive && (
@@ -204,7 +204,7 @@ export default function Layout({ children, currentPageName }) {
       <div className="mb-2">
         <button
           onClick={() => toggleSection(section.id)}
-          className="flex items-center gap-2 w-full px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider hover:text-slate-700"
+          className="flex items-center gap-2 w-full px-3 py-2 text-xs font-semibold text-[var(--pagsmile-blue)]/70 uppercase tracking-wider hover:text-[var(--pagsmile-blue)]"
         >
           <SectionIcon className="w-4 h-4" />
           <span className="flex-1 text-left">{section.label}</span>
@@ -279,16 +279,16 @@ export default function Layout({ children, currentPageName }) {
                 </span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-800 truncate">{user?.full_name}</p>
-                <p className="text-xs text-slate-500">{isAdmin ? 'Administrador' : 'Usuário'}</p>
+                <p className="text-sm font-medium text-[var(--pagsmile-blue)] truncate">{user?.full_name}</p>
+                <p className="text-xs text-[var(--pagsmile-blue)]/60">{isAdmin ? 'Administrador' : 'Usuário'}</p>
               </div>
-            </div>
-            <Button
+              </div>
+              <Button
               variant="ghost"
               size="sm"
               onClick={() => base44.auth.logout()}
-              className="w-full justify-start text-slate-600 hover:text-slate-800"
-            >
+              className="w-full justify-start text-[var(--pagsmile-blue)]/70 hover:text-[var(--pagsmile-blue)]"
+              >
               <LogOut className="w-4 h-4 mr-2" />
               Sair
             </Button>

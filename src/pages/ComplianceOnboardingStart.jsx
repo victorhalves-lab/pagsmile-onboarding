@@ -65,7 +65,7 @@ export default function ComplianceOnboardingStart() {
           <h1 className="text-4xl md:text-5xl font-bold text-[var(--pagsmile-blue)] mb-6 tracking-tight">
             Compliance Inteligente
           </h1>
-          <p className="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-[var(--pagsmile-blue)]/70 max-w-2xl mx-auto leading-relaxed">
             Bem-vindo ao processo de onboarding da Pagsmile. 
             Selecione como deseja operar para iniciarmos a configuração personalizada do seu perfil.
           </p>
