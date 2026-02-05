@@ -15,8 +15,7 @@ import { useOnboardingAnalytics } from '../components/analytics/useOnboardingAna
 import Step1Identificacao from '../components/compliance/steps/Step1Identificacao';
 import Step2TipoEmpresa from '../components/compliance/steps/Step2TipoEmpresa';
 import Step3Endereco from '../components/compliance/steps/Step3Endereco';
-import Step4Atividade from '../components/compliance/steps/Step4Atividade';
-import Step5Volumetria from '../components/compliance/steps/Step5Volumetria';
+import Step4AtividadeNegocios from '../components/compliance/steps/Step4AtividadeNegocios';
 import Step6PerfilClientes from '../components/compliance/steps/Step6PerfilClientes';
 import Step7Responsaveis from '../components/compliance/steps/Step7Responsaveis';
 import Step8PLDSancoes from '../components/compliance/steps/Step8PLDSancoes';
@@ -28,8 +27,7 @@ const STEPS = [
   { id: 'identificacao', title: 'Identificação', icon: Building2 },
   { id: 'tipo_empresa', title: 'Tipo Empresa', icon: FileText },
   { id: 'endereco', title: 'Endereço', icon: MapPin },
-  { id: 'atividade', title: 'Atividade', icon: Briefcase },
-  { id: 'volumetria', title: 'Volumetria', icon: TrendingUp },
+  { id: 'atividade_negocios', title: 'Detalhes do Negócio', icon: Briefcase },
   { id: 'perfil_clientes', title: 'Clientes', icon: Users },
   { id: 'responsaveis', title: 'Responsáveis', icon: UserCircle },
   { id: 'pld_sancoes', title: 'Sanções', icon: ShieldAlert },
@@ -95,14 +93,13 @@ export default function CompliancePixOnly() {
       case 1: return <Step1Identificacao {...props} />;
       case 2: return <Step2TipoEmpresa {...props} />;
       case 3: return <Step3Endereco {...props} />;
-      case 4: return <Step4Atividade {...props} />;
-      case 5: return <Step5Volumetria {...props} />;
-      case 6: return <Step6PerfilClientes {...props} />;
-      case 7: return <Step7Responsaveis {...props} />;
-      case 8: return <Step8PLDSancoes {...props} />;
-      case 9: return <Step9PLDRiscos {...props} />;
-      case 10: return <Step10PLDOperacao {...props} />;
-      case 11: return <Step11Confirmacao {...props} />;
+      case 4: return <Step4AtividadeNegocios {...props} />;
+      case 5: return <Step6PerfilClientes {...props} />;
+      case 6: return <Step7Responsaveis {...props} />;
+      case 7: return <Step8PLDSancoes {...props} />;
+      case 8: return <Step9PLDRiscos {...props} />;
+      case 9: return <Step10PLDOperacao {...props} />;
+      case 10: return <Step11Confirmacao {...props} />;
       default: return null;
     }
   };

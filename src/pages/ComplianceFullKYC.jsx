@@ -16,8 +16,7 @@ import { useOnboardingAnalytics } from '../components/analytics/useOnboardingAna
 import Step1Identificacao from '../components/compliance/steps/Step1Identificacao';
 import Step2TipoEmpresa from '../components/compliance/steps/Step2TipoEmpresa';
 import Step3Endereco from '../components/compliance/steps/Step3Endereco';
-import Step4Atividade from '../components/compliance/steps/Step4Atividade';
-import Step5Volumetria from '../components/compliance/steps/Step5Volumetria';
+import Step4AtividadeNegocios from '../components/compliance/steps/Step4AtividadeNegocios';
 import Step6PerfilClientes from '../components/compliance/steps/Step6PerfilClientes';
 import Step7Responsaveis from '../components/compliance/steps/Step7Responsaveis';
 import Section4UBO from '../components/compliance/steps/Section4UBO';
@@ -34,8 +33,7 @@ const STEPS = [
   { id: 'identificacao', title: 'Identificação', icon: Building2 },
   { id: 'tipo_empresa', title: 'Tipo Empresa', icon: FileText },
   { id: 'endereco', title: 'Endereço', icon: MapPin },
-  { id: 'atividade', title: 'Atividade', icon: Briefcase },
-  { id: 'volumetria', title: 'Volumetria', icon: TrendingUp },
+  { id: 'atividade_negocios', title: 'Detalhes do Negócio', icon: Briefcase },
   { id: 'perfil_clientes', title: 'Clientes', icon: Users },
   { id: 'responsaveis', title: 'Responsáveis', icon: UserCircle },
   { id: 'ubo', title: 'Beneficiários', icon: Users },
@@ -137,19 +135,18 @@ export default function ComplianceFullKYC() {
       case 1: return <Step1Identificacao {...baseProps} />;
       case 2: return <Step2TipoEmpresa {...baseProps} />;
       case 3: return <Step3Endereco {...baseProps} />;
-      case 4: return <Step4Atividade {...baseProps} />;
-      case 5: return <Step5Volumetria {...baseProps} />;
-      case 6: return <Step6PerfilClientes {...baseProps} />;
-      case 7: return <Step7Responsaveis {...baseProps} />;
-      case 8: return <Section4UBO {...arrayProps} />;
-      case 9: return <Section5Socios {...arrayProps} />;
-      case 10: return <Section6Licenciamento {...baseProps} />;
-      case 11: return <Section7Marketplace {...baseProps} />;
-      case 12: return <Section8SegurancaCartao {...baseProps} />;
-      case 13: return <Step8PLDSancoes {...baseProps} />;
-      case 14: return <Step9PLDRiscos {...baseProps} />;
-      case 15: return <Step10PLDOperacao {...baseProps} />;
-      case 16: return <Step11Confirmacao {...baseProps} />;
+      case 4: return <Step4AtividadeNegocios {...arrayProps} />;
+      case 5: return <Step6PerfilClientes {...baseProps} />;
+      case 6: return <Step7Responsaveis {...baseProps} />;
+      case 7: return <Section4UBO {...arrayProps} />;
+      case 8: return <Section5Socios {...arrayProps} />;
+      case 9: return <Section6Licenciamento {...baseProps} />;
+      case 10: return <Section7Marketplace {...baseProps} />;
+      case 11: return <Section8SegurancaCartao {...baseProps} />;
+      case 12: return <Step8PLDSancoes {...baseProps} />;
+      case 13: return <Step9PLDRiscos {...baseProps} />;
+      case 14: return <Step10PLDOperacao {...baseProps} />;
+      case 15: return <Step11Confirmacao {...baseProps} />;
       default: return null;
     }
   };
