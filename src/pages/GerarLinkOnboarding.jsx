@@ -60,7 +60,8 @@ export default function GerarLinkOnboarding() {
     utmMedium: '',
     utmCampaign: '',
     utmContent: '',
-    expiresAt: ''
+    expiresAt: '',
+    complianceType: 'GENERIC'
   });
 
   const { data: templates = [] } = useQuery({
@@ -96,7 +97,8 @@ export default function GerarLinkOnboarding() {
         utmMedium: '',
         utmCampaign: '',
         utmContent: '',
-        expiresAt: ''
+        expiresAt: '',
+        complianceType: 'GENERIC'
       });
       setActiveTab('history');
     },
@@ -113,11 +115,24 @@ export default function GerarLinkOnboarding() {
     }
   });
 
-  // Link genérico (sem código)
-  const genericLink = `${window.location.origin}${createPageUrl('ComplianceOnboardingStart')}`;
+  // Links por tipo de compliance
+  const getPageByComplianceType = (type) => {
+    switch (type) {
+      case 'PIX': return 'CompliancePixOnly';
+      case 'FULL': return 'ComplianceFullKYC';
+      default: return 'ComplianceOnboardingStart';
+    }
+  };
+
+  const genericLinks = {
+    GENERIC: `${window.location.origin}${createPageUrl('ComplianceOnboardingStart')}`,
+    PIX: `${window.location.origin}${createPageUrl('CompliancePixOnly')}`,
+    FULL: `${window.location.origin}${createPageUrl('ComplianceFullKYC')}`
+  };
 
   const generateLinkUrl = (link) => {
-    let url = `${window.location.origin}${createPageUrl('ComplianceOnboardingStart')}?ref=${link.uniqueCode}`;
+    const page = getPageByComplianceType(link.complianceType);
+    let url = `${window.location.origin}${createPageUrl(page)}?ref=${link.uniqueCode}`;
     if (link.utmSource) url += `&utm_source=${link.utmSource}`;
     if (link.utmMedium) url += `&utm_medium=${link.utmMedium}`;
     if (link.utmCampaign) url += `&utm_campaign=${link.utmCampaign}`;
@@ -225,7 +240,7 @@ export default function GerarLinkOnboarding() {
         </TabsList>
 
         <TabsContent value="generate" className="space-y-6">
-          {/* Link Genérico */}
+          {/* Links Rápidos por Tipo */}
           <Card>
             <CardHeader>
               <div className="flex items-center gap-3">
@@ -233,20 +248,52 @@ export default function GerarLinkOnboarding() {
                   <LinkIcon className="w-5 h-5 text-[var(--pagsmile-green)]" />
                 </div>
                 <div>
-                  <CardTitle>Link Genérico</CardTitle>
-                  <CardDescription>Link padrão sem rastreamento personalizado</CardDescription>
+                  <CardTitle>Links Rápidos</CardTitle>
+                  <CardDescription>Links diretos para cada tipo de compliance (sem rastreamento)</CardDescription>
                 </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex gap-2">
-                <Input readOnly value={genericLink} className="font-mono text-sm bg-slate-50" />
-                <Button variant="outline" onClick={() => handleCopy(genericLink)} className="shrink-0">
-                  {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
-                </Button>
-                <Button variant="outline" onClick={() => window.open(genericLink, '_blank')} className="shrink-0">
-                  <ExternalLink className="w-4 h-4" />
-                </Button>
+              {/* Link Genérico */}
+              <div className="space-y-2">
+                <Label className="text-xs font-medium text-[var(--pagsmile-blue)]/70">Genérico (escolha na página)</Label>
+                <div className="flex gap-2">
+                  <Input readOnly value={genericLinks.GENERIC} className="font-mono text-xs bg-slate-50" />
+                  <Button variant="outline" size="sm" onClick={() => handleCopy(genericLinks.GENERIC)} className="shrink-0">
+                    <Copy className="w-4 h-4" />
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.GENERIC, '_blank')} className="shrink-0">
+                    <ExternalLink className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Link Compliance Pix */}
+              <div className="space-y-2">
+                <Label className="text-xs font-medium text-blue-600">Compliance Pix (simplificado)</Label>
+                <div className="flex gap-2">
+                  <Input readOnly value={genericLinks.PIX} className="font-mono text-xs bg-blue-50 border-blue-200" />
+                  <Button variant="outline" size="sm" onClick={() => handleCopy(genericLinks.PIX)} className="shrink-0 border-blue-200 hover:bg-blue-50">
+                    <Copy className="w-4 h-4 text-blue-600" />
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.PIX, '_blank')} className="shrink-0 border-blue-200 hover:bg-blue-50">
+                    <ExternalLink className="w-4 h-4 text-blue-600" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Link Full Compliance */}
+              <div className="space-y-2">
+                <Label className="text-xs font-medium text-purple-600">Full Compliance (completo)</Label>
+                <div className="flex gap-2">
+                  <Input readOnly value={genericLinks.FULL} className="font-mono text-xs bg-purple-50 border-purple-200" />
+                  <Button variant="outline" size="sm" onClick={() => handleCopy(genericLinks.FULL)} className="shrink-0 border-purple-200 hover:bg-purple-50">
+                    <Copy className="w-4 h-4 text-purple-600" />
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.FULL, '_blank')} className="shrink-0 border-purple-200 hover:bg-purple-50">
+                    <ExternalLink className="w-4 h-4 text-purple-600" />
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -270,6 +317,49 @@ export default function GerarLinkOnboarding() {
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* Tipo de Compliance */}
+              <div className="space-y-2">
+                <Label className="font-semibold">Tipo de Compliance *</Label>
+                <div className="grid grid-cols-3 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, complianceType: 'GENERIC' }))}
+                    className={`p-4 rounded-lg border-2 transition-all text-left ${
+                      formData.complianceType === 'GENERIC' 
+                        ? 'border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5' 
+                        : 'border-slate-200 hover:border-slate-300'
+                    }`}
+                  >
+                    <p className="font-semibold text-sm text-[var(--pagsmile-blue)]">Genérico</p>
+                    <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">Merchant escolhe o tipo</p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, complianceType: 'PIX' }))}
+                    className={`p-4 rounded-lg border-2 transition-all text-left ${
+                      formData.complianceType === 'PIX' 
+                        ? 'border-blue-500 bg-blue-50' 
+                        : 'border-slate-200 hover:border-slate-300'
+                    }`}
+                  >
+                    <p className="font-semibold text-sm text-blue-600">Compliance Pix</p>
+                    <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">Fluxo simplificado</p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, complianceType: 'FULL' }))}
+                    className={`p-4 rounded-lg border-2 transition-all text-left ${
+                      formData.complianceType === 'FULL' 
+                        ? 'border-purple-500 bg-purple-50' 
+                        : 'border-slate-200 hover:border-slate-300'
+                    }`}
+                  >
+                    <p className="font-semibold text-sm text-purple-600">Full Compliance</p>
+                    <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">KYC completo</p>
+                  </button>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Questionário (opcional)</Label>
@@ -407,6 +497,16 @@ export default function GerarLinkOnboarding() {
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
                               <Badge variant="outline" className="font-mono text-sm">{link.uniqueCode}</Badge>
+                              <Badge 
+                                className={`text-xs ${
+                                  link.complianceType === 'PIX' ? 'bg-blue-100 text-blue-700' :
+                                  link.complianceType === 'FULL' ? 'bg-purple-100 text-purple-700' :
+                                  'bg-slate-100 text-slate-700'
+                                }`}
+                              >
+                                {link.complianceType === 'PIX' ? 'Pix' : 
+                                 link.complianceType === 'FULL' ? 'Full' : 'Genérico'}
+                              </Badge>
                               {link.commercialAgentName && (
                                 <span className="text-sm text-[var(--pagsmile-blue)]/80">{link.commercialAgentName}</span>
                               )}
