@@ -16,6 +16,7 @@ import Step1Identificacao from '../components/compliance/steps/Step1Identificaca
 import Step2TipoEmpresa from '../components/compliance/steps/Step2TipoEmpresa';
 import Step3Endereco from '../components/compliance/steps/Step3Endereco';
 import Step4AtividadeNegocios from '../components/compliance/steps/Step4AtividadeNegocios';
+import Step5PerfilOperacional from '../components/compliance/steps/Step5PerfilOperacional';
 import Step6PerfilClientes from '../components/compliance/steps/Step6PerfilClientes';
 import Step7Responsaveis from '../components/compliance/steps/Step7Responsaveis';
 import Step8PLDSancoes from '../components/compliance/steps/Step8PLDSancoes';
@@ -28,6 +29,7 @@ const STEPS = [
   { id: 'tipo_empresa', title: 'Tipo Empresa', icon: FileText },
   { id: 'endereco', title: 'Endereço', icon: MapPin },
   { id: 'atividade_negocios', title: 'Detalhes do Negócio', icon: Briefcase },
+  { id: 'perfil_operacional', title: 'Operação', icon: TrendingUp },
   { id: 'perfil_clientes', title: 'Clientes', icon: Users },
   { id: 'responsaveis', title: 'Responsáveis', icon: UserCircle },
   { id: 'pld_sancoes', title: 'Sanções', icon: ShieldAlert },

@@ -1,79 +1,122 @@
 import React from 'react';
-import { CheckCircle, Info, Shield } from 'lucide-react';
+import { CheckCircle, ShieldCheck, FileCheck, AlertTriangle } from 'lucide-react';
 import FormSection from '../FormSection';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default function Step11Confirmacao({ formData, handleChange }) {
+  
+  const handleCheck = (field, checked) => {
+    handleChange(field, checked);
+  };
+
   return (
-    <FormSection
-      title="Confirmação e Declarações"
-      subtitle="Revisão final e aceitação dos termos."
-      icon={CheckCircle}
-    >
-      <Alert className="bg-[var(--pagsmile-green)]/10 border-[var(--pagsmile-green)]/30">
-        <Info className="h-4 w-4 text-[var(--pagsmile-green)]" />
-        <AlertDescription className="text-slate-700">
-          <strong>Quase lá!</strong> Por favor, revise e confirme as declarações abaixo antes de prosseguir.
-        </AlertDescription>
-      </Alert>
+    <div className="space-y-8">
+      <FormSection
+        title="Confirmação e Declarações Finais"
+        subtitle="Por favor, leia atentamente e confirme as declarações abaixo para finalizar."
+        icon={CheckCircle}
+      >
+        <Alert className="bg-blue-50 border-blue-200 mb-6">
+          <ShieldCheck className="h-5 w-5 text-blue-600" />
+          <AlertTitle className="text-blue-800 font-bold ml-2">Importante</AlertTitle>
+          <AlertDescription className="text-blue-700 ml-2 mt-1">
+            Ao prosseguir, você está iniciando formalmente o processo de análise de Compliance. Informações falsas ou omitidas podem levar à rejeição imediata do cadastro e inclusão em listas de restrição.
+          </AlertDescription>
+        </Alert>
 
-      <div className="space-y-4">
-        <div className="flex items-start space-x-3 p-4 rounded-xl border border-slate-200 bg-white">
-          <Checkbox
-            id="declaracao1"
-            checked={formData.declaracao1 || false}
-            onCheckedChange={(checked) => handleChange('declaracao1', checked)}
-            className="mt-1"
-          />
-          <Label htmlFor="declaracao1" className="text-sm text-slate-700 cursor-pointer leading-relaxed">
-            Declaro que todas as informações fornecidas neste questionário são verdadeiras, precisas e completas.
-            <span className="text-red-500 ml-1">*</span>
-          </Label>
+        <div className="space-y-6 bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+          
+          {/* Termos de Uso e Privacidade */}
+          <div className="flex items-start space-x-3">
+            <Checkbox 
+              id="termos_uso" 
+              checked={formData.aceiteTermosUso}
+              onCheckedChange={(c) => handleCheck('aceiteTermosUso', c)}
+            />
+            <div className="grid gap-1.5 leading-none">
+              <Label
+                htmlFor="termos_uso"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+              >
+                Li e aceito os Termos de Uso e Política de Privacidade da PagSmile
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Concordo com o processamento dos meus dados para fins de cadastro e operação.
+              </p>
+            </div>
+          </div>
+
+          {/* Autorização de Consultas (CAF/BigDataCorp) */}
+          <div className="flex items-start space-x-3">
+            <Checkbox 
+              id="autorizacao_consulta" 
+              checked={formData.aceiteAutorizacaoConsulta}
+              onCheckedChange={(c) => handleCheck('aceiteAutorizacaoConsulta', c)}
+            />
+            <div className="grid gap-1.5 leading-none">
+              <Label
+                htmlFor="autorizacao_consulta"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+              >
+                Autorização para Consultas de Dados (SCR, Bureaus e Fontes Públicas)
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Autorizo a PagSmile e seus parceiros (como CAF e BigDataCorp) a consultar meus dados e dos sócios/diretores em bureaus de crédito, SCR (Sistema de Informações de Crédito) e outras fontes públicas e privadas para fins de análise de crédito e compliance.
+              </p>
+            </div>
+          </div>
+
+          {/* Termo de Responsabilidade e Veracidade */}
+          <div className="flex items-start space-x-3">
+            <Checkbox 
+              id="termo_veracidade" 
+              checked={formData.aceiteVeracidade}
+              onCheckedChange={(c) => handleCheck('aceiteVeracidade', c)}
+            />
+            <div className="grid gap-1.5 leading-none">
+              <Label
+                htmlFor="termo_veracidade"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+              >
+                Declaração de Veracidade e Licitude
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Declaro, sob as penas da lei, que todas as informações prestadas e documentos enviados são verdadeiros, autênticos e atualizados. Declaro também que a origem dos recursos transacionados é lícita e não provém de atividades ilegais.
+              </p>
+            </div>
+          </div>
+
+          {/* Declaração de PLD */}
+          <div className="flex items-start space-x-3">
+            <Checkbox 
+              id="termo_pld" 
+              checked={formData.aceitePLD}
+              onCheckedChange={(c) => handleCheck('aceitePLD', c)}
+            />
+            <div className="grid gap-1.5 leading-none">
+              <Label
+                htmlFor="termo_pld"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+              >
+                Compromisso de Prevenção à Lavagem de Dinheiro
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Comprometo-me a manter controles internos adequados para prevenir a utilização dos serviços da PagSmile para lavagem de dinheiro ou financiamento ao terrorismo.
+              </p>
+            </div>
+          </div>
+
         </div>
 
-        <div className="flex items-start space-x-3 p-4 rounded-xl border border-slate-200 bg-white">
-          <Checkbox
-            id="declaracao2"
-            checked={formData.declaracao2 || false}
-            onCheckedChange={(checked) => handleChange('declaracao2', checked)}
-            className="mt-1"
-          />
-          <Label htmlFor="declaracao2" className="text-sm text-slate-700 cursor-pointer leading-relaxed">
-            Autorizo a PagSmile a realizar as consultas e verificações necessárias para confirmar as informações prestadas.
-            <span className="text-red-500 ml-1">*</span>
-          </Label>
+        {/* Warning Final */}
+        <div className="flex items-center gap-3 p-4 bg-yellow-50 text-yellow-800 rounded-lg text-sm border border-yellow-100">
+           <AlertTriangle className="w-5 h-5 shrink-0" />
+           <p>Após a confirmação, você será redirecionado para o envio dos documentos comprobatórios.</p>
         </div>
 
-        <div className="flex items-start space-x-3 p-4 rounded-xl border border-slate-200 bg-white">
-          <Checkbox
-            id="declaracao3"
-            checked={formData.declaracao3 || false}
-            onCheckedChange={(checked) => handleChange('declaracao3', checked)}
-            className="mt-1"
-          />
-          <Label htmlFor="declaracao3" className="text-sm text-slate-700 cursor-pointer leading-relaxed">
-            Li e aceito os{' '}
-            <a href="#" className="text-[var(--pagsmile-green)] hover:underline font-medium">
-              Termos de Uso
-            </a>{' '}
-            e{' '}
-            <a href="#" className="text-[var(--pagsmile-green)] hover:underline font-medium">
-              Política de Privacidade
-            </a>{' '}
-            da PagSmile.
-            <span className="text-red-500 ml-1">*</span>
-          </Label>
-        </div>
-      </div>
-
-      <Alert className="bg-blue-50 border-blue-200">
-        <Shield className="h-4 w-4 text-blue-600" />
-        <AlertDescription className="text-slate-700">
-          <strong>A segurança dos seus dados é a nossa prioridade.</strong> Todas as informações são protegidas e tratadas com confidencialidade.
-        </AlertDescription>
-      </Alert>
-    </FormSection>
+      </FormSection>
+    </div>
   );
 }

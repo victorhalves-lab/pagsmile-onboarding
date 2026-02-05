@@ -17,6 +17,7 @@ import Step1Identificacao from '../components/compliance/steps/Step1Identificaca
 import Step2TipoEmpresa from '../components/compliance/steps/Step2TipoEmpresa';
 import Step3Endereco from '../components/compliance/steps/Step3Endereco';
 import Step4AtividadeNegocios from '../components/compliance/steps/Step4AtividadeNegocios';
+import Step5PerfilOperacional from '../components/compliance/steps/Step5PerfilOperacional';
 import Step6PerfilClientes from '../components/compliance/steps/Step6PerfilClientes';
 import Step7Responsaveis from '../components/compliance/steps/Step7Responsaveis';
 import Section4UBO from '../components/compliance/steps/Section4UBO';
@@ -136,15 +137,16 @@ export default function ComplianceFullKYC() {
       case 2: return <Step2TipoEmpresa {...baseProps} />;
       case 3: return <Step3Endereco {...baseProps} />;
       case 4: return <Step4AtividadeNegocios {...arrayProps} />;
-      case 5: return <Step6PerfilClientes {...baseProps} />;
-      case 6: return <Step7Responsaveis {...baseProps} />;
-      case 7: return <Section4UBO {...arrayProps} />;
-      case 8: return <Section5Socios {...arrayProps} />;
-      case 9: return <Section6Licenciamento {...baseProps} />;
-      case 10: return <Section7Marketplace {...baseProps} />;
-      case 11: return <Section8SegurancaCartao {...baseProps} />;
-      case 12: return <Step8CompliancePLD {...baseProps} />;
-      case 13: return <Step11Confirmacao {...baseProps} />;
+      case 5: return <Step5PerfilOperacional {...baseProps} />;
+      case 6: return <Step6PerfilClientes {...baseProps} />;
+      case 7: return <Step7Responsaveis {...baseProps} />;
+      case 8: return <Section4UBO {...arrayProps} />;
+      case 9: return <Section5Socios {...arrayProps} />;
+      case 10: return <Section6Licenciamento {...baseProps} />;
+      case 11: return <Section7Marketplace {...baseProps} />;
+      case 12: return <Section8SegurancaCartao {...baseProps} />;
+      case 13: return <Step8CompliancePLD {...baseProps} />;
+      case 14: return <Step11Confirmacao {...baseProps} />;
       default: return null;
     }
   };
