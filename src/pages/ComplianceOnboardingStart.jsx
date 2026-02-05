@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { Button } from '@/components/ui/button';
-import { QrCode, CreditCard, Wallet, ArrowRight, ArrowLeft } from 'lucide-react';
+import { QrCode, CreditCard, Wallet, ArrowRight, ArrowLeft, ShieldCheck } from 'lucide-react';
 import SelectionButton from '../components/compliance/SelectionButton';
 import { trackLinkClick } from '../components/analytics/useOnboardingAnalytics';
 
@@ -10,12 +10,10 @@ export default function ComplianceOnboardingStart() {
   const navigate = useNavigate();
   const [selectedMethod, setSelectedMethod] = useState(null);
 
-  // Rastreia clique no link ao carregar a página
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const refCode = urlParams.get('ref');
     
-    // Salva o código do link no localStorage para uso posterior
     if (refCode) {
       localStorage.setItem('onboarding_link_code', refCode);
       trackLinkClick(refCode);
@@ -26,30 +24,29 @@ export default function ComplianceOnboardingStart() {
     {
       value: 'pix',
       label: 'Somente Pix',
-      description: 'Habilite recebimentos e pagamentos via Pix de forma rápida.',
-      details: 'Processo de compliance simplificado e ágil.',
-      icon: <QrCode className="w-5 h-5" />
+      description: 'Habilite recebimentos e pagamentos via Pix com compliance simplificado.',
+      details: 'Ideal para operações ágeis.',
+      icon: <QrCode className="w-8 h-8" />
     },
     {
       value: 'card',
       label: 'Somente Cartão',
-      description: 'Habilite recebimentos com cartão de crédito e débito.',
-      details: 'Requer compliance completo para bandeiras e adquirentes.',
-      icon: <CreditCard className="w-5 h-5" />
+      description: 'Habilite processamento de cartões de crédito e débito.',
+      details: 'Para negócios que precisam de abrangência.',
+      icon: <CreditCard className="w-8 h-8" />
     },
     {
       value: 'both',
-      label: 'Pix e Cartão',
-      description: 'Habilite todos os métodos de pagamento para seu negócio.',
-      details: 'Combina Pix e cartão com compliance unificado.',
-      icon: <Wallet className="w-5 h-5" />
+      label: 'Solução Completa',
+      description: 'Unifique Pix e Cartões em uma única integração robusta.',
+      details: 'A escolha recomendada para crescimento.',
+      icon: <Wallet className="w-8 h-8" />
     }
   ];
 
   const handleContinue = () => {
     if (selectedMethod) {
       localStorage.setItem('payment_method_type', selectedMethod);
-      
       if (selectedMethod === 'pix') {
         navigate(createPageUrl('CompliancePixOnly'));
       } else {
@@ -59,71 +56,43 @@ export default function ComplianceOnboardingStart() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-73px)] bg-gradient-to-br from-[#002443] to-[#001020] flex items-center justify-center p-6">
-      <div className="max-w-2xl w-full">
-        {/* Card principal */}
-        <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-10">
-          {/* Header */}
-          <div className="text-center mb-10">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[var(--pagsmile-green)]/10 mb-4">
-              <Wallet className="w-8 h-8 text-[var(--pagsmile-green)]" />
-            </div>
-            <h1 className="text-3xl font-bold text-slate-800 mb-3">
-              Complete seu Compliance
-            </h1>
-            <p className="text-slate-600 text-lg">
-              Sua conta está quase pronta! Precisamos de algumas informações para ativar seus serviços.
-            </p>
+    <div className="flex flex-col items-center justify-center min-h-[80vh]">
+      <div className="w-full max-w-4xl">
+        <div className="text-center mb-12 animate-in slide-in-from-bottom-8 duration-700">
+          <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-gradient-to-br from-[var(--pagsmile-green)] to-[var(--pagsmile-blue)] text-white mb-6 shadow-xl shadow-green-900/10">
+            <ShieldCheck className="w-10 h-10" />
           </div>
-
-          {/* Seleção de método */}
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-lg font-semibold text-slate-700 mb-4">
-                Selecione o método de pagamento desejado:
-              </h2>
-              <SelectionButton
-                options={paymentMethods}
-                value={selectedMethod}
-                onChange={setSelectedMethod}
-                columns={1}
-              />
-            </div>
-
-            {/* Detalhes do método selecionado */}
-            {selectedMethod && (
-              <div className="p-4 rounded-xl bg-[var(--pagsmile-green)]/5 border border-[var(--pagsmile-green)]/20">
-                <p className="text-sm text-slate-600">
-                  {paymentMethods.find(m => m.value === selectedMethod)?.details}
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Navegação */}
-          <div className="mt-10 flex flex-col sm:flex-row gap-4">
-            <Button
-              variant="outline"
-              onClick={() => navigate(createPageUrl('AdminDashboard'))}
-              className="flex-1"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Voltar para o Dashboard
-            </Button>
-            <Button
-              onClick={handleContinue}
-              disabled={!selectedMethod}
-              className="flex-1 bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white"
-            >
-              Continuar
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          </div>
+          <h1 className="text-4xl md:text-5xl font-bold text-[var(--pagsmile-blue)] mb-6 tracking-tight">
+            Compliance Inteligente
+          </h1>
+          <p className="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed">
+            Bem-vindo ao processo de onboarding da Pagsmile. 
+            Selecione como deseja operar para iniciarmos a configuração personalizada do seu perfil.
+          </p>
         </div>
 
-        {/* Footer info */}
-        <p className="text-center text-slate-400 text-sm mt-6">
-          Seus dados estão protegidos e serão tratados com total confidencialidade.
+        <div className="mb-12 animate-in slide-in-from-bottom-10 duration-1000 delay-100">
+          <SelectionButton
+            options={paymentMethods}
+            value={selectedMethod}
+            onChange={setSelectedMethod}
+            columns={3}
+          />
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-lg mx-auto animate-in slide-in-from-bottom-12 duration-1000 delay-200">
+          <Button
+            onClick={handleContinue}
+            disabled={!selectedMethod}
+            className="h-14 px-8 text-lg bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white rounded-xl w-full shadow-lg shadow-green-500/20 transition-all hover:scale-105"
+          >
+            Começar Agora
+            <ArrowRight className="w-5 h-5 ml-2" />
+          </Button>
+        </div>
+        
+        <p className="text-center text-slate-400 text-sm mt-8 animate-in fade-in duration-1000 delay-500">
+          Ambiente seguro e criptografado de ponta a ponta.
         </p>
       </div>
     </div>

@@ -47,9 +47,13 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
+import AdminComplianceAudit from './pages/AdminComplianceAudit';
+import AdminComplianceDocs from './pages/AdminComplianceDocs';
+import AdminComplianceRules from './pages/AdminComplianceRules';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminHelenaIA from './pages/AdminHelenaIA';
 import AdminIntegrations from './pages/AdminIntegrations';
+import AdminRevalidationManager from './pages/AdminRevalidationManager';
 import AdminSettings from './pages/AdminSettings';
 import ComplianceFullKYC from './pages/ComplianceFullKYC';
 import ComplianceOnboardingStart from './pages/ComplianceOnboardingStart';
@@ -64,17 +68,17 @@ import OnboardingCaseDetails from './pages/OnboardingCaseDetails';
 import OnboardingCompletion from './pages/OnboardingCompletion';
 import QuestionnaireEditor from './pages/QuestionnaireEditor';
 import QuestionnaireTemplates from './pages/QuestionnaireTemplates';
-import AdminComplianceAudit from './pages/AdminComplianceAudit';
-import AdminComplianceDocs from './pages/AdminComplianceDocs';
-import AdminComplianceRules from './pages/AdminComplianceRules';
-import AdminRevalidationManager from './pages/AdminRevalidationManager';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
+    "AdminComplianceAudit": AdminComplianceAudit,
+    "AdminComplianceDocs": AdminComplianceDocs,
+    "AdminComplianceRules": AdminComplianceRules,
     "AdminDashboard": AdminDashboard,
     "AdminHelenaIA": AdminHelenaIA,
     "AdminIntegrations": AdminIntegrations,
+    "AdminRevalidationManager": AdminRevalidationManager,
     "AdminSettings": AdminSettings,
     "ComplianceFullKYC": ComplianceFullKYC,
     "ComplianceOnboardingStart": ComplianceOnboardingStart,
@@ -89,10 +93,6 @@ export const PAGES = {
     "OnboardingCompletion": OnboardingCompletion,
     "QuestionnaireEditor": QuestionnaireEditor,
     "QuestionnaireTemplates": QuestionnaireTemplates,
-    "AdminComplianceAudit": AdminComplianceAudit,
-    "AdminComplianceDocs": AdminComplianceDocs,
-    "AdminComplianceRules": AdminComplianceRules,
-    "AdminRevalidationManager": AdminRevalidationManager,
 }
 
 export const pagesConfig = {

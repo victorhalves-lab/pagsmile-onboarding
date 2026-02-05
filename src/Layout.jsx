@@ -69,28 +69,58 @@ export default function Layout({ children, currentPageName }) {
   // Layout público para fluxo de onboarding (via link)
   if (isPublicPage) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="min-h-screen font-sans antialiased bg-[#f8f9fa]">
         <style>{`
+          @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
           :root {
             --pagsmile-green: #2bc196;
             --pagsmile-green-light: #5cf7cf;
             --pagsmile-blue: #002443;
             --pagsmile-blue-light: #003366;
             --pagsmile-gray: #f4f4f4;
+            --font-sans: 'Plus Jakarta Sans', sans-serif;
+          }
+
+          body {
+            font-family: var(--font-sans);
+            color: var(--pagsmile-blue);
+          }
+
+          .modern-shadow {
+            box-shadow: 0 4px 20px rgba(0, 36, 67, 0.05);
+          }
+
+          .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
           }
         `}</style>
-        <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+
+        <div className="fixed top-0 left-0 w-full h-2 bg-gradient-to-r from-[var(--pagsmile-blue)] via-[var(--pagsmile-green)] to-[var(--pagsmile-green-light)] z-[60]" />
+
+        <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/80 backdrop-blur-md border-b border-slate-100">
+          <div className="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
             <div className="flex items-center gap-3">
               <img 
                 src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/9bd38c4f7_Logo-modo-claro.png" 
                 alt="Pagsmile" 
-                className="h-8"
+                className="h-9"
               />
             </div>
           </div>
         </header>
-        <main>{children}</main>
+
+        <main className="pt-24 pb-12 px-4 md:px-8 max-w-7xl mx-auto min-h-screen">
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+            {children}
+          </div>
+        </main>
+
+        <footer className="py-8 text-center text-sm text-slate-400">
+          <p>&copy; {new Date().getFullYear()} Pagsmile. Inovação e Segurança em Pagamentos.</p>
+        </footer>
       </div>
     );
   }
@@ -197,14 +227,22 @@ export default function Layout({ children, currentPageName }) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="min-h-screen bg-[#f8f9fa] flex font-sans">
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
         :root {
           --pagsmile-green: #2bc196;
           --pagsmile-green-light: #5cf7cf;
           --pagsmile-blue: #002443;
           --pagsmile-blue-light: #003366;
           --pagsmile-gray: #f4f4f4;
+          --font-sans: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+          font-family: var(--font-sans);
+          color: var(--pagsmile-blue);
         }
       `}</style>
 

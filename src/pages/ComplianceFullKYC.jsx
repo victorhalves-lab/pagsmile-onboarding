@@ -31,21 +31,21 @@ import Step10PLDOperacao from '../components/compliance/steps/Step10PLDOperacao'
 import Step11Confirmacao from '../components/compliance/steps/Step11Confirmacao';
 
 const STEPS = [
-  { id: 'identificacao', title: 'Identificação da Empresa', icon: Building2 },
-  { id: 'tipo_empresa', title: 'Tipo de Empresa', icon: FileText },
-  { id: 'endereco', title: 'Endereço Comercial', icon: MapPin },
-  { id: 'atividade', title: 'Atividade Econômica', icon: Briefcase },
-  { id: 'volumetria', title: 'Volumetria Financeira', icon: TrendingUp },
-  { id: 'perfil_clientes', title: 'Perfil de Clientes', icon: Users },
+  { id: 'identificacao', title: 'Identificação', icon: Building2 },
+  { id: 'tipo_empresa', title: 'Tipo Empresa', icon: FileText },
+  { id: 'endereco', title: 'Endereço', icon: MapPin },
+  { id: 'atividade', title: 'Atividade', icon: Briefcase },
+  { id: 'volumetria', title: 'Volumetria', icon: TrendingUp },
+  { id: 'perfil_clientes', title: 'Clientes', icon: Users },
   { id: 'responsaveis', title: 'Responsáveis', icon: UserCircle },
-  { id: 'ubo', title: 'Beneficiários Finais (UBO)', icon: Users },
-  { id: 'socios', title: 'Sócios e Administradores', icon: UserCheck },
+  { id: 'ubo', title: 'Beneficiários', icon: Users },
+  { id: 'socios', title: 'Sócios', icon: UserCheck },
   { id: 'licenciamento', title: 'Licenciamento', icon: Scale },
   { id: 'marketplace', title: 'Marketplace', icon: Store },
-  { id: 'seguranca_cartao', title: 'Segurança de Cartão', icon: Lock },
-  { id: 'pld_sancoes', title: 'PLD - Sanções', icon: ShieldAlert },
-  { id: 'pld_riscos', title: 'PLD - Riscos', icon: AlertTriangle },
-  { id: 'pld_operacao', title: 'PLD - Operação', icon: ShieldCheck },
+  { id: 'seguranca_cartao', title: 'Segurança', icon: Lock },
+  { id: 'pld_sancoes', title: 'Sanções', icon: ShieldAlert },
+  { id: 'pld_riscos', title: 'Riscos PLD', icon: AlertTriangle },
+  { id: 'pld_operacao', title: 'Operação', icon: ShieldCheck },
   { id: 'confirmacao', title: 'Confirmação', icon: CheckCircle }
 ];
 
@@ -155,92 +155,68 @@ export default function ComplianceFullKYC() {
   };
 
   const isLastStep = currentStep === STEPS.length;
+  const progress = (currentStep / STEPS.length) * 100;
 
   return (
-    <div className="min-h-[calc(100vh-73px)] bg-slate-50">
-      {/* Header fixo */}
-      <div className="sticky top-[57px] z-40 bg-white border-b border-slate-200 px-4 py-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-xl font-bold text-slate-800">Compliance Completo</h1>
-              <p className="text-sm text-slate-500">{STEPS[currentStep - 1].title}</p>
-            </div>
+    <div className="flex gap-8 items-start">
+      {/* Sidebar de Navegação */}
+      <div className="hidden lg:block w-80 sticky top-24 space-y-8">
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+          <h3 className="font-bold text-[var(--pagsmile-blue)] mb-2">Progresso</h3>
+          <div className="h-2 bg-slate-100 rounded-full overflow-hidden mb-4">
+            <div 
+              className="h-full bg-[var(--pagsmile-green)] transition-all duration-500 ease-out"
+              style={{ width: `${progress}%` }}
+            />
           </div>
-          <ProgressBar currentStep={currentStep} totalSteps={STEPS.length} />
+          <p className="text-sm text-slate-500">
+            Passo {currentStep} de {STEPS.length}: <span className="text-[var(--pagsmile-green)] font-medium">{STEPS[currentStep-1].title}</span>
+          </p>
+        </div>
+
+        <div className="max-h-[calc(100vh-300px)] overflow-y-auto">
+          <StepNavigation
+            steps={STEPS}
+            currentStep={currentStep}
+            onStepClick={setCurrentStep}
+            className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100"
+          />
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-6">
-        <div className="flex gap-6">
-          {/* Navegação lateral - Desktop */}
-          <div className="hidden lg:block w-72 flex-shrink-0">
-            <div className="sticky top-[180px] max-h-[calc(100vh-220px)] overflow-y-auto">
-              <StepNavigation
-                steps={STEPS}
-                currentStep={currentStep}
-                onStepClick={setCurrentStep}
-              />
-            </div>
-          </div>
+      {/* Conteúdo Principal */}
+      <div className="flex-1 min-w-0">
+        <div className="bg-white rounded-3xl p-6 md:p-10 shadow-sm border border-slate-100 modern-shadow">
+          {renderStep()}
 
-          {/* Conteúdo principal */}
-          <div className="flex-1 min-w-0">
-            <div className="bg-white rounded-xl border border-slate-200 p-6 md:p-8">
-              {renderStep()}
-            </div>
-
-            {/* Botões de navegação */}
-            <div className="flex justify-between mt-6 gap-4">
-              <Button
-                variant="outline"
-                onClick={currentStep === 1 ? () => navigate(createPageUrl('ComplianceOnboardingStart')) : handlePrevious}
-                className="flex-1 md:flex-none"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                {currentStep === 1 ? 'Voltar ao Início' : 'Anterior'}
-              </Button>
-              
-              <Button
-                onClick={isLastStep ? handleSubmit : handleNext}
-                className="flex-1 md:flex-none bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white"
-              >
-                {isLastStep ? (
-                  <>
-                    <Check className="w-4 h-4 mr-2" />
-                    Finalizar e Enviar Documentos
-                  </>
-                ) : (
-                  <>
-                    Próximo
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </>
-                )}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Navegação mobile - Bolinhas */}
-      <div className="lg:hidden fixed bottom-20 left-0 right-0 bg-white border-t border-slate-200 p-3">
-        <div className="flex justify-center gap-1.5 overflow-x-auto px-2">
-          {STEPS.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => index + 1 <= currentStep && setCurrentStep(index + 1)}
-              disabled={index + 1 > currentStep}
-              className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium transition-all flex-shrink-0 ${
-                index + 1 === currentStep
-                  ? 'bg-[var(--pagsmile-green)] text-white'
-                  : index + 1 < currentStep
-                  ? 'bg-[var(--pagsmile-green)]/20 text-[var(--pagsmile-green)]'
-                  : 'bg-slate-100 text-slate-400'
-              }`}
+          {/* Botões de Ação */}
+          <div className="flex justify-between items-center mt-12 pt-8 border-t border-slate-100">
+            <Button
+              variant="ghost"
+              onClick={currentStep === 1 ? () => navigate(createPageUrl('ComplianceOnboardingStart')) : handlePrevious}
+              className="text-slate-500 hover:text-[var(--pagsmile-blue)] hover:bg-slate-50"
             >
-              {index + 1 < currentStep ? <Check className="w-3 h-3" /> : index + 1}
-            </button>
-          ))}
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              {currentStep === 1 ? 'Início' : 'Voltar'}
+            </Button>
+            
+            <Button
+              onClick={isLastStep ? handleSubmit : handleNext}
+              className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white px-8 h-12 rounded-xl shadow-lg shadow-green-500/20"
+            >
+              {isLastStep ? (
+                <>
+                  Concluir
+                  <Check className="w-4 h-4 ml-2" />
+                </>
+              ) : (
+                <>
+                  Continuar
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       </div>
     </div>
