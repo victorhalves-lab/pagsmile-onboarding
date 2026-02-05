@@ -80,11 +80,58 @@ export default function Layout({ children, currentPageName }) {
             --pagsmile-blue-light: #003366;
             --pagsmile-gray: #f4f4f4;
             --font-sans: 'Plus Jakarta Sans', sans-serif;
+
+            /* Override Shadcn default colors */
+            --foreground: #002443;
+            --primary: #2bc196;
+            --primary-foreground: #ffffff;
+            --secondary: #002443;
+            --secondary-foreground: #ffffff;
+            --muted: #f4f4f4;
+            --muted-foreground: #002443;
+            --accent: #2bc196;
+            --accent-foreground: #ffffff;
+            --card: #ffffff;
+            --card-foreground: #002443;
+            --popover: #ffffff;
+            --popover-foreground: #002443;
+            --border: #e2e8f0;
+            --input: #e2e8f0;
+            --ring: #2bc196;
           }
 
           body {
             font-family: var(--font-sans);
-            color: var(--pagsmile-blue);
+            color: #002443;
+          }
+
+          * {
+            color: inherit;
+          }
+
+          h1, h2, h3, h4, h5, h6, p, span, label, div {
+            color: #002443;
+          }
+
+          .text-muted-foreground {
+            color: #002443 !important;
+            opacity: 0.7;
+          }
+
+          .text-foreground {
+            color: #002443 !important;
+          }
+
+          .text-primary {
+            color: #2bc196 !important;
+          }
+
+          .bg-primary {
+            background-color: #2bc196 !important;
+          }
+
+          .text-black, .text-gray-900, .text-gray-800, .text-gray-700, .text-gray-600, .text-gray-500, .text-slate-900, .text-slate-800, .text-slate-700, .text-slate-600, .text-slate-500 {
+            color: #002443 !important;
           }
 
           .modern-shadow {
