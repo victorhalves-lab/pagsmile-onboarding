@@ -122,6 +122,7 @@ export default function GerarLinkOnboarding() {
       case 'FULL': return 'ComplianceFullKYC';
       case 'LITE': return 'ComplianceLite';
       case 'ECOMMERCE': return 'ComplianceEcommerce';
+      case 'SAAS': return 'ComplianceSaaS';
       default: return 'ComplianceOnboardingStart';
     }
   };
@@ -131,7 +132,8 @@ export default function GerarLinkOnboarding() {
     PIX: `${window.location.origin}${createPageUrl('CompliancePixOnly')}`,
     FULL: `${window.location.origin}${createPageUrl('ComplianceFullKYC')}`,
     LITE: `${window.location.origin}${createPageUrl('ComplianceLite')}`,
-    ECOMMERCE: `${window.location.origin}${createPageUrl('ComplianceEcommerce')}`
+    ECOMMERCE: `${window.location.origin}${createPageUrl('ComplianceEcommerce')}`,
+    SAAS: `${window.location.origin}${createPageUrl('ComplianceSaaS')}`
   };
 
   const generateLinkUrl = (link) => {
@@ -327,6 +329,20 @@ export default function GerarLinkOnboarding() {
                   </Button>
                 </div>
               </div>
+
+              {/* Link SaaS */}
+              <div className="space-y-2">
+                <Label className="text-xs font-medium text-violet-600">SaaS Fast Track (recorrência)</Label>
+                <div className="flex gap-2">
+                  <Input readOnly value={genericLinks.SAAS} className="font-mono text-xs bg-violet-50 border-violet-200" />
+                  <Button variant="outline" size="sm" onClick={() => handleCopy(genericLinks.SAAS)} className="shrink-0 border-violet-200 hover:bg-violet-50">
+                    <Copy className="w-4 h-4 text-violet-600" />
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.SAAS, '_blank')} className="shrink-0 border-violet-200 hover:bg-violet-50">
+                    <ExternalLink className="w-4 h-4 text-violet-600" />
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
@@ -352,7 +368,7 @@ export default function GerarLinkOnboarding() {
               {/* Tipo de Compliance */}
               <div className="space-y-2">
                 <Label className="font-semibold">Tipo de Compliance *</Label>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
                   <button
                     type="button"
                     onClick={() => setFormData(prev => ({ ...prev, complianceType: 'GENERIC' }))}
@@ -412,6 +428,18 @@ export default function GerarLinkOnboarding() {
                   >
                     <p className="font-semibold text-sm text-orange-600">E-commerce</p>
                     <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">Lojas virtuais</p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, complianceType: 'SAAS' }))}
+                    className={`p-4 rounded-lg border-2 transition-all text-left ${
+                      formData.complianceType === 'SAAS' 
+                        ? 'border-violet-500 bg-violet-50' 
+                        : 'border-slate-200 hover:border-slate-300'
+                    }`}
+                  >
+                    <p className="font-semibold text-sm text-violet-600">SaaS</p>
+                    <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">Recorrência</p>
                   </button>
                 </div>
               </div>
@@ -559,13 +587,15 @@ export default function GerarLinkOnboarding() {
                                   link.complianceType === 'FULL' ? 'bg-purple-100 text-purple-700' :
                                   link.complianceType === 'LITE' ? 'bg-teal-100 text-teal-700' :
                                   link.complianceType === 'ECOMMERCE' ? 'bg-orange-100 text-orange-700' :
+                                  link.complianceType === 'SAAS' ? 'bg-violet-100 text-violet-700' :
                                   'bg-slate-100 text-slate-700'
                                 }`}
                               >
                                 {link.complianceType === 'PIX' ? 'Pix' : 
                                  link.complianceType === 'FULL' ? 'Full' : 
                                  link.complianceType === 'LITE' ? 'Lite' : 
-                                 link.complianceType === 'ECOMMERCE' ? 'E-commerce' : 'Genérico'}
+                                 link.complianceType === 'ECOMMERCE' ? 'E-commerce' : 
+                                 link.complianceType === 'SAAS' ? 'SaaS' : 'Genérico'}
                               </Badge>
                               {link.commercialAgentName && (
                                 <span className="text-sm text-[var(--pagsmile-blue)]/80">{link.commercialAgentName}</span>
