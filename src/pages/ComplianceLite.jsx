@@ -4,24 +4,38 @@ import { createPageUrl } from '../utils';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 import { 
-  Building2, Briefcase, Users, ShieldAlert, FileCheck, CheckCircle 
+  Building2, MapPin, FileText, Briefcase, Package, Users, UserCircle,
+  ShieldAlert, UserX, AlertTriangle, Globe, FileCheck
 } from 'lucide-react';
 
-import ProgressBar from '../components/compliance/ProgressBar';
 import StepNavigation from '../components/compliance/StepNavigation';
 import { useOnboardingAnalytics } from '../components/analytics/useOnboardingAnalytics';
 
-import StepL1Identificacao from '../components/compliance/steps/lite/StepL1Identificacao';
-import StepL2ModeloNegocio from '../components/compliance/steps/lite/StepL2ModeloNegocio';
-import StepL3EstruturaSocietaria from '../components/compliance/steps/lite/StepL3EstruturaSocietaria';
-import StepL4ComplianceRisco from '../components/compliance/steps/lite/StepL4ComplianceRisco';
-import StepL5Declaracoes from '../components/compliance/steps/lite/StepL5Declaracoes';
+import StepL1aIdentificacao from '../components/compliance/steps/lite/StepL1aIdentificacao';
+import StepL1bEndereco from '../components/compliance/steps/lite/StepL1bEndereco';
+import StepL1cDescricao from '../components/compliance/steps/lite/StepL1cDescricao';
+import StepL2aModelo from '../components/compliance/steps/lite/StepL2aModelo';
+import StepL2bEntrega from '../components/compliance/steps/lite/StepL2bEntrega';
+import StepL3aEstrutura from '../components/compliance/steps/lite/StepL3aEstrutura';
+import StepL3bUBO from '../components/compliance/steps/lite/StepL3bUBO';
+import StepL4aAtividade from '../components/compliance/steps/lite/StepL4aAtividade';
+import StepL4bPEP from '../components/compliance/steps/lite/StepL4bPEP';
+import StepL4cRiscos from '../components/compliance/steps/lite/StepL4cRiscos';
+import StepL4dExterior from '../components/compliance/steps/lite/StepL4dExterior';
+import StepL5aDeclaracoes from '../components/compliance/steps/lite/StepL5aDeclaracoes';
 
 const STEPS = [
   { id: 'identificacao', title: 'Identificação', icon: Building2 },
-  { id: 'modelo_negocio', title: 'Modelo de Negócio', icon: Briefcase },
-  { id: 'estrutura', title: 'Estrutura Societária', icon: Users },
-  { id: 'compliance', title: 'Compliance', icon: ShieldAlert },
+  { id: 'endereco', title: 'Endereço', icon: MapPin },
+  { id: 'descricao', title: 'Sobre o Negócio', icon: FileText },
+  { id: 'modelo', title: 'Modelo de Negócio', icon: Briefcase },
+  { id: 'entrega', title: 'Entrega', icon: Package },
+  { id: 'estrutura', title: 'Estrutura', icon: Users },
+  { id: 'ubo', title: 'Beneficiário Final', icon: UserCircle },
+  { id: 'atividade', title: 'Atividade', icon: ShieldAlert },
+  { id: 'pep', title: 'PEP e Sanções', icon: UserX },
+  { id: 'riscos', title: 'Riscos', icon: AlertTriangle },
+  { id: 'exterior', title: 'Internacional', icon: Globe },
   { id: 'declaracoes', title: 'Declarações', icon: FileCheck }
 ];
 
@@ -79,37 +93,19 @@ export default function ComplianceLite() {
     const props = { formData, handleChange };
     
     switch (currentStep) {
-      case 1: return <StepL1Identificacao {...props} />;
-      case 2: return <StepL2ModeloNegocio {...props} />;
-      case 3: return <StepL3EstruturaSocietaria {...props} />;
-      case 4: return <StepL4ComplianceRisco {...props} />;
-      case 5: return <StepL5Declaracoes {...props} />;
+      case 1: return <StepL1aIdentificacao {...props} />;
+      case 2: return <StepL1bEndereco {...props} />;
+      case 3: return <StepL1cDescricao {...props} />;
+      case 4: return <StepL2aModelo {...props} />;
+      case 5: return <StepL2bEntrega {...props} />;
+      case 6: return <StepL3aEstrutura {...props} />;
+      case 7: return <StepL3bUBO {...props} />;
+      case 8: return <StepL4aAtividade {...props} />;
+      case 9: return <StepL4bPEP {...props} />;
+      case 10: return <StepL4cRiscos {...props} />;
+      case 11: return <StepL4dExterior {...props} />;
+      case 12: return <StepL5aDeclaracoes {...props} />;
       default: return null;
-    }
-  };
-
-  // Validação básica por step
-  const canContinue = () => {
-    switch (currentStep) {
-      case 1:
-        return formData.cnpj && formData.razaoSocial && formData.enderecoComercial && formData.descricaoNegocio;
-      case 2:
-        return formData.modeloNegocio && formData.canalVenda && 
-               formData.entregaProdutoFisico !== undefined && 
-               formData.entregaDigitalServico !== undefined;
-      case 3:
-        return formData.tipoEmpresa && formData.representanteLegalNome && 
-               formData.representanteLegalCPF && formData.representanteLegalEmail &&
-               formData.existeUBO !== undefined;
-      case 4:
-        return formData.atividadeIlegal !== undefined && formData.exigeLicenca !== undefined &&
-               formData.socioPEP !== undefined && formData.socioSancionado !== undefined &&
-               formData.atuaCripto !== undefined && formData.atuaJogos !== undefined &&
-               formData.encerramentoConta !== undefined && formData.operacaoExterior !== undefined;
-      case 5:
-        return formData.declaracaoVeracidade && formData.declaracaoAutorizacao && formData.declaracaoLegalidade;
-      default:
-        return true;
     }
   };
 
@@ -119,22 +115,22 @@ export default function ComplianceLite() {
   return (
     <div className="flex gap-8 items-start">
       {/* Sidebar de Navegação */}
-      <div className="hidden lg:block w-80 sticky top-24 space-y-8">
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-          <div className="flex items-center gap-2 mb-4">
+      <div className="hidden lg:block w-72 sticky top-24 space-y-6">
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+          <div className="flex items-center gap-2 mb-3">
             <div className="px-2 py-1 rounded-lg bg-teal-100 text-teal-700 text-xs font-semibold">
               LITE
             </div>
-            <h3 className="font-bold text-[var(--pagsmile-blue)]">Perfil Simplificado</h3>
+            <h3 className="font-bold text-[var(--pagsmile-blue)] text-sm">Perfil Simplificado</h3>
           </div>
-          <div className="h-2 bg-slate-100 rounded-full overflow-hidden mb-4">
+          <div className="h-2 bg-slate-100 rounded-full overflow-hidden mb-3">
             <div 
               className="h-full bg-[var(--pagsmile-green)] transition-all duration-500 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>
-          <p className="text-sm text-slate-500">
-            Passo {currentStep} de {STEPS.length}: <span className="text-[var(--pagsmile-green)] font-medium">{STEPS[currentStep-1].title}</span>
+          <p className="text-xs text-slate-500">
+            Passo {currentStep} de {STEPS.length}
           </p>
         </div>
 
@@ -142,17 +138,8 @@ export default function ComplianceLite() {
           steps={STEPS}
           currentStep={currentStep}
           onStepClick={setCurrentStep}
-          className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100"
+          className="bg-white rounded-2xl p-3 shadow-sm border border-slate-100"
         />
-
-        {/* Info Box */}
-        <div className="bg-teal-50 rounded-2xl p-4 border border-teal-100">
-          <p className="text-sm text-teal-800 font-medium mb-2">Questionário Simplificado</p>
-          <p className="text-xs text-teal-700">
-            Este questionário foi otimizado para pequenas e médias empresas. 
-            O preenchimento leva aproximadamente 5 minutos.
-          </p>
-        </div>
       </div>
 
       {/* Conteúdo Principal */}
@@ -175,11 +162,11 @@ export default function ComplianceLite() {
           </div>
         </div>
 
-        <div className="bg-white rounded-3xl p-6 md:p-10 shadow-sm border border-slate-100 modern-shadow">
+        <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100 modern-shadow">
           {renderStep()}
 
           {/* Botões de Ação */}
-          <div className="flex justify-between items-center mt-12 pt-8 border-t border-slate-100">
+          <div className="flex justify-between items-center mt-10 pt-6 border-t border-slate-100">
             <Button
               variant="ghost"
               onClick={currentStep === 1 ? () => navigate(createPageUrl('ComplianceOnboardingStart')) : handlePrevious}
@@ -191,8 +178,7 @@ export default function ComplianceLite() {
             
             <Button
               onClick={isLastStep ? handleSubmit : handleNext}
-              disabled={!canContinue()}
-              className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white px-8 h-12 rounded-xl shadow-lg shadow-green-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white px-8 h-12 rounded-xl shadow-lg shadow-green-500/20"
             >
               {isLastStep ? (
                 <>
