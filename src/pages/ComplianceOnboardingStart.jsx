@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { Button } from '@/components/ui/button';
-import { QrCode, CreditCard, Wallet, ArrowRight, ArrowLeft, ShieldCheck, Zap } from 'lucide-react';
+import { QrCode, CreditCard, Wallet, ArrowRight, ArrowLeft, ShieldCheck, Zap, ShoppingCart } from 'lucide-react';
 import SelectionButton from '../components/compliance/SelectionButton';
 import { trackLinkClick } from '../components/analytics/useOnboardingAnalytics';
 
@@ -27,6 +27,13 @@ export default function ComplianceOnboardingStart() {
       description: 'Questionário simplificado para PMEs que precisam de agilidade.',
       details: 'Ideal para pequenas e médias empresas.',
       icon: <Zap className="w-8 h-8" />
+    },
+    {
+      value: 'ecommerce',
+      label: 'E-commerce',
+      description: 'Questionário completo para lojas virtuais e marketplaces.',
+      details: 'Otimizado para operações de e-commerce.',
+      icon: <ShoppingCart className="w-8 h-8" />
     },
     {
       value: 'pix',
@@ -56,6 +63,8 @@ export default function ComplianceOnboardingStart() {
       localStorage.setItem('payment_method_type', selectedMethod);
       if (selectedMethod === 'lite') {
         navigate(createPageUrl('ComplianceLite'));
+      } else if (selectedMethod === 'ecommerce') {
+        navigate(createPageUrl('ComplianceEcommerce'));
       } else if (selectedMethod === 'pix') {
         navigate(createPageUrl('CompliancePixOnly'));
       } else {
