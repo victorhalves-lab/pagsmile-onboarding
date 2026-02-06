@@ -300,6 +300,7 @@ export default function DynamicQuestionnaire({
             formData={formData}
             onFieldChange={handleFieldChange}
             showTitle={false}
+            allQuestions={questions}
           />
 
           {/* Botões de Ação */}
