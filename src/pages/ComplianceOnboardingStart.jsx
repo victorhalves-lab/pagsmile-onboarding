@@ -26,7 +26,7 @@ export default function ComplianceOnboardingStart() {
       label: 'Perfil Lite',
       description: 'Questionário simplificado para PMEs que precisam de agilidade.',
       details: 'Ideal para pequenas e médias empresas.',
-      icon: <ShieldCheck className="w-8 h-8" />
+      icon: <Zap className="w-8 h-8" />
     },
     {
       value: 'pix',

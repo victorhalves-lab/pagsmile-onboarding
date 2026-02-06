@@ -4,37 +4,40 @@ import { createPageUrl } from '../utils';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 import { 
-  Building2, FileText, MapPin, Briefcase, TrendingUp, 
-  Users, UserCircle, ShieldAlert, AlertTriangle, ShieldCheck, CheckCircle 
+  Building2, FileText, MapPin, Briefcase, TrendingUp, Users, 
+  UserCircle, MessageSquare, ShieldCheck, ShieldAlert, AlertTriangle, CheckCircle 
 } from 'lucide-react';
 
-import ProgressBar from '../components/compliance/ProgressBar';
 import StepNavigation from '../components/compliance/StepNavigation';
 import { useOnboardingAnalytics } from '../components/analytics/useOnboardingAnalytics';
 
-import Step1Identificacao from '../components/compliance/steps/Step1Identificacao';
-import Step2TipoEmpresa from '../components/compliance/steps/Step2TipoEmpresa';
-import Step3Endereco from '../components/compliance/steps/Step3Endereco';
-import Step4AtividadeNegocios from '../components/compliance/steps/Step4AtividadeNegocios';
-import Step5PerfilOperacional from '../components/compliance/steps/Step5PerfilOperacional';
-import Step6PerfilClientes from '../components/compliance/steps/Step6PerfilClientes';
-import Step7Responsaveis from '../components/compliance/steps/Step7Responsaveis';
-import Step8PLDSancoes from '../components/compliance/steps/Step8PLDSancoes';
-import Step9PLDRiscos from '../components/compliance/steps/Step9PLDRiscos';
-import Step10PLDOperacao from '../components/compliance/steps/Step10PLDOperacao';
-import Step11Confirmacao from '../components/compliance/steps/Step11Confirmacao';
+import StepP1Identificacao from '../components/compliance/steps/pix/StepP1Identificacao';
+import StepP2RazaoSocial from '../components/compliance/steps/pix/StepP2RazaoSocial';
+import StepP3TipoEmpresa from '../components/compliance/steps/pix/StepP3TipoEmpresa';
+import StepP4Endereco from '../components/compliance/steps/pix/StepP4Endereco';
+import StepP5Atividade from '../components/compliance/steps/pix/StepP5Atividade';
+import StepP6Volume from '../components/compliance/steps/pix/StepP6Volume';
+import StepP7Clientes from '../components/compliance/steps/pix/StepP7Clientes';
+import StepP8Responsavel from '../components/compliance/steps/pix/StepP8Responsavel';
+import StepP9SAC from '../components/compliance/steps/pix/StepP9SAC';
+import StepP10Compliance from '../components/compliance/steps/pix/StepP10Compliance';
+import StepP11PLDSancoes from '../components/compliance/steps/pix/StepP11PLDSancoes';
+import StepP12PLDRiscos from '../components/compliance/steps/pix/StepP12PLDRiscos';
+import StepP13Confirmacao from '../components/compliance/steps/pix/StepP13Confirmacao';
 
 const STEPS = [
   { id: 'identificacao', title: 'Identificação', icon: Building2 },
+  { id: 'razao_social', title: 'Razão Social', icon: FileText },
   { id: 'tipo_empresa', title: 'Tipo Empresa', icon: FileText },
   { id: 'endereco', title: 'Endereço', icon: MapPin },
-  { id: 'atividade_negocios', title: 'Detalhes do Negócio', icon: Briefcase },
-  { id: 'perfil_operacional', title: 'Operação', icon: TrendingUp },
-  { id: 'perfil_clientes', title: 'Clientes', icon: Users },
-  { id: 'responsaveis', title: 'Responsáveis', icon: UserCircle },
+  { id: 'atividade', title: 'Atividade', icon: Briefcase },
+  { id: 'volume', title: 'Volume', icon: TrendingUp },
+  { id: 'clientes', title: 'Clientes', icon: Users },
+  { id: 'responsavel', title: 'Responsável', icon: UserCircle },
+  { id: 'sac', title: 'SAC', icon: MessageSquare },
+  { id: 'compliance', title: 'Compliance', icon: ShieldCheck },
   { id: 'pld_sancoes', title: 'Sanções', icon: ShieldAlert },
-  { id: 'pld_riscos', title: 'Riscos PLD', icon: AlertTriangle },
-  { id: 'pld_operacao', title: 'Operação', icon: ShieldCheck },
+  { id: 'pld_riscos', title: 'Riscos', icon: AlertTriangle },
   { id: 'confirmacao', title: 'Confirmação', icon: CheckCircle }
 ];
 
@@ -92,15 +95,19 @@ export default function CompliancePixOnly() {
     const props = { formData, handleChange };
     
     switch (currentStep) {
-      case 1: return <Step1Identificacao {...props} />;
-      case 2: return <Step2TipoEmpresa {...props} />;
-      case 3: return <Step3Endereco {...props} />;
-      case 4: return <Step4AtividadeNegocios {...props} />;
-      case 5: return <Step5PerfilOperacional {...props} />;
-      case 6: return <Step6PerfilClientes {...props} />;
-      case 7: return <Step7Responsaveis {...props} />;
-      case 8: return <Step8CompliancePLD {...props} />;
-      case 9: return <Step11Confirmacao {...props} />;
+      case 1: return <StepP1Identificacao {...props} />;
+      case 2: return <StepP2RazaoSocial {...props} />;
+      case 3: return <StepP3TipoEmpresa {...props} />;
+      case 4: return <StepP4Endereco {...props} />;
+      case 5: return <StepP5Atividade {...props} />;
+      case 6: return <StepP6Volume {...props} />;
+      case 7: return <StepP7Clientes {...props} />;
+      case 8: return <StepP8Responsavel {...props} />;
+      case 9: return <StepP9SAC {...props} />;
+      case 10: return <StepP10Compliance {...props} />;
+      case 11: return <StepP11PLDSancoes {...props} />;
+      case 12: return <StepP12PLDRiscos {...props} />;
+      case 13: return <StepP13Confirmacao {...props} />;
       default: return null;
     }
   };
@@ -111,17 +118,22 @@ export default function CompliancePixOnly() {
   return (
     <div className="flex gap-8 items-start">
       {/* Sidebar de Navegação */}
-      <div className="hidden lg:block w-80 sticky top-24 space-y-8">
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-          <h3 className="font-bold text-[var(--pagsmile-blue)] mb-2">Progresso</h3>
-          <div className="h-2 bg-slate-100 rounded-full overflow-hidden mb-4">
+      <div className="hidden lg:block w-72 sticky top-24 space-y-6">
+        <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="px-2 py-1 rounded-lg bg-blue-100 text-blue-700 text-xs font-semibold">
+              PIX
+            </div>
+            <h3 className="font-bold text-[var(--pagsmile-blue)] text-sm">Somente Pix</h3>
+          </div>
+          <div className="h-2 bg-slate-100 rounded-full overflow-hidden mb-3">
             <div 
               className="h-full bg-[var(--pagsmile-green)] transition-all duration-500 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>
-          <p className="text-sm text-slate-500">
-            Passo {currentStep} de {STEPS.length}: <span className="text-[var(--pagsmile-green)] font-medium">{STEPS[currentStep-1].title}</span>
+          <p className="text-xs text-slate-500">
+            Passo {currentStep} de {STEPS.length}
           </p>
         </div>
 
@@ -129,17 +141,35 @@ export default function CompliancePixOnly() {
           steps={STEPS}
           currentStep={currentStep}
           onStepClick={setCurrentStep}
-          className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100"
+          className="bg-white rounded-2xl p-3 shadow-sm border border-slate-100"
         />
       </div>
 
       {/* Conteúdo Principal */}
       <div className="flex-1 min-w-0">
-        <div className="bg-white rounded-3xl p-6 md:p-10 shadow-sm border border-slate-100 modern-shadow">
+        {/* Mobile Progress */}
+        <div className="lg:hidden mb-6">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="px-2 py-1 rounded-lg bg-blue-100 text-blue-700 text-xs font-semibold">
+              PIX
+            </div>
+            <span className="text-sm text-[var(--pagsmile-blue)]/70">
+              Passo {currentStep} de {STEPS.length}
+            </span>
+          </div>
+          <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-[var(--pagsmile-green)] transition-all duration-500 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100 modern-shadow">
           {renderStep()}
 
           {/* Botões de Ação */}
-          <div className="flex justify-between items-center mt-12 pt-8 border-t border-slate-100">
+          <div className="flex justify-between items-center mt-10 pt-6 border-t border-slate-100">
             <Button
               variant="ghost"
               onClick={currentStep === 1 ? () => navigate(createPageUrl('ComplianceOnboardingStart')) : handlePrevious}
