@@ -120,6 +120,7 @@ export default function GerarLinkOnboarding() {
     switch (type) {
       case 'PIX': return 'CompliancePixOnly';
       case 'FULL': return 'ComplianceFullKYC';
+      case 'LITE': return 'ComplianceLite';
       default: return 'ComplianceOnboardingStart';
     }
   };
@@ -127,7 +128,8 @@ export default function GerarLinkOnboarding() {
   const genericLinks = {
     GENERIC: `${window.location.origin}${createPageUrl('ComplianceOnboardingStart')}`,
     PIX: `${window.location.origin}${createPageUrl('CompliancePixOnly')}`,
-    FULL: `${window.location.origin}${createPageUrl('ComplianceFullKYC')}`
+    FULL: `${window.location.origin}${createPageUrl('ComplianceFullKYC')}`,
+    LITE: `${window.location.origin}${createPageUrl('ComplianceLite')}`
   };
 
   const generateLinkUrl = (link) => {
@@ -295,6 +297,20 @@ export default function GerarLinkOnboarding() {
                   </Button>
                 </div>
               </div>
+
+              {/* Link Perfil Lite */}
+              <div className="space-y-2">
+                <Label className="text-xs font-medium text-teal-600">Perfil Lite (PMEs simplificado)</Label>
+                <div className="flex gap-2">
+                  <Input readOnly value={genericLinks.LITE} className="font-mono text-xs bg-teal-50 border-teal-200" />
+                  <Button variant="outline" size="sm" onClick={() => handleCopy(genericLinks.LITE)} className="shrink-0 border-teal-200 hover:bg-teal-50">
+                    <Copy className="w-4 h-4 text-teal-600" />
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.LITE, '_blank')} className="shrink-0 border-teal-200 hover:bg-teal-50">
+                    <ExternalLink className="w-4 h-4 text-teal-600" />
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
@@ -320,7 +336,7 @@ export default function GerarLinkOnboarding() {
               {/* Tipo de Compliance */}
               <div className="space-y-2">
                 <Label className="font-semibold">Tipo de Compliance *</Label>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   <button
                     type="button"
                     onClick={() => setFormData(prev => ({ ...prev, complianceType: 'GENERIC' }))}
@@ -356,6 +372,18 @@ export default function GerarLinkOnboarding() {
                   >
                     <p className="font-semibold text-sm text-purple-600">Full Compliance</p>
                     <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">KYC completo</p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, complianceType: 'LITE' }))}
+                    className={`p-4 rounded-lg border-2 transition-all text-left ${
+                      formData.complianceType === 'LITE' 
+                        ? 'border-teal-500 bg-teal-50' 
+                        : 'border-slate-200 hover:border-slate-300'
+                    }`}
+                  >
+                    <p className="font-semibold text-sm text-teal-600">Perfil Lite</p>
+                    <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">PMEs simplificado</p>
                   </button>
                 </div>
               </div>
@@ -501,11 +529,13 @@ export default function GerarLinkOnboarding() {
                                 className={`text-xs ${
                                   link.complianceType === 'PIX' ? 'bg-blue-100 text-blue-700' :
                                   link.complianceType === 'FULL' ? 'bg-purple-100 text-purple-700' :
+                                  link.complianceType === 'LITE' ? 'bg-teal-100 text-teal-700' :
                                   'bg-slate-100 text-slate-700'
                                 }`}
                               >
                                 {link.complianceType === 'PIX' ? 'Pix' : 
-                                 link.complianceType === 'FULL' ? 'Full' : 'Genérico'}
+                                 link.complianceType === 'FULL' ? 'Full' : 
+                                 link.complianceType === 'LITE' ? 'Lite' : 'Genérico'}
                               </Badge>
                               {link.commercialAgentName && (
                                 <span className="text-sm text-[var(--pagsmile-blue)]/80">{link.commercialAgentName}</span>

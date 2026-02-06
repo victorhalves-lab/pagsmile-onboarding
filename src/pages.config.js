@@ -62,6 +62,7 @@ import GestaoDocumentos from './pages/GestaoDocumentos';
 import GestaoRevalidacao from './pages/GestaoRevalidacao';
 import HelenaIA from './pages/HelenaIA';
 import Home from './pages/Home';
+import HowItWorks from './pages/HowItWorks';
 import IntegracoesExternas from './pages/IntegracoesExternas';
 import LivenessFacematchStep from './pages/LivenessFacematchStep';
 import LivenessSimulation from './pages/LivenessSimulation';
@@ -69,7 +70,8 @@ import OnboardingCompletion from './pages/OnboardingCompletion';
 import QuestionariosRecebidos from './pages/QuestionariosRecebidos';
 import RegrasDeCompliance from './pages/RegrasDeCompliance';
 import TemplatesQuestionarios from './pages/TemplatesQuestionarios';
-import HowItWorks from './pages/HowItWorks';
+import ComplianceLite from './pages/ComplianceLite';
+import DocumentUploadLite from './pages/DocumentUploadLite';
 import __Layout from './Layout.jsx';
 
 
@@ -89,6 +91,7 @@ export const PAGES = {
     "GestaoRevalidacao": GestaoRevalidacao,
     "HelenaIA": HelenaIA,
     "Home": Home,
+    "HowItWorks": HowItWorks,
     "IntegracoesExternas": IntegracoesExternas,
     "LivenessFacematchStep": LivenessFacematchStep,
     "LivenessSimulation": LivenessSimulation,
@@ -96,7 +99,8 @@ export const PAGES = {
     "QuestionariosRecebidos": QuestionariosRecebidos,
     "RegrasDeCompliance": RegrasDeCompliance,
     "TemplatesQuestionarios": TemplatesQuestionarios,
-    "HowItWorks": HowItWorks,
+    "ComplianceLite": ComplianceLite,
+    "DocumentUploadLite": DocumentUploadLite,
 }
 
 export const pagesConfig = {
