@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { Button } from '@/components/ui/button';
-import { QrCode, CreditCard, Wallet, ArrowRight, ArrowLeft, ShieldCheck, Zap, ShoppingCart } from 'lucide-react';
+import { QrCode, CreditCard, Wallet, ArrowRight, ArrowLeft, ShieldCheck, Zap, ShoppingCart, Cloud } from 'lucide-react';
 import SelectionButton from '../components/compliance/SelectionButton';
 import { trackLinkClick } from '../components/analytics/useOnboardingAnalytics';
 
@@ -27,6 +27,13 @@ export default function ComplianceOnboardingStart() {
       description: 'Questionário simplificado para PMEs que precisam de agilidade.',
       details: 'Ideal para pequenas e médias empresas.',
       icon: <Zap className="w-8 h-8" />
+    },
+    {
+      value: 'saas',
+      label: 'SaaS / Recorrência',
+      description: 'Fast Track para empresas de SaaS com modelo de assinatura.',
+      details: 'Otimizado para recorrência online.',
+      icon: <Cloud className="w-8 h-8" />
     },
     {
       value: 'ecommerce',
@@ -63,6 +70,8 @@ export default function ComplianceOnboardingStart() {
       localStorage.setItem('payment_method_type', selectedMethod);
       if (selectedMethod === 'lite') {
         navigate(createPageUrl('ComplianceLite'));
+      } else if (selectedMethod === 'saas') {
+        navigate(createPageUrl('ComplianceSaaS'));
       } else if (selectedMethod === 'ecommerce') {
         navigate(createPageUrl('ComplianceEcommerce'));
       } else if (selectedMethod === 'pix') {

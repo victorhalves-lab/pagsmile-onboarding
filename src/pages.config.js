@@ -74,6 +74,8 @@ import RegrasDeCompliance from './pages/RegrasDeCompliance';
 import TemplatesQuestionarios from './pages/TemplatesQuestionarios';
 import ComplianceEcommerce from './pages/ComplianceEcommerce';
 import DocumentUploadEcommerce from './pages/DocumentUploadEcommerce';
+import ComplianceSaaS from './pages/ComplianceSaaS';
+import DocumentUploadSaaS from './pages/DocumentUploadSaaS';
 import __Layout from './Layout.jsx';
 
 
@@ -105,6 +107,8 @@ export const PAGES = {
     "TemplatesQuestionarios": TemplatesQuestionarios,
     "ComplianceEcommerce": ComplianceEcommerce,
     "DocumentUploadEcommerce": DocumentUploadEcommerce,
+    "ComplianceSaaS": ComplianceSaaS,
+    "DocumentUploadSaaS": DocumentUploadSaaS,
 }
 
 export const pagesConfig = {
