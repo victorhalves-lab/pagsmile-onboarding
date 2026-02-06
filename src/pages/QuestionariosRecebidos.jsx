@@ -44,6 +44,7 @@ export default function QuestionariosRecebidos() {
   const [scoreFilter, setScoreFilter] = useState('all');
   const [analystFilter, setAnalystFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
+  const [modelFilter, setModelFilter] = useState('all');
   const [sortField, setSortField] = useState('created_date');
   const [sortOrder, setSortOrder] = useState('desc');
   const [currentPage, setCurrentPage] = useState(1);
@@ -70,6 +71,18 @@ export default function QuestionariosRecebidos() {
     queryFn: () => base44.entities.User.list()
   });
 
+  // Fetch Questionnaire Templates para exibir o modelo
+  const { data: questionnaireTemplates = [] } = useQuery({
+    queryKey: ['questionnaireTemplates'],
+    queryFn: () => base44.entities.QuestionnaireTemplate.list()
+  });
+
+  // Fetch OnboardingLinks para pegar o complianceType
+  const { data: onboardingLinks = [] } = useQuery({
+    queryKey: ['onboardingLinks'],
+    queryFn: () => base44.entities.OnboardingLink.list()
+  });
+
   const merchantMap = React.useMemo(() => {
     const map = {};
     merchants.forEach(m => { map[m.id] = m; });
@@ -81,6 +94,50 @@ export default function QuestionariosRecebidos() {
     complianceScores.forEach(s => { map[s.onboarding_case_id] = s; });
     return map;
   }, [complianceScores]);
+
+  const templatesMap = React.useMemo(() => {
+    const map = {};
+    questionnaireTemplates.forEach(t => { map[t.id] = t; });
+    return map;
+  }, [questionnaireTemplates]);
+
+  const linksMap = React.useMemo(() => {
+    const map = {};
+    onboardingLinks.forEach(l => { map[l.uniqueCode] = l; });
+    return map;
+  }, [onboardingLinks]);
+
+  // Função para determinar o modelo do caso
+  const getCaseModel = (c) => {
+    // Primeiro tenta pelo link
+    if (c.onboardingLinkCode && linksMap[c.onboardingLinkCode]) {
+      const link = linksMap[c.onboardingLinkCode];
+      if (link.complianceType === 'LITE') return 'lite';
+      if (link.complianceType === 'PIX') return 'pix';
+      if (link.complianceType === 'FULL') return 'full';
+    }
+    // Depois tenta pelo template
+    if (c.questionnaireTemplateId && templatesMap[c.questionnaireTemplateId]) {
+      return templatesMap[c.questionnaireTemplateId].model || 'full';
+    }
+    return 'full'; // default
+  };
+
+  const getModelBadge = (model) => {
+    const config = {
+      'lite': { color: 'bg-teal-100 text-teal-700', label: 'Lite' },
+      'pix': { color: 'bg-blue-100 text-blue-700', label: 'Pix' },
+      'full': { color: 'bg-purple-100 text-purple-700', label: 'Full' },
+      'ecommerce': { color: 'bg-amber-100 text-amber-700', label: 'E-commerce' },
+      'gateway': { color: 'bg-indigo-100 text-indigo-700', label: 'Gateway' }
+    };
+    const { color, label } = config[model] || config['full'];
+    return (
+      <Badge className={`${color} text-xs font-medium border-0`}>
+        {label}
+      </Badge>
+    );
+  };
 
   // Estatísticas rápidas
   const stats = React.useMemo(() => {
@@ -200,6 +257,10 @@ export default function QuestionariosRecebidos() {
       // Prioridade
       const matchesPriority = priorityFilter === 'all' || c.priority === priorityFilter;
       
+      // Modelo
+      const caseModel = getCaseModel(c);
+      const matchesModel = modelFilter === 'all' || caseModel === modelFilter;
+      
       // Score
       let matchesScore = true;
       if (scoreFilter !== 'all' && c.riskScore !== undefined) {
@@ -228,7 +289,7 @@ export default function QuestionariosRecebidos() {
         }
       }
       
-      return matchesSearch && matchesStatus && matchesMerchantType && matchesScore && matchesDate && matchesAnalyst && matchesPriority;
+      return matchesSearch && matchesStatus && matchesMerchantType && matchesScore && matchesDate && matchesAnalyst && matchesPriority && matchesModel;
     }).sort((a, b) => {
       let aValue = a[sortField];
       let bValue = b[sortField];
@@ -243,7 +304,7 @@ export default function QuestionariosRecebidos() {
       }
       return aValue < bValue ? 1 : -1;
     });
-  }, [onboardingCases, merchantMap, searchTerm, statusFilter, merchantTypeFilter, scoreFilter, dateFilter, analystFilter, priorityFilter, sortField, sortOrder]);
+  }, [onboardingCases, merchantMap, linksMap, templatesMap, searchTerm, statusFilter, merchantTypeFilter, scoreFilter, dateFilter, analystFilter, priorityFilter, modelFilter, sortField, sortOrder]);
 
   // Paginação
   const totalPages = Math.ceil(filteredCases.length / itemsPerPage);
@@ -370,6 +431,18 @@ export default function QuestionariosRecebidos() {
           <div className="flex gap-2 flex-wrap items-center">
             <Filter className="w-4 h-4 text-[var(--pagsmile-blue)]/50" />
             
+            <Select value={modelFilter} onValueChange={setModelFilter}>
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder="Modelo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos Modelos</SelectItem>
+                <SelectItem value="lite">Lite</SelectItem>
+                <SelectItem value="pix">Pix</SelectItem>
+                <SelectItem value="full">Full</SelectItem>
+              </SelectContent>
+            </Select>
+
             <Select value={merchantTypeFilter} onValueChange={setMerchantTypeFilter}>
               <SelectTrigger className="w-36">
                 <SelectValue placeholder="Tipo" />
@@ -432,7 +505,7 @@ export default function QuestionariosRecebidos() {
               </SelectContent>
             </Select>
 
-            {(statusFilter !== 'all' || merchantTypeFilter !== 'all' || scoreFilter !== 'all' || dateFilter !== 'all' || analystFilter !== 'all' || priorityFilter !== 'all') && (
+            {(statusFilter !== 'all' || merchantTypeFilter !== 'all' || scoreFilter !== 'all' || dateFilter !== 'all' || analystFilter !== 'all' || priorityFilter !== 'all' || modelFilter !== 'all') && (
               <Button 
                 variant="ghost" 
                 size="sm"
@@ -443,6 +516,7 @@ export default function QuestionariosRecebidos() {
                   setDateFilter('all');
                   setAnalystFilter('all');
                   setPriorityFilter('all');
+                  setModelFilter('all');
                 }}
                 className="text-[var(--pagsmile-blue)]/70"
               >
@@ -495,7 +569,7 @@ export default function QuestionariosRecebidos() {
                     <ArrowUpDown className="w-3 h-3" />
                   </button>
                 </TableHead>
-                <TableHead>Tipo</TableHead>
+                <TableHead>Modelo</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-center">Fase 1 (SQ)</TableHead>
                 <TableHead className="text-center">Fase 2 (SVE)</TableHead>
@@ -564,9 +638,7 @@ export default function QuestionariosRecebidos() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className="font-normal">
-                        {merchant?.type || 'N/A'}
-                      </Badge>
+                      {getModelBadge(getCaseModel(c))}
                     </TableCell>
                     <TableCell>{getStatusBadge(c.status)}</TableCell>
                     
