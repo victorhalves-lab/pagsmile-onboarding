@@ -101,7 +101,8 @@ export default function DynamicQuestionnaire({
   flowType,
   badgeLabel,
   badgeColor = 'bg-blue-100 text-blue-700',
-  questionsPerStep = 4
+  questionsPerStep = 4,
+  onComplete // Callback opcional quando completa o questionário
 }) {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
@@ -188,7 +189,11 @@ export default function DynamicQuestionnaire({
     if (template?.id) {
       localStorage.setItem('current_template_id', template.id);
     }
-    navigate(createPageUrl(documentUploadPage));
+    if (onComplete) {
+      onComplete({ formData, template, questions });
+    } else {
+      navigate(createPageUrl(documentUploadPage));
+    }
   };
 
   if (loadingTemplate || loadingQuestions) {
