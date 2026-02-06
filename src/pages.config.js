@@ -51,10 +51,12 @@ import AdminDashboard from './pages/AdminDashboard';
 import AnaliseDeCasos from './pages/AnaliseDeCasos';
 import Auditoria from './pages/Auditoria';
 import ComplianceFullKYC from './pages/ComplianceFullKYC';
+import ComplianceLite from './pages/ComplianceLite';
 import ComplianceOnboardingStart from './pages/ComplianceOnboardingStart';
 import CompliancePixOnly from './pages/CompliancePixOnly';
 import Configuracoes from './pages/Configuracoes';
 import DocumentUploadFull from './pages/DocumentUploadFull';
+import DocumentUploadLite from './pages/DocumentUploadLite';
 import DocumentUploadPix from './pages/DocumentUploadPix';
 import EditorQuestionario from './pages/EditorQuestionario';
 import GerarLinkOnboarding from './pages/GerarLinkOnboarding';
@@ -70,8 +72,8 @@ import OnboardingCompletion from './pages/OnboardingCompletion';
 import QuestionariosRecebidos from './pages/QuestionariosRecebidos';
 import RegrasDeCompliance from './pages/RegrasDeCompliance';
 import TemplatesQuestionarios from './pages/TemplatesQuestionarios';
-import ComplianceLite from './pages/ComplianceLite';
-import DocumentUploadLite from './pages/DocumentUploadLite';
+import ComplianceEcommerce from './pages/ComplianceEcommerce';
+import DocumentUploadEcommerce from './pages/DocumentUploadEcommerce';
 import __Layout from './Layout.jsx';
 
 
@@ -80,10 +82,12 @@ export const PAGES = {
     "AnaliseDeCasos": AnaliseDeCasos,
     "Auditoria": Auditoria,
     "ComplianceFullKYC": ComplianceFullKYC,
+    "ComplianceLite": ComplianceLite,
     "ComplianceOnboardingStart": ComplianceOnboardingStart,
     "CompliancePixOnly": CompliancePixOnly,
     "Configuracoes": Configuracoes,
     "DocumentUploadFull": DocumentUploadFull,
+    "DocumentUploadLite": DocumentUploadLite,
     "DocumentUploadPix": DocumentUploadPix,
     "EditorQuestionario": EditorQuestionario,
     "GerarLinkOnboarding": GerarLinkOnboarding,
@@ -99,8 +103,8 @@ export const PAGES = {
     "QuestionariosRecebidos": QuestionariosRecebidos,
     "RegrasDeCompliance": RegrasDeCompliance,
     "TemplatesQuestionarios": TemplatesQuestionarios,
-    "ComplianceLite": ComplianceLite,
-    "DocumentUploadLite": DocumentUploadLite,
+    "ComplianceEcommerce": ComplianceEcommerce,
+    "DocumentUploadEcommerce": DocumentUploadEcommerce,
 }
 
 export const pagesConfig = {
