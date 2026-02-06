@@ -50,9 +50,11 @@ export default function Layout({ children, currentPageName }) {
     'CompliancePixOnly',
     'ComplianceFullKYC',
     'ComplianceLite',
+    'ComplianceSaaS',
     'DocumentUploadPix',
     'DocumentUploadFull',
     'DocumentUploadLite',
+    'DocumentUploadSaaS',
     'LivenessFacematchStep',
     'LivenessSimulation',
     'OnboardingCompletion'
