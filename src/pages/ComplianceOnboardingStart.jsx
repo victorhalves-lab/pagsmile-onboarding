@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../utils';
 import { Button } from '@/components/ui/button';
-import { QrCode, CreditCard, Wallet, ArrowRight, ArrowLeft, ShieldCheck } from 'lucide-react';
+import { QrCode, CreditCard, Wallet, ArrowRight, ArrowLeft, ShieldCheck, Zap } from 'lucide-react';
 import SelectionButton from '../components/compliance/SelectionButton';
 import { trackLinkClick } from '../components/analytics/useOnboardingAnalytics';
 
