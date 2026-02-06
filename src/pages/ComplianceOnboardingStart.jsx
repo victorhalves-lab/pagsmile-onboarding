@@ -22,6 +22,13 @@ export default function ComplianceOnboardingStart() {
 
   const paymentMethods = [
     {
+      value: 'lite',
+      label: 'Perfil Lite',
+      description: 'Questionário simplificado para PMEs que precisam de agilidade.',
+      details: 'Ideal para pequenas e médias empresas.',
+      icon: <ShieldCheck className="w-8 h-8" />
+    },
+    {
       value: 'pix',
       label: 'Somente Pix',
       description: 'Habilite recebimentos e pagamentos via Pix com compliance simplificado.',
@@ -47,7 +54,9 @@ export default function ComplianceOnboardingStart() {
   const handleContinue = () => {
     if (selectedMethod) {
       localStorage.setItem('payment_method_type', selectedMethod);
-      if (selectedMethod === 'pix') {
+      if (selectedMethod === 'lite') {
+        navigate(createPageUrl('ComplianceLite'));
+      } else if (selectedMethod === 'pix') {
         navigate(createPageUrl('CompliancePixOnly'));
       } else {
         navigate(createPageUrl('ComplianceFullKYC'));
@@ -75,7 +84,7 @@ export default function ComplianceOnboardingStart() {
             options={paymentMethods}
             value={selectedMethod}
             onChange={setSelectedMethod}
-            columns={3}
+            columns={4}
           />
         </div>
 

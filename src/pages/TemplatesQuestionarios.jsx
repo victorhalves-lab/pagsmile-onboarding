@@ -120,6 +120,16 @@ export default function TemplatesQuestionarios() {
                       <Badge variant="outline">
                         {template.merchantType === 'PF' ? 'Pessoa Física' : 'Pessoa Jurídica'}
                       </Badge>
+                      {template.model && (
+                        <Badge className={
+                          template.model === 'lite' ? 'bg-teal-100 text-teal-700' :
+                          template.model === 'pix' ? 'bg-blue-100 text-blue-700' :
+                          template.model === 'full' ? 'bg-purple-100 text-purple-700' :
+                          'bg-slate-100 text-slate-700'
+                        }>
+                          {template.model.charAt(0).toUpperCase() + template.model.slice(1)}
+                        </Badge>
+                      )}
                       <Badge className={template.isActive ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-[var(--pagsmile-blue)]/80'}>
                         {template.isActive ? 'Ativo' : 'Inativo'}
                       </Badge>
