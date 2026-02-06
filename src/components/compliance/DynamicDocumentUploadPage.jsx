@@ -78,13 +78,25 @@ export default function DynamicDocumentUploadPage({
       const formData = JSON.parse(localStorage.getItem(formDataStorageKey) || '{}');
       const linkCode = localStorage.getItem('onboarding_link_code');
 
+      // Extrair dados do formulário baseado nas perguntas
+      const findValue = (keywords) => {
+        for (const q of questions) {
+          const key = q.id;
+          const text = q.text?.toLowerCase() || '';
+          if (keywords.some(kw => text.includes(kw)) && formData[key]) {
+            return formData[key];
+          }
+        }
+        return '';
+      };
+
       // Criar Merchant
       const merchantData = {
         type: 'PJ',
-        cpfCnpj: formData.cnpj || formData[Object.keys(formData).find(k => k.includes('cnpj'))] || '',
-        fullName: formData.razaoSocial || formData[Object.keys(formData).find(k => k.includes('razao') || k.includes('Razão'))] || '',
-        companyName: formData.nomeFantasia || formData[Object.keys(formData).find(k => k.includes('fantasia') || k.includes('Fantasia'))] || '',
-        email: formData.email || formData[Object.keys(formData).find(k => k.includes('email') || k.includes('Email'))] || '',
+        cpfCnpj: findValue(['cnpj']) || '',
+        fullName: findValue(['razão social', 'razao social']) || '',
+        companyName: findValue(['fantasia', 'nome fantasia']) || '',
+        email: findValue(['e-mail', 'email']) || '',
         onboardingStatus: 'Pendente',
         paymentServices: flowType === 'pix' ? ['Pix'] : ['Pix', 'Cartão']
       };
