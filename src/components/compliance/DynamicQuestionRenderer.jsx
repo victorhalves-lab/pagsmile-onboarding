@@ -155,6 +155,44 @@ function QuestionItem({ question, value, onChange }) {
   );
 }
 
+// Função para avaliar lógica condicional
+function evaluateConditionalLogic(conditionalLogic, formData) {
+  if (!conditionalLogic || !conditionalLogic.dependsOn) {
+    return true; // Sem lógica condicional = sempre visível
+  }
+
+  const { dependsOn, operator, value } = conditionalLogic;
+  const dependentValue = formData[dependsOn];
+
+  // Converter valores para comparação
+  const normalizeValue = (val) => {
+    if (val === true || val === 'true') return 'true';
+    if (val === false || val === 'false') return 'false';
+    return String(val || '').toLowerCase();
+  };
+
+  const normalizedDependentValue = normalizeValue(dependentValue);
+  const normalizedExpectedValue = normalizeValue(value);
+
+  switch (operator) {
+    case 'equals':
+      return normalizedDependentValue === normalizedExpectedValue;
+    case 'not_equals':
+      return normalizedDependentValue !== normalizedExpectedValue;
+    case 'contains':
+      return normalizedDependentValue.includes(normalizedExpectedValue);
+    case 'greater_than':
+      return parseFloat(dependentValue) > parseFloat(value);
+    case 'less_than':
+      return parseFloat(dependentValue) < parseFloat(value);
+    case 'in':
+      const allowedValues = value.split(',').map(v => v.trim().toLowerCase());
+      return allowedValues.includes(normalizedDependentValue);
+    default:
+      return true;
+  }
+}
+
 // Componente principal que agrupa perguntas por seção/step
 export default function DynamicQuestionRenderer({ 
   questions, 
@@ -163,14 +201,20 @@ export default function DynamicQuestionRenderer({
   currentStep,
   questionsPerStep = 5, // Quantas perguntas por step
   showTitle = true,
-  stepTitle = null
+  stepTitle = null,
+  allQuestions = [] // Todas as perguntas para avaliar lógica condicional corretamente
 }) {
   // Se currentStep for definido, filtramos as perguntas para aquele step
   const displayQuestions = currentStep !== undefined
     ? questions.slice((currentStep - 1) * questionsPerStep, currentStep * questionsPerStep)
     : questions;
 
-  if (displayQuestions.length === 0) {
+  // Filtrar perguntas visíveis baseado na lógica condicional
+  const visibleQuestions = displayQuestions.filter(question => {
+    return evaluateConditionalLogic(question.conditionalLogic, formData);
+  });
+
+  if (visibleQuestions.length === 0) {
     return (
       <div className="text-center py-8 text-slate-500">
         Nenhuma pergunta configurada para esta etapa.
@@ -187,7 +231,7 @@ export default function DynamicQuestionRenderer({
       )}
       
       <div className="space-y-5">
-        {displayQuestions.map((question) => (
+        {visibleQuestions.map((question) => (
           <QuestionItem
             key={question.id}
             question={question}
