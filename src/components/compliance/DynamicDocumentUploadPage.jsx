@@ -50,7 +50,7 @@ export default function DynamicDocumentUploadPage({
   });
 
   // Buscar perguntas para salvar as respostas
-  const { data: questions = [] } = useQuery({
+  const { data: questions = [], isLoading: loadingQuestions } = useQuery({
     queryKey: ['questions', template?.id],
     queryFn: () => base44.entities.Question.filter(
       { questionnaireTemplateId: template.id }, 
@@ -174,7 +174,7 @@ export default function DynamicDocumentUploadPage({
     }
   };
 
-  if (loadingTemplate) {
+  if (loadingTemplate || loadingQuestions) {
     return (
       <div className="flex items-center justify-center py-12">
         <Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" />

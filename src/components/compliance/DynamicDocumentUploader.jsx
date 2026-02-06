@@ -132,14 +132,18 @@ export default function DynamicDocumentUploader({
     if (storageKey) {
       const savedDocs = localStorage.getItem(storageKey);
       if (savedDocs) {
-        setDocuments(JSON.parse(savedDocs));
+        try {
+          setDocuments(JSON.parse(savedDocs));
+        } catch (e) {
+          console.error('Erro ao carregar documentos salvos:', e);
+        }
       }
     }
-  }, [storageKey]);
+  }, [storageKey, setDocuments]);
 
   // Salvar no localStorage quando mudar
   useEffect(() => {
-    if (storageKey && documents) {
+    if (storageKey && documents && Object.keys(documents).length > 0) {
       localStorage.setItem(storageKey, JSON.stringify(documents));
     }
   }, [documents, storageKey]);
