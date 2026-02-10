@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import DynamicDocumentUploader from './DynamicDocumentUploader';
+import IdentityVerificationModal from './IdentityVerificationModal';
 
 export default function DynamicDocumentUploadPage({
   templateId,
@@ -20,18 +21,19 @@ export default function DynamicDocumentUploadPage({
   flowType,
   badgeLabel,
   badgeColor = 'bg-blue-100 text-blue-700',
-  onSubmit // Função customizada de submissão (opcional)
+  onSubmit
 }) {
   const navigate = useNavigate();
   const [documents, setDocuments] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [allRequiredUploaded, setAllRequiredUploaded] = useState(false);
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [createdCaseId, setCreatedCaseId] = useState(null);
 
   // Buscar template
   const { data: template, isLoading: loadingTemplate } = useQuery({
     queryKey: ['template', templateId, templateModel],
     queryFn: async () => {
-      // Primeiro tenta pelo ID salvo
       const savedTemplateId = localStorage.getItem('current_template_id');
       if (savedTemplateId) {
         const templates = await base44.entities.QuestionnaireTemplate.filter({ id: savedTemplateId });
@@ -65,7 +67,6 @@ export default function DynamicDocumentUploadPage({
     setIsSubmitting(true);
 
     try {
-      // Se houver função customizada de submissão, usa ela
       if (onSubmit) {
         await onSubmit({ template, documents, formDataStorageKey, questions });
         return;
@@ -75,7 +76,6 @@ export default function DynamicDocumentUploadPage({
       const formData = JSON.parse(localStorage.getItem(formDataStorageKey) || '{}');
       const linkCode = localStorage.getItem('onboarding_link_code');
 
-      // Extrair dados do formulário baseado nas perguntas
       const findValue = (keywords) => {
         for (const q of questions) {
           const key = q.id;
@@ -154,14 +154,11 @@ export default function DynamicDocumentUploadPage({
       localStorage.removeItem(documentsStorageKey);
       localStorage.removeItem('current_template_id');
 
-      toast.success('Questionário enviado com sucesso!');
-      
-      // Navegar para próxima página
-      if (nextPageName === 'OnboardingCompletion') {
-        navigate(createPageUrl(nextPageName) + `?caseId=${onboardingCase.id}`);
-      } else {
-        navigate(createPageUrl(nextPageName));
-      }
+      toast.success('Documentos enviados com sucesso!');
+
+      // Abrir modal de verificação de identidade
+      setCreatedCaseId(onboardingCase.id);
+      setShowVerificationModal(true);
 
     } catch (error) {
       console.error('Erro ao submeter:', error);
@@ -248,6 +245,14 @@ export default function DynamicDocumentUploadPage({
           )}
         </Button>
       </div>
+
+      {/* Modal de Verificação de Identidade */}
+      <IdentityVerificationModal
+        isOpen={showVerificationModal}
+        onClose={() => setShowVerificationModal(false)}
+        caseId={createdCaseId}
+        flowType={flowType}
+      />
     </div>
   );
 }
