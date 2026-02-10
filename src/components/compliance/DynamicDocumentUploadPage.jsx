@@ -60,10 +60,7 @@ export default function DynamicDocumentUploadPage({
   });
 
   const handleSubmit = async () => {
-    if (!allRequiredUploaded) {
-      toast.error('Por favor, envie todos os documentos obrigatórios.');
-      return;
-    }
+    // Documentos são opcionais para simulação - não bloqueia o fluxo
 
     setIsSubmitting(true);
 
@@ -235,7 +232,7 @@ export default function DynamicDocumentUploadPage({
 
         <Button
           onClick={handleSubmit}
-          disabled={!allRequiredUploaded || isSubmitting}
+          disabled={isSubmitting}
           className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white px-8 h-12 rounded-xl shadow-lg shadow-green-500/20 disabled:opacity-50"
         >
           {isSubmitting ? (
