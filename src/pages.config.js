@@ -50,14 +50,18 @@
 import AdminDashboard from './pages/AdminDashboard';
 import AnaliseDeCasos from './pages/AnaliseDeCasos';
 import Auditoria from './pages/Auditoria';
+import ComplianceEcommerce from './pages/ComplianceEcommerce';
 import ComplianceFullKYC from './pages/ComplianceFullKYC';
 import ComplianceLite from './pages/ComplianceLite';
 import ComplianceOnboardingStart from './pages/ComplianceOnboardingStart';
 import CompliancePixOnly from './pages/CompliancePixOnly';
+import ComplianceSaaS from './pages/ComplianceSaaS';
 import Configuracoes from './pages/Configuracoes';
+import DocumentUploadEcommerce from './pages/DocumentUploadEcommerce';
 import DocumentUploadFull from './pages/DocumentUploadFull';
 import DocumentUploadLite from './pages/DocumentUploadLite';
 import DocumentUploadPix from './pages/DocumentUploadPix';
+import DocumentUploadSaaS from './pages/DocumentUploadSaaS';
 import EditorQuestionario from './pages/EditorQuestionario';
 import GerarLinkOnboarding from './pages/GerarLinkOnboarding';
 import GestaoDocumentos from './pages/GestaoDocumentos';
@@ -72,10 +76,6 @@ import OnboardingCompletion from './pages/OnboardingCompletion';
 import QuestionariosRecebidos from './pages/QuestionariosRecebidos';
 import RegrasDeCompliance from './pages/RegrasDeCompliance';
 import TemplatesQuestionarios from './pages/TemplatesQuestionarios';
-import ComplianceEcommerce from './pages/ComplianceEcommerce';
-import DocumentUploadEcommerce from './pages/DocumentUploadEcommerce';
-import ComplianceSaaS from './pages/ComplianceSaaS';
-import DocumentUploadSaaS from './pages/DocumentUploadSaaS';
 import __Layout from './Layout.jsx';
 
 
@@ -83,14 +83,18 @@ export const PAGES = {
     "AdminDashboard": AdminDashboard,
     "AnaliseDeCasos": AnaliseDeCasos,
     "Auditoria": Auditoria,
+    "ComplianceEcommerce": ComplianceEcommerce,
     "ComplianceFullKYC": ComplianceFullKYC,
     "ComplianceLite": ComplianceLite,
     "ComplianceOnboardingStart": ComplianceOnboardingStart,
     "CompliancePixOnly": CompliancePixOnly,
+    "ComplianceSaaS": ComplianceSaaS,
     "Configuracoes": Configuracoes,
+    "DocumentUploadEcommerce": DocumentUploadEcommerce,
     "DocumentUploadFull": DocumentUploadFull,
     "DocumentUploadLite": DocumentUploadLite,
     "DocumentUploadPix": DocumentUploadPix,
+    "DocumentUploadSaaS": DocumentUploadSaaS,
     "EditorQuestionario": EditorQuestionario,
     "GerarLinkOnboarding": GerarLinkOnboarding,
     "GestaoDocumentos": GestaoDocumentos,
@@ -105,10 +109,6 @@ export const PAGES = {
     "QuestionariosRecebidos": QuestionariosRecebidos,
     "RegrasDeCompliance": RegrasDeCompliance,
     "TemplatesQuestionarios": TemplatesQuestionarios,
-    "ComplianceEcommerce": ComplianceEcommerce,
-    "DocumentUploadEcommerce": DocumentUploadEcommerce,
-    "ComplianceSaaS": ComplianceSaaS,
-    "DocumentUploadSaaS": DocumentUploadSaaS,
 }
 
 export const pagesConfig = {
