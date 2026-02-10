@@ -8,7 +8,7 @@ export default function DocumentUploadFull() {
       formDataStorageKey="compliance_data_full"
       documentsStorageKey="documents_full"
       questionnairePageName="ComplianceFullKYC"
-      nextPageName="LivenessFacematchStep"
+      nextPageName="OnboardingCompletion"
       flowType="full"
       badgeLabel="Full KYC"
       badgeColor="bg-purple-100 text-purple-700"

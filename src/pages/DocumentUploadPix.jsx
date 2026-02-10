@@ -8,7 +8,7 @@ export default function DocumentUploadPix() {
       formDataStorageKey="compliance_data_pix"
       documentsStorageKey="documents_pix"
       questionnairePageName="CompliancePixOnly"
-      nextPageName="LivenessFacematchStep"
+      nextPageName="OnboardingCompletion"
       flowType="pix"
       badgeLabel="Somente Pix"
       badgeColor="bg-blue-100 text-blue-700"

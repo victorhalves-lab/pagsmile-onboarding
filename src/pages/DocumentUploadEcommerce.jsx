@@ -8,7 +8,7 @@ export default function DocumentUploadEcommerce() {
       formDataStorageKey="compliance_data_ecommerce"
       documentsStorageKey="documents_ecommerce"
       questionnairePageName="ComplianceEcommerce"
-      nextPageName="LivenessFacematchStep"
+      nextPageName="OnboardingCompletion"
       flowType="ecommerce"
       badgeLabel="E-commerce Known"
       badgeColor="bg-orange-100 text-orange-700"
