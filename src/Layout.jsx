@@ -207,7 +207,6 @@ export default function Layout({ children, currentPageName }) {
       items: [
         { label: 'Configurações', path: 'Configuracoes', icon: Settings },
         { label: 'Auditoria', path: 'Auditoria', icon: History },
-        { label: 'How It Works', path: 'HowItWorks', icon: FileText },
       ]
     }
   ];
