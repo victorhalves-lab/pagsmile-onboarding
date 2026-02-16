@@ -305,9 +305,17 @@ export default function Layout({ children, currentPageName }) {
           {/* Navigation */}
           <nav className="flex-1 p-4 overflow-y-auto">
             {menuStructure.map(section => (
-              <NavSection key={section.id} section={section} />
-            ))}
-          </nav>
+                    <NavSection key={section.id} section={section} />
+                  ))}
+
+                  {/* How It Works - standalone */}
+                  <div className="mt-2 pt-2 border-t border-slate-200">
+                    <NavItem 
+                      item={{ label: 'How It Works', path: 'HowItWorks', icon: FileText }} 
+                      isActive={currentPageName === 'HowItWorks'} 
+                    />
+                  </div>
+                </nav>
 
           {/* User Info & Logout */}
           <div className="p-4 border-t border-slate-200 bg-slate-50/50">
@@ -372,7 +380,16 @@ export default function Layout({ children, currentPageName }) {
               {menuStructure.map(section => (
                 <NavSection key={section.id} section={section} isMobile />
               ))}
-            </nav>
+
+              {/* How It Works - standalone */}
+              <div className="mt-2 pt-2 border-t border-slate-200">
+                <NavItem 
+                  item={{ label: 'How It Works', path: 'HowItWorks', icon: FileText }} 
+                  isActive={currentPageName === 'HowItWorks'}
+                  onClick={() => setMobileMenuOpen(false)}
+                />
+              </div>
+              </nav>
           </aside>
         </div>
       )}
