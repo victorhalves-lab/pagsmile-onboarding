@@ -235,6 +235,11 @@ export default function DynamicQuestionnaire({
   };
 
   const handleSubmit = () => {
+    const missing = validateCurrentStep();
+    if (missing.length > 0) {
+      toast.error(`Preencha todos os campos obrigatórios (${missing.length} campo${missing.length > 1 ? 's' : ''} pendente${missing.length > 1 ? 's' : ''}).`);
+      return;
+    }
     if (storageKey) {
       localStorage.setItem(storageKey, JSON.stringify(formData));
     }
