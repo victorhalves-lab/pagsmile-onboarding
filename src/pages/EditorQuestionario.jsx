@@ -34,6 +34,9 @@ export default function EditorQuestionario() {
     name: '',
     description: '',
     merchantType: 'PJ',
+    category: 'COMPLIANCE',
+    subCategory: 'GENERAL',
+    linkedComplianceTemplateId: '',
     isActive: true,
     riskThresholds: {
       autoApproveAbove: 80,
@@ -73,6 +76,12 @@ export default function EditorQuestionario() {
     queryFn: () => base44.entities.DocumentType.list()
   });
 
+  // Fetch compliance templates for linking
+  const { data: complianceTemplates = [] } = useQuery({
+    queryKey: ['complianceTemplates'],
+    queryFn: () => base44.entities.QuestionnaireTemplate.filter({ category: 'COMPLIANCE', isActive: true })
+  });
+
   // Update form when template loads
   useEffect(() => {
     if (template) {
@@ -80,6 +89,9 @@ export default function EditorQuestionario() {
         name: template.name || '',
         description: template.description || '',
         merchantType: template.merchantType || 'PJ',
+        category: template.category || 'COMPLIANCE',
+        subCategory: template.subCategory || 'GENERAL',
+        linkedComplianceTemplateId: template.linkedComplianceTemplateId || '',
         isActive: template.isActive !== false,
         riskThresholds: template.riskThresholds || {
           autoApproveAbove: 80,
