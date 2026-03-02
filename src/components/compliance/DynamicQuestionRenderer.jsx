@@ -208,7 +208,8 @@ export default function DynamicQuestionRenderer({
   questionsPerStep = 5, // Quantas perguntas por step
   showTitle = true,
   stepTitle = null,
-  allQuestions = [] // Todas as perguntas para avaliar lógica condicional corretamente
+  allQuestions = [], // Todas as perguntas para avaliar lógica condicional corretamente
+  prefillSources = {} // Mapa de questionId → fonte do pré-preenchimento
 }) {
   // Se currentStep for definido, filtramos as perguntas para aquele step
   const displayQuestions = currentStep !== undefined
