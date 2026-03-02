@@ -148,12 +148,14 @@ export default function DynamicDocumentUploader({
     }
   }, [documents, storageKey]);
 
-  // Sempre permitir continuar - documentos são opcionais para simulação
+  // Verificar se todos os documentos obrigatórios foram enviados
   useEffect(() => {
     if (onAllRequiredUploaded) {
-      onAllRequiredUploaded(true); // Sempre true para permitir simulação
+      const allMandatoryUploaded = mandatoryDocs.length === 0 || 
+        mandatoryDocs.every(d => documents[d.documentTypeId || d.id]?.url);
+      onAllRequiredUploaded(allMandatoryUploaded);
     }
-  }, [onAllRequiredUploaded]);
+  }, [onAllRequiredUploaded, documents, requiredDocs]);
 
   const handleUpload = async (docId, file) => {
     setUploadingDoc(docId);
