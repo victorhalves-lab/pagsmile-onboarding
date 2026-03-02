@@ -78,6 +78,8 @@ import RegrasDeCompliance from './pages/RegrasDeCompliance';
 import TemplatesQuestionarios from './pages/TemplatesQuestionarios';
 import LeadQuestionnaire from './pages/LeadQuestionnaire';
 import LeadSuccess from './pages/LeadSuccess';
+import LeadManagement from './pages/LeadManagement';
+import LeadDetails from './pages/LeadDetails';
 import __Layout from './Layout.jsx';
 
 
@@ -113,6 +115,8 @@ export const PAGES = {
     "TemplatesQuestionarios": TemplatesQuestionarios,
     "LeadQuestionnaire": LeadQuestionnaire,
     "LeadSuccess": LeadSuccess,
+    "LeadManagement": LeadManagement,
+    "LeadDetails": LeadDetails,
 }
 
 export const pagesConfig = {
