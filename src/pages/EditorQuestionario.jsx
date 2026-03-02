@@ -258,24 +258,6 @@ export default function EditorQuestionario() {
               />
             </div>
 
-            {/* SubCategoria (só para LEAD_GENERATION) */}
-            {formData.category === 'LEAD_GENERATION' && (
-              <div className="space-y-3">
-                <Label>Subcategoria do Tipo de Negócio</Label>
-                <SelectionButton
-                  options={[
-                    { value: 'MERCHAN', label: 'Merchan', icon: <ShoppingCart className="w-5 h-5" />, description: 'Vende direto ao consumidor final' },
-                    { value: 'GATEWAY', label: 'Gateway', icon: <Network className="w-5 h-5" />, description: 'Precisa de parceiro de subadquirência' },
-                    { value: 'MARKETPLACE', label: 'Marketplace', icon: <Building2 className="w-5 h-5" />, description: 'Possui sub-sellers (e-commerce)' }
-                  ]}
-                  value={formData.subCategory}
-                  onChange={(value) => setFormData({ ...formData, subCategory: value })}
-                  columns={3}
-                  helperText=""
-                />
-              </div>
-            )}
-
             {/* Link para template de compliance (só para LEAD_GENERATION) */}
             {formData.category === 'LEAD_GENERATION' && complianceTemplates.length > 0 && (
               <div className="space-y-2">
@@ -304,20 +286,6 @@ export default function EditorQuestionario() {
                 </Select>
               </div>
             )}
-
-            <div className="space-y-3">
-              <Label>Tipo de Merchant</Label>
-              <SelectionButton
-                options={[
-                  { value: 'PF', label: 'Pessoa Física', icon: <Users className="w-5 h-5" />, description: 'CPF e dados pessoais' },
-                  { value: 'PJ', label: 'Pessoa Jurídica', icon: <Building2 className="w-5 h-5" />, description: 'CNPJ e dados empresariais' }
-                ]}
-                value={formData.merchantType}
-                onChange={(value) => setFormData({ ...formData, merchantType: value })}
-                columns={2}
-                helperText=""
-              />
-            </div>
 
             <div className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
               <div>
