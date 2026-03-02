@@ -57,7 +57,9 @@ export default function Layout({ children, currentPageName }) {
     'DocumentUploadSaaS',
     'LivenessFacematchStep',
     'LivenessSimulation',
-    'OnboardingCompletion'
+    'OnboardingCompletion',
+    'LeadQuestionnaire',
+    'LeadSuccess'
   ];
 
   const isPublicPage = publicPages.includes(currentPageName);
@@ -170,12 +172,20 @@ export default function Layout({ children, currentPageName }) {
   // Menu items com estrutura hierárquica
   const menuStructure = [
     {
+      id: 'leads',
+      label: 'Leads & Vendas',
+      icon: Inbox,
+      items: [
+        { label: 'Gestão de Leads', path: 'LeadManagement', icon: Users, highlight: true },
+      ]
+    },
+    {
       id: 'compliance',
       label: 'Compliance',
       icon: Shield,
       items: [
         { label: 'Dashboard', path: 'AdminDashboard', icon: LayoutDashboard },
-        { label: 'Questionários Recebidos', path: 'QuestionariosRecebidos', icon: FileCheck, highlight: true },
+        { label: 'Questionários Recebidos', path: 'QuestionariosRecebidos', icon: FileCheck },
         { label: 'Análise de Casos', path: 'AnaliseDeCasos', icon: ClipboardList, hidden: true },
         { label: 'Gestão de Documentos', path: 'GestaoDocumentos', icon: FileText },
         { label: 'Revalidação', path: 'GestaoRevalidacao', icon: History },
