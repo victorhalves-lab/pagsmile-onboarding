@@ -53,6 +53,7 @@ export default function GerarLinkOnboarding() {
   const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState({
+    linkType: 'LEAD_QUESTIONNAIRE',
     questionnaireTemplateId: '',
     commercialAgentId: '',
     commercialAgentName: '',
@@ -90,6 +91,7 @@ export default function GerarLinkOnboarding() {
       queryClient.invalidateQueries({ queryKey: ['onboardingLinks'] });
       toast.success('Link criado com sucesso!');
       setFormData({
+        linkType: 'LEAD_QUESTIONNAIRE',
         questionnaireTemplateId: '',
         commercialAgentId: '',
         commercialAgentName: '',
@@ -116,8 +118,9 @@ export default function GerarLinkOnboarding() {
   });
 
   // Links por tipo de compliance
-  const getPageByComplianceType = (type) => {
-    switch (type) {
+  const getPageByLinkType = (link) => {
+    if (link.linkType === 'LEAD_QUESTIONNAIRE') return 'LeadQuestionnaire';
+    switch (link.complianceType) {
       case 'PIX': return 'CompliancePixOnly';
       case 'FULL': return 'ComplianceFullKYC';
       case 'LITE': return 'ComplianceLite';
@@ -128,6 +131,7 @@ export default function GerarLinkOnboarding() {
   };
 
   const genericLinks = {
+    LEAD: `${window.location.origin}${createPageUrl('LeadQuestionnaire')}`,
     GENERIC: `${window.location.origin}${createPageUrl('ComplianceOnboardingStart')}`,
     PIX: `${window.location.origin}${createPageUrl('CompliancePixOnly')}`,
     FULL: `${window.location.origin}${createPageUrl('ComplianceFullKYC')}`,
@@ -137,7 +141,7 @@ export default function GerarLinkOnboarding() {
   };
 
   const generateLinkUrl = (link) => {
-    const page = getPageByComplianceType(link.complianceType);
+    const page = getPageByLinkType(link);
     let url = `${window.location.origin}${createPageUrl(page)}?ref=${link.uniqueCode}`;
     if (link.utmSource) url += `&utm_source=${link.utmSource}`;
     if (link.utmMedium) url += `&utm_medium=${link.utmMedium}`;
@@ -260,6 +264,24 @@ export default function GerarLinkOnboarding() {
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* Link Questionário de Leads */}
+              <div className="space-y-2">
+                <Label className="text-xs font-medium text-[var(--pagsmile-green)] font-bold">📋 Questionário de Leads (Comercial)</Label>
+                <div className="flex gap-2">
+                  <Input readOnly value={genericLinks.LEAD} className="font-mono text-xs bg-green-50 border-green-200" />
+                  <Button variant="outline" size="sm" onClick={() => handleCopy(genericLinks.LEAD)} className="shrink-0 border-green-200 hover:bg-green-50">
+                    <Copy className="w-4 h-4 text-[var(--pagsmile-green)]" />
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.LEAD, '_blank')} className="shrink-0 border-green-200 hover:bg-green-50">
+                    <ExternalLink className="w-4 h-4 text-[var(--pagsmile-green)]" />
+                  </Button>
+                </div>
+              </div>
+
+              <div className="border-t border-slate-200 pt-4">
+                <p className="text-xs font-semibold text-[var(--pagsmile-blue)]/50 uppercase tracking-wider mb-3">Links de Compliance</p>
+              </div>
+
               {/* Link Genérico */}
               <div className="space-y-2">
                 <Label className="text-xs font-medium text-[var(--pagsmile-blue)]/70">Genérico (escolha na página)</Label>
@@ -365,7 +387,51 @@ export default function GerarLinkOnboarding() {
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Tipo de Compliance */}
+              {/* Tipo de Link */}
+              <div className="space-y-2">
+                <Label className="font-semibold">Tipo de Link *</Label>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, linkType: 'LEAD_QUESTIONNAIRE' }))}
+                    className={`p-4 rounded-lg border-2 transition-all text-left ${
+                      formData.linkType === 'LEAD_QUESTIONNAIRE' 
+                        ? 'border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5' 
+                        : 'border-slate-200 hover:border-slate-300'
+                    }`}
+                  >
+                    <p className="font-semibold text-sm text-[var(--pagsmile-green)]">📋 Lead</p>
+                    <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">Questionário comercial</p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, linkType: 'KYC_AVULSO' }))}
+                    className={`p-4 rounded-lg border-2 transition-all text-left ${
+                      formData.linkType === 'KYC_AVULSO' 
+                        ? 'border-purple-500 bg-purple-50' 
+                        : 'border-slate-200 hover:border-slate-300'
+                    }`}
+                  >
+                    <p className="font-semibold text-sm text-purple-600">🔒 Compliance</p>
+                    <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">KYC/KYB avulso</p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, linkType: 'PROPOSAL' }))}
+                    className={`p-4 rounded-lg border-2 transition-all text-left ${
+                      formData.linkType === 'PROPOSAL' 
+                        ? 'border-blue-500 bg-blue-50' 
+                        : 'border-slate-200 hover:border-slate-300'
+                    }`}
+                  >
+                    <p className="font-semibold text-sm text-blue-600">📄 Proposta</p>
+                    <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">Link de proposta</p>
+                  </button>
+                </div>
+              </div>
+
+              {/* Tipo de Compliance (só se KYC_AVULSO) */}
+              {formData.linkType === 'KYC_AVULSO' && (
               <div className="space-y-2">
                 <Label className="font-semibold">Tipo de Compliance *</Label>
                 <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
