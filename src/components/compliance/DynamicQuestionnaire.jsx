@@ -14,6 +14,7 @@ import StepNavigation from './StepNavigation';
 import DynamicQuestionRenderer from './DynamicQuestionRenderer';
 import { useOnboardingAnalytics } from '../analytics/useOnboardingAnalytics';
 import { useLeadPrefill } from './useLeadPrefill';
+import { toast } from 'sonner';
 
 // Mapeamento de ícones por palavra-chave no título da pergunta
 const ICON_MAPPINGS = {
