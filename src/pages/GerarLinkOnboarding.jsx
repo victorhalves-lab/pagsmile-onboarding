@@ -661,6 +661,7 @@ export default function GerarLinkOnboarding() {
                               <Badge 
                                 className={`text-xs ${
                                   link.linkType === 'LEAD_QUESTIONNAIRE' ? 'bg-green-100 text-green-700' :
+                                  link.linkType === 'LEAD_SIMPLIFICADO' ? 'bg-amber-100 text-amber-700' :
                                   link.complianceType === 'PIX' ? 'bg-blue-100 text-blue-700' :
                                   link.complianceType === 'FULL' ? 'bg-purple-100 text-purple-700' :
                                   link.complianceType === 'LITE' ? 'bg-teal-100 text-teal-700' :
@@ -670,6 +671,7 @@ export default function GerarLinkOnboarding() {
                                 }`}
                               >
                                 {link.linkType === 'LEAD_QUESTIONNAIRE' ? '📋 Lead' :
+                                 link.linkType === 'LEAD_SIMPLIFICADO' ? '⚡ Simplificado' :
                                  link.complianceType === 'PIX' ? 'Pix' : 
                                  link.complianceType === 'FULL' ? 'Full' : 
                                  link.complianceType === 'LITE' ? 'Lite' : 
