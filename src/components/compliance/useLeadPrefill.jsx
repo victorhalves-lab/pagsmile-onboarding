@@ -6,10 +6,9 @@ import { base44 } from '@/api/base44Client';
  * Utiliza palavras-chave no texto das perguntas para encontrar correspondências.
  */
 
-// Mapeamento de palavras-chave da pergunta de compliance → campo do Lead ou do questionnaireData
+// Mapeamento de palavras-chave da pergunta de compliance → campo do Lead (fallback quando sourceEntityPath não está definido)
 const LEAD_FIELD_MAPPINGS = [
   { keywords: ['cnpj'], leadField: 'cpfCnpj' },
-  { keywords: ['cpf'], leadField: 'cpfCnpj' },
   { keywords: ['razão social', 'razao social'], leadField: 'fullName' },
   { keywords: ['nome fantasia'], leadField: 'companyName' },
   { keywords: ['e-mail da empresa', 'email da empresa', 'e-mail corporativo', 'email corporativo'], leadField: 'email' },
