@@ -85,6 +85,7 @@ import QuestionariosRecebidos from './pages/QuestionariosRecebidos';
 import RegrasDeCompliance from './pages/RegrasDeCompliance';
 import TemplatesQuestionarios from './pages/TemplatesQuestionarios';
 import PropostaPublica from './pages/PropostaPublica';
+import QuestionarioSimplificadoPublico from './pages/QuestionarioSimplificadoPublico';
 import __Layout from './Layout.jsx';
 
 
@@ -127,6 +128,7 @@ export const PAGES = {
     "RegrasDeCompliance": RegrasDeCompliance,
     "TemplatesQuestionarios": TemplatesQuestionarios,
     "PropostaPublica": PropostaPublica,
+    "QuestionarioSimplificadoPublico": QuestionarioSimplificadoPublico,
 }
 
 export const pagesConfig = {
