@@ -59,7 +59,8 @@ export default function Layout({ children, currentPageName }) {
     'LivenessSimulation',
     'OnboardingCompletion',
     'LeadQuestionnaire',
-    'LeadSuccess'
+    'LeadSuccess',
+    'PropostaPublica'
   ];
 
   const isPublicPage = publicPages.includes(currentPageName);
@@ -173,10 +174,13 @@ export default function Layout({ children, currentPageName }) {
   const menuStructure = [
     {
       id: 'leads',
-      label: 'Leads & Vendas',
+      label: 'Leads & Propostas',
       icon: Inbox,
       items: [
-        { label: 'Gestão de Leads', path: 'LeadManagement', icon: Users, highlight: true },
+        { label: 'Questionários Recebidos', path: 'QuestionariosLeads', icon: ClipboardList, highlight: true },
+        { label: 'Pipeline Comercial', path: 'PipelineComercial', icon: Users },
+        { label: 'Gestão de Propostas', path: 'GestaoPropostas', icon: FileText },
+        { label: 'Criar Proposta', path: 'CriarProposta', icon: FileCheck },
       ]
     },
     {
