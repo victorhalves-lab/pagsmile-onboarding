@@ -244,6 +244,7 @@ export default function DynamicQuestionRenderer({
             question={question}
             value={formData[question.id]}
             onChange={onFieldChange}
+            prefillSource={prefillSources[question.id]}
           />
         ))}
       </div>
