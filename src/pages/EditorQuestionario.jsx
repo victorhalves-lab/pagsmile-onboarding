@@ -13,8 +13,16 @@ import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
 import { 
   ArrowLeft, Save, Loader2, Settings, ListChecks, 
-  FileText, AlertTriangle, Users, Building2, Info
+  FileText, AlertTriangle, Users, Building2, Info,
+  Briefcase, ShoppingCart, Network, Link as LinkIcon
 } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { toast } from 'sonner';
 import SelectionButton from '@/components/compliance/SelectionButton';
 import QuestionList from '@/components/editor/QuestionList';
@@ -234,6 +242,68 @@ export default function EditorQuestionario() {
                 rows={3}
               />
             </div>
+
+            {/* Categoria do Questionário */}
+            <div className="space-y-3">
+              <Label>Categoria do Questionário *</Label>
+              <SelectionButton
+                options={[
+                  { value: 'LEAD_GENERATION', label: 'Geração de Leads', icon: <Briefcase className="w-5 h-5" />, description: 'Questionário comercial para novos clientes' },
+                  { value: 'COMPLIANCE', label: 'Compliance', icon: <FileText className="w-5 h-5" />, description: 'KYC/KYB para onboarding regulatório' }
+                ]}
+                value={formData.category}
+                onChange={(value) => setFormData({ ...formData, category: value })}
+                columns={2}
+                helperText=""
+              />
+            </div>
+
+            {/* SubCategoria (só para LEAD_GENERATION) */}
+            {formData.category === 'LEAD_GENERATION' && (
+              <div className="space-y-3">
+                <Label>Subcategoria do Tipo de Negócio</Label>
+                <SelectionButton
+                  options={[
+                    { value: 'MERCHAN', label: 'Merchan', icon: <ShoppingCart className="w-5 h-5" />, description: 'Vende direto ao consumidor final' },
+                    { value: 'GATEWAY', label: 'Gateway', icon: <Network className="w-5 h-5" />, description: 'Precisa de parceiro de subadquirência' },
+                    { value: 'MARKETPLACE', label: 'Marketplace', icon: <Building2 className="w-5 h-5" />, description: 'Possui sub-sellers (e-commerce)' }
+                  ]}
+                  value={formData.subCategory}
+                  onChange={(value) => setFormData({ ...formData, subCategory: value })}
+                  columns={3}
+                  helperText=""
+                />
+              </div>
+            )}
+
+            {/* Link para template de compliance (só para LEAD_GENERATION) */}
+            {formData.category === 'LEAD_GENERATION' && complianceTemplates.length > 0 && (
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <LinkIcon className="w-4 h-4 text-[var(--pagsmile-green)]" />
+                  Vincular a Template de Compliance
+                </Label>
+                <p className="text-xs text-[var(--pagsmile-blue)]/60">
+                  Ao vincular, quando o lead for qualificado, o sistema recomendará este questionário de compliance.
+                </p>
+                <Select
+                  value={formData.linkedComplianceTemplateId || '_none'}
+                  onValueChange={(v) => setFormData({ ...formData, linkedComplianceTemplateId: v === '_none' ? '' : v })}
+                >
+                  <SelectTrigger className="h-12">
+                    <SelectValue placeholder="Selecione um template de compliance..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="_none">Nenhum (definir manualmente depois)</SelectItem>
+                    {complianceTemplates.map(ct => (
+                      <SelectItem key={ct.id} value={ct.id}>
+                        {ct.name} {ct.model ? `(${ct.model})` : ''}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
             <div className="space-y-3">
               <Label>Tipo de Merchant</Label>
