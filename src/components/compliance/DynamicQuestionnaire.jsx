@@ -187,8 +187,39 @@ export default function DynamicQuestionnaire({
     setFormData(prev => ({ ...prev, [questionId]: value }));
   };
 
+  const validateCurrentStep = () => {
+    const currentQuestions = currentStepData.questions;
+    const missingFields = currentQuestions.filter(q => {
+      if (!q.isRequired) return false;
+      // Check conditional logic - skip validation if question is hidden
+      if (q.conditionalLogic && q.conditionalLogic.dependsOn) {
+        const depValue = formData[q.conditionalLogic.dependsOn];
+        const normalize = (val) => {
+          if (val === true || val === 'true') return 'true';
+          if (val === false || val === 'false') return 'false';
+          return String(val || '').toLowerCase();
+        };
+        const nDep = normalize(depValue);
+        const nExp = normalize(q.conditionalLogic.value);
+        const op = q.conditionalLogic.operator;
+        if (op === 'equals' && nDep !== nExp) return false;
+        if (op === 'not_equals' && nDep === nExp) return false;
+      }
+      const val = formData[q.id];
+      if (val === undefined || val === null || val === '') return true;
+      if (Array.isArray(val) && val.length === 0) return true;
+      return false;
+    });
+    return missingFields;
+  };
+
   const handleNext = () => {
     if (currentStep < steps.length) {
+      const missing = validateCurrentStep();
+      if (missing.length > 0) {
+        toast.error(`Preencha todos os campos obrigatórios (${missing.length} campo${missing.length > 1 ? 's' : ''} pendente${missing.length > 1 ? 's' : ''}).`);
+        return;
+      }
       trackPageComplete({ stepNumber: currentStep });
       setCurrentStep(currentStep + 1);
       window.scrollTo(0, 0);
