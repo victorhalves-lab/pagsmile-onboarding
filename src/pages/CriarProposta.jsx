@@ -63,10 +63,21 @@ export default function CriarProposta() {
     if (lead) {
       setForm({
         clienteNome: lead.companyName || lead.fullName || '',
-        clienteCnpj: lead.cpfCnpj || '',
+        clienteCnpj: (lead.cpfCnpj || '').replace(/\D/g, ''),
         clienteMcc: lead.mcc || '',
         clienteContato: lead.contactName || '',
       });
+
+      // Pre-fill rates from lead questionnaireData if available
+      const qd = lead.questionnaireData || {};
+      const newRates = { ...rates };
+
+      // Try to extract known rate fields from questionnaire data
+      if (qd.taxa_pix || lead.tpvMensal) {
+        // Map any lead rate data to proposal rates
+      }
+
+      setRates(newRates);
     }
   }, [lead]);
 
@@ -77,29 +88,32 @@ export default function CriarProposta() {
 
   const updateCartao = (cartaoData) => {
     setRates(prev => ({ ...prev, cartao: cartaoData }));
+    setErrors(prev => ({ ...prev, cartao: undefined }));
   };
 
   const updateRav = (ravData) => {
     setRates(prev => ({ ...prev, rav: ravData }));
+    setErrors(prev => ({ ...prev, rav: undefined }));
   };
 
   const updateRates = (newRates) => {
     setRates(newRates);
+    setErrors(prev => ({ ...prev, pix: undefined }));
   };
 
   const validate = () => {
     const newErrors = {};
     if (!form.clienteNome) newErrors.clienteNome = 'Obrigatório';
-    if (!form.clienteCnpj) newErrors.clienteCnpj = 'Obrigatório';
+    if (!form.clienteCnpj || form.clienteCnpj.replace(/\D/g, '').length !== 14) {
+      newErrors.clienteCnpj = 'CNPJ inválido (14 dígitos)';
+    }
     if (!form.clienteMcc) newErrors.clienteMcc = 'Obrigatório';
     if (!form.clienteContato) newErrors.clienteContato = 'Obrigatório';
 
-    // At least one card rate
     const hasAnyCardRate = Object.values(rates.cartao || {}).some(b =>
       b && (b.avista || b.de2a6x || b.de7a12x)
     );
     if (!hasAnyCardRate) newErrors.cartao = 'Preencha ao menos uma taxa de cartão';
-
     if (!rates.pix?.valor) newErrors.pix = 'Preencha o valor do PIX';
     if (!rates.rav?.taxa) newErrors.rav = 'Preencha a taxa RAV';
 
@@ -114,13 +128,33 @@ export default function CriarProposta() {
   };
 
   const gerarToken = () => {
-    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let token = '';
+    for (let i = 0; i < 64; i++) token += chars.charAt(Math.floor(Math.random() * chars.length));
+    return token;
   };
 
-  const buildPropostaData = (status) => {
-    // Convert string rates to numbers
+  const buildPropostaData = async (status) => {
+    const taxas = rates.cartao || {};
+
+    // Build granular credit rates per bandeira
+    const credito_1x = {};
+    const credito_2_6x = {};
+    const credito_7_12x = {};
+    const debito = {};
+
+    ['visa', 'mastercard', 'elo', 'amex', 'outras'].forEach(bandeira => {
+      const b = taxas[bandeira] || {};
+      credito_1x[bandeira] = parseTaxa(b.avista);
+      credito_2_6x[bandeira] = parseTaxa(b.de2a6x);
+      credito_7_12x[bandeira] = parseTaxa(b.de7a12x);
+      // Débito estimado como 60% da taxa à vista
+      debito[bandeira] = Math.round(parseTaxa(b.avista) * 0.6 * 100) / 100;
+    });
+
+    // Also keep the original cartao structure for backward compatibility
     const cartaoNum = {};
-    Object.entries(rates.cartao || {}).forEach(([bandeira, faixas]) => {
+    Object.entries(taxas).forEach(([bandeira, faixas]) => {
       cartaoNum[bandeira] = {};
       Object.entries(faixas || {}).forEach(([faixa, val]) => {
         cartaoNum[bandeira][faixa] = parseTaxa(val);
@@ -130,6 +164,12 @@ export default function CriarProposta() {
     const validUntil = new Date();
     validUntil.setDate(validUntil.getDate() + 15);
 
+    let criadoPor = 'sistema';
+    try {
+      const user = await base44.auth.me();
+      criadoPor = user?.email || user?.id || 'sistema';
+    } catch (e) { /* ignore */ }
+
     return {
       leadId: leadId || '',
       codigo: gerarCodigo(),
@@ -137,13 +177,18 @@ export default function CriarProposta() {
       status,
       origem: 'manual',
       clienteNome: form.clienteNome,
-      clienteCnpj: form.clienteCnpj,
+      clienteCnpj: form.clienteCnpj.replace(/\D/g, ''),
       clienteContato: form.clienteContato,
       clienteMcc: form.clienteMcc,
       rates: {
         cartao: cartaoNum,
+        credito_1x,
+        credito_2_6x,
+        credito_7_12x,
+        debito,
         pix: { tipo: rates.pix?.tipo || 'percentual', valor: parseTaxa(rates.pix?.valor) },
         boleto: parseTaxa(rates.boleto),
+        antifraude: parseTaxa(rates.alertaPreChargeback),
         feeTransacao: parseTaxa(rates.feeTransacao),
         alertaPreChargeback: parseTaxa(rates.alertaPreChargeback),
         minimoGarantido: parseTaxa(rates.minimoGarantido),
@@ -151,12 +196,14 @@ export default function CriarProposta() {
       },
       validUntil: validUntil.toISOString(),
       tokenPublico: gerarToken(),
+      responsavelId: criadoPor,
+      responsavelNome: criadoPor,
     };
   };
 
   const handleSalvarRascunho = async () => {
     setSaving(true);
-    const data = buildPropostaData('rascunho');
+    const data = await buildPropostaData('rascunho');
     await base44.entities.Proposal.create(data);
     toast.success('Rascunho salvo!');
     setSaving(false);
@@ -169,7 +216,7 @@ export default function CriarProposta() {
       return;
     }
     setSaving(true);
-    const data = buildPropostaData('rascunho');
+    const data = await buildPropostaData('rascunho');
     const created = await base44.entities.Proposal.create(data);
 
     if (leadId) {
@@ -182,7 +229,7 @@ export default function CriarProposta() {
         leadId,
         activityType: 'proposta_criada',
         description: `Proposta ${data.codigo} criada`,
-        performedBy: 'admin',
+        performedBy: data.responsavelNome || 'admin',
         activityDate: new Date().toISOString()
       });
     }
@@ -195,7 +242,7 @@ export default function CriarProposta() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between sticky top-0 bg-[#f8f9fa] z-10 py-3 -mt-3">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
             <ArrowLeft className="w-5 h-5" />
@@ -218,7 +265,9 @@ export default function CriarProposta() {
           <CardTaxasCartao taxas={rates.cartao} onUpdate={updateCartao} />
           {errors.cartao && <p className="text-xs text-red-500 -mt-4">{errors.cartao}</p>}
           <CardAntecipacao rav={rates.rav} onUpdate={updateRav} />
+          {errors.rav && <p className="text-xs text-red-500 -mt-4">{errors.rav}</p>}
           <CardOutrasTaxas rates={rates} onUpdate={updateRates} />
+          {errors.pix && <p className="text-xs text-red-500 -mt-4">{errors.pix}</p>}
         </div>
 
         {/* Preview */}
@@ -228,7 +277,7 @@ export default function CriarProposta() {
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between pt-6 border-t border-slate-200">
+      <div className="flex items-center justify-between pt-6 border-t border-slate-200 sticky bottom-0 bg-[#f8f9fa] py-4 -mb-4">
         <Button variant="outline" onClick={() => navigate(-1)}>Cancelar</Button>
         <Button
           onClick={handleGerarProposta}

@@ -57,6 +57,7 @@ import ComplianceOnboardingStart from './pages/ComplianceOnboardingStart';
 import CompliancePixOnly from './pages/CompliancePixOnly';
 import ComplianceSaaS from './pages/ComplianceSaaS';
 import Configuracoes from './pages/Configuracoes';
+import CriarProposta from './pages/CriarProposta';
 import DocumentUploadEcommerce from './pages/DocumentUploadEcommerce';
 import DocumentUploadFull from './pages/DocumentUploadFull';
 import DocumentUploadLite from './pages/DocumentUploadLite';
@@ -65,25 +66,24 @@ import DocumentUploadSaaS from './pages/DocumentUploadSaaS';
 import EditorQuestionario from './pages/EditorQuestionario';
 import GerarLinkOnboarding from './pages/GerarLinkOnboarding';
 import GestaoDocumentos from './pages/GestaoDocumentos';
+import GestaoPropostas from './pages/GestaoPropostas';
 import GestaoRevalidacao from './pages/GestaoRevalidacao';
 import HelenaIA from './pages/HelenaIA';
 import Home from './pages/Home';
 import HowItWorks from './pages/HowItWorks';
 import IntegracoesExternas from './pages/IntegracoesExternas';
+import LeadDetails from './pages/LeadDetails';
+import LeadManagement from './pages/LeadManagement';
+import LeadQuestionnaire from './pages/LeadQuestionnaire';
+import LeadSuccess from './pages/LeadSuccess';
 import LivenessFacematchStep from './pages/LivenessFacematchStep';
 import LivenessSimulation from './pages/LivenessSimulation';
 import OnboardingCompletion from './pages/OnboardingCompletion';
+import PipelineComercial from './pages/PipelineComercial';
+import QuestionariosLeads from './pages/QuestionariosLeads';
 import QuestionariosRecebidos from './pages/QuestionariosRecebidos';
 import RegrasDeCompliance from './pages/RegrasDeCompliance';
 import TemplatesQuestionarios from './pages/TemplatesQuestionarios';
-import LeadQuestionnaire from './pages/LeadQuestionnaire';
-import LeadSuccess from './pages/LeadSuccess';
-import LeadManagement from './pages/LeadManagement';
-import LeadDetails from './pages/LeadDetails';
-import CriarProposta from './pages/CriarProposta';
-import GestaoPropostas from './pages/GestaoPropostas';
-import PipelineComercial from './pages/PipelineComercial';
-import QuestionariosLeads from './pages/QuestionariosLeads';
 import __Layout from './Layout.jsx';
 
 
@@ -98,6 +98,7 @@ export const PAGES = {
     "CompliancePixOnly": CompliancePixOnly,
     "ComplianceSaaS": ComplianceSaaS,
     "Configuracoes": Configuracoes,
+    "CriarProposta": CriarProposta,
     "DocumentUploadEcommerce": DocumentUploadEcommerce,
     "DocumentUploadFull": DocumentUploadFull,
     "DocumentUploadLite": DocumentUploadLite,
@@ -106,25 +107,24 @@ export const PAGES = {
     "EditorQuestionario": EditorQuestionario,
     "GerarLinkOnboarding": GerarLinkOnboarding,
     "GestaoDocumentos": GestaoDocumentos,
+    "GestaoPropostas": GestaoPropostas,
     "GestaoRevalidacao": GestaoRevalidacao,
     "HelenaIA": HelenaIA,
     "Home": Home,
     "HowItWorks": HowItWorks,
     "IntegracoesExternas": IntegracoesExternas,
+    "LeadDetails": LeadDetails,
+    "LeadManagement": LeadManagement,
+    "LeadQuestionnaire": LeadQuestionnaire,
+    "LeadSuccess": LeadSuccess,
     "LivenessFacematchStep": LivenessFacematchStep,
     "LivenessSimulation": LivenessSimulation,
     "OnboardingCompletion": OnboardingCompletion,
+    "PipelineComercial": PipelineComercial,
+    "QuestionariosLeads": QuestionariosLeads,
     "QuestionariosRecebidos": QuestionariosRecebidos,
     "RegrasDeCompliance": RegrasDeCompliance,
     "TemplatesQuestionarios": TemplatesQuestionarios,
-    "LeadQuestionnaire": LeadQuestionnaire,
-    "LeadSuccess": LeadSuccess,
-    "LeadManagement": LeadManagement,
-    "LeadDetails": LeadDetails,
-    "CriarProposta": CriarProposta,
-    "GestaoPropostas": GestaoPropostas,
-    "PipelineComercial": PipelineComercial,
-    "QuestionariosLeads": QuestionariosLeads,
 }
 
 export const pagesConfig = {
