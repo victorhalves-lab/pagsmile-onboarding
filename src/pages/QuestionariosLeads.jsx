@@ -122,6 +122,37 @@ export default function QuestionariosLeads() {
     return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" /></div>;
   }
 
+  const handleVerDetalhes = (q) => {
+    // TODO: navegar para detalhes do questionário simplificado
+    toast.info(`Detalhes: ${q.protocolo}`);
+  };
+
+  const handleVincularLead = async (q) => {
+    const lead = await base44.entities.Lead.create({
+      email: q.contato_email,
+      fullName: q.nome_empresa,
+      cpfCnpj: q.cnpj,
+      phone: q.contato_telefone,
+      contactName: q.contato_nome,
+      contactRole: q.contato_cargo,
+      status: 'questionario_preenchido',
+      businessSubCategory: 'MERCHAN',
+    });
+    await base44.entities.QuestionarioSimplificado.update(q.id, { status: 'vinculado', lead_id: lead.id });
+    queryClient.invalidateQueries({ queryKey: ['questionarios-simplificados'] });
+    queryClient.invalidateQueries({ queryKey: ['leads-questionarios'] });
+    toast.success('Lead criado e vinculado!');
+  };
+
+  const handleGerarProposta = (q) => {
+    const leadId = q.lead_id;
+    if (leadId) {
+      navigate(createPageUrl('CriarProposta') + `?leadId=${leadId}`);
+    } else {
+      toast.info('Vincule a um lead primeiro para gerar proposta');
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -138,10 +169,47 @@ export default function QuestionariosLeads() {
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={exportCSV}><Download className="w-4 h-4 mr-1" /> Exportar CSV</Button>
-          <Button variant="outline" size="sm" onClick={() => refetch()}><RefreshCw className="w-4 h-4" /></Button>
+          <Button variant="outline" size="sm" onClick={() => { refetch(); refetchSimplificados(); }}><RefreshCw className="w-4 h-4" /></Button>
         </div>
       </div>
 
+      {/* Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList>
+          <TabsTrigger value="completo" className="gap-1">
+            <ClipboardList className="w-3 h-3" />
+            Completo ({leads.length})
+          </TabsTrigger>
+          <TabsTrigger value="simplificado" className="gap-1">
+            <Zap className="w-3 h-3" />
+            Simplificado ({questionariosSimplificados.length})
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="simplificado" className="mt-4">
+          {loadingSimplificados ? (
+            <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" /></div>
+          ) : questionariosSimplificados.length === 0 ? (
+            <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
+              <Zap className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/30 mb-3" />
+              <p className="text-[var(--pagsmile-blue)]/60">Nenhum questionário simplificado recebido</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {questionariosSimplificados.map(q => (
+                <QuestionarioSimplificadoCard
+                  key={q.id}
+                  questionario={q}
+                  onVerDetalhes={handleVerDetalhes}
+                  onVincularLead={handleVincularLead}
+                  onGerarProposta={handleGerarProposta}
+                />
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="completo" className="mt-4 space-y-6">
       {/* Filters */}
       <div className="flex flex-wrap gap-3 items-center">
         <div className="relative flex-1 min-w-[200px]">
