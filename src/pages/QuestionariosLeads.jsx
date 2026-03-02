@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
@@ -19,10 +20,11 @@ import {
 } from '@/components/ui/alert-dialog';
 import {
   Search, ClipboardList, Download, Eye, Trash2, Loader2, X,
-  ShoppingCart, Network, Building2, ArrowUpDown, RefreshCw
+  ShoppingCart, Network, Building2, ArrowUpDown, RefreshCw, Zap
 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
+import QuestionarioSimplificadoCard from '../components/questionario-simplificado/QuestionarioSimplificadoCard';
 
 const STATUS_CONFIG = {
   questionario_preenchido: { label: 'Novo', color: 'bg-blue-100 text-blue-700', icon: '🔵' },

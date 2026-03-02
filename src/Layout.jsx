@@ -60,7 +60,8 @@ export default function Layout({ children, currentPageName }) {
     'OnboardingCompletion',
     'LeadQuestionnaire',
     'LeadSuccess',
-    'PropostaPublica'
+    'PropostaPublica',
+    'QuestionarioSimplificadoPublico'
   ];
 
   const isPublicPage = publicPages.includes(currentPageName);
