@@ -133,7 +133,7 @@ function QuestionField({ question, value, onChange }) {
 }
 
 // Componente que renderiza UMA pergunta completa com label
-function QuestionItem({ question, value, onChange }) {
+function QuestionItem({ question, value, onChange, prefillSource }) {
   return (
     <div className="space-y-2">
       <div className="flex items-start gap-2">
@@ -150,6 +150,12 @@ function QuestionItem({ question, value, onChange }) {
           </div>
         )}
       </div>
+      {prefillSource && (
+        <div className="flex items-center gap-1.5 text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md w-fit">
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Preenchido automaticamente com dados do questionário de leads
+        </div>
+      )}
       <QuestionField question={question} value={value} onChange={onChange} />
     </div>
   );
