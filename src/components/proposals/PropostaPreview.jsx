@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { FileText, CreditCard } from 'lucide-react';
+import ParcelasTable from './ParcelasTable';
 
 const BANDEIRAS = [
   { id: 'mastercard', label: 'Master' },
@@ -30,6 +31,10 @@ export default function PropostaPreview({ form, rates }) {
   const cartao = rates?.cartao || {};
   const pix = rates?.pix || {};
   const rav = rates?.rav || {};
+
+  const taxaRAV = parseFloat(String(rav.taxa || '0').replace(',', '.')) || 0;
+  const prazo = rav.prazo || 'D+1';
+  const currentTaxas = cartao[previewBandeira] || {};
 
   return (
     <Card className="border-slate-200 sticky top-24">
@@ -65,7 +70,7 @@ export default function PropostaPreview({ form, rates }) {
             </TabsList>
             {BANDEIRAS.map(b => (
               <TabsContent key={b.id} value={b.id} className="mt-2">
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-2 mb-3">
                   <div className="bg-white border border-slate-100 rounded-lg p-2 text-center">
                     <p className="text-[10px] text-[var(--pagsmile-blue)]/50">À Vista</p>
                     <p className="text-sm font-bold text-[var(--pagsmile-green)]">
@@ -90,6 +95,14 @@ export default function PropostaPreview({ form, rates }) {
           </Tabs>
         </div>
 
+        {/* Tabela de Parcelas 1x-12x */}
+        <div>
+          <p className="text-xs font-semibold text-[var(--pagsmile-blue)]/70 mb-2">
+            Tabela de Parcelas ({BANDEIRAS.find(b => b.id === previewBandeira)?.label})
+          </p>
+          <ParcelasTable taxas={currentTaxas} taxaRAV={taxaRAV} prazo={prazo} compact />
+        </div>
+
         {/* PIX */}
         <div className="flex items-center justify-between py-2 border-t border-slate-100">
           <span className="text-xs text-[var(--pagsmile-blue)]/70">PIX</span>
@@ -101,19 +114,13 @@ export default function PropostaPreview({ form, rates }) {
         {/* Boleto */}
         <div className="flex items-center justify-between py-2 border-t border-slate-100">
           <span className="text-xs text-[var(--pagsmile-blue)]/70">Boleto</span>
-          <span className="text-sm font-semibold">
-            {formatMoeda(rates?.boleto)}
-          </span>
+          <span className="text-sm font-semibold">{formatMoeda(rates?.boleto)}</span>
         </div>
 
         {/* RAV */}
         <div className="flex items-center justify-between py-2 border-t border-slate-100">
-          <span className="text-xs text-[var(--pagsmile-blue)]/70">
-            RAV ({rav.prazo || 'D+1'})
-          </span>
-          <span className="text-sm font-semibold">
-            {formatTaxa(rav.taxa)} a.m.
-          </span>
+          <span className="text-xs text-[var(--pagsmile-blue)]/70">RAV ({prazo})</span>
+          <span className="text-sm font-semibold">{formatTaxa(rav.taxa)} a.m.</span>
         </div>
 
         {/* Fee */}
@@ -129,6 +136,14 @@ export default function PropostaPreview({ form, rates }) {
           <div className="flex items-center justify-between py-2 border-t border-slate-100">
             <span className="text-xs text-[var(--pagsmile-blue)]/70">Alerta Pré-CB</span>
             <span className="text-sm font-semibold">{formatMoeda(rates.alertaPreChargeback)}</span>
+          </div>
+        )}
+
+        {/* Mínimo Garantido */}
+        {rates?.minimoGarantido && (
+          <div className="flex items-center justify-between py-2 border-t border-slate-100">
+            <span className="text-xs text-[var(--pagsmile-blue)]/70">Mínimo Garantido</span>
+            <span className="text-sm font-semibold">{formatMoeda(rates.minimoGarantido)}</span>
           </div>
         )}
       </CardContent>
