@@ -1,0 +1,490 @@
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { base44 } from '@/api/base44Client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
+import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Building2, User, Briefcase, DollarSign, PieChart, Clock,
+  CreditCard, Package, FileText, CheckCircle, ArrowLeft, 
+  ArrowRight, Loader2, ShieldCheck, HelpCircle
+} from 'lucide-react';
+import { toast } from 'sonner';
+import LeadStepNavigation from './LeadStepNavigation';
+
+const STORAGE_KEY = 'lead_questionnaire_data';
+
+export default function LeadQuestionnaireForm({ template, questions, linkCode, onSubmit }) {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [formData, setFormData] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const autoSaveRef = useRef(null);
+
+  // Agrupar perguntas em steps (5 perguntas por step)
+  const QUESTIONS_PER_STEP = 5;
+  const steps = [];
+  for (let i = 0; i < questions.length; i += QUESTIONS_PER_STEP) {
+    steps.push(questions.slice(i, i + QUESTIONS_PER_STEP));
+  }
+  // Adicionar step de confirmação
+  const totalSteps = steps.length + 1;
+
+  // Carregar dados do localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      setFormData(JSON.parse(saved));
+    }
+  }, []);
+
+  // Auto-save a cada segundo
+  useEffect(() => {
+    autoSaveRef.current = setInterval(() => {
+      if (Object.keys(formData).length > 0) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+      }
+    }, 1000);
+    return () => clearInterval(autoSaveRef.current);
+  }, [formData]);
+
+  const updateField = useCallback((fieldId, value) => {
+    setFormData(prev => ({ ...prev, [fieldId]: value }));
+  }, []);
+
+  // Verificar lógica condicional
+  const shouldShowQuestion = (question) => {
+    if (!question.conditionalLogic?.dependsOn) return true;
+    const depValue = formData[question.conditionalLogic.dependsOn];
+    const expectedValue = question.conditionalLogic.value;
+    const operator = question.conditionalLogic.operator || 'equals';
+
+    switch (operator) {
+      case 'equals': return String(depValue) === String(expectedValue);
+      case 'not_equals': return String(depValue) !== String(expectedValue);
+      case 'contains': return String(depValue || '').includes(expectedValue);
+      default: return true;
+    }
+  };
+
+  // Validar step atual
+  const validateStep = () => {
+    if (currentStep >= steps.length) return true;
+    const stepQuestions = steps[currentStep].filter(shouldShowQuestion);
+    
+    for (const q of stepQuestions) {
+      if (q.isRequired) {
+        const val = formData[q.id];
+        if (val === undefined || val === null || val === '' || (Array.isArray(val) && val.length === 0)) {
+          toast.error(`Por favor, preencha: "${q.text}"`);
+          return false;
+        }
+        // Validações específicas
+        if (q.validationRules?.minLength && String(val).length < q.validationRules.minLength) {
+          toast.error(`"${q.text}" deve ter no mínimo ${q.validationRules.minLength} caracteres`);
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
+  const handleNext = () => {
+    if (!validateStep()) return;
+    if (currentStep < totalSteps - 1) {
+      setCurrentStep(prev => prev + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentStep > 0) {
+      setCurrentStep(prev => prev - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const generateProtocolo = () => {
+    const year = new Date().getFullYear();
+    const seq = String(Math.floor(Math.random() * 99999)).padStart(5, '0');
+    return `PAG-QL-${year}-${seq}`;
+  };
+
+  const calculateQualityScore = () => {
+    let score = 50; // Base
+    if (formData.tpv_mensal && parseFloat(formData.tpv_mensal) > 100000) score += 10;
+    if (formData.site) score += 5;
+    if (formData.desafios_atuais && formData.desafios_atuais.length > 30) score += 5;
+    if (formData.contato_cargo && ['Sócio', 'Diretor', 'C-Level'].includes(formData.contato_cargo)) score += 10;
+    if (formData.expectativa_crescimento === 'Mais de 100%') score += 10;
+    if (formData.proposta_concorrente_url) score += 5;
+    return Math.min(100, score);
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.aceite_termos || !formData.aceite_privacidade) {
+      toast.error('Você precisa aceitar os termos e a política de privacidade');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    const protocolo = generateProtocolo();
+    const qualityScore = calculateQualityScore();
+
+    // Determinar businessSubCategory
+    let businessSubCategory = 'MERCHAN';
+    for (const q of questions) {
+      if (q.text?.toLowerCase().includes('o que sua empresa é') || q.text?.toLowerCase().includes('tipo de empresa')) {
+        const answer = formData[q.id];
+        if (answer?.toLowerCase().includes('gateway')) businessSubCategory = 'GATEWAY';
+        else if (answer?.toLowerCase().includes('marketplace')) businessSubCategory = 'MARKETPLACE';
+        else businessSubCategory = 'MERCHAN';
+        break;
+      }
+    }
+
+    // Buscar template de compliance vinculado
+    let recommendedComplianceTemplateId = template.linkedComplianceTemplateId || '';
+
+    // Encontrar valores relevantes
+    const findFieldValue = (keywords) => {
+      for (const q of questions) {
+        const text = q.text?.toLowerCase() || '';
+        if (keywords.some(kw => text.includes(kw)) && formData[q.id]) {
+          return formData[q.id];
+        }
+      }
+      return '';
+    };
+
+    const leadData = {
+      email: findFieldValue(['e-mail', 'email']) || '',
+      fullName: findFieldValue(['razão social', 'razao social']) || findFieldValue(['nome completo']) || '',
+      cpfCnpj: findFieldValue(['cnpj', 'cpf']) || '',
+      phone: findFieldValue(['celular', 'telefone']) || '',
+      companyName: findFieldValue(['fantasia', 'nome fantasia']) || '',
+      website: findFieldValue(['site', 'website', 'url']) || '',
+      mcc: findFieldValue(['mcc']) || '',
+      contactName: findFieldValue(['contato_nome', 'nome do contato', 'nome completo do contato']) || '',
+      contactRole: findFieldValue(['cargo']) || '',
+      status: 'questionario_preenchido',
+      businessSubCategory,
+      leadQuestionnaireTemplateId: template.id,
+      recommendedComplianceTemplateId,
+      tpvMensal: parseFloat(findFieldValue(['tpv']) || '0') || 0,
+      ticketMedio: parseFloat(findFieldValue(['ticket']) || '0') || 0,
+      transacoesMes: parseFloat(findFieldValue(['transações', 'transacoes']) || '0') || 0,
+      expectativaCrescimento: findFieldValue(['crescimento']) || '',
+      protocolo,
+      origemLead: new URLSearchParams(window.location.search).get('utm_source') || '',
+      onboardingLinkCode: linkCode || '',
+      questionnaireData: formData,
+      priscilaQualityScore: qualityScore,
+      priscilaRiskLevel: 'EM_ANALISE',
+      lastInteractionDate: new Date().toISOString()
+    };
+
+    const lead = await base44.entities.Lead.create(leadData);
+
+    // Registrar atividade
+    await base44.entities.LeadActivity.create({
+      leadId: lead.id,
+      activityType: 'questionario_preenchido',
+      description: `Questionário de leads preenchido via link ${linkCode || 'direto'}. Protocolo: ${protocolo}`,
+      performedBy: leadData.email || 'cliente',
+      activityDate: new Date().toISOString()
+    });
+
+    // Limpar localStorage
+    localStorage.removeItem(STORAGE_KEY);
+
+    setIsSubmitting(false);
+    onSubmit({ ...leadData, id: lead.id });
+  };
+
+  const renderQuestion = (question) => {
+    if (!shouldShowQuestion(question)) return null;
+    const value = formData[question.id] || '';
+
+    return (
+      <div key={question.id} className="space-y-2">
+        <Label className="text-sm font-semibold text-[var(--pagsmile-blue)]">
+          {question.text}
+          {question.isRequired && <span className="text-red-500 ml-1">*</span>}
+        </Label>
+        {question.helpText && (
+          <p className="text-xs text-[var(--pagsmile-blue)]/60 flex items-center gap-1">
+            <HelpCircle className="w-3 h-3" />
+            {question.helpText}
+          </p>
+        )}
+
+        {question.type === 'TEXT' && (
+          <Input
+            value={value}
+            onChange={(e) => updateField(question.id, e.target.value)}
+            placeholder={question.placeholder || ''}
+            className="h-12 rounded-xl"
+          />
+        )}
+
+        {question.type === 'NUMBER' && (
+          <Input
+            type="number"
+            value={value}
+            onChange={(e) => updateField(question.id, e.target.value)}
+            placeholder={question.placeholder || ''}
+            className="h-12 rounded-xl"
+          />
+        )}
+
+        {question.type === 'EMAIL' && (
+          <Input
+            type="email"
+            value={value}
+            onChange={(e) => updateField(question.id, e.target.value)}
+            placeholder={question.placeholder || 'email@empresa.com'}
+            className="h-12 rounded-xl"
+          />
+        )}
+
+        {question.type === 'PHONE' && (
+          <Input
+            type="tel"
+            value={value}
+            onChange={(e) => updateField(question.id, e.target.value)}
+            placeholder={question.placeholder || '(11) 99999-9999'}
+            className="h-12 rounded-xl"
+          />
+        )}
+
+        {question.type === 'CPF_CNPJ' && (
+          <Input
+            value={value}
+            onChange={(e) => updateField(question.id, e.target.value)}
+            placeholder={question.placeholder || 'Digite o CPF ou CNPJ'}
+            className="h-12 rounded-xl"
+          />
+        )}
+
+        {question.type === 'DATE' && (
+          <Input
+            type="date"
+            value={value}
+            onChange={(e) => updateField(question.id, e.target.value)}
+            className="h-12 rounded-xl"
+          />
+        )}
+
+        {question.type === 'SELECT' && (
+          <Select value={value} onValueChange={(v) => updateField(question.id, v)}>
+            <SelectTrigger className="h-12 rounded-xl">
+              <SelectValue placeholder={question.placeholder || 'Selecione...'} />
+            </SelectTrigger>
+            <SelectContent>
+              {(question.options || []).map((opt, i) => (
+                <SelectItem key={i} value={opt}>{opt}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+
+        {question.type === 'MULTI_SELECT' && (
+          <div className="flex flex-wrap gap-2">
+            {(question.options || []).map((opt, i) => {
+              const selected = Array.isArray(value) ? value.includes(opt) : false;
+              return (
+                <Badge
+                  key={i}
+                  variant={selected ? 'default' : 'outline'}
+                  className={`cursor-pointer px-4 py-2 text-sm transition-all ${
+                    selected
+                      ? 'bg-[var(--pagsmile-green)] text-white border-[var(--pagsmile-green)]'
+                      : 'hover:border-[var(--pagsmile-green)] hover:text-[var(--pagsmile-green)]'
+                  }`}
+                  onClick={() => {
+                    const current = Array.isArray(value) ? value : [];
+                    const updated = selected
+                      ? current.filter(v => v !== opt)
+                      : [...current, opt];
+                    updateField(question.id, updated);
+                  }}
+                >
+                  {opt}
+                </Badge>
+              );
+            })}
+          </div>
+        )}
+
+        {question.type === 'BOOLEAN' && (
+          <div className="flex items-center gap-3 bg-slate-50 rounded-xl px-4 py-3">
+            <Switch
+              checked={value === true || value === 'true'}
+              onCheckedChange={(checked) => updateField(question.id, checked)}
+            />
+            <span className="text-sm text-[var(--pagsmile-blue)]/80">
+              {value ? 'Sim' : 'Não'}
+            </span>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Step de confirmação
+  const renderConfirmation = () => (
+    <div className="space-y-6">
+      <div className="text-center mb-8">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[var(--pagsmile-green)]/10 mb-4">
+          <CheckCircle className="w-8 h-8 text-[var(--pagsmile-green)]" />
+        </div>
+        <h2 className="text-xl font-bold text-[var(--pagsmile-blue)]">Confirmação e Termos</h2>
+        <p className="text-sm text-[var(--pagsmile-blue)]/70 mt-1">Revise e aceite os termos para enviar</p>
+      </div>
+
+      <div className="bg-slate-50 rounded-xl p-6 space-y-4">
+        <h3 className="font-semibold text-[var(--pagsmile-blue)]">Resumo dos dados</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+          {questions.filter(q => formData[q.id]).slice(0, 8).map(q => (
+            <div key={q.id} className="flex flex-col">
+              <span className="text-[var(--pagsmile-blue)]/60 text-xs">{q.text}</span>
+              <span className="font-medium text-[var(--pagsmile-blue)] truncate">
+                {Array.isArray(formData[q.id]) ? formData[q.id].join(', ') : String(formData[q.id])}
+              </span>
+            </div>
+          ))}
+        </div>
+        {questions.filter(q => formData[q.id]).length > 8 && (
+          <p className="text-xs text-[var(--pagsmile-blue)]/50">
+            E mais {questions.filter(q => formData[q.id]).length - 8} campos preenchidos...
+          </p>
+        )}
+      </div>
+
+      <div className="space-y-4 bg-white border border-slate-200 rounded-xl p-6">
+        <div className="flex items-start gap-3">
+          <Checkbox
+            checked={formData.aceite_termos || false}
+            onCheckedChange={(checked) => updateField('aceite_termos', checked)}
+            id="termos"
+          />
+          <Label htmlFor="termos" className="text-sm leading-relaxed cursor-pointer">
+            Li e aceito os <span className="text-[var(--pagsmile-green)] font-semibold">Termos de Uso</span> da plataforma Pagsmile.
+          </Label>
+        </div>
+        <div className="flex items-start gap-3">
+          <Checkbox
+            checked={formData.aceite_privacidade || false}
+            onCheckedChange={(checked) => updateField('aceite_privacidade', checked)}
+            id="privacidade"
+          />
+          <Label htmlFor="privacidade" className="text-sm leading-relaxed cursor-pointer">
+            Li e aceito a <span className="text-[var(--pagsmile-green)] font-semibold">Política de Privacidade</span> da Pagsmile.
+          </Label>
+        </div>
+      </div>
+    </div>
+  );
+
+  const isLastStep = currentStep === totalSteps - 1;
+  const isConfirmationStep = currentStep >= steps.length;
+
+  return (
+    <div className="max-w-3xl mx-auto py-8 px-4">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <img 
+          src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/9bd38c4f7_Logo-modo-claro.png" 
+          alt="Pagsmile" 
+          className="h-8 mx-auto mb-6"
+        />
+        <h1 className="text-2xl md:text-3xl font-bold text-[var(--pagsmile-blue)]">
+          {template.name || 'Questionário Comercial'}
+        </h1>
+        <p className="text-[var(--pagsmile-blue)]/70 mt-2">
+          {template.description || 'Preencha os dados abaixo para iniciar seu cadastro'}
+        </p>
+      </div>
+
+      {/* Step Navigation */}
+      <LeadStepNavigation 
+        currentStep={currentStep} 
+        totalSteps={totalSteps}
+        steps={steps}
+        questions={questions}
+      />
+
+      {/* Formulário */}
+      <div className="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm mt-6">
+        {isConfirmationStep ? (
+          renderConfirmation()
+        ) : (
+          <div className="space-y-6">
+            {steps[currentStep]?.map(q => renderQuestion(q))}
+          </div>
+        )}
+
+        {/* Botões de Navegação */}
+        <div className="flex justify-between items-center mt-8 pt-6 border-t border-slate-200">
+          <Button
+            variant="ghost"
+            onClick={handlePrev}
+            disabled={currentStep === 0}
+            className="text-[var(--pagsmile-blue)]/70"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Anterior
+          </Button>
+
+          {isLastStep ? (
+            <Button
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white px-8 h-12 rounded-xl shadow-lg"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Enviando...
+                </>
+              ) : (
+                <>
+                  Enviar Questionário
+                  <ShieldCheck className="w-4 h-4 ml-2" />
+                </>
+              )}
+            </Button>
+          ) : (
+            <Button
+              onClick={handleNext}
+              className="bg-[var(--pagsmile-blue)] hover:bg-[var(--pagsmile-blue)]/90 text-white px-8 h-12 rounded-xl"
+            >
+              Próximo
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* Segurança */}
+      <div className="text-center mt-6">
+        <p className="text-xs text-[var(--pagsmile-blue)]/40 flex items-center justify-center gap-1">
+          <ShieldCheck className="w-3 h-3" />
+          Seus dados estão protegidos e serão tratados com confidencialidade.
+        </p>
+      </div>
+    </div>
+  );
+}

@@ -76,6 +76,8 @@ import OnboardingCompletion from './pages/OnboardingCompletion';
 import QuestionariosRecebidos from './pages/QuestionariosRecebidos';
 import RegrasDeCompliance from './pages/RegrasDeCompliance';
 import TemplatesQuestionarios from './pages/TemplatesQuestionarios';
+import LeadQuestionnaire from './pages/LeadQuestionnaire';
+import LeadSuccess from './pages/LeadSuccess';
 import __Layout from './Layout.jsx';
 
 
@@ -109,6 +111,8 @@ export const PAGES = {
     "QuestionariosRecebidos": QuestionariosRecebidos,
     "RegrasDeCompliance": RegrasDeCompliance,
     "TemplatesQuestionarios": TemplatesQuestionarios,
+    "LeadQuestionnaire": LeadQuestionnaire,
+    "LeadSuccess": LeadSuccess,
 }
 
 export const pagesConfig = {
