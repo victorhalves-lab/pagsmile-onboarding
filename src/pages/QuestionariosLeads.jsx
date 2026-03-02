@@ -46,11 +46,17 @@ export default function QuestionariosLeads() {
   const [periodoFilter, setPeriodoFilter] = useState('all');
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [page, setPage] = useState(1);
+  const [activeTab, setActiveTab] = useState('completo');
   const itemsPerPage = 10;
 
   const { data: leads = [], isLoading, refetch } = useQuery({
     queryKey: ['leads-questionarios'],
     queryFn: () => base44.entities.Lead.list('-created_date', 500)
+  });
+
+  const { data: questionariosSimplificados = [], isLoading: loadingSimplificados, refetch: refetchSimplificados } = useQuery({
+    queryKey: ['questionarios-simplificados'],
+    queryFn: () => base44.entities.QuestionarioSimplificado.list('-created_date', 500)
   });
 
   const deleteMutation = useMutation({
