@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import CnpjInput from './CnpjInput';
 
 export default function CardDadosCliente({ form, errors, mccs = [], onUpdate }) {
   return (
@@ -35,11 +36,10 @@ export default function CardDadosCliente({ form, errors, mccs = [], onUpdate }) 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <Label className="text-xs font-medium">CNPJ *</Label>
-            <Input
+            <CnpjInput
               value={form.clienteCnpj || ''}
-              onChange={(e) => onUpdate('clienteCnpj', e.target.value)}
-              placeholder="00.000.000/0000-00"
-              className={errors?.clienteCnpj ? 'border-red-500' : ''}
+              onChange={(val) => onUpdate('clienteCnpj', val)}
+              error={errors?.clienteCnpj}
             />
             {errors?.clienteCnpj && <p className="text-xs text-red-500">{errors.clienteCnpj}</p>}
           </div>
