@@ -618,10 +618,16 @@ export default function GerarLinkOnboarding() {
                     📋 Leads ({links.filter(l => l.linkType === 'LEAD_QUESTIONNAIRE').length})
                   </button>
                   <button
+                    onClick={() => setHistoryFilter('simplificado')}
+                    className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${historyFilter === 'simplificado' ? 'bg-white shadow-sm text-amber-700' : 'text-[var(--pagsmile-blue)]/60 hover:text-[var(--pagsmile-blue)]'}`}
+                  >
+                    ⚡ Simplificado ({links.filter(l => l.linkType === 'LEAD_SIMPLIFICADO').length})
+                  </button>
+                  <button
                     onClick={() => setHistoryFilter('onboarding')}
                     className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${historyFilter === 'onboarding' ? 'bg-white shadow-sm text-purple-700' : 'text-[var(--pagsmile-blue)]/60 hover:text-[var(--pagsmile-blue)]'}`}
                   >
-                    🔒 Onboarding ({links.filter(l => l.linkType !== 'LEAD_QUESTIONNAIRE').length})
+                    🔒 Onboarding ({links.filter(l => !['LEAD_QUESTIONNAIRE', 'LEAD_SIMPLIFICADO'].includes(l.linkType)).length})
                   </button>
                 </div>
               </div>
@@ -640,7 +646,8 @@ export default function GerarLinkOnboarding() {
                 <div className="space-y-4">
                   {links.filter(link => {
                     if (historyFilter === 'lead') return link.linkType === 'LEAD_QUESTIONNAIRE';
-                    if (historyFilter === 'onboarding') return link.linkType !== 'LEAD_QUESTIONNAIRE';
+                    if (historyFilter === 'simplificado') return link.linkType === 'LEAD_SIMPLIFICADO';
+                    if (historyFilter === 'onboarding') return !['LEAD_QUESTIONNAIRE', 'LEAD_SIMPLIFICADO'].includes(link.linkType);
                     return true;
                   }).map((link) => {
                     const conversion = link.clickCount > 0 
