@@ -136,6 +136,9 @@ export default function DynamicQuestionnaire({
     enabled: !!template?.id
   });
 
+  // Pré-preenchimento com dados do Lead
+  const { prefillData, prefillSources, hasPrefill, lead } = useLeadPrefill(questions);
+
   // Agrupar perguntas em steps
   const steps = groupQuestionsIntoSteps(questions, questionsPerStep);
 
