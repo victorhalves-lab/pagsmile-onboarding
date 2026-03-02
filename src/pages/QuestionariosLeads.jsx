@@ -343,6 +343,9 @@ export default function QuestionariosLeads() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
