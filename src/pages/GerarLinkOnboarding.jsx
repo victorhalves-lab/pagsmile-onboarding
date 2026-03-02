@@ -509,6 +509,7 @@ export default function GerarLinkOnboarding() {
                   </button>
                 </div>
               </div>
+              )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -649,6 +650,7 @@ export default function GerarLinkOnboarding() {
                               <Badge variant="outline" className="font-mono text-sm">{link.uniqueCode}</Badge>
                               <Badge 
                                 className={`text-xs ${
+                                  link.linkType === 'LEAD_QUESTIONNAIRE' ? 'bg-green-100 text-green-700' :
                                   link.complianceType === 'PIX' ? 'bg-blue-100 text-blue-700' :
                                   link.complianceType === 'FULL' ? 'bg-purple-100 text-purple-700' :
                                   link.complianceType === 'LITE' ? 'bg-teal-100 text-teal-700' :
@@ -657,7 +659,8 @@ export default function GerarLinkOnboarding() {
                                   'bg-slate-100 text-slate-700'
                                 }`}
                               >
-                                {link.complianceType === 'PIX' ? 'Pix' : 
+                                {link.linkType === 'LEAD_QUESTIONNAIRE' ? '📋 Lead' :
+                                 link.complianceType === 'PIX' ? 'Pix' : 
                                  link.complianceType === 'FULL' ? 'Full' : 
                                  link.complianceType === 'LITE' ? 'Lite' : 
                                  link.complianceType === 'ECOMMERCE' ? 'E-commerce' : 
