@@ -133,6 +133,7 @@ export default function GerarLinkOnboarding() {
 
   const genericLinks = {
     LEAD: `${window.location.origin}${createPageUrl('LeadQuestionnaire')}`,
+    LEAD_SIMPLIFICADO: `${window.location.origin}${createPageUrl('QuestionarioSimplificadoPublico')}`,
     GENERIC: `${window.location.origin}${createPageUrl('ComplianceOnboardingStart')}`,
     PIX: `${window.location.origin}${createPageUrl('CompliancePixOnly')}`,
     FULL: `${window.location.origin}${createPageUrl('ComplianceFullKYC')}`,
@@ -275,6 +276,20 @@ export default function GerarLinkOnboarding() {
                   </Button>
                   <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.LEAD, '_blank')} className="shrink-0 border-green-200 hover:bg-green-50">
                     <ExternalLink className="w-4 h-4 text-[var(--pagsmile-green)]" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Link Questionário Simplificado */}
+              <div className="space-y-2">
+                <Label className="text-xs font-medium text-amber-600 font-bold">⚡ Questionário Simplificado (Pós-reunião)</Label>
+                <div className="flex gap-2">
+                  <Input readOnly value={genericLinks.LEAD_SIMPLIFICADO} className="font-mono text-xs bg-amber-50 border-amber-200" />
+                  <Button variant="outline" size="sm" onClick={() => handleCopy(genericLinks.LEAD_SIMPLIFICADO)} className="shrink-0 border-amber-200 hover:bg-amber-50">
+                    <Copy className="w-4 h-4 text-amber-600" />
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.LEAD_SIMPLIFICADO, '_blank')} className="shrink-0 border-amber-200 hover:bg-amber-50">
+                    <ExternalLink className="w-4 h-4 text-amber-600" />
                   </Button>
                 </div>
               </div>
