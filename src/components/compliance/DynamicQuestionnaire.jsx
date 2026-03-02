@@ -150,7 +150,7 @@ export default function DynamicQuestionnaire({
     linkCode
   });
 
-  // Carregar dados salvos
+  // Carregar dados salvos + pré-preencher com dados do Lead
   useEffect(() => {
     if (storageKey) {
       const savedData = localStorage.getItem(storageKey);
@@ -159,6 +159,22 @@ export default function DynamicQuestionnaire({
       }
     }
   }, [storageKey]);
+
+  // Aplicar pré-preenchimento do Lead (apenas para campos vazios)
+  useEffect(() => {
+    if (hasPrefill && Object.keys(prefillData).length > 0) {
+      setFormData(prev => {
+        const merged = { ...prev };
+        for (const [questionId, value] of Object.entries(prefillData)) {
+          // Só preenche se o campo estiver vazio
+          if (!merged[questionId] && merged[questionId] !== false) {
+            merged[questionId] = value;
+          }
+        }
+        return merged;
+      });
+    }
+  }, [hasPrefill, JSON.stringify(prefillData)]);
 
   // Salvar dados
   useEffect(() => {
