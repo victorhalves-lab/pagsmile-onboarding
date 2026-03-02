@@ -6,6 +6,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,13 +19,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { 
   Plus, FileText, Edit, Trash2, Loader2, 
-  Users, Building2 
+  Users, Building2, Briefcase, Shield, ShoppingCart, Network
 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function TemplatesQuestionarios() {
   const queryClient = useQueryClient();
   const [deleteId, setDeleteId] = useState(null);
+  const [activeTab, setActiveTab] = useState('all');
 
   const { data: templates = [], isLoading } = useQuery({
     queryKey: ['questionnaireTemplates'],
@@ -62,7 +64,7 @@ export default function TemplatesQuestionarios() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Questionários</h1>
-          <p className="text-[var(--pagsmile-blue)]/70">Gerencie os templates de questionário de compliance</p>
+          <p className="text-[var(--pagsmile-blue)]/70">Gerencie templates de questionário de leads e compliance</p>
         </div>
         <Link to={createPageUrl('EditorQuestionario')}>
           <Button className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90">
@@ -72,8 +74,28 @@ export default function TemplatesQuestionarios() {
         </Link>
       </div>
 
+      {/* Tabs de Filtro */}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList>
+          <TabsTrigger value="all">Todos ({templates.length})</TabsTrigger>
+          <TabsTrigger value="LEAD_GENERATION" className="gap-1">
+            <Briefcase className="w-3 h-3" />
+            Leads ({templates.filter(t => t.category === 'LEAD_GENERATION').length})
+          </TabsTrigger>
+          <TabsTrigger value="COMPLIANCE" className="gap-1">
+            <Shield className="w-3 h-3" />
+            Compliance ({templates.filter(t => t.category === 'COMPLIANCE' || !t.category).length})
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+
       {/* Lista de Templates */}
-      {templates.length === 0 ? (
+      {(() => {
+        const filtered = activeTab === 'all' ? templates :
+          activeTab === 'LEAD_GENERATION' ? templates.filter(t => t.category === 'LEAD_GENERATION') :
+          templates.filter(t => t.category === 'COMPLIANCE' || !t.category);
+        return filtered;
+      })().length === 0 ? (
         <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
           <FileText className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/40 mb-4" />
           <h3 className="text-lg font-medium text-[var(--pagsmile-blue)] mb-2">
@@ -91,7 +113,12 @@ export default function TemplatesQuestionarios() {
         </div>
       ) : (
         <div className="grid gap-4">
-          {templates.map((template) => (
+          {(() => {
+            const filtered = activeTab === 'all' ? templates :
+              activeTab === 'LEAD_GENERATION' ? templates.filter(t => t.category === 'LEAD_GENERATION') :
+              templates.filter(t => t.category === 'COMPLIANCE' || !t.category);
+            return filtered;
+          })().map((template) => (
             <div 
               key={template.id} 
               className="bg-white rounded-xl border border-slate-200 p-6"
@@ -116,7 +143,23 @@ export default function TemplatesQuestionarios() {
                     <p className="text-sm text-[var(--pagsmile-blue)]/70 mt-1">
                       {template.description || 'Sem descrição'}
                     </p>
-                    <div className="flex items-center gap-2 mt-3">
+                    <div className="flex items-center gap-2 mt-3 flex-wrap">
+                      {/* Categoria */}
+                      <Badge className={
+                        template.category === 'LEAD_GENERATION' 
+                          ? 'bg-amber-100 text-amber-800' 
+                          : 'bg-indigo-100 text-indigo-800'
+                      }>
+                        {template.category === 'LEAD_GENERATION' ? '🎯 Lead' : '🛡️ Compliance'}
+                      </Badge>
+                      {/* SubCategoria para Leads */}
+                      {template.category === 'LEAD_GENERATION' && template.subCategory && template.subCategory !== 'GENERAL' && (
+                        <Badge className="bg-orange-100 text-orange-700">
+                          {template.subCategory === 'MERCHAN' ? 'Merchan' : 
+                           template.subCategory === 'GATEWAY' ? 'Gateway' : 
+                           template.subCategory === 'MARKETPLACE' ? 'Marketplace' : template.subCategory}
+                        </Badge>
+                      )}
                       <Badge variant="outline">
                         {template.merchantType === 'PF' ? 'Pessoa Física' : 'Pessoa Jurídica'}
                       </Badge>
