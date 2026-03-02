@@ -50,6 +50,7 @@ export default function GerarLinkOnboarding() {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [activeTab, setActiveTab] = useState('generate');
   const [expandedLinkId, setExpandedLinkId] = useState(null);
+  const [historyFilter, setHistoryFilter] = useState('all');
   const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState({
@@ -570,8 +571,32 @@ export default function GerarLinkOnboarding() {
         <TabsContent value="history">
           <Card>
             <CardHeader>
-              <CardTitle>Links Gerados</CardTitle>
-              <CardDescription>Histórico de todos os links criados</CardDescription>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <CardTitle>Links Gerados</CardTitle>
+                  <CardDescription>Histórico de todos os links criados</CardDescription>
+                </div>
+                <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1">
+                  <button
+                    onClick={() => setHistoryFilter('all')}
+                    className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${historyFilter === 'all' ? 'bg-white shadow-sm text-[var(--pagsmile-blue)]' : 'text-[var(--pagsmile-blue)]/60 hover:text-[var(--pagsmile-blue)]'}`}
+                  >
+                    Todos ({links.length})
+                  </button>
+                  <button
+                    onClick={() => setHistoryFilter('lead')}
+                    className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${historyFilter === 'lead' ? 'bg-white shadow-sm text-green-700' : 'text-[var(--pagsmile-blue)]/60 hover:text-[var(--pagsmile-blue)]'}`}
+                  >
+                    📋 Leads ({links.filter(l => l.linkType === 'LEAD_QUESTIONNAIRE').length})
+                  </button>
+                  <button
+                    onClick={() => setHistoryFilter('onboarding')}
+                    className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${historyFilter === 'onboarding' ? 'bg-white shadow-sm text-purple-700' : 'text-[var(--pagsmile-blue)]/60 hover:text-[var(--pagsmile-blue)]'}`}
+                  >
+                    🔒 Onboarding ({links.filter(l => l.linkType !== 'LEAD_QUESTIONNAIRE').length})
+                  </button>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               {linksLoading ? (
@@ -585,7 +610,11 @@ export default function GerarLinkOnboarding() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {links.map((link) => {
+                  {links.filter(link => {
+                    if (historyFilter === 'lead') return link.linkType === 'LEAD_QUESTIONNAIRE';
+                    if (historyFilter === 'onboarding') return link.linkType !== 'LEAD_QUESTIONNAIRE';
+                    return true;
+                  }).map((link) => {
                     const conversion = link.clickCount > 0 
                       ? ((link.submissionCount / link.clickCount) * 100).toFixed(1) 
                       : 0;
