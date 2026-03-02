@@ -49,19 +49,51 @@ function normalizeText(text) {
 }
 
 /**
+ * Resolve o valor de um sourceEntityPath no objeto Lead.
+ * Ex: "Lead.cpfCnpj" → lead.cpfCnpj
+ *     "Lead.questionnaireData.abc123" → lead.questionnaireData.abc123
+ */
+function resolveSourcePath(lead, path) {
+  if (!path || !lead) return undefined;
+  
+  // Remove o prefixo "Lead." se presente
+  const cleanPath = path.startsWith('Lead.') ? path.substring(5) : path;
+  
+  // Navega pelo objeto
+  const parts = cleanPath.split('.');
+  let value = lead;
+  for (const part of parts) {
+    if (value === null || value === undefined) return undefined;
+    value = value[part];
+  }
+  
+  return value;
+}
+
+/**
  * Dado um Lead e suas questões do questionário de lead, 
  * retorna um objeto { questionId: valor } para pré-preencher o compliance.
+ * Prioridade: 1) sourceEntityPath explícito, 2) keywords em campos do Lead, 3) keywords no questionnaireData
  */
 export function mapLeadToComplianceQuestions(lead, leadQuestions, complianceQuestions) {
   if (!lead || !complianceQuestions?.length) return {};
   
   const prefillData = {};
-  const prefillSources = {}; // Rastreia de onde veio cada valor
+  const prefillSources = {};
 
   for (const cq of complianceQuestions) {
+    // 1. PRIORIDADE: usar sourceEntityPath se definido na pergunta
+    if (cq.sourceEntityPath) {
+      const val = resolveSourcePath(lead, cq.sourceEntityPath);
+      if (val !== undefined && val !== null && val !== '' && val !== 0) {
+        prefillData[cq.id] = String(val);
+        prefillSources[cq.id] = cq.sourceEntityPath;
+        continue; // Encontrou via caminho explícito, pula para próxima pergunta
+      }
+    }
+
+    // 2. FALLBACK: tentar mapear por keywords do campo direto do Lead
     const cqText = normalizeText(cq.text);
-    
-    // 1. Tentar mapear do campo direto do Lead
     for (const mapping of LEAD_FIELD_MAPPINGS) {
       const match = mapping.keywords.some(kw => cqText.includes(normalizeText(kw)));
       if (match && lead[mapping.leadField]) {
@@ -74,13 +106,12 @@ export function mapLeadToComplianceQuestions(lead, leadQuestions, complianceQues
       }
     }
 
-    // 2. Se não encontrou, tentar mapear do questionnaireData do Lead
+    // 3. Se não encontrou, tentar mapear do questionnaireData do Lead
     if (!prefillData[cq.id] && lead.questionnaireData && leadQuestions?.length > 0) {
       for (const qdMapping of QUESTIONNAIRE_DATA_KEYWORDS) {
         const complianceMatch = qdMapping.keywords.some(kw => cqText.includes(normalizeText(kw)));
         if (!complianceMatch) continue;
 
-        // Buscar pergunta correspondente no questionário de lead
         for (const lq of leadQuestions) {
           const lqText = normalizeText(lq.text);
           const leadMatch = qdMapping.qKeywords.some(kw => lqText.includes(normalizeText(kw)));
