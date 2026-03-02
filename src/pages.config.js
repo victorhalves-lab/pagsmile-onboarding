@@ -80,6 +80,10 @@ import LeadQuestionnaire from './pages/LeadQuestionnaire';
 import LeadSuccess from './pages/LeadSuccess';
 import LeadManagement from './pages/LeadManagement';
 import LeadDetails from './pages/LeadDetails';
+import CriarProposta from './pages/CriarProposta';
+import GestaoPropostas from './pages/GestaoPropostas';
+import PipelineComercial from './pages/PipelineComercial';
+import QuestionariosLeads from './pages/QuestionariosLeads';
 import __Layout from './Layout.jsx';
 
 
@@ -117,6 +121,10 @@ export const PAGES = {
     "LeadSuccess": LeadSuccess,
     "LeadManagement": LeadManagement,
     "LeadDetails": LeadDetails,
+    "CriarProposta": CriarProposta,
+    "GestaoPropostas": GestaoPropostas,
+    "PipelineComercial": PipelineComercial,
+    "QuestionariosLeads": QuestionariosLeads,
 }
 
 export const pagesConfig = {

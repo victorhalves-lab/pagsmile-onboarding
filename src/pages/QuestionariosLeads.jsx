@@ -1,0 +1,272 @@
+import React, { useState, useMemo } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { createPageUrl } from '../utils';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
+import {
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+} from '@/components/ui/table';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
+  Search, ClipboardList, Download, Eye, Trash2, Loader2, X,
+  ShoppingCart, Network, Building2, ArrowUpDown, RefreshCw
+} from 'lucide-react';
+import { toast } from 'sonner';
+import moment from 'moment';
+
+const STATUS_CONFIG = {
+  questionario_preenchido: { label: 'Novo', color: 'bg-blue-100 text-blue-700', icon: '🔵' },
+  analisado_priscila: { label: 'Analisado', color: 'bg-purple-100 text-purple-700', icon: '🟣' },
+  em_contato_comercial: { label: 'Em Contato', color: 'bg-amber-100 text-amber-700', icon: '🟡' },
+  proposta_enviada: { label: 'Proposta Enviada', color: 'bg-indigo-100 text-indigo-700', icon: '🟣' },
+  proposta_aceita: { label: 'Proposta Aceita', color: 'bg-green-100 text-green-700', icon: '🟢' },
+  proposta_recusada: { label: 'Recusada', color: 'bg-red-100 text-red-700', icon: '🔴' },
+  perdido: { label: 'Perdido', color: 'bg-slate-100 text-slate-600', icon: '⚫' },
+};
+
+const SUB_CAT = { MERCHAN: { label: 'Merchan', icon: ShoppingCart }, GATEWAY: { label: 'Gateway', icon: Network }, MARKETPLACE: { label: 'Marketplace', icon: Building2 } };
+
+export default function QuestionariosLeads() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [periodoFilter, setPeriodoFilter] = useState('all');
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const { data: leads = [], isLoading, refetch } = useQuery({
+    queryKey: ['leads-questionarios'],
+    queryFn: () => base44.entities.Lead.list('-created_date', 500)
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => base44.entities.Lead.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['leads-questionarios'] });
+      toast.success('Questionário excluído');
+      setDeleteTarget(null);
+    }
+  });
+
+  const filtered = useMemo(() => {
+    let result = leads;
+    if (search) {
+      const s = search.toLowerCase();
+      result = result.filter(l =>
+        (l.fullName || '').toLowerCase().includes(s) ||
+        (l.cpfCnpj || '').includes(s) ||
+        (l.contactName || '').toLowerCase().includes(s) ||
+        (l.email || '').toLowerCase().includes(s) ||
+        (l.protocolo || '').toLowerCase().includes(s)
+      );
+    }
+    if (statusFilter !== 'all') result = result.filter(l => l.status === statusFilter);
+    if (periodoFilter !== 'all') {
+      const now = moment();
+      const map = { hoje: 0, '7dias': 7, '30dias': 30, '90dias': 90 };
+      const days = map[periodoFilter];
+      if (days === 0) result = result.filter(l => moment(l.created_date).isSame(now, 'day'));
+      else result = result.filter(l => moment(l.created_date).isAfter(now.clone().subtract(days, 'days')));
+    }
+    return result;
+  }, [leads, search, statusFilter, periodoFilter]);
+
+  const totalPages = Math.ceil(filtered.length / itemsPerPage);
+  const paginatedLeads = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+
+  // Stats
+  const thisMonth = leads.filter(l => moment(l.created_date).isSame(moment(), 'month')).length;
+  const aguardando = leads.filter(l => ['questionario_preenchido', 'analisado_priscila'].includes(l.status)).length;
+
+  const hasFilters = search || statusFilter !== 'all' || periodoFilter !== 'all';
+
+  const exportCSV = () => {
+    const headers = ['Protocolo', 'CNPJ', 'Razão Social', 'Contato', 'Email', 'TPV', 'Score', 'Status', 'Origem', 'Data'];
+    const rows = filtered.map(l => [
+      l.protocolo, l.cpfCnpj, l.fullName, l.contactName, l.email,
+      l.tpvMensal, l.priscilaQualityScore, l.status, l.origemLead,
+      l.created_date ? moment(l.created_date).format('DD/MM/YYYY') : ''
+    ]);
+    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `questionarios_${moment().format('YYYY-MM-DD')}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Exportado com sucesso!');
+  };
+
+  if (isLoading) {
+    return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" /></div>;
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="flex items-center gap-3">
+          <ClipboardList className="w-6 h-6 text-[var(--pagsmile-green)]" />
+          <div>
+            <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Questionários Recebidos</h1>
+            <div className="flex gap-3 text-xs text-[var(--pagsmile-blue)]/70 mt-1">
+              <span>{thisMonth} leads este mês</span>
+              <span>{aguardando} aguardando ação</span>
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={exportCSV}><Download className="w-4 h-4 mr-1" /> Exportar CSV</Button>
+          <Button variant="outline" size="sm" onClick={() => refetch()}><RefreshCw className="w-4 h-4" /></Button>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="flex flex-wrap gap-3 items-center">
+        <div className="relative flex-1 min-w-[200px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/40" />
+          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar por CNPJ, razão social, contato, email..." className="pl-10 h-10" />
+        </div>
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="w-[170px] h-10"><SelectValue placeholder="Status" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos os status</SelectItem>
+            {Object.entries(STATUS_CONFIG).map(([k, v]) => (
+              <SelectItem key={k} value={k}>{v.icon} {v.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select value={periodoFilter} onValueChange={setPeriodoFilter}>
+          <SelectTrigger className="w-[150px] h-10"><SelectValue placeholder="Período" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="hoje">Hoje</SelectItem>
+            <SelectItem value="7dias">Últimos 7 dias</SelectItem>
+            <SelectItem value="30dias">Últimos 30 dias</SelectItem>
+            <SelectItem value="90dias">Últimos 90 dias</SelectItem>
+          </SelectContent>
+        </Select>
+        {hasFilters && (
+          <Button variant="ghost" size="sm" onClick={() => { setSearch(''); setStatusFilter('all'); setPeriodoFilter('all'); }}>
+            <X className="w-4 h-4 mr-1" /> Limpar
+          </Button>
+        )}
+      </div>
+
+      {/* Table */}
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Protocolo</TableHead>
+                <TableHead>Empresa</TableHead>
+                <TableHead>Tipo</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Score</TableHead>
+                <TableHead>TPV Mensal</TableHead>
+                <TableHead>Data</TableHead>
+                <TableHead className="text-right">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {paginatedLeads.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-12">
+                    <ClipboardList className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/30 mb-3" />
+                    <p className="text-[var(--pagsmile-blue)]/60">
+                      {hasFilters ? 'Nenhum resultado com esses filtros' : 'Nenhum questionário recebido'}
+                    </p>
+                  </TableCell>
+                </TableRow>
+              ) : paginatedLeads.map(lead => {
+                const sCfg = STATUS_CONFIG[lead.status] || { label: lead.status, color: 'bg-slate-100' };
+                const sc = SUB_CAT[lead.businessSubCategory];
+                const ScIcon = sc?.icon || ShoppingCart;
+                return (
+                  <TableRow key={lead.id} className="hover:bg-slate-50">
+                    <TableCell><span className="font-mono text-xs text-[var(--pagsmile-green)]">{lead.protocolo || '-'}</span></TableCell>
+                    <TableCell>
+                      <p className="font-medium text-sm">{lead.fullName || lead.email}</p>
+                      <p className="text-[10px] text-[var(--pagsmile-blue)]/50">{lead.cpfCnpj || ''}</p>
+                    </TableCell>
+                    <TableCell>
+                      {sc && <div className="flex items-center gap-1"><ScIcon className="w-3 h-3" /><span className="text-xs">{sc.label}</span></div>}
+                    </TableCell>
+                    <TableCell><Badge className={`text-xs ${sCfg.color}`}>{sCfg.label}</Badge></TableCell>
+                    <TableCell>
+                      {lead.priscilaQualityScore != null ? (
+                        <span className={`text-sm font-bold ${lead.priscilaQualityScore >= 70 ? 'text-green-600' : lead.priscilaQualityScore >= 40 ? 'text-amber-600' : 'text-red-600'}`}>
+                          {lead.priscilaQualityScore}
+                        </span>
+                      ) : '-'}
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm font-mono">
+                        {lead.tpvMensal ? `R$ ${lead.tpvMensal.toLocaleString('pt-BR')}` : '-'}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-xs text-[var(--pagsmile-blue)]/60">
+                        {lead.created_date ? moment(lead.created_date).format('DD/MM/YY HH:mm') : '-'}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <Link to={createPageUrl('LeadDetails') + `?id=${lead.id}`}>
+                          <Button variant="ghost" size="sm"><Eye className="w-4 h-4" /></Button>
+                        </Link>
+                        <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(lead)} className="text-red-500 hover:text-red-700">
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between px-4 py-3 border-t border-slate-100">
+            <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Anterior</Button>
+            <span className="text-xs text-[var(--pagsmile-blue)]/60">Página {page} de {totalPages}</span>
+            <Button variant="outline" size="sm" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>Próxima</Button>
+          </div>
+        )}
+      </div>
+
+      {/* Delete dialog */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir Questionário</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação é irreversível. Todos os dados serão perdidos.
+              {deleteTarget && <><br /><strong>{deleteTarget.cpfCnpj}</strong> - {deleteTarget.protocolo}</>}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deleteMutation.mutate(deleteTarget.id)} className="bg-red-500 hover:bg-red-600">
+              {deleteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Excluir'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}
