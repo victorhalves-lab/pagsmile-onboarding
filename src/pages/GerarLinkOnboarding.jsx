@@ -432,83 +432,35 @@ export default function GerarLinkOnboarding() {
 
               {/* Tipo de Compliance (só se KYC_AVULSO) */}
               {formData.linkType === 'KYC_AVULSO' && (
-              <div className="space-y-2">
-                <Label className="font-semibold">Tipo de Compliance *</Label>
-                <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, complianceType: 'GENERIC' }))}
-                    className={`p-4 rounded-lg border-2 transition-all text-left ${
-                      formData.complianceType === 'GENERIC' 
-                        ? 'border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5' 
-                        : 'border-slate-200 hover:border-slate-300'
-                    }`}
-                  >
-                    <p className="font-semibold text-sm text-[var(--pagsmile-blue)]">Genérico</p>
-                    <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">Merchant escolhe o tipo</p>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, complianceType: 'PIX' }))}
-                    className={`p-4 rounded-lg border-2 transition-all text-left ${
-                      formData.complianceType === 'PIX' 
-                        ? 'border-blue-500 bg-blue-50' 
-                        : 'border-slate-200 hover:border-slate-300'
-                    }`}
-                  >
-                    <p className="font-semibold text-sm text-blue-600">Compliance Pix</p>
-                    <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">Fluxo simplificado</p>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, complianceType: 'FULL' }))}
-                    className={`p-4 rounded-lg border-2 transition-all text-left ${
-                      formData.complianceType === 'FULL' 
-                        ? 'border-purple-500 bg-purple-50' 
-                        : 'border-slate-200 hover:border-slate-300'
-                    }`}
-                  >
-                    <p className="font-semibold text-sm text-purple-600">Full Compliance</p>
-                    <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">KYC completo</p>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, complianceType: 'LITE' }))}
-                    className={`p-4 rounded-lg border-2 transition-all text-left ${
-                      formData.complianceType === 'LITE' 
-                        ? 'border-teal-500 bg-teal-50' 
-                        : 'border-slate-200 hover:border-slate-300'
-                    }`}
-                  >
-                    <p className="font-semibold text-sm text-teal-600">Perfil Lite</p>
-                    <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">PMEs simplificado</p>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, complianceType: 'ECOMMERCE' }))}
-                    className={`p-4 rounded-lg border-2 transition-all text-left ${
-                      formData.complianceType === 'ECOMMERCE' 
-                        ? 'border-orange-500 bg-orange-50' 
-                        : 'border-slate-200 hover:border-slate-300'
-                    }`}
-                  >
-                    <p className="font-semibold text-sm text-orange-600">E-commerce</p>
-                    <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">Lojas virtuais</p>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, complianceType: 'SAAS' }))}
-                    className={`p-4 rounded-lg border-2 transition-all text-left ${
-                      formData.complianceType === 'SAAS' 
-                        ? 'border-violet-500 bg-violet-50' 
-                        : 'border-slate-200 hover:border-slate-300'
-                    }`}
-                  >
-                    <p className="font-semibold text-sm text-violet-600">SaaS</p>
-                    <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">Recorrência</p>
-                  </button>
+                <div className="space-y-2">
+                  <Label className="font-semibold">Tipo de Compliance *</Label>
+                  <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
+                    <button type="button" onClick={() => setFormData(prev => ({ ...prev, complianceType: 'GENERIC' }))} className={`p-4 rounded-lg border-2 transition-all text-left ${formData.complianceType === 'GENERIC' ? 'border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5' : 'border-slate-200 hover:border-slate-300'}`}>
+                      <p className="font-semibold text-sm text-[var(--pagsmile-blue)]">Genérico</p>
+                      <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">Merchant escolhe o tipo</p>
+                    </button>
+                    <button type="button" onClick={() => setFormData(prev => ({ ...prev, complianceType: 'PIX' }))} className={`p-4 rounded-lg border-2 transition-all text-left ${formData.complianceType === 'PIX' ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:border-slate-300'}`}>
+                      <p className="font-semibold text-sm text-blue-600">Compliance Pix</p>
+                      <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">Fluxo simplificado</p>
+                    </button>
+                    <button type="button" onClick={() => setFormData(prev => ({ ...prev, complianceType: 'FULL' }))} className={`p-4 rounded-lg border-2 transition-all text-left ${formData.complianceType === 'FULL' ? 'border-purple-500 bg-purple-50' : 'border-slate-200 hover:border-slate-300'}`}>
+                      <p className="font-semibold text-sm text-purple-600">Full Compliance</p>
+                      <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">KYC completo</p>
+                    </button>
+                    <button type="button" onClick={() => setFormData(prev => ({ ...prev, complianceType: 'LITE' }))} className={`p-4 rounded-lg border-2 transition-all text-left ${formData.complianceType === 'LITE' ? 'border-teal-500 bg-teal-50' : 'border-slate-200 hover:border-slate-300'}`}>
+                      <p className="font-semibold text-sm text-teal-600">Perfil Lite</p>
+                      <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">PMEs simplificado</p>
+                    </button>
+                    <button type="button" onClick={() => setFormData(prev => ({ ...prev, complianceType: 'ECOMMERCE' }))} className={`p-4 rounded-lg border-2 transition-all text-left ${formData.complianceType === 'ECOMMERCE' ? 'border-orange-500 bg-orange-50' : 'border-slate-200 hover:border-slate-300'}`}>
+                      <p className="font-semibold text-sm text-orange-600">E-commerce</p>
+                      <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">Lojas virtuais</p>
+                    </button>
+                    <button type="button" onClick={() => setFormData(prev => ({ ...prev, complianceType: 'SAAS' }))} className={`p-4 rounded-lg border-2 transition-all text-left ${formData.complianceType === 'SAAS' ? 'border-violet-500 bg-violet-50' : 'border-slate-200 hover:border-slate-300'}`}>
+                      <p className="font-semibold text-sm text-violet-600">SaaS</p>
+                      <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">Recorrência</p>
+                    </button>
+                  </div>
                 </div>
-              </div>
               )}
 
               {/* Questionário e Agente */}
@@ -523,7 +475,7 @@ export default function GerarLinkOnboarding() {
                       <SelectValue placeholder="Selecione o questionário" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={null}>Padrão (qualquer)</SelectItem>
+                      <SelectItem value="_none">Padrão (qualquer)</SelectItem>
                       {templates.map(t => (
                         <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
                       ))}
