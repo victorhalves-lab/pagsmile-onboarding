@@ -121,6 +121,7 @@ export default function GerarLinkOnboarding() {
   // Links por tipo de compliance
   const getPageByLinkType = (link) => {
     if (link.linkType === 'LEAD_QUESTIONNAIRE') return 'LeadQuestionnaire';
+    if (link.linkType === 'LEAD_SIMPLIFICADO') return 'QuestionarioSimplificadoPublico';
     switch (link.complianceType) {
       case 'PIX': return 'CompliancePixOnly';
       case 'FULL': return 'ComplianceFullKYC';
@@ -418,6 +419,18 @@ export default function GerarLinkOnboarding() {
                   >
                     <p className="font-semibold text-sm text-[var(--pagsmile-green)]">📋 Lead</p>
                     <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">Questionário comercial</p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, linkType: 'LEAD_SIMPLIFICADO' }))}
+                    className={`p-4 rounded-lg border-2 transition-all text-left ${
+                      formData.linkType === 'LEAD_SIMPLIFICADO' 
+                        ? 'border-amber-500 bg-amber-50' 
+                        : 'border-slate-200 hover:border-slate-300'
+                    }`}
+                  >
+                    <p className="font-semibold text-sm text-amber-600">⚡ Simplificado</p>
+                    <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">Pós-reunião (taxas)</p>
                   </button>
                   <button
                     type="button"
