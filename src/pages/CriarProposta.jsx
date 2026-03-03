@@ -219,6 +219,17 @@ export default function CriarProposta() {
     const data = await buildPropostaData('rascunho');
     const created = await base44.entities.Proposal.create(data);
 
+    // Registrar no AuditLog
+    await base44.entities.AuditLog.create({
+      entityName: 'Proposal',
+      entityId: created.id,
+      actionType: 'CREATE',
+      actionDescription: `Proposta ${data.codigo} criada para ${data.clienteNome}`,
+      changedBy: data.responsavelNome || 'admin',
+      changeDate: new Date().toISOString(),
+      details: { codigo: data.codigo, clienteNome: data.clienteNome, clienteCnpj: data.clienteCnpj, status: data.status }
+    });
+
     if (leadId) {
       await base44.entities.Lead.update(leadId, {
         currentProposalId: created.id,
