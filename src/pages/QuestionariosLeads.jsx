@@ -180,10 +180,19 @@ export default function QuestionariosLeads() {
       phone: q.contato_telefone,
       contactName: q.contato_nome,
       contactRole: q.contato_cargo,
-      status: 'questionario_preenchido',
+      status: 'em_contato_comercial',
       businessSubCategory: 'MERCHAN',
+      onboardingLinkCode: q.onboarding_link_code || '',
+      lastInteractionDate: new Date().toISOString(),
     });
     await base44.entities.QuestionarioSimplificado.update(q.id, { status: 'vinculado', lead_id: lead.id });
+    await base44.entities.LeadActivity.create({
+      leadId: lead.id,
+      activityType: 'contato_iniciado',
+      description: `Lead criado a partir de questionário simplificado (${q.protocolo})`,
+      performedBy: 'admin',
+      activityDate: new Date().toISOString()
+    });
     queryClient.invalidateQueries({ queryKey: ['questionarios-simplificados'] });
     queryClient.invalidateQueries({ queryKey: ['leads-questionarios'] });
     toast.success('Lead criado e vinculado!');
