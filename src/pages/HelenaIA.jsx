@@ -178,8 +178,8 @@ export default function HelenaIA() {
       
       return {
         name,
-        ia: iaCount || Math.floor(120 + i * 20 + Math.random() * 20),
-        manual: manualCount || Math.floor(50 - i * 5 + Math.random() * 10)
+        ia: iaCount,
+        manual: manualCount
       };
     });
   }, [helenaAnalyses]);

@@ -76,6 +76,9 @@ export default function QuestionariosLeads() {
   const [activeTab, setActiveTab] = useState('completo');
   const [riskFilter, setRiskFilter] = useState('all');
   const [sortBy, setSortBy] = useState('date');
+
+  // Reset page when filters change
+  React.useEffect(() => { setPage(1); }, [search, statusFilter, periodoFilter, riskFilter, sortBy]);
   const itemsPerPage = 10;
 
   const { data: leads = [], isLoading, refetch } = useQuery({
