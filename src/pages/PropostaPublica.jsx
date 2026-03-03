@@ -40,12 +40,22 @@ export default function PropostaPublica() {
     enabled: !!token
   });
 
-  // Register view when loaded
+  // Register view when loaded + track in LeadActivity
   useEffect(() => {
     if (proposta && proposta.status === 'enviada') {
       base44.entities.Proposal.update(proposta.id, {
         status: 'visualizada',
       });
+      // Registrar visualização como atividade do Lead
+      if (proposta.leadId) {
+        base44.entities.LeadActivity.create({
+          leadId: proposta.leadId,
+          activityType: 'proposta_visualizada',
+          description: `Proposta ${proposta.codigo} visualizada pelo cliente`,
+          performedBy: 'cliente',
+          activityDate: new Date().toISOString()
+        });
+      }
     }
   }, [proposta?.id]);
 
