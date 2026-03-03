@@ -62,6 +62,19 @@ export default function PartnerForm({ form, onChange, onSave, saving, isEditing 
           />
         </div>
 
+        <div className="space-y-1.5">
+          <Label className="text-xs text-[#002443]/50">Taxa de Antecipação (%)</Label>
+          <Input
+            type="number"
+            step="0.01"
+            value={form.percentualAntecipacao || ''}
+            onChange={(e) => update('percentualAntecipacao', parseFloat(e.target.value) || 0)}
+            placeholder="0.00"
+            className="border-[#002443]/10"
+          />
+          <p className="text-[10px] text-[#002443]/30">Global para todos os MCCs deste parceiro</p>
+        </div>
+
         <div className="flex items-center gap-3 p-3 rounded-xl border border-[#002443]/5 bg-[#f4f4f4]">
           <Star className={`w-4 h-4 ${form.isPrincipal ? 'text-amber-500 fill-amber-500' : 'text-[#002443]/20'}`} />
           <div className="flex-1">

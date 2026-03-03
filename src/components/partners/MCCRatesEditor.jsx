@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
-import { Plus, Trash2, Edit, Save, Loader2, CreditCard, ChevronDown, ChevronUp, Copy } from 'lucide-react';
+import { Plus, Trash2, Edit, Loader2, CreditCard, ChevronDown, ChevronUp, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 
 const BANDEIRAS = ['visa', 'mastercard', 'elo', 'amex', 'outras'];
@@ -28,7 +28,7 @@ function RateInput({ value, onChange, placeholder = "0.00" }) {
   );
 }
 
-function MCCRateCard({ mccRate, onEdit, onDelete, expanded, onToggle }) {
+function MCCRateCard({ mccRate, partnerAntecipacao, onEdit, onDelete, expanded, onToggle }) {
   const rates = mccRate.rates || {};
   const cartao = rates.cartao || {};
 
@@ -106,45 +106,14 @@ function MCCRateCard({ mccRate, onEdit, onDelete, expanded, onToggle }) {
             </div>
           </div>
 
-          {/* Débito */}
-          <div>
-            <Label className="text-[10px] text-[#002443]/40 font-bold uppercase tracking-wider mb-2 block">
-              MDR Débito
-            </Label>
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs">
-                <thead>
-                  <tr className="border-b border-[#002443]/5">
-                    <th className="text-left py-2 text-[#002443]/40 font-semibold w-24">Bandeira</th>
-                    <th className="text-center py-2 text-[#002443]/40 font-semibold">Base</th>
-                    <th className="text-center py-2 text-[#2bc196] font-semibold">Mín. +20%</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {BANDEIRAS.filter(b => b !== 'amex').map(b => {
-                    const val = rates.debito?.[b] || 0;
-                    const min = Math.round(val * MARKUP * 100) / 100;
-                    return (
-                      <tr key={b} className="border-b border-[#002443]/[0.03]">
-                        <td className="py-2 font-semibold text-[#002443]">{BANDEIRA_LABELS[b]}</td>
-                        <td className="text-center py-2 text-[#002443]">{val ? `${val}%` : '-'}</td>
-                        <td className="text-center py-2 font-bold text-[#2bc196]">{val ? `${min}%` : '-'}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* Antecipação */}
-          {rates.percentualAntecipacao > 0 && (
+          {/* Antecipação (global do parceiro, readonly) */}
+          {partnerAntecipacao > 0 && (
             <div className="flex items-center gap-3 p-3 rounded-lg bg-[#f4f4f4]">
-              <span className="text-xs text-[#002443]/60">Taxa Antecipação:</span>
-              <span className="text-sm font-bold text-[#002443]">{rates.percentualAntecipacao}%</span>
+              <span className="text-xs text-[#002443]/60">Taxa Antecipação (global):</span>
+              <span className="text-sm font-bold text-[#002443]">{partnerAntecipacao}%</span>
               <span className="text-xs text-[#002443]/30">→</span>
               <span className="text-sm font-bold text-[#2bc196]">
-                {Math.round(rates.percentualAntecipacao * MARKUP * 100) / 100}% mín.
+                {Math.round(partnerAntecipacao * MARKUP * 100) / 100}% mín.
               </span>
             </div>
           )}
@@ -154,13 +123,13 @@ function MCCRateCard({ mccRate, onEdit, onDelete, expanded, onToggle }) {
   );
 }
 
-export default function MCCRatesEditor({ partnerId, mccRates, onSave, onDelete, saving }) {
+export default function MCCRatesEditor({ partnerId, partnerAntecipacao, mccRates, onSave, onDelete, saving }) {
   const [showDialog, setShowDialog] = useState(false);
   const [editingMCC, setEditingMCC] = useState(null);
   const [expandedMCC, setExpandedMCC] = useState(null);
-  const [mccForm, setMccForm] = useState({ mcc: '', mccLabel: '', rates: { cartao: {}, debito: {}, percentualAntecipacao: 0 } });
+  const [mccForm, setMccForm] = useState({ mcc: '', mccLabel: '', rates: { cartao: {} } });
 
-  const resetForm = () => setMccForm({ mcc: '', mccLabel: '', rates: { cartao: {}, debito: {}, percentualAntecipacao: 0 } });
+  const resetForm = () => setMccForm({ mcc: '', mccLabel: '', rates: { cartao: {} } });
 
   const openNew = () => { resetForm(); setEditingMCC(null); setShowDialog(true); };
 
@@ -169,7 +138,7 @@ export default function MCCRatesEditor({ partnerId, mccRates, onSave, onDelete, 
     setMccForm({
       mcc: mccRate.mcc || '',
       mccLabel: mccRate.mccLabel || '',
-      rates: mccRate.rates || { cartao: {}, debito: {}, percentualAntecipacao: 0 }
+      rates: { cartao: mccRate.rates?.cartao || {} }
     });
     setShowDialog(true);
   };
@@ -186,16 +155,6 @@ export default function MCCRatesEditor({ partnerId, mccRates, onSave, onDelete, 
             [faixa]: value
           }
         }
-      }
-    }));
-  };
-
-  const updateDebito = (bandeira, value) => {
-    setMccForm(prev => ({
-      ...prev,
-      rates: {
-        ...prev.rates,
-        debito: { ...(prev.rates.debito || {}), [bandeira]: value }
       }
     }));
   };
@@ -220,8 +179,8 @@ export default function MCCRatesEditor({ partnerId, mccRates, onSave, onDelete, 
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-sm font-bold text-[#002443]">Taxas por MCC</h3>
-          <p className="text-[10px] text-[#002443]/40">{mccRates.length} MCC(s) cadastrado(s)</p>
+          <h3 className="text-sm font-bold text-[#002443]">Taxas de MDR por MCC</h3>
+          <p className="text-[10px] text-[#002443]/40">{mccRates.length} MCC(s) cadastrado(s) — apenas crédito (à vista, 2x-6x, 7x-12x)</p>
         </div>
         <Button onClick={openNew} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl text-sm">
           <Plus className="w-4 h-4 mr-1" /> Adicionar MCC
@@ -232,7 +191,7 @@ export default function MCCRatesEditor({ partnerId, mccRates, onSave, onDelete, 
         <div className="text-center py-8 rounded-xl border border-dashed border-[#002443]/10">
           <CreditCard className="w-8 h-8 text-[#002443]/10 mx-auto mb-2" />
           <p className="text-sm text-[#002443]/40">Nenhum MCC cadastrado</p>
-          <p className="text-xs text-[#002443]/30">Adicione MCCs e suas taxas para este parceiro</p>
+          <p className="text-xs text-[#002443]/30">Adicione MCCs e suas taxas de MDR crédito</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -240,6 +199,7 @@ export default function MCCRatesEditor({ partnerId, mccRates, onSave, onDelete, 
             <MCCRateCard
               key={mr.id}
               mccRate={mr}
+              partnerAntecipacao={partnerAntecipacao || 0}
               onEdit={() => openEdit(mr)}
               onDelete={() => onDelete(mr.id)}
               expanded={expandedMCC === mr.id}
@@ -254,7 +214,7 @@ export default function MCCRatesEditor({ partnerId, mccRates, onSave, onDelete, 
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl">
           <DialogHeader>
             <DialogTitle className="text-[#002443]">{editingMCC ? 'Editar' : 'Novo'} MCC</DialogTitle>
-            <DialogDescription className="text-[#002443]/50">Configure as taxas de MDR para este MCC.</DialogDescription>
+            <DialogDescription className="text-[#002443]/50">Configure as taxas de MDR Crédito para este MCC.</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-5 py-2">
@@ -315,38 +275,6 @@ export default function MCCRatesEditor({ partnerId, mccRates, onSave, onDelete, 
                   </tbody>
                 </table>
               </div>
-            </div>
-
-            {/* Débito */}
-            <div>
-              <Label className="text-xs text-[#002443]/50 font-bold uppercase tracking-wider mb-2 block">MDR Débito (%)</Label>
-              <div className="grid grid-cols-4 gap-3">
-                {BANDEIRAS.filter(b => b !== 'amex').map(b => (
-                  <div key={b} className="space-y-1">
-                    <Label className="text-[10px] text-[#002443]/40">{BANDEIRA_LABELS[b]}</Label>
-                    <RateInput
-                      value={mccForm.rates.debito?.[b]}
-                      onChange={(val) => updateDebito(b, val)}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Antecipação */}
-            <div className="space-y-1.5">
-              <Label className="text-xs text-[#002443]/50 font-bold uppercase tracking-wider">Taxa de Antecipação (%)</Label>
-              <Input
-                type="number"
-                step="0.01"
-                value={mccForm.rates.percentualAntecipacao || ''}
-                onChange={(e) => setMccForm(prev => ({
-                  ...prev,
-                  rates: { ...prev.rates, percentualAntecipacao: parseFloat(e.target.value) || 0 }
-                }))}
-                placeholder="0.00"
-                className="border-[#002443]/10 w-40"
-              />
             </div>
           </div>
 
