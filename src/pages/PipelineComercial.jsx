@@ -114,13 +114,23 @@ export default function PipelineComercial() {
     return result;
   }, [leads, search, period]);
 
-  // Group leads by column
+  // Group leads by column (considering questionnaire type)
   const columns = useMemo(() => {
     return COLUNAS.map(col => ({
       ...col,
-      leads: filteredLeads.filter(l => col.statuses.includes(l.status))
+      leads: filteredLeads.filter(l => {
+        if (!col.statuses.includes(l.status)) return false;
+
+        // For "Leads (Quest. Completo)" — only leads from LEAD_QUESTIONNAIRE (or no link = direct)
+        if (col.questionnaireType === 'FULL') {
+          const lt = l.onboardingLinkCode ? linkTypeMap[l.onboardingLinkCode] : 'LEAD_QUESTIONNAIRE';
+          return lt !== 'LEAD_SIMPLIFICADO';
+        }
+
+        return true;
+      })
     }));
-  }, [filteredLeads]);
+  }, [filteredLeads, linkTypeMap]);
 
   const onDragEnd = (result) => {
     if (!result.destination) return;
