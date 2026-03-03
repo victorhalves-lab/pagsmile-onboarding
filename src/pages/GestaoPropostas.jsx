@@ -111,15 +111,22 @@ export default function GestaoPropostas() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Gestão de Propostas</h1>
-          <p className="text-[var(--pagsmile-blue)]/70 text-sm">{filtered.length} propostas encontradas</p>
+      {/* Hero Header */}
+      <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-6 shadow-lg">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-xl bg-white/10">
+              <FileText className="w-6 h-6 text-[#5cf7cf]" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white">Gestão de Propostas</h1>
+              <p className="text-white/60 text-sm mt-1">{filtered.length} propostas encontradas</p>
+            </div>
+          </div>
+          <Button onClick={() => navigate(createPageUrl('CriarProposta'))} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white gap-2 rounded-xl shadow-md">
+            <Plus className="w-4 h-4" /> Nova Proposta
+          </Button>
         </div>
-        <Button onClick={() => navigate(createPageUrl('CriarProposta'))} className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white gap-2">
-          <Plus className="w-4 h-4" /> Nova Proposta
-        </Button>
       </div>
 
       {/* Metrics Dashboard */}
@@ -148,7 +155,7 @@ export default function GestaoPropostas() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -177,7 +184,7 @@ export default function GestaoPropostas() {
                 const sCfg = STATUS_CONFIG[p.status] || STATUS_CONFIG.rascunho;
                 const expiring = isExpiring(p);
                 return (
-                  <TableRow key={p.id} className="hover:bg-slate-50">
+                  <TableRow key={p.id} className="hover:bg-[#f4f4f4] transition-colors">
                     <TableCell>
                       <span className="font-mono text-sm text-[var(--pagsmile-green)]">{p.codigo || '-'}</span>
                     </TableCell>

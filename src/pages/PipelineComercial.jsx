@@ -152,30 +152,34 @@ export default function PipelineComercial() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div className="flex items-center gap-3">
-          <BarChart3 className="w-6 h-6 text-[var(--pagsmile-green)]" />
-          <div>
-            <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Pipeline Comercial</h1>
-            <div className="flex gap-4 text-xs text-[var(--pagsmile-blue)]/70 mt-1">
-              <span>{filteredLeads.length} leads</span>
-              <span className="flex items-center gap-1"><DollarSign className="w-3 h-3" /> TPV: {formatMoeda(totalTPV)}</span>
-              <span className="flex items-center gap-1"><TrendingUp className="w-3 h-3" /> Receita (2,5%): {formatMoeda(totalTPV * 0.025)}</span>
+      {/* Hero Header */}
+      <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-6 shadow-lg">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-xl bg-white/10">
+              <BarChart3 className="w-6 h-6 text-[#5cf7cf]" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white">Pipeline Comercial</h1>
+              <div className="flex gap-3 text-xs text-white/60 mt-1.5">
+                <span className="bg-white/10 px-2 py-0.5 rounded-md">{filteredLeads.length} leads</span>
+                <span className="bg-white/10 px-2 py-0.5 rounded-md flex items-center gap-1"><DollarSign className="w-3 h-3" /> TPV: {formatMoeda(totalTPV)}</span>
+                <span className="bg-[#2bc196]/20 text-[#5cf7cf] px-2 py-0.5 rounded-md flex items-center gap-1 font-medium"><TrendingUp className="w-3 h-3" /> Receita: {formatMoeda(totalTPV * 0.025)}</span>
+              </div>
             </div>
           </div>
+          <Select value={period} onValueChange={setPeriod}>
+            <SelectTrigger className="w-[160px] h-9 border-white/20 text-white bg-white/10 rounded-lg"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="week">Esta Semana</SelectItem>
+              <SelectItem value="month">Este Mês</SelectItem>
+              <SelectItem value="3months">3 Meses</SelectItem>
+              <SelectItem value="6months">6 Meses</SelectItem>
+              <SelectItem value="12months">12 Meses</SelectItem>
+              <SelectItem value="all">Lifetime</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-        <Select value={period} onValueChange={setPeriod}>
-          <SelectTrigger className="w-[160px] h-9"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="week">Esta Semana</SelectItem>
-            <SelectItem value="month">Este Mês</SelectItem>
-            <SelectItem value="3months">3 Meses</SelectItem>
-            <SelectItem value="6months">6 Meses</SelectItem>
-            <SelectItem value="12months">12 Meses</SelectItem>
-            <SelectItem value="all">Lifetime</SelectItem>
-          </SelectContent>
-        </Select>
       </div>
 
       {/* Metrics */}
@@ -208,14 +212,14 @@ export default function PipelineComercial() {
             const colReceitaAnual = colReceitaMensal * 12;
             return (
               <div key={col.id} className="flex-shrink-0 w-[260px]">
-                {/* Column header */}
-                <div className="mb-3">
-                  <div className="h-1 rounded-full mb-2" style={{ backgroundColor: col.color }} />
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-semibold text-[var(--pagsmile-blue)]">{col.name}</span>
-                    <Badge variant="outline" className="text-xs">{col.leads.length}</Badge>
-                  </div>
-                  <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-[10px] bg-slate-50 rounded-md p-2 border border-slate-100">
+              {/* Column header */}
+              <div className="mb-3 bg-white rounded-2xl p-3 border border-[#002443]/5 shadow-sm">
+                <div className="h-1 rounded-full mb-2" style={{ backgroundColor: col.color }} />
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-[#002443]">{col.name}</span>
+                  <Badge className="text-[10px] bg-[#002443]/5 text-[#002443] border-0">{col.leads.length}</Badge>
+                </div>
+                <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-[10px] bg-[#f4f4f4] rounded-xl p-2 border border-[#002443]/5">
                     <div>
                       <span className="text-[var(--pagsmile-blue)]/40">TPV/mês</span>
                       <p className="font-bold text-[var(--pagsmile-blue)]">{formatMoeda(colTPVMensal)}</p>
@@ -240,8 +244,8 @@ export default function PipelineComercial() {
                     <div
                       ref={provided.innerRef}
                       {...provided.droppableProps}
-                      className={`space-y-2 min-h-[100px] rounded-lg p-2 transition-colors ${
-                        snapshot.isDraggingOver ? 'bg-slate-100' : 'bg-slate-50/50'
+                      className={`space-y-2 min-h-[100px] rounded-xl p-2 transition-colors ${
+                        snapshot.isDraggingOver ? 'bg-[#2bc196]/5 border-2 border-dashed border-[#2bc196]/30' : 'bg-[#f4f4f4]/50'
                       }`}
                     >
                       {col.leads.map((lead, idx) => (
@@ -251,8 +255,8 @@ export default function PipelineComercial() {
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
-                              className={`bg-white rounded-lg border border-slate-200 p-3 transition-shadow ${
-                                snapshot.isDragging ? 'shadow-lg ring-2 ring-[var(--pagsmile-green)]/30' : 'hover:shadow-md'
+                              className={`bg-white rounded-xl border border-[#002443]/5 p-3 transition-all ${
+                                snapshot.isDragging ? 'shadow-lg ring-2 ring-[#2bc196]/30 -rotate-1' : 'hover:shadow-md hover:-translate-y-0.5'
                               }`}
                             >
                               <LeadKanbanCard lead={lead} onAction={handleCardAction} />
