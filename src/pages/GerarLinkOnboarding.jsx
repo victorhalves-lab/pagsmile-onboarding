@@ -133,7 +133,7 @@ export default function GerarLinkOnboarding() {
   };
 
   const genericLinks = {
-    LEAD: `${window.location.origin}${createPageUrl('LeadQuestionnaire')}`,
+    LEAD: `${window.location.origin}${createPageUrl('LeadQuestionnaire')}?templateId=69a5ccbeafab70a7ca2184ad`,
     LEAD_SIMPLIFICADO: `${window.location.origin}${createPageUrl('QuestionarioSimplificadoPublico')}`,
     GENERIC: `${window.location.origin}${createPageUrl('ComplianceOnboardingStart')}`,
     PIX: `${window.location.origin}${createPageUrl('CompliancePixOnly')}`,

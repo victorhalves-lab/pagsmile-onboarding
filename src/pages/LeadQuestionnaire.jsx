@@ -43,7 +43,9 @@ export default function LeadQuestionnaire() {
         category: 'LEAD_GENERATION', 
         isActive: true 
       });
-      return templates[0] || null;
+      // Prioriza o template completo caso existam múltiplos
+      const fullTemplate = templates.find(t => t.model === 'full_lead_public');
+      return fullTemplate || templates[0] || null;
     }
   });
 
