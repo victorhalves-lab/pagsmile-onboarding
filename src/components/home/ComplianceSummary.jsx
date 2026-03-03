@@ -3,16 +3,16 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '../../utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Shield, ArrowRight, CheckCircle, AlertTriangle, Clock, XCircle } from 'lucide-react';
+import { Shield, ArrowRight, AlertTriangle } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
 const STATUS_COLORS = {
-  'Pendente': '#9CA3AF',
-  'Em Processamento': '#3B82F6',
-  'Aprovado': '#10B981',
+  'Pendente': '#002443',
+  'Em Processamento': '#36706c',
+  'Aprovado': '#2bc196',
   'Manual': '#F59E0B',
   'Recusado': '#EF4444',
-  'Docs Solicitados': '#8B5CF6',
+  'Docs Solicitados': '#5cf7cf',
 };
 
 export default function ComplianceSummary({ cases, helenaAnalyses }) {
@@ -24,36 +24,35 @@ export default function ComplianceSummary({ cases, helenaAnalyses }) {
 
     const pendingManual = (byStatus['Manual'] || 0) + (byStatus['Pendente'] || 0);
     const approved = byStatus['Aprovado'] || 0;
-    const rejected = byStatus['Recusado'] || 0;
     const inProcess = byStatus['Em Processamento'] || 0;
 
-    // Helena metrics
     const helenaApproved = helenaAnalyses.filter(h => h.iaDecision === 'Aprovado' || h.recomendacao_final === 'Aprovado').length;
     const helenaTotal = helenaAnalyses.length;
     const autoApprovalRate = helenaTotal > 0 ? ((helenaApproved / helenaTotal) * 100).toFixed(0) : 0;
 
-    // Chart data
     const chartData = Object.entries(byStatus)
       .filter(([_, count]) => count > 0)
       .map(([status, count]) => ({
         name: status,
         value: count,
-        color: STATUS_COLORS[status] || '#9CA3AF'
+        color: STATUS_COLORS[status] || '#002443'
       }));
 
-    return { byStatus, pendingManual, approved, rejected, inProcess, autoApprovalRate, chartData, total: cases.length };
+    return { byStatus, pendingManual, approved, inProcess, autoApprovalRate, chartData, total: cases.length };
   }, [cases, helenaAnalyses]);
 
   return (
-    <Card>
+    <Card className="rounded-2xl border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm flex items-center gap-2">
-            <Shield className="w-4 h-4 text-[var(--pagsmile-green)]" />
+          <CardTitle className="text-sm flex items-center gap-2 font-bold text-[#002443]">
+            <div className="p-1.5 rounded-lg bg-[#36706c]/10">
+              <Shield className="w-3.5 h-3.5 text-[#36706c]" />
+            </div>
             Compliance
           </CardTitle>
           <Link to={createPageUrl('AdminDashboard')}>
-            <Button variant="ghost" size="sm" className="text-xs gap-1 text-[var(--pagsmile-green)]">
+            <Button variant="ghost" size="sm" className="text-xs gap-1 text-[#2bc196] hover:text-[#002443] font-semibold">
               Dashboard <ArrowRight className="w-3 h-3" />
             </Button>
           </Link>
@@ -62,23 +61,23 @@ export default function ComplianceSummary({ cases, helenaAnalyses }) {
       <CardContent className="space-y-4">
         {/* Summary stats */}
         <div className="grid grid-cols-4 gap-2">
-          <div className="text-center">
-            <p className="text-lg font-bold text-[var(--pagsmile-blue)]">{metrics.total}</p>
-            <p className="text-[10px] text-[var(--pagsmile-blue)]/50">Total</p>
+          <div className="text-center p-2 rounded-xl bg-[#f4f4f4]">
+            <p className="text-lg font-bold text-[#002443]">{metrics.total}</p>
+            <p className="text-[10px] text-[#282828]/40 font-medium">Total</p>
           </div>
-          <div className="text-center">
-            <p className="text-lg font-bold text-green-600">{metrics.approved}</p>
-            <p className="text-[10px] text-[var(--pagsmile-blue)]/50">Aprovados</p>
+          <div className="text-center p-2 rounded-xl bg-[#2bc196]/5">
+            <p className="text-lg font-bold text-[#2bc196]">{metrics.approved}</p>
+            <p className="text-[10px] text-[#282828]/40 font-medium">Aprovados</p>
           </div>
-          <div className="text-center">
-            <p className={`text-lg font-bold ${metrics.pendingManual > 0 ? 'text-amber-600' : 'text-[var(--pagsmile-blue)]'}`}>
+          <div className="text-center p-2 rounded-xl bg-[#f4f4f4]">
+            <p className={`text-lg font-bold ${metrics.pendingManual > 0 ? 'text-amber-600' : 'text-[#002443]'}`}>
               {metrics.pendingManual}
             </p>
-            <p className="text-[10px] text-[var(--pagsmile-blue)]/50">Pendentes</p>
+            <p className="text-[10px] text-[#282828]/40 font-medium">Pendentes</p>
           </div>
-          <div className="text-center">
-            <p className="text-lg font-bold text-blue-600">{metrics.autoApprovalRate}%</p>
-            <p className="text-[10px] text-[var(--pagsmile-blue)]/50">IA Auto</p>
+          <div className="text-center p-2 rounded-xl bg-[#36706c]/5">
+            <p className="text-lg font-bold text-[#36706c]">{metrics.autoApprovalRate}%</p>
+            <p className="text-[10px] text-[#282828]/40 font-medium">IA Auto</p>
           </div>
         </div>
 
@@ -92,8 +91,8 @@ export default function ComplianceSummary({ cases, helenaAnalyses }) {
                     data={metrics.chartData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={20}
-                    outerRadius={38}
+                    innerRadius={22}
+                    outerRadius={40}
                     dataKey="value"
                     strokeWidth={2}
                     stroke="#fff"
@@ -104,19 +103,19 @@ export default function ComplianceSummary({ cases, helenaAnalyses }) {
                   </Pie>
                   <Tooltip 
                     formatter={(value, name) => [value, name]}
-                    contentStyle={{ fontSize: '11px', borderRadius: '8px' }}
+                    contentStyle={{ fontSize: '11px', borderRadius: '12px', border: '1px solid #e2e8f0' }}
                   />
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="flex-1 space-y-1">
+            <div className="flex-1 space-y-1.5">
               {metrics.chartData.map((item) => (
-                <div key={item.name} className="flex items-center justify-between text-[10px]">
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
-                    <span className="text-[var(--pagsmile-blue)]/70">{item.name}</span>
+                <div key={item.name} className="flex items-center justify-between text-[11px]">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
+                    <span className="text-[#282828]/60 font-medium">{item.name}</span>
                   </div>
-                  <span className="font-bold text-[var(--pagsmile-blue)]">{item.value}</span>
+                  <span className="font-bold text-[#002443]">{item.value}</span>
                 </div>
               ))}
             </div>
@@ -125,9 +124,9 @@ export default function ComplianceSummary({ cases, helenaAnalyses }) {
 
         {/* Pending alert */}
         {metrics.pendingManual > 0 && (
-          <div className="flex items-center gap-2 p-2 rounded-lg bg-amber-50 border border-amber-200">
+          <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-50 border border-amber-200/50">
             <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
-            <p className="text-[10px] text-amber-700">
+            <p className="text-[11px] text-amber-700 font-medium">
               {metrics.pendingManual} caso{metrics.pendingManual > 1 ? 's' : ''} aguardando análise manual
             </p>
           </div>
