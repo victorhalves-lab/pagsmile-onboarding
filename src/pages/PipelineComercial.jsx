@@ -48,6 +48,20 @@ export default function PipelineComercial() {
     queryFn: () => base44.entities.Lead.list('-created_date', 500)
   });
 
+  const { data: onboardingLinks = [] } = useQuery({
+    queryKey: ['pipeline-onboarding-links'],
+    queryFn: () => base44.entities.OnboardingLink.list('-created_date', 500)
+  });
+
+  // Map linkCode -> linkType for quick lookup
+  const linkTypeMap = React.useMemo(() => {
+    const map = {};
+    onboardingLinks.forEach(link => {
+      if (link.uniqueCode) map[link.uniqueCode] = link.linkType;
+    });
+    return map;
+  }, [onboardingLinks]);
+
   const moveMutation = useMutation({
     mutationFn: async ({ leadId, newStatus }) => {
       await base44.entities.Lead.update(leadId, {
