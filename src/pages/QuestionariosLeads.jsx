@@ -162,8 +162,11 @@ export default function QuestionariosLeads() {
   }
 
   const handleVerDetalhes = (q) => {
-    // TODO: navegar para detalhes do questionário simplificado
-    toast.info(`Detalhes: ${q.protocolo}`);
+    if (q.lead_id) {
+      navigate(createPageUrl('LeadDetails') + `?id=${q.lead_id}`);
+    } else {
+      toast.info(`Protocolo: ${q.protocolo} | ${q.nome_empresa} | CNPJ: ${q.cnpj} | Contato: ${q.contato_nome} (${q.contato_email})`);
+    }
   };
 
   const handleVincularLead = async (q) => {

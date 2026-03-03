@@ -69,9 +69,19 @@ export function KPICardComparison({
       badge: 'bg-green-100 text-green-700',
       target: 'text-[var(--pagsmile-blue)]/70'
     },
+    blue: {
+      after: 'text-blue-600',
+      badge: 'bg-blue-100 text-blue-700',
+      target: 'text-[var(--pagsmile-blue)]/70'
+    },
     red: {
       after: 'text-red-600',
       badge: 'bg-red-100 text-red-700',
+      target: 'text-[var(--pagsmile-blue)]/70'
+    },
+    purple: {
+      after: 'text-purple-600',
+      badge: 'bg-purple-100 text-purple-700',
       target: 'text-[var(--pagsmile-blue)]/70'
     }
   };

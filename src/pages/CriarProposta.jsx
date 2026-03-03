@@ -225,8 +225,13 @@ export default function CriarProposta() {
   const handleSalvarRascunho = async () => {
     setSaving(true);
     const data = await buildPropostaData('rascunho');
-    await base44.entities.Proposal.create(data);
-    toast.success('Rascunho salvo!');
+    if (editId) {
+      await base44.entities.Proposal.update(editId, data);
+      toast.success('Rascunho atualizado!');
+    } else {
+      await base44.entities.Proposal.create(data);
+      toast.success('Rascunho salvo!');
+    }
     setSaving(false);
     navigate(createPageUrl('GestaoPropostas'));
   };
@@ -238,7 +243,13 @@ export default function CriarProposta() {
     }
     setSaving(true);
     const data = await buildPropostaData('rascunho');
-    const created = await base44.entities.Proposal.create(data);
+    let created;
+    if (editId) {
+      await base44.entities.Proposal.update(editId, data);
+      created = { id: editId };
+    } else {
+      created = await base44.entities.Proposal.create(data);
+    }
 
     // Registrar no AuditLog
     await base44.entities.AuditLog.create({
