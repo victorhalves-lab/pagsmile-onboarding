@@ -26,6 +26,7 @@ import moment from 'moment';
 import LeadQuickActions from '../components/leads/LeadQuickActions';
 import LeadProposals from '../components/leads/LeadProposals';
 import LeadSLAIndicator from '../components/leads/LeadSLAIndicator';
+import LeadQualifierPanel from '../components/leads/LeadQualifierPanel';
 
 const STATUS_CONFIG = {
   questionario_preenchido: { label: 'Questionário Preenchido', color: 'bg-blue-100 text-blue-700' },
@@ -157,6 +158,7 @@ export default function LeadDetails() {
       <Tabs defaultValue="overview">
         <TabsList>
           <TabsTrigger value="overview">Visão Geral</TabsTrigger>
+          <TabsTrigger value="leadqualifier">Lead Qualifier IA</TabsTrigger>
           <TabsTrigger value="priscila">Análise PRISCILA</TabsTrigger>
           <TabsTrigger value="questionnaire">Questionário</TabsTrigger>
           <TabsTrigger value="proposals">Propostas</TabsTrigger>
@@ -233,6 +235,10 @@ export default function LeadDetails() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="leadqualifier" className="mt-4">
+          <LeadQualifierPanel lead={lead} />
         </TabsContent>
 
         <TabsContent value="priscila" className="mt-4">
