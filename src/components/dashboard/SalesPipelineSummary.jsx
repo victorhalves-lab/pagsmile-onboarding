@@ -2,18 +2,17 @@ import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../../utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { DollarSign, Users, TrendingUp, ArrowRight, AlertTriangle } from 'lucide-react';
+import { DollarSign, ArrowRight, AlertTriangle } from 'lucide-react';
 import moment from 'moment';
 
 const FUNNEL_STAGES = [
-  { key: 'leads', label: 'Leads (Completo)', statuses: ['questionario_preenchido', 'analisado_priscila'], color: '#6B7280' },
-  { key: 'contato', label: 'Contato + Simpl.', statuses: ['em_contato_comercial'], color: '#F59E0B' },
-  { key: 'proposta', label: 'Proposta', statuses: ['proposta_enviada'], color: '#3B82F6' },
-  { key: 'aceita', label: 'Aceita', statuses: ['proposta_aceita'], color: '#8B5CF6' },
-  { key: 'kyc', label: 'KYC', statuses: ['kyc_iniciado', 'kyc_aprovado', 'kyc_revisao_manual'], color: '#10B981' },
-  { key: 'ativado', label: 'Ativado', statuses: ['ativado'], color: '#059669' },
+  { key: 'leads', label: 'Leads', statuses: ['questionario_preenchido', 'analisado_priscila'], color: '#002443' },
+  { key: 'contato', label: 'Contato', statuses: ['em_contato_comercial'], color: '#36706c' },
+  { key: 'proposta', label: 'Proposta', statuses: ['proposta_enviada'], color: '#2bc196' },
+  { key: 'aceita', label: 'Aceita', statuses: ['proposta_aceita'], color: '#2bc196' },
+  { key: 'kyc', label: 'KYC', statuses: ['kyc_iniciado', 'kyc_aprovado', 'kyc_revisao_manual'], color: '#5cf7cf' },
+  { key: 'ativado', label: 'Ativado', statuses: ['ativado'], color: '#2bc196' },
 ];
 
 export default function SalesPipelineSummary({ leads }) {
@@ -25,36 +24,33 @@ export default function SalesPipelineSummary({ leads }) {
     }));
 
     const totalTPV = leads.reduce((s, l) => s + (l.tpvMensal || 0), 0);
-    const avgScore = leads.filter(l => l.priscilaQualityScore).length > 0
-      ? Math.round(leads.filter(l => l.priscilaQualityScore).reduce((s, l) => s + l.priscilaQualityScore, 0) / leads.filter(l => l.priscilaQualityScore).length)
-      : 0;
 
-    // Leads parados há mais de 7 dias
     const staleLeads = leads.filter(l => {
       if (['ativado', 'perdido'].includes(l.status)) return false;
       const lastDate = l.lastInteractionDate || l.updated_date || l.created_date;
       return moment().diff(moment(lastDate), 'days') > 7;
     }).length;
 
-    // Conversão geral
     const ativos = leads.filter(l => l.status === 'ativado').length;
     const conversionRate = leads.length > 0 ? ((ativos / leads.length) * 100).toFixed(1) : 0;
 
-    return { stages, totalTPV, avgScore, staleLeads, conversionRate, total: leads.length };
+    return { stages, totalTPV, staleLeads, conversionRate, total: leads.length };
   }, [leads]);
 
   const maxCount = Math.max(...metrics.stages.map(s => s.count), 1);
 
   return (
-    <Card>
+    <Card className="rounded-2xl border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm flex items-center gap-2">
-            <DollarSign className="w-4 h-4 text-[var(--pagsmile-green)]" />
+          <CardTitle className="text-sm flex items-center gap-2 font-bold text-[#002443]">
+            <div className="p-1.5 rounded-lg bg-[#002443]/10">
+              <DollarSign className="w-3.5 h-3.5 text-[#002443]" />
+            </div>
             Pipeline de Vendas
           </CardTitle>
           <Link to={createPageUrl('PipelineComercial')}>
-            <Button variant="ghost" size="sm" className="text-xs gap-1 text-[var(--pagsmile-green)]">
+            <Button variant="ghost" size="sm" className="text-xs gap-1 text-[#2bc196] hover:text-[#002443] font-semibold">
               Ver Pipeline <ArrowRight className="w-3 h-3" />
             </Button>
           </Link>
@@ -63,53 +59,53 @@ export default function SalesPipelineSummary({ leads }) {
       <CardContent className="space-y-4">
         {/* Summary stats */}
         <div className="grid grid-cols-4 gap-2">
-          <div className="text-center">
-            <p className="text-lg font-bold text-[var(--pagsmile-blue)]">{metrics.total}</p>
-            <p className="text-[10px] text-[var(--pagsmile-blue)]/50">Leads</p>
+          <div className="text-center p-2 rounded-xl bg-[#f4f4f4]">
+            <p className="text-lg font-bold text-[#002443]">{metrics.total}</p>
+            <p className="text-[10px] text-[#282828]/40 font-medium">Leads</p>
           </div>
-          <div className="text-center">
-            <p className="text-lg font-bold text-[var(--pagsmile-green)]">
+          <div className="text-center p-2 rounded-xl bg-[#2bc196]/5">
+            <p className="text-lg font-bold text-[#2bc196]">
               R$ {(metrics.totalTPV / 1000000).toFixed(1)}M
             </p>
-            <p className="text-[10px] text-[var(--pagsmile-blue)]/50">TPV Total</p>
+            <p className="text-[10px] text-[#282828]/40 font-medium">TPV</p>
           </div>
-          <div className="text-center">
-            <p className="text-lg font-bold text-blue-600">{metrics.conversionRate}%</p>
-            <p className="text-[10px] text-[var(--pagsmile-blue)]/50">Conversão</p>
+          <div className="text-center p-2 rounded-xl bg-[#f4f4f4]">
+            <p className="text-lg font-bold text-[#36706c]">{metrics.conversionRate}%</p>
+            <p className="text-[10px] text-[#282828]/40 font-medium">Conversão</p>
           </div>
-          <div className="text-center">
-            <p className={`text-lg font-bold ${metrics.staleLeads > 0 ? 'text-amber-600' : 'text-[var(--pagsmile-blue)]'}`}>
+          <div className="text-center p-2 rounded-xl bg-[#f4f4f4]">
+            <p className={`text-lg font-bold ${metrics.staleLeads > 0 ? 'text-amber-600' : 'text-[#002443]'}`}>
               {metrics.staleLeads}
             </p>
-            <p className="text-[10px] text-[var(--pagsmile-blue)]/50">Parados 7d+</p>
+            <p className="text-[10px] text-[#282828]/40 font-medium">Parados</p>
           </div>
         </div>
 
         {/* Funnel bars */}
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {metrics.stages.map(stage => (
-            <div key={stage.key} className="flex items-center gap-2">
-              <span className="text-[10px] w-16 text-right text-[var(--pagsmile-blue)]/60 shrink-0">{stage.label}</span>
-              <div className="flex-1 bg-slate-100 rounded-full h-5 relative overflow-hidden">
+            <div key={stage.key} className="flex items-center gap-2.5">
+              <span className="text-[10px] w-14 text-right text-[#282828]/40 shrink-0 font-medium">{stage.label}</span>
+              <div className="flex-1 bg-[#f4f4f4] rounded-full h-5 relative overflow-hidden">
                 <div
-                  className="h-full rounded-full transition-all duration-500 flex items-center"
+                  className="h-full rounded-full transition-all duration-700 ease-out"
                   style={{
-                    width: `${Math.max((stage.count / maxCount) * 100, stage.count > 0 ? 8 : 0)}%`,
+                    width: `${Math.max((stage.count / maxCount) * 100, stage.count > 0 ? 10 : 0)}%`,
                     backgroundColor: stage.color
                   }}
                 />
               </div>
-              <span className="text-xs font-bold w-6 text-[var(--pagsmile-blue)]">{stage.count}</span>
+              <span className="text-xs font-bold w-6 text-[#002443]">{stage.count}</span>
             </div>
           ))}
         </div>
 
         {/* Alert for stale leads */}
         {metrics.staleLeads > 0 && (
-          <div className="flex items-center gap-2 p-2 rounded-lg bg-amber-50 border border-amber-200">
+          <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-50 border border-amber-200/50">
             <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
-            <p className="text-[10px] text-amber-700">
-              {metrics.staleLeads} lead{metrics.staleLeads > 1 ? 's' : ''} sem interação há mais de 7 dias
+            <p className="text-[11px] text-amber-700 font-medium">
+              {metrics.staleLeads} lead{metrics.staleLeads > 1 ? 's' : ''} sem interação há 7+ dias
             </p>
           </div>
         )}
