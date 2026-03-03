@@ -219,8 +219,8 @@ export default function TemplatesQuestionarios() {
                     onClick={() => {
                       const baseUrl = window.location.origin;
                       const path = template.category === 'LEAD_GENERATION' 
-                        ? '/lead-questionnaire' 
-                        : '/compliance-onboarding-start';
+                        ? createPageUrl('LeadQuestionnaire')
+                        : createPageUrl('ComplianceOnboardingStart');
                       const url = `${baseUrl}${path}?templateId=${template.id}`;
                       navigator.clipboard.writeText(url);
                       toast.success('Link público copiado!');
@@ -236,8 +236,8 @@ export default function TemplatesQuestionarios() {
                     onClick={() => {
                       const baseUrl = window.location.origin;
                       const path = template.category === 'LEAD_GENERATION' 
-                        ? '/lead-questionnaire' 
-                        : '/compliance-onboarding-start';
+                        ? createPageUrl('LeadQuestionnaire')
+                        : createPageUrl('ComplianceOnboardingStart');
                       const url = `${baseUrl}${path}?templateId=${template.id}`;
                       window.open(url, '_blank');
                     }}
