@@ -39,13 +39,17 @@ import {
 import { 
   RefreshCw, Plus, Loader2, Calendar, Clock,
   CheckCircle2, XCircle, AlertTriangle, Search,
-  Filter, ChevronLeft, ChevronRight, Play, Pause, User, Building2
+  Filter, ChevronLeft, ChevronRight, Play, Pause, User, Building2,
+  History, Eye
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '../utils';
 
 export default function GestaoRevalidacao() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [dateRangeFilter, setDateRangeFilter] = useState('all');
   const [showScheduleDialog, setShowScheduleDialog] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 15;
@@ -170,6 +174,7 @@ export default function GestaoRevalidacao() {
   };
 
   const filteredSchedules = React.useMemo(() => {
+    const now = new Date();
     return schedules.filter(s => {
       const merchant = merchantMap[s.merchantId];
       const matchesSearch = !searchTerm || 
@@ -178,9 +183,21 @@ export default function GestaoRevalidacao() {
       
       const matchesStatus = statusFilter === 'all' || s.status === statusFilter;
       
-      return matchesSearch && matchesStatus;
+      let matchesDateRange = true;
+      if (dateRangeFilter !== 'all' && s.scheduledDate) {
+        const schedDate = new Date(s.scheduledDate);
+        if (dateRangeFilter === '7days') {
+          matchesDateRange = schedDate <= new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000) && schedDate >= now;
+        } else if (dateRangeFilter === '30days') {
+          matchesDateRange = schedDate <= new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000) && schedDate >= now;
+        } else if (dateRangeFilter === 'overdue') {
+          matchesDateRange = schedDate < now && s.status === 'pending';
+        }
+      }
+      
+      return matchesSearch && matchesStatus && matchesDateRange;
     });
-  }, [schedules, searchTerm, statusFilter, merchantMap]);
+  }, [schedules, searchTerm, statusFilter, dateRangeFilter, merchantMap]);
 
   const totalPages = Math.ceil(filteredSchedules.length / itemsPerPage);
   const paginatedSchedules = filteredSchedules.slice(
@@ -198,77 +215,59 @@ export default function GestaoRevalidacao() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-teal-100">
-            <RefreshCw className="w-6 h-6 text-teal-600" />
+      {/* Hero Header */}
+      <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-6 shadow-lg">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-xl bg-white/10">
+              <History className="w-6 h-6 text-[#5cf7cf]" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white">Revalidação de Clientes</h1>
+              <p className="text-white/60 text-sm mt-1">Gerencie a recertificação periódica de merchants</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Revalidação de Clientes</h1>
-            <p className="text-[var(--pagsmile-blue)]/70">Gerencie a recertificação periódica de merchants</p>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => refetch()} className="border-white/20 text-white hover:bg-white/10 rounded-xl bg-transparent">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Atualizar
+            </Button>
+            <Button 
+              onClick={() => setShowScheduleDialog(true)}
+              className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl shadow-md"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Agendar Revalidação
+            </Button>
           </div>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => refetch()}>
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Atualizar
-          </Button>
-          <Button 
-            onClick={() => setShowScheduleDialog(true)}
-            className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Agendar Revalidação
-          </Button>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        <Card>
-          <CardContent className="pt-4">
-            <p className="text-2xl font-bold text-[var(--pagsmile-blue)]">{stats.total}</p>
-            <p className="text-xs text-[var(--pagsmile-blue)]/70">Total</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <p className="text-2xl font-bold text-yellow-600">{stats.pending}</p>
-            <p className="text-xs text-[var(--pagsmile-blue)]/70">Pendentes</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <p className="text-2xl font-bold text-blue-600">{stats.inProgress}</p>
-            <p className="text-xs text-[var(--pagsmile-blue)]/70">Em Andamento</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <p className="text-2xl font-bold text-green-600">{stats.completed}</p>
-            <p className="text-xs text-[var(--pagsmile-blue)]/70">Concluídas</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <p className="text-2xl font-bold text-purple-600">{stats.thisMonth}</p>
-            <p className="text-xs text-[var(--pagsmile-blue)]/70">Este Mês</p>
-          </CardContent>
-        </Card>
-        <Card className={stats.overdue > 0 ? 'border-red-200 bg-red-50' : ''}>
-          <CardContent className="pt-4">
-            <p className="text-2xl font-bold text-red-600">{stats.overdue}</p>
-            <p className="text-xs text-[var(--pagsmile-blue)]/70">Atrasadas</p>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        {[
+          { label: 'Total', value: stats.total, color: 'text-[#002443]' },
+          { label: 'Pendentes', value: stats.pending, color: 'text-yellow-600' },
+          { label: 'Em Andamento', value: stats.inProgress, color: 'text-blue-600' },
+          { label: 'Concluídas', value: stats.completed, color: 'text-green-600' },
+          { label: 'Este Mês', value: stats.thisMonth, color: 'text-purple-600' },
+          { label: 'Atrasadas', value: stats.overdue, color: 'text-red-600', alert: stats.overdue > 0 },
+        ].map((s, i) => (
+          <Card key={i} className={`rounded-2xl border-[#002443]/5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all ${s.alert ? 'border-red-300 bg-red-50/50' : ''}`}>
+            <CardContent className="pt-4">
+              <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
+              <p className="text-xs text-[#282828]/50">{s.label}</p>
+              {s.alert && <p className="text-[10px] text-red-500 font-medium mt-1">Requer atenção!</p>}
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       {/* Filtros */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4">
+      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-4">
         <div className="flex flex-col md:flex-row gap-4 justify-between">
           <div className="flex gap-2 flex-wrap items-center">
-            <Filter className="w-4 h-4 text-[var(--pagsmile-blue)]/50" />
+            <Filter className="w-4 h-4 text-[#002443]/50" />
             
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-36">
@@ -280,6 +279,18 @@ export default function GestaoRevalidacao() {
                 <SelectItem value="in_progress">Em Andamento</SelectItem>
                 <SelectItem value="completed">Concluídas</SelectItem>
                 <SelectItem value="cancelled">Canceladas</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={dateRangeFilter} onValueChange={setDateRangeFilter}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Período" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas as datas</SelectItem>
+                <SelectItem value="7days">Próximos 7 dias</SelectItem>
+                <SelectItem value="30days">Próximos 30 dias</SelectItem>
+                <SelectItem value="overdue">Atrasadas</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -297,7 +308,7 @@ export default function GestaoRevalidacao() {
       </div>
 
       {/* Tabela */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" />
@@ -310,12 +321,13 @@ export default function GestaoRevalidacao() {
         ) : (
           <Table>
             <TableHeader>
-              <TableRow className="bg-slate-50">
+              <TableRow className="bg-[#f4f4f4]">
                 <TableHead>Merchant</TableHead>
                 <TableHead>Data Programada</TableHead>
                 <TableHead>Tipo</TableHead>
                 <TableHead>Frequência</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Caso</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
             </TableHeader>
@@ -324,7 +336,7 @@ export default function GestaoRevalidacao() {
                 const merchant = merchantMap[schedule.merchantId];
                 const isOverdue = schedule.status === 'pending' && new Date(schedule.scheduledDate) < new Date();
                 return (
-                  <TableRow key={schedule.id} className={`hover:bg-slate-50 ${isOverdue ? 'bg-red-50' : ''}`}>
+                  <TableRow key={schedule.id} className={`hover:bg-[#f4f4f4] transition-colors ${isOverdue ? 'bg-red-50/50' : ''}`}>
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <div className={`p-2 rounded-lg ${
@@ -356,6 +368,18 @@ export default function GestaoRevalidacao() {
                       {getFrequencyLabel(schedule.frequency)}
                     </TableCell>
                     <TableCell>{getStatusBadge(schedule.status)}</TableCell>
+                    <TableCell>
+                      {schedule.onboardingCaseId ? (
+                        <Link to={createPageUrl('AnaliseDeCasos') + `?id=${schedule.onboardingCaseId}`}>
+                          <Button variant="ghost" size="sm" className="text-[#2bc196] hover:text-[#2bc196] text-xs">
+                            <Eye className="w-3.5 h-3.5 mr-1" />
+                            Ver caso
+                          </Button>
+                        </Link>
+                      ) : (
+                        <span className="text-xs text-[#282828]/30">-</span>
+                      )}
+                    </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
                         {schedule.status === 'pending' && (
@@ -462,6 +486,7 @@ export default function GestaoRevalidacao() {
                 type="date"
                 value={formData.scheduledDate}
                 onChange={(e) => setFormData(prev => ({ ...prev, scheduledDate: e.target.value }))}
+                min={new Date().toISOString().split('T')[0]}
               />
             </div>
 
