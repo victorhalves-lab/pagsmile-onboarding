@@ -30,16 +30,20 @@ import {
 import { 
   FileText, Search, RefreshCw, Loader2,
   Eye, Filter, CheckCircle2, XCircle, Clock,
-  Image, File, FileCheck, Building2, User, ChevronRight
+  Image, File, FileCheck, Building2, User, ChevronRight, Shield, Upload
 } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
+import DocumentViewerModal from '@/components/compliance/DocumentViewerModal';
+import RejectReasonsDialog from '@/components/compliance/RejectReasonsDialog';
 
 export default function GestaoDocumentos() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedDoc, setSelectedDoc] = useState(null);
-  const [rejectReason, setRejectReason] = useState('');
   const [showRejectDialog, setShowRejectDialog] = useState(false);
+  const [showViewerModal, setShowViewerModal] = useState(false);
+  const [viewerDoc, setViewerDoc] = useState(null);
   const queryClient = useQueryClient();
 
   const { data: documents = [], isLoading, refetch } = useQuery({
@@ -143,15 +147,16 @@ export default function GestaoDocumentos() {
     });
   };
 
-  const handleReject = () => {
-    if (!rejectReason) {
-      toast.error('Informe o motivo da rejeição');
-      return;
-    }
+  const handleReject = (reason) => {
     updateDocMutation.mutate({
       docId: selectedDoc.id,
-      data: { validationStatus: 'Rejeitado', validationNotes: rejectReason }
+      data: { validationStatus: 'Rejeitado', validationNotes: reason }
     });
+  };
+
+  const openViewer = (doc) => {
+    setViewerDoc(doc);
+    setShowViewerModal(true);
   };
 
   const globalStats = React.useMemo(() => ({
@@ -192,72 +197,49 @@ export default function GestaoDocumentos() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-purple-100">
-            <FileText className="w-6 h-6 text-purple-600" />
+      {/* Hero Header */}
+      <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-6 shadow-lg">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-xl bg-white/10">
+              <FileText className="w-6 h-6 text-[#5cf7cf]" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white">Gestão de Documentos</h1>
+              <p className="text-white/60 text-sm mt-1">Documentos organizados por merchant</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Gestão de Documentos</h1>
-            <p className="text-[var(--pagsmile-blue)]/70">Documentos organizados por merchant</p>
-          </div>
+          <Button variant="outline" onClick={() => refetch()} className="border-white/20 text-white hover:bg-white/10 rounded-xl bg-transparent">
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Atualizar
+          </Button>
         </div>
-        <Button variant="outline" onClick={() => refetch()}>
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Atualizar
-        </Button>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <button
-          onClick={() => setStatusFilter('all')}
-          className={`bg-white rounded-xl border p-4 text-left transition-all hover:shadow-md ${
-            statusFilter === 'all' ? 'border-[var(--pagsmile-green)] ring-2 ring-[var(--pagsmile-green)]/20' : 'border-slate-200'
-          }`}
-        >
-          <p className="text-2xl font-bold text-[var(--pagsmile-blue)]">{globalStats.merchants}</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/70">Merchants</p>
-        </button>
-        <button
-          onClick={() => setStatusFilter('all')}
-          className={`bg-white rounded-xl border p-4 text-left transition-all hover:shadow-md border-slate-200`}
-        >
-          <p className="text-2xl font-bold text-blue-600">{globalStats.total}</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/70">Total Docs</p>
-        </button>
-        <button
-          onClick={() => setStatusFilter('Pendente')}
-          className={`bg-white rounded-xl border p-4 text-left transition-all hover:shadow-md ${
-            statusFilter === 'Pendente' ? 'border-yellow-500 ring-2 ring-yellow-500/20' : 'border-slate-200'
-          }`}
-        >
-          <p className="text-2xl font-bold text-yellow-600">{globalStats.pendente}</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/70">Pendentes</p>
-        </button>
-        <button
-          onClick={() => setStatusFilter('Validado')}
-          className={`bg-white rounded-xl border p-4 text-left transition-all hover:shadow-md ${
-            statusFilter === 'Validado' ? 'border-green-500 ring-2 ring-green-500/20' : 'border-slate-200'
-          }`}
-        >
-          <p className="text-2xl font-bold text-green-600">{globalStats.validado}</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/70">Validados</p>
-        </button>
-        <button
-          onClick={() => setStatusFilter('Rejeitado')}
-          className={`bg-white rounded-xl border p-4 text-left transition-all hover:shadow-md ${
-            statusFilter === 'Rejeitado' ? 'border-red-500 ring-2 ring-red-500/20' : 'border-slate-200'
-          }`}
-        >
-          <p className="text-2xl font-bold text-red-600">{globalStats.rejeitado}</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/70">Rejeitados</p>
-        </button>
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        {[
+          { key: 'all', label: 'Merchants', value: globalStats.merchants, color: 'text-[#002443]', border: 'border-[#2bc196]', ring: 'ring-[#2bc196]/20' },
+          { key: 'all2', label: 'Total Docs', value: globalStats.total, color: 'text-blue-600', border: 'border-blue-500', ring: 'ring-blue-500/20' },
+          { key: 'Pendente', label: 'Pendentes', value: globalStats.pendente, color: 'text-yellow-600', border: 'border-yellow-500', ring: 'ring-yellow-500/20' },
+          { key: 'Validado', label: 'Validados', value: globalStats.validado, color: 'text-green-600', border: 'border-green-500', ring: 'ring-green-500/20' },
+          { key: 'Rejeitado', label: 'Rejeitados', value: globalStats.rejeitado, color: 'text-red-600', border: 'border-red-500', ring: 'ring-red-500/20' },
+        ].map(s => (
+          <button
+            key={s.key}
+            onClick={() => setStatusFilter(s.key === 'all2' ? 'all' : s.key)}
+            className={`bg-white rounded-2xl border p-4 text-left transition-all hover:shadow-md hover:-translate-y-0.5 ${
+              (statusFilter === s.key || (statusFilter === 'all' && s.key === 'all')) ? `${s.border} ring-2 ${s.ring}` : 'border-[#002443]/5'
+            }`}
+          >
+            <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
+            <p className="text-xs text-[#282828]/50">{s.label}</p>
+          </button>
+        ))}
       </div>
 
       {/* Filtros */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4">
+      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-4">
         <div className="flex flex-col md:flex-row gap-4 justify-between">
           <div className="flex gap-2 flex-wrap items-center">
             <Filter className="w-4 h-4 text-[var(--pagsmile-blue)]/50" />
@@ -316,30 +298,40 @@ export default function GestaoDocumentos() {
                 value={item.merchant?.id || 'unknown'}
                 className={`bg-white rounded-xl border border-slate-200 border-l-4 ${getMerchantStatusColor(item.stats)} overflow-hidden`}
               >
-                <AccordionTrigger className="px-4 py-4 hover:no-underline hover:bg-slate-50">
+                <AccordionTrigger className="px-4 py-4 hover:no-underline hover:bg-[#f4f4f4]/50">
                   <div className="flex items-center justify-between w-full pr-4">
                     <div className="flex items-center gap-4">
-                      <div className="p-2 rounded-lg bg-slate-100">
+                      <div className={`p-2 rounded-xl ${item.merchant?.type === 'PJ' ? 'bg-purple-100' : 'bg-blue-100'}`}>
                         {item.merchant?.type === 'PJ' ? (
-                          <Building2 className="w-5 h-5 text-[var(--pagsmile-blue)]/80" />
+                          <Building2 className="w-5 h-5 text-purple-600" />
                         ) : (
-                          <User className="w-5 h-5 text-[var(--pagsmile-blue)]/80" />
+                          <User className="w-5 h-5 text-blue-600" />
                         )}
                       </div>
                       <div className="text-left">
-                        <p className="font-semibold text-[var(--pagsmile-blue)]">
+                        <p className="font-semibold text-[#002443]">
                           {item.merchant?.fullName || 'Merchant Desconhecido'}
                         </p>
-                        <p className="text-sm text-[var(--pagsmile-blue)]/70">
+                        <p className="text-sm text-[#282828]/50">
                           {item.merchant?.cpfCnpj || '-'} 
                           {item.merchant?.type && <span className="ml-2">• {item.merchant.type}</span>}
                         </p>
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-4">
+                      {/* Progress indicator */}
+                      <div className="hidden md:flex items-center gap-2 min-w-[120px]">
+                        <Progress 
+                          value={item.stats.total > 0 ? (item.stats.validado / item.stats.total) * 100 : 0} 
+                          className="h-2 w-20"
+                        />
+                        <span className="text-[10px] text-[#282828]/40 font-medium whitespace-nowrap">
+                          {item.stats.validado}/{item.stats.total}
+                        </span>
+                      </div>
+                      
                       <div className="flex items-center gap-2 text-sm">
-                        <span className="text-[var(--pagsmile-blue)]/70">{item.stats.total} docs</span>
                         {item.stats.pendente > 0 && (
                           <Badge className="bg-yellow-100 text-yellow-800 border-0">
                             {item.stats.pendente} pendente{item.stats.pendente > 1 ? 's' : ''}
@@ -362,64 +354,66 @@ export default function GestaoDocumentos() {
                 </AccordionTrigger>
                 
                 <AccordionContent className="px-4 pb-4">
-                  <div className="border-t border-slate-100 pt-4 space-y-3">
-                    {item.documents.map((doc) => (
-                      <div 
-                        key={doc.id} 
-                        className="flex items-center justify-between p-3 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 bg-white rounded-lg border">
-                            {getFileIcon(doc.fileType)}
+                  <div className="border-t border-[#002443]/5 pt-4 space-y-2">
+                    {item.documents.map((doc) => {
+                      const statusColor = 
+                        doc.validationStatus === 'Validado' ? 'border-l-green-500' :
+                        doc.validationStatus === 'Rejeitado' ? 'border-l-red-500' :
+                        'border-l-yellow-500';
+                      return (
+                        <div 
+                          key={doc.id} 
+                          className={`flex items-center justify-between p-3 bg-[#f4f4f4] rounded-xl hover:bg-[#f4f4f4]/80 transition-colors border-l-[3px] ${statusColor}`}
+                        >
+                          <div className="flex items-center gap-3 cursor-pointer" onClick={() => openViewer(doc)}>
+                            <div className="p-2 bg-white rounded-lg border border-[#002443]/5">
+                              {getFileIcon(doc.fileType)}
+                            </div>
+                            <div>
+                              <p className="font-medium text-[#002443] text-sm">{doc.documentName || 'Documento'}</p>
+                              <p className="text-xs text-[#282828]/40">
+                                {doc.fileName} • {doc.uploadDate ? new Date(doc.uploadDate).toLocaleDateString('pt-BR') : 
+                                 doc.created_date ? new Date(doc.created_date).toLocaleDateString('pt-BR') : '-'}
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="font-medium text-[var(--pagsmile-blue)]">{doc.documentName || 'Documento'}</p>
-                            <p className="text-xs text-[var(--pagsmile-blue)]/70">
-                              {doc.fileName} • {doc.uploadDate ? new Date(doc.uploadDate).toLocaleDateString('pt-BR') : 
-                               doc.created_date ? new Date(doc.created_date).toLocaleDateString('pt-BR') : '-'}
-                            </p>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center gap-3">
-                          {getStatusBadge(doc.validationStatus)}
                           
-                          <div className="flex items-center gap-1">
-                            {doc.fileUrl && (
-                              <Button variant="ghost" size="sm" asChild>
-                                <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer">
-                                  <Eye className="w-4 h-4" />
-                                </a>
+                          <div className="flex items-center gap-3">
+                            {getStatusBadge(doc.validationStatus)}
+                            
+                            <div className="flex items-center gap-1">
+                              <Button variant="ghost" size="sm" onClick={() => openViewer(doc)} className="text-[#002443]/50 hover:text-[#002443]">
+                                <Eye className="w-4 h-4" />
                               </Button>
-                            )}
-                            {(!doc.validationStatus || doc.validationStatus === 'Pendente') && (
-                              <>
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm"
-                                  onClick={() => handleApprove(doc)}
-                                  disabled={updateDocMutation.isPending}
-                                  className="text-green-600 hover:text-green-700 hover:bg-green-50"
-                                >
-                                  <CheckCircle2 className="w-4 h-4" />
-                                </Button>
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm"
-                                  onClick={() => {
-                                    setSelectedDoc(doc);
-                                    setShowRejectDialog(true);
-                                  }}
-                                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                >
-                                  <XCircle className="w-4 h-4" />
-                                </Button>
-                              </>
-                            )}
+                              {(!doc.validationStatus || doc.validationStatus === 'Pendente') && (
+                                <>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm"
+                                    onClick={() => handleApprove(doc)}
+                                    disabled={updateDocMutation.isPending}
+                                    className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                                  >
+                                    <CheckCircle2 className="w-4 h-4" />
+                                  </Button>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm"
+                                    onClick={() => {
+                                      setSelectedDoc(doc);
+                                      setShowRejectDialog(true);
+                                    }}
+                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  >
+                                    <XCircle className="w-4 h-4" />
+                                  </Button>
+                                </>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </AccordionContent>
               </AccordionItem>
@@ -428,42 +422,31 @@ export default function GestaoDocumentos() {
         )}
       </div>
 
-      {/* Dialog de Rejeição */}
-      <Dialog open={showRejectDialog} onOpenChange={setShowRejectDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <XCircle className="w-5 h-5 text-red-600" />
-              Rejeitar Documento
-            </DialogTitle>
-            <DialogDescription>
-              Informe o motivo da rejeição do documento "{selectedDoc?.documentName}".
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <Label>Motivo da Rejeição <span className="text-red-500">*</span></Label>
-            <Textarea 
-              placeholder="Descreva o motivo da rejeição..."
-              value={rejectReason}
-              onChange={(e) => setRejectReason(e.target.value)}
-              className="mt-2"
-            />
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowRejectDialog(false)}>
-              Cancelar
-            </Button>
-            <Button 
-              onClick={handleReject}
-              disabled={updateDocMutation.isPending || !rejectReason}
-              variant="destructive"
-            >
-              {updateDocMutation.isPending && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
-              Rejeitar Documento
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Document Viewer Modal */}
+      <DocumentViewerModal
+        open={showViewerModal}
+        onOpenChange={setShowViewerModal}
+        document={viewerDoc}
+        onApprove={(doc) => {
+          handleApprove(doc);
+          setShowViewerModal(false);
+        }}
+        onReject={(doc) => {
+          setSelectedDoc(doc);
+          setShowViewerModal(false);
+          setShowRejectDialog(true);
+        }}
+        isPending={updateDocMutation.isPending}
+      />
+
+      {/* Reject Reasons Dialog */}
+      <RejectReasonsDialog
+        open={showRejectDialog}
+        onOpenChange={setShowRejectDialog}
+        documentName={selectedDoc?.documentName}
+        onConfirm={handleReject}
+        isPending={updateDocMutation.isPending}
+      />
     </div>
   );
 }
