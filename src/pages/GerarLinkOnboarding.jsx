@@ -175,8 +175,17 @@ export default function GerarLinkOnboarding() {
     const totalSubmissions = links.reduce((sum, l) => sum + (l.submissionCount || 0), 0);
     const totalCompleted = links.reduce((sum, l) => sum + (l.completedCount || 0), 0);
     const conversionRate = totalClicks > 0 ? ((totalSubmissions / totalClicks) * 100).toFixed(1) : 0;
+    const completionRate = totalSubmissions > 0 ? ((totalCompleted / totalSubmissions) * 100).toFixed(1) : 0;
+
+    // Best performing link
+    const bestLink = links.reduce((best, l) => {
+      if (!l.clickCount) return best;
+      const rate = (l.submissionCount || 0) / l.clickCount;
+      if (!best || rate > best.rate) return { code: l.uniqueCode, rate, agent: l.commercialAgentName };
+      return best;
+    }, null);
     
-    return { totalClicks, totalSubmissions, totalCompleted, conversionRate, totalLinks: links.length };
+    return { totalClicks, totalSubmissions, totalCompleted, conversionRate, completionRate, totalLinks: links.length, bestLink };
   }, [links]);
 
   return (
@@ -241,10 +250,22 @@ export default function GerarLinkOnboarding() {
               <TrendingUp className="w-4 h-4 text-teal-500" />
               <p className="text-2xl font-bold text-teal-600">{stats.conversionRate}%</p>
             </div>
-            <p className="text-xs text-[var(--pagsmile-blue)]/70">Taxa de Conversão</p>
+            <p className="text-xs text-[var(--pagsmile-blue)]/70">Clique → Submissão</p>
           </CardContent>
         </Card>
       </div>
+      {/* Best link indicator */}
+      {stats.bestLink && stats.bestLink.rate > 0 && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-3 flex items-center gap-3">
+          <TrendingUp className="w-5 h-5 text-green-600 shrink-0" />
+          <div>
+            <p className="text-sm font-medium text-green-800">
+              Melhor link: <span className="font-mono">{stats.bestLink.code}</span> — {(stats.bestLink.rate * 100).toFixed(0)}% de conversão
+              {stats.bestLink.agent && <span className="text-green-600 ml-1">({stats.bestLink.agent})</span>}
+            </p>
+          </div>
+        </div>
+      )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
