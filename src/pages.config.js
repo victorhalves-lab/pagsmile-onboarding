@@ -57,14 +57,18 @@ import ComplianceOnboardingStart from './pages/ComplianceOnboardingStart';
 import CompliancePixOnly from './pages/CompliancePixOnly';
 import ComplianceSaaS from './pages/ComplianceSaaS';
 import Configuracoes from './pages/Configuracoes';
+import ContratoPublico from './pages/ContratoPublico';
+import CriarContrato from './pages/CriarContrato';
 import CriarProposta from './pages/CriarProposta';
 import DocumentUploadEcommerce from './pages/DocumentUploadEcommerce';
 import DocumentUploadFull from './pages/DocumentUploadFull';
 import DocumentUploadLite from './pages/DocumentUploadLite';
 import DocumentUploadPix from './pages/DocumentUploadPix';
 import DocumentUploadSaaS from './pages/DocumentUploadSaaS';
+import EditorContrato from './pages/EditorContrato';
 import EditorQuestionario from './pages/EditorQuestionario';
 import GerarLinkOnboarding from './pages/GerarLinkOnboarding';
+import GestaoContratos from './pages/GestaoContratos';
 import GestaoDocumentos from './pages/GestaoDocumentos';
 import GestaoPropostas from './pages/GestaoPropostas';
 import GestaoRevalidacao from './pages/GestaoRevalidacao';
@@ -82,17 +86,13 @@ import LivenessSimulation from './pages/LivenessSimulation';
 import MessageTemplates from './pages/MessageTemplates';
 import OnboardingCompletion from './pages/OnboardingCompletion';
 import PipelineComercial from './pages/PipelineComercial';
+import PreviewContrato from './pages/PreviewContrato';
 import PropostaPublica from './pages/PropostaPublica';
 import QuestionarioSimplificadoPublico from './pages/QuestionarioSimplificadoPublico';
 import QuestionariosLeads from './pages/QuestionariosLeads';
 import QuestionariosRecebidos from './pages/QuestionariosRecebidos';
 import RegrasDeCompliance from './pages/RegrasDeCompliance';
 import TemplatesQuestionarios from './pages/TemplatesQuestionarios';
-import GestaoContratos from './pages/GestaoContratos';
-import EditorContrato from './pages/EditorContrato';
-import PreviewContrato from './pages/PreviewContrato';
-import ContratoPublico from './pages/ContratoPublico';
-import CriarContrato from './pages/CriarContrato';
 import __Layout from './Layout.jsx';
 
 
@@ -107,14 +107,18 @@ export const PAGES = {
     "CompliancePixOnly": CompliancePixOnly,
     "ComplianceSaaS": ComplianceSaaS,
     "Configuracoes": Configuracoes,
+    "ContratoPublico": ContratoPublico,
+    "CriarContrato": CriarContrato,
     "CriarProposta": CriarProposta,
     "DocumentUploadEcommerce": DocumentUploadEcommerce,
     "DocumentUploadFull": DocumentUploadFull,
     "DocumentUploadLite": DocumentUploadLite,
     "DocumentUploadPix": DocumentUploadPix,
     "DocumentUploadSaaS": DocumentUploadSaaS,
+    "EditorContrato": EditorContrato,
     "EditorQuestionario": EditorQuestionario,
     "GerarLinkOnboarding": GerarLinkOnboarding,
+    "GestaoContratos": GestaoContratos,
     "GestaoDocumentos": GestaoDocumentos,
     "GestaoPropostas": GestaoPropostas,
     "GestaoRevalidacao": GestaoRevalidacao,
@@ -132,17 +136,13 @@ export const PAGES = {
     "MessageTemplates": MessageTemplates,
     "OnboardingCompletion": OnboardingCompletion,
     "PipelineComercial": PipelineComercial,
+    "PreviewContrato": PreviewContrato,
     "PropostaPublica": PropostaPublica,
     "QuestionarioSimplificadoPublico": QuestionarioSimplificadoPublico,
     "QuestionariosLeads": QuestionariosLeads,
     "QuestionariosRecebidos": QuestionariosRecebidos,
     "RegrasDeCompliance": RegrasDeCompliance,
     "TemplatesQuestionarios": TemplatesQuestionarios,
-    "GestaoContratos": GestaoContratos,
-    "EditorContrato": EditorContrato,
-    "PreviewContrato": PreviewContrato,
-    "ContratoPublico": ContratoPublico,
-    "CriarContrato": CriarContrato,
 }
 
 export const pagesConfig = {

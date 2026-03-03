@@ -277,10 +277,10 @@ export default function Layout({ children, currentPageName }) {
       <div className="mb-1">
         <button
         onClick={() => toggleSection(section.id)}
-        className={`flex items-center gap-2.5 w-full px-3 py-2.5 text-xs font-semibold tracking-wide transition-all duration-200 rounded-lg ${
+        className={`flex items-center gap-2.5 w-full px-3 py-2.5 text-xs font-bold tracking-wide transition-all duration-200 rounded-lg ${
           isExpanded 
             ? 'text-[#5cf7cf] bg-white/5' 
-            : 'text-white/50 hover:text-white/80 hover:bg-white/5'
+            : 'text-white/70 hover:text-white/90 hover:bg-white/5'
         }`}
         >
         <SectionIcon className={`w-4 h-4 ${isExpanded ? 'text-[#2bc196]' : 'text-white/30'}`} />
