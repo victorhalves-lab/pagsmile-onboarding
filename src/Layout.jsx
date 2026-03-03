@@ -20,7 +20,8 @@ import {
   ChevronRight,
   Shield,
   FileText,
-  History
+  History,
+  FileSignature
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
