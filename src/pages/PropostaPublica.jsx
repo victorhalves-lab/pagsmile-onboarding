@@ -40,13 +40,16 @@ export default function PropostaPublica() {
     enabled: !!token
   });
 
-  // Register view when loaded + track in LeadActivity
+  // Register view when loaded + track in LeadActivity (idempotent)
   useEffect(() => {
     if (proposta && proposta.status === 'enviada') {
+      const viewKey = `proposta_viewed_${proposta.id}`;
+      if (sessionStorage.getItem(viewKey)) return;
+      sessionStorage.setItem(viewKey, '1');
+
       base44.entities.Proposal.update(proposta.id, {
         status: 'visualizada',
       });
-      // Registrar visualização como atividade do Lead
       if (proposta.leadId) {
         base44.entities.LeadActivity.create({
           leadId: proposta.leadId,

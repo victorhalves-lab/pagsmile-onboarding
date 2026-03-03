@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../../utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Eye, Phone, FileText, Shield, AlertTriangle, Clock } from 'lucide-react';
+import { Eye, Phone, FileText, Clock, RefreshCw, CalendarClock } from 'lucide-react';
 import moment from 'moment';
 import LeadSLAIndicator from '../leads/LeadSLAIndicator';
+import StatusUpdateModal from './StatusUpdateModal';
+import FollowUpModal from './FollowUpModal';
 
 const RISK_CONFIG = {
   BAIXO: { label: 'Baixo', color: 'bg-green-100 text-green-700' },
@@ -22,6 +24,8 @@ const getScoreBg = (score) => {
 
 export default function LeadKanbanCard({ lead, onAction }) {
   const navigate = useNavigate();
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [showFollowUpModal, setShowFollowUpModal] = useState(false);
   const riskCfg = RISK_CONFIG[lead.priscilaRiskLevel];
   const daysSinceUpdate = lead.lastInteractionDate
     ? moment().diff(moment(lead.lastInteractionDate), 'days')
@@ -30,7 +34,6 @@ export default function LeadKanbanCard({ lead, onAction }) {
 
   return (
     <div className="space-y-2">
-      {/* Name and company */}
       <p className="text-sm font-medium text-[var(--pagsmile-blue)] truncate">
         {lead.companyName || lead.fullName}
       </p>
@@ -38,7 +41,6 @@ export default function LeadKanbanCard({ lead, onAction }) {
         {lead.contactName || lead.email}
       </p>
 
-      {/* Score + Risk row */}
       <div className="flex items-center gap-2 flex-wrap">
         {lead.priscilaQualityScore != null && (
           <div className="flex items-center gap-1">
@@ -61,24 +63,20 @@ export default function LeadKanbanCard({ lead, onAction }) {
         )}
       </div>
 
-      {/* TPV */}
       {lead.tpvMensal > 0 && (
         <p className="text-xs font-mono text-[var(--pagsmile-green)]">
           R$ {lead.tpvMensal.toLocaleString('pt-BR')}/mês
         </p>
       )}
 
-      {/* SLA Indicator */}
       <LeadSLAIndicator lead={lead} />
 
-      {/* Last interaction */}
       {lead.lastInteractionDate && (
         <p className="text-[9px] text-[var(--pagsmile-blue)]/40">
           Último contato: {moment(lead.lastInteractionDate).fromNow()}
         </p>
       )}
 
-      {/* Action buttons */}
       <div className="flex gap-1 pt-1 flex-wrap">
         <Button
           variant="ghost" size="sm" className="h-6 px-2 text-[10px]"
@@ -103,7 +101,22 @@ export default function LeadKanbanCard({ lead, onAction }) {
             <FileText className="w-3 h-3 mr-0.5" /> Proposta
           </Button>
         )}
+        <Button
+          variant="ghost" size="sm" className="h-6 px-2 text-[10px]"
+          onClick={(e) => { e.stopPropagation(); setShowStatusModal(true); }}
+        >
+          <RefreshCw className="w-3 h-3 mr-0.5" /> Status
+        </Button>
+        <Button
+          variant="ghost" size="sm" className="h-6 px-2 text-[10px]"
+          onClick={(e) => { e.stopPropagation(); setShowFollowUpModal(true); }}
+        >
+          <CalendarClock className="w-3 h-3 mr-0.5" /> Follow-up
+        </Button>
       </div>
+
+      <StatusUpdateModal open={showStatusModal} onClose={() => setShowStatusModal(false)} lead={lead} />
+      <FollowUpModal open={showFollowUpModal} onClose={() => setShowFollowUpModal(false)} lead={lead} />
     </div>
   );
 }
