@@ -35,20 +35,20 @@ export default function CardDadosCliente({ form, errors, onUpdate }) {
   };
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-base font-semibold text-white">Dados do Cliente</h2>
+    <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-6 space-y-4">
+      <h2 className="text-base font-bold text-[#002443]">Dados do Cliente</h2>
       
       {/* Optional Lead Selector */}
       {leads && leads.length > 0 && (
          <div className="space-y-1.5">
-           <Label className="text-xs text-slate-400">Selecionar Lead (Opcional)</Label>
+           <Label className="text-xs text-[#282828]/50 font-medium">Selecionar Lead (Opcional)</Label>
            <Select onValueChange={handleLeadSelect}>
-             <SelectTrigger className="bg-[#18181b] border-white/10 text-white h-10">
+             <SelectTrigger className="bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 rounded-lg">
                <SelectValue placeholder="Selecione um lead para preencher..." />
              </SelectTrigger>
-             <SelectContent className="bg-[#18181b] border-white/10 text-white">
+             <SelectContent>
                {leads.map(lead => (
-                 <SelectItem key={lead.id} value={lead.id} className="focus:bg-white/10 focus:text-white cursor-pointer">
+                 <SelectItem key={lead.id} value={lead.id} className="cursor-pointer">
                    {lead.companyName || lead.fullName}
                  </SelectItem>
                ))}
@@ -58,51 +58,51 @@ export default function CardDadosCliente({ form, errors, onUpdate }) {
       )}
 
       <div className="space-y-1.5">
-        <Label className="text-xs text-slate-400">Nome da Empresa <span className="text-red-500">*</span></Label>
+        <Label className="text-xs text-[#282828]/50 font-medium">Nome da Empresa <span className="text-red-500">*</span></Label>
         <Input
           value={form.clienteNome || ''}
           onChange={(e) => onUpdate('clienteNome', e.target.value)}
           placeholder="Razão social ou nome fantasia"
-          className={`bg-[#18181b] border-white/10 text-white h-10 placeholder:text-slate-600 ${errors?.clienteNome ? 'border-red-500' : ''}`}
+          className={`bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 rounded-lg ${errors?.clienteNome ? 'border-red-500' : ''}`}
         />
         {errors?.clienteNome && <p className="text-xs text-red-500">{errors.clienteNome}</p>}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-1.5">
-          <Label className="text-xs text-slate-400">CNPJ <span className="text-red-500">*</span></Label>
+          <Label className="text-xs text-[#282828]/50 font-medium">CNPJ <span className="text-red-500">*</span></Label>
           <CnpjInput
             value={form.clienteCnpj || ''}
             onChange={(val) => onUpdate('clienteCnpj', val)}
             error={errors?.clienteCnpj}
-            className="bg-[#18181b] border-white/10 text-white h-10 placeholder:text-slate-600"
+            className="bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 rounded-lg"
           />
           {errors?.clienteCnpj && <p className="text-xs text-red-500">{errors.clienteCnpj}</p>}
         </div>
         
         <div className="space-y-1.5">
-          <Label className="text-xs text-slate-400">MCC <span className="text-red-500">*</span></Label>
+          <Label className="text-xs text-[#282828]/50 font-medium">MCC <span className="text-red-500">*</span></Label>
           <Input
             value={form.clienteMcc || ''}
             onChange={(e) => onUpdate('clienteMcc', e.target.value.replace(/\D/g, '').slice(0, 4))}
             placeholder="Ex: 5812"
-            className={`bg-[#18181b] border-white/10 text-white h-10 placeholder:text-slate-600 ${errors?.clienteMcc ? 'border-red-500' : ''}`}
+            className={`bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 rounded-lg ${errors?.clienteMcc ? 'border-red-500' : ''}`}
             required
           />
           {errors?.clienteMcc && <p className="text-xs text-red-500">{errors.clienteMcc}</p>}
-          <p className="text-[10px] text-slate-500 leading-tight">
-            O MCC deve ser o código vinculado ao seu CNAE principal. Para identificar o correto, pesquise qual código MCC corresponde à atividade descrita no seu cartão CNPJ.
+          <p className="text-[10px] text-[#282828]/40 leading-tight">
+            O MCC deve ser o código vinculado ao seu CNAE principal.
           </p>
         </div>
       </div>
 
       <div className="space-y-1.5">
-        <Label className="text-xs text-slate-400">Contato <span className="text-red-500">*</span></Label>
+        <Label className="text-xs text-[#282828]/50 font-medium">Contato <span className="text-red-500">*</span></Label>
         <Input
           value={form.clienteContato || ''}
           onChange={(e) => onUpdate('clienteContato', e.target.value)}
           placeholder="Nome do contato principal"
-          className={`bg-[#18181b] border-white/10 text-white h-10 placeholder:text-slate-600 ${errors?.clienteContato ? 'border-red-500' : ''}`}
+          className={`bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 rounded-lg ${errors?.clienteContato ? 'border-red-500' : ''}`}
         />
         {errors?.clienteContato && <p className="text-xs text-red-500">{errors.clienteContato}</p>}
       </div>

@@ -83,19 +83,19 @@ export default function CardTaxasCartao({ rates, onUpdateRates, selectedBrand, s
   }
 
   return (
-    <div className="space-y-4 pt-4 border-t border-white/10">
-      <h2 className="text-base font-semibold text-white">Taxas de Cartão</h2>
+    <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-6 space-y-4">
+      <h2 className="text-base font-bold text-[#002443]">Taxas de Cartão</h2>
       
       {/* Brand Selection */}
-      <div className="flex flex-wrap gap-2 p-1 bg-[#18181b] rounded-lg w-fit">
+      <div className="flex flex-wrap gap-2 p-1 bg-[#f4f4f4] rounded-xl w-fit">
         {BANDEIRAS.map(b => (
           <button
             key={b.id}
             onClick={() => setSelectedBrand(b.id)}
-            className={`px-4 py-2 text-xs font-medium rounded-md transition-all ${
+            className={`px-4 py-2 text-xs font-medium rounded-lg transition-all ${
               selectedBrand === b.id
-                ? 'bg-[#2bc196]/10 text-[#2bc196] border border-[#2bc196]/20'
-                : 'text-slate-400 hover:text-white hover:bg-white/5'
+                ? 'bg-white text-[#2bc196] border border-[#2bc196]/20 shadow-sm'
+                : 'text-[#282828]/50 hover:text-[#002443] hover:bg-white/50'
             }`}
           >
             {b.label}
@@ -104,15 +104,15 @@ export default function CardTaxasCartao({ rates, onUpdateRates, selectedBrand, s
       </div>
 
       {/* Inputs */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-[#18181b] p-4 rounded-lg border border-white/5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-[#f4f4f4] p-4 rounded-xl border border-[#002443]/5">
         {FAIXAS_SPEC.map(f => (
           <div key={f.id} className="space-y-2">
-            <Label className="text-xs text-slate-400">{f.label}</Label>
+            <Label className="text-xs text-[#282828]/50 font-medium">{f.label}</Label>
             <TaxaInput
               value={taxas[selectedBrand]?.[f.id] || ''}
               onChange={(val) => updateTaxa(selectedBrand, f.id, val)}
               placeholder="0,00"
-              className="bg-[#09090b] border-white/10 text-white h-12 text-lg font-medium text-right pr-4"
+              className="bg-white border-[#002443]/10 text-[#002443] h-12 text-lg font-medium text-right pr-4 rounded-lg"
               // Custom styled input
             />
           </div>
@@ -126,7 +126,7 @@ export default function CardTaxasCartao({ rates, onUpdateRates, selectedBrand, s
                 variant="outline" 
                 size="sm" 
                 onClick={copyToMasterVisa}
-                className="bg-transparent border-white/10 text-slate-300 hover:text-white hover:bg-white/10 text-xs h-8"
+                className="border-[#002443]/10 text-[#002443] hover:bg-[#002443]/5 text-xs h-8 rounded-lg"
             >
                 <Copy className="w-3 h-3 mr-2" />
                 Copiar para Visa/Master
@@ -136,7 +136,7 @@ export default function CardTaxasCartao({ rates, onUpdateRates, selectedBrand, s
                 variant="outline" 
                 size="sm" 
                 onClick={copyToAll}
-                className="bg-transparent border-white/10 text-slate-300 hover:text-white hover:bg-white/10 text-xs h-8"
+                className="border-[#002443]/10 text-[#002443] hover:bg-[#002443]/5 text-xs h-8 rounded-lg"
             >
                 <Copy className="w-3 h-3 mr-2" />
                 Copiar para Todas
@@ -148,9 +148,9 @@ export default function CardTaxasCartao({ rates, onUpdateRates, selectedBrand, s
             id="sync-all"
             checked={syncAll}
             onCheckedChange={setSyncAll}
-            className="border-white/20 data-[state=checked]:bg-[#2bc196] data-[state=checked]:border-[#2bc196]"
+            className="border-[#002443]/20 data-[state=checked]:bg-[#2bc196] data-[state=checked]:border-[#2bc196]"
           />
-          <Label htmlFor="sync-all" className="text-xs text-slate-400 cursor-pointer select-none">
+          <Label htmlFor="sync-all" className="text-xs text-[#282828]/50 cursor-pointer select-none">
             Sincronizar: ao editar, copiar automaticamente para todas as bandeiras
           </Label>
         </div>

@@ -21,40 +21,38 @@ const PRAZOS = [
 
 export default function CardAntecipacao({ form, onUpdate }) {
   return (
-    <div className="space-y-4 pt-4 border-t border-white/10">
+    <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-6 space-y-4">
       <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-white">Antecipação</h2>
-          {/* Optional: Switch to toggle section availability if needed, currently implied by fields */}
+          <h2 className="text-base font-bold text-[#002443]">Antecipação</h2>
       </div>
       
-      {/* Container Style from image */}
-      <div className="bg-[#18181b] p-4 rounded-lg border border-white/5 space-y-4">
+      <div className="bg-[#f4f4f4] p-4 rounded-xl border border-[#002443]/5 space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <Label className="text-xs text-slate-400">Taxa RAV</Label>
+              <Label className="text-xs text-[#282828]/50 font-medium">Taxa RAV</Label>
               <div className="relative">
                   <TaxaInput
                     value={form.taxaAntecipacao || ''}
                     onChange={(val) => onUpdate('taxaAntecipacao', val)}
                     placeholder="0,00"
-                    className="bg-[#09090b] border-white/10 text-white h-10 pr-12 text-right"
+                    className="bg-white border-[#002443]/10 text-[#002443] h-10 pr-12 text-right rounded-lg"
                   />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">a.m.</span>
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#282828]/40">a.m.</span>
               </div>
             </div>
             
             <div className="space-y-1.5">
-              <Label className="text-xs text-slate-400">Prazo de Recebimento</Label>
+              <Label className="text-xs text-[#282828]/50 font-medium">Prazo de Recebimento</Label>
               <Select 
                 value={form.prazoRecebimento || 'D+1'} 
                 onValueChange={(v) => onUpdate('prazoRecebimento', v)}
               >
-                <SelectTrigger className="bg-[#09090b] border-white/10 text-white h-10">
+                <SelectTrigger className="bg-white border-[#002443]/10 text-[#002443] h-10 rounded-lg">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#18181b] border-white/10 text-white">
+                <SelectContent>
                   {PRAZOS.map(p => (
-                    <SelectItem key={p.value} value={p.value} className="focus:bg-white/10 focus:text-white cursor-pointer">
+                    <SelectItem key={p.value} value={p.value} className="cursor-pointer">
                         {p.label}
                     </SelectItem>
                   ))}
@@ -69,23 +67,23 @@ export default function CardAntecipacao({ form, onUpdate }) {
                   checked={form.usaAntecipacao}
                   onCheckedChange={(checked) => onUpdate('usaAntecipacao', checked)}
                   className="data-[state=checked]:bg-[#2bc196]"
-               />
-               <Label htmlFor="usa-antecipacao" className="text-xs text-slate-400 cursor-pointer">
+                  />
+                  <Label htmlFor="usa-antecipacao" className="text-xs text-[#282828]/50 cursor-pointer">
                    Utiliza Antecipação?
                </Label>
           </div>
           
           {form.usaAntecipacao && (
               <div className="space-y-1.5 pt-2">
-                 <Label className="text-xs text-slate-400">% do TPV Antecipado</Label>
+                 <Label className="text-xs text-[#282828]/50 font-medium">% do TPV Antecipado</Label>
                   <div className="relative">
                       <TaxaInput
                         value={form.percentualAntecipacao || ''}
                         onChange={(val) => onUpdate('percentualAntecipacao', val)}
                         placeholder="100,00"
-                        className="bg-[#09090b] border-white/10 text-white h-10 pr-8 text-right"
+                        className="bg-white border-[#002443]/10 text-[#002443] h-10 pr-8 text-right rounded-lg"
                       />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">%</span>
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#282828]/40">%</span>
                   </div>
               </div>
           )}

@@ -291,42 +291,15 @@ export default function CriarProposta() {
   };
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-slate-50 font-sans">
-      <style>{`
-        /* Dark Scrollbar */
-        ::-webkit-scrollbar {
-          width: 8px;
-          height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-          background: #18181b; 
-        }
-        ::-webkit-scrollbar-thumb {
-          background: #27272a; 
-          border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-          background: #3f3f46; 
-        }
-        
-        /* Input autofill fix for dark mode */
-        input:-webkit-autofill,
-        input:-webkit-autofill:hover, 
-        input:-webkit-autofill:focus, 
-        input:-webkit-autofill:active{
-            -webkit-box-shadow: 0 0 0 30px #18181b inset !important;
-            -webkit-text-fill-color: white !important;
-        }
-      `}</style>
-      
+    <div className="min-h-screen bg-[#f4f4f4] font-sans">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-[#09090b] sticky top-0 z-20">
+      <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-[#002443] to-[#36706c] sticky top-0 z-20 rounded-b-2xl shadow-lg mx-0">
         <div className="flex items-center gap-3">
           <Button 
             variant="ghost" 
             size="icon" 
             onClick={() => navigate(-1)}
-            className="text-slate-400 hover:text-white hover:bg-white/10"
+            className="text-white/70 hover:text-white hover:bg-white/10"
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
@@ -338,7 +311,7 @@ export default function CriarProposta() {
           variant="outline" 
           onClick={handleSalvarRascunho} 
           disabled={saving}
-          className="bg-transparent border-white/20 text-white hover:bg-white/10"
+          className="border-white/20 text-white hover:bg-white/10 rounded-xl bg-transparent"
         >
           {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
           Salvar Rascunho
@@ -347,7 +320,7 @@ export default function CriarProposta() {
 
       <div className="flex h-[calc(100vh-73px)] overflow-hidden">
         {/* Left Column - Form */}
-        <ScrollArea className="flex-1 border-r border-white/10">
+        <ScrollArea className="flex-1 border-r border-[#002443]/5">
           <div className="p-6 space-y-6 pb-32">
             <CardDadosCliente 
               form={form} 
@@ -375,7 +348,7 @@ export default function CriarProposta() {
         </ScrollArea>
 
         {/* Right Column - Preview */}
-        <div className="w-[480px] bg-[#0c0c0e] border-l border-white/5 flex flex-col">
+        <div className="w-[480px] bg-gradient-to-b from-[#002443]/[0.03] to-[#36706c]/[0.05] border-l border-[#002443]/5 flex flex-col">
           <div className="p-6 flex-1 overflow-y-auto">
              <PropostaPreview 
                form={form} 
@@ -384,31 +357,30 @@ export default function CriarProposta() {
                onBandeiraChange={setSelectedBrand}
              />
              
-             {/* Analysis Placeholder (since user asked to exclude logic but keep layout, we can show empty state or just the summary) */}
-             <div className="mt-6 rounded-lg border border-yellow-500/20 bg-yellow-500/5 p-4">
-               <div className="flex items-center gap-2 text-yellow-500 mb-2">
+             <div className="mt-6 rounded-2xl border border-[#36706c]/20 bg-[#36706c]/5 p-4">
+               <div className="flex items-center gap-2 text-[#36706c] mb-2">
                  <AlertTriangle className="w-4 h-4" />
-                 <h3 className="text-sm font-semibold">Análise de Rentabilidade</h3>
+                 <h3 className="text-sm font-semibold text-[#002443]">Análise de Rentabilidade</h3>
                </div>
-               <p className="text-xs text-slate-400">
+               <p className="text-xs text-[#282828]/50">
                  A análise de rentabilidade será calculada após a geração da proposta.
                </p>
              </div>
           </div>
           
-          <div className="p-6 border-t border-white/10 bg-[#0c0c0e]">
+          <div className="p-6 border-t border-[#002443]/5 bg-white/80 backdrop-blur-sm">
              <div className="grid grid-cols-2 gap-3">
                <Button 
                  variant="outline" 
                  onClick={() => navigate(-1)}
-                 className="border-white/20 text-white hover:bg-white/10 hover:text-white"
+                 className="border-[#002443]/10 text-[#002443] hover:bg-[#002443]/5 rounded-xl"
                >
                  Cancelar
                </Button>
                <Button
                  onClick={handleGerarProposta}
                  disabled={saving}
-                 className="bg-[#2bc196] hover:bg-[#25a983] text-white"
+                 className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl shadow-md"
                >
                  {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <FileText className="w-4 h-4 mr-2" />}
                  Gerar Proposta
