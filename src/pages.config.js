@@ -80,12 +80,12 @@ import LivenessFacematchStep from './pages/LivenessFacematchStep';
 import LivenessSimulation from './pages/LivenessSimulation';
 import OnboardingCompletion from './pages/OnboardingCompletion';
 import PipelineComercial from './pages/PipelineComercial';
+import PropostaPublica from './pages/PropostaPublica';
+import QuestionarioSimplificadoPublico from './pages/QuestionarioSimplificadoPublico';
 import QuestionariosLeads from './pages/QuestionariosLeads';
 import QuestionariosRecebidos from './pages/QuestionariosRecebidos';
 import RegrasDeCompliance from './pages/RegrasDeCompliance';
 import TemplatesQuestionarios from './pages/TemplatesQuestionarios';
-import PropostaPublica from './pages/PropostaPublica';
-import QuestionarioSimplificadoPublico from './pages/QuestionarioSimplificadoPublico';
 import __Layout from './Layout.jsx';
 
 
@@ -123,12 +123,12 @@ export const PAGES = {
     "LivenessSimulation": LivenessSimulation,
     "OnboardingCompletion": OnboardingCompletion,
     "PipelineComercial": PipelineComercial,
+    "PropostaPublica": PropostaPublica,
+    "QuestionarioSimplificadoPublico": QuestionarioSimplificadoPublico,
     "QuestionariosLeads": QuestionariosLeads,
     "QuestionariosRecebidos": QuestionariosRecebidos,
     "RegrasDeCompliance": RegrasDeCompliance,
     "TemplatesQuestionarios": TemplatesQuestionarios,
-    "PropostaPublica": PropostaPublica,
-    "QuestionarioSimplificadoPublico": QuestionarioSimplificadoPublico,
 }
 
 export const pagesConfig = {
