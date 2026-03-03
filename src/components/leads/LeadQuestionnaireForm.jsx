@@ -288,16 +288,32 @@ export default function LeadQuestionnaireForm({ template, questions, linkCode, o
         )}
 
         {question.type === 'SELECT' && (
-          <Select value={value} onValueChange={(v) => updateField(question.id, v)}>
-            <SelectTrigger className="h-12 rounded-xl">
-              <SelectValue placeholder={question.placeholder || 'Selecione...'} />
-            </SelectTrigger>
-            <SelectContent>
-              {(question.options || []).map((opt, i) => (
-                <SelectItem key={i} value={opt}>{opt}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {(question.options || []).map((opt, i) => {
+              const isSelected = value === opt;
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => updateField(question.id, opt)}
+                  className={`relative p-4 text-left rounded-2xl border transition-all duration-200 flex items-start gap-3 ${
+                    isSelected 
+                      ? 'border-[#2bc196] bg-[#2bc196]/5 shadow-sm ring-1 ring-[#2bc196]' 
+                      : 'border-slate-200 bg-white hover:border-[#2bc196]/30 hover:bg-slate-50'
+                  }`}
+                >
+                  <div className={`mt-0.5 flex-shrink-0 w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${
+                    isSelected ? 'border-[#2bc196] bg-[#2bc196]' : 'border-slate-300 bg-white'
+                  }`}>
+                    {isSelected && <CheckCircle className="w-3.5 h-3.5 text-white" />}
+                  </div>
+                  <span className={`font-medium text-sm leading-tight ${isSelected ? 'text-[#002443]' : 'text-[#002443]/70'}`}>
+                    {opt}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         )}
 
         {question.type === 'MULTI_SELECT' && (
@@ -305,14 +321,9 @@ export default function LeadQuestionnaireForm({ template, questions, linkCode, o
             {(question.options || []).map((opt, i) => {
               const selected = Array.isArray(value) ? value.includes(opt) : false;
               return (
-                <Badge
+                <button
                   key={i}
-                  variant={selected ? 'default' : 'outline'}
-                  className={`cursor-pointer px-4 py-2 text-sm transition-all ${
-                    selected
-                      ? 'bg-[var(--pagsmile-green)] text-white border-[var(--pagsmile-green)]'
-                      : 'hover:border-[var(--pagsmile-green)] hover:text-[var(--pagsmile-green)]'
-                  }`}
+                  type="button"
                   onClick={() => {
                     const current = Array.isArray(value) ? value : [];
                     const updated = selected
@@ -320,23 +331,47 @@ export default function LeadQuestionnaireForm({ template, questions, linkCode, o
                       : [...current, opt];
                     updateField(question.id, updated);
                   }}
+                  className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 border ${
+                    selected
+                      ? 'bg-[#2bc196] text-white border-[#2bc196] shadow-sm scale-[1.02]'
+                      : 'bg-white text-[#002443]/70 border-slate-200 hover:border-[#2bc196]/50 hover:bg-slate-50'
+                  }`}
                 >
                   {opt}
-                </Badge>
+                </button>
               );
             })}
           </div>
         )}
 
         {question.type === 'BOOLEAN' && (
-          <div className="flex items-center gap-3 bg-slate-50 rounded-xl px-4 py-3">
-            <Switch
-              checked={value === true || value === 'true'}
-              onCheckedChange={(checked) => updateField(question.id, checked)}
+          <div className="flex bg-slate-100 p-1.5 rounded-xl w-full sm:w-72 relative shadow-inner">
+            <button
+              type="button"
+              onClick={() => updateField(question.id, true)}
+              className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all z-10 ${
+                value === true ? 'text-white' : 'text-[#002443]/50 hover:text-[#002443]'
+              }`}
+            >
+              Sim
+            </button>
+            <button
+              type="button"
+              onClick={() => updateField(question.id, false)}
+              className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all z-10 ${
+                value === false ? 'text-white' : 'text-[#002443]/50 hover:text-[#002443]'
+              }`}
+            >
+              Não
+            </button>
+            {/* Fundo animado (Pílula) */}
+            <div 
+              className="absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-[#2bc196] rounded-lg transition-all duration-300 ease-in-out shadow-sm"
+              style={{
+                left: value === true ? '6px' : value === false ? 'calc(50% + 0px)' : '6px',
+                opacity: value === '' || value === undefined ? 0 : 1
+              }}
             />
-            <span className="text-sm text-[var(--pagsmile-blue)]/80">
-              {value ? 'Sim' : 'Não'}
-            </span>
           </div>
         )}
       </div>

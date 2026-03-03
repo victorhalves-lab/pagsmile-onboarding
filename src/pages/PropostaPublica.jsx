@@ -212,16 +212,32 @@ export default function PropostaPublica() {
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4" ref={propostaContentRef}>
-      {/* Header */}
-      <div className="bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl p-8 mb-8 text-center">
-        <img
-          src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/9bd38c4f7_Logo-modo-claro.png"
-          alt="Pagsmile"
-          className="h-10 mx-auto mb-4 brightness-0 invert"
-        />
-        <p className="text-white/60 text-sm">
-          Emitida em {proposta.created_date ? moment(proposta.created_date).format('DD/MM/YYYY') : '-'}
-        </p>
+      {/* Premium Hero Header */}
+      <div className="relative overflow-hidden bg-[#002443] rounded-3xl p-8 md:p-12 mb-8 text-center shadow-xl">
+        {/* Abstract Background Details */}
+        <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#2bc196 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
+        <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#2bc196] rounded-full blur-3xl opacity-20 pointer-events-none"></div>
+        <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-[#5cf7cf] rounded-full blur-3xl opacity-10 pointer-events-none"></div>
+        
+        <div className="relative z-10">
+          <img
+            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/9bd38c4f7_Logo-modo-claro.png"
+            alt="Pagsmile"
+            className="h-12 mx-auto mb-6 brightness-0 invert"
+          />
+          <Badge className="bg-[#2bc196]/20 text-[#5cf7cf] hover:bg-[#2bc196]/30 border-none mb-4 px-4 py-1.5 text-sm">
+            Proposta Exclusiva
+          </Badge>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-3">
+            Condições Comerciais
+          </h1>
+          <p className="text-white/80 text-base md:text-lg max-w-lg mx-auto">
+            Preparadas especialmente para <span className="font-bold text-white">{proposta.clienteNome}</span>
+          </p>
+          <p className="text-white/40 text-xs mt-8">
+            Emitida em {proposta.created_date ? moment(proposta.created_date).format('DD/MM/YYYY') : '-'}
+          </p>
+        </div>
       </div>
 
       {/* Title + Export */}
@@ -362,35 +378,35 @@ export default function PropostaPublica() {
         </CardContent>
       </Card>
 
-      {/* Action Buttons */}
+      {/* Floating Action Bar */}
       {['enviada', 'visualizada', 'rascunho'].includes(proposta.status) && (
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-md border-t border-slate-200 z-50 md:relative md:bg-transparent md:backdrop-blur-none md:border-none md:p-0 flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4 md:mb-8 shadow-[0_-10px_40px_rgba(0,36,67,0.08)] md:shadow-none pb-safe">
           <Button
             onClick={() => setShowAceiteModal(true)}
-            size="lg"
-            className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-8 gap-2 w-full sm:w-auto"
+            className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-10 h-14 rounded-2xl text-lg font-bold w-full md:w-auto shadow-lg shadow-[#2bc196]/20 transition-transform hover:scale-105"
           >
-            <CheckCircle2 className="w-5 h-5" />
+            <Shield className="w-5 h-5 mr-2" />
             Aceitar Proposta
           </Button>
-          <Button
-            onClick={() => setShowContrapropostaModal(true)}
-            size="lg"
-            variant="outline"
-            className="border-blue-300 text-blue-700 hover:bg-blue-50 px-8 gap-2 w-full sm:w-auto"
-          >
-            <MessageSquare className="w-5 h-5" />
-            Contraproposta
-          </Button>
-          <Button
-            onClick={() => setShowRecusaModal(true)}
-            size="lg"
-            variant="outline"
-            className="border-red-300 text-red-700 hover:bg-red-50 px-8 gap-2 w-full sm:w-auto"
-          >
-            <XCircle className="w-5 h-5" />
-            Recusar
-          </Button>
+          
+          <div className="flex w-full md:w-auto gap-3">
+            <Button
+              onClick={() => setShowContrapropostaModal(true)}
+              variant="outline"
+              className="flex-1 md:flex-none border-[#002443]/20 text-[#002443] hover:bg-[#002443]/5 h-14 rounded-2xl font-semibold"
+            >
+              <MessageSquare className="w-4 h-4 mr-2" />
+              Negociar
+            </Button>
+            <Button
+              onClick={() => setShowRecusaModal(true)}
+              variant="outline"
+              className="flex-1 md:flex-none border-red-200 text-red-600 hover:bg-red-50 h-14 rounded-2xl font-semibold"
+            >
+              <XCircle className="w-4 h-4 mr-2" />
+              Recusar
+            </Button>
+          </div>
         </div>
       )}
 
