@@ -96,6 +96,7 @@ export default function Configuracoes() {
             { v: 'risk', icon: AlertTriangle, label: 'Regras de Risco' },
             { v: 'integrations', icon: Globe, label: 'Integrações' },
             { v: 'notifications', icon: Bell, label: 'Notificações' },
+            { v: 'partners', icon: Handshake, label: 'Parceiros' },
           ].map(tab => (
             <TabsTrigger key={tab.v} value={tab.v} className="gap-1.5 data-[state=active]:bg-white data-[state=active]:text-[#002443] data-[state=active]:shadow-sm text-[#002443]/50">
               <tab.icon className="w-3.5 h-3.5" /> {tab.label}
