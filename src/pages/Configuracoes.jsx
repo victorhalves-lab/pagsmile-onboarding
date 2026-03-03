@@ -279,6 +279,11 @@ export default function Configuracoes() {
           </div>
         </TabsContent>
 
+        {/* Partners */}
+        <TabsContent value="partners">
+          <PartnersTab />
+        </TabsContent>
+
         {/* Notifications */}
         <TabsContent value="notifications">
           <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 space-y-5">
