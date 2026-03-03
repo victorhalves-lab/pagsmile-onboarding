@@ -92,6 +92,7 @@ import GestaoContratos from './pages/GestaoContratos';
 import EditorContrato from './pages/EditorContrato';
 import PreviewContrato from './pages/PreviewContrato';
 import ContratoPublico from './pages/ContratoPublico';
+import CriarContrato from './pages/CriarContrato';
 import __Layout from './Layout.jsx';
 
 
@@ -141,6 +142,7 @@ export const PAGES = {
     "EditorContrato": EditorContrato,
     "PreviewContrato": PreviewContrato,
     "ContratoPublico": ContratoPublico,
+    "CriarContrato": CriarContrato,
 }
 
 export const pagesConfig = {
