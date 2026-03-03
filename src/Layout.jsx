@@ -47,6 +47,7 @@ export default function Layout({ children, currentPageName }) {
 
   // Páginas públicas (fluxo de onboarding do merchant via link)
   const publicPages = [
+    'ContratoPublico',
     'ComplianceOnboardingStart',
     'CompliancePixOnly',
     'ComplianceFullKYC',
