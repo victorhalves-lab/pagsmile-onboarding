@@ -209,23 +209,27 @@ export default function QuestionariosLeads() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex items-center gap-3">
-          <ClipboardList className="w-6 h-6 text-[var(--pagsmile-green)]" />
-          <div>
-            <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Questionários Recebidos</h1>
-            <div className="flex gap-3 text-xs text-[var(--pagsmile-blue)]/70 mt-1">
-              <span>{thisMonth} este mês</span>
-              <span>{aguardando} aguardando</span>
-              <span className="text-green-600 font-medium">{highScoreLeads} alto score</span>
-              {criticalLeads > 0 && <span className="text-red-600 font-medium">{criticalLeads} risco alto/crítico</span>}
+      {/* Hero Header */}
+      <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-6 shadow-lg">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-xl bg-white/10">
+              <ClipboardList className="w-6 h-6 text-[#5cf7cf]" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white">Questionários Recebidos</h1>
+              <div className="flex gap-3 text-xs text-white/60 mt-1.5">
+                <span className="bg-white/10 px-2 py-0.5 rounded-md">{thisMonth} este mês</span>
+                <span className="bg-white/10 px-2 py-0.5 rounded-md">{aguardando} aguardando</span>
+                <span className="bg-[#2bc196]/20 text-[#5cf7cf] px-2 py-0.5 rounded-md font-medium">{highScoreLeads} alto score</span>
+                {criticalLeads > 0 && <span className="bg-red-500/20 text-red-300 px-2 py-0.5 rounded-md font-medium">{criticalLeads} risco alto/crítico</span>}
+              </div>
             </div>
           </div>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={exportCSV}><Download className="w-4 h-4 mr-1" /> Exportar CSV</Button>
-          <Button variant="outline" size="sm" onClick={() => { refetch(); refetchSimplificados(); }}><RefreshCw className="w-4 h-4" /></Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={exportCSV} className="border-white/20 text-white hover:bg-white/10 rounded-lg"><Download className="w-4 h-4 mr-1" /> Exportar</Button>
+            <Button variant="outline" size="sm" onClick={() => { refetch(); refetchSimplificados(); }} className="border-white/20 text-white hover:bg-white/10 rounded-lg"><RefreshCw className="w-4 h-4" /></Button>
+          </div>
         </div>
       </div>
 
@@ -317,7 +321,7 @@ export default function QuestionariosLeads() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -348,7 +352,7 @@ export default function QuestionariosLeads() {
                 const sc = SUB_CAT[lead.businessSubCategory];
                 const ScIcon = sc?.icon || ShoppingCart;
                 return (
-                  <TableRow key={lead.id} className="hover:bg-slate-50">
+                  <TableRow key={lead.id} className="hover:bg-[#f4f4f4] transition-colors">
                     <TableCell><span className="font-mono text-xs text-[var(--pagsmile-green)]">{lead.protocolo || '-'}</span></TableCell>
                     <TableCell>
                       <p className="font-medium text-sm">{lead.fullName || lead.email}</p>
@@ -432,7 +436,7 @@ export default function QuestionariosLeads() {
           </Table>
         </div>
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-slate-100">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-[#002443]/5">
             <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Anterior</Button>
             <span className="text-xs text-[var(--pagsmile-blue)]/60">Página {page} de {totalPages}</span>
             <Button variant="outline" size="sm" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>Próxima</Button>
