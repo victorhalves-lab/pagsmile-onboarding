@@ -32,7 +32,7 @@ import {
   Search, RefreshCw, Eye, Clock, CheckCircle2, 
   AlertTriangle, XCircle, Users, FileCheck, Link as LinkIcon,
   Loader2, MoreHorizontal, Mail, TrendingUp, TrendingDown,
-  Calendar, ArrowUpDown, Building2, User, Brain
+  Calendar, ArrowUpDown, Building2, User, Brain, Shield
 } from 'lucide-react';
 
 import KPICard, { KPICardComparison } from '../components/dashboard/KPICard';
@@ -46,6 +46,7 @@ import QuickMetricsCard from '../components/dashboard/QuickMetricsCard';
 import ScoreDistributionChart from '../components/dashboard/ScoreDistributionChart';
 import ComplianceScoresOverview from '../components/dashboard/ComplianceScoresOverview';
 import SalesPipelineSummary from '../components/dashboard/SalesPipelineSummary';
+import ActionableInsightsCard from '../components/compliance/ActionableInsightsCard';
 
 export default function AdminDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -89,6 +90,11 @@ export default function AdminDashboard() {
   const { data: leads = [] } = useQuery({
     queryKey: ['dashboard-leads'],
     queryFn: () => base44.entities.Lead.list('-created_date', 500)
+  });
+
+  const { data: revalidationSchedules = [] } = useQuery({
+    queryKey: ['revalidationSchedules-dash'],
+    queryFn: () => base44.entities.RevalidationSchedule.list()
   });
 
   const merchantMap = React.useMemo(() => {
@@ -400,23 +406,30 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Dashboard de Compliance</h1>
-          <p className="text-[var(--pagsmile-blue)]/70 font-medium">Visão executiva do processo de onboarding</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => refetchCases()} className="text-[var(--pagsmile-blue)] border-[var(--pagsmile-blue)]/20 hover:bg-[var(--pagsmile-blue)]/5 font-semibold">
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Atualizar
-          </Button>
-          <Link to={createPageUrl('GerarLinkOnboarding')}>
-            <Button className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white">
-              <LinkIcon className="w-4 h-4 mr-2" />
-              Gerar Link
+      {/* Hero Header */}
+      <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-6 shadow-lg">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-xl bg-white/10">
+              <Shield className="w-6 h-6 text-[#5cf7cf]" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white">Dashboard de Compliance</h1>
+              <p className="text-white/60 text-sm mt-1">Visão executiva do processo de onboarding</p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => refetchCases()} className="border-white/20 text-white hover:bg-white/10 rounded-xl bg-transparent">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Atualizar
             </Button>
-          </Link>
+            <Link to={createPageUrl('GerarLinkOnboarding')}>
+              <Button className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl shadow-md">
+                <LinkIcon className="w-4 h-4 mr-2" />
+                Gerar Link
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -508,6 +521,15 @@ export default function AdminDashboard() {
         <h2 className="text-lg font-bold text-[#002443] mb-3">Análise de Scores (SENTINEL)</h2>
         <ComplianceScoresOverview scores={stats.scoreStats} />
       </div>
+
+      {/* Actionable Insights - NEW */}
+      <ActionableInsightsCard
+        manualReviewCount={stats.manual}
+        pendingDocs={stats.pendingDocs}
+        overdueRevalidations={revalidationSchedules.filter(s => s.status === 'pending' && new Date(s.scheduledDate) < new Date()).length}
+        pendingManualOver24h={stats.pendingManualOver24h}
+        criticalScoresToday={stats.criticalScoresToday}
+      />
 
       {/* Helena Insights & Alertas */}
       <HelenaInsightsAlerts
