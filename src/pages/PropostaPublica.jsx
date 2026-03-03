@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
+import { createPageUrl } from '../utils';
 import { formatCNPJ } from '@/components/proposals/CnpjInput';
 import TaxasPorBandeiraPublic from '@/components/proposals/TaxasPorBandeiraPublic';
 import ParcelasTableDetalhada from '@/components/proposals/ParcelasTableDetalhada';
