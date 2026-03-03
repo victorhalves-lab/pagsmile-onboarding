@@ -77,7 +77,7 @@ export default function Layout({ children, currentPageName }) {
   // Layout público para fluxo de onboarding (via link)
   if (isPublicPage) {
     return (
-      <div className="min-h-screen font-sans antialiased bg-[#f8f9fa]">
+      <div className="min-h-screen font-sans antialiased bg-[#f4f4f4]">
         <style>{`
           @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
@@ -289,7 +289,7 @@ export default function Layout({ children, currentPageName }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f9fa] flex font-sans">
+    <div className="min-h-screen bg-[#f4f4f4] flex font-sans">
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
@@ -432,7 +432,7 @@ export default function Layout({ children, currentPageName }) {
       )}
 
       {/* Main Content */}
-      <main className={`flex-1 ${isAuthenticated ? 'lg:ml-64' : ''} bg-[#f8f9fa] min-h-screen`}>
+      <main className={`flex-1 ${isAuthenticated ? 'lg:ml-64' : ''} bg-[#f4f4f4] min-h-screen`}>
         <div className={`p-4 lg:p-8 ${isAuthenticated ? 'pt-20 lg:pt-8' : ''}`}>
           {children}
         </div>

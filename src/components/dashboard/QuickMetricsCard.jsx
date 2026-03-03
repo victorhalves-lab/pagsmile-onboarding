@@ -10,29 +10,29 @@ export default function QuickMetricsCard({
   const metrics = [
     {
       icon: Zap,
-      iconBg: 'bg-green-100',
-      iconColor: 'text-green-600',
+      iconBg: 'bg-[#2bc196]/10',
+      iconColor: 'text-[#2bc196]',
       label: 'Tempo Médio (IA)',
       value: avgTimeIA
     },
     {
       icon: Clock,
-      iconBg: 'bg-slate-100',
-      iconColor: 'text-[var(--pagsmile-blue)]/80',
+      iconBg: 'bg-[#002443]/10',
+      iconColor: 'text-[#002443]',
       label: 'Tempo Médio (Manual)',
       value: avgTimeManual
     },
     {
       icon: Target,
-      iconBg: 'bg-blue-100',
-      iconColor: 'text-blue-600',
+      iconBg: 'bg-[#36706c]/10',
+      iconColor: 'text-[#36706c]',
       label: 'Score Médio Carteira',
       value: avgScore
     },
     {
       icon: FileText,
-      iconBg: 'bg-orange-100',
-      iconColor: 'text-orange-600',
+      iconBg: 'bg-[#5cf7cf]/10',
+      iconColor: 'text-[#36706c]',
       label: 'Docs Pendentes',
       value: pendingDocs
     }
@@ -43,7 +43,7 @@ export default function QuickMetricsCard({
       {metrics.map((metric, index) => {
         const Icon = metric.icon;
         return (
-          <div key={index} className="bg-white rounded-xl border border-slate-200 p-4">
+          <div key={index} className="bg-white rounded-2xl border border-[#002443]/5 p-4 hover:shadow-md transition-shadow">
             <div className="flex items-center gap-3">
               <div className={`p-2 rounded-lg ${metric.iconBg}`}>
                 <Icon className={`w-4 h-4 ${metric.iconColor}`} />

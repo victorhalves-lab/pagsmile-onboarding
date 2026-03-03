@@ -291,7 +291,7 @@ export default function CriarProposta() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f4f4f4] font-sans">
+    <div className="min-h-screen bg-white font-sans">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 bg-gradient-to-r from-[#002443] to-[#36706c] sticky top-0 z-20 rounded-b-2xl shadow-lg mx-0">
         <div className="flex items-center gap-3">
@@ -348,7 +348,7 @@ export default function CriarProposta() {
         </ScrollArea>
 
         {/* Right Column - Preview */}
-        <div className="w-[480px] bg-gradient-to-b from-[#002443]/[0.03] to-[#36706c]/[0.05] border-l border-[#002443]/5 flex flex-col">
+        <div className="w-[480px] bg-[#f4f4f4] border-l border-[#002443]/10 flex flex-col">
           <div className="p-6 flex-1 overflow-y-auto">
              <PropostaPreview 
                form={form} 
@@ -368,7 +368,7 @@ export default function CriarProposta() {
              </div>
           </div>
           
-          <div className="p-6 border-t border-[#002443]/5 bg-white/80 backdrop-blur-sm">
+          <div className="p-6 border-t border-[#002443]/10 bg-white">
              <div className="grid grid-cols-2 gap-3">
                <Button 
                  variant="outline" 
