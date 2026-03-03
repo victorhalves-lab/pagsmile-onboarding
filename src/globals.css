@@ -6,25 +6,34 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 210 100% 13%;
+    /* Brand Colors based on Guide */
+    --pagsmile-dark-blue: #002443;
+    --pagsmile-primary-green: #2bc196;
+    --pagsmile-teal: #36706c;
+    --pagsmile-highlight: #5cf7cf;
+    --pagsmile-bg-gray: #f4f4f4;
+    --pagsmile-text-dark: #282828;
+
+    /* Shadcn Mappings */
+    --background: 0 0% 96%; /* #f4f4f4 */
+    --foreground: 210 29% 24%; /* #002443 converted roughly or just use hex in usage */
     --card: 0 0% 100%;
-    --card-foreground: 210 100% 13%;
+    --card-foreground: 210 29% 24%;
     --popover: 0 0% 100%;
-    --popover-foreground: 210 100% 13%;
-    --primary: 160 62% 45%;
+    --popover-foreground: 210 29% 24%;
+    --primary: 163 63% 46%; /* #2bc196 */
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 210 100% 13%;
+    --secondary: 210 100% 13%; /* #002443 */
+    --secondary-foreground: 0 0% 100%;
     --muted: 210 40% 96%;
-    --muted-foreground: 210 100% 13%;
-    --accent: 160 62% 45%;
+    --muted-foreground: 210 29% 24%;
+    --accent: 163 63% 46%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 160 62% 45%;
+    --ring: 163 63% 46%;
     --radius: 0.75rem;
   }
 }
@@ -35,17 +44,22 @@
     font-family: 'Plus Jakarta Sans', sans-serif;
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: #f4f4f4; /* Brand BG */
+    color: #002443; /* Brand Dark Blue */
     font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 700; /* Bold headers */
     color: #002443;
   }
 }
 
 /* ===== FORÇA GLOBAL - SOBRESCREVE TUDO ===== */
 
-/* Todos os textos devem ser azul Pagsmile */
+/* Todos os textos principais devem ser azul Pagsmile escuro */
 * {
-  color: #002443;
+  border-color: #e2e8f0;
 }
 
 /* Exceções: textos brancos em fundos coloridos */
