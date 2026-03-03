@@ -25,12 +25,12 @@ export default function CardOutrasTaxas({ rates, onUpdateRates }) {
           {/* PIX Section */}
           <div className="space-y-3">
               <Label className="text-xs text-[#282828]/50 font-medium">Tipo de cobrança PIX</Label>
-              <div className="grid grid-cols-2 gap-3 p-1 bg-white rounded-xl border border-[#002443]/5">
+              <div className="grid grid-cols-2 gap-3 p-1 bg-[#f4f4f4] rounded-xl border border-[#002443]/5">
                 <button
                   onClick={() => updatePix('tipo', 'percentual')}
                   className={`flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-medium transition-all ${
                     pixTipo === 'percentual' 
-                      ? 'bg-[#2bc196]/10 text-[#2bc196] border border-[#2bc196]/30 shadow-sm' 
+                      ? 'bg-white text-[#2bc196] border border-[#2bc196]/30 shadow-sm' 
                       : 'text-[#282828]/50 hover:text-[#002443]'
                   }`}
                 >
@@ -57,7 +57,7 @@ export default function CardOutrasTaxas({ rates, onUpdateRates }) {
                       value={rates?.pix?.valor || ''}
                       onChange={(val) => updatePix('valor', val)}
                       placeholder="0,00"
-                      className="bg-white border-[#002443]/10 text-[#002443] h-10 pr-8 text-right rounded-lg"
+                      className="bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 pr-8 text-right rounded-lg"
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#282828]/40">
                         {pixTipo === 'percentual' ? '%' : ''}
@@ -79,7 +79,7 @@ export default function CardOutrasTaxas({ rates, onUpdateRates }) {
                       value={rates?.feeTransacao || ''}
                       onChange={(val) => updateField('feeTransacao', val)}
                       placeholder="0,00"
-                      className="bg-white border-[#002443]/10 text-[#002443] h-10 pl-8 text-right rounded-lg"
+                      className="bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 pl-8 text-right rounded-lg"
                     />
                 </div>
               </div>
@@ -92,7 +92,7 @@ export default function CardOutrasTaxas({ rates, onUpdateRates }) {
                       value={rates?.boleto || ''}
                       onChange={(val) => updateField('boleto', val)}
                       placeholder="0,00"
-                      className="bg-white border-[#002443]/10 text-[#002443] h-10 pl-8 text-right rounded-lg"
+                      className="bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 pl-8 text-right rounded-lg"
                     />
                 </div>
               </div>
@@ -105,7 +105,7 @@ export default function CardOutrasTaxas({ rates, onUpdateRates }) {
                       value={rates?.alertaPreChargeback || ''}
                       onChange={(val) => updateField('alertaPreChargeback', val)}
                       placeholder="0,00"
-                      className="bg-white border-[#002443]/10 text-[#002443] h-10 pl-8 text-right rounded-lg"
+                      className="bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 pl-8 text-right rounded-lg"
                     />
                 </div>
               </div>
@@ -121,7 +121,7 @@ export default function CardOutrasTaxas({ rates, onUpdateRates }) {
                           value={rates?.minimoGarantido?.mes1 || ''}
                           onChange={(val) => updateField('minimoGarantido', { ...rates.minimoGarantido, mes1: val })}
                           placeholder="0,00"
-                          className="bg-white border-[#002443]/10 text-[#002443] h-10 pl-8 text-right text-xs rounded-lg"
+                          className="bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 pl-8 text-right text-xs rounded-lg"
                         />
                     </div>
                   </div>
@@ -133,7 +133,7 @@ export default function CardOutrasTaxas({ rates, onUpdateRates }) {
                           value={rates?.minimoGarantido?.mes2 || ''}
                           onChange={(val) => updateField('minimoGarantido', { ...rates.minimoGarantido, mes2: val })}
                           placeholder="0,00"
-                          className="bg-white border-[#002443]/10 text-[#002443] h-10 pl-8 text-right text-xs rounded-lg"
+                          className="bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 pl-8 text-right text-xs rounded-lg"
                         />
                     </div>
                   </div>
@@ -145,7 +145,7 @@ export default function CardOutrasTaxas({ rates, onUpdateRates }) {
                           value={rates?.minimoGarantido?.mes3 || ''}
                           onChange={(val) => updateField('minimoGarantido', { ...rates.minimoGarantido, mes3: val })}
                           placeholder="0,00"
-                          className="bg-white border-[#002443]/10 text-[#002443] h-10 pl-8 text-right text-xs rounded-lg"
+                          className="bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 pl-8 text-right text-xs rounded-lg"
                         />
                     </div>
                   </div>

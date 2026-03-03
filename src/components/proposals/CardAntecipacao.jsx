@@ -35,7 +35,7 @@ export default function CardAntecipacao({ form, onUpdate }) {
                     value={form.taxaAntecipacao || ''}
                     onChange={(val) => onUpdate('taxaAntecipacao', val)}
                     placeholder="0,00"
-                    className="bg-white border-[#002443]/10 text-[#002443] h-10 pr-12 text-right rounded-lg"
+                    className="bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 pr-12 text-right rounded-lg"
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#282828]/40">a.m.</span>
               </div>
@@ -81,7 +81,7 @@ export default function CardAntecipacao({ form, onUpdate }) {
                         value={form.percentualAntecipacao || ''}
                         onChange={(val) => onUpdate('percentualAntecipacao', val)}
                         placeholder="100,00"
-                        className="bg-white border-[#002443]/10 text-[#002443] h-10 pr-8 text-right rounded-lg"
+                        className="bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 pr-8 text-right rounded-lg"
                       />
                       <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#282828]/40">%</span>
                   </div>

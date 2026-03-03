@@ -56,7 +56,7 @@ export default function ParcelasTableDetalhada({ taxas, taxaRAV = 0, prazo = 'D+
                 </thead>
                 <tbody>
                   {rows.map(r => (
-                    <tr key={r.parcela} className="border-b border-slate-100">
+                    <tr key={r.parcela} className="border-b border-[#002443]/5 hover:bg-[#2bc196]/5">
                       <td className="py-2 px-3 font-medium">{r.parcela}x</td>
                       <td className="py-2 px-3 text-right">{r.taxaBase.toFixed(2)}%</td>
                       {taxaRAV > 0 && prazo !== 'FLUXO' && (

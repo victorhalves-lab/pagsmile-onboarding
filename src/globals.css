@@ -103,6 +103,26 @@ a:hover {
   color: #002443 !important;
 }
 
+/* Force brand backgrounds - remove any slate/gray backgrounds */
+.bg-slate-50,
+.bg-slate-100,
+.bg-gray-50,
+.bg-gray-100 {
+  background-color: #f4f4f4 !important;
+}
+
+.border-slate-200,
+.border-slate-100,
+.border-gray-200,
+.border-gray-100 {
+  border-color: rgba(0, 36, 67, 0.08) !important;
+}
+
+.hover\:bg-slate-50:hover,
+.hover\:bg-gray-50:hover {
+  background-color: rgba(43, 193, 150, 0.05) !important;
+}
+
 /* Cores muted sempre em azul */
 .text-muted-foreground {
   color: #002443 !important;

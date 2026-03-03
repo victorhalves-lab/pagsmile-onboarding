@@ -63,7 +63,7 @@ export default function CardDadosCliente({ form, errors, onUpdate }) {
           value={form.clienteNome || ''}
           onChange={(e) => onUpdate('clienteNome', e.target.value)}
           placeholder="Razão social ou nome fantasia"
-          className={`bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 rounded-lg ${errors?.clienteNome ? 'border-red-500' : ''}`}
+          className={`bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 rounded-lg placeholder:text-[#282828]/30 ${errors?.clienteNome ? 'border-red-500' : ''}`}
         />
         {errors?.clienteNome && <p className="text-xs text-red-500">{errors.clienteNome}</p>}
       </div>
@@ -86,7 +86,7 @@ export default function CardDadosCliente({ form, errors, onUpdate }) {
             value={form.clienteMcc || ''}
             onChange={(e) => onUpdate('clienteMcc', e.target.value.replace(/\D/g, '').slice(0, 4))}
             placeholder="Ex: 5812"
-            className={`bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 rounded-lg ${errors?.clienteMcc ? 'border-red-500' : ''}`}
+            className={`bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 rounded-lg placeholder:text-[#282828]/30 ${errors?.clienteMcc ? 'border-red-500' : ''}`}
             required
           />
           {errors?.clienteMcc && <p className="text-xs text-red-500">{errors.clienteMcc}</p>}
@@ -102,7 +102,7 @@ export default function CardDadosCliente({ form, errors, onUpdate }) {
           value={form.clienteContato || ''}
           onChange={(e) => onUpdate('clienteContato', e.target.value)}
           placeholder="Nome do contato principal"
-          className={`bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 rounded-lg ${errors?.clienteContato ? 'border-red-500' : ''}`}
+          className={`bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 rounded-lg placeholder:text-[#282828]/30 ${errors?.clienteContato ? 'border-red-500' : ''}`}
         />
         {errors?.clienteContato && <p className="text-xs text-red-500">{errors.clienteContato}</p>}
       </div>

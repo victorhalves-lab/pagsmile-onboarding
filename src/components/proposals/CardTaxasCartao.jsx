@@ -112,7 +112,7 @@ export default function CardTaxasCartao({ rates, onUpdateRates, selectedBrand, s
               value={taxas[selectedBrand]?.[f.id] || ''}
               onChange={(val) => updateTaxa(selectedBrand, f.id, val)}
               placeholder="0,00"
-              className="bg-white border-[#002443]/10 text-[#002443] h-12 text-lg font-medium text-right pr-4 rounded-lg"
+              className="bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-12 text-lg font-medium text-right pr-4 rounded-lg"
               // Custom styled input
             />
           </div>

@@ -48,21 +48,21 @@ export default function ParcelasTable({ taxas, taxaRAV = 0, prazo = 'D+1', compa
     <div className="overflow-x-auto">
       <table className={`w-full ${compact ? 'text-[10px]' : 'text-xs'}`}>
         <thead>
-          <tr className="border-b border-slate-200">
-            <th className="text-left py-1.5 px-2 font-semibold text-[var(--pagsmile-blue)]/70">Parcela</th>
-            <th className="text-left py-1.5 px-2 font-semibold text-[var(--pagsmile-blue)]/70">Faixa</th>
-            <th className="text-right py-1.5 px-2 font-semibold text-[var(--pagsmile-blue)]/70">Base</th>
+          <tr className="border-b border-[#002443]/10">
+            <th className="text-left py-1.5 px-2 font-semibold text-[#002443]/70">Parcela</th>
+            <th className="text-left py-1.5 px-2 font-semibold text-[#002443]/70">Faixa</th>
+            <th className="text-right py-1.5 px-2 font-semibold text-[#002443]/70">Base</th>
             {taxaRAV > 0 && prazo !== 'FLUXO' && (
-              <th className="text-right py-1.5 px-2 font-semibold text-[var(--pagsmile-blue)]/70">RAV</th>
+              <th className="text-right py-1.5 px-2 font-semibold text-[#002443]/70">RAV</th>
             )}
-            <th className="text-right py-1.5 px-2 font-semibold text-[var(--pagsmile-green)]">Final</th>
+            <th className="text-right py-1.5 px-2 font-semibold text-[#2bc196]">Final</th>
           </tr>
         </thead>
         <tbody>
           {rows.map(r => (
-            <tr key={r.parcela} className="border-b border-slate-50 hover:bg-slate-50/50">
+            <tr key={r.parcela} className="border-b border-[#002443]/5 hover:bg-[#2bc196]/5">
               <td className="py-1.5 px-2 font-medium">{r.parcela}x</td>
-              <td className="py-1.5 px-2 text-[var(--pagsmile-blue)]/50">{r.faixa}</td>
+              <td className="py-1.5 px-2 text-[#282828]/50">{r.faixa}</td>
               <td className="py-1.5 px-2 text-right">{r.taxaBase.toFixed(2)}%</td>
               {taxaRAV > 0 && prazo !== 'FLUXO' && (
                 <td className="py-1.5 px-2 text-right text-amber-600">

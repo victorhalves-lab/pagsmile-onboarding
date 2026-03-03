@@ -92,17 +92,17 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
 
   return (
     <div className="h-full flex flex-col">
-      <h2 className="text-base font-semibold text-white mb-4">Preview - Tabela de Parcelas</h2>
+      <h2 className="text-base font-bold text-[#002443] mb-4">Preview - Tabela de Parcelas</h2>
       
       {/* Brand Selector */}
       <div className="mb-4">
         <Select value={selectedBrand} onValueChange={onBandeiraChange}>
-            <SelectTrigger className="bg-[#18181b] border-white/10 text-white h-10">
+            <SelectTrigger className="bg-white border-[#002443]/10 text-[#002443] h-10 rounded-lg">
                 <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-[#18181b] border-white/10 text-white">
+            <SelectContent>
                 {BANDEIRAS.map(b => (
-                    <SelectItem key={b.id} value={b.id} className="focus:bg-white/10 focus:text-white cursor-pointer">
+                    <SelectItem key={b.id} value={b.id} className="cursor-pointer">
                         {b.label}
                     </SelectItem>
                 ))}
@@ -111,7 +111,7 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
       </div>
       
       {/* Table Header */}
-      <div className="grid grid-cols-5 text-xs text-slate-500 mb-2 px-2">
+      <div className="grid grid-cols-5 text-xs text-[#282828]/50 mb-2 px-2 font-semibold">
           <div>Parcela</div>
           <div>Faixa</div>
           <div className="text-right">Base</div>
@@ -120,24 +120,28 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
       </div>
       
       {/* Rows */}
-      <div className="space-y-1">
+      <div className="space-y-0.5">
           {rows.map(row => (
-              <div key={row.parcela} className="grid grid-cols-5 items-center px-2 py-2 rounded-md hover:bg-white/5 transition-colors">
-                  <div className="text-sm font-medium text-white">{row.parcela}x</div>
+              <div key={row.parcela} className="grid grid-cols-5 items-center px-2 py-2 rounded-lg hover:bg-[#2bc196]/5 transition-colors">
+                  <div className="text-sm font-medium text-[#002443]">{row.parcela}x</div>
                   <div>
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded ${row.badgeColor}`}>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded-md ${
+                        row.parcela === 1 ? 'bg-[#002443]/10 text-[#002443]' :
+                        row.parcela <= 6 ? 'bg-[#36706c]/10 text-[#36706c]' :
+                        'bg-[#2bc196]/10 text-[#2bc196]'
+                      }`}>
                           {row.badgeLabel}
                       </span>
                   </div>
-                  <div className="text-sm text-right text-slate-300">{fmtPct(row.taxaBase)}</div>
-                  <div className="text-sm text-right text-slate-400">
+                  <div className="text-sm text-right text-[#282828]/60">{fmtPct(row.taxaBase)}</div>
+                  <div className="text-sm text-right">
                       {row.taxaAntecipacao > 0 ? (
-                          <span className="text-emerald-500">+{fmtPct(row.taxaAntecipacao)}</span>
+                          <span className="text-[#2bc196]">+{fmtPct(row.taxaAntecipacao)}</span>
                       ) : (
-                          <span className="text-slate-600">-</span>
+                          <span className="text-[#282828]/20">-</span>
                       )}
                   </div>
-                  <div className="text-sm font-bold text-right text-yellow-500">
+                  <div className="text-sm font-bold text-right text-[#002443]">
                       {fmtPct(row.taxaFinal)}
                   </div>
               </div>
@@ -146,28 +150,28 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
       
       {/* Footer Stats */}
       <div className="space-y-2 mt-6">
-          <div className="p-3 bg-[#18181b] rounded-lg border border-white/5 flex flex-col gap-1 text-center">
-              <p className="text-[10px] text-slate-500 uppercase">TPV Mínimo Garantido</p>
-              <div className="flex items-center justify-center gap-2 text-[10px] font-medium text-white">
+          <div className="p-3 bg-[#002443]/5 rounded-xl border border-[#002443]/10 flex flex-col gap-1 text-center">
+              <p className="text-[10px] text-[#282828]/50 uppercase font-semibold">TPV Mínimo Garantido</p>
+              <div className="flex items-center justify-center gap-2 text-[10px] font-medium text-[#002443]">
                   <span>Mês 1: R$ {parseVal(rates.minimoGarantido?.mes1).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
-                  <span className="text-slate-600">→</span>
+                  <span className="text-[#282828]/20">→</span>
                   <span>Mês 2: R$ {parseVal(rates.minimoGarantido?.mes2).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
-                  <span className="text-slate-600">→</span>
-                  <span className="text-[#2bc196]">Mês 3+: R$ {parseVal(rates.minimoGarantido?.mes3).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+                  <span className="text-[#282828]/20">→</span>
+                  <span className="text-[#2bc196] font-bold">Mês 3+: R$ {parseVal(rates.minimoGarantido?.mes3).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
               </div>
           </div>
-          <div className="grid grid-cols-3 gap-2 p-4 bg-[#18181b] rounded-lg border border-white/5">
+          <div className="grid grid-cols-3 gap-2 p-4 bg-[#002443]/5 rounded-xl border border-[#002443]/10">
               <div className="text-center">
-                  <p className="text-[10px] text-slate-500 uppercase">Prazo</p>
-                  <p className="text-sm font-bold text-white">{prazo}</p>
+                  <p className="text-[10px] text-[#282828]/50 uppercase font-semibold">Prazo</p>
+                  <p className="text-sm font-bold text-[#002443]">{prazo}</p>
               </div>
-              <div className="text-center border-l border-white/5">
-                  <p className="text-[10px] text-slate-500 uppercase">RAV</p>
+              <div className="text-center border-l border-[#002443]/10">
+                  <p className="text-[10px] text-[#282828]/50 uppercase font-semibold">RAV</p>
                   <p className="text-sm font-bold text-[#2bc196]">{fmtPct(taxaRAV)} a.m.</p>
               </div>
-              <div className="text-center border-l border-white/5">
-                  <p className="text-[10px] text-slate-500 uppercase">PIX</p>
-                  <p className="text-sm font-bold text-white">
+              <div className="text-center border-l border-[#002443]/10">
+                  <p className="text-[10px] text-[#282828]/50 uppercase font-semibold">PIX</p>
+                  <p className="text-sm font-bold text-[#002443]">
                       {rates.pix?.tipo === 'fixo' 
                           ? `R$ ${parseVal(rates.pix?.valor).toFixed(2)}` 
                           : fmtPct(rates.pix?.valor)

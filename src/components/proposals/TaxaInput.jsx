@@ -26,7 +26,7 @@ export default function TaxaInput({ value, onChange, prefix, suffix, placeholder
   return (
     <div className="relative w-full">
       {prefix && (
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-500 font-medium z-10 pointer-events-none">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#282828]/40 font-medium z-10 pointer-events-none">
           {prefix}
         </span>
       )}
@@ -34,10 +34,10 @@ export default function TaxaInput({ value, onChange, prefix, suffix, placeholder
         value={displayValue}
         onChange={handleChange}
         placeholder={placeholder}
-        className={`${className} ${prefix ? 'pl-8' : ''} ${suffix ? 'pr-12' : ''} placeholder:text-slate-600 focus:border-[#2bc196] focus:ring-1 focus:ring-[#2bc196]`}
+        className={`${className} ${prefix ? 'pl-8' : ''} ${suffix ? 'pr-12' : ''} placeholder:text-[#282828]/30 focus:border-[#2bc196] focus:ring-1 focus:ring-[#2bc196]`}
       />
       {suffix && (
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-slate-500 font-medium z-10 pointer-events-none">
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-[#282828]/40 font-medium z-10 pointer-events-none">
           {suffix}
         </span>
       )}
