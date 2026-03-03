@@ -234,19 +234,21 @@ export default function Layout({ children, currentPageName }) {
       <Link
         to={createPageUrl(item.path)}
         onClick={onClick}
-        className={`flex items-center gap-3 px-3 py-2.5 rounded-r-lg border-l-4 transition-all duration-200 text-sm font-medium ${
+        className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm font-medium ${
           isActive
-            ? 'border-[#5cf7cf] bg-[#5cf7cf]/10 text-[#5cf7cf]'
-            : 'border-transparent text-slate-400 hover:text-white hover:bg-white/5'
+            ? 'bg-[var(--pagsmile-green)] text-white shadow-md'
+            : item.highlight && !isActive
+            ? 'text-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5 hover:bg-[var(--pagsmile-green)]/10'
+            : 'text-[#002443]/80 hover:text-[#002443] hover:bg-[#002443]/5'
             }`}
-      >
-        <Icon className={`w-4 h-4 ${isActive ? 'text-[#5cf7cf]' : 'text-current'}`} />
+            >
+        <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-[#002443]/80'}`} />
         <span className="flex-1">{item.label}</span>
         {item.highlight && !isActive && (
-          <span className="w-1.5 h-1.5 rounded-full bg-[#2bc196] animate-pulse"></span>
+          <span className="w-2 h-2 rounded-full bg-[var(--pagsmile-green)] animate-pulse"></span>
         )}
         {item.badge && (
-          <span className="text-[10px] bg-[#2bc196] text-[#002443] px-1.5 py-0.5 rounded font-bold">{item.badge}</span>
+          <span className="text-xs bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">{item.badge}</span>
         )}
       </Link>
     );
@@ -258,17 +260,17 @@ export default function Layout({ children, currentPageName }) {
     const visibleItems = section.items.filter(item => !item.hidden);
     
     return (
-      <div className="mb-4">
+      <div className="mb-2">
         <button
           onClick={() => toggleSection(section.id)}
-          className="flex items-center gap-2 w-full px-4 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider hover:text-white transition-colors group"
+          className="flex items-center gap-2 w-full px-3 py-2 text-xs font-bold text-[#002443] uppercase tracking-wider hover:text-[#002443]/80 transition-colors"
         >
-          <SectionIcon className={`w-4 h-4 ${isExpanded ? 'text-[#2bc196]' : 'text-slate-500 group-hover:text-[#2bc196]'}`} />
+          <SectionIcon className="w-4 h-4 text-[#2bc196]" />
           <span className="flex-1 text-left">{section.label}</span>
-          {isExpanded ? <ChevronDown className="w-3 h-3 text-slate-500" /> : <ChevronRight className="w-3 h-3 text-slate-500" />}
+          {isExpanded ? <ChevronDown className="w-3 h-3 text-[#002443]/50" /> : <ChevronRight className="w-3 h-3 text-[#002443]/50" />}
         </button>
         {isExpanded && (
-          <div className="mt-1 space-y-0.5">
+          <div className="mt-1 space-y-1 pl-2">
             {visibleItems.map(item => (
               <NavItem 
                 key={item.path} 
@@ -305,23 +307,22 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Sidebar - Desktop */}
       {isAuthenticated && (
-        <aside className="hidden lg:flex flex-col w-64 bg-[#002443] min-h-screen fixed left-0 top-0 z-20 shadow-2xl">
+        <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-slate-200 min-h-screen fixed left-0 top-0 z-20">
           {/* Logo */}
-          <div className="p-6 border-b border-white/10 bg-[#002443]">
+          <div className="p-4 border-b border-slate-200 bg-white">
             <div className="flex items-center gap-3">
-              {/* Using a placeholder or potentially a light mode logo if available, or applying brightness filter */}
               <img 
                 src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/9bd38c4f7_Logo-modo-claro.png" 
                 alt="Pagsmile" 
-                className="h-8 w-auto brightness-0 invert" 
+                className="h-8 w-auto"
               />
             </div>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-2 py-6 overflow-y-auto">
+          <nav className="flex-1 p-4 overflow-y-auto">
             {/* Home link */}
-            <div className="mb-4">
+            <div className="mb-3">
               <NavItem 
                 item={{ label: 'Home', path: 'Home', icon: LayoutDashboard }} 
                 isActive={currentPageName === 'Home'} 
@@ -333,7 +334,7 @@ export default function Layout({ children, currentPageName }) {
                   ))}
 
                   {/* How It Works - standalone */}
-                  <div className="mt-4 pt-4 border-t border-white/10">
+                  <div className="mt-2 pt-2 border-t border-slate-200">
                     <NavItem 
                       item={{ label: 'How It Works', path: 'HowItWorks', icon: FileText }} 
                       isActive={currentPageName === 'HowItWorks'} 
@@ -342,22 +343,23 @@ export default function Layout({ children, currentPageName }) {
                 </nav>
 
           {/* User Info & Logout */}
-          <div className="p-4 border-t border-white/10 bg-[#002443]">
-            <div className="flex items-center gap-3 mb-3 p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors cursor-pointer group">
-              <div className="w-9 h-9 rounded-full bg-[#2bc196] flex items-center justify-center text-[#002443] shadow-sm font-bold">
-                {user?.full_name?.charAt(0) || 'U'}
+          <div className="p-4 border-t border-slate-200 bg-slate-50/50">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-9 h-9 rounded-full bg-[#002443] flex items-center justify-center text-white shadow-sm">
+                <span className="text-sm font-semibold">
+                  {user?.full_name?.charAt(0) || 'U'}
+                </span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-white truncate group-hover:text-[#5cf7cf] transition-colors">{user?.full_name}</p>
-                <p className="text-xs text-white/50 truncate">{isAdmin ? 'Administrador' : 'Usuário'}</p>
+                <p className="text-sm font-semibold text-[#002443] truncate">{user?.full_name}</p>
+                <p className="text-xs text-[var(--pagsmile-blue)]/70 truncate">{isAdmin ? 'Administrador' : 'Usuário'}</p>
               </div>
-              <Settings className="w-4 h-4 text-white/30 group-hover:text-[#5cf7cf]" />
-            </div>
+              </div>
               <Button
               variant="ghost"
               size="sm"
               onClick={() => base44.auth.logout()}
-              className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-white/5 font-medium"
+              className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 font-medium"
               >
               <LogOut className="w-4 h-4 mr-2" />
               Sair
