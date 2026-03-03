@@ -10,9 +10,19 @@ export default function HelenaInsightsAlerts({
   pendingManualOver24h = 0,
   approvalRateTrend = 0,
   criticalScoresToday = 0,
-  manualTimeTrend = 0
+  manualTimeTrend = 0,
+  staleLeads = 0
 }) {
   const alerts = [
+    {
+      icon: Clock,
+      iconBg: 'bg-amber-100',
+      iconColor: 'text-amber-600',
+      message: `${staleLeads} leads comerciais parados há mais de 7 dias sem interação`,
+      action: 'Ver Pipeline',
+      actionLink: 'PipelineComercial',
+      show: staleLeads > 0
+    },
     {
       icon: Clock,
       iconBg: 'bg-slate-100',

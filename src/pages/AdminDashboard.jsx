@@ -515,6 +515,11 @@ export default function AdminDashboard() {
         approvalRateTrend={stats.approvalRateTrend}
         criticalScoresToday={stats.criticalScoresToday}
         manualTimeTrend={15}
+        staleLeads={leads.filter(l => {
+          if (['ativado', 'perdido', 'proposta_recusada'].includes(l.status)) return false;
+          const d = l.lastInteractionDate || l.updated_date || l.created_date;
+          return d && (new Date() - new Date(d)) / (1000*60*60*24) > 7;
+        }).length}
       />
 
       {/* Gráficos - Row 1 */}

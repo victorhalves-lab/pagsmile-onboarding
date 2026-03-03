@@ -25,6 +25,7 @@ import { toast } from 'sonner';
 import moment from 'moment';
 import LeadQuickActions from '../components/leads/LeadQuickActions';
 import LeadProposals from '../components/leads/LeadProposals';
+import LeadSLAIndicator from '../components/leads/LeadSLAIndicator';
 
 const STATUS_CONFIG = {
   questionario_preenchido: { label: 'Questionário Preenchido', color: 'bg-blue-100 text-blue-700' },
@@ -137,6 +138,7 @@ export default function LeadDetails() {
               </Badge>
             )}
             {lead.protocolo && <span className="text-xs font-mono text-[var(--pagsmile-blue)]/50">{lead.protocolo}</span>}
+            <LeadSLAIndicator lead={lead} />
           </div>
         </div>
         <Select value={newStatus || lead.status} onValueChange={(v) => { setNewStatus(v); updateStatusMutation.mutate(v); }}>

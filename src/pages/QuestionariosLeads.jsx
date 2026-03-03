@@ -26,6 +26,7 @@ import {
 import { toast } from 'sonner';
 import moment from 'moment';
 import QuestionarioSimplificadoCard from '../components/questionario-simplificado/QuestionarioSimplificadoCard';
+import LeadSLAIndicator from '../components/leads/LeadSLAIndicator';
 
 const STATUS_CONFIG = {
   questionario_preenchido: { label: 'Novo', color: 'bg-blue-100 text-blue-700', icon: '🔵' },
@@ -368,9 +369,12 @@ export default function QuestionariosLeads() {
                       </span>
                     </TableCell>
                     <TableCell>
-                      <span className="text-xs text-[var(--pagsmile-blue)]/60">
-                        {lead.created_date ? moment(lead.created_date).format('DD/MM/YY HH:mm') : '-'}
-                      </span>
+                      <div className="flex flex-col gap-1">
+                        <span className="text-xs text-[var(--pagsmile-blue)]/60">
+                          {lead.created_date ? moment(lead.created_date).format('DD/MM/YY HH:mm') : '-'}
+                        </span>
+                        <LeadSLAIndicator lead={lead} />
+                      </div>
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">

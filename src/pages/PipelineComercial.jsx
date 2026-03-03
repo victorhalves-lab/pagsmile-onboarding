@@ -19,6 +19,8 @@ import { toast } from 'sonner';
 import moment from 'moment';
 import LeadKanbanCard from '../components/pipeline/LeadKanbanCard';
 import PipelineMetrics from '../components/pipeline/PipelineMetrics';
+import PipelineAgingAlerts from '../components/pipeline/PipelineAgingAlerts';
+import PipelineConversionChart from '../components/pipeline/PipelineConversionChart';
 
 const COLUNAS = [
   { id: 'questionario_preenchido', name: 'Leads', color: '#6B7280', statuses: ['questionario_preenchido', 'analisado_priscila'] },
@@ -154,6 +156,12 @@ export default function PipelineComercial() {
 
       {/* Metrics */}
       <PipelineMetrics leads={filteredLeads} />
+
+      {/* Conversion chart + Aging alerts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <PipelineConversionChart leads={filteredLeads} />
+        <PipelineAgingAlerts leads={filteredLeads} />
+      </div>
 
       {/* Search */}
       <div className="relative max-w-md">

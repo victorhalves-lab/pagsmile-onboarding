@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Eye, Phone, FileText, Shield, AlertTriangle, Clock } from 'lucide-react';
 import moment from 'moment';
+import LeadSLAIndicator from '../leads/LeadSLAIndicator';
 
 const RISK_CONFIG = {
   BAIXO: { label: 'Baixo', color: 'bg-green-100 text-green-700' },
@@ -66,6 +67,9 @@ export default function LeadKanbanCard({ lead, onAction }) {
           R$ {lead.tpvMensal.toLocaleString('pt-BR')}/mês
         </p>
       )}
+
+      {/* SLA Indicator */}
+      <LeadSLAIndicator lead={lead} />
 
       {/* Last interaction */}
       {lead.lastInteractionDate && (
