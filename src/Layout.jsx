@@ -27,7 +27,7 @@ import { Button } from '@/components/ui/button';
 
 export default function Layout({ children, currentPageName }) {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
-  const [expandedSections, setExpandedSections] = React.useState(['leads', 'contratos', 'compliance', 'tools', 'integrations', 'admin']);
+  const [expandedSections, setExpandedSections] = React.useState([]);
 
   const { data: authData } = useQuery({
     queryKey: ['user'],
@@ -68,11 +68,11 @@ export default function Layout({ children, currentPageName }) {
 
   const isPublicPage = publicPages.includes(currentPageName);
 
-  const toggleSection = (section) => {
+  const toggleSection = (sectionId) => {
     setExpandedSections(prev => 
-      prev.includes(section) 
-        ? prev.filter(s => s !== section)
-        : [...prev, section]
+      prev.includes(sectionId) 
+        ? []
+        : [sectionId]
     );
   };
 
@@ -275,12 +275,16 @@ export default function Layout({ children, currentPageName }) {
     return (
       <div className="mb-1">
         <button
-          onClick={() => toggleSection(section.id)}
-          className="flex items-center gap-2 w-full px-3 py-2 text-[10px] font-bold text-white/30 uppercase tracking-[0.15em] hover:text-white/50 transition-colors"
+        onClick={() => toggleSection(section.id)}
+        className={`flex items-center gap-2.5 w-full px-3 py-2.5 text-xs font-semibold tracking-wide transition-all duration-200 rounded-lg ${
+          isExpanded 
+            ? 'text-[#5cf7cf] bg-white/5' 
+            : 'text-white/50 hover:text-white/80 hover:bg-white/5'
+        }`}
         >
-          <SectionIcon className="w-3.5 h-3.5 text-[#2bc196]/60" />
-          <span className="flex-1 text-left">{section.label}</span>
-          {isExpanded ? <ChevronDown className="w-3 h-3 text-white/20" /> : <ChevronRight className="w-3 h-3 text-white/20" />}
+        <SectionIcon className={`w-4 h-4 ${isExpanded ? 'text-[#2bc196]' : 'text-white/30'}`} />
+        <span className="flex-1 text-left">{section.label}</span>
+        {isExpanded ? <ChevronDown className="w-3.5 h-3.5 text-[#2bc196]/60" /> : <ChevronRight className="w-3.5 h-3.5 text-white/20" />}
         </button>
         {isExpanded && (
           <div className="mt-0.5 space-y-0.5 pl-1">
