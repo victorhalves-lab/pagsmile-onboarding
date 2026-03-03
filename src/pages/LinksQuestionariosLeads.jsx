@@ -28,49 +28,58 @@ export default function LinksQuestionariosLeads() {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Links de Questionários</h1>
-        <p className="text-[var(--pagsmile-blue)]/70">Acesse e gere links para coleta de dados de leads</p>
+    <div className="space-y-8">
+      {/* Hero Header */}
+      <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-8 shadow-lg">
+        <div className="flex items-center gap-4">
+          <div className="p-3 rounded-xl bg-white/10">
+            <LinkIcon className="w-6 h-6 text-[#5cf7cf]" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-white">Links de Questionários</h1>
+            <p className="text-white/60 text-sm mt-1">Acesse e gere links para coleta de dados de leads</p>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Card Questionário Completo */}
-        <Card className="border-l-4 border-l-[var(--pagsmile-green)]">
-          <CardHeader>
+        <Card className="rounded-2xl border border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+          <div className="h-1.5 bg-gradient-to-r from-[#2bc196] to-[#5cf7cf]" />
+          <CardHeader className="pt-5">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-[var(--pagsmile-green)]/10">
-                  <Briefcase className="w-6 h-6 text-[var(--pagsmile-green)]" />
+                <div className="p-2.5 rounded-xl bg-[#2bc196]/10">
+                  <Briefcase className="w-5 h-5 text-[#2bc196]" />
                 </div>
                 <div>
-                  <CardTitle className="text-lg">Questionário Completo</CardTitle>
-                  <CardDescription>Para qualificação comercial detalhada</CardDescription>
+                  <CardTitle className="text-base font-bold text-[#002443]">Questionário Completo</CardTitle>
+                  <CardDescription className="text-[#282828]/50 text-xs mt-0.5">Para qualificação comercial detalhada</CardDescription>
                 </div>
               </div>
-              <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.LEAD, '_blank')}>
-                <ExternalLink className="w-4 h-4 mr-2" />
+              <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.LEAD, '_blank')} className="border-[#002443]/10 text-[#002443] hover:bg-[#002443]/5 rounded-lg">
+                <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
                 Visualizar
               </Button>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label className="text-xs font-semibold uppercase text-[var(--pagsmile-blue)]/60">Link Padrão</Label>
+              <Label className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40">Link Padrão</Label>
               <div className="flex gap-2">
-                <Input readOnly value={genericLinks.LEAD} className="font-mono text-xs bg-slate-50" />
+                <Input readOnly value={genericLinks.LEAD} className="font-mono text-xs bg-[#f4f4f4] border-[#002443]/5 rounded-lg" />
                 <Button 
                   onClick={() => handleCopy(genericLinks.LEAD, 'lead-standard')}
-                  className={copied === 'lead-standard' ? 'bg-green-600' : ''}
+                  className={`rounded-lg ${copied === 'lead-standard' ? 'bg-[#2bc196]' : 'bg-[#002443] hover:bg-[#002443]/90'}`}
                 >
                   {copied === 'lead-standard' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                 </Button>
               </div>
             </div>
             
-            <div className="bg-slate-50 p-4 rounded-lg text-sm text-[var(--pagsmile-blue)]/80">
-              <p><strong>Use este questionário quando:</strong></p>
-              <ul className="list-disc pl-4 mt-1 space-y-1 text-xs">
+            <div className="bg-[#f4f4f4] p-4 rounded-xl text-sm text-[#002443]/80 border border-[#002443]/5">
+              <p className="font-semibold text-[#002443] text-xs mb-2">Use este questionário quando:</p>
+              <ul className="list-disc pl-4 space-y-1 text-xs text-[#282828]/60">
                 <li>O cliente está iniciando o contato comercial</li>
                 <li>Você precisa de dados completos para análise de MCC e Compliance</li>
                 <li>É necessário validar documentos e sócios</li>
@@ -88,41 +97,42 @@ export default function LinksQuestionariosLeads() {
         </Card>
 
         {/* Card Questionário Simplificado */}
-        <Card className="border-l-4 border-l-amber-500">
-          <CardHeader>
+        <Card className="rounded-2xl border border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+          <div className="h-1.5 bg-gradient-to-r from-[#36706c] to-[#2bc196]" />
+          <CardHeader className="pt-5">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-amber-100">
-                  <Zap className="w-6 h-6 text-amber-600" />
+                <div className="p-2.5 rounded-xl bg-[#36706c]/10">
+                  <Zap className="w-5 h-5 text-[#36706c]" />
                 </div>
                 <div>
-                  <CardTitle className="text-lg">Questionário Simplificado</CardTitle>
-                  <CardDescription>Para coleta rápida de taxas e proposta</CardDescription>
+                  <CardTitle className="text-base font-bold text-[#002443]">Questionário Simplificado</CardTitle>
+                  <CardDescription className="text-[#282828]/50 text-xs mt-0.5">Para coleta rápida de taxas e proposta</CardDescription>
                 </div>
               </div>
-              <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.LEAD_SIMPLIFICADO, '_blank')}>
-                <ExternalLink className="w-4 h-4 mr-2" />
+              <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.LEAD_SIMPLIFICADO, '_blank')} className="border-[#002443]/10 text-[#002443] hover:bg-[#002443]/5 rounded-lg">
+                <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
                 Visualizar
               </Button>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label className="text-xs font-semibold uppercase text-[var(--pagsmile-blue)]/60">Link Padrão</Label>
+              <Label className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40">Link Padrão</Label>
               <div className="flex gap-2">
-                <Input readOnly value={genericLinks.LEAD_SIMPLIFICADO} className="font-mono text-xs bg-slate-50" />
+                <Input readOnly value={genericLinks.LEAD_SIMPLIFICADO} className="font-mono text-xs bg-[#f4f4f4] border-[#002443]/5 rounded-lg" />
                 <Button 
                   onClick={() => handleCopy(genericLinks.LEAD_SIMPLIFICADO, 'lead-simple')}
-                  className={copied === 'lead-simple' ? 'bg-green-600' : ''}
+                  className={`rounded-lg ${copied === 'lead-simple' ? 'bg-[#2bc196]' : 'bg-[#002443] hover:bg-[#002443]/90'}`}
                 >
                   {copied === 'lead-simple' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                 </Button>
               </div>
             </div>
 
-            <div className="bg-slate-50 p-4 rounded-lg text-sm text-[var(--pagsmile-blue)]/80">
-              <p><strong>Use este questionário quando:</strong></p>
-              <ul className="list-disc pl-4 mt-1 space-y-1 text-xs">
+            <div className="bg-[#f4f4f4] p-4 rounded-xl text-sm text-[#002443]/80 border border-[#002443]/5">
+              <p className="font-semibold text-[#002443] text-xs mb-2">Use este questionário quando:</p>
+              <ul className="list-disc pl-4 space-y-1 text-xs text-[#282828]/60">
                 <li>Você já teve uma reunião e quer enviar uma proposta</li>
                 <li>Precisa apenas coletar as taxas atuais do cliente</li>
                 <li>O cliente quer agilidade no processo comercial</li>
@@ -201,7 +211,7 @@ function LinkGenerator({ type, label, basePage, icon: Icon }) {
   }
 
   return (
-    <div className="w-full space-y-4 pt-4 border-t border-slate-100 animate-in slide-in-from-top-2">
+    <div className="w-full space-y-4 pt-4 border-t border-[#002443]/5 animate-in slide-in-from-top-2">
       <div className="space-y-2">
         <Label className="text-xs">Nome do Vendedor (Opcional)</Label>
         <Input 
@@ -216,7 +226,7 @@ function LinkGenerator({ type, label, basePage, icon: Icon }) {
         <div className="space-y-2">
           <Label className="text-xs text-green-600 font-bold">Link Gerado:</Label>
           <div className="flex gap-2">
-            <Input readOnly value={generatedLink} className="font-mono text-xs bg-green-50 border-green-200" />
+            <Input readOnly value={generatedLink} className="font-mono text-xs bg-[#5cf7cf]/10 border-[#2bc196]/30 rounded-lg" />
             <Button size="sm" onClick={handleCopy} className={copied ? 'bg-green-600' : ''}>
               {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
             </Button>
@@ -240,7 +250,7 @@ function LinkGenerator({ type, label, basePage, icon: Icon }) {
           </Button>
           <Button 
             size="sm" 
-            className="flex-1 bg-[var(--pagsmile-blue)] hover:bg-[var(--pagsmile-blue)]/90"
+            className="flex-1 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-lg"
             onClick={handleGenerate}
             disabled={createLinkMutation.isPending}
           >
