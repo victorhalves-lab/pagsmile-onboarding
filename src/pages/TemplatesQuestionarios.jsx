@@ -155,7 +155,7 @@ export default function TemplatesQuestionarios() {
                       {/* SubCategoria para Leads */}
                       {template.category === 'LEAD_GENERATION' && template.subCategory && template.subCategory !== 'GENERAL' && (
                         <Badge className="bg-orange-100 text-orange-700">
-                          {template.subCategory === 'MERCHAN' ? 'Merchan' : 
+                          {template.subCategory === 'MERCHAN' ? 'Merchant' : 
                            template.subCategory === 'GATEWAY' ? 'Gateway' : 
                            template.subCategory === 'MARKETPLACE' ? 'Marketplace' : template.subCategory}
                         </Badge>
