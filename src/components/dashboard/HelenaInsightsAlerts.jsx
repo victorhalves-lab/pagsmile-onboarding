@@ -29,7 +29,7 @@ export default function HelenaInsightsAlerts({
       iconColor: 'text-[var(--pagsmile-blue)]/80',
       message: `${pendingManualOver24h} submissões aguardando análise manual há mais de 24h`,
       action: 'Ver fila',
-      actionLink: 'ComplianceSubmissions',
+      actionLink: 'QuestionariosRecebidos',
       show: pendingManualOver24h > 0
     },
     {
@@ -38,7 +38,7 @@ export default function HelenaInsightsAlerts({
       iconColor: 'text-green-600',
       message: `Taxa de aprovação automática ${approvalRateTrend >= 0 ? 'aumentou' : 'diminuiu'} ${Math.abs(approvalRateTrend)}% esta semana`,
       action: 'Ver métricas',
-      actionLink: 'AdminHelenaIA',
+      actionLink: 'HelenaIA',
       show: approvalRateTrend !== 0
     },
     {
@@ -47,7 +47,7 @@ export default function HelenaInsightsAlerts({
       iconColor: 'text-red-600',
       message: `${criticalScoresToday} merchants com score crítico detectados hoje`,
       action: 'Analisar',
-      actionLink: 'ComplianceSubmissions',
+      actionLink: 'QuestionariosRecebidos',
       show: criticalScoresToday > 0
     },
     {
@@ -56,7 +56,7 @@ export default function HelenaInsightsAlerts({
       iconColor: 'text-blue-600',
       message: `Tempo médio de análise manual ${manualTimeTrend >= 0 ? 'reduziu' : 'aumentou'} ${Math.abs(manualTimeTrend)}%`,
       action: 'Detalhes',
-      actionLink: 'AdminHelenaIA',
+      actionLink: 'HelenaIA',
       show: manualTimeTrend !== 0
     }
   ];
