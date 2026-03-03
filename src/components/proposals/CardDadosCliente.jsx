@@ -82,23 +82,17 @@ export default function CardDadosCliente({ form, errors, onUpdate }) {
         
         <div className="space-y-1.5">
           <Label className="text-xs text-slate-400">MCC <span className="text-red-500">*</span></Label>
-          <Select value={form.clienteMcc || ''} onValueChange={(v) => onUpdate('clienteMcc', v)}>
-            <SelectTrigger className={`bg-[#18181b] border-white/10 text-white h-10 ${errors?.clienteMcc ? 'border-red-500' : ''}`}>
-              <SelectValue placeholder="Selecione o MCC" />
-            </SelectTrigger>
-            <SelectContent className="bg-[#18181b] border-white/10 text-white max-h-[200px]">
-              {mccs && mccs.length > 0 ? (
-                  mccs.map(m => (
-                    <SelectItem key={m.id} value={m.codigo || m.id} className="focus:bg-white/10 focus:text-white cursor-pointer">
-                      {m.codigo} - {m.descricao || m.name}
-                    </SelectItem>
-                  ))
-              ) : (
-                  <SelectItem value="0000" className="focus:bg-white/10 focus:text-white cursor-pointer">0000 - Geral</SelectItem>
-              )}
-            </SelectContent>
-          </Select>
+          <Input
+            value={form.clienteMcc || ''}
+            onChange={(e) => onUpdate('clienteMcc', e.target.value.replace(/\D/g, '').slice(0, 4))}
+            placeholder="Ex: 5812"
+            className={`bg-[#18181b] border-white/10 text-white h-10 placeholder:text-slate-600 ${errors?.clienteMcc ? 'border-red-500' : ''}`}
+            required
+          />
           {errors?.clienteMcc && <p className="text-xs text-red-500">{errors.clienteMcc}</p>}
+          <p className="text-[10px] text-slate-500 leading-tight">
+            O MCC deve ser o código vinculado ao seu CNAE principal. Para identificar o correto, pesquise qual código MCC corresponde à atividade descrita no seu cartão CNPJ.
+          </p>
         </div>
       </div>
 

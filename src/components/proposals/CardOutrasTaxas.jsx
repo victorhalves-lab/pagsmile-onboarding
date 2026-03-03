@@ -110,16 +110,45 @@ export default function CardOutrasTaxas({ rates, onUpdateRates }) {
                 </div>
               </div>
               
-              <div className="space-y-1.5">
-                <Label className="text-xs text-slate-400">Mínimo Garantido Mensal</Label>
-                <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">R$</span>
-                    <TaxaInput
-                      value={rates?.minimoGarantido || ''}
-                      onChange={(val) => updateField('minimoGarantido', val)}
-                      placeholder="0,00"
-                      className="bg-[#09090b] border-white/10 text-white h-10 pl-8 text-right"
-                    />
+              <div className="col-span-2 space-y-3 pt-2 mt-2 border-t border-white/5">
+                <Label className="text-xs text-slate-400">TPV Mínimo Garantido</Label>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] text-slate-500">Mês 1</Label>
+                    <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">R$</span>
+                        <TaxaInput
+                          value={rates?.minimoGarantido?.mes1 || ''}
+                          onChange={(val) => updateField('minimoGarantido', { ...rates.minimoGarantido, mes1: val })}
+                          placeholder="0,00"
+                          className="bg-[#09090b] border-white/10 text-white h-10 pl-8 text-right text-xs"
+                        />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] text-slate-500">Mês 2</Label>
+                    <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">R$</span>
+                        <TaxaInput
+                          value={rates?.minimoGarantido?.mes2 || ''}
+                          onChange={(val) => updateField('minimoGarantido', { ...rates.minimoGarantido, mes2: val })}
+                          placeholder="0,00"
+                          className="bg-[#09090b] border-white/10 text-white h-10 pl-8 text-right text-xs"
+                        />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] text-slate-500">Mês 3 em diante</Label>
+                    <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">R$</span>
+                        <TaxaInput
+                          value={rates?.minimoGarantido?.mes3 || ''}
+                          onChange={(val) => updateField('minimoGarantido', { ...rates.minimoGarantido, mes3: val })}
+                          placeholder="0,00"
+                          className="bg-[#09090b] border-white/10 text-white h-10 pl-8 text-right text-xs"
+                        />
+                    </div>
+                  </div>
                 </div>
               </div>
           </div>

@@ -47,7 +47,7 @@ export default function CriarProposta() {
     boleto: '',
     feeTransacao: '',
     alertaPreChargeback: '',
-    minimoGarantido: '',
+    minimoGarantido: { mes1: '', mes2: '', mes3: '' },
   });
 
   // Fetch lead if coming from a lead
@@ -96,7 +96,7 @@ export default function CriarProposta() {
         boleto: r.boleto || '',
         feeTransacao: r.feeTransacao || '',
         alertaPreChargeback: r.alertaPreChargeback || r.antifraude || '',
-        minimoGarantido: r.minimoGarantido || '',
+        minimoGarantido: typeof r.minimoGarantido === 'object' ? r.minimoGarantido : { mes1: r.minimoGarantido || '', mes2: r.minimoGarantido || '', mes3: r.minimoGarantido || '' },
       });
     }
   }, [existingProposal]);
@@ -203,7 +203,11 @@ export default function CriarProposta() {
         antifraude: parseTaxa(rates.alertaPreChargeback),
         feeTransacao: parseTaxa(rates.feeTransacao),
         alertaPreChargeback: parseTaxa(rates.alertaPreChargeback),
-        minimoGarantido: parseTaxa(rates.minimoGarantido),
+        minimoGarantido: {
+          mes1: parseTaxa(rates.minimoGarantido?.mes1),
+          mes2: parseTaxa(rates.minimoGarantido?.mes2),
+          mes3: parseTaxa(rates.minimoGarantido?.mes3)
+        },
         rav: { taxa: parseTaxa(form.taxaAntecipacao), prazo: form.prazoRecebimento },
         percentualAntecipacao: parseTaxa(form.percentualAntecipacao),
       },

@@ -145,23 +145,35 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
       </div>
       
       {/* Footer Stats */}
-      <div className="grid grid-cols-3 gap-2 mt-6 p-4 bg-[#18181b] rounded-lg border border-white/5">
-          <div className="text-center">
-              <p className="text-[10px] text-slate-500 uppercase">Prazo</p>
-              <p className="text-sm font-bold text-white">{prazo}</p>
+      <div className="space-y-2 mt-6">
+          <div className="p-3 bg-[#18181b] rounded-lg border border-white/5 flex flex-col gap-1 text-center">
+              <p className="text-[10px] text-slate-500 uppercase">TPV Mínimo Garantido</p>
+              <div className="flex items-center justify-center gap-2 text-[10px] font-medium text-white">
+                  <span>Mês 1: R$ {parseVal(rates.minimoGarantido?.mes1).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+                  <span className="text-slate-600">→</span>
+                  <span>Mês 2: R$ {parseVal(rates.minimoGarantido?.mes2).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+                  <span className="text-slate-600">→</span>
+                  <span className="text-[#2bc196]">Mês 3+: R$ {parseVal(rates.minimoGarantido?.mes3).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+              </div>
           </div>
-          <div className="text-center border-l border-white/5">
-              <p className="text-[10px] text-slate-500 uppercase">RAV</p>
-              <p className="text-sm font-bold text-[#2bc196]">{fmtPct(taxaRAV)} a.m.</p>
-          </div>
-          <div className="text-center border-l border-white/5">
-              <p className="text-[10px] text-slate-500 uppercase">PIX</p>
-              <p className="text-sm font-bold text-white">
-                  {rates.pix?.tipo === 'fixo' 
-                      ? `R$ ${parseVal(rates.pix?.valor).toFixed(2)}` 
-                      : fmtPct(rates.pix?.valor)
-                  }
-              </p>
+          <div className="grid grid-cols-3 gap-2 p-4 bg-[#18181b] rounded-lg border border-white/5">
+              <div className="text-center">
+                  <p className="text-[10px] text-slate-500 uppercase">Prazo</p>
+                  <p className="text-sm font-bold text-white">{prazo}</p>
+              </div>
+              <div className="text-center border-l border-white/5">
+                  <p className="text-[10px] text-slate-500 uppercase">RAV</p>
+                  <p className="text-sm font-bold text-[#2bc196]">{fmtPct(taxaRAV)} a.m.</p>
+              </div>
+              <div className="text-center border-l border-white/5">
+                  <p className="text-[10px] text-slate-500 uppercase">PIX</p>
+                  <p className="text-sm font-bold text-white">
+                      {rates.pix?.tipo === 'fixo' 
+                          ? `R$ ${parseVal(rates.pix?.valor).toFixed(2)}` 
+                          : fmtPct(rates.pix?.valor)
+                      }
+                  </p>
+              </div>
           </div>
       </div>
     </div>
