@@ -178,6 +178,7 @@ export default function Layout({ children, currentPageName }) {
       label: 'Leads & Propostas',
       icon: Inbox,
       items: [
+        { label: 'Links de Questionários', path: 'LinksQuestionariosLeads', icon: LinkIcon },
         { label: 'Questionários Recebidos', path: 'QuestionariosLeads', icon: ClipboardList, highlight: true },
         { label: 'Pipeline Comercial', path: 'PipelineComercial', icon: Users },
         { label: 'Gestão de Propostas', path: 'GestaoPropostas', icon: FileText },
