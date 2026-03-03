@@ -178,7 +178,10 @@ export default function PipelineComercial() {
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="flex gap-4 overflow-x-auto pb-4" style={{ minHeight: '60vh' }}>
           {columns.map(col => {
-            const colTPV = col.leads.reduce((s, l) => s + (l.tpvMensal || 0), 0);
+            const colTPVMensal = col.leads.reduce((s, l) => s + (l.tpvMensal || 0), 0);
+            const colTPVAnual = colTPVMensal * 12;
+            const colReceitaMensal = colTPVMensal * 0.025;
+            const colReceitaAnual = colReceitaMensal * 12;
             return (
               <div key={col.id} className="flex-shrink-0 w-[260px]">
                 {/* Column header */}
@@ -189,8 +192,23 @@ export default function PipelineComercial() {
                     <Badge variant="outline" className="text-xs">{col.leads.length}</Badge>
                   </div>
                   {col.leads.length > 0 && (
-                    <div className="text-[10px] text-[var(--pagsmile-blue)]/50 mt-1">
-                      TPV: {formatMoeda(colTPV)} • Receita: <span className="text-[var(--pagsmile-green)]">{formatMoeda(colTPV * 0.022)}</span>
+                    <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-[10px] bg-slate-50 rounded-md p-2 border border-slate-100">
+                      <div>
+                        <span className="text-[var(--pagsmile-blue)]/40">TPV/mês</span>
+                        <p className="font-bold text-[var(--pagsmile-blue)]">{formatMoeda(colTPVMensal)}</p>
+                      </div>
+                      <div>
+                        <span className="text-[var(--pagsmile-blue)]/40">TPV/ano</span>
+                        <p className="font-bold text-[var(--pagsmile-blue)]">{formatMoeda(colTPVAnual)}</p>
+                      </div>
+                      <div>
+                        <span className="text-[var(--pagsmile-blue)]/40">Receita/mês</span>
+                        <p className="font-bold text-[var(--pagsmile-green)]">{formatMoeda(colReceitaMensal)}</p>
+                      </div>
+                      <div>
+                        <span className="text-[var(--pagsmile-blue)]/40">Receita/ano</span>
+                        <p className="font-bold text-[var(--pagsmile-green)]">{formatMoeda(colReceitaAnual)}</p>
+                      </div>
                     </div>
                   )}
                 </div>
