@@ -27,6 +27,7 @@ import { toast } from 'sonner';
 import moment from 'moment';
 import QuestionarioSimplificadoCard from '../components/questionario-simplificado/QuestionarioSimplificadoCard';
 import LeadSLAIndicator from '../components/leads/LeadSLAIndicator';
+import LeadQualifierBadge from '../components/leads/LeadQualifierBadge';
 
 const STATUS_CONFIG = {
   questionario_preenchido: { label: 'Novo', color: 'bg-blue-100 text-blue-700', icon: '🔵' },
@@ -331,6 +332,7 @@ export default function QuestionariosLeads() {
                 <TableHead>Tipo</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Score</TableHead>
+                <TableHead>Lead IA</TableHead>
                 <TableHead>Risco</TableHead>
                 <TableHead>TPV Mensal</TableHead>
                 <TableHead>Data</TableHead>
@@ -340,7 +342,7 @@ export default function QuestionariosLeads() {
             <TableBody>
               {paginatedLeads.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={9} className="text-center py-12">
+                  <TableCell colSpan={10} className="text-center py-12">
                     <ClipboardList className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/30 mb-3" />
                     <p className="text-[var(--pagsmile-blue)]/60">
                       {hasFilters ? 'Nenhum resultado com esses filtros' : 'Nenhum questionário recebido'}
@@ -368,6 +370,9 @@ export default function QuestionariosLeads() {
                           {lead.priscilaQualityScore}
                         </span>
                       ) : <span className="text-xs text-slate-400">Pendente</span>}
+                    </TableCell>
+                    <TableCell>
+                      <LeadQualifierBadge lead={lead} size="xs" />
                     </TableCell>
                     <TableCell>
                       {lead.priscilaRiskLevel ? (() => {
