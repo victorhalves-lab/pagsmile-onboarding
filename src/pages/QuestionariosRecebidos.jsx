@@ -27,13 +27,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Checkbox } from '@/components/ui/checkbox';
 import { 
   Search, RefreshCw, Eye, Clock, CheckCircle2, 
   AlertTriangle, XCircle, FileCheck,
   Loader2, MoreHorizontal, Mail, Download,
   ArrowUpDown, Building2, User, Filter,
   ChevronLeft, ChevronRight, Brain, FileText,
-  Inbox
+  Inbox, ChevronDown, Shield
 } from 'lucide-react';
 
 export default function QuestionariosRecebidos() {
@@ -48,6 +49,8 @@ export default function QuestionariosRecebidos() {
   const [sortField, setSortField] = useState('created_date');
   const [sortOrder, setSortOrder] = useState('desc');
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [expandedRow, setExpandedRow] = useState(null);
   const itemsPerPage = 15;
 
   const { data: onboardingCases = [], isLoading: casesLoading, refetch: refetchCases } = useQuery({
@@ -342,91 +345,75 @@ export default function QuestionariosRecebidos() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-[var(--pagsmile-green)]/10">
-              <Inbox className="w-6 h-6 text-[var(--pagsmile-green)]" />
+      {/* Hero Header */}
+      <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-6 shadow-lg">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex items-center gap-4">
+            <div className="p-3 rounded-xl bg-white/10">
+              <Shield className="w-6 h-6 text-[#5cf7cf]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Questionários Recebidos</h1>
-              <p className="text-[var(--pagsmile-blue)]/70">Todas as submissões de compliance dos merchants</p>
+              <h1 className="text-2xl font-bold text-white">Questionários Recebidos</h1>
+              <p className="text-white/60 text-sm mt-1">Todas as submissões de compliance dos merchants</p>
             </div>
           </div>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={handleExport}>
-            <Download className="w-4 h-4 mr-2" />
-            Exportar
-          </Button>
-          <Button variant="outline" onClick={() => refetchCases()}>
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Atualizar
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={handleExport} className="border-white/20 text-white hover:bg-white/10 rounded-xl bg-transparent">
+              <Download className="w-4 h-4 mr-2" />
+              Exportar
+            </Button>
+            <Button variant="outline" onClick={() => refetchCases()} className="border-white/20 text-white hover:bg-white/10 rounded-xl bg-transparent">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Atualizar
+            </Button>
+          </div>
         </div>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-        <button 
-          onClick={() => setStatusFilter('all')}
-          className={`bg-white rounded-xl border p-4 text-left transition-all hover:shadow-md ${
-            statusFilter === 'all' ? 'border-[var(--pagsmile-green)] ring-2 ring-[var(--pagsmile-green)]/20' : 'border-slate-200'
-          }`}
-        >
-          <p className="text-2xl font-bold text-[var(--pagsmile-blue)]">{stats.total}</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/70">Total</p>
-        </button>
-        <button 
-          onClick={() => setStatusFilter('Pendente')}
-          className={`bg-white rounded-xl border p-4 text-left transition-all hover:shadow-md ${
-            statusFilter === 'Pendente' ? 'border-yellow-500 ring-2 ring-yellow-500/20' : 'border-slate-200'
-          }`}
-        >
-          <p className="text-2xl font-bold text-yellow-600">{stats.pendente}</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/70">Pendentes</p>
-        </button>
-        <button 
-          onClick={() => setStatusFilter('Em Processamento')}
-          className={`bg-white rounded-xl border p-4 text-left transition-all hover:shadow-md ${
-            statusFilter === 'Em Processamento' ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-slate-200'
-          }`}
-        >
-          <p className="text-2xl font-bold text-blue-600">{stats.processando}</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/70">Processando</p>
-        </button>
-        <button 
-          onClick={() => setStatusFilter('Manual')}
-          className={`bg-white rounded-xl border p-4 text-left transition-all hover:shadow-md ${
-            statusFilter === 'Manual' ? 'border-orange-500 ring-2 ring-orange-500/20' : 'border-slate-200'
-          }`}
-        >
-          <p className="text-2xl font-bold text-orange-600">{stats.manual}</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/70">Revisão Manual</p>
-        </button>
-        <button 
-          onClick={() => setStatusFilter('Aprovado')}
-          className={`bg-white rounded-xl border p-4 text-left transition-all hover:shadow-md ${
-            statusFilter === 'Aprovado' ? 'border-green-500 ring-2 ring-green-500/20' : 'border-slate-200'
-          }`}
-        >
-          <p className="text-2xl font-bold text-green-600">{stats.aprovado}</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/70">Aprovados</p>
-        </button>
-        <button 
-          onClick={() => setStatusFilter('Recusado')}
-          className={`bg-white rounded-xl border p-4 text-left transition-all hover:shadow-md ${
-            statusFilter === 'Recusado' ? 'border-red-500 ring-2 ring-red-500/20' : 'border-slate-200'
-          }`}
-        >
-          <p className="text-2xl font-bold text-red-600">{stats.recusado}</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/70">Recusados</p>
-        </button>
+        {[
+          { key: 'all', label: 'Total', value: stats.total, color: 'text-[#002443]', border: 'border-[#2bc196]', ring: 'ring-[#2bc196]/20' },
+          { key: 'Pendente', label: 'Pendentes', value: stats.pendente, color: 'text-yellow-600', border: 'border-yellow-500', ring: 'ring-yellow-500/20' },
+          { key: 'Em Processamento', label: 'Processando', value: stats.processando, color: 'text-blue-600', border: 'border-blue-500', ring: 'ring-blue-500/20' },
+          { key: 'Manual', label: 'Revisão Manual', value: stats.manual, color: 'text-orange-600', border: 'border-orange-500', ring: 'ring-orange-500/20' },
+          { key: 'Aprovado', label: 'Aprovados', value: stats.aprovado, color: 'text-green-600', border: 'border-green-500', ring: 'ring-green-500/20' },
+          { key: 'Recusado', label: 'Recusados', value: stats.recusado, color: 'text-red-600', border: 'border-red-500', ring: 'ring-red-500/20' },
+        ].map(s => (
+          <button 
+            key={s.key}
+            onClick={() => setStatusFilter(s.key)}
+            className={`bg-white rounded-2xl border p-4 text-left transition-all hover:shadow-md hover:-translate-y-0.5 ${
+              statusFilter === s.key ? `${s.border} ring-2 ${s.ring}` : 'border-[#002443]/5'
+            }`}
+          >
+            <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
+            <p className="text-xs text-[#282828]/50">{s.label}</p>
+            {s.key === 'Manual' && stats.slaAtRisk > 0 && (
+              <p className="text-[10px] text-red-500 font-medium mt-1">{stats.slaAtRisk} com SLA em risco</p>
+            )}
+          </button>
+        ))}
       </div>
 
-      {/* Filtros */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4">
+      {/* Batch Actions Bar */}
+      {selectedRows.length > 0 && (
+        <div className="bg-[#002443] rounded-xl p-3 flex items-center justify-between shadow-lg">
+          <span className="text-sm text-white font-medium">{selectedRows.length} selecionado(s)</span>
+          <div className="flex gap-2">
+            <Button 
+              size="sm" 
+              className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-lg text-xs"
+              onClick={() => setSelectedRows([])}
+            >
+              Limpar seleção
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Filtros - Sticky */}
+      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-4 sticky top-0 z-10">
         <div className="flex flex-col md:flex-row gap-4 justify-between">
           <div className="flex gap-2 flex-wrap items-center">
             <Filter className="w-4 h-4 text-[var(--pagsmile-blue)]/50" />
@@ -538,7 +525,7 @@ export default function QuestionariosRecebidos() {
       </div>
 
       {/* Tabela */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" />
@@ -552,7 +539,19 @@ export default function QuestionariosRecebidos() {
         ) : (
           <Table>
             <TableHeader>
-              <TableRow className="bg-slate-50">
+              <TableRow className="bg-[#f4f4f4]">
+                <TableHead className="w-10">
+                  <Checkbox 
+                    checked={selectedRows.length === paginatedCases.length && paginatedCases.length > 0}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        setSelectedRows(paginatedCases.map(c => c.id));
+                      } else {
+                        setSelectedRows([]);
+                      }
+                    }}
+                  />
+                </TableHead>
                 <TableHead className="w-[280px]">
                   <button 
                     className="flex items-center gap-1 hover:text-[var(--pagsmile-blue)] font-semibold"
@@ -615,8 +614,17 @@ export default function QuestionariosRecebidos() {
               {paginatedCases.map((c) => {
                 const merchant = merchantMap[c.merchantId];
                 return (
-                  <TableRow key={c.id} className="hover:bg-slate-50">
-                    <TableCell>
+                  <React.Fragment key={c.id}>
+                  <TableRow className={`hover:bg-[#f4f4f4] transition-colors cursor-pointer ${selectedRows.includes(c.id) ? 'bg-[#2bc196]/5' : ''}`}>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
+                      <Checkbox 
+                        checked={selectedRows.includes(c.id)}
+                        onCheckedChange={(checked) => {
+                          setSelectedRows(prev => checked ? [...prev, c.id] : prev.filter(id => id !== c.id));
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell onClick={() => setExpandedRow(expandedRow === c.id ? null : c.id)}>
                       <div className="flex items-center gap-3">
                         <div className={`p-2 rounded-lg ${
                           merchant?.type === 'PF' ? 'bg-blue-100' : 'bg-purple-100'
@@ -659,11 +667,20 @@ export default function QuestionariosRecebidos() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <span className={`text-sm font-medium ${
-                        getTimeInQueue(c.created_date).includes('d') ? 'text-orange-600' : 'text-[var(--pagsmile-blue)]/80'
-                      }`}>
-                        {getTimeInQueue(c.created_date)}
-                      </span>
+                      {(() => {
+                        const time = getTimeInQueue(c.created_date);
+                        const hasDays = time.includes('d');
+                        const days = hasDays ? parseInt(time) : 0;
+                        let bgColor = 'bg-green-100 text-green-700';
+                        if (days >= 5) bgColor = 'bg-red-100 text-red-700';
+                        else if (days >= 3) bgColor = 'bg-orange-100 text-orange-700';
+                        else if (days >= 1) bgColor = 'bg-yellow-100 text-yellow-700';
+                        return (
+                          <span className={`text-xs font-semibold px-2 py-1 rounded-lg ${bgColor}`}>
+                            {time}
+                          </span>
+                        );
+                      })()}
                     </TableCell>
                     <TableCell>
                       <span className="text-sm text-[var(--pagsmile-blue)]/80">
@@ -682,6 +699,14 @@ export default function QuestionariosRecebidos() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          onClick={(e) => { e.stopPropagation(); setExpandedRow(expandedRow === c.id ? null : c.id); }}
+                          className="text-[#002443]/50"
+                        >
+                          <ChevronDown className={`w-4 h-4 transition-transform ${expandedRow === c.id ? 'rotate-180' : ''}`} />
+                        </Button>
                         <Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`}>
                           <Button variant="ghost" size="sm" className="text-[var(--pagsmile-green)] hover:text-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/10">
                             <Eye className="w-4 h-4 mr-1" />
@@ -720,6 +745,58 @@ export default function QuestionariosRecebidos() {
                       </div>
                     </TableCell>
                   </TableRow>
+                  {/* Expanded Row Detail */}
+                  {expandedRow === c.id && (
+                    <TableRow className="bg-[#f4f4f4]/50">
+                      <TableCell colSpan={11} className="p-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="bg-white rounded-xl p-4 border border-[#002443]/5">
+                            <h4 className="text-xs font-bold text-[#002443] mb-2 uppercase tracking-wider">Resumo IA</h4>
+                            <p className="text-xs text-[#282828]/60">
+                              {scoresMap[c.id]?.sumario_executivo || scoresMap[c.id]?.parecer_final || c.iaExplanation || 'Análise não disponível.'}
+                            </p>
+                          </div>
+                          <div className="bg-white rounded-xl p-4 border border-[#002443]/5">
+                            <h4 className="text-xs font-bold text-[#002443] mb-2 uppercase tracking-wider">Red Flags</h4>
+                            {(scoresMap[c.id]?.red_flags || c.redFlags || []).length > 0 ? (
+                              <ul className="space-y-1">
+                                {(scoresMap[c.id]?.red_flags || c.redFlags || []).slice(0, 3).map((flag, i) => (
+                                  <li key={i} className="flex items-start gap-1.5 text-xs text-red-600">
+                                    <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                                    <span className="line-clamp-2">{flag}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <p className="text-xs text-[#282828]/40">Nenhum red flag identificado.</p>
+                            )}
+                          </div>
+                          <div className="bg-white rounded-xl p-4 border border-[#002443]/5">
+                            <h4 className="text-xs font-bold text-[#002443] mb-2 uppercase tracking-wider">Scores Detalhados</h4>
+                            <div className="space-y-2">
+                              <div className="flex justify-between text-xs">
+                                <span className="text-[#282828]/50">Questionário (SQ)</span>
+                                <span className="font-bold">{scoresMap[c.id]?.score_questionario || '-'}</span>
+                              </div>
+                              <div className="flex justify-between text-xs">
+                                <span className="text-[#282828]/50">Validação Ext. (SVE)</span>
+                                <span className="font-bold">{scoresMap[c.id]?.score_validacao_externa || '-'}</span>
+                              </div>
+                              <div className="flex justify-between text-xs">
+                                <span className="text-[#282828]/50">Geral Composto (SGC)</span>
+                                <span className="font-bold text-[#2bc196]">{scoresMap[c.id]?.score_geral_composto || '-'}</span>
+                              </div>
+                              <div className="flex justify-between text-xs">
+                                <span className="text-[#282828]/50">Recomendação</span>
+                                <span className="font-semibold">{scoresMap[c.id]?.recomendacao_final || c.iaDecision || '-'}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  </React.Fragment>
                 );
               })}
             </TableBody>
