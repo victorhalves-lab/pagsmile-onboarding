@@ -57,7 +57,7 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
       </div>
 
       {/* Table */}
-      <div className="rounded-xl bg-white/[0.03] border border-white/5 overflow-hidden mb-5">
+      <div className="rounded-xl bg-white/[0.03] border border-white/5 overflow-hidden mb-5 max-h-[500px] overflow-y-auto">
         {/* Header */}
         <div className="grid grid-cols-5 text-[9px] text-white/20 font-bold uppercase tracking-wider py-2 px-3 bg-white/[0.02]">
           <div>Parc.</div><div>Faixa</div><div className="text-right">Base</div><div className="text-right">RAV</div><div className="text-right">Final</div>
