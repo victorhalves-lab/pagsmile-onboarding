@@ -188,14 +188,6 @@ export default function Layout({ children, currentPageName }) {
       ]
     },
     {
-      id: 'contratos',
-      label: 'Contratos',
-      icon: Stamp,
-      items: [
-        { label: 'Gestão de Contratos', path: 'GestaoContratos', icon: FileText },
-      ]
-    },
-    {
       id: 'compliance',
       label: 'Compliance',
       icon: Shield,
@@ -205,6 +197,15 @@ export default function Layout({ children, currentPageName }) {
         { label: 'Análise de Casos', path: 'AnaliseDeCasos', icon: ClipboardList, hidden: true },
         { label: 'Gestão de Documentos', path: 'GestaoDocumentos', icon: FileText },
         { label: 'Revalidação', path: 'GestaoRevalidacao', icon: History },
+      ]
+    },
+    {
+      id: 'contratos',
+      label: 'Contratos',
+      icon: Stamp,
+      items: [
+        { label: 'Gestão de Contratos', path: 'GestaoContratos', icon: FileText },
+        { label: 'Criar Contrato', path: 'CriarContrato', icon: FileCheck },
       ]
     },
     {
