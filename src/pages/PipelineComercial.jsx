@@ -13,10 +13,12 @@ import {
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import {
   Search, Eye, Pencil, BarChart3, Loader2, X,
-  DollarSign, TrendingUp
+  DollarSign, TrendingUp, Phone
 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
+import LeadKanbanCard from '../components/pipeline/LeadKanbanCard';
+import PipelineMetrics from '../components/pipeline/PipelineMetrics';
 
 const COLUNAS = [
   { id: 'questionario_preenchido', name: 'Leads', color: '#6B7280', statuses: ['questionario_preenchido', 'analisado_priscila'] },
@@ -63,6 +65,15 @@ export default function PipelineComercial() {
       toast.success('Lead movido!');
     }
   });
+
+  const handleCardAction = async (action, lead) => {
+    if (action === 'contact') {
+      await base44.entities.Lead.update(lead.id, { status: 'em_contato_comercial', lastInteractionDate: new Date().toISOString() });
+      await base44.entities.LeadActivity.create({ leadId: lead.id, activityType: 'contato_iniciado', description: 'Contato iniciado via pipeline', performedBy: 'admin', activityDate: new Date().toISOString() });
+      queryClient.invalidateQueries({ queryKey: ['pipeline-leads'] });
+      toast.success('Contato iniciado!');
+    }
+  };
 
   // Filter by period
   const filteredLeads = useMemo(() => {
@@ -141,6 +152,9 @@ export default function PipelineComercial() {
         </Select>
       </div>
 
+      {/* Metrics */}
+      <PipelineMetrics leads={filteredLeads} />
+
       {/* Search */}
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/40" />
@@ -190,41 +204,10 @@ export default function PipelineComercial() {
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
                               className={`bg-white rounded-lg border border-slate-200 p-3 transition-shadow ${
-                                snapshot.isDragging ? 'shadow-lg' : 'hover:shadow-md'
+                                snapshot.isDragging ? 'shadow-lg ring-2 ring-[var(--pagsmile-green)]/30' : 'hover:shadow-md'
                               }`}
                             >
-                              <p className="text-sm font-medium text-[var(--pagsmile-blue)] truncate">
-                                {lead.companyName || lead.fullName}
-                              </p>
-                              <p className="text-[10px] text-[var(--pagsmile-blue)]/50 truncate">{lead.contactName || lead.email}</p>
-                              {lead.tpvMensal > 0 && (
-                                <p className="text-xs font-mono text-[var(--pagsmile-green)] mt-1">
-                                  {formatMoeda(lead.tpvMensal)}/mês
-                                </p>
-                              )}
-                              {lead.priscilaQualityScore != null && (
-                                <Badge variant="outline" className="text-[10px] mt-1">
-                                  Score: {lead.priscilaQualityScore}
-                                </Badge>
-                              )}
-                              <div className="flex gap-1 mt-2">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-6 w-6 p-0"
-                                  onClick={() => navigate(createPageUrl('LeadDetails') + `?id=${lead.id}`)}
-                                >
-                                  <Eye className="w-3 h-3" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-6 w-6 p-0"
-                                  onClick={() => navigate(createPageUrl('CriarProposta') + `?lead=${lead.id}`)}
-                                >
-                                  <Pencil className="w-3 h-3" />
-                                </Button>
-                              </div>
+                              <LeadKanbanCard lead={lead} onAction={handleCardAction} />
                             </div>
                           )}
                         </Draggable>
