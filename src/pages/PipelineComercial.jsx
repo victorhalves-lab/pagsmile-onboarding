@@ -23,10 +23,10 @@ import PipelineAgingAlerts from '../components/pipeline/PipelineAgingAlerts';
 import PipelineConversionChart from '../components/pipeline/PipelineConversionChart';
 
 const COLUNAS = [
-  { id: 'questionario_preenchido', name: 'Leads', color: '#6B7280', statuses: ['questionario_preenchido', 'analisado_priscila'] },
-  { id: 'em_contato_comercial', name: 'Em Contato', color: '#F59E0B', statuses: ['em_contato_comercial'] },
+  { id: 'leads_completo', name: 'Leads (Quest. Completo)', color: '#6B7280', statuses: ['questionario_preenchido', 'analisado_priscila'], questionnaireType: 'FULL' },
+  { id: 'em_contato_simplificado', name: 'Em Contato + Quest. Simplificado', color: '#F59E0B', statuses: ['em_contato_comercial'], questionnaireType: 'ANY' },
   { id: 'proposta_enviada', name: 'Proposta Enviada', color: '#3B82F6', statuses: ['proposta_enviada'] },
-  { id: 'proposta_aceita', name: 'Proposta Aceita', color: '#F59E0B', statuses: ['proposta_aceita'] },
+  { id: 'proposta_aceita', name: 'Proposta Aceita', color: '#8B5CF6', statuses: ['proposta_aceita'] },
   { id: 'kyc_aprovado', name: 'KYC Aprovado', color: '#10B981', statuses: ['kyc_iniciado', 'kyc_aprovado', 'kyc_revisao_manual'] },
   { id: 'ativado', name: 'Ativado', color: '#059669', statuses: ['ativado'] },
   { id: 'perdido', name: 'Perdido', color: '#EF4444', statuses: ['perdido', 'proposta_recusada'] },
