@@ -373,26 +373,26 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Mobile Header */}
       {isAuthenticated && (
-        <div className="lg:hidden fixed top-0 left-0 right-0 bg-white border-b border-slate-200 z-50">
+        <div className="lg:hidden fixed top-0 left-0 right-0 bg-[#002443] z-50">
           <div className="flex items-center justify-between px-4 py-3">
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-[#002443]"
+                className="text-white/80"
               >
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
               <img 
                 src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/9bd38c4f7_Logo-modo-claro.png" 
                 alt="Pagsmile" 
-                className="h-6"
+                className="h-6 brightness-0 invert"
               />
             </div>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => base44.auth.logout()}
-              className="text-[#002443]"
+              className="text-white/60 hover:text-white hover:bg-white/10"
             >
               <LogOut className="w-4 h-4" />
             </Button>
@@ -402,11 +402,11 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Mobile Sidebar */}
       {isAuthenticated && mobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 bg-black/50 z-40" onClick={() => setMobileMenuOpen(false)}>
-          <aside className="w-64 bg-white h-full pt-16 overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <nav className="p-4">
+        <div className="lg:hidden fixed inset-0 bg-black/60 z-40" onClick={() => setMobileMenuOpen(false)}>
+          <aside className="w-64 bg-[#002443] h-full pt-16 overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <nav className="px-3 py-4">
               {/* Home link */}
-              <div className="mb-3">
+              <div className="mb-2">
                 <NavItem 
                   item={{ label: 'Home', path: 'Home', icon: LayoutDashboard }} 
                   isActive={currentPageName === 'Home'}
@@ -419,14 +419,14 @@ export default function Layout({ children, currentPageName }) {
               ))}
 
               {/* How It Works - standalone */}
-              <div className="mt-2 pt-2 border-t border-slate-200">
+              <div className="mt-3 pt-3 border-t border-white/10">
                 <NavItem 
                   item={{ label: 'How It Works', path: 'HowItWorks', icon: FileText }} 
                   isActive={currentPageName === 'HowItWorks'}
                   onClick={() => setMobileMenuOpen(false)}
                 />
               </div>
-              </nav>
+            </nav>
           </aside>
         </div>
       )}
