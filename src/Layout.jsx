@@ -21,7 +21,7 @@ import {
   Shield,
   FileText,
   History,
-  FileSignature
+  Stamp
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -190,7 +190,7 @@ export default function Layout({ children, currentPageName }) {
     {
       id: 'contratos',
       label: 'Contratos',
-      icon: FileSignature,
+      icon: Stamp,
       items: [
         { label: 'Gestão de Contratos', path: 'GestaoContratos', icon: FileText },
       ]
