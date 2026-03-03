@@ -49,42 +49,42 @@ export default function ProposalMetrics({ propostas }) {
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
-      <Card>
+      <Card className="rounded-2xl border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow">
         <CardContent className="p-3">
           <div className="flex items-center gap-1.5">
-            <FileText className="w-4 h-4 text-slate-500" />
+            <FileText className="w-4 h-4 text-[#36706c]" />
             <span className="text-xs text-[var(--pagsmile-blue)]/60">Total</span>
           </div>
           <p className="text-xl font-bold text-[var(--pagsmile-blue)] mt-1">{metrics.total}</p>
           <p className="text-[10px] text-[var(--pagsmile-blue)]/40">{metrics.rascunhos} rascunhos</p>
         </CardContent>
       </Card>
-      <Card>
+      <Card className="rounded-2xl border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow">
         <CardContent className="p-3">
           <div className="flex items-center gap-1.5">
-            <TrendingUp className="w-4 h-4 text-green-500" />
+            <TrendingUp className="w-4 h-4 text-[#2bc196]" />
             <span className="text-xs text-[var(--pagsmile-blue)]/60">Taxa Aceite</span>
           </div>
-          <p className="text-xl font-bold text-green-600 mt-1">{metrics.taxaAceite.toFixed(0)}%</p>
+          <p className="text-xl font-bold text-[#2bc196] mt-1">{metrics.taxaAceite.toFixed(0)}%</p>
           <p className="text-[10px] text-[var(--pagsmile-blue)]/40">{metrics.aceitas} aceitas</p>
         </CardContent>
       </Card>
-      <Card>
+      <Card className="rounded-2xl border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow">
         <CardContent className="p-3">
           <div className="flex items-center gap-1.5">
-            <Clock className="w-4 h-4 text-blue-500" />
+            <Clock className="w-4 h-4 text-[#36706c]" />
             <span className="text-xs text-[var(--pagsmile-blue)]/60">Tempo Aceite</span>
           </div>
-          <p className="text-xl font-bold text-blue-600 mt-1">
+          <p className="text-xl font-bold text-[#36706c] mt-1">
             {metrics.tempoMedioAceite != null ? `${metrics.tempoMedioAceite}d` : '-'}
           </p>
           <p className="text-[10px] text-[var(--pagsmile-blue)]/40">média em dias</p>
         </CardContent>
       </Card>
-      <Card>
+      <Card className="rounded-2xl border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow">
         <CardContent className="p-3">
           <div className="flex items-center gap-1.5">
-            <DollarSign className="w-4 h-4 text-[var(--pagsmile-green)]" />
+            <DollarSign className="w-4 h-4 text-[#2bc196]" />
             <span className="text-xs text-[var(--pagsmile-blue)]/60">Receita Ganha</span>
           </div>
           <p className="text-lg font-bold text-[var(--pagsmile-green)] mt-1">
@@ -92,7 +92,7 @@ export default function ProposalMetrics({ propostas }) {
           </p>
         </CardContent>
       </Card>
-      <Card>
+      <Card className="rounded-2xl border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow">
         <CardContent className="p-3">
           <div className="flex items-center gap-1.5">
             <XCircle className="w-4 h-4 text-red-500" />
@@ -102,7 +102,7 @@ export default function ProposalMetrics({ propostas }) {
           <p className="text-[10px] text-[var(--pagsmile-blue)]/40">{metrics.expiradas} expiradas</p>
         </CardContent>
       </Card>
-      <Card className={metrics.expirando > 0 ? 'border-amber-300 bg-amber-50' : ''}>
+      <Card className={`rounded-2xl border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow ${metrics.expirando > 0 ? 'border-amber-300 bg-amber-50' : ''}`}>
         <CardContent className="p-3">
           <div className="flex items-center gap-1.5">
             <Clock className="w-4 h-4 text-amber-500" />

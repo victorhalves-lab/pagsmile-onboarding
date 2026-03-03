@@ -39,7 +39,7 @@ export default function PipelineMetrics({ leads }) {
       {kpis.map((kpi) => {
         const Icon = kpi.icon;
         return (
-          <Card key={kpi.label} className="border-slate-200">
+          <Card key={kpi.label} className="rounded-2xl border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow">
             <CardContent className="p-3">
               <div className="flex items-center gap-2">
                 <Icon className={`w-4 h-4 ${kpi.iconColor}`} />
