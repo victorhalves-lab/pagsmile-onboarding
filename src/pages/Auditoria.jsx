@@ -42,6 +42,9 @@ export default function Auditoria() {
   const [selectedLog, setSelectedLog] = useState(null);
   const itemsPerPage = 20;
 
+  // Reset page when filters change
+  React.useEffect(() => { setCurrentPage(1); }, [searchTerm, actionFilter, actorTypeFilter, dateFilter, entityFilter]);
+
   const { data: auditLogs = [], isLoading, refetch } = useQuery({
     queryKey: ['allAuditLogs'],
     queryFn: () => base44.entities.AuditLog.list('-changeDate', 500)
