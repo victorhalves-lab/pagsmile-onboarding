@@ -188,6 +188,14 @@ export default function Layout({ children, currentPageName }) {
       ]
     },
     {
+      id: 'contratos',
+      label: 'Contratos',
+      icon: FileSignature,
+      items: [
+        { label: 'Gestão de Contratos', path: 'GestaoContratos', icon: FileText },
+      ]
+    },
+    {
       id: 'compliance',
       label: 'Compliance',
       icon: Shield,
