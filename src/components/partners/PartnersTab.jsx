@@ -256,7 +256,7 @@ export default function PartnersTab() {
             </Button>
           </div>
 
-          <div className="grid grid-cols-3 gap-4 mt-4">
+          <div className="grid grid-cols-4 gap-4 mt-4">
             <div className="p-3 rounded-xl bg-[#f4f4f4]">
               <p className="text-[10px] text-[#002443]/40 uppercase font-bold">Fee Transação</p>
               <p className="text-lg font-bold text-[#002443]">R$ {(selectedPartner.transactionFee || 0).toFixed(2)}</p>
@@ -269,6 +269,11 @@ export default function PartnersTab() {
               <p className="text-[10px] text-[#002443]/40 uppercase font-bold">3DS</p>
               <p className="text-lg font-bold text-[#002443]">R$ {(selectedPartner.threeDSCost || 0).toFixed(2)}</p>
             </div>
+            <div className="p-3 rounded-xl bg-[#f4f4f4]">
+              <p className="text-[10px] text-[#002443]/40 uppercase font-bold">Antecipação</p>
+              <p className="text-lg font-bold text-[#002443]">{(selectedPartner.percentualAntecipacao || 0).toFixed(2)}%</p>
+              <p className="text-[10px] text-[#2bc196] font-semibold">mín. {(Math.round((selectedPartner.percentualAntecipacao || 0) * 1.20 * 100) / 100).toFixed(2)}%</p>
+            </div>
           </div>
         </div>
 
@@ -276,6 +281,7 @@ export default function PartnersTab() {
         <div className="bg-white rounded-2xl border border-[#002443]/5 p-6">
           <MCCRatesEditor
             partnerId={selectedPartner.id}
+            partnerAntecipacao={selectedPartner.percentualAntecipacao || 0}
             mccRates={partnerMCCRates}
             onSave={(data, existingId) => saveMCCRateMutation.mutate({ data, existingId })}
             onDelete={(id) => deleteMCCRateMutation.mutate(id)}
