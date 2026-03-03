@@ -233,13 +233,79 @@ export default function PropostaPublica() {
         <ExportButtons contentRef={propostaContentRef} />
       </div>
 
-      {/* Client Card */}
-      <Card className="mb-6 border-[#2bc196]/20 bg-[#2bc196]/5">
-        <CardContent className="py-4">
-          <p className="font-bold text-lg text-[#002443]">{proposta.clienteNome}</p>
-          <p className="text-sm text-[#002443]/60">CNPJ: {formatCNPJ(proposta.clienteCnpj)}</p>
-        </CardContent>
-      </Card>
+      {/* Detalhes do Cliente e Proposta */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <Card className="border-[#2bc196]/20 bg-[#2bc196]/5">
+          <CardContent className="py-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Shield className="w-4 h-4 text-[#2bc196]" />
+              <h3 className="font-bold text-sm text-[#002443]">Dados do Cliente</h3>
+            </div>
+            <p className="font-bold text-lg text-[#002443]">{proposta.clienteNome}</p>
+            <p className="text-sm text-[#002443]/60">CNPJ: {formatCNPJ(proposta.clienteCnpj)}</p>
+            {proposta.clienteContato && (
+              <p className="text-sm text-[#002443]/60 mt-1">Contato: {proposta.clienteContato}</p>
+            )}
+            {proposta.clienteMcc && (
+              <div className="mt-3 inline-flex items-center gap-1 bg-white/60 px-2 py-1 rounded text-xs text-[#002443]/80 border border-[#002443]/10">
+                <span className="font-semibold text-[#002443]">MCC:</span> {proposta.clienteMcc}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+        
+        <Card className="border-slate-200">
+          <CardContent className="py-4">
+             <div className="flex items-center gap-2 mb-2">
+              <Clock className="w-4 h-4 text-slate-500" />
+              <h3 className="font-bold text-sm text-[#002443]">Validade da Proposta</h3>
+            </div>
+            <p className="font-bold text-lg text-[#002443]">
+              {proposta.validUntil ? moment(proposta.validUntil).format('DD/MM/YYYY') : '-'}
+            </p>
+            <p className="text-sm text-[#002443]/60 mt-2 flex items-center gap-1.5">
+              <Info className="w-3.5 h-3.5" />
+              Esta proposta está sujeita à aprovação do time de compliance.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* TPV Mínimo Garantido */}
+      {rates.minimoGarantido && (parseFloat(rates.minimoGarantido.mes1) > 0 || parseFloat(rates.minimoGarantido.mes2) > 0 || parseFloat(rates.minimoGarantido.mes3) > 0) && (
+        <Card className="mb-6 bg-slate-50 border-slate-200">
+          <CardContent className="py-4">
+            <div className="flex items-center gap-2 mb-4">
+              <Shield className="w-5 h-5 text-slate-500" />
+              <h2 className="font-bold text-base text-[#002443]">TPV Mínimo Garantido</h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="bg-white p-3 rounded-lg border border-slate-200 text-center">
+                <p className="text-xs text-[#002443]/50 uppercase font-semibold mb-1">Mês 1</p>
+                <p className="font-bold text-[#002443]">
+                  R$ {(parseFloat(rates.minimoGarantido.mes1) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2})}
+                </p>
+              </div>
+              <div className="bg-white p-3 rounded-lg border border-slate-200 text-center">
+                <p className="text-xs text-[#002443]/50 uppercase font-semibold mb-1">Mês 2</p>
+                <p className="font-bold text-[#002443]">
+                  R$ {(parseFloat(rates.minimoGarantido.mes2) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2})}
+                </p>
+              </div>
+              <div className="bg-white p-3 rounded-lg border border-[#2bc196]/40 text-center shadow-sm relative overflow-hidden">
+                <div className="absolute inset-0 bg-[#2bc196]/5 pointer-events-none" />
+                <p className="text-xs text-[#2bc196] uppercase font-semibold mb-1">Mês 3 em diante</p>
+                <p className="font-bold text-[#2bc196]">
+                  R$ {(parseFloat(rates.minimoGarantido.mes3) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2})}
+                </p>
+              </div>
+            </div>
+            <p className="text-xs text-[#002443]/50 mt-3 text-center">
+              * O valor de "Mês 3 em diante" é a meta mensal a ser mantida a partir do terceiro mês de operação.
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Taxas por Bandeira */}
       <Card className="mb-6">
@@ -255,39 +321,39 @@ export default function PropostaPublica() {
       {/* Outros Métodos */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <Card>
-          <CardContent className="py-4 text-center">
-            <p className="text-xs text-[#002443]/50 mb-1">PIX</p>
+          <CardContent className="py-4 text-center flex flex-col justify-center h-full">
+            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">PIX</p>
             <p className="text-lg font-bold text-[#2bc196]">
               {rates.pix?.tipo === 'fixo'
-                ? `R$ ${(rates.pix?.valor || 0).toFixed(2).replace('.', ',')}`
-                : `${rates.pix?.valor || 0}%`}
+                ? `R$ ${(parseFloat(rates.pix?.valor) || 0).toFixed(2).replace('.', ',')}`
+                : `${(parseFloat(rates.pix?.valor) || 0).toFixed(2).replace('.', ',')}%`}
             </p>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="py-4 text-center">
-            <p className="text-xs text-[#002443]/50 mb-1">BOLETO</p>
+          <CardContent className="py-4 text-center flex flex-col justify-center h-full">
+            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">BOLETO</p>
             <p className="text-lg font-bold text-[#002443]">
-              R$ {(rates.boleto || 0).toFixed(2).replace('.', ',')}
+              R$ {(parseFloat(rates.boleto) || 0).toFixed(2).replace('.', ',')}
             </p>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="py-4 text-center">
-            <p className="text-xs text-[#002443]/50 mb-1">PRAZO</p>
+          <CardContent className="py-4 text-center flex flex-col justify-center h-full">
+            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">PRAZO DE RECEBIMENTO</p>
             <p className="text-lg font-bold text-[#002443]">{prazo}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="py-4 text-center">
-            <p className="text-xs text-[#002443]/50 mb-1">ANTECIPAÇÃO</p>
+          <CardContent className="py-4 text-center flex flex-col justify-center h-full">
+            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">TAXA RAV (ANTECIPAÇÃO)</p>
             <p className="text-lg font-bold text-amber-600">{taxaRAV}% a.m.</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Tabela de Parcelas Detalhada */}
-      <Card className="mb-6">
+      <Card className="mb-8">
         <CardContent className="py-4">
           <h2 className="font-bold text-base text-[#002443] mb-4">
             Tabela de Parcelas (1x a 12x) por Bandeira
@@ -295,16 +361,6 @@ export default function PropostaPublica() {
           <ParcelasTableDetalhada taxas={rates} taxaRAV={taxaRAV} prazo={prazo} />
         </CardContent>
       </Card>
-
-      {/* Info */}
-      <Alert className="mb-8 border-[#2bc196]/20 bg-[#2bc196]/5">
-        <Info className="w-4 h-4 text-[#2bc196]" />
-        <AlertDescription className="text-sm text-[#002443]/70">
-          {proposta.clienteMcc && `Válida para MCC ${proposta.clienteMcc}. `}
-          Válida até {proposta.validUntil ? moment(proposta.validUntil).format('DD/MM/YYYY') : '-'}.
-          {' '}Sujeita à aprovação de compliance.
-        </AlertDescription>
-      </Alert>
 
       {/* Action Buttons */}
       {['enviada', 'visualizada', 'rascunho'].includes(proposta.status) && (
