@@ -1,107 +1,129 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Settings } from 'lucide-react';
 import TaxaInput from './TaxaInput';
+import { Check } from 'lucide-react';
 
-export default function CardOutrasTaxas({ rates, onUpdate }) {
+export default function CardOutrasTaxas({ rates, onUpdateRates }) {
   const pixTipo = rates?.pix?.tipo || 'percentual';
 
   const updatePix = (field, value) => {
-    onUpdate({
+    onUpdateRates({
       ...rates,
       pix: { ...rates?.pix, [field]: value }
     });
   };
 
   const updateField = (field, value) => {
-    onUpdate({ ...rates, [field]: value });
+    onUpdateRates({ ...rates, [field]: value });
   };
 
   return (
-    <Card className="border-slate-200">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base flex items-center gap-2">
-          <Settings className="w-5 h-5 text-[var(--pagsmile-green)]" />
-          Outras Taxas
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* PIX */}
-        <div className="space-y-2">
-          <Label className="text-xs font-medium">Tipo de cobrança PIX</Label>
-          <div className="flex gap-2">
-            <button
-              onClick={() => updatePix('tipo', 'percentual')}
-              className={`flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all border ${
-                pixTipo === 'percentual' 
-                  ? 'bg-[var(--pagsmile-green)] text-white border-[var(--pagsmile-green)]' 
-                  : 'bg-white text-[var(--pagsmile-blue)]/70 border-slate-200 hover:border-[var(--pagsmile-green)]'
-              }`}
-            >
-              % Percentual
-            </button>
-            <button
-              onClick={() => updatePix('tipo', 'fixo')}
-              className={`flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all border ${
-                pixTipo === 'fixo' 
-                  ? 'bg-[var(--pagsmile-green)] text-white border-[var(--pagsmile-green)]' 
-                  : 'bg-white text-[var(--pagsmile-blue)]/70 border-slate-200 hover:border-[var(--pagsmile-green)]'
-              }`}
-            >
-              R$ Fixo
-            </button>
+    <div className="space-y-4 pt-4 border-t border-white/10">
+      <h2 className="text-base font-semibold text-white">Outras Taxas</h2>
+      
+      <div className="bg-[#18181b] p-4 rounded-lg border border-white/5 space-y-5">
+          {/* PIX Section */}
+          <div className="space-y-3">
+              <Label className="text-xs text-slate-400">Tipo de cobrança PIX</Label>
+              <div className="grid grid-cols-2 gap-3 p-1 bg-[#09090b] rounded-lg border border-white/5">
+                <button
+                  onClick={() => updatePix('tipo', 'percentual')}
+                  className={`flex items-center justify-center gap-2 py-2 px-3 rounded-md text-xs font-medium transition-all ${
+                    pixTipo === 'percentual' 
+                      ? 'bg-[#18181b] text-[#2bc196] border border-[#2bc196]/50 shadow-sm' 
+                      : 'text-slate-500 hover:text-slate-300'
+                  }`}
+                >
+                  {pixTipo === 'percentual' && <Check className="w-3 h-3" />}
+                  % Percentual
+                </button>
+                <button
+                  onClick={() => updatePix('tipo', 'fixo')}
+                  className={`flex items-center justify-center gap-2 py-2 px-3 rounded-md text-xs font-medium transition-all ${
+                    pixTipo === 'fixo' 
+                      ? 'bg-[#18181b] text-white border border-white/20 shadow-sm' 
+                      : 'text-slate-500 hover:text-slate-300'
+                  }`}
+                >
+                  {pixTipo === 'fixo' && <Check className="w-3 h-3" />}
+                  R$ Fixo
+                </button>
+              </div>
+              
+              <div className="space-y-1.5">
+                <Label className="text-xs text-slate-400">Valor PIX</Label>
+                <div className="relative">
+                    <TaxaInput
+                      value={rates?.pix?.valor || ''}
+                      onChange={(val) => updatePix('valor', val)}
+                      placeholder="0,00"
+                      className="bg-[#09090b] border-white/10 text-white h-10 pr-8 text-right"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">
+                        {pixTipo === 'percentual' ? '%' : ''}
+                    </span>
+                    {pixTipo === 'fixo' && (
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">R$</span>
+                    )}
+                </div>
+              </div>
           </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-1.5">
-            <Label className="text-xs font-medium">Valor PIX *</Label>
-            <TaxaInput
-              value={rates?.pix?.valor || ''}
-              onChange={(val) => updatePix('valor', val)}
-              suffix={pixTipo === 'percentual' ? '%' : ''}
-              prefix={pixTipo === 'fixo' ? 'R$' : ''}
-            />
+          
+          {/* Other Rates Grid */}
+          <div className="grid grid-cols-2 gap-4 pt-2 border-t border-white/5">
+              <div className="space-y-1.5">
+                <Label className="text-xs text-slate-400">Fee por Transação</Label>
+                <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">R$</span>
+                    <TaxaInput
+                      value={rates?.feeTransacao || ''}
+                      onChange={(val) => updateField('feeTransacao', val)}
+                      placeholder="0,00"
+                      className="bg-[#09090b] border-white/10 text-white h-10 pl-8 text-right"
+                    />
+                </div>
+              </div>
+              
+              <div className="space-y-1.5">
+                <Label className="text-xs text-slate-400">Taxa Boleto</Label>
+                <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">R$</span>
+                    <TaxaInput
+                      value={rates?.boleto || ''}
+                      onChange={(val) => updateField('boleto', val)}
+                      placeholder="0,00"
+                      className="bg-[#09090b] border-white/10 text-white h-10 pl-8 text-right"
+                    />
+                </div>
+              </div>
+              
+              <div className="space-y-1.5">
+                <Label className="text-xs text-slate-400">Alerta Pré-Chargeback</Label>
+                <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">R$</span>
+                    <TaxaInput
+                      value={rates?.alertaPreChargeback || ''}
+                      onChange={(val) => updateField('alertaPreChargeback', val)}
+                      placeholder="0,00"
+                      className="bg-[#09090b] border-white/10 text-white h-10 pl-8 text-right"
+                    />
+                </div>
+              </div>
+              
+              <div className="space-y-1.5">
+                <Label className="text-xs text-slate-400">Mínimo Garantido Mensal</Label>
+                <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-500">R$</span>
+                    <TaxaInput
+                      value={rates?.minimoGarantido || ''}
+                      onChange={(val) => updateField('minimoGarantido', val)}
+                      placeholder="0,00"
+                      className="bg-[#09090b] border-white/10 text-white h-10 pl-8 text-right"
+                    />
+                </div>
+              </div>
           </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs font-medium">Fee por Transação</Label>
-            <TaxaInput
-              value={rates?.feeTransacao || ''}
-              onChange={(val) => updateField('feeTransacao', val)}
-              prefix="R$"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-1.5">
-            <Label className="text-xs font-medium">Taxa Boleto</Label>
-            <TaxaInput
-              value={rates?.boleto || ''}
-              onChange={(val) => updateField('boleto', val)}
-              prefix="R$"
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs font-medium">Alerta Pré-Chargeback</Label>
-            <TaxaInput
-              value={rates?.alertaPreChargeback || ''}
-              onChange={(val) => updateField('alertaPreChargeback', val)}
-              prefix="R$"
-            />
-          </div>
-        </div>
-
-        <div className="space-y-1.5">
-          <Label className="text-xs font-medium">Mínimo Garantido Mensal</Label>
-          <TaxaInput
-            value={rates?.minimoGarantido || ''}
-            onChange={(val) => updateField('minimoGarantido', val)}
-            prefix="R$"
-          />
-        </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

@@ -1,152 +1,169 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import React from 'react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { FileText, CreditCard } from 'lucide-react';
-import ParcelasTable from './ParcelasTable';
 
 const BANDEIRAS = [
-  { id: 'mastercard', label: 'Master' },
+  { id: 'mastercard', label: 'Mastercard' },
   { id: 'visa', label: 'Visa' },
   { id: 'elo', label: 'Elo' },
   { id: 'amex', label: 'Amex' },
   { id: 'outras', label: 'Outras' },
 ];
 
-function formatTaxa(val) {
-  if (!val && val !== 0) return '-';
-  const num = typeof val === 'string' ? val.replace(',', '.') : val;
-  return `${num}%`;
-}
+export default function PropostaPreview({ form, rates, selectedBrand, onBandeiraChange }) {
+  // Parsing helpers
+  const parseVal = (val) => {
+      if (!val) return 0;
+      return typeof val === 'string' ? parseFloat(val.replace(',', '.')) : val;
+  };
+  
+  const fmtPct = (val) => {
+      const num = typeof val === 'number' ? val : parseVal(val);
+      if (isNaN(num)) return '0.00%';
+      return `${num.toFixed(2)}%`;
+  };
 
-function formatMoeda(val) {
-  if (!val && val !== 0) return '-';
-  const num = typeof val === 'string' ? parseFloat(val.replace(',', '.')) : val;
-  if (isNaN(num)) return '-';
-  return `R$ ${num.toFixed(2).replace('.', ',')}`;
-}
+  const taxas = rates.cartao?.[selectedBrand] || {};
+  const taxaRAV = parseVal(form.taxaAntecipacao);
+  const prazo = form.prazoRecebimento || 'D+1';
+  
+  // Convert prazo to days
+  const getPrazoDias = (p) => {
+      if (p === 'FLUXO') return 0;
+      if (p.startsWith('D+')) return parseInt(p.split('+')[1]);
+      return 1; // default
+  };
+  const prazoDias = getPrazoDias(prazo);
 
-export default function PropostaPreview({ form, rates }) {
-  const [previewBandeira, setPreviewBandeira] = useState('mastercard');
-  const cartao = rates?.cartao || {};
-  const pix = rates?.pix || {};
-  const rav = rates?.rav || {};
+  // Generate rows
+  const rows = [];
+  for (let parcela = 1; parcela <= 12; parcela++) {
+      let faixa = '';
+      let taxaBase = 0;
+      let badgeColor = '';
+      let badgeLabel = '';
 
-  const taxaRAV = parseFloat(String(rav.taxa || '0').replace(',', '.')) || 0;
-  const prazo = rav.prazo || 'D+1';
-  const currentTaxas = cartao[previewBandeira] || {};
+      if (parcela === 1) {
+          faixa = 'avista';
+          badgeLabel = 'Cash';
+          badgeColor = 'bg-blue-500/20 text-blue-400';
+          taxaBase = parseVal(taxas.avista);
+      } else if (parcela >= 2 && parcela <= 6) {
+          faixa = 'de2a6x';
+          badgeLabel = '2x-6x';
+          badgeColor = 'bg-purple-500/20 text-purple-400';
+          taxaBase = parseVal(taxas.de2a6x);
+      } else {
+          faixa = 'de7a12x';
+          badgeLabel = '7x-12x';
+          badgeColor = 'bg-amber-500/20 text-amber-400';
+          taxaBase = parseVal(taxas.de7a12x);
+      }
+
+      // Calculate Antecipation
+      let taxaAntecipacao = 0;
+      if (prazo !== 'FLUXO' && taxaRAV > 0) {
+          const diasVencimento = parcela * 30;
+          const diasAntecipados = diasVencimento - prazoDias;
+          // Only if positive anticipation
+          if (diasAntecipados > 0) {
+              const mesesAntecipados = diasAntecipados / 30;
+              taxaAntecipacao = mesesAntecipados * taxaRAV;
+          }
+      }
+
+      const taxaFinal = taxaBase + taxaAntecipacao;
+
+      rows.push({
+          parcela,
+          badgeLabel,
+          badgeColor,
+          taxaBase,
+          taxaAntecipacao,
+          taxaFinal
+      });
+  }
 
   return (
-    <Card className="border-slate-200 sticky top-24">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base flex items-center gap-2">
-          <FileText className="w-5 h-5 text-[var(--pagsmile-green)]" />
-          Preview da Proposta
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Dados do Cliente */}
-        <div className="bg-slate-50 rounded-lg p-3 space-y-1">
-          <p className="font-semibold text-sm text-[var(--pagsmile-blue)]">
-            {form.clienteNome || 'Nome da Empresa'}
-          </p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/60">
-            {form.clienteCnpj || 'CNPJ'} • {form.clienteMcc || 'MCC'}
-          </p>
-        </div>
-
-        {/* Taxas de Cartão */}
-        <div>
-          <p className="text-xs font-semibold text-[var(--pagsmile-blue)]/70 mb-2 flex items-center gap-1">
-            <CreditCard className="w-3 h-3" /> Cartão de Crédito
-          </p>
-          <Tabs value={previewBandeira} onValueChange={setPreviewBandeira}>
-            <TabsList className="w-full grid grid-cols-5 h-8">
-              {BANDEIRAS.map(b => (
-                <TabsTrigger key={b.id} value={b.id} className="text-[10px] py-1">
-                  {b.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-            {BANDEIRAS.map(b => (
-              <TabsContent key={b.id} value={b.id} className="mt-2">
-                <div className="grid grid-cols-3 gap-2 mb-3">
-                  <div className="bg-white border border-slate-100 rounded-lg p-2 text-center">
-                    <p className="text-[10px] text-[var(--pagsmile-blue)]/50">À Vista</p>
-                    <p className="text-sm font-bold text-[var(--pagsmile-green)]">
-                      {formatTaxa(cartao[b.id]?.avista)}
-                    </p>
+    <div className="h-full flex flex-col">
+      <h2 className="text-base font-semibold text-white mb-4">Preview - Tabela de Parcelas</h2>
+      
+      {/* Brand Selector */}
+      <div className="mb-4">
+        <Select value={selectedBrand} onValueChange={onBandeiraChange}>
+            <SelectTrigger className="bg-[#18181b] border-white/10 text-white h-10">
+                <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-[#18181b] border-white/10 text-white">
+                {BANDEIRAS.map(b => (
+                    <SelectItem key={b.id} value={b.id} className="focus:bg-white/10 focus:text-white cursor-pointer">
+                        {b.label}
+                    </SelectItem>
+                ))}
+            </SelectContent>
+        </Select>
+      </div>
+      
+      {/* Table Header */}
+      <div className="grid grid-cols-5 text-xs text-slate-500 mb-2 px-2">
+          <div>Parcela</div>
+          <div>Faixa</div>
+          <div className="text-right">Base</div>
+          <div className="text-right">RAV</div>
+          <div className="text-right">Final</div>
+      </div>
+      
+      {/* Rows */}
+      <div className="space-y-1">
+          {rows.map(row => (
+              <div key={row.parcela} className="grid grid-cols-5 items-center px-2 py-2 rounded-md hover:bg-white/5 transition-colors">
+                  <div className="text-sm font-medium text-white">{row.parcela}x</div>
+                  <div>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded ${row.badgeColor}`}>
+                          {row.badgeLabel}
+                      </span>
                   </div>
-                  <div className="bg-white border border-slate-100 rounded-lg p-2 text-center">
-                    <p className="text-[10px] text-[var(--pagsmile-blue)]/50">2-6x</p>
-                    <p className="text-sm font-bold text-[var(--pagsmile-green)]">
-                      {formatTaxa(cartao[b.id]?.de2a6x)}
-                    </p>
+                  <div className="text-sm text-right text-slate-300">{fmtPct(row.taxaBase)}</div>
+                  <div className="text-sm text-right text-slate-400">
+                      {row.taxaAntecipacao > 0 ? (
+                          <span className="text-emerald-500">+{fmtPct(row.taxaAntecipacao)}</span>
+                      ) : (
+                          <span className="text-slate-600">-</span>
+                      )}
                   </div>
-                  <div className="bg-white border border-slate-100 rounded-lg p-2 text-center">
-                    <p className="text-[10px] text-[var(--pagsmile-blue)]/50">7-12x</p>
-                    <p className="text-sm font-bold text-[var(--pagsmile-green)]">
-                      {formatTaxa(cartao[b.id]?.de7a12x)}
-                    </p>
+                  <div className="text-sm font-bold text-right text-yellow-500">
+                      {fmtPct(row.taxaFinal)}
                   </div>
-                </div>
-              </TabsContent>
-            ))}
-          </Tabs>
-        </div>
-
-        {/* Tabela de Parcelas 1x-12x */}
-        <div>
-          <p className="text-xs font-semibold text-[var(--pagsmile-blue)]/70 mb-2">
-            Tabela de Parcelas ({BANDEIRAS.find(b => b.id === previewBandeira)?.label})
-          </p>
-          <ParcelasTable taxas={currentTaxas} taxaRAV={taxaRAV} prazo={prazo} compact />
-        </div>
-
-        {/* PIX */}
-        <div className="flex items-center justify-between py-2 border-t border-slate-100">
-          <span className="text-xs text-[var(--pagsmile-blue)]/70">PIX</span>
-          <span className="text-sm font-semibold text-[var(--pagsmile-green)]">
-            {pix.tipo === 'fixo' ? formatMoeda(pix.valor) : formatTaxa(pix.valor)}
-          </span>
-        </div>
-
-        {/* Boleto */}
-        <div className="flex items-center justify-between py-2 border-t border-slate-100">
-          <span className="text-xs text-[var(--pagsmile-blue)]/70">Boleto</span>
-          <span className="text-sm font-semibold">{formatMoeda(rates?.boleto)}</span>
-        </div>
-
-        {/* RAV */}
-        <div className="flex items-center justify-between py-2 border-t border-slate-100">
-          <span className="text-xs text-[var(--pagsmile-blue)]/70">RAV ({prazo})</span>
-          <span className="text-sm font-semibold">{formatTaxa(rav.taxa)} a.m.</span>
-        </div>
-
-        {/* Fee */}
-        {rates?.feeTransacao && (
-          <div className="flex items-center justify-between py-2 border-t border-slate-100">
-            <span className="text-xs text-[var(--pagsmile-blue)]/70">Fee/Transação</span>
-            <span className="text-sm font-semibold">{formatMoeda(rates.feeTransacao)}</span>
+              </div>
+          ))}
+      </div>
+      
+      {/* Footer Stats */}
+      <div className="grid grid-cols-3 gap-2 mt-6 p-4 bg-[#18181b] rounded-lg border border-white/5">
+          <div className="text-center">
+              <p className="text-[10px] text-slate-500 uppercase">Prazo</p>
+              <p className="text-sm font-bold text-white">{prazo}</p>
           </div>
-        )}
-
-        {/* Antifraude */}
-        {rates?.alertaPreChargeback && (
-          <div className="flex items-center justify-between py-2 border-t border-slate-100">
-            <span className="text-xs text-[var(--pagsmile-blue)]/70">Alerta Pré-CB</span>
-            <span className="text-sm font-semibold">{formatMoeda(rates.alertaPreChargeback)}</span>
+          <div className="text-center border-l border-white/5">
+              <p className="text-[10px] text-slate-500 uppercase">RAV</p>
+              <p className="text-sm font-bold text-[#2bc196]">{fmtPct(taxaRAV)} a.m.</p>
           </div>
-        )}
-
-        {/* Mínimo Garantido */}
-        {rates?.minimoGarantido && (
-          <div className="flex items-center justify-between py-2 border-t border-slate-100">
-            <span className="text-xs text-[var(--pagsmile-blue)]/70">Mínimo Garantido</span>
-            <span className="text-sm font-semibold">{formatMoeda(rates.minimoGarantido)}</span>
+          <div className="text-center border-l border-white/5">
+              <p className="text-[10px] text-slate-500 uppercase">PIX</p>
+              <p className="text-sm font-bold text-white">
+                  {rates.pix?.tipo === 'fixo' 
+                      ? `R$ ${parseVal(rates.pix?.valor).toFixed(2)}` 
+                      : fmtPct(rates.pix?.valor)
+                  }
+              </p>
           </div>
-        )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
