@@ -1,7 +1,7 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Loader2, Users, FileText, Shield } from 'lucide-react';
+import { Loader2, Users, FileText, Shield, Zap } from 'lucide-react';
 import KPICard from '@/components/dashboard/KPICard';
 import QuickActions from '@/components/home/QuickActions';
 import SalesPipelineSummary from '@/components/dashboard/SalesPipelineSummary';
@@ -64,21 +64,48 @@ export default function Home() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
       </div>
     );
   }
 
+  const greeting = (() => {
+    const h = new Date().getHours();
+    if (h < 12) return 'Bom dia';
+    if (h < 18) return 'Boa tarde';
+    return 'Boa noite';
+  })();
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">
-          Olá, {user?.full_name?.split(' ')[0] || 'Usuário'} 👋
-        </h1>
-        <p className="text-sm text-[var(--pagsmile-blue)]/60 mt-1">
-          Aqui está o resumo geral da sua operação hoje.
-        </p>
+    <div className="space-y-6 max-w-[1400px] mx-auto">
+      {/* Hero Section with Gradient */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#002443] via-[#002443] to-[#36706c] p-8 md:p-10">
+        {/* Decorative elements */}
+        <div className="absolute top-0 right-0 w-80 h-80 bg-[#2bc196]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#5cf7cf]/5 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4 pointer-events-none" />
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#5cf7cf 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+        
+        <div className="relative z-10">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <div>
+              <p className="text-[#5cf7cf] text-sm font-semibold tracking-wider uppercase mb-1">{greeting}</p>
+              <h1 className="text-3xl md:text-4xl font-bold text-white leading-tight">
+                {user?.full_name?.split(' ')[0] || 'Usuário'}
+              </h1>
+              <p className="text-white/50 text-sm mt-2 max-w-md">
+                Aqui está o resumo geral da sua operação. Você tem{' '}
+                <span className="text-[#5cf7cf] font-semibold">{pendingCases} casos</span> pendentes e{' '}
+                <span className="text-[#5cf7cf] font-semibold">{openProposals} propostas</span> em aberto.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2.5 border border-white/10">
+              <Zap className="w-4 h-4 text-[#5cf7cf]" />
+              <span className="text-white/70 text-xs font-medium">
+                {moment().format('dddd, DD [de] MMMM')}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* KPIs */}
@@ -86,26 +113,26 @@ export default function Home() {
         <KPICard
           title="Leads Ativos"
           value={activeLeads}
-          subtitle={`${leads.length} total`}
+          subtitle={`de ${leads.length} total`}
           icon={Users}
-          iconBg="bg-blue-100"
-          iconColor="text-blue-600"
+          iconBg="bg-[#002443]/10"
+          iconColor="text-[#002443]"
         />
         <KPICard
           title="Propostas em Aberto"
           value={openProposals}
-          subtitle={`${proposals.length} total`}
+          subtitle={`de ${proposals.length} total`}
           icon={FileText}
-          iconBg="bg-amber-100"
-          iconColor="text-amber-600"
+          iconBg="bg-[#2bc196]/10"
+          iconColor="text-[#2bc196]"
         />
         <KPICard
           title="Compliance Pendentes"
           value={pendingCases}
-          subtitle={`${cases.length} total`}
+          subtitle={`de ${cases.length} total`}
           icon={Shield}
-          iconBg="bg-purple-100"
-          iconColor="text-purple-600"
+          iconBg="bg-[#36706c]/10"
+          iconColor="text-[#36706c]"
         />
       </div>
 
@@ -119,14 +146,9 @@ export default function Home() {
       />
 
       {/* Main content grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Pipeline */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         <SalesPipelineSummary leads={leads} />
-
-        {/* Proposals */}
         <ProposalStatusSummary proposals={proposals} />
-
-        {/* Compliance */}
         <ComplianceSummary cases={cases} helenaAnalyses={helenaAnalyses} />
       </div>
 
