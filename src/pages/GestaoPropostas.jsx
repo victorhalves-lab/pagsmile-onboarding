@@ -18,10 +18,11 @@ import {
 } from '@/components/ui/alert-dialog';
 import {
   Search, Plus, Eye, Pencil, Send, Link2, Copy, Trash2,
-  Loader2, X, AlertTriangle, FileText, List
+  Loader2, X, AlertTriangle, FileText, List, Clock, CheckCircle, XCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
+import ProposalMetrics from '../components/proposals/ProposalMetrics';
 
 const STATUS_CONFIG = {
   rascunho: { label: 'Rascunho', color: 'bg-slate-100 text-slate-700', icon: '⚪' },
@@ -119,6 +120,9 @@ export default function GestaoPropostas() {
         </Button>
       </div>
 
+      {/* Metrics Dashboard */}
+      <ProposalMetrics propostas={propostas} />
+
       {/* Filters */}
       <div className="flex flex-wrap gap-3 items-center">
         <div className="relative flex-1 min-w-[200px]">
@@ -151,6 +155,7 @@ export default function GestaoPropostas() {
                 <TableHead>Empresa</TableHead>
                 <TableHead>CNPJ</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Timeline</TableHead>
                 <TableHead>Validade</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
@@ -158,7 +163,7 @@ export default function GestaoPropostas() {
             <TableBody>
               {filtered.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-12">
+                  <TableCell colSpan={7} className="text-center py-12">
                     <FileText className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/30 mb-3" />
                     <p className="text-[var(--pagsmile-blue)]/60">Nenhuma proposta encontrada</p>
                     <Button variant="link" onClick={() => navigate(createPageUrl('CriarProposta'))} className="mt-2 text-[var(--pagsmile-green)]">
@@ -177,6 +182,31 @@ export default function GestaoPropostas() {
                     <TableCell className="font-medium text-sm">{p.clienteNome || '-'}</TableCell>
                     <TableCell className="text-sm text-[var(--pagsmile-blue)]/60">{p.clienteCnpj || '-'}</TableCell>
                     <TableCell><Badge className={sCfg.color}>{sCfg.label}</Badge></TableCell>
+                    <TableCell>
+                      <div className="flex flex-col gap-0.5 text-[10px]">
+                        {p.sentDate && (
+                          <div className="flex items-center gap-1 text-blue-600">
+                            <Send className="w-2.5 h-2.5" />
+                            Enviada {moment(p.sentDate).format('DD/MM')}
+                          </div>
+                        )}
+                        {p.acceptedDate && (
+                          <div className="flex items-center gap-1 text-green-600">
+                            <CheckCircle className="w-2.5 h-2.5" />
+                            Aceita {moment(p.acceptedDate).format('DD/MM')}
+                          </div>
+                        )}
+                        {p.rejectedDate && (
+                          <div className="flex items-center gap-1 text-red-600">
+                            <XCircle className="w-2.5 h-2.5" />
+                            Recusada {moment(p.rejectedDate).format('DD/MM')}
+                          </div>
+                        )}
+                        {!p.sentDate && !p.acceptedDate && !p.rejectedDate && (
+                          <span className="text-slate-400">Criada {moment(p.created_date).format('DD/MM')}</span>
+                        )}
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1">
                         {expiring && <AlertTriangle className="w-3 h-3 text-amber-500" />}
