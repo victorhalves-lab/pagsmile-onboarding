@@ -69,6 +69,7 @@ import GestaoDocumentos from './pages/GestaoDocumentos';
 import GestaoPropostas from './pages/GestaoPropostas';
 import GestaoRevalidacao from './pages/GestaoRevalidacao';
 import HelenaIA from './pages/HelenaIA';
+import Home from './pages/Home';
 import HowItWorks from './pages/HowItWorks';
 import IntegracoesExternas from './pages/IntegracoesExternas';
 import LeadDetails from './pages/LeadDetails';
@@ -87,7 +88,6 @@ import QuestionariosLeads from './pages/QuestionariosLeads';
 import QuestionariosRecebidos from './pages/QuestionariosRecebidos';
 import RegrasDeCompliance from './pages/RegrasDeCompliance';
 import TemplatesQuestionarios from './pages/TemplatesQuestionarios';
-import Home from './pages/Home';
 import __Layout from './Layout.jsx';
 
 
@@ -114,6 +114,7 @@ export const PAGES = {
     "GestaoPropostas": GestaoPropostas,
     "GestaoRevalidacao": GestaoRevalidacao,
     "HelenaIA": HelenaIA,
+    "Home": Home,
     "HowItWorks": HowItWorks,
     "IntegracoesExternas": IntegracoesExternas,
     "LeadDetails": LeadDetails,
@@ -132,7 +133,6 @@ export const PAGES = {
     "QuestionariosRecebidos": QuestionariosRecebidos,
     "RegrasDeCompliance": RegrasDeCompliance,
     "TemplatesQuestionarios": TemplatesQuestionarios,
-    "Home": Home,
 }
 
 export const pagesConfig = {

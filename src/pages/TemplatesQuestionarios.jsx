@@ -8,18 +8,12 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { 
   Plus, FileText, Edit, Trash2, Loader2, 
-  Users, Building2, Briefcase, Shield, ShoppingCart, Network, Copy, ExternalLink, Download
+  Users, Building2, Briefcase, Shield, Copy, ExternalLink, Download
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -74,148 +68,159 @@ export default function TemplatesQuestionarios() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" />
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
       </div>
     );
   }
 
+  const filtered = activeTab === 'all' ? templates :
+    activeTab === 'LEAD_GENERATION' ? templates.filter(t => t.category === 'LEAD_GENERATION') :
+    templates.filter(t => t.category === 'COMPLIANCE' || !t.category);
+
+  const stats = [
+    { label: 'Total', value: templates.length, color: '#002443' },
+    { label: 'Leads', value: templates.filter(t => t.category === 'LEAD_GENERATION').length, color: '#2bc196' },
+    { label: 'Compliance', value: templates.filter(t => t.category === 'COMPLIANCE' || !t.category).length, color: '#36706c' },
+    { label: 'Ativos', value: templates.filter(t => t.isActive).length, color: '#2bc196' },
+  ];
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Questionários</h1>
-          <p className="text-[var(--pagsmile-blue)]/70">Gerencie templates de questionário de leads e compliance</p>
+          <h1 className="text-2xl font-bold text-[#002443]">Questionários</h1>
+          <p className="text-sm text-[#002443]/60">Gerencie templates de questionário de leads e compliance</p>
         </div>
         <Link to={createPageUrl('EditorQuestionario')}>
-          <Button className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90">
+          <Button className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
             <Plus className="w-4 h-4 mr-2" />
             Novo Questionário
           </Button>
         </Link>
       </div>
 
-      {/* Tabs de Filtro */}
+      {/* Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {stats.map((s, i) => (
+          <div key={i} className="bg-white rounded-2xl border border-[#002443]/5 p-4">
+            <p className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</p>
+            <p className="text-xs text-[#002443]/50">{s.label}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value="all">Todos ({templates.length})</TabsTrigger>
-          <TabsTrigger value="LEAD_GENERATION" className="gap-1">
+        <TabsList className="bg-[#f4f4f4] border border-[#002443]/5">
+          <TabsTrigger value="all" className="data-[state=active]:bg-white data-[state=active]:text-[#002443] data-[state=active]:shadow-sm">
+            Todos ({templates.length})
+          </TabsTrigger>
+          <TabsTrigger value="LEAD_GENERATION" className="gap-1.5 data-[state=active]:bg-white data-[state=active]:text-[#002443] data-[state=active]:shadow-sm">
             <Briefcase className="w-3 h-3" />
             Leads ({templates.filter(t => t.category === 'LEAD_GENERATION').length})
           </TabsTrigger>
-          <TabsTrigger value="COMPLIANCE" className="gap-1">
+          <TabsTrigger value="COMPLIANCE" className="gap-1.5 data-[state=active]:bg-white data-[state=active]:text-[#002443] data-[state=active]:shadow-sm">
             <Shield className="w-3 h-3" />
             Compliance ({templates.filter(t => t.category === 'COMPLIANCE' || !t.category).length})
           </TabsTrigger>
         </TabsList>
       </Tabs>
 
-      {/* Lista de Templates */}
-      {(() => {
-        const filtered = activeTab === 'all' ? templates :
-          activeTab === 'LEAD_GENERATION' ? templates.filter(t => t.category === 'LEAD_GENERATION') :
-          templates.filter(t => t.category === 'COMPLIANCE' || !t.category);
-        return filtered;
-      })().length === 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-          <FileText className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/40 mb-4" />
-          <h3 className="text-lg font-medium text-[var(--pagsmile-blue)] mb-2">
-            Nenhum questionário criado
-          </h3>
-          <p className="text-[var(--pagsmile-blue)]/70 mb-6">
-            Crie seu primeiro template de questionário para começar.
-          </p>
+      {/* List */}
+      {filtered.length === 0 ? (
+        <div className="bg-white rounded-2xl border border-[#002443]/5 p-12 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-[#f4f4f4] flex items-center justify-center mx-auto mb-4">
+            <FileText className="w-7 h-7 text-[#002443]/20" />
+          </div>
+          <h3 className="text-base font-semibold text-[#002443] mb-1">Nenhum questionário criado</h3>
+          <p className="text-sm text-[#002443]/50 mb-6">Crie seu primeiro template de questionário para começar.</p>
           <Link to={createPageUrl('EditorQuestionario')}>
-            <Button className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90">
+            <Button className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
               <Plus className="w-4 h-4 mr-2" />
               Criar Questionário
             </Button>
           </Link>
         </div>
       ) : (
-        <div className="grid gap-4">
-          {(() => {
-            const filtered = activeTab === 'all' ? templates :
-              activeTab === 'LEAD_GENERATION' ? templates.filter(t => t.category === 'LEAD_GENERATION') :
-              templates.filter(t => t.category === 'COMPLIANCE' || !t.category);
-            return filtered;
-          })().map((template) => (
+        <div className="grid gap-3">
+          {filtered.map((template) => (
             <div 
               key={template.id} 
-              className="bg-white rounded-xl border border-slate-200 p-6"
+              className="bg-white rounded-2xl border border-[#002443]/5 p-5 hover:shadow-sm transition-shadow"
             >
-              <div className="flex items-start justify-between">
-                <div className="flex items-start gap-4">
-                  <div className={`p-3 rounded-xl ${
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start gap-4 flex-1 min-w-0">
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
                     template.merchantType === 'PF' 
-                      ? 'bg-blue-100 text-blue-600' 
-                      : 'bg-purple-100 text-purple-600'
+                      ? 'bg-[#2bc196]/10' 
+                      : 'bg-[#002443]/5'
                   }`}>
                     {template.merchantType === 'PF' ? (
-                      <Users className="w-6 h-6" />
+                      <Users className="w-5 h-5 text-[#2bc196]" />
                     ) : (
-                      <Building2 className="w-6 h-6" />
+                      <Building2 className="w-5 h-5 text-[#002443]" />
                     )}
                   </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-[var(--pagsmile-blue)]">
+                  <div className="min-w-0">
+                    <h3 className="text-base font-semibold text-[#002443] truncate">
                       {template.name}
                     </h3>
-                    <p className="text-sm text-[var(--pagsmile-blue)]/70 mt-1">
+                    <p className="text-sm text-[#002443]/50 mt-0.5 line-clamp-1">
                       {template.description || 'Sem descrição'}
                     </p>
                     <div className="flex items-center gap-2 mt-3 flex-wrap">
-                      {/* Categoria */}
                       <Badge className={
                         template.category === 'LEAD_GENERATION' 
-                          ? 'bg-amber-100 text-amber-800' 
-                          : 'bg-indigo-100 text-indigo-800'
+                          ? 'bg-[#2bc196]/10 text-[#2bc196] border-0' 
+                          : 'bg-[#002443]/5 text-[#002443] border-0'
                       }>
                         {template.category === 'LEAD_GENERATION' ? '🎯 Lead' : '🛡️ Compliance'}
                       </Badge>
-                      {/* SubCategoria para Leads */}
                       {template.category === 'LEAD_GENERATION' && template.subCategory && template.subCategory !== 'GENERAL' && (
-                        <Badge className="bg-orange-100 text-orange-700">
+                        <Badge className="bg-[#36706c]/10 text-[#36706c] border-0">
                           {template.subCategory === 'MERCHAN' ? 'Merchant' : 
                            template.subCategory === 'GATEWAY' ? 'Gateway' : 
                            template.subCategory === 'MARKETPLACE' ? 'Marketplace' : template.subCategory}
                         </Badge>
                       )}
-                      <Badge variant="outline">
+                      <Badge variant="outline" className="border-[#002443]/10 text-[#002443]/60">
                         {template.merchantType === 'PF' ? 'Pessoa Física' : 'Pessoa Jurídica'}
                       </Badge>
                       {template.model && (
-                        <Badge className={
-                          template.model === 'lite' ? 'bg-teal-100 text-teal-700' :
-                          template.model === 'pix' ? 'bg-blue-100 text-blue-700' :
-                          template.model === 'full' ? 'bg-purple-100 text-purple-700' :
-                          'bg-slate-100 text-slate-700'
-                        }>
+                        <Badge className="bg-[#5cf7cf]/10 text-[#36706c] border-0">
                           {template.model.charAt(0).toUpperCase() + template.model.slice(1)}
                         </Badge>
                       )}
-                      <Badge className={template.isActive ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-[var(--pagsmile-blue)]/80'}>
-                        {template.isActive ? 'Ativo' : 'Inativo'}
+                      <Badge className={template.isActive 
+                        ? 'bg-[#2bc196]/10 text-[#2bc196] border-0' 
+                        : 'bg-[#f4f4f4] text-[#002443]/40 border-0'
+                      }>
+                        {template.isActive ? '● Ativo' : '○ Inativo'}
                       </Badge>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3 shrink-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-[var(--pagsmile-blue)]/70">Ativo</span>
+                    <span className="text-xs text-[#002443]/40">Ativo</span>
                     <Switch
                       checked={template.isActive}
                       onCheckedChange={(checked) => 
                         toggleMutation.mutate({ id: template.id, isActive: checked })
                       }
+                      className="data-[state=checked]:bg-[#2bc196]"
                     />
                   </div>
                   
+                  <div className="h-6 w-px bg-[#002443]/5" />
+
                   <Button 
                     variant="ghost" 
-                    size="icon"
+                    size="sm"
+                    className="h-8 w-8 p-0"
                     onClick={() => {
                       const baseUrl = window.location.origin;
                       const path = template.category === 'LEAD_GENERATION' 
@@ -227,12 +232,13 @@ export default function TemplatesQuestionarios() {
                     }}
                     title="Copiar Link Público"
                   >
-                    <Copy className="w-4 h-4 text-[var(--pagsmile-green)]" />
+                    <Copy className="w-4 h-4 text-[#2bc196]" />
                   </Button>
 
                   <Button 
                     variant="ghost" 
-                    size="icon"
+                    size="sm"
+                    className="h-8 w-8 p-0"
                     onClick={() => {
                       const baseUrl = window.location.origin;
                       const path = template.category === 'LEAD_GENERATION' 
@@ -243,29 +249,30 @@ export default function TemplatesQuestionarios() {
                     }}
                     title="Abrir Link Público"
                   >
-                    <ExternalLink className="w-4 h-4 text-blue-500" />
+                    <ExternalLink className="w-4 h-4 text-[#002443]/40" />
                   </Button>
 
                   <Button 
                     variant="ghost" 
-                    size="icon"
+                    size="sm"
+                    className="h-8 w-8 p-0"
                     onClick={() => handleDownloadPdf(template)}
-                    title="Baixar PDF do Questionário"
+                    title="Baixar PDF"
                   >
-                    <Download className="w-4 h-4 text-purple-500" />
+                    <Download className="w-4 h-4 text-[#002443]/40" />
                   </Button>
 
                   <Link to={createPageUrl('EditorQuestionario') + `?id=${template.id}`}>
-                    <Button variant="ghost" size="icon">
-                      <Edit className="w-4 h-4" />
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                      <Edit className="w-4 h-4 text-[#002443]/40" />
                     </Button>
                   </Link>
                   
                   <Button 
                     variant="ghost" 
-                    size="icon"
+                    size="sm"
+                    className="h-8 w-8 p-0 text-red-400 hover:text-red-600"
                     onClick={() => setDeleteId(template.id)}
-                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
                   >
                     <Trash2 className="w-4 h-4" />
                   </Button>
@@ -276,20 +283,19 @@ export default function TemplatesQuestionarios() {
         </div>
       )}
 
-      {/* Dialog de Confirmação de Exclusão */}
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <AlertDialogContent>
+        <AlertDialogContent className="rounded-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle>Excluir questionário?</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-[#002443]">Excluir questionário?</AlertDialogTitle>
+            <AlertDialogDescription className="text-[#002443]/60">
               Esta ação não pode ser desfeita. O questionário será permanentemente removido.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel className="rounded-xl">Cancelar</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deleteMutation.mutate(deleteId)}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-red-500 hover:bg-red-600 rounded-xl"
             >
               Excluir
             </AlertDialogAction>

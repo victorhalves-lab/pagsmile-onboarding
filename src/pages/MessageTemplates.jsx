@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
@@ -21,9 +20,16 @@ import { Plus, Edit, Trash2, Loader2, Mail, MessageSquare, FileText } from 'luci
 import { toast } from 'sonner';
 
 const TYPE_CONFIG = {
-  EMAIL: { label: 'E-mail', icon: Mail, color: 'bg-blue-100 text-blue-700' },
-  SMS: { label: 'SMS', icon: MessageSquare, color: 'bg-green-100 text-green-700' },
-  WHATSAPP: { label: 'WhatsApp', icon: MessageSquare, color: 'bg-emerald-100 text-emerald-700' },
+  EMAIL: { label: 'E-mail', icon: Mail, bg: 'bg-[#002443]/5', text: 'text-[#002443]' },
+  SMS: { label: 'SMS', icon: MessageSquare, bg: 'bg-[#2bc196]/10', text: 'text-[#2bc196]' },
+  WHATSAPP: { label: 'WhatsApp', icon: MessageSquare, bg: 'bg-[#36706c]/10', text: 'text-[#36706c]' },
+};
+
+const CATEGORY_CONFIG = {
+  GENERAL: { label: 'Geral', bg: 'bg-[#f4f4f4]', text: 'text-[#002443]/60' },
+  FOLLOW_UP: { label: 'Follow-up', bg: 'bg-[#36706c]/10', text: 'text-[#36706c]' },
+  WELCOME: { label: 'Boas-vindas', bg: 'bg-[#2bc196]/10', text: 'text-[#2bc196]' },
+  PROPOSAL: { label: 'Proposta', bg: 'bg-[#002443]/5', text: 'text-[#002443]' },
 };
 
 const PLACEHOLDERS = ['{{leadName}}', '{{linkUrl}}', '{{agentName}}', '{{companyName}}', '{{protocolo}}'];
@@ -71,85 +77,157 @@ export default function MessageTemplates() {
 
   const insertPlaceholder = (ph) => setForm(f => ({ ...f, body: f.body + ph }));
 
-  if (isLoading) return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" /></div>;
+  if (isLoading) return (
+    <div className="flex justify-center py-20">
+      <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
+    </div>
+  );
+
+  const stats = [
+    { label: 'Total', value: templates.length, color: '#002443' },
+    { label: 'E-mail', value: templates.filter(t => t.type === 'EMAIL').length, color: '#002443' },
+    { label: 'SMS', value: templates.filter(t => t.type === 'SMS').length, color: '#2bc196' },
+    { label: 'WhatsApp', value: templates.filter(t => t.type === 'WHATSAPP').length, color: '#36706c' },
+  ];
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Templates de Mensagem</h1>
-          <p className="text-sm text-[var(--pagsmile-blue)]/70">{templates.length} templates cadastrados</p>
+          <h1 className="text-2xl font-bold text-[#002443]">Templates de Mensagem</h1>
+          <p className="text-sm text-[#002443]/60">{templates.length} templates cadastrados</p>
         </div>
-        <Button onClick={() => { resetForm(); setShowEditor(true); }} className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90">
+        <Button onClick={() => { resetForm(); setShowEditor(true); }} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
           <Plus className="w-4 h-4 mr-2" /> Novo Template
         </Button>
       </div>
 
+      {/* Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {stats.map((s, i) => (
+          <div key={i} className="bg-white rounded-2xl border border-[#002443]/5 p-4">
+            <p className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</p>
+            <p className="text-xs text-[#002443]/50">{s.label}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* List */}
       {templates.length === 0 ? (
-        <Card><CardContent className="py-12 text-center">
-          <FileText className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/30 mb-3" />
-          <p className="text-[var(--pagsmile-blue)]/60">Nenhum template criado ainda.</p>
-        </CardContent></Card>
+        <div className="bg-white rounded-2xl border border-[#002443]/5 p-12 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-[#f4f4f4] flex items-center justify-center mx-auto mb-4">
+            <FileText className="w-7 h-7 text-[#002443]/20" />
+          </div>
+          <h3 className="text-base font-semibold text-[#002443] mb-1">Nenhum template criado</h3>
+          <p className="text-sm text-[#002443]/50 mb-6">Crie seu primeiro template de mensagem.</p>
+          <Button onClick={() => { resetForm(); setShowEditor(true); }} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
+            <Plus className="w-4 h-4 mr-2" /> Criar Template
+          </Button>
+        </div>
       ) : (
         <div className="grid gap-3">
           {templates.map(t => {
             const cfg = TYPE_CONFIG[t.type] || TYPE_CONFIG.EMAIL;
+            const catCfg = CATEGORY_CONFIG[t.category] || CATEGORY_CONFIG.GENERAL;
             const Icon = cfg.icon;
             return (
-              <Card key={t.id}>
-                <CardContent className="p-4 flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold text-[var(--pagsmile-blue)]">{t.name}</h3>
-                      <Badge className={`${cfg.color} gap-1 text-xs`}><Icon className="w-3 h-3" />{cfg.label}</Badge>
-                      {!t.isActive && <Badge variant="outline" className="text-xs">Inativo</Badge>}
+              <div key={t.id} className="bg-white rounded-2xl border border-[#002443]/5 p-5 hover:shadow-sm transition-shadow">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-start gap-4 flex-1 min-w-0">
+                    <div className={`w-10 h-10 rounded-xl ${cfg.bg} flex items-center justify-center shrink-0`}>
+                      <Icon className={`w-5 h-5 ${cfg.text}`} />
                     </div>
-                    {t.subject && <p className="text-xs text-[var(--pagsmile-blue)]/60 mb-1">Assunto: {t.subject}</p>}
-                    <p className="text-sm text-[var(--pagsmile-blue)]/70 line-clamp-2">{t.body}</p>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <h3 className="font-semibold text-[#002443]">{t.name}</h3>
+                        <Badge className={`${cfg.bg} ${cfg.text} gap-1 text-xs border-0`}>
+                          <Icon className="w-3 h-3" />{cfg.label}
+                        </Badge>
+                        <Badge className={`${catCfg.bg} ${catCfg.text} text-xs border-0`}>
+                          {catCfg.label}
+                        </Badge>
+                        {t.isActive === false && (
+                          <Badge className="bg-[#f4f4f4] text-[#002443]/40 text-xs border-0">Inativo</Badge>
+                        )}
+                      </div>
+                      {t.subject && <p className="text-xs text-[#002443]/40 mb-1">Assunto: {t.subject}</p>}
+                      <p className="text-sm text-[#002443]/60 line-clamp-2">{t.body}</p>
+                    </div>
                   </div>
-                  <div className="flex gap-1">
-                    <Button variant="ghost" size="sm" onClick={() => handleEdit(t)}><Edit className="w-4 h-4" /></Button>
-                    <Button variant="ghost" size="sm" onClick={() => setDeleteId(t.id)} className="text-red-500"><Trash2 className="w-4 h-4" /></Button>
+                  <div className="flex gap-1 shrink-0">
+                    <Button variant="ghost" size="sm" onClick={() => handleEdit(t)} className="h-8 w-8 p-0">
+                      <Edit className="w-4 h-4 text-[#002443]/40" />
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => setDeleteId(t.id)} className="h-8 w-8 p-0 text-red-400 hover:text-red-600">
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             );
           })}
         </div>
       )}
 
+      {/* Editor */}
       <Dialog open={showEditor} onOpenChange={(o) => { if (!o) resetForm(); setShowEditor(o); }}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader><DialogTitle>{editing ? 'Editar' : 'Novo'} Template</DialogTitle></DialogHeader>
+        <DialogContent className="max-w-lg rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-[#002443]">{editing ? 'Editar' : 'Novo'} Template</DialogTitle>
+          </DialogHeader>
           <div className="space-y-4 py-2">
-            <div className="space-y-2"><Label>Nome *</Label><Input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Ex: Follow-up Dia 1" /></div>
+            <div className="space-y-1.5">
+              <Label className="text-xs text-[#002443]/50">Nome *</Label>
+              <Input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Ex: Follow-up Dia 1" className="border-[#002443]/10" />
+            </div>
             <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2"><Label>Tipo</Label>
-                <Select value={form.type} onValueChange={v => setForm(f => ({ ...f, type: v }))}><SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent><SelectItem value="EMAIL">E-mail</SelectItem><SelectItem value="SMS">SMS</SelectItem><SelectItem value="WHATSAPP">WhatsApp</SelectItem></SelectContent>
+              <div className="space-y-1.5">
+                <Label className="text-xs text-[#002443]/50">Tipo</Label>
+                <Select value={form.type} onValueChange={v => setForm(f => ({ ...f, type: v }))}>
+                  <SelectTrigger className="border-[#002443]/10"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="EMAIL">E-mail</SelectItem>
+                    <SelectItem value="SMS">SMS</SelectItem>
+                    <SelectItem value="WHATSAPP">WhatsApp</SelectItem>
+                  </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2"><Label>Categoria</Label>
-                <Select value={form.category} onValueChange={v => setForm(f => ({ ...f, category: v }))}><SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent><SelectItem value="GENERAL">Geral</SelectItem><SelectItem value="FOLLOW_UP">Follow-up</SelectItem><SelectItem value="WELCOME">Boas-vindas</SelectItem><SelectItem value="PROPOSAL">Proposta</SelectItem></SelectContent>
+              <div className="space-y-1.5">
+                <Label className="text-xs text-[#002443]/50">Categoria</Label>
+                <Select value={form.category} onValueChange={v => setForm(f => ({ ...f, category: v }))}>
+                  <SelectTrigger className="border-[#002443]/10"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="GENERAL">Geral</SelectItem>
+                    <SelectItem value="FOLLOW_UP">Follow-up</SelectItem>
+                    <SelectItem value="WELCOME">Boas-vindas</SelectItem>
+                    <SelectItem value="PROPOSAL">Proposta</SelectItem>
+                  </SelectContent>
                 </Select>
               </div>
             </div>
-            {form.type === 'EMAIL' && <div className="space-y-2"><Label>Assunto</Label><Input value={form.subject} onChange={e => setForm(f => ({ ...f, subject: e.target.value }))} placeholder="Assunto do e-mail" /></div>}
-            <div className="space-y-2">
-              <Label>Corpo da Mensagem *</Label>
-              <Textarea value={form.body} onChange={e => setForm(f => ({ ...f, body: e.target.value }))} rows={5} placeholder="Olá {{leadName}}, ..." />
-              <div className="flex gap-1 flex-wrap">
-                <span className="text-[10px] text-[var(--pagsmile-blue)]/50">Placeholders:</span>
+            {form.type === 'EMAIL' && (
+              <div className="space-y-1.5">
+                <Label className="text-xs text-[#002443]/50">Assunto</Label>
+                <Input value={form.subject} onChange={e => setForm(f => ({ ...f, subject: e.target.value }))} placeholder="Assunto do e-mail" className="border-[#002443]/10" />
+              </div>
+            )}
+            <div className="space-y-1.5">
+              <Label className="text-xs text-[#002443]/50">Corpo da Mensagem *</Label>
+              <Textarea value={form.body} onChange={e => setForm(f => ({ ...f, body: e.target.value }))} rows={5} placeholder="Olá {{leadName}}, ..." className="border-[#002443]/10" />
+              <div className="flex gap-1.5 flex-wrap pt-1">
+                <span className="text-[10px] text-[#002443]/30">Placeholders:</span>
                 {PLACEHOLDERS.map(ph => (
-                  <button key={ph} onClick={() => insertPlaceholder(ph)} className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-[var(--pagsmile-blue)]/70">{ph}</button>
+                  <button key={ph} onClick={() => insertPlaceholder(ph)} className="text-[10px] px-2 py-0.5 rounded-lg bg-[#f4f4f4] hover:bg-[#2bc196]/10 text-[#002443]/50 hover:text-[#2bc196] transition-colors border border-[#002443]/5">
+                    {ph}
+                  </button>
                 ))}
               </div>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowEditor(false)}>Cancelar</Button>
-            <Button onClick={() => saveMutation.mutate(form)} disabled={!form.name || !form.body || saveMutation.isPending} className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90">
+            <Button variant="outline" onClick={() => setShowEditor(false)} className="rounded-xl border-[#002443]/10">Cancelar</Button>
+            <Button onClick={() => saveMutation.mutate(form)} disabled={!form.name || !form.body || saveMutation.isPending} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
               {saveMutation.isPending && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
               {editing ? 'Atualizar' : 'Criar'}
             </Button>
@@ -158,8 +236,15 @@ export default function MessageTemplates() {
       </Dialog>
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Excluir template?</AlertDialogTitle><AlertDialogDescription>Esta ação é irreversível.</AlertDialogDescription></AlertDialogHeader>
-          <AlertDialogFooter><AlertDialogCancel>Cancelar</AlertDialogCancel><AlertDialogAction onClick={() => deleteMutation.mutate(deleteId)} className="bg-red-500">Excluir</AlertDialogAction></AlertDialogFooter>
+        <AlertDialogContent className="rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-[#002443]">Excluir template?</AlertDialogTitle>
+            <AlertDialogDescription className="text-[#002443]/60">Esta ação é irreversível.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-xl">Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deleteMutation.mutate(deleteId)} className="bg-red-500 hover:bg-red-600 rounded-xl">Excluir</AlertDialogAction>
+          </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>

@@ -8,37 +8,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
+  Tabs, TabsContent, TabsList, TabsTrigger,
 } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
-  ArrowLeft, Link as LinkIcon, Copy, Check, ExternalLink, Info,
-  Plus, QrCode, BarChart3, Eye, Trash2, Loader2, RefreshCw,
+  Link as LinkIcon, Copy, Check, ExternalLink, Info,
+  Plus, BarChart3, Trash2, Loader2, RefreshCw,
   TrendingUp, MousePointer, FileCheck, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -118,7 +96,6 @@ export default function GerarLinkOnboarding() {
     }
   });
 
-  // Links por tipo de compliance
   const getPageByLinkType = (link) => {
     if (link.linkType === 'LEAD_QUESTIONNAIRE') return 'LeadQuestionnaire';
     if (link.linkType === 'LEAD_SIMPLIFICADO') return 'QuestionarioSimplificadoPublico';
@@ -169,359 +146,245 @@ export default function GerarLinkOnboarding() {
     createLinkMutation.mutate(formData);
   };
 
-  // Stats
   const stats = React.useMemo(() => {
     const totalClicks = links.reduce((sum, l) => sum + (l.clickCount || 0), 0);
     const totalSubmissions = links.reduce((sum, l) => sum + (l.submissionCount || 0), 0);
     const totalCompleted = links.reduce((sum, l) => sum + (l.completedCount || 0), 0);
     const conversionRate = totalClicks > 0 ? ((totalSubmissions / totalClicks) * 100).toFixed(1) : 0;
-    const completionRate = totalSubmissions > 0 ? ((totalCompleted / totalSubmissions) * 100).toFixed(1) : 0;
-
-    // Best performing link
     const bestLink = links.reduce((best, l) => {
       if (!l.clickCount) return best;
       const rate = (l.submissionCount || 0) / l.clickCount;
       if (!best || rate > best.rate) return { code: l.uniqueCode, rate, agent: l.commercialAgentName };
       return best;
     }, null);
-    
-    return { totalClicks, totalSubmissions, totalCompleted, conversionRate, completionRate, totalLinks: links.length, bestLink };
+    return { totalClicks, totalSubmissions, totalCompleted, conversionRate, totalLinks: links.length, bestLink };
   }, [links]);
+
+  const LINK_TYPE_STYLES = {
+    LEAD_QUESTIONNAIRE: { label: '📋 Lead', bg: 'bg-[#2bc196]/10', border: 'border-[#2bc196]/20', text: 'text-[#2bc196]' },
+    LEAD_SIMPLIFICADO: { label: '⚡ Simplificado', bg: 'bg-[#36706c]/10', border: 'border-[#36706c]/20', text: 'text-[#36706c]' },
+    KYC_AVULSO: { label: '🔒 Compliance', bg: 'bg-[#002443]/5', border: 'border-[#002443]/10', text: 'text-[#002443]' },
+    PROPOSAL: { label: '📄 Proposta', bg: 'bg-[#5cf7cf]/10', border: 'border-[#5cf7cf]/30', text: 'text-[#36706c]' },
+  };
+
+  const getLinkBadgeStyle = (link) => {
+    if (link.linkType === 'LEAD_QUESTIONNAIRE') return 'bg-[#2bc196]/10 text-[#2bc196]';
+    if (link.linkType === 'LEAD_SIMPLIFICADO') return 'bg-[#36706c]/10 text-[#36706c]';
+    return 'bg-[#002443]/10 text-[#002443]';
+  };
+
+  const getLinkLabel = (link) => {
+    if (link.linkType === 'LEAD_QUESTIONNAIRE') return '📋 Lead';
+    if (link.linkType === 'LEAD_SIMPLIFICADO') return '⚡ Simplificado';
+    const ct = link.complianceType;
+    if (ct === 'PIX') return 'Pix';
+    if (ct === 'FULL') return 'Full';
+    if (ct === 'LITE') return 'Lite';
+    if (ct === 'ECOMMERCE') return 'E-commerce';
+    if (ct === 'SAAS') return 'SaaS';
+    return 'Genérico';
+  };
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="flex items-center gap-4">
-          <Link to={createPageUrl('AdminDashboard')}>
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Links de Onboarding</h1>
-            <p className="text-[var(--pagsmile-blue)]/70">Gere e gerencie links para novos merchants</p>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold text-[#002443]">Links de Onboarding</h1>
+          <p className="text-sm text-[#002443]/60">Gere e gerencie links para novos merchants</p>
         </div>
-        <Button variant="outline" onClick={() => refetch()}>
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Atualizar
+        <Button variant="outline" onClick={() => refetch()} className="border-[#002443]/10 hover:bg-[#f4f4f4]">
+          <RefreshCw className="w-4 h-4 mr-2 text-[#002443]/50" />
+          <span className="text-[#002443]/70">Atualizar</span>
         </Button>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <Card>
-          <CardContent className="pt-4">
-            <p className="text-2xl font-bold text-[var(--pagsmile-blue)]">{stats.totalLinks}</p>
-            <p className="text-xs text-[var(--pagsmile-blue)]/70">Links Criados</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-2">
-              <MousePointer className="w-4 h-4 text-blue-500" />
-              <p className="text-2xl font-bold text-blue-600">{stats.totalClicks}</p>
+        {[
+          { label: 'Links Criados', value: stats.totalLinks, icon: LinkIcon, color: '#002443' },
+          { label: 'Total de Cliques', value: stats.totalClicks, icon: MousePointer, color: '#36706c' },
+          { label: 'Submissões', value: stats.totalSubmissions, icon: FileCheck, color: '#2bc196' },
+          { label: 'Completados', value: stats.totalCompleted, icon: Check, color: '#2bc196' },
+          { label: 'Clique → Submissão', value: `${stats.conversionRate}%`, icon: TrendingUp, color: '#36706c' },
+        ].map((s, i) => (
+          <div key={i} className="bg-white rounded-2xl border border-[#002443]/5 p-4">
+            <div className="flex items-center gap-2 mb-1">
+              <s.icon className="w-4 h-4" style={{ color: s.color }} />
+              <p className="text-2xl font-bold text-[#002443]">{s.value}</p>
             </div>
-            <p className="text-xs text-[var(--pagsmile-blue)]/70">Total de Cliques</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-2">
-              <FileCheck className="w-4 h-4 text-purple-500" />
-              <p className="text-2xl font-bold text-purple-600">{stats.totalSubmissions}</p>
-            </div>
-            <p className="text-xs text-[var(--pagsmile-blue)]/70">Submissões</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-green-500" />
-              <p className="text-2xl font-bold text-green-600">{stats.totalCompleted}</p>
-            </div>
-            <p className="text-xs text-[var(--pagsmile-blue)]/70">Completados</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-4">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-teal-500" />
-              <p className="text-2xl font-bold text-teal-600">{stats.conversionRate}%</p>
-            </div>
-            <p className="text-xs text-[var(--pagsmile-blue)]/70">Clique → Submissão</p>
-          </CardContent>
-        </Card>
-      </div>
-      {/* Best link indicator */}
-      {stats.bestLink && stats.bestLink.rate > 0 && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-3 flex items-center gap-3">
-          <TrendingUp className="w-5 h-5 text-green-600 shrink-0" />
-          <div>
-            <p className="text-sm font-medium text-green-800">
-              Melhor link: <span className="font-mono">{stats.bestLink.code}</span> — {(stats.bestLink.rate * 100).toFixed(0)}% de conversão
-              {stats.bestLink.agent && <span className="text-green-600 ml-1">({stats.bestLink.agent})</span>}
-            </p>
+            <p className="text-xs text-[#002443]/50">{s.label}</p>
           </div>
+        ))}
+      </div>
+
+      {/* Best link */}
+      {stats.bestLink && stats.bestLink.rate > 0 && (
+        <div className="bg-[#2bc196]/5 border border-[#2bc196]/15 rounded-2xl p-4 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-xl bg-[#2bc196]/10 flex items-center justify-center">
+            <TrendingUp className="w-4 h-4 text-[#2bc196]" />
+          </div>
+          <p className="text-sm text-[#002443]">
+            Melhor link: <span className="font-mono font-semibold">{stats.bestLink.code}</span> — {(stats.bestLink.rate * 100).toFixed(0)}% de conversão
+            {stats.bestLink.agent && <span className="text-[#002443]/50 ml-1">({stats.bestLink.agent})</span>}
+          </p>
         </div>
       )}
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value="generate">Gerar Link</TabsTrigger>
-          <TabsTrigger value="history">Histórico ({links.length})</TabsTrigger>
+        <TabsList className="bg-[#f4f4f4] border border-[#002443]/5">
+          <TabsTrigger value="generate" className="data-[state=active]:bg-white data-[state=active]:text-[#002443] data-[state=active]:shadow-sm">Gerar Link</TabsTrigger>
+          <TabsTrigger value="history" className="data-[state=active]:bg-white data-[state=active]:text-[#002443] data-[state=active]:shadow-sm">Histórico ({links.length})</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="generate" className="space-y-6">
-          {/* Links Rápidos por Tipo */}
-          <Card>
-            <CardHeader>
+        <TabsContent value="generate" className="space-y-6 mt-6">
+          {/* Links Rápidos */}
+          <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-[#002443]/5">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-[var(--pagsmile-green)]/10">
-                  <LinkIcon className="w-5 h-5 text-[var(--pagsmile-green)]" />
+                <div className="w-10 h-10 rounded-xl bg-[#2bc196]/10 flex items-center justify-center">
+                  <LinkIcon className="w-5 h-5 text-[#2bc196]" />
                 </div>
                 <div>
-                  <CardTitle>Links Rápidos</CardTitle>
-                  <CardDescription>Links diretos para cada tipo de compliance (sem rastreamento)</CardDescription>
+                  <h2 className="text-base font-bold text-[#002443]">Links Rápidos</h2>
+                  <p className="text-xs text-[#002443]/50">Links diretos para cada tipo (sem rastreamento)</p>
                 </div>
               </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Link Questionário de Leads */}
-              <div className="space-y-2">
-                <Label className="text-xs font-medium text-[var(--pagsmile-green)] font-bold">📋 Questionário de Leads (Comercial)</Label>
-                <div className="flex gap-2">
-                  <Input readOnly value={genericLinks.LEAD} className="font-mono text-xs bg-green-50 border-green-200" />
-                  <Button variant="outline" size="sm" onClick={() => handleCopy(genericLinks.LEAD)} className="shrink-0 border-green-200 hover:bg-green-50">
-                    <Copy className="w-4 h-4 text-[var(--pagsmile-green)]" />
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.LEAD, '_blank')} className="shrink-0 border-green-200 hover:bg-green-50">
-                    <ExternalLink className="w-4 h-4 text-[var(--pagsmile-green)]" />
-                  </Button>
+            </div>
+            <div className="p-6 space-y-4">
+              {/* Leads & Simplificado */}
+              {[
+                { key: 'LEAD', label: '📋 Questionário de Leads (Comercial)', accent: '#2bc196' },
+                { key: 'LEAD_SIMPLIFICADO', label: '⚡ Questionário Simplificado (Pós-reunião)', accent: '#36706c' },
+              ].map(item => (
+                <div key={item.key} className="space-y-1.5">
+                  <Label className="text-xs font-semibold" style={{ color: item.accent }}>{item.label}</Label>
+                  <div className="flex gap-2">
+                    <Input readOnly value={genericLinks[item.key]} className="font-mono text-xs bg-[#f4f4f4] border-[#002443]/5" />
+                    <Button variant="outline" size="sm" onClick={() => handleCopy(genericLinks[item.key])} className="shrink-0 border-[#002443]/10 hover:bg-[#f4f4f4]">
+                      <Copy className="w-4 h-4" style={{ color: item.accent }} />
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => window.open(genericLinks[item.key], '_blank')} className="shrink-0 border-[#002443]/10 hover:bg-[#f4f4f4]">
+                      <ExternalLink className="w-4 h-4" style={{ color: item.accent }} />
+                    </Button>
+                  </div>
                 </div>
+              ))}
+
+              <div className="border-t border-[#002443]/5 pt-4">
+                <p className="text-[10px] font-bold text-[#002443]/30 uppercase tracking-[0.15em] mb-3">Links de Compliance</p>
               </div>
 
-              {/* Link Questionário Simplificado */}
-              <div className="space-y-2">
-                <Label className="text-xs font-medium text-amber-600 font-bold">⚡ Questionário Simplificado (Pós-reunião)</Label>
-                <div className="flex gap-2">
-                  <Input readOnly value={genericLinks.LEAD_SIMPLIFICADO} className="font-mono text-xs bg-amber-50 border-amber-200" />
-                  <Button variant="outline" size="sm" onClick={() => handleCopy(genericLinks.LEAD_SIMPLIFICADO)} className="shrink-0 border-amber-200 hover:bg-amber-50">
-                    <Copy className="w-4 h-4 text-amber-600" />
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.LEAD_SIMPLIFICADO, '_blank')} className="shrink-0 border-amber-200 hover:bg-amber-50">
-                    <ExternalLink className="w-4 h-4 text-amber-600" />
-                  </Button>
+              {[
+                { key: 'GENERIC', label: 'Genérico (escolha na página)' },
+                { key: 'PIX', label: 'Compliance Pix (simplificado)' },
+                { key: 'FULL', label: 'Full Compliance (completo)' },
+                { key: 'LITE', label: 'Perfil Lite (PMEs simplificado)' },
+                { key: 'ECOMMERCE', label: 'E-commerce Known (lojas virtuais)' },
+                { key: 'SAAS', label: 'SaaS Fast Track (recorrência)' },
+              ].map(item => (
+                <div key={item.key} className="space-y-1.5">
+                  <Label className="text-xs font-medium text-[#002443]/60">{item.label}</Label>
+                  <div className="flex gap-2">
+                    <Input readOnly value={genericLinks[item.key]} className="font-mono text-xs bg-[#f4f4f4] border-[#002443]/5" />
+                    <Button variant="outline" size="sm" onClick={() => handleCopy(genericLinks[item.key])} className="shrink-0 border-[#002443]/10 hover:bg-[#f4f4f4]">
+                      <Copy className="w-4 h-4 text-[#002443]/40" />
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => window.open(genericLinks[item.key], '_blank')} className="shrink-0 border-[#002443]/10 hover:bg-[#f4f4f4]">
+                      <ExternalLink className="w-4 h-4 text-[#002443]/40" />
+                    </Button>
+                  </div>
                 </div>
-              </div>
+              ))}
+            </div>
+          </div>
 
-              <div className="border-t border-slate-200 pt-4">
-                <p className="text-xs font-semibold text-[var(--pagsmile-blue)]/50 uppercase tracking-wider mb-3">Links de Compliance</p>
-              </div>
-
-              {/* Link Genérico */}
-              <div className="space-y-2">
-                <Label className="text-xs font-medium text-[var(--pagsmile-blue)]/70">Genérico (escolha na página)</Label>
-                <div className="flex gap-2">
-                  <Input readOnly value={genericLinks.GENERIC} className="font-mono text-xs bg-slate-50" />
-                  <Button variant="outline" size="sm" onClick={() => handleCopy(genericLinks.GENERIC)} className="shrink-0">
-                    <Copy className="w-4 h-4" />
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.GENERIC, '_blank')} className="shrink-0">
-                    <ExternalLink className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-
-              {/* Link Compliance Pix */}
-              <div className="space-y-2">
-                <Label className="text-xs font-medium text-blue-600">Compliance Pix (simplificado)</Label>
-                <div className="flex gap-2">
-                  <Input readOnly value={genericLinks.PIX} className="font-mono text-xs bg-blue-50 border-blue-200" />
-                  <Button variant="outline" size="sm" onClick={() => handleCopy(genericLinks.PIX)} className="shrink-0 border-blue-200 hover:bg-blue-50">
-                    <Copy className="w-4 h-4 text-blue-600" />
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.PIX, '_blank')} className="shrink-0 border-blue-200 hover:bg-blue-50">
-                    <ExternalLink className="w-4 h-4 text-blue-600" />
-                  </Button>
-                </div>
-              </div>
-
-              {/* Link Full Compliance */}
-              <div className="space-y-2">
-                <Label className="text-xs font-medium text-purple-600">Full Compliance (completo)</Label>
-                <div className="flex gap-2">
-                  <Input readOnly value={genericLinks.FULL} className="font-mono text-xs bg-purple-50 border-purple-200" />
-                  <Button variant="outline" size="sm" onClick={() => handleCopy(genericLinks.FULL)} className="shrink-0 border-purple-200 hover:bg-purple-50">
-                    <Copy className="w-4 h-4 text-purple-600" />
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.FULL, '_blank')} className="shrink-0 border-purple-200 hover:bg-purple-50">
-                    <ExternalLink className="w-4 h-4 text-purple-600" />
-                  </Button>
-                </div>
-              </div>
-
-              {/* Link Perfil Lite */}
-              <div className="space-y-2">
-                <Label className="text-xs font-medium text-teal-600">Perfil Lite (PMEs simplificado)</Label>
-                <div className="flex gap-2">
-                  <Input readOnly value={genericLinks.LITE} className="font-mono text-xs bg-teal-50 border-teal-200" />
-                  <Button variant="outline" size="sm" onClick={() => handleCopy(genericLinks.LITE)} className="shrink-0 border-teal-200 hover:bg-teal-50">
-                    <Copy className="w-4 h-4 text-teal-600" />
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.LITE, '_blank')} className="shrink-0 border-teal-200 hover:bg-teal-50">
-                    <ExternalLink className="w-4 h-4 text-teal-600" />
-                  </Button>
-                </div>
-              </div>
-
-              {/* Link E-commerce */}
-              <div className="space-y-2">
-                <Label className="text-xs font-medium text-orange-600">E-commerce Known (lojas virtuais)</Label>
-                <div className="flex gap-2">
-                  <Input readOnly value={genericLinks.ECOMMERCE} className="font-mono text-xs bg-orange-50 border-orange-200" />
-                  <Button variant="outline" size="sm" onClick={() => handleCopy(genericLinks.ECOMMERCE)} className="shrink-0 border-orange-200 hover:bg-orange-50">
-                    <Copy className="w-4 h-4 text-orange-600" />
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.ECOMMERCE, '_blank')} className="shrink-0 border-orange-200 hover:bg-orange-50">
-                    <ExternalLink className="w-4 h-4 text-orange-600" />
-                  </Button>
-                </div>
-              </div>
-
-              {/* Link SaaS */}
-              <div className="space-y-2">
-                <Label className="text-xs font-medium text-violet-600">SaaS Fast Track (recorrência)</Label>
-                <div className="flex gap-2">
-                  <Input readOnly value={genericLinks.SAAS} className="font-mono text-xs bg-violet-50 border-violet-200" />
-                  <Button variant="outline" size="sm" onClick={() => handleCopy(genericLinks.SAAS)} className="shrink-0 border-violet-200 hover:bg-violet-50">
-                    <Copy className="w-4 h-4 text-violet-600" />
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.SAAS, '_blank')} className="shrink-0 border-violet-200 hover:bg-violet-50">
-                    <ExternalLink className="w-4 h-4 text-violet-600" />
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Criar Link Personalizado */}
-          <Card>
-            <CardHeader>
+          {/* Link Personalizado */}
+          <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-[#002443]/5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-purple-100">
-                    <Plus className="w-5 h-5 text-purple-600" />
+                  <div className="w-10 h-10 rounded-xl bg-[#002443]/5 flex items-center justify-center">
+                    <Plus className="w-5 h-5 text-[#002443]" />
                   </div>
                   <div>
-                    <CardTitle>Link Personalizado</CardTitle>
-                    <CardDescription>Crie um link com rastreamento e parâmetros</CardDescription>
+                    <h2 className="text-base font-bold text-[#002443]">Link Personalizado</h2>
+                    <p className="text-xs text-[#002443]/50">Crie um link com rastreamento e parâmetros</p>
                   </div>
                 </div>
-                <Button variant="ghost" size="sm" onClick={() => setShowAdvanced(!showAdvanced)}>
+                <button onClick={() => setShowAdvanced(!showAdvanced)} className="text-xs font-medium text-[#2bc196] hover:text-[#36706c] transition-colors">
                   {showAdvanced ? 'Ocultar Avançado' : 'Mostrar Avançado'}
-                </Button>
+                </button>
               </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
+            </div>
+            <div className="p-6 space-y-5">
               {/* Tipo de Link */}
               <div className="space-y-2">
-                <Label className="font-semibold">Tipo de Link *</Label>
+                <Label className="text-xs font-semibold text-[#002443]">Tipo de Link *</Label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, linkType: 'LEAD_QUESTIONNAIRE' }))}
-                    className={`p-4 rounded-lg border-2 transition-all text-left ${
-                      formData.linkType === 'LEAD_QUESTIONNAIRE' 
-                        ? 'border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5' 
-                        : 'border-slate-200 hover:border-slate-300'
-                    }`}
-                  >
-                    <p className="font-semibold text-sm text-[var(--pagsmile-green)]">📋 Lead</p>
-                    <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">Questionário comercial</p>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, linkType: 'LEAD_SIMPLIFICADO' }))}
-                    className={`p-4 rounded-lg border-2 transition-all text-left ${
-                      formData.linkType === 'LEAD_SIMPLIFICADO' 
-                        ? 'border-amber-500 bg-amber-50' 
-                        : 'border-slate-200 hover:border-slate-300'
-                    }`}
-                  >
-                    <p className="font-semibold text-sm text-amber-600">⚡ Simplificado</p>
-                    <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">Pós-reunião (taxas)</p>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, linkType: 'KYC_AVULSO' }))}
-                    className={`p-4 rounded-lg border-2 transition-all text-left ${
-                      formData.linkType === 'KYC_AVULSO' 
-                        ? 'border-purple-500 bg-purple-50' 
-                        : 'border-slate-200 hover:border-slate-300'
-                    }`}
-                  >
-                    <p className="font-semibold text-sm text-purple-600">🔒 Compliance</p>
-                    <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">KYC/KYB avulso</p>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, linkType: 'PROPOSAL' }))}
-                    className={`p-4 rounded-lg border-2 transition-all text-left ${
-                      formData.linkType === 'PROPOSAL' 
-                        ? 'border-blue-500 bg-blue-50' 
-                        : 'border-slate-200 hover:border-slate-300'
-                    }`}
-                  >
-                    <p className="font-semibold text-sm text-blue-600">📄 Proposta</p>
-                    <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">Link de proposta</p>
-                  </button>
+                  {[
+                    { value: 'LEAD_QUESTIONNAIRE', emoji: '📋', label: 'Lead', desc: 'Questionário comercial', accent: '#2bc196' },
+                    { value: 'LEAD_SIMPLIFICADO', emoji: '⚡', label: 'Simplificado', desc: 'Pós-reunião (taxas)', accent: '#36706c' },
+                    { value: 'KYC_AVULSO', emoji: '🔒', label: 'Compliance', desc: 'KYC/KYB avulso', accent: '#002443' },
+                    { value: 'PROPOSAL', emoji: '📄', label: 'Proposta', desc: 'Link de proposta', accent: '#36706c' },
+                  ].map(opt => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, linkType: opt.value }))}
+                      className={`p-4 rounded-xl border-2 transition-all text-left ${
+                        formData.linkType === opt.value 
+                          ? 'border-[#2bc196] bg-[#2bc196]/5 shadow-sm' 
+                          : 'border-[#002443]/5 hover:border-[#002443]/15 bg-white'
+                      }`}
+                    >
+                      <p className="font-semibold text-sm" style={{ color: opt.accent }}>{opt.emoji} {opt.label}</p>
+                      <p className="text-xs text-[#002443]/40 mt-1">{opt.desc}</p>
+                    </button>
+                  ))}
                 </div>
               </div>
 
-              {/* Tipo de Compliance (só se KYC_AVULSO) */}
+              {/* Compliance Type */}
               {formData.linkType === 'KYC_AVULSO' && (
                 <div className="space-y-2">
-                  <Label className="font-semibold">Tipo de Compliance *</Label>
+                  <Label className="text-xs font-semibold text-[#002443]">Tipo de Compliance *</Label>
                   <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
-                    <button type="button" onClick={() => setFormData(prev => ({ ...prev, complianceType: 'GENERIC' }))} className={`p-4 rounded-lg border-2 transition-all text-left ${formData.complianceType === 'GENERIC' ? 'border-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5' : 'border-slate-200 hover:border-slate-300'}`}>
-                      <p className="font-semibold text-sm text-[var(--pagsmile-blue)]">Genérico</p>
-                      <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">Merchant escolhe o tipo</p>
-                    </button>
-                    <button type="button" onClick={() => setFormData(prev => ({ ...prev, complianceType: 'PIX' }))} className={`p-4 rounded-lg border-2 transition-all text-left ${formData.complianceType === 'PIX' ? 'border-blue-500 bg-blue-50' : 'border-slate-200 hover:border-slate-300'}`}>
-                      <p className="font-semibold text-sm text-blue-600">Compliance Pix</p>
-                      <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">Fluxo simplificado</p>
-                    </button>
-                    <button type="button" onClick={() => setFormData(prev => ({ ...prev, complianceType: 'FULL' }))} className={`p-4 rounded-lg border-2 transition-all text-left ${formData.complianceType === 'FULL' ? 'border-purple-500 bg-purple-50' : 'border-slate-200 hover:border-slate-300'}`}>
-                      <p className="font-semibold text-sm text-purple-600">Full Compliance</p>
-                      <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">KYC completo</p>
-                    </button>
-                    <button type="button" onClick={() => setFormData(prev => ({ ...prev, complianceType: 'LITE' }))} className={`p-4 rounded-lg border-2 transition-all text-left ${formData.complianceType === 'LITE' ? 'border-teal-500 bg-teal-50' : 'border-slate-200 hover:border-slate-300'}`}>
-                      <p className="font-semibold text-sm text-teal-600">Perfil Lite</p>
-                      <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">PMEs simplificado</p>
-                    </button>
-                    <button type="button" onClick={() => setFormData(prev => ({ ...prev, complianceType: 'ECOMMERCE' }))} className={`p-4 rounded-lg border-2 transition-all text-left ${formData.complianceType === 'ECOMMERCE' ? 'border-orange-500 bg-orange-50' : 'border-slate-200 hover:border-slate-300'}`}>
-                      <p className="font-semibold text-sm text-orange-600">E-commerce</p>
-                      <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">Lojas virtuais</p>
-                    </button>
-                    <button type="button" onClick={() => setFormData(prev => ({ ...prev, complianceType: 'SAAS' }))} className={`p-4 rounded-lg border-2 transition-all text-left ${formData.complianceType === 'SAAS' ? 'border-violet-500 bg-violet-50' : 'border-slate-200 hover:border-slate-300'}`}>
-                      <p className="font-semibold text-sm text-violet-600">SaaS</p>
-                      <p className="text-xs text-[var(--pagsmile-blue)]/60 mt-1">Recorrência</p>
-                    </button>
+                    {[
+                      { value: 'GENERIC', label: 'Genérico', desc: 'Merchant escolhe' },
+                      { value: 'PIX', label: 'Pix', desc: 'Simplificado' },
+                      { value: 'FULL', label: 'Full', desc: 'KYC completo' },
+                      { value: 'LITE', label: 'Lite', desc: 'PMEs' },
+                      { value: 'ECOMMERCE', label: 'E-commerce', desc: 'Lojas virtuais' },
+                      { value: 'SAAS', label: 'SaaS', desc: 'Recorrência' },
+                    ].map(opt => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => setFormData(prev => ({ ...prev, complianceType: opt.value }))}
+                        className={`p-3 rounded-xl border-2 transition-all text-left ${
+                          formData.complianceType === opt.value 
+                            ? 'border-[#2bc196] bg-[#2bc196]/5' 
+                            : 'border-[#002443]/5 hover:border-[#002443]/15'
+                        }`}
+                      >
+                        <p className="font-semibold text-xs text-[#002443]">{opt.label}</p>
+                        <p className="text-[10px] text-[#002443]/40 mt-0.5">{opt.desc}</p>
+                      </button>
+                    ))}
                   </div>
                 </div>
               )}
 
               {/* Questionário e Agente */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Questionário (opcional)</Label>
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-[#002443]/50">Questionário (opcional)</Label>
                   <Select 
                     value={formData.questionnaireTemplateId} 
                     onValueChange={(v) => setFormData(prev => ({ ...prev, questionnaireTemplateId: v }))}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="border-[#002443]/10 bg-white">
                       <SelectValue placeholder="Selecione o questionário" />
                     </SelectTrigger>
                     <SelectContent>
@@ -532,63 +395,42 @@ export default function GerarLinkOnboarding() {
                     </SelectContent>
                   </Select>
                 </div>
-
-                <div className="space-y-2">
-                  <Label>Agente Comercial</Label>
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-[#002443]/50">Agente Comercial</Label>
                   <Input
                     value={formData.commercialAgentName}
                     onChange={(e) => setFormData(prev => ({ ...prev, commercialAgentName: e.target.value }))}
                     placeholder="Nome do agente"
+                    className="border-[#002443]/10"
                   />
                 </div>
               </div>
 
               {showAdvanced && (
                 <>
-                  <div className="border-t pt-4">
-                    <p className="text-sm font-medium text-[var(--pagsmile-blue)]/90 mb-3">Parâmetros UTM</p>
+                  <div className="border-t border-[#002443]/5 pt-4">
+                    <p className="text-xs font-semibold text-[#002443]/70 mb-3">Parâmetros UTM</p>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="space-y-2">
-                        <Label className="text-xs">Source</Label>
-                        <Input
-                          value={formData.utmSource}
-                          onChange={(e) => setFormData(prev => ({ ...prev, utmSource: e.target.value }))}
-                          placeholder="google, facebook"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-xs">Medium</Label>
-                        <Input
-                          value={formData.utmMedium}
-                          onChange={(e) => setFormData(prev => ({ ...prev, utmMedium: e.target.value }))}
-                          placeholder="email, cpc"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-xs">Campaign</Label>
-                        <Input
-                          value={formData.utmCampaign}
-                          onChange={(e) => setFormData(prev => ({ ...prev, utmCampaign: e.target.value }))}
-                          placeholder="black_friday"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-xs">Content</Label>
-                        <Input
-                          value={formData.utmContent}
-                          onChange={(e) => setFormData(prev => ({ ...prev, utmContent: e.target.value }))}
-                          placeholder="banner_top"
-                        />
-                      </div>
+                      {['Source', 'Medium', 'Campaign', 'Content'].map((field) => (
+                        <div key={field} className="space-y-1.5">
+                          <Label className="text-xs text-[#002443]/40">{field}</Label>
+                          <Input
+                            value={formData[`utm${field}`]}
+                            onChange={(e) => setFormData(prev => ({ ...prev, [`utm${field}`]: e.target.value }))}
+                            placeholder={field === 'Source' ? 'google, facebook' : field === 'Medium' ? 'email, cpc' : field === 'Campaign' ? 'black_friday' : 'banner_top'}
+                            className="border-[#002443]/10"
+                          />
+                        </div>
+                      ))}
                     </div>
                   </div>
-
-                  <div className="space-y-2">
-                    <Label>Data de Expiração (opcional)</Label>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs text-[#002443]/40">Data de Expiração (opcional)</Label>
                     <Input
                       type="date"
                       value={formData.expiresAt}
                       onChange={(e) => setFormData(prev => ({ ...prev, expiresAt: e.target.value }))}
+                      className="border-[#002443]/10"
                     />
                   </div>
                 </>
@@ -597,7 +439,7 @@ export default function GerarLinkOnboarding() {
               <Button 
                 onClick={handleCreateLink}
                 disabled={createLinkMutation.isPending}
-                className="w-full bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90"
+                className="w-full bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl h-11"
               >
                 {createLinkMutation.isPending ? (
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
@@ -606,65 +448,61 @@ export default function GerarLinkOnboarding() {
                 )}
                 Criar Link Personalizado
               </Button>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          <Alert>
-            <Info className="w-4 h-4" />
-            <AlertDescription>
+          <div className="bg-[#002443]/5 rounded-2xl p-4 flex items-start gap-3">
+            <Info className="w-4 h-4 text-[#002443]/40 mt-0.5 shrink-0" />
+            <p className="text-xs text-[#002443]/60">
               Links personalizados permitem rastrear a origem das submissões e medir a performance de campanhas e agentes comerciais.
-            </AlertDescription>
-          </Alert>
+            </p>
+          </div>
         </TabsContent>
 
-        <TabsContent value="history">
-          <Card>
-            <CardHeader>
+        <TabsContent value="history" className="mt-6">
+          <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-[#002443]/5">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                  <CardTitle>Links Gerados</CardTitle>
-                  <CardDescription>Histórico de todos os links criados</CardDescription>
+                  <h2 className="text-base font-bold text-[#002443]">Links Gerados</h2>
+                  <p className="text-xs text-[#002443]/50">Histórico de todos os links criados</p>
                 </div>
-                <div className="flex items-center gap-1 bg-slate-100 rounded-lg p-1">
-                  <button
-                    onClick={() => setHistoryFilter('all')}
-                    className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${historyFilter === 'all' ? 'bg-white shadow-sm text-[var(--pagsmile-blue)]' : 'text-[var(--pagsmile-blue)]/60 hover:text-[var(--pagsmile-blue)]'}`}
-                  >
-                    Todos ({links.length})
-                  </button>
-                  <button
-                    onClick={() => setHistoryFilter('lead')}
-                    className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${historyFilter === 'lead' ? 'bg-white shadow-sm text-green-700' : 'text-[var(--pagsmile-blue)]/60 hover:text-[var(--pagsmile-blue)]'}`}
-                  >
-                    📋 Leads ({links.filter(l => l.linkType === 'LEAD_QUESTIONNAIRE').length})
-                  </button>
-                  <button
-                    onClick={() => setHistoryFilter('simplificado')}
-                    className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${historyFilter === 'simplificado' ? 'bg-white shadow-sm text-amber-700' : 'text-[var(--pagsmile-blue)]/60 hover:text-[var(--pagsmile-blue)]'}`}
-                  >
-                    ⚡ Simplificado ({links.filter(l => l.linkType === 'LEAD_SIMPLIFICADO').length})
-                  </button>
-                  <button
-                    onClick={() => setHistoryFilter('onboarding')}
-                    className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${historyFilter === 'onboarding' ? 'bg-white shadow-sm text-purple-700' : 'text-[var(--pagsmile-blue)]/60 hover:text-[var(--pagsmile-blue)]'}`}
-                  >
-                    🔒 Onboarding ({links.filter(l => !['LEAD_QUESTIONNAIRE', 'LEAD_SIMPLIFICADO'].includes(l.linkType)).length})
-                  </button>
+                <div className="flex items-center gap-1 bg-[#f4f4f4] rounded-xl p-1 border border-[#002443]/5">
+                  {[
+                    { key: 'all', label: `Todos (${links.length})` },
+                    { key: 'lead', label: `📋 Leads (${links.filter(l => l.linkType === 'LEAD_QUESTIONNAIRE').length})` },
+                    { key: 'simplificado', label: `⚡ Simpl. (${links.filter(l => l.linkType === 'LEAD_SIMPLIFICADO').length})` },
+                    { key: 'onboarding', label: `🔒 Onb. (${links.filter(l => !['LEAD_QUESTIONNAIRE', 'LEAD_SIMPLIFICADO'].includes(l.linkType)).length})` },
+                  ].map(f => (
+                    <button
+                      key={f.key}
+                      onClick={() => setHistoryFilter(f.key)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                        historyFilter === f.key 
+                          ? 'bg-white shadow-sm text-[#002443]' 
+                          : 'text-[#002443]/40 hover:text-[#002443]/70'
+                      }`}
+                    >
+                      {f.label}
+                    </button>
+                  ))}
                 </div>
               </div>
-            </CardHeader>
-            <CardContent>
+            </div>
+            <div className="p-6">
               {linksLoading ? (
-                <div className="flex justify-center py-8">
-                  <Loader2 className="w-6 h-6 animate-spin text-[var(--pagsmile-blue)]/50" />
+                <div className="flex justify-center py-12">
+                  <Loader2 className="w-6 h-6 animate-spin text-[#2bc196]" />
                 </div>
               ) : links.length === 0 ? (
-                <div className="text-center py-8">
-                  <LinkIcon className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/40 mb-4" />
-                  <p className="text-[var(--pagsmile-blue)]/70">Nenhum link personalizado criado</p>
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 rounded-2xl bg-[#f4f4f4] flex items-center justify-center mx-auto mb-4">
+                    <LinkIcon className="w-7 h-7 text-[#002443]/20" />
+                  </div>
+                  <p className="text-sm text-[#002443]/50">Nenhum link personalizado criado</p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {links.filter(link => {
                     if (historyFilter === 'lead') return link.linkType === 'LEAD_QUESTIONNAIRE';
                     if (historyFilter === 'simplificado') return link.linkType === 'LEAD_SIMPLIFICADO';
@@ -677,116 +515,76 @@ export default function GerarLinkOnboarding() {
                     const isExpanded = expandedLinkId === link.id;
                     
                     return (
-                      <div key={link.id} className="border border-slate-200 rounded-lg overflow-hidden">
-                        {/* Link Header */}
+                      <div key={link.id} className="border border-[#002443]/5 rounded-2xl overflow-hidden bg-white hover:shadow-sm transition-shadow">
                         <div 
-                          className="p-4 bg-white hover:bg-slate-50 cursor-pointer transition-colors"
+                          className="p-4 cursor-pointer transition-colors"
                           onClick={() => setExpandedLinkId(isExpanded ? null : link.id)}
                         >
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                              <Badge variant="outline" className="font-mono text-sm">{link.uniqueCode}</Badge>
-                              <Badge 
-                                className={`text-xs ${
-                                  link.linkType === 'LEAD_QUESTIONNAIRE' ? 'bg-green-100 text-green-700' :
-                                  link.linkType === 'LEAD_SIMPLIFICADO' ? 'bg-amber-100 text-amber-700' :
-                                  link.complianceType === 'PIX' ? 'bg-blue-100 text-blue-700' :
-                                  link.complianceType === 'FULL' ? 'bg-purple-100 text-purple-700' :
-                                  link.complianceType === 'LITE' ? 'bg-teal-100 text-teal-700' :
-                                  link.complianceType === 'ECOMMERCE' ? 'bg-orange-100 text-orange-700' :
-                                  link.complianceType === 'SAAS' ? 'bg-violet-100 text-violet-700' :
-                                  'bg-slate-100 text-slate-700'
-                                }`}
-                              >
-                                {link.linkType === 'LEAD_QUESTIONNAIRE' ? '📋 Lead' :
-                                 link.linkType === 'LEAD_SIMPLIFICADO' ? '⚡ Simplificado' :
-                                 link.complianceType === 'PIX' ? 'Pix' : 
-                                 link.complianceType === 'FULL' ? 'Full' : 
-                                 link.complianceType === 'LITE' ? 'Lite' : 
-                                 link.complianceType === 'ECOMMERCE' ? 'E-commerce' : 
-                                 link.complianceType === 'SAAS' ? 'SaaS' : 'Genérico'}
+                            <div className="flex items-center gap-3 flex-wrap">
+                              <Badge variant="outline" className="font-mono text-sm border-[#002443]/10">{link.uniqueCode}</Badge>
+                              <Badge className={`${getLinkBadgeStyle(link)} text-xs border-0`}>
+                                {getLinkLabel(link)}
                               </Badge>
                               {link.commercialAgentName && (
-                                <span className="text-sm text-[var(--pagsmile-blue)]/80">{link.commercialAgentName}</span>
+                                <span className="text-sm text-[#002443]/60">{link.commercialAgentName}</span>
                               )}
-                              <span className="text-xs text-[var(--pagsmile-blue)]/50">
+                              <span className="text-xs text-[#002443]/30">
                                 {link.created_date ? new Date(link.created_date).toLocaleDateString('pt-BR') : ''}
                               </span>
                             </div>
                             
-                            <div className="flex items-center gap-6">
-                              {/* Métricas resumidas */}
-                              <div className="flex items-center gap-4 text-sm">
+                            <div className="flex items-center gap-4">
+                              <div className="hidden md:flex items-center gap-3 text-sm">
                                 <div className="flex items-center gap-1">
-                                  <MousePointer className="w-3 h-3 text-blue-500" />
-                                  <span className="font-medium text-blue-600">{link.clickCount || 0}</span>
+                                  <MousePointer className="w-3 h-3 text-[#36706c]" />
+                                  <span className="font-medium text-[#36706c]">{link.clickCount || 0}</span>
                                 </div>
                                 <div className="flex items-center gap-1">
-                                  <FileCheck className="w-3 h-3 text-purple-500" />
-                                  <span className="font-medium text-purple-600">{link.submissionCount || 0}</span>
+                                  <FileCheck className="w-3 h-3 text-[#2bc196]" />
+                                  <span className="font-medium text-[#2bc196]">{link.submissionCount || 0}</span>
                                 </div>
                                 <div className="flex items-center gap-1">
-                                  <Check className="w-3 h-3 text-green-500" />
-                                  <span className="font-medium text-green-600">{link.completedCount || 0}</span>
+                                  <Check className="w-3 h-3 text-[#2bc196]" />
+                                  <span className="font-medium text-[#2bc196]">{link.completedCount || 0}</span>
                                 </div>
-                                <Badge variant="secondary" className="text-xs">
-                                  {conversion}% conv.
+                                <Badge className="text-xs bg-[#f4f4f4] text-[#002443]/60 border-0">
+                                  {conversion}%
                                 </Badge>
                               </div>
 
-                              {/* Ações */}
                               <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm"
-                                  onClick={() => handleCopy(generateLinkUrl(link), link.id)}
-                                >
-                                  {copiedId === link.id ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+                                <Button variant="ghost" size="sm" onClick={() => handleCopy(generateLinkUrl(link), link.id)} className="h-8 w-8 p-0">
+                                  {copiedId === link.id ? <Check className="w-4 h-4 text-[#2bc196]" /> : <Copy className="w-4 h-4 text-[#002443]/40" />}
                                 </Button>
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm"
-                                  onClick={() => window.open(generateLinkUrl(link), '_blank')}
-                                >
-                                  <ExternalLink className="w-4 h-4" />
+                                <Button variant="ghost" size="sm" onClick={() => window.open(generateLinkUrl(link), '_blank')} className="h-8 w-8 p-0">
+                                  <ExternalLink className="w-4 h-4 text-[#002443]/40" />
                                 </Button>
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm"
-                                  onClick={() => deleteLinkMutation.mutate(link.id)}
-                                  className="text-red-500 hover:text-red-700"
-                                >
+                                <Button variant="ghost" size="sm" onClick={() => deleteLinkMutation.mutate(link.id)} className="h-8 w-8 p-0 text-red-400 hover:text-red-600">
                                   <Trash2 className="w-4 h-4" />
                                 </Button>
                               </div>
 
-                              {/* Expand/Collapse */}
-                              <Button variant="ghost" size="sm">
-                                {isExpanded ? (
-                                  <ChevronUp className="w-4 h-4" />
-                                ) : (
-                                  <ChevronDown className="w-4 h-4" />
-                                )}
-                              </Button>
+                              <button className="text-[#002443]/30">
+                                {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                              </button>
                             </div>
                           </div>
 
-                          {/* UTM Tags */}
                           {(link.utmSource || link.utmMedium || link.utmCampaign) && (
                             <div className="flex gap-2 mt-2">
-                              {link.utmSource && <Badge variant="outline" className="text-xs">source: {link.utmSource}</Badge>}
-                              {link.utmMedium && <Badge variant="outline" className="text-xs">medium: {link.utmMedium}</Badge>}
-                              {link.utmCampaign && <Badge variant="outline" className="text-xs">campaign: {link.utmCampaign}</Badge>}
+                              {link.utmSource && <Badge variant="outline" className="text-[10px] border-[#002443]/10 text-[#002443]/40">source: {link.utmSource}</Badge>}
+                              {link.utmMedium && <Badge variant="outline" className="text-[10px] border-[#002443]/10 text-[#002443]/40">medium: {link.utmMedium}</Badge>}
+                              {link.utmCampaign && <Badge variant="outline" className="text-[10px] border-[#002443]/10 text-[#002443]/40">campaign: {link.utmCampaign}</Badge>}
                             </div>
                           )}
                         </div>
 
-                        {/* Analytics Dashboard Expandido */}
                         {isExpanded && (
-                          <div className="border-t border-slate-200 bg-slate-50 p-4">
-                            <h4 className="text-sm font-semibold text-[var(--pagsmile-blue)]/90 mb-4 flex items-center gap-2">
-                              <BarChart3 className="w-4 h-4" />
-                              Analytics Detalhado - Funil de Conversão
+                          <div className="border-t border-[#002443]/5 bg-[#f4f4f4] p-4">
+                            <h4 className="text-sm font-semibold text-[#002443]/70 mb-4 flex items-center gap-2">
+                              <BarChart3 className="w-4 h-4 text-[#2bc196]" />
+                              Analytics Detalhado
                             </h4>
                             <LinkAnalyticsDashboard linkId={link.id} linkCode={link.uniqueCode} />
                           </div>
@@ -796,8 +594,8 @@ export default function GerarLinkOnboarding() {
                   })}
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
