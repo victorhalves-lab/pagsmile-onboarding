@@ -18,11 +18,12 @@ import {
 } from '@/components/ui/alert-dialog';
 import {
   Search, Plus, Eye, Pencil, Send, Link2, Copy, Trash2,
-  Loader2, X, AlertTriangle, FileText, List, Clock, CheckCircle, XCircle
+  Loader2, X, AlertTriangle, FileText, List, Clock, CheckCircle, XCircle, History
 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
 import ProposalMetrics from '../components/proposals/ProposalMetrics';
+import ProposalHistoryModal from '../components/proposals/ProposalHistoryModal';
 
 const STATUS_CONFIG = {
   rascunho: { label: 'Rascunho', color: 'bg-slate-100 text-slate-700', icon: '⚪' },
@@ -40,6 +41,7 @@ export default function GestaoPropostas() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [deleteId, setDeleteId] = useState(null);
+  const [historyProposalId, setHistoryProposalId] = useState(null);
 
   const { data: propostas = [], isLoading } = useQuery({
     queryKey: ['propostas'],
@@ -233,6 +235,9 @@ export default function GestaoPropostas() {
                         <Button variant="ghost" size="sm" onClick={() => duplicar(p)}>
                           <Copy className="w-4 h-4" />
                         </Button>
+                        <Button variant="ghost" size="sm" onClick={() => setHistoryProposalId(p.id)} title="Histórico">
+                          <History className="w-4 h-4" />
+                        </Button>
                         <Button variant="ghost" size="sm" onClick={() => setDeleteId(p.id)} className="text-red-500 hover:text-red-700">
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -245,6 +250,13 @@ export default function GestaoPropostas() {
           </Table>
         </div>
       </div>
+
+      {/* History Modal */}
+      <ProposalHistoryModal
+        open={!!historyProposalId}
+        onClose={() => setHistoryProposalId(null)}
+        proposalId={historyProposalId}
+      />
 
       {/* Delete dialog */}
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
