@@ -27,7 +27,7 @@ import { Button } from '@/components/ui/button';
 
 export default function Layout({ children, currentPageName }) {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
-  const [expandedSections, setExpandedSections] = React.useState(['leads', 'compliance', 'tools', 'integrations', 'admin']);
+  const [expandedSections, setExpandedSections] = React.useState(['leads', 'contratos', 'compliance', 'tools', 'integrations', 'admin']);
 
   const { data: authData } = useQuery({
     queryKey: ['user'],
