@@ -234,21 +234,24 @@ export default function Layout({ children, currentPageName }) {
       <Link
         to={createPageUrl(item.path)}
         onClick={onClick}
-        className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors text-sm font-medium ${
+        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 text-sm font-medium relative ${
           isActive
-            ? 'bg-[var(--pagsmile-green)] text-white shadow-md'
+            ? 'bg-white/10 text-[#5cf7cf] font-semibold'
             : item.highlight && !isActive
-            ? 'text-[var(--pagsmile-green)] bg-[var(--pagsmile-green)]/5 hover:bg-[var(--pagsmile-green)]/10'
-            : 'text-[#002443]/80 hover:text-[#002443] hover:bg-[#002443]/5'
-            }`}
-            >
-        <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-[#002443]/80'}`} />
+            ? 'text-[#2bc196] hover:bg-white/5'
+            : 'text-white/60 hover:text-white hover:bg-white/5'
+        }`}
+      >
+        {isActive && (
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-[#5cf7cf] rounded-r-full" />
+        )}
+        <Icon className={`w-4 h-4 ${isActive ? 'text-[#5cf7cf]' : item.highlight ? 'text-[#2bc196]' : 'text-white/40'}`} />
         <span className="flex-1">{item.label}</span>
         {item.highlight && !isActive && (
-          <span className="w-2 h-2 rounded-full bg-[var(--pagsmile-green)] animate-pulse"></span>
+          <span className="w-2 h-2 rounded-full bg-[#2bc196] animate-pulse"></span>
         )}
         {item.badge && (
-          <span className="text-xs bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">{item.badge}</span>
+          <span className="text-[10px] bg-white/10 text-white/70 px-1.5 py-0.5 rounded-md">{item.badge}</span>
         )}
       </Link>
     );
@@ -260,17 +263,17 @@ export default function Layout({ children, currentPageName }) {
     const visibleItems = section.items.filter(item => !item.hidden);
     
     return (
-      <div className="mb-2">
+      <div className="mb-1">
         <button
           onClick={() => toggleSection(section.id)}
-          className="flex items-center gap-2 w-full px-3 py-2 text-xs font-bold text-[#002443] uppercase tracking-wider hover:text-[#002443]/80 transition-colors"
+          className="flex items-center gap-2 w-full px-3 py-2 text-[10px] font-bold text-white/30 uppercase tracking-[0.15em] hover:text-white/50 transition-colors"
         >
-          <SectionIcon className="w-4 h-4 text-[#2bc196]" />
+          <SectionIcon className="w-3.5 h-3.5 text-[#2bc196]/60" />
           <span className="flex-1 text-left">{section.label}</span>
-          {isExpanded ? <ChevronDown className="w-3 h-3 text-[#002443]/50" /> : <ChevronRight className="w-3 h-3 text-[#002443]/50" />}
+          {isExpanded ? <ChevronDown className="w-3 h-3 text-white/20" /> : <ChevronRight className="w-3 h-3 text-white/20" />}
         </button>
         {isExpanded && (
-          <div className="mt-1 space-y-1 pl-2">
+          <div className="mt-0.5 space-y-0.5 pl-1">
             {visibleItems.map(item => (
               <NavItem 
                 key={item.path} 
