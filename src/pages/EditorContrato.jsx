@@ -13,11 +13,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 
-import ClienteForm from '../components/contrato/ClienteForm';
-import ModulosForm from '../components/contrato/ModulosForm';
-import PrecosForm from '../components/contrato/PrecosForm';
-import SLAsForm from '../components/contrato/SLAsForm';
-import AssinaturaForm from '../components/contrato/AssinaturaForm';
+import ClienteForm from '@/components/contrato/ClienteForm';
+import ModulosForm from '@/components/contrato/ModulosForm';
+import PrecosForm from '@/components/contrato/PrecosForm';
+import SLAsForm from '@/components/contrato/SLAsForm';
+import AssinaturaForm from '@/components/contrato/AssinaturaForm';
 
 const STATUS_CONFIG = {
   pre_generated: { label: 'Pré-gerado', color: 'bg-amber-100 text-amber-800' },

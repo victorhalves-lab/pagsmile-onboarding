@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Loader2, FileText, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import ConteudoContrato from '../components/contrato/ConteudoContrato';
+import ConteudoContrato from '@/components/contrato/ConteudoContrato';
 
 export default function ContratoPublico() {
   const urlParams = new URLSearchParams(window.location.search);

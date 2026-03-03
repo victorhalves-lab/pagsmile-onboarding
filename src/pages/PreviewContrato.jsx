@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
-import ConteudoContrato from '../components/contrato/ConteudoContrato';
+import ConteudoContrato from '@/components/contrato/ConteudoContrato';
 
 export default function PreviewContrato() {
   const urlParams = new URLSearchParams(window.location.search);
