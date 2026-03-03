@@ -8,11 +8,11 @@ import { DollarSign, Users, TrendingUp, ArrowRight, AlertTriangle } from 'lucide
 import moment from 'moment';
 
 const FUNNEL_STAGES = [
-  { key: 'novo', label: 'Novos', statuses: ['questionario_preenchido', 'analisado_priscila'], color: '#6B7280' },
-  { key: 'contato', label: 'Em Contato', statuses: ['em_contato_comercial'], color: '#F59E0B' },
+  { key: 'leads', label: 'Leads (Completo)', statuses: ['questionario_preenchido', 'analisado_priscila'], color: '#6B7280' },
+  { key: 'contato', label: 'Contato + Simpl.', statuses: ['em_contato_comercial'], color: '#F59E0B' },
   { key: 'proposta', label: 'Proposta', statuses: ['proposta_enviada'], color: '#3B82F6' },
-  { key: 'aceita', label: 'Aceita', statuses: ['proposta_aceita'], color: '#10B981' },
-  { key: 'kyc', label: 'KYC', statuses: ['kyc_iniciado', 'kyc_aprovado', 'kyc_revisao_manual'], color: '#8B5CF6' },
+  { key: 'aceita', label: 'Aceita', statuses: ['proposta_aceita'], color: '#8B5CF6' },
+  { key: 'kyc', label: 'KYC', statuses: ['kyc_iniciado', 'kyc_aprovado', 'kyc_revisao_manual'], color: '#10B981' },
   { key: 'ativado', label: 'Ativado', statuses: ['ativado'], color: '#059669' },
 ];
 
