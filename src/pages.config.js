@@ -89,6 +89,8 @@ import QuestionariosRecebidos from './pages/QuestionariosRecebidos';
 import RegrasDeCompliance from './pages/RegrasDeCompliance';
 import TemplatesQuestionarios from './pages/TemplatesQuestionarios';
 import GestaoContratos from './pages/GestaoContratos';
+import EditorContrato from './pages/EditorContrato';
+import PreviewContrato from './pages/PreviewContrato';
 import __Layout from './Layout.jsx';
 
 
@@ -135,6 +137,8 @@ export const PAGES = {
     "RegrasDeCompliance": RegrasDeCompliance,
     "TemplatesQuestionarios": TemplatesQuestionarios,
     "GestaoContratos": GestaoContratos,
+    "EditorContrato": EditorContrato,
+    "PreviewContrato": PreviewContrato,
 }
 
 export const pagesConfig = {
