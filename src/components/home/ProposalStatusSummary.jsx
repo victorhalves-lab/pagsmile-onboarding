@@ -4,18 +4,18 @@ import { createPageUrl } from '../../utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { FileText, ArrowRight, AlertTriangle, Clock } from 'lucide-react';
+import { FileText, ArrowRight, Clock } from 'lucide-react';
 import moment from 'moment';
 
 const STATUS_CONFIG = {
-  rascunho: { label: 'Rascunho', color: 'bg-slate-100 text-slate-700' },
-  enviada: { label: 'Enviada', color: 'bg-blue-100 text-blue-700' },
-  visualizada: { label: 'Visualizada', color: 'bg-purple-100 text-purple-700' },
-  aceita: { label: 'Aceita', color: 'bg-green-100 text-green-700' },
-  recusada: { label: 'Recusada', color: 'bg-red-100 text-red-700' },
+  rascunho: { label: 'Rascunho', color: 'bg-[#002443]/10 text-[#002443]' },
+  enviada: { label: 'Enviada', color: 'bg-[#36706c]/10 text-[#36706c]' },
+  visualizada: { label: 'Visualizada', color: 'bg-[#2bc196]/10 text-[#2bc196]' },
+  aceita: { label: 'Aceita', color: 'bg-[#2bc196]/20 text-[#2bc196]' },
+  recusada: { label: 'Recusada', color: 'bg-red-100 text-red-600' },
   contraproposta: { label: 'Contraproposta', color: 'bg-amber-100 text-amber-700' },
-  expirada: { label: 'Expirada', color: 'bg-gray-100 text-gray-500' },
-  cancelada: { label: 'Cancelada', color: 'bg-gray-100 text-gray-500' },
+  expirada: { label: 'Expirada', color: 'bg-[#f4f4f4] text-[#282828]/40' },
+  cancelada: { label: 'Cancelada', color: 'bg-[#f4f4f4] text-[#282828]/40' },
 };
 
 export default function ProposalStatusSummary({ proposals }) {
@@ -40,15 +40,17 @@ export default function ProposalStatusSummary({ proposals }) {
   const mainStatuses = ['rascunho', 'enviada', 'visualizada', 'aceita', 'recusada', 'contraproposta'];
 
   return (
-    <Card>
+    <Card className="rounded-2xl border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm flex items-center gap-2">
-            <FileText className="w-4 h-4 text-[var(--pagsmile-green)]" />
+          <CardTitle className="text-sm flex items-center gap-2 font-bold text-[#002443]">
+            <div className="p-1.5 rounded-lg bg-[#2bc196]/10">
+              <FileText className="w-3.5 h-3.5 text-[#2bc196]" />
+            </div>
             Propostas
           </CardTitle>
           <Link to={createPageUrl('GestaoPropostas')}>
-            <Button variant="ghost" size="sm" className="text-xs gap-1 text-[var(--pagsmile-green)]">
+            <Button variant="ghost" size="sm" className="text-xs gap-1 text-[#2bc196] hover:text-[#002443] font-semibold">
               Ver Todas <ArrowRight className="w-3 h-3" />
             </Button>
           </Link>
@@ -57,41 +59,39 @@ export default function ProposalStatusSummary({ proposals }) {
       <CardContent className="space-y-4">
         {/* Summary stats */}
         <div className="grid grid-cols-3 gap-2">
-          <div className="text-center">
-            <p className="text-lg font-bold text-[var(--pagsmile-blue)]">{metrics.total}</p>
-            <p className="text-[10px] text-[var(--pagsmile-blue)]/50">Total</p>
+          <div className="text-center p-2 rounded-xl bg-[#f4f4f4]">
+            <p className="text-lg font-bold text-[#002443]">{metrics.total}</p>
+            <p className="text-[10px] text-[#282828]/40 font-medium">Total</p>
           </div>
-          <div className="text-center">
-            <p className="text-lg font-bold text-green-600">{metrics.acceptanceRate}%</p>
-            <p className="text-[10px] text-[var(--pagsmile-blue)]/50">Aceitas</p>
+          <div className="text-center p-2 rounded-xl bg-[#2bc196]/5">
+            <p className="text-lg font-bold text-[#2bc196]">{metrics.acceptanceRate}%</p>
+            <p className="text-[10px] text-[#282828]/40 font-medium">Aceitas</p>
           </div>
-          <div className="text-center">
-            <p className={`text-lg font-bold ${metrics.expiringSoon > 0 ? 'text-amber-600' : 'text-[var(--pagsmile-blue)]'}`}>
+          <div className="text-center p-2 rounded-xl bg-[#f4f4f4]">
+            <p className={`text-lg font-bold ${metrics.expiringSoon > 0 ? 'text-amber-600' : 'text-[#002443]'}`}>
               {metrics.expiringSoon}
             </p>
-            <p className="text-[10px] text-[var(--pagsmile-blue)]/50">Vencendo</p>
+            <p className="text-[10px] text-[#282828]/40 font-medium">Vencendo</p>
           </div>
         </div>
 
         {/* Status breakdown */}
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           {mainStatuses.map(status => (
-            <div key={status} className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Badge className={`text-[10px] px-1.5 py-0 ${STATUS_CONFIG[status].color}`}>
-                  {STATUS_CONFIG[status].label}
-                </Badge>
-              </div>
-              <span className="text-sm font-bold text-[var(--pagsmile-blue)]">{metrics.byStatus[status]}</span>
+            <div key={status} className="flex items-center justify-between py-1">
+              <Badge className={`text-[10px] px-2 py-0.5 rounded-lg font-semibold ${STATUS_CONFIG[status].color}`}>
+                {STATUS_CONFIG[status].label}
+              </Badge>
+              <span className="text-sm font-bold text-[#002443]">{metrics.byStatus[status]}</span>
             </div>
           ))}
         </div>
 
         {/* Expiring alert */}
         {metrics.expiringSoon > 0 && (
-          <div className="flex items-center gap-2 p-2 rounded-lg bg-amber-50 border border-amber-200">
+          <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-50 border border-amber-200/50">
             <Clock className="w-4 h-4 text-amber-500 shrink-0" />
-            <p className="text-[10px] text-amber-700">
+            <p className="text-[11px] text-amber-700 font-medium">
               {metrics.expiringSoon} proposta{metrics.expiringSoon > 1 ? 's' : ''} vencendo nos próximos 3 dias
             </p>
           </div>
