@@ -1,5 +1,9 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
+const SLACK_CHANNEL = '#comercial-sub';
+const SLACK_BOT_NAME = 'Pagsmile Bot';
+const SLACK_BOT_EMOJI = ':rotating_light:';
+
 // SLA rules per status (max days expected in each stage)
 const SLA_RULES = {
   questionario_preenchido: { maxDays: 2, label: 'Análise em até 2 dias' },
@@ -10,6 +14,26 @@ const SLA_RULES = {
   kyc_iniciado: { maxDays: 10, label: 'Conclusão em até 10 dias' },
   kyc_revisao_manual: { maxDays: 5, label: 'Revisão em até 5 dias' },
 };
+
+async function sendSlackMessage(accessToken, channel, text, blocks) {
+  const body = {
+    channel,
+    text,
+    username: SLACK_BOT_NAME,
+    icon_emoji: SLACK_BOT_EMOJI,
+  };
+  if (blocks) body.blocks = blocks;
+
+  const res = await fetch('https://slack.com/api/chat.postMessage', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+  return res.json();
+}
 
 Deno.serve(async (req) => {
   try {
@@ -25,7 +49,6 @@ Deno.serve(async (req) => {
     const overdueLeads = [];
 
     for (const lead of leads) {
-      // Skip final statuses
       if (['ativado', 'perdido', 'proposta_recusada'].includes(lead.status)) continue;
 
       const rule = SLA_RULES[lead.status];
@@ -54,31 +77,37 @@ Deno.serve(async (req) => {
       return Response.json({ message: 'No overdue leads', count: 0 });
     }
 
-    // Group overdue leads for email
-    const leadsList = overdueLeads
+    // Build Slack message blocks
+    const leadLines = overdueLeads
       .sort((a, b) => b.daysOverdue - a.daysOverdue)
-      .map(l => `• ${l.name} — ${l.rule} (${l.daysOverdue} dia(s) excedido, ${l.totalDays}d no total)`)
+      .map(l => `• *${l.name}* — ${l.rule} (:warning: ${l.daysOverdue}d excedido, ${l.totalDays}d no total)`)
       .join('\n');
 
-    const emailBody = `
-<div style="font-family: 'Plus Jakarta Sans', sans-serif; max-width: 600px; margin: 0 auto;">
-  <div style="background: linear-gradient(135deg, #002443, #003366); padding: 24px; border-radius: 12px 12px 0 0;">
-    <h1 style="color: #ffffff; margin: 0; font-size: 20px;">⚠️ Alerta de SLA — Leads Parados</h1>
-    <p style="color: rgba(255,255,255,0.7); margin: 8px 0 0; font-size: 14px;">${overdueLeads.length} lead(s) com SLA excedido</p>
-  </div>
-  <div style="background: #ffffff; padding: 24px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 12px 12px;">
-    <p style="color: #002443; font-size: 14px; margin-bottom: 16px;">Os seguintes leads estão parados além do prazo de SLA definido:</p>
-    <pre style="background: #f8f9fa; padding: 16px; border-radius: 8px; font-size: 13px; color: #002443; white-space: pre-wrap; line-height: 1.8;">${leadsList}</pre>
-    <p style="color: #002443; font-size: 13px; margin-top: 16px; opacity: 0.7;">Acesse o Pipeline Comercial para tomar ações.</p>
-  </div>
-</div>`;
+    const blocks = [
+      {
+        type: 'header',
+        text: { type: 'plain_text', text: `⚠️ Alerta de SLA — ${overdueLeads.length} Lead(s) Parado(s)`, emoji: true }
+      },
+      {
+        type: 'section',
+        text: { type: 'mrkdwn', text: leadLines }
+      },
+      {
+        type: 'context',
+        elements: [
+          { type: 'mrkdwn', text: `Verificação automática • ${now.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })} às ${now.toLocaleTimeString('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' })}` }
+        ]
+      }
+    ];
 
-    // Send email notification to admin
-    await base44.asServiceRole.integrations.Core.SendEmail({
-      to: user.email,
-      subject: `⚠️ SLA Alert: ${overdueLeads.length} lead(s) parado(s)`,
-      body: emailBody
-    });
+    // Send Slack notification
+    const slackToken = await base44.asServiceRole.connectors.getAccessToken('slackbot');
+    const slackResult = await sendSlackMessage(
+      slackToken,
+      SLACK_CHANNEL,
+      `⚠️ SLA Alert: ${overdueLeads.length} lead(s) parado(s)`,
+      blocks
+    );
 
     // Log activities for each overdue lead (only if not already logged today)
     for (const lead of overdueLeads) {
@@ -105,8 +134,9 @@ Deno.serve(async (req) => {
     }
 
     return Response.json({ 
-      message: `Email sent. ${overdueLeads.length} overdue leads found.`,
+      message: `Slack notification sent. ${overdueLeads.length} overdue leads found.`,
       count: overdueLeads.length,
+      slackResult,
       leads: overdueLeads 
     });
   } catch (error) {

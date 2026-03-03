@@ -1,5 +1,29 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
+const SLACK_CHANNEL = '#comercial-sub';
+const SLACK_BOT_NAME = 'Pagsmile Bot';
+const SLACK_BOT_EMOJI = ':clipboard:';
+
+async function sendSlackMessage(accessToken, channel, text, blocks) {
+  const body = {
+    channel,
+    text,
+    username: SLACK_BOT_NAME,
+    icon_emoji: SLACK_BOT_EMOJI,
+  };
+  if (blocks) body.blocks = blocks;
+
+  const res = await fetch('https://slack.com/api/chat.postMessage', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+  return res.json();
+}
+
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -10,8 +34,6 @@ Deno.serve(async (req) => {
     }
 
     const now = new Date();
-    
-    // Get all proposals that could be expired
     const proposals = await base44.asServiceRole.entities.Proposal.filter({});
     
     const expirableStatuses = ['rascunho', 'enviada', 'visualizada'];
@@ -24,12 +46,10 @@ Deno.serve(async (req) => {
       const expiryDate = new Date(proposal.validUntil);
       if (expiryDate >= now) continue;
 
-      // Expire the proposal
       await base44.asServiceRole.entities.Proposal.update(proposal.id, {
         status: 'expirada'
       });
 
-      // Log activity on the lead
       if (proposal.leadId) {
         await base44.asServiceRole.entities.LeadActivity.create({
           leadId: proposal.leadId,
@@ -49,29 +69,39 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Send notification email if any proposals expired
     if (expiredProposals.length > 0) {
-      const list = expiredProposals
-        .map(p => `• ${p.codigo || 'Sem código'} — ${p.clienteNome || 'N/A'} (vencida em ${new Date(p.validUntil).toLocaleDateString('pt-BR')})`)
+      const lines = expiredProposals
+        .map(p => `• *${p.codigo || 'Sem código'}* — ${p.clienteNome || 'N/A'} (vencida em ${new Date(p.validUntil).toLocaleDateString('pt-BR')})`)
         .join('\n');
 
-      const emailBody = `
-<div style="font-family: 'Plus Jakarta Sans', sans-serif; max-width: 600px; margin: 0 auto;">
-  <div style="background: linear-gradient(135deg, #002443, #003366); padding: 24px; border-radius: 12px 12px 0 0;">
-    <h1 style="color: #ffffff; margin: 0; font-size: 20px;">📋 Propostas Expiradas Automaticamente</h1>
-    <p style="color: rgba(255,255,255,0.7); margin: 8px 0 0; font-size: 14px;">${expiredProposals.length} proposta(s) expiraram hoje</p>
-  </div>
-  <div style="background: #ffffff; padding: 24px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 12px 12px;">
-    <pre style="background: #f8f9fa; padding: 16px; border-radius: 8px; font-size: 13px; color: #002443; white-space: pre-wrap; line-height: 1.8;">${list}</pre>
-    <p style="color: #002443; font-size: 13px; margin-top: 16px; opacity: 0.7;">Considere entrar em contato com os clientes para renovar as propostas.</p>
-  </div>
-</div>`;
+      const blocks = [
+        {
+          type: 'header',
+          text: { type: 'plain_text', text: `📋 ${expiredProposals.length} Proposta(s) Expirada(s)`, emoji: true }
+        },
+        {
+          type: 'section',
+          text: { type: 'mrkdwn', text: lines }
+        },
+        {
+          type: 'section',
+          text: { type: 'mrkdwn', text: ':bulb: Considere entrar em contato com os clientes para renovar as propostas.' }
+        },
+        {
+          type: 'context',
+          elements: [
+            { type: 'mrkdwn', text: `Verificação automática • ${now.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' })}` }
+          ]
+        }
+      ];
 
-      await base44.asServiceRole.integrations.Core.SendEmail({
-        to: user.email,
-        subject: `📋 ${expiredProposals.length} proposta(s) expirada(s) automaticamente`,
-        body: emailBody
-      });
+      const slackToken = await base44.asServiceRole.connectors.getAccessToken('slackbot');
+      await sendSlackMessage(
+        slackToken,
+        SLACK_CHANNEL,
+        `📋 ${expiredProposals.length} proposta(s) expirada(s) automaticamente`,
+        blocks
+      );
     }
 
     return Response.json({
