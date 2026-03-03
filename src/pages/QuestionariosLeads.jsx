@@ -37,6 +37,31 @@ const STATUS_CONFIG = {
   perdido: { label: 'Perdido', color: 'bg-slate-100 text-slate-600', icon: '⚫' },
 };
 
+const RISK_CONFIG = {
+  BAIXO: { label: 'Baixo', color: 'bg-green-100 text-green-700', icon: Shield },
+  MEDIO: { label: 'Médio', color: 'bg-amber-100 text-amber-700', icon: AlertTriangle },
+  ALTO: { label: 'Alto', color: 'bg-orange-100 text-orange-700', icon: AlertTriangle },
+  CRITICO: { label: 'Crítico', color: 'bg-red-100 text-red-700', icon: AlertTriangle },
+  EM_ANALISE: { label: 'Em Análise', color: 'bg-slate-100 text-slate-600', icon: Shield },
+};
+
+const getScoreColor = (score) => {
+  if (score >= 70) return 'text-green-600 bg-green-50 border-green-200';
+  if (score >= 40) return 'text-amber-600 bg-amber-50 border-amber-200';
+  return 'text-red-600 bg-red-50 border-red-200';
+};
+
+const getActionButtons = (lead, navigate) => {
+  const actions = [];
+  if (['questionario_preenchido', 'analisado_priscila'].includes(lead.status)) {
+    actions.push({ label: 'Iniciar Contato', icon: Phone, variant: 'default', action: 'contact' });
+  }
+  if (['questionario_preenchido', 'analisado_priscila', 'em_contato_comercial'].includes(lead.status) && lead.priscilaRiskLevel !== 'CRITICO') {
+    actions.push({ label: 'Gerar Proposta', icon: FileText, variant: 'outline', action: 'proposal' });
+  }
+  return actions;
+};
+
 const SUB_CAT = { MERCHAN: { label: 'Merchan', icon: ShoppingCart }, GATEWAY: { label: 'Gateway', icon: Network }, MARKETPLACE: { label: 'Marketplace', icon: Building2 } };
 
 export default function QuestionariosLeads() {
@@ -48,6 +73,8 @@ export default function QuestionariosLeads() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [page, setPage] = useState(1);
   const [activeTab, setActiveTab] = useState('completo');
+  const [riskFilter, setRiskFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('date');
   const itemsPerPage = 10;
 
   const { data: leads = [], isLoading, refetch } = useQuery({
@@ -89,8 +116,14 @@ export default function QuestionariosLeads() {
       if (days === 0) result = result.filter(l => moment(l.created_date).isSame(now, 'day'));
       else result = result.filter(l => moment(l.created_date).isAfter(now.clone().subtract(days, 'days')));
     }
+    if (riskFilter !== 'all') result = result.filter(l => l.priscilaRiskLevel === riskFilter);
+    // Sort
+    if (sortBy === 'score_desc') result = [...result].sort((a, b) => (b.priscilaQualityScore || 0) - (a.priscilaQualityScore || 0));
+    else if (sortBy === 'score_asc') result = [...result].sort((a, b) => (a.priscilaQualityScore || 0) - (b.priscilaQualityScore || 0));
+    else if (sortBy === 'tpv') result = [...result].sort((a, b) => (b.tpvMensal || 0) - (a.tpvMensal || 0));
+    else result = [...result].sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
     return result;
-  }, [leads, search, statusFilter, periodoFilter]);
+  }, [leads, search, statusFilter, periodoFilter, riskFilter, sortBy]);
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const paginatedLeads = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
@@ -99,7 +132,11 @@ export default function QuestionariosLeads() {
   const thisMonth = leads.filter(l => moment(l.created_date).isSame(moment(), 'month')).length;
   const aguardando = leads.filter(l => ['questionario_preenchido', 'analisado_priscila'].includes(l.status)).length;
 
-  const hasFilters = search || statusFilter !== 'all' || periodoFilter !== 'all';
+  const hasFilters = search || statusFilter !== 'all' || periodoFilter !== 'all' || riskFilter !== 'all';
+
+  // Stats aprimorados
+  const highScoreLeads = leads.filter(l => (l.priscilaQualityScore || 0) >= 70).length;
+  const criticalLeads = leads.filter(l => l.priscilaRiskLevel === 'CRITICO' || l.priscilaRiskLevel === 'ALTO').length;
 
   const exportCSV = () => {
     const headers = ['Protocolo', 'CNPJ', 'Razão Social', 'Contato', 'Email', 'TPV', 'Score', 'Status', 'Origem', 'Data'];
@@ -163,8 +200,10 @@ export default function QuestionariosLeads() {
           <div>
             <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Questionários Recebidos</h1>
             <div className="flex gap-3 text-xs text-[var(--pagsmile-blue)]/70 mt-1">
-              <span>{thisMonth} leads este mês</span>
-              <span>{aguardando} aguardando ação</span>
+              <span>{thisMonth} este mês</span>
+              <span>{aguardando} aguardando</span>
+              <span className="text-green-600 font-medium">{highScoreLeads} alto score</span>
+              {criticalLeads > 0 && <span className="text-red-600 font-medium">{criticalLeads} risco alto/crítico</span>}
             </div>
           </div>
         </div>
