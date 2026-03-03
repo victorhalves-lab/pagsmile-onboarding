@@ -5,39 +5,39 @@ import { FileText, Link as LinkIcon, Users, Shield, ClipboardList } from 'lucide
 
 const actions = [
   {
-    label: 'Criar Nova Proposta',
+    label: 'Nova Proposta',
+    description: 'Criar proposta comercial',
     icon: FileText,
     path: 'CriarProposta',
-    color: 'bg-[var(--pagsmile-green)]',
-    iconColor: 'text-white'
+    color: 'bg-[#2bc196]',
   },
   {
-    label: 'Enviar Link de Questionário',
+    label: 'Link de Questionário',
+    description: 'Enviar para leads',
     icon: ClipboardList,
     path: 'GerarLinkOnboarding',
-    color: 'bg-blue-600',
-    iconColor: 'text-white'
+    color: 'bg-[#36706c]',
   },
   {
-    label: 'Gerar Link de Onboarding',
+    label: 'Gerar Link',
+    description: 'Onboarding de merchant',
     icon: LinkIcon,
     path: 'GerarLinkOnboarding',
-    color: 'bg-purple-600',
-    iconColor: 'text-white'
+    color: 'bg-[#002443]',
   },
   {
-    label: 'Ver Todos os Leads',
+    label: 'Ver Leads',
+    description: 'Leads recebidos',
     icon: Users,
     path: 'QuestionariosLeads',
-    color: 'bg-amber-500',
-    iconColor: 'text-white'
+    color: 'bg-[#36706c]',
   },
   {
-    label: 'Compliance Dashboard',
+    label: 'Compliance',
+    description: 'Dashboard completo',
     icon: Shield,
     path: 'AdminDashboard',
-    color: 'bg-[var(--pagsmile-blue)]',
-    iconColor: 'text-white'
+    color: 'bg-[#002443]',
   }
 ];
 
@@ -50,12 +50,15 @@ export default function QuickActions() {
           <Link
             key={action.label}
             to={createPageUrl(action.path)}
-            className="flex flex-col items-center gap-2 p-4 bg-white rounded-xl border border-slate-200 hover:shadow-md hover:border-slate-300 transition-all group"
+            className="flex flex-col items-center gap-3 p-5 bg-white rounded-2xl border border-[#002443]/5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 group"
           >
-            <div className={`p-3 rounded-xl ${action.color} group-hover:scale-110 transition-transform`}>
-              <Icon className={`w-5 h-5 ${action.iconColor}`} />
+            <div className={`p-3.5 rounded-xl ${action.color} group-hover:scale-110 transition-transform duration-300 shadow-sm`}>
+              <Icon className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xs font-semibold text-center text-[var(--pagsmile-blue)]">{action.label}</span>
+            <div className="text-center">
+              <span className="text-xs font-bold text-[#002443] block">{action.label}</span>
+              <span className="text-[10px] text-[#282828]/40 mt-0.5 block">{action.description}</span>
+            </div>
           </Link>
         );
       })}
