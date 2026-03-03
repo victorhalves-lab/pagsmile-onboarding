@@ -153,7 +153,7 @@ export default function PartnersTab() {
                 <TableHeader>
                   <TableRow className="bg-[#f4f4f4]">
                     {['Parceiro', 'Fee Trans.', 'Antifraude', '3DS', 'Antecipação', 'MCCs', ''].map((h, i) => (
-                      <TableHead key={i} className={`text-[10px] font-bold text-[#002443]/40 uppercase ${i === 5 ? 'text-right' : ''}`}>{h}</TableHead>
+                      <TableHead key={i} className={`text-[10px] font-bold text-[#002443]/40 uppercase ${i === 6 ? 'text-right' : ''}`}>{h}</TableHead>
                     ))}
                   </TableRow>
                 </TableHeader>
