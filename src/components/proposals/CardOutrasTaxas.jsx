@@ -1,157 +1,64 @@
 import React from 'react';
 import { Label } from '@/components/ui/label';
+import { Check, Banknote } from 'lucide-react';
 import TaxaInput from './TaxaInput';
-import { Check } from 'lucide-react';
 
 export default function CardOutrasTaxas({ rates, onUpdateRates }) {
   const pixTipo = rates?.pix?.tipo || 'percentual';
+  const updatePix = (field, value) => onUpdateRates({ ...rates, pix: { ...rates?.pix, [field]: value } });
+  const updateField = (field, value) => onUpdateRates({ ...rates, [field]: value });
 
-  const updatePix = (field, value) => {
-    onUpdateRates({
-      ...rates,
-      pix: { ...rates?.pix, [field]: value }
-    });
-  };
-
-  const updateField = (field, value) => {
-    onUpdateRates({ ...rates, [field]: value });
-  };
+  const labelCls = "text-[10px] text-[#2bc196]/70 font-semibold uppercase tracking-wider";
+  const inputCls = "bg-white/5 border-white/10 text-white h-11 rounded-xl placeholder:text-white/15 focus:border-[#2bc196] focus:ring-1 focus:ring-[#2bc196]";
 
   return (
-    <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-6 space-y-4">
-      <h2 className="text-base font-bold text-[#002443]">Outras Taxas</h2>
-      
-      <div className="bg-[#f4f4f4] p-4 rounded-xl border border-[#002443]/5 space-y-5">
-          {/* PIX Section */}
-          <div className="space-y-3">
-              <Label className="text-xs text-[#282828]/50 font-medium">Tipo de cobrança PIX</Label>
-              <div className="grid grid-cols-2 gap-3 p-1 bg-[#f4f4f4] rounded-xl border border-[#002443]/5">
-                <button
-                  onClick={() => updatePix('tipo', 'percentual')}
-                  className={`flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-medium transition-all ${
-                    pixTipo === 'percentual' 
-                      ? 'bg-white text-[#2bc196] border border-[#2bc196]/30 shadow-sm' 
-                      : 'text-[#282828]/50 hover:text-[#002443]'
-                  }`}
-                >
-                  {pixTipo === 'percentual' && <Check className="w-3 h-3" />}
-                  % Percentual
-                </button>
-                <button
-                  onClick={() => updatePix('tipo', 'fixo')}
-                  className={`flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-xs font-medium transition-all ${
-                    pixTipo === 'fixo' 
-                      ? 'bg-[#002443]/10 text-[#002443] border border-[#002443]/20 shadow-sm' 
-                      : 'text-[#282828]/50 hover:text-[#002443]'
-                  }`}
-                >
-                  {pixTipo === 'fixo' && <Check className="w-3 h-3" />}
-                  R$ Fixo
-                </button>
-              </div>
-              
-              <div className="space-y-1.5">
-                <Label className="text-xs text-[#282828]/50 font-medium">Valor PIX</Label>
-                <div className="relative">
-                    <TaxaInput
-                      value={rates?.pix?.valor || ''}
-                      onChange={(val) => updatePix('valor', val)}
-                      placeholder="0,00"
-                      className="bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 pr-8 text-right rounded-lg"
-                    />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#282828]/40">
-                        {pixTipo === 'percentual' ? '%' : ''}
-                    </span>
-                    {pixTipo === 'fixo' && (
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-[#282828]/40">R$</span>
-                    )}
-                </div>
-              </div>
-          </div>
-          
-          {/* Other Rates Grid */}
-          <div className="grid grid-cols-2 gap-4 pt-2 border-t border-[#002443]/5">
-              <div className="space-y-1.5">
-                <Label className="text-xs text-[#282828]/50 font-medium">Fee por Transação</Label>
-                <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-[#282828]/40">R$</span>
-                    <TaxaInput
-                      value={rates?.feeTransacao || ''}
-                      onChange={(val) => updateField('feeTransacao', val)}
-                      placeholder="0,00"
-                      className="bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 pl-8 text-right rounded-lg"
-                    />
-                </div>
-              </div>
-              
-              <div className="space-y-1.5">
-                <Label className="text-xs text-[#282828]/50 font-medium">Taxa Boleto</Label>
-                <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-[#282828]/40">R$</span>
-                    <TaxaInput
-                      value={rates?.boleto || ''}
-                      onChange={(val) => updateField('boleto', val)}
-                      placeholder="0,00"
-                      className="bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 pl-8 text-right rounded-lg"
-                    />
-                </div>
-              </div>
-              
-              <div className="space-y-1.5">
-                <Label className="text-xs text-[#282828]/50 font-medium">Alerta Pré-Chargeback</Label>
-                <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-[#282828]/40">R$</span>
-                    <TaxaInput
-                      value={rates?.alertaPreChargeback || ''}
-                      onChange={(val) => updateField('alertaPreChargeback', val)}
-                      placeholder="0,00"
-                      className="bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 pl-8 text-right rounded-lg"
-                    />
-                </div>
-              </div>
-              
-              <div className="col-span-2 space-y-3 pt-2 mt-2 border-t border-[#002443]/5">
-                <Label className="text-xs text-[#282828]/50 font-medium">TPV Mínimo Garantido</Label>
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="space-y-1.5">
-                    <Label className="text-[10px] text-[#282828]/40">Mês 1</Label>
-                    <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-[#282828]/40">R$</span>
-                        <TaxaInput
-                          value={rates?.minimoGarantido?.mes1 || ''}
-                          onChange={(val) => updateField('minimoGarantido', { ...rates.minimoGarantido, mes1: val })}
-                          placeholder="0,00"
-                          className="bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 pl-8 text-right text-xs rounded-lg"
-                        />
-                    </div>
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-[10px] text-[#282828]/40">Mês 2</Label>
-                    <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-[#282828]/40">R$</span>
-                        <TaxaInput
-                          value={rates?.minimoGarantido?.mes2 || ''}
-                          onChange={(val) => updateField('minimoGarantido', { ...rates.minimoGarantido, mes2: val })}
-                          placeholder="0,00"
-                          className="bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 pl-8 text-right text-xs rounded-lg"
-                        />
-                    </div>
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-[10px] text-[#282828]/40">Mês 3 em diante</Label>
-                    <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-[#282828]/40">R$</span>
-                        <TaxaInput
-                          value={rates?.minimoGarantido?.mes3 || ''}
-                          onChange={(val) => updateField('minimoGarantido', { ...rates.minimoGarantido, mes3: val })}
-                          placeholder="0,00"
-                          className="bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 pl-8 text-right text-xs rounded-lg"
-                        />
-                    </div>
-                  </div>
-                </div>
-              </div>
-          </div>
+    <div className="rounded-2xl bg-white/[0.03] border border-white/5 p-5 space-y-5">
+      <div className="flex items-center gap-2 mb-1">
+        <div className="w-7 h-7 rounded-lg bg-[#2bc196]/10 flex items-center justify-center"><Banknote className="w-3.5 h-3.5 text-[#2bc196]" /></div>
+        <h2 className="text-sm font-bold text-white">Outras Taxas</h2>
+      </div>
+
+      {/* PIX */}
+      <div className="space-y-3">
+        <Label className={labelCls}>PIX</Label>
+        <div className="flex gap-2 mb-2">
+          {[{ v: 'percentual', l: '% Percentual' }, { v: 'fixo', l: 'R$ Fixo' }].map(opt => (
+            <button key={opt.v} onClick={() => updatePix('tipo', opt.v)}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-bold transition-all ${
+                pixTipo === opt.v
+                  ? 'bg-[#2bc196] text-[#002443] shadow-lg shadow-[#2bc196]/20'
+                  : 'bg-white/5 text-white/30 hover:text-white/50 border border-white/5'
+              }`}>
+              {pixTipo === opt.v && <Check className="w-3 h-3" />} {opt.l}
+            </button>
+          ))}
+        </div>
+        <TaxaInput value={rates?.pix?.valor || ''} onChange={(val) => updatePix('valor', val)} placeholder="0,00"
+          prefix={pixTipo === 'fixo' ? 'R$' : undefined} suffix={pixTipo === 'percentual' ? '%' : undefined}
+          className={`${inputCls} text-right ${pixTipo === 'fixo' ? 'pl-10' : 'pr-10'}`} />
+      </div>
+
+      {/* Other fees grid */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1"><Label className={labelCls}>Fee por Transação</Label>
+          <TaxaInput value={rates?.feeTransacao || ''} onChange={(val) => updateField('feeTransacao', val)} placeholder="0,00" prefix="R$" className={`${inputCls} text-right pl-10`} /></div>
+        <div className="space-y-1"><Label className={labelCls}>Taxa Boleto</Label>
+          <TaxaInput value={rates?.boleto || ''} onChange={(val) => updateField('boleto', val)} placeholder="0,00" prefix="R$" className={`${inputCls} text-right pl-10`} /></div>
+        <div className="col-span-2 space-y-1"><Label className={labelCls}>Alerta Pré-Chargeback</Label>
+          <TaxaInput value={rates?.alertaPreChargeback || ''} onChange={(val) => updateField('alertaPreChargeback', val)} placeholder="0,00" prefix="R$" className={`${inputCls} text-right pl-10`} /></div>
+      </div>
+
+      {/* TPV Mínimo */}
+      <div className="space-y-2 pt-3 border-t border-white/5">
+        <Label className={labelCls}>TPV Mínimo Garantido</Label>
+        <div className="grid grid-cols-3 gap-2">
+          {[{ k: 'mes1', l: 'Mês 1' }, { k: 'mes2', l: 'Mês 2' }, { k: 'mes3', l: 'Mês 3+' }].map(m => (
+            <div key={m.k} className="space-y-1">
+              <p className="text-[9px] text-white/20 text-center">{m.l}</p>
+              <TaxaInput value={rates?.minimoGarantido?.[m.k] || ''} onChange={(val) => updateField('minimoGarantido', { ...rates.minimoGarantido, [m.k]: val })} placeholder="0,00" prefix="R$" className={`${inputCls} text-right pl-10 text-sm`} />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

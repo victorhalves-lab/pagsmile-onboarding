@@ -1,15 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { User, Building2, Hash, Phone } from 'lucide-react';
 import CnpjInput from './CnpjInput';
 
 export default function CardDadosCliente({ form, errors, onUpdate }) {
@@ -18,12 +12,6 @@ export default function CardDadosCliente({ form, errors, onUpdate }) {
     queryFn: () => base44.entities.Lead.list('-created_date', 100),
   });
 
-  const { data: mccs } = useQuery({
-    queryKey: ['mccs-list'],
-    queryFn: () => base44.entities.MerchantCategoryCode?.list() || [], // Fallback if entity doesn't exist yet
-  });
-
-  // Handle lead selection
   const handleLeadSelect = (leadId) => {
     const selected = leads?.find(l => l.id === leadId);
     if (selected) {
@@ -34,77 +22,56 @@ export default function CardDadosCliente({ form, errors, onUpdate }) {
     }
   };
 
+  const inputCls = "bg-white/5 border-white/10 text-white h-11 rounded-xl placeholder:text-white/20 focus:border-[#2bc196] focus:ring-1 focus:ring-[#2bc196]";
+  const labelCls = "text-[10px] text-[#2bc196]/70 font-semibold uppercase tracking-wider";
+  const errorCls = "text-[10px] text-red-400";
+
   return (
-    <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-6 space-y-4">
-      <h2 className="text-base font-bold text-[#002443]">Dados do Cliente</h2>
-      
-      {/* Optional Lead Selector */}
+    <div className="rounded-2xl bg-white/[0.03] border border-white/5 p-5 space-y-4">
+      <div className="flex items-center gap-2 mb-1">
+        <div className="w-7 h-7 rounded-lg bg-[#2bc196]/10 flex items-center justify-center"><Building2 className="w-3.5 h-3.5 text-[#2bc196]" /></div>
+        <h2 className="text-sm font-bold text-white">Dados do Cliente</h2>
+      </div>
+
+      {/* Lead Quick Select */}
       {leads && leads.length > 0 && (
-         <div className="space-y-1.5">
-           <Label className="text-xs text-[#282828]/50 font-medium">Selecionar Lead (Opcional)</Label>
-           <Select onValueChange={handleLeadSelect}>
-             <SelectTrigger className="bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 rounded-lg">
-               <SelectValue placeholder="Selecione um lead para preencher..." />
-             </SelectTrigger>
-             <SelectContent>
-               {leads.map(lead => (
-                 <SelectItem key={lead.id} value={lead.id} className="cursor-pointer">
-                   {lead.companyName || lead.fullName}
-                 </SelectItem>
-               ))}
-             </SelectContent>
-           </Select>
-         </div>
+        <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+          {leads.slice(0, 6).map(l => (
+            <button key={l.id} onClick={() => handleLeadSelect(l.id)}
+              className="flex-shrink-0 px-3 py-1.5 rounded-lg bg-white/5 border border-white/5 text-[10px] text-white/50 hover:text-white hover:border-[#2bc196]/30 hover:bg-[#2bc196]/5 transition-all truncate max-w-[140px]">
+              {l.companyName || l.fullName}
+            </button>
+          ))}
+        </div>
       )}
 
-      <div className="space-y-1.5">
-        <Label className="text-xs text-[#282828]/50 font-medium">Nome da Empresa <span className="text-red-500">*</span></Label>
-        <Input
-          value={form.clienteNome || ''}
-          onChange={(e) => onUpdate('clienteNome', e.target.value)}
-          placeholder="Razão social ou nome fantasia"
-          className={`bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 rounded-lg placeholder:text-[#282828]/30 ${errors?.clienteNome ? 'border-red-500' : ''}`}
-        />
-        {errors?.clienteNome && <p className="text-xs text-red-500">{errors.clienteNome}</p>}
+      <div className="space-y-1">
+        <Label className={labelCls}>Nome da Empresa *</Label>
+        <Input value={form.clienteNome || ''} onChange={(e) => onUpdate('clienteNome', e.target.value)} placeholder="Razão social ou nome fantasia"
+          className={`${inputCls} ${errors?.clienteNome ? 'border-red-400/50' : ''}`} />
+        {errors?.clienteNome && <p className={errorCls}>{errors.clienteNome}</p>}
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-1.5">
-          <Label className="text-xs text-[#282828]/50 font-medium">CNPJ <span className="text-red-500">*</span></Label>
-          <CnpjInput
-            value={form.clienteCnpj || ''}
-            onChange={(val) => onUpdate('clienteCnpj', val)}
-            error={errors?.clienteCnpj}
-            className="bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 rounded-lg"
-          />
-          {errors?.clienteCnpj && <p className="text-xs text-red-500">{errors.clienteCnpj}</p>}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1">
+          <Label className={labelCls}>CNPJ *</Label>
+          <CnpjInput value={form.clienteCnpj || ''} onChange={(val) => onUpdate('clienteCnpj', val)} error={errors?.clienteCnpj}
+            className={`${inputCls} ${errors?.clienteCnpj ? 'border-red-400/50' : ''}`} />
+          {errors?.clienteCnpj && <p className={errorCls}>{errors.clienteCnpj}</p>}
         </div>
-        
-        <div className="space-y-1.5">
-          <Label className="text-xs text-[#282828]/50 font-medium">MCC <span className="text-red-500">*</span></Label>
-          <Input
-            value={form.clienteMcc || ''}
-            onChange={(e) => onUpdate('clienteMcc', e.target.value.replace(/\D/g, '').slice(0, 4))}
-            placeholder="Ex: 5812"
-            className={`bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 rounded-lg placeholder:text-[#282828]/30 ${errors?.clienteMcc ? 'border-red-500' : ''}`}
-            required
-          />
-          {errors?.clienteMcc && <p className="text-xs text-red-500">{errors.clienteMcc}</p>}
-          <p className="text-[10px] text-[#282828]/40 leading-tight">
-            O MCC deve ser o código vinculado ao seu CNAE principal.
-          </p>
+        <div className="space-y-1">
+          <Label className={labelCls}>MCC *</Label>
+          <Input value={form.clienteMcc || ''} onChange={(e) => onUpdate('clienteMcc', e.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="5812"
+            className={`${inputCls} ${errors?.clienteMcc ? 'border-red-400/50' : ''}`} />
+          {errors?.clienteMcc && <p className={errorCls}>{errors.clienteMcc}</p>}
         </div>
       </div>
 
-      <div className="space-y-1.5">
-        <Label className="text-xs text-[#282828]/50 font-medium">Contato <span className="text-red-500">*</span></Label>
-        <Input
-          value={form.clienteContato || ''}
-          onChange={(e) => onUpdate('clienteContato', e.target.value)}
-          placeholder="Nome do contato principal"
-          className={`bg-[#f4f4f4] border-[#002443]/10 text-[#002443] h-10 rounded-lg placeholder:text-[#282828]/30 ${errors?.clienteContato ? 'border-red-500' : ''}`}
-        />
-        {errors?.clienteContato && <p className="text-xs text-red-500">{errors.clienteContato}</p>}
+      <div className="space-y-1">
+        <Label className={labelCls}>Contato *</Label>
+        <Input value={form.clienteContato || ''} onChange={(e) => onUpdate('clienteContato', e.target.value)} placeholder="Nome do contato principal"
+          className={`${inputCls} ${errors?.clienteContato ? 'border-red-400/50' : ''}`} />
+        {errors?.clienteContato && <p className={errorCls}>{errors.clienteContato}</p>}
       </div>
     </div>
   );
