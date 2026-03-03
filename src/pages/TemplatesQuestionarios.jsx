@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { 
   Plus, FileText, Edit, Trash2, Loader2, 
-  Users, Building2, Briefcase, Shield, ShoppingCart, Network, Copy
+  Users, Building2, Briefcase, Shield, ShoppingCart, Network, Copy, ExternalLink, Download
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -49,6 +49,28 @@ export default function TemplatesQuestionarios() {
       queryClient.invalidateQueries({ queryKey: ['questionnaireTemplates'] });
     }
   });
+
+  const handleDownloadPdf = async (template) => {
+    try {
+      toast.loading('Gerando PDF...', { id: 'pdf-toast' });
+      const { data } = await base44.functions.invoke('generateQuestionnairePdf', { 
+        questionnaireTemplateId: template.id 
+      });
+      const blob = new Blob([data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `questionario_${template.name.replace(/\s+/g, '_')}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      a.remove();
+      toast.success('Download concluído', { id: 'pdf-toast' });
+    } catch (error) {
+      console.error(error);
+      toast.error('Erro ao gerar PDF', { id: 'pdf-toast' });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -206,6 +228,31 @@ export default function TemplatesQuestionarios() {
                     title="Copiar Link Público"
                   >
                     <Copy className="w-4 h-4 text-[var(--pagsmile-green)]" />
+                  </Button>
+
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={() => {
+                      const baseUrl = window.location.origin;
+                      const path = template.category === 'LEAD_GENERATION' 
+                        ? '/lead-questionnaire' 
+                        : '/compliance-onboarding-start';
+                      const url = `${baseUrl}${path}?templateId=${template.id}`;
+                      window.open(url, '_blank');
+                    }}
+                    title="Abrir Link Público"
+                  >
+                    <ExternalLink className="w-4 h-4 text-blue-500" />
+                  </Button>
+
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={() => handleDownloadPdf(template)}
+                    title="Baixar PDF do Questionário"
+                  >
+                    <Download className="w-4 h-4 text-purple-500" />
                   </Button>
 
                   <Link to={createPageUrl('EditorQuestionario') + `?id=${template.id}`}>
