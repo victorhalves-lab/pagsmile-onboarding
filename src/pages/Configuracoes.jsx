@@ -22,8 +22,9 @@ import {
 import { 
   Settings, FileText, AlertTriangle, Save, Shield,
   CheckCircle2, XCircle, Info, Plus, Trash2, Edit,
-  Loader2, Users, Key, Globe, Mail, Bell
+  Loader2, Users, Key, Globe, Mail, Bell, Handshake
 } from 'lucide-react';
+import PartnersTab from '@/components/partners/PartnersTab';
 import { toast } from 'sonner';
 
 export default function Configuracoes() {
