@@ -275,8 +275,26 @@ export default function QuestionariosLeads() {
             <SelectItem value="90dias">Últimos 90 dias</SelectItem>
           </SelectContent>
         </Select>
+        <Select value={riskFilter} onValueChange={setRiskFilter}>
+          <SelectTrigger className="w-[150px] h-10"><SelectValue placeholder="Risco" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos os riscos</SelectItem>
+            {Object.entries(RISK_CONFIG).map(([k, v]) => (
+              <SelectItem key={k} value={k}>{v.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select value={sortBy} onValueChange={setSortBy}>
+          <SelectTrigger className="w-[170px] h-10"><SelectValue placeholder="Ordenar" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="date">Mais recentes</SelectItem>
+            <SelectItem value="score_desc">Maior score</SelectItem>
+            <SelectItem value="score_asc">Menor score</SelectItem>
+            <SelectItem value="tpv">Maior TPV</SelectItem>
+          </SelectContent>
+        </Select>
         {hasFilters && (
-          <Button variant="ghost" size="sm" onClick={() => { setSearch(''); setStatusFilter('all'); setPeriodoFilter('all'); }}>
+          <Button variant="ghost" size="sm" onClick={() => { setSearch(''); setStatusFilter('all'); setPeriodoFilter('all'); setRiskFilter('all'); }}>
             <X className="w-4 h-4 mr-1" /> Limpar
           </Button>
         )}
@@ -293,6 +311,7 @@ export default function QuestionariosLeads() {
                 <TableHead>Tipo</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Score</TableHead>
+                <TableHead>Risco</TableHead>
                 <TableHead>TPV Mensal</TableHead>
                 <TableHead>Data</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
@@ -301,7 +320,7 @@ export default function QuestionariosLeads() {
             <TableBody>
               {paginatedLeads.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-12">
+                  <TableCell colSpan={9} className="text-center py-12">
                     <ClipboardList className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/30 mb-3" />
                     <p className="text-[var(--pagsmile-blue)]/60">
                       {hasFilters ? 'Nenhum resultado com esses filtros' : 'Nenhum questionário recebido'}
@@ -325,10 +344,23 @@ export default function QuestionariosLeads() {
                     <TableCell><Badge className={`text-xs ${sCfg.color}`}>{sCfg.label}</Badge></TableCell>
                     <TableCell>
                       {lead.priscilaQualityScore != null ? (
-                        <span className={`text-sm font-bold ${lead.priscilaQualityScore >= 70 ? 'text-green-600' : lead.priscilaQualityScore >= 40 ? 'text-amber-600' : 'text-red-600'}`}>
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-sm font-bold border ${getScoreColor(lead.priscilaQualityScore)}`}>
                           {lead.priscilaQualityScore}
                         </span>
-                      ) : '-'}
+                      ) : <span className="text-xs text-slate-400">Pendente</span>}
+                    </TableCell>
+                    <TableCell>
+                      {lead.priscilaRiskLevel ? (() => {
+                        const rCfg = RISK_CONFIG[lead.priscilaRiskLevel];
+                        if (!rCfg) return <span className="text-xs">{lead.priscilaRiskLevel}</span>;
+                        const RIcon = rCfg.icon;
+                        return (
+                          <Badge className={`text-xs gap-1 ${rCfg.color}`}>
+                            <RIcon className="w-3 h-3" />
+                            {rCfg.label}
+                          </Badge>
+                        );
+                      })() : <span className="text-xs text-slate-400">-</span>}
                     </TableCell>
                     <TableCell>
                       <span className="text-sm font-mono">
@@ -342,10 +374,34 @@ export default function QuestionariosLeads() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
+                        {getActionButtons(lead, navigate).map((btn, i) => {
+                          const BIcon = btn.icon;
+                          return (
+                            <Button
+                              key={i}
+                              variant={btn.variant === 'default' ? 'default' : 'outline'}
+                              size="sm"
+                              className={btn.variant === 'default' ? 'bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white h-7 text-xs' : 'h-7 text-xs'}
+                              onClick={() => {
+                                if (btn.action === 'contact') {
+                                  base44.entities.Lead.update(lead.id, { status: 'em_contato_comercial', lastInteractionDate: new Date().toISOString() });
+                                  base44.entities.LeadActivity.create({ leadId: lead.id, activityType: 'contato_iniciado', description: 'Contato iniciado', performedBy: 'admin', activityDate: new Date().toISOString() });
+                                  queryClient.invalidateQueries({ queryKey: ['leads-questionarios'] });
+                                  toast.success('Status atualizado para "Em Contato"');
+                                } else if (btn.action === 'proposal') {
+                                  navigate(createPageUrl('CriarProposta') + `?lead=${lead.id}`);
+                                }
+                              }}
+                            >
+                              <BIcon className="w-3 h-3 mr-1" />
+                              {btn.label}
+                            </Button>
+                          );
+                        })}
                         <Link to={createPageUrl('LeadDetails') + `?id=${lead.id}`}>
-                          <Button variant="ghost" size="sm"><Eye className="w-4 h-4" /></Button>
+                          <Button variant="ghost" size="sm" className="h-7"><Eye className="w-4 h-4" /></Button>
                         </Link>
-                        <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(lead)} className="text-red-500 hover:text-red-700">
+                        <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(lead)} className="text-red-500 hover:text-red-700 h-7">
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
