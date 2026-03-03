@@ -320,6 +320,14 @@ export default function Layout({ children, currentPageName }) {
 
           {/* Navigation */}
           <nav className="flex-1 p-4 overflow-y-auto">
+            {/* Home link */}
+            <div className="mb-3">
+              <NavItem 
+                item={{ label: 'Home', path: 'Home', icon: LayoutDashboard }} 
+                isActive={currentPageName === 'Home'} 
+              />
+            </div>
+
             {menuStructure.map(section => (
                     <NavSection key={section.id} section={section} />
                   ))}
