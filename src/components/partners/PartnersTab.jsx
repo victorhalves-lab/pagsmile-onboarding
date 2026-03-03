@@ -19,7 +19,7 @@ export default function PartnersTab() {
   const queryClient = useQueryClient();
   const [view, setView] = useState('list'); // list | form | detail
   const [selectedPartner, setSelectedPartner] = useState(null);
-  const [partnerForm, setPartnerForm] = useState({ name: '', isPrincipal: false, transactionFee: 0, antifraudCost: 0, threeDSCost: 0, notes: '' });
+  const [partnerForm, setPartnerForm] = useState({ name: '', isPrincipal: false, transactionFee: 0, antifraudCost: 0, threeDSCost: 0, percentualAntecipacao: 0, notes: '' });
   const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   const { data: partners = [], isLoading: loadingPartners } = useQuery({
@@ -97,7 +97,7 @@ export default function PartnersTab() {
 
   const handleNewPartner = () => {
     setSelectedPartner(null);
-    setPartnerForm({ name: '', isPrincipal: false, transactionFee: 0, antifraudCost: 0, threeDSCost: 0, notes: '' });
+    setPartnerForm({ name: '', isPrincipal: false, transactionFee: 0, antifraudCost: 0, threeDSCost: 0, percentualAntecipacao: 0, notes: '' });
     setView('form');
   };
 
@@ -109,6 +109,7 @@ export default function PartnersTab() {
       transactionFee: partner.transactionFee || 0,
       antifraudCost: partner.antifraudCost || 0,
       threeDSCost: partner.threeDSCost || 0,
+      percentualAntecipacao: partner.percentualAntecipacao || 0,
       notes: partner.notes || ''
     });
     setView('form');
@@ -151,7 +152,7 @@ export default function PartnersTab() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-[#f4f4f4]">
-                    {['Parceiro', 'Fee Trans.', 'Antifraude', '3DS', 'MCCs', ''].map((h, i) => (
+                    {['Parceiro', 'Fee Trans.', 'Antifraude', '3DS', 'Antecipação', 'MCCs', ''].map((h, i) => (
                       <TableHead key={i} className={`text-[10px] font-bold text-[#002443]/40 uppercase ${i === 5 ? 'text-right' : ''}`}>{h}</TableHead>
                     ))}
                   </TableRow>
@@ -173,6 +174,7 @@ export default function PartnersTab() {
                         <TableCell className="text-sm text-[#002443]">R$ {(partner.transactionFee || 0).toFixed(2)}</TableCell>
                         <TableCell className="text-sm text-[#002443]">R$ {(partner.antifraudCost || 0).toFixed(2)}</TableCell>
                         <TableCell className="text-sm text-[#002443]">R$ {(partner.threeDSCost || 0).toFixed(2)}</TableCell>
+                        <TableCell className="text-sm text-[#002443]">{(partner.percentualAntecipacao || 0).toFixed(2)}%</TableCell>
                         <TableCell>
                           <Badge variant="outline" className="border-[#002443]/10 text-[#002443]/50 text-[10px]">{mccCount} MCC(s)</Badge>
                         </TableCell>
