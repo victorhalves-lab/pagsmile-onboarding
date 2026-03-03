@@ -137,7 +137,7 @@ export default function PipelineComercial() {
             <div className="flex gap-4 text-xs text-[var(--pagsmile-blue)]/70 mt-1">
               <span>{filteredLeads.length} leads</span>
               <span className="flex items-center gap-1"><DollarSign className="w-3 h-3" /> TPV: {formatMoeda(totalTPV)}</span>
-              <span className="flex items-center gap-1"><TrendingUp className="w-3 h-3" /> Receita: {formatMoeda(totalTPV * 0.022)}</span>
+              <span className="flex items-center gap-1"><TrendingUp className="w-3 h-3" /> Receita (2,5%): {formatMoeda(totalTPV * 0.025)}</span>
             </div>
           </div>
         </div>
