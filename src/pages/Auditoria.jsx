@@ -37,6 +37,7 @@ export default function Auditoria() {
   const [actionFilter, setActionFilter] = useState('all');
   const [actorTypeFilter, setActorTypeFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
+  const [entityFilter, setEntityFilter] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedLog, setSelectedLog] = useState(null);
   const itemsPerPage = 20;
@@ -110,9 +111,10 @@ export default function Auditoria() {
         }
       }
       
-      return matchesSearch && matchesAction && matchesActorType && matchesDate;
+      const matchesEntity = !entityFilter || log.entityName === entityFilter;
+      return matchesSearch && matchesAction && matchesActorType && matchesDate && matchesEntity;
     });
-  }, [auditLogs, searchTerm, actionFilter, actorTypeFilter, dateFilter]);
+  }, [auditLogs, searchTerm, actionFilter, actorTypeFilter, dateFilter, entityFilter]);
 
   // Paginação
   const totalPages = Math.ceil(filteredLogs.length / itemsPerPage);
@@ -195,9 +197,23 @@ export default function Auditoria() {
                 <SelectItem value="all">Todas as Ações</SelectItem>
                 <SelectItem value="CREATE">Criação</SelectItem>
                 <SelectItem value="UPDATE">Atualização</SelectItem>
+                <SelectItem value="DELETE">Exclusão</SelectItem>
                 <SelectItem value="APPROVAL">Aprovação</SelectItem>
                 <SelectItem value="REJECTION">Rejeição</SelectItem>
                 <SelectItem value="VALIDATION">Validação</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={entityFilter || 'all'} onValueChange={(v) => setEntityFilter(v === 'all' ? null : v)}>
+              <SelectTrigger className="w-44">
+                <SelectValue placeholder="Entidade" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas as Entidades</SelectItem>
+                <SelectItem value="Proposal">Propostas</SelectItem>
+                <SelectItem value="ComplianceRule">Regras de Compliance</SelectItem>
+                <SelectItem value="OnboardingCase">Onboarding Cases</SelectItem>
+                <SelectItem value="Lead">Leads</SelectItem>
               </SelectContent>
             </Select>
 
@@ -225,7 +241,7 @@ export default function Auditoria() {
               </SelectContent>
             </Select>
 
-            {(actionFilter !== 'all' || actorTypeFilter !== 'all' || dateFilter !== 'all') && (
+            {(actionFilter !== 'all' || actorTypeFilter !== 'all' || dateFilter !== 'all' || entityFilter) && (
               <Button 
                 variant="ghost" 
                 size="sm"
@@ -233,6 +249,7 @@ export default function Auditoria() {
                   setActionFilter('all');
                   setActorTypeFilter('all');
                   setDateFilter('all');
+                  setEntityFilter(null);
                 }}
               >
                 Limpar filtros

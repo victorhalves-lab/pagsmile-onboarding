@@ -42,14 +42,16 @@ import {
 import { 
   Settings, Plus, Edit, Trash2, Loader2, RefreshCw,
   CheckCircle2, XCircle, AlertTriangle, Mail, Flag, UserPlus,
-  FileText, Zap, Play
+  FileText, Zap, Play, History
 } from 'lucide-react';
 import { toast } from 'sonner';
+import RuleSimulatorModal from '../components/compliance/RuleSimulatorModal';
 
 export default function RegrasDeCompliance() {
   const [showEditor, setShowEditor] = useState(false);
   const [editingRule, setEditingRule] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
+  const [simulateRule, setSimulateRule] = useState(null);
   const queryClient = useQueryClient();
 
   const { data: rules = [], isLoading, refetch } = useQuery({
@@ -84,10 +86,24 @@ export default function RegrasDeCompliance() {
 
   const saveMutation = useMutation({
     mutationFn: async (data) => {
+      const isNew = !editingRule;
+      let result;
       if (editingRule) {
-        return base44.entities.ComplianceRule.update(editingRule.id, data);
+        result = await base44.entities.ComplianceRule.update(editingRule.id, data);
+      } else {
+        result = await base44.entities.ComplianceRule.create(data);
       }
-      return base44.entities.ComplianceRule.create(data);
+      // Audit log
+      await base44.entities.AuditLog.create({
+        entityName: 'ComplianceRule',
+        entityId: editingRule?.id || result?.id || 'unknown',
+        actionType: isNew ? 'CREATE' : 'UPDATE',
+        actionDescription: `Regra "${data.name}" ${isNew ? 'criada' : 'atualizada'}`,
+        changedBy: 'admin',
+        changeDate: new Date().toISOString(),
+        details: { name: data.name, type: data.type, conditions: data.conditions }
+      });
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['complianceRules'] });
@@ -101,7 +117,19 @@ export default function RegrasDeCompliance() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.ComplianceRule.delete(id),
+    mutationFn: async (id) => {
+      const rule = rules.find(r => r.id === id);
+      await base44.entities.ComplianceRule.delete(id);
+      await base44.entities.AuditLog.create({
+        entityName: 'ComplianceRule',
+        entityId: id,
+        actionType: 'DELETE',
+        actionDescription: `Regra "${rule?.name || id}" excluída`,
+        changedBy: 'admin',
+        changeDate: new Date().toISOString(),
+        details: { name: rule?.name, type: rule?.type }
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['complianceRules'] });
       toast.success('Regra excluída');
@@ -317,8 +345,12 @@ export default function RegrasDeCompliance() {
                       />
                     </div>
                     
-                    <Button variant="ghost" size="icon" onClick={() => handleEdit(rule)}>
+                    <Button variant="ghost" size="icon" onClick={() => handleEdit(rule)} title="Editar">
                       <Edit className="w-4 h-4" />
+                    </Button>
+                    
+                    <Button variant="ghost" size="icon" onClick={() => setSimulateRule(rule)} title="Simular">
+                      <Play className="w-4 h-4 text-blue-600" />
                     </Button>
                     
                     <Button 
@@ -326,6 +358,7 @@ export default function RegrasDeCompliance() {
                       size="icon"
                       onClick={() => setDeleteId(rule.id)}
                       className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                      title="Excluir"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -532,6 +565,13 @@ export default function RegrasDeCompliance() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Rule Simulator */}
+      <RuleSimulatorModal
+        open={!!simulateRule}
+        onClose={() => setSimulateRule(null)}
+        rule={simulateRule}
+      />
 
       {/* Dialog de Exclusão */}
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
