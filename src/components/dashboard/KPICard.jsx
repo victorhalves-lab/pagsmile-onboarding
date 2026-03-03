@@ -1,48 +1,47 @@
 import React from 'react';
-import { TrendingUp, TrendingDown, ArrowRight } from 'lucide-react';
+import { TrendingUp, TrendingDown } from 'lucide-react';
 
 export default function KPICard({ 
   title, 
   value, 
   subtitle, 
   icon: Icon, 
-  iconBg = 'bg-slate-100', 
-  iconColor = 'text-slate-600',
+  iconBg = 'bg-[#2bc196]/10', 
+  iconColor = 'text-[#2bc196]',
   trend,
   trendValue,
   trendLabel,
   className = '',
-  size = 'default'
 }) {
   const isPositiveTrend = trend === 'up';
   
   return (
-    <div className={`bg-white rounded-xl border border-slate-200 p-4 ${className}`}>
+    <div className={`bg-white rounded-2xl border border-[#002443]/5 p-5 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 group ${className}`}>
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <p className="text-xs text-[var(--pagsmile-blue)]/70 font-semibold mb-1">{title}</p>
-          <p className={`font-bold text-[var(--pagsmile-blue)] ${size === 'large' ? 'text-3xl' : 'text-2xl'}`}>
+          <p className="text-xs text-[#282828]/50 font-semibold uppercase tracking-wider mb-2">{title}</p>
+          <p className="font-bold text-[#002443] text-3xl tracking-tight">
             {value}
           </p>
           {subtitle && (
-            <p className="text-xs text-[var(--pagsmile-blue)]/70 font-medium mt-1">{subtitle}</p>
+            <p className="text-xs text-[#282828]/40 font-medium mt-1.5">{subtitle}</p>
           )}
           {trendValue !== undefined && (
-            <div className={`flex items-center gap-1 mt-2 text-xs ${
-              isPositiveTrend ? 'text-green-600' : 'text-red-600'
+            <div className={`flex items-center gap-1 mt-2.5 text-xs font-medium ${
+              isPositiveTrend ? 'text-[#2bc196]' : 'text-red-500'
             }`}>
               {isPositiveTrend ? (
-                <TrendingUp className="w-3 h-3" />
+                <TrendingUp className="w-3.5 h-3.5" />
               ) : (
-                <TrendingDown className="w-3 h-3" />
+                <TrendingDown className="w-3.5 h-3.5" />
               )}
               <span>{trendValue}</span>
-              {trendLabel && <span className="text-[var(--pagsmile-blue)]/50">{trendLabel}</span>}
+              {trendLabel && <span className="text-[#282828]/40">{trendLabel}</span>}
             </div>
           )}
         </div>
         {Icon && (
-          <div className={`p-2 rounded-lg ${iconBg}`}>
+          <div className={`p-3 rounded-xl ${iconBg} group-hover:scale-110 transition-transform duration-300`}>
             <Icon className={`w-5 h-5 ${iconColor}`} />
           </div>
         )}
@@ -64,64 +63,42 @@ export function KPICardComparison({
   colorScheme = 'green'
 }) {
   const colors = {
-    green: {
-      after: 'text-green-600',
-      badge: 'bg-green-100 text-green-700',
-      target: 'text-[var(--pagsmile-blue)]/70'
-    },
-    blue: {
-      after: 'text-blue-600',
-      badge: 'bg-blue-100 text-blue-700',
-      target: 'text-[var(--pagsmile-blue)]/70'
-    },
-    red: {
-      after: 'text-red-600',
-      badge: 'bg-red-100 text-red-700',
-      target: 'text-[var(--pagsmile-blue)]/70'
-    },
-    purple: {
-      after: 'text-purple-600',
-      badge: 'bg-purple-100 text-purple-700',
-      target: 'text-[var(--pagsmile-blue)]/70'
-    }
+    green: { after: 'text-[#2bc196]', badge: 'bg-[#2bc196]/10 text-[#2bc196]' },
+    blue: { after: 'text-[#002443]', badge: 'bg-[#002443]/10 text-[#002443]' },
+    teal: { after: 'text-[#36706c]', badge: 'bg-[#36706c]/10 text-[#36706c]' },
   };
-
   const scheme = colors[colorScheme] || colors.green;
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-4">
-      <p className="text-xs text-[var(--pagsmile-blue)]/70 font-semibold mb-3">{title}</p>
-      
-      <div className="flex items-center justify-center gap-3 mb-3">
+    <div className="bg-white rounded-2xl border border-[#002443]/5 p-5">
+      <p className="text-xs text-[#282828]/50 font-semibold uppercase tracking-wider mb-3">{title}</p>
+      <div className="flex items-center justify-center gap-4 mb-3">
         {beforeValue !== undefined && beforeValue !== null && (
           <>
             <div className="text-center">
-              <p className="text-xs text-[var(--pagsmile-blue)]/50">{beforeLabel}</p>
-              <p className="text-xl font-bold text-[var(--pagsmile-blue)]/50">{beforeValue}</p>
+              <p className="text-xs text-[#282828]/40">{beforeLabel}</p>
+              <p className="text-xl font-bold text-[#282828]/30">{beforeValue}</p>
             </div>
-            <ArrowRight className="w-4 h-4 text-[var(--pagsmile-blue)]/40" />
+            <span className="text-[#282828]/20">→</span>
           </>
         )}
         <div className="text-center">
           {beforeValue !== undefined && beforeValue !== null && (
-            <p className="text-xs text-[var(--pagsmile-blue)]/50">{afterLabel}</p>
+            <p className="text-xs text-[#282828]/40">{afterLabel}</p>
           )}
           <p className={`text-2xl font-bold ${scheme.after}`}>{afterValue}</p>
         </div>
       </div>
-
       {improvement && (
-        <div className={`text-center py-1.5 px-3 rounded-lg ${scheme.badge} text-xs font-medium`}>
+        <div className={`text-center py-1.5 px-3 rounded-xl ${scheme.badge} text-xs font-semibold`}>
           {improvement}
         </div>
       )}
-
       {improvementLabel && (
-        <p className="text-xs text-[var(--pagsmile-blue)]/70 text-center mt-2">{improvementLabel}</p>
+        <p className="text-xs text-[#282828]/40 text-center mt-2">{improvementLabel}</p>
       )}
-
       {target && (
-        <p className={`text-xs text-center mt-2 ${scheme.target}`}>
+        <p className="text-xs text-[#282828]/40 text-center mt-2">
           ⊙ {targetLabel}: {target}
         </p>
       )}
