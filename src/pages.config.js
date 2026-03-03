@@ -91,6 +91,7 @@ import TemplatesQuestionarios from './pages/TemplatesQuestionarios';
 import GestaoContratos from './pages/GestaoContratos';
 import EditorContrato from './pages/EditorContrato';
 import PreviewContrato from './pages/PreviewContrato';
+import ContratoPublico from './pages/ContratoPublico';
 import __Layout from './Layout.jsx';
 
 
@@ -139,6 +140,7 @@ export const PAGES = {
     "GestaoContratos": GestaoContratos,
     "EditorContrato": EditorContrato,
     "PreviewContrato": PreviewContrato,
+    "ContratoPublico": ContratoPublico,
 }
 
 export const pagesConfig = {
