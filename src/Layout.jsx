@@ -401,6 +401,15 @@ export default function Layout({ children, currentPageName }) {
         <div className="lg:hidden fixed inset-0 bg-black/50 z-40" onClick={() => setMobileMenuOpen(false)}>
           <aside className="w-64 bg-white h-full pt-16 overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <nav className="p-4">
+              {/* Home link */}
+              <div className="mb-3">
+                <NavItem 
+                  item={{ label: 'Home', path: 'Home', icon: LayoutDashboard }} 
+                  isActive={currentPageName === 'Home'}
+                  onClick={() => setMobileMenuOpen(false)}
+                />
+              </div>
+
               {menuStructure.map(section => (
                 <NavSection key={section.id} section={section} isMobile />
               ))}
