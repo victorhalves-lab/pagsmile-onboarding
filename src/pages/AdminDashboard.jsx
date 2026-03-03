@@ -45,6 +45,7 @@ import RiskDistributionCards from '../components/dashboard/RiskDistributionCards
 import QuickMetricsCard from '../components/dashboard/QuickMetricsCard';
 import ScoreDistributionChart from '../components/dashboard/ScoreDistributionChart';
 import ComplianceScoresOverview from '../components/dashboard/ComplianceScoresOverview';
+import SalesPipelineSummary from '../components/dashboard/SalesPipelineSummary';
 
 export default function AdminDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -83,6 +84,11 @@ export default function AdminDashboard() {
   const { data: analytics = [] } = useQuery({
     queryKey: ['onboardingAnalytics'],
     queryFn: () => base44.entities.OnboardingAnalytics.list('-created_date', 1000)
+  });
+
+  const { data: leads = [] } = useQuery({
+    queryKey: ['dashboard-leads'],
+    queryFn: () => base44.entities.Lead.list('-created_date', 500)
   });
 
   const merchantMap = React.useMemo(() => {
@@ -530,10 +536,10 @@ export default function AdminDashboard() {
         <TopRejectionReasonsChart data={stats.topRejectionReasons} />
       </div>
 
-      {/* Distribuição de Scores */}
+      {/* Distribuição de Scores + Pipeline de Vendas */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <ScoreDistributionChart data={stats.scoreDistribution} />
-        {/* Placeholder for future chart or keep layout balanced */}
+        <SalesPipelineSummary leads={leads} />
       </div>
 
       {/* Distribuição de Risco */}

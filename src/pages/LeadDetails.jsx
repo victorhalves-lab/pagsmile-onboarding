@@ -23,6 +23,8 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
+import LeadQuickActions from '../components/leads/LeadQuickActions';
+import LeadProposals from '../components/leads/LeadProposals';
 
 const STATUS_CONFIG = {
   questionario_preenchido: { label: 'Questionário Preenchido', color: 'bg-blue-100 text-blue-700' },
@@ -121,7 +123,7 @@ export default function LeadDetails() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate(createPageUrl('LeadManagement'))}>
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <div className="flex-1">
@@ -147,11 +149,15 @@ export default function LeadDetails() {
         </Select>
       </div>
 
+      {/* Quick Actions Bar */}
+      <LeadQuickActions lead={lead} />
+
       <Tabs defaultValue="overview">
         <TabsList>
           <TabsTrigger value="overview">Visão Geral</TabsTrigger>
           <TabsTrigger value="priscila">Análise PRISCILA</TabsTrigger>
           <TabsTrigger value="questionnaire">Questionário</TabsTrigger>
+          <TabsTrigger value="proposals">Propostas</TabsTrigger>
           <TabsTrigger value="history">Histórico ({activities.length})</TabsTrigger>
         </TabsList>
 
@@ -312,6 +318,10 @@ export default function LeadDetails() {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="proposals" className="mt-4">
+          <LeadProposals leadId={leadId} />
         </TabsContent>
 
         <TabsContent value="history" className="mt-4">
