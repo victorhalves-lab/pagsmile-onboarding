@@ -72,7 +72,7 @@ export default function GestaoPropostas() {
   }, [propostas, search, statusFilter]);
 
   const copyLink = (proposta) => {
-    const url = `${window.location.origin}/PropostaPublica?token=${proposta.tokenPublico}`;
+    const url = window.location.origin + createPageUrl('PropostaPublica') + `?token=${proposta.tokenPublico}`;
     navigator.clipboard.writeText(url);
     toast.success('Link copiado!');
   };
