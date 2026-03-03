@@ -29,6 +29,10 @@ import QuestionList from '@/components/editor/QuestionList';
 import QuestionFormDialog from '@/components/editor/QuestionFormDialog';
 import TemplateDocumentsList from '@/components/editor/TemplateDocumentsList';
 import DocumentFormDialog from '@/components/editor/DocumentFormDialog';
+import QuestionnairePreview from '@/components/editor/QuestionnairePreview';
+import QuestionLibraryModal from '@/components/editor/QuestionLibraryModal';
+import AISuggestionsModal from '@/components/editor/AISuggestionsModal';
+import TemplateVersionHistory from '@/components/editor/TemplateVersionHistory';
 
 export default function EditorQuestionario() {
   const navigate = useNavigate();
@@ -59,6 +63,9 @@ export default function EditorQuestionario() {
   const [editingQuestion, setEditingQuestion] = useState(null);
   const [documentDialogOpen, setDocumentDialogOpen] = useState(false);
   const [editingDocumentLink, setEditingDocumentLink] = useState(null);
+  const [libraryModalOpen, setLibraryModalOpen] = useState(false);
+  const [aiSuggestionsOpen, setAISuggestionsOpen] = useState(false);
+  const [versionHistoryOpen, setVersionHistoryOpen] = useState(false);
 
   // Fetch template data
   const { data: template, isLoading: loadingTemplate } = useQuery({
@@ -134,6 +141,53 @@ export default function EditorQuestionario() {
     }
   });
 
+  // Save as new version
+  const saveNewVersionMutation = useMutation({
+    mutationFn: async () => {
+      // Archive current
+      await base44.entities.QuestionnaireTemplate.update(templateId, { isArchived: true });
+      // Create new version
+      const { id, created_date, updated_date, created_by, ...data } = template;
+      const newTemplate = await base44.entities.QuestionnaireTemplate.create({
+        ...data,
+        ...formData,
+        version: (template.version || 1) + 1,
+        previousVersionId: templateId,
+        isArchived: false,
+      });
+      // Copy questions
+      for (const q of questions) {
+        const { id: qId, created_date: cd, updated_date: ud, created_by: cb, ...qData } = q;
+        await base44.entities.Question.create({ ...qData, questionnaireTemplateId: newTemplate.id });
+      }
+      return newTemplate;
+    },
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({ queryKey: ['questionnaireTemplates'] });
+      toast.success('Nova versão criada!');
+      navigate(createPageUrl('EditorQuestionario') + `?id=${result.id}`);
+    }
+  });
+
+  const handleRestoreVersion = async (oldVersion) => {
+    const { id, created_date, updated_date, created_by, ...data } = oldVersion;
+    const newTemplate = await base44.entities.QuestionnaireTemplate.create({
+      ...data,
+      version: (template?.version || oldVersion.version || 1) + 1,
+      previousVersionId: oldVersion.id,
+      isArchived: false,
+    });
+    const oldQuestions = await base44.entities.Question.filter({ questionnaireTemplateId: oldVersion.id });
+    for (const q of oldQuestions) {
+      const { id: qId, created_date: cd, updated_date: ud, created_by: cb, ...qData } = q;
+      await base44.entities.Question.create({ ...qData, questionnaireTemplateId: newTemplate.id });
+    }
+    if (template) await base44.entities.QuestionnaireTemplate.update(templateId, { isArchived: true });
+    toast.success('Versão restaurada!');
+    navigate(createPageUrl('EditorQuestionario') + `?id=${newTemplate.id}`);
+    setVersionHistoryOpen(false);
+  };
+
   const handleSave = () => {
     if (!formData.name.trim()) {
       toast.error('Nome do questionário é obrigatório');
@@ -181,18 +235,31 @@ export default function EditorQuestionario() {
             )}
           </div>
         </div>
-        <Button 
-          onClick={handleSave}
-          disabled={saveMutation.isPending}
-          className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90"
-        >
-          {saveMutation.isPending ? (
-            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-          ) : (
-            <Save className="w-4 h-4 mr-2" />
+        <div className="flex gap-2">
+          {isEditing && (
+            <>
+              <Button variant="outline" onClick={() => setVersionHistoryOpen(true)}>
+                Versões
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => saveNewVersionMutation.mutate()}
+                disabled={saveNewVersionMutation.isPending}
+              >
+                {saveNewVersionMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                Nova Versão
+              </Button>
+            </>
           )}
-          Salvar
-        </Button>
+          <Button
+            onClick={handleSave}
+            disabled={saveMutation.isPending}
+            className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90"
+          >
+            {saveMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+            Salvar
+          </Button>
+        </div>
       </div>
 
       {/* Tabs */}
@@ -318,13 +385,29 @@ export default function EditorQuestionario() {
 
         {/* Tab: Perguntas */}
         <TabsContent value="questions" className="space-y-6">
-          <QuestionList
-            questions={questions}
-            templateId={templateId}
-            onAddQuestion={() => handleOpenQuestionDialog()}
-            onEditQuestion={(q) => handleOpenQuestionDialog(q)}
-            isLoading={loadingQuestions}
-          />
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <div>
+              <div className="flex gap-2 mb-4">
+                <Button variant="outline" size="sm" onClick={() => setLibraryModalOpen(true)}>
+                  📚 Da Biblioteca
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => setAISuggestionsOpen(true)} className="text-purple-700">
+                  🤖 Sugestões IA
+                </Button>
+              </div>
+              <QuestionList
+                questions={questions}
+                templateId={templateId}
+                onAddQuestion={() => handleOpenQuestionDialog()}
+                onEditQuestion={(q) => handleOpenQuestionDialog(q)}
+                isLoading={loadingQuestions}
+              />
+            </div>
+            <div className="hidden xl:block sticky top-4">
+              <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)]/70 mb-3">Pré-visualização</h3>
+              <QuestionnairePreview template={formData} questions={questions} />
+            </div>
+          </div>
         </TabsContent>
 
         {/* Tab: Documentos */}
@@ -446,6 +529,29 @@ export default function EditorQuestionario() {
         template={template}
         templateId={templateId}
         documentTypes={documentTypes}
+      />
+
+      <QuestionLibraryModal
+        open={libraryModalOpen}
+        onClose={() => setLibraryModalOpen(false)}
+        templateId={templateId}
+        existingQuestionCount={questions.length}
+      />
+
+      <AISuggestionsModal
+        open={aiSuggestionsOpen}
+        onClose={() => setAISuggestionsOpen(false)}
+        templateId={templateId}
+        template={template || formData}
+        existingQuestions={questions}
+      />
+
+      <TemplateVersionHistory
+        open={versionHistoryOpen}
+        onClose={() => setVersionHistoryOpen(false)}
+        templateName={template?.name || formData.name}
+        currentVersion={template?.version || 1}
+        onRestore={handleRestoreVersion}
       />
     </div>
   );
