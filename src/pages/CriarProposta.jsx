@@ -26,7 +26,7 @@ const formatTaxa = (val) => {
 export default function CriarProposta() {
   const navigate = useNavigate();
   const urlParams = new URLSearchParams(window.location.search);
-  const leadId = urlParams.get('lead') || urlParams.get('lead_id');
+  const leadId = urlParams.get('lead') || urlParams.get('lead_id') || urlParams.get('leadId');
   const editId = urlParams.get('edit');
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState({});
@@ -55,31 +55,52 @@ export default function CriarProposta() {
       const leads = await base44.entities.Lead.filter({ id: leadId });
       return leads[0] || null;
     },
-    enabled: !!leadId
+    enabled: !!leadId && !editId
   });
+
+  // Fetch existing proposal for edit mode
+  const { data: existingProposal } = useQuery({
+    queryKey: ['proposal-edit', editId],
+    queryFn: async () => {
+      const proposals = await base44.entities.Proposal.filter({ id: editId });
+      return proposals[0] || null;
+    },
+    enabled: !!editId
+  });
+
+  // Pre-fill form from existing proposal (edit mode)
+  useEffect(() => {
+    if (existingProposal) {
+      setForm({
+        clienteNome: existingProposal.clienteNome || '',
+        clienteCnpj: existingProposal.clienteCnpj || '',
+        clienteMcc: existingProposal.clienteMcc || '',
+        clienteContato: existingProposal.clienteContato || '',
+      });
+      const r = existingProposal.rates || {};
+      setRates({
+        cartao: r.cartao || {},
+        pix: r.pix || { tipo: 'percentual', valor: '' },
+        boleto: r.boleto || '',
+        feeTransacao: r.feeTransacao || '',
+        alertaPreChargeback: r.alertaPreChargeback || r.antifraude || '',
+        minimoGarantido: r.minimoGarantido || '',
+        rav: r.rav || { taxa: '', prazo: 'D+1' },
+      });
+    }
+  }, [existingProposal]);
 
   // Pre-fill form from lead
   useEffect(() => {
-    if (lead) {
+    if (lead && !editId) {
       setForm({
         clienteNome: lead.companyName || lead.fullName || '',
         clienteCnpj: (lead.cpfCnpj || '').replace(/\D/g, ''),
         clienteMcc: lead.mcc || '',
         clienteContato: lead.contactName || '',
       });
-
-      // Pre-fill rates from lead questionnaireData if available
-      const qd = lead.questionnaireData || {};
-      const newRates = { ...rates };
-
-      // Try to extract known rate fields from questionnaire data
-      if (qd.taxa_pix || lead.tpvMensal) {
-        // Map any lead rate data to proposal rates
-      }
-
-      setRates(newRates);
     }
-  }, [lead]);
+  }, [lead, editId]);
 
   const updateForm = (field, value) => {
     setForm(prev => ({ ...prev, [field]: value }));

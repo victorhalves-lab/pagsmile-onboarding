@@ -83,14 +83,20 @@ export function KPICardComparison({
       <p className="text-xs text-[var(--pagsmile-blue)]/70 font-semibold mb-3">{title}</p>
       
       <div className="flex items-center justify-center gap-3 mb-3">
+        {beforeValue !== undefined && beforeValue !== null && (
+          <>
+            <div className="text-center">
+              <p className="text-xs text-[var(--pagsmile-blue)]/50">{beforeLabel}</p>
+              <p className="text-xl font-bold text-[var(--pagsmile-blue)]/50">{beforeValue}</p>
+            </div>
+            <ArrowRight className="w-4 h-4 text-[var(--pagsmile-blue)]/40" />
+          </>
+        )}
         <div className="text-center">
-          <p className="text-xs text-[var(--pagsmile-blue)]/50">{beforeLabel}</p>
-          <p className="text-xl font-bold text-[var(--pagsmile-blue)]/50">{beforeValue}</p>
-        </div>
-        <ArrowRight className="w-4 h-4 text-[var(--pagsmile-blue)]/40" />
-        <div className="text-center">
-          <p className="text-xs text-[var(--pagsmile-blue)]/50">{afterLabel}</p>
-          <p className={`text-xl font-bold ${scheme.after}`}>{afterValue}</p>
+          {beforeValue !== undefined && beforeValue !== null && (
+            <p className="text-xs text-[var(--pagsmile-blue)]/50">{afterLabel}</p>
+          )}
+          <p className={`text-2xl font-bold ${scheme.after}`}>{afterValue}</p>
         </div>
       </div>
 
