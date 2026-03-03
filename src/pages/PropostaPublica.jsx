@@ -202,7 +202,18 @@ export default function PropostaPublica() {
         <h1 className="text-2xl font-bold text-[#002443] mb-2">
           Proposta {isAceita ? 'Aceita' : 'Recusada'}
         </h1>
-        <p className="text-[#002443]/60">Esta proposta já foi respondida.</p>
+        <p className="text-[#002443]/60">
+          {isAceita ? 'Obrigado! Agora você será direcionado ao questionário de Compliance.' : 'Esta proposta já foi respondida.'}
+        </p>
+        {isAceita && proposta.complianceRedirectUrl && (
+          <Button
+            onClick={() => window.location.href = proposta.complianceRedirectUrl}
+            className="mt-6 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-8 h-12 rounded-2xl font-bold"
+          >
+            <Shield className="w-4 h-4 mr-2" />
+            Iniciar Questionário de Compliance
+          </Button>
+        )}
       </div>
     );
   }
