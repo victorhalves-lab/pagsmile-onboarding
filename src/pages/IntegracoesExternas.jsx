@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,67 +8,24 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from '@/components/ui/alert';
-import {
-  Plug,
-  Settings,
-  Activity,
-  CheckCircle2,
-  XCircle,
-  Clock,
-  RefreshCw,
-  Plus,
-  ExternalLink,
-  Key,
-  Webhook,
-  Database,
-  Shield,
-  Eye,
-  Play,
-  Loader2,
-  AlertTriangle,
-  Copy,
-  FileText,
-  Users,
-  Building2,
-  Fingerprint,
-  ScanFace,
-  FileSearch,
+  Plug, Settings, Activity, CheckCircle2, XCircle, Clock,
+  RefreshCw, ExternalLink, Eye, Play, Loader2, AlertTriangle,
+  Copy, FileText, Users, Building2, Fingerprint, ScanFace, FileSearch, Database, Shield,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function IntegracoesExternas() {
   const [activeTab, setActiveTab] = useState('overview');
-  const [configDialog, setConfigDialog] = useState({ open: false, provider: null });
   const [testingProvider, setTestingProvider] = useState(null);
   const queryClient = useQueryClient();
 
-  const { data: integrationConfigs = [], isLoading: configsLoading } = useQuery({
+  const { data: integrationConfigs = [] } = useQuery({
     queryKey: ['integrationConfigs'],
     queryFn: () => base44.entities.IntegrationConfig.list()
   });
@@ -103,15 +60,15 @@ export default function IntegracoesExternas() {
 
   const getStatusBadge = (status) => {
     const config = {
-      success: { color: 'bg-green-100 text-green-800', icon: CheckCircle2 },
-      failed: { color: 'bg-red-100 text-red-800', icon: XCircle },
-      pending: { color: 'bg-yellow-100 text-yellow-800', icon: Clock },
-      processing: { color: 'bg-blue-100 text-blue-800', icon: Loader2 },
+      success: { bg: 'bg-[#2bc196]/10', text: 'text-[#2bc196]', icon: CheckCircle2 },
+      failed: { bg: 'bg-red-50', text: 'text-red-500', icon: XCircle },
+      pending: { bg: 'bg-[#002443]/5', text: 'text-[#002443]/60', icon: Clock },
+      processing: { bg: 'bg-[#36706c]/10', text: 'text-[#36706c]', icon: Loader2 },
     };
     const c = config[status] || config.pending;
     const Icon = c.icon;
     return (
-      <Badge className={`${c.color} gap-1`}>
+      <Badge className={`${c.bg} ${c.text} gap-1 border-0`}>
         <Icon className={`w-3 h-3 ${status === 'processing' ? 'animate-spin' : ''}`} />
         {status}
       </Badge>
@@ -120,792 +77,456 @@ export default function IntegracoesExternas() {
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
-    toast.success('Copiado para a área de transferência');
+    toast.success('Copiado!');
   };
 
   const handleTestConnection = async (provider) => {
     setTestingProvider(provider);
-    // Simular teste de conexão
     await new Promise(resolve => setTimeout(resolve, 2000));
     toast.success(`Conexão com ${provider} testada com sucesso!`);
     setTestingProvider(null);
+  };
+
+  const logStats = {
+    success: integrationLogs.filter(l => l.status === 'success').length,
+    failed: integrationLogs.filter(l => l.status === 'failed').length,
+    caf: integrationLogs.filter(l => l.provider === 'CAF').length,
+    bdc: integrationLogs.filter(l => l.provider === 'BigDataCorp').length,
   };
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Integrações Externas</h1>
-          <p className="text-[var(--pagsmile-blue)]/70">Configure e monitore as integrações com CAF e BigDataCorp</p>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[#002443]/5 flex items-center justify-center">
+            <Plug className="w-5 h-5 text-[#002443]" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-[#002443]">Integrações Externas</h1>
+            <p className="text-sm text-[#002443]/60">Configure e monitore CAF e BigDataCorp</p>
+          </div>
         </div>
-        <Button variant="outline" onClick={() => queryClient.invalidateQueries()}>
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Atualizar
+        <Button variant="outline" onClick={() => queryClient.invalidateQueries()} className="border-[#002443]/10 hover:bg-[#f4f4f4] rounded-xl">
+          <RefreshCw className="w-4 h-4 mr-2 text-[#002443]/50" />
+          <span className="text-[#002443]/70">Atualizar</span>
         </Button>
       </div>
 
-      {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value="overview">Visão Geral</TabsTrigger>
-          <TabsTrigger value="caf">CAF</TabsTrigger>
-          <TabsTrigger value="bigdatacorp">BigDataCorp</TabsTrigger>
-          <TabsTrigger value="webhooks">Webhooks</TabsTrigger>
-          <TabsTrigger value="logs">Logs</TabsTrigger>
+        <TabsList className="bg-[#f4f4f4] border border-[#002443]/5">
+          {['overview', 'caf', 'bigdatacorp', 'webhooks', 'logs'].map(tab => (
+            <TabsTrigger key={tab} value={tab} className="data-[state=active]:bg-white data-[state=active]:text-[#002443] data-[state=active]:shadow-sm">
+              {tab === 'overview' ? 'Visão Geral' : tab === 'caf' ? 'CAF' : tab === 'bigdatacorp' ? 'BigDataCorp' : tab === 'webhooks' ? 'Webhooks' : 'Logs'}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
-        {/* Overview Tab */}
-        <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Overview */}
+        <TabsContent value="overview" className="space-y-6 mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* CAF Card */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-purple-100">
-                      <Shield className="w-6 h-6 text-purple-600" />
-                    </div>
-                    <div>
-                      <CardTitle>CAF (Combate à Fraude)</CardTitle>
-                      <CardDescription>Verificação de identidade e documentos</CardDescription>
-                    </div>
-                  </div>
-                  <Badge className={cafConfig?.is_active ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-[var(--pagsmile-blue)]/80'}>
-                    {cafConfig?.is_active ? 'Ativo' : 'Inativo'}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <p className="text-[var(--pagsmile-blue)]/70">Ambiente</p>
-                    <p className="font-medium">{cafConfig?.environment || 'Não configurado'}</p>
+            <div className="bg-white rounded-2xl border border-[#002443]/5 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#2bc196]/10 flex items-center justify-center">
+                    <Shield className="w-5 h-5 text-[#2bc196]" />
                   </div>
                   <div>
-                    <p className="text-[var(--pagsmile-blue)]/70">Último Teste</p>
-                    <p className="font-medium">{cafConfig?.last_test_at ? new Date(cafConfig.last_test_at).toLocaleDateString('pt-BR') : '-'}</p>
+                    <h3 className="font-bold text-[#002443]">CAF (Combate à Fraude)</h3>
+                    <p className="text-xs text-[#002443]/50">Verificação de identidade e documentos</p>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="flex-1" onClick={() => setActiveTab('caf')}>
-                    <Settings className="w-4 h-4 mr-2" />
-                    Configurar
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => handleTestConnection('CAF')}
-                    disabled={testingProvider === 'CAF'}
-                  >
-                    {testingProvider === 'CAF' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                <Badge className={cafConfig?.is_active ? 'bg-[#2bc196]/10 text-[#2bc196] border-0' : 'bg-[#f4f4f4] text-[#002443]/40 border-0'}>
+                  {cafConfig?.is_active ? '● Ativo' : '○ Inativo'}
+                </Badge>
+              </div>
+              <div className="grid grid-cols-2 gap-4 text-sm mb-4">
+                <div><p className="text-[#002443]/40 text-xs">Ambiente</p><p className="font-medium text-[#002443]">{cafConfig?.environment || 'Não configurado'}</p></div>
+                <div><p className="text-[#002443]/40 text-xs">Último Teste</p><p className="font-medium text-[#002443]">{cafConfig?.last_test_at ? new Date(cafConfig.last_test_at).toLocaleDateString('pt-BR') : '-'}</p></div>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" className="flex-1 rounded-xl border-[#002443]/10" onClick={() => setActiveTab('caf')}>
+                  <Settings className="w-4 h-4 mr-2 text-[#002443]/40" /> Configurar
+                </Button>
+                <Button variant="outline" size="sm" className="rounded-xl border-[#002443]/10" onClick={() => handleTestConnection('CAF')} disabled={testingProvider === 'CAF'}>
+                  {testingProvider === 'CAF' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 text-[#2bc196]" />}
+                </Button>
+              </div>
+            </div>
 
             {/* BigDataCorp Card */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-blue-100">
-                      <Database className="w-6 h-6 text-blue-600" />
-                    </div>
-                    <div>
-                      <CardTitle>BigDataCorp</CardTitle>
-                      <CardDescription>Dados empresariais e KYC</CardDescription>
-                    </div>
-                  </div>
-                  <Badge className={bdcConfig?.is_active ? 'bg-green-100 text-green-800' : 'bg-slate-100 text-[var(--pagsmile-blue)]/80'}>
-                    {bdcConfig?.is_active ? 'Ativo' : 'Inativo'}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <p className="text-[var(--pagsmile-blue)]/70">Ambiente</p>
-                    <p className="font-medium">{bdcConfig?.environment || 'Não configurado'}</p>
+            <div className="bg-white rounded-2xl border border-[#002443]/5 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#002443]/5 flex items-center justify-center">
+                    <Database className="w-5 h-5 text-[#002443]" />
                   </div>
                   <div>
-                    <p className="text-[var(--pagsmile-blue)]/70">Último Teste</p>
-                    <p className="font-medium">{bdcConfig?.last_test_at ? new Date(bdcConfig.last_test_at).toLocaleDateString('pt-BR') : '-'}</p>
+                    <h3 className="font-bold text-[#002443]">BigDataCorp</h3>
+                    <p className="text-xs text-[#002443]/50">Dados empresariais e KYC</p>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="flex-1" onClick={() => setActiveTab('bigdatacorp')}>
-                    <Settings className="w-4 h-4 mr-2" />
-                    Configurar
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={() => handleTestConnection('BigDataCorp')}
-                    disabled={testingProvider === 'BigDataCorp'}
-                  >
-                    {testingProvider === 'BigDataCorp' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                <Badge className={bdcConfig?.is_active ? 'bg-[#2bc196]/10 text-[#2bc196] border-0' : 'bg-[#f4f4f4] text-[#002443]/40 border-0'}>
+                  {bdcConfig?.is_active ? '● Ativo' : '○ Inativo'}
+                </Badge>
+              </div>
+              <div className="grid grid-cols-2 gap-4 text-sm mb-4">
+                <div><p className="text-[#002443]/40 text-xs">Ambiente</p><p className="font-medium text-[#002443]">{bdcConfig?.environment || 'Não configurado'}</p></div>
+                <div><p className="text-[#002443]/40 text-xs">Último Teste</p><p className="font-medium text-[#002443]">{bdcConfig?.last_test_at ? new Date(bdcConfig.last_test_at).toLocaleDateString('pt-BR') : '-'}</p></div>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" className="flex-1 rounded-xl border-[#002443]/10" onClick={() => setActiveTab('bigdatacorp')}>
+                  <Settings className="w-4 h-4 mr-2 text-[#002443]/40" /> Configurar
+                </Button>
+                <Button variant="outline" size="sm" className="rounded-xl border-[#002443]/10" onClick={() => handleTestConnection('BigDataCorp')} disabled={testingProvider === 'BigDataCorp'}>
+                  {testingProvider === 'BigDataCorp' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 text-[#2bc196]" />}
+                </Button>
+              </div>
+            </div>
           </div>
 
           {/* Quick Stats */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Atividade Recente</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center p-4 bg-slate-50 rounded-lg">
-                  <p className="text-2xl font-bold text-[var(--pagsmile-blue)]">
-                    {integrationLogs.filter(l => l.status === 'success').length}
-                  </p>
-                  <p className="text-sm text-[var(--pagsmile-blue)]/70">Sucesso (24h)</p>
-                </div>
-                <div className="text-center p-4 bg-slate-50 rounded-lg">
-                  <p className="text-2xl font-bold text-[var(--pagsmile-blue)]">
-                    {integrationLogs.filter(l => l.status === 'failed').length}
-                  </p>
-                  <p className="text-sm text-[var(--pagsmile-blue)]/70">Falhas (24h)</p>
-                </div>
-                <div className="text-center p-4 bg-slate-50 rounded-lg">
-                  <p className="text-2xl font-bold text-[var(--pagsmile-blue)]">
-                    {integrationLogs.filter(l => l.provider === 'CAF').length}
-                  </p>
-                  <p className="text-sm text-[var(--pagsmile-blue)]/70">Chamadas CAF</p>
-                </div>
-                <div className="text-center p-4 bg-slate-50 rounded-lg">
-                  <p className="text-2xl font-bold text-[var(--pagsmile-blue)]">
-                    {integrationLogs.filter(l => l.provider === 'BigDataCorp').length}
-                  </p>
-                  <p className="text-sm text-[var(--pagsmile-blue)]/70">Chamadas BDC</p>
-                </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[
+              { label: 'Sucesso (24h)', value: logStats.success, color: '#2bc196' },
+              { label: 'Falhas (24h)', value: logStats.failed, color: '#002443' },
+              { label: 'Chamadas CAF', value: logStats.caf, color: '#36706c' },
+              { label: 'Chamadas BDC', value: logStats.bdc, color: '#002443' },
+            ].map((s, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-[#002443]/5 p-4">
+                <p className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</p>
+                <p className="text-xs text-[#002443]/50">{s.label}</p>
               </div>
-            </CardContent>
-          </Card>
+            ))}
+          </div>
         </TabsContent>
 
-        
         {/* CAF Tab */}
-        <TabsContent value="caf" className="space-y-6">
-          <Alert>
-            <AlertTriangle className="h-4 w-4" />
-            <AlertTitle>Importante</AlertTitle>
-            <AlertDescription>
-              As integrações com a CAF devem ser feitas exclusivamente via backend. 
-              Nunca exponha as chaves de autenticação no frontend.
-            </AlertDescription>
-          </Alert>
+        <TabsContent value="caf" className="space-y-6 mt-6">
+          <div className="bg-[#2bc196]/5 border border-[#2bc196]/15 rounded-2xl p-4 flex items-start gap-3">
+            <AlertTriangle className="w-4 h-4 text-[#2bc196] mt-0.5 shrink-0" />
+            <p className="text-xs text-[#002443]/60">As integrações com a CAF devem ser feitas exclusivamente via backend. Nunca exponha as chaves de autenticação no frontend.</p>
+          </div>
 
-          {/* Mapeamento Microscópico de Integração - CAF */}
-          <Card className="border-purple-200 shadow-sm">
-            <CardHeader className="bg-purple-50/50">
-              <div className="flex items-center gap-2">
-                <FileText className="w-5 h-5 text-purple-600" />
-                <CardTitle className="text-purple-900">Mapeamento de Integração: Documentos</CardTitle>
-              </div>
-              <CardDescription className="text-purple-700">
-                Visão detalhada de como cada documento solicitado no questionário é processado pelos endpoints da CAF.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[200px]">Documento Solicitado</TableHead>
-                    <TableHead className="w-[150px]">Página/Step</TableHead>
-                    <TableHead className="w-[200px]">Endpoint CAF</TableHead>
-                    <TableHead>O que é gerado/validado?</TableHead>
-                    <TableHead className="w-[100px]">Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow>
-                    <TableCell className="font-medium">Contrato Social / MEI</TableCell>
-                    <TableCell><Badge variant="outline">UploadDocs</Badge></TableCell>
-                    <TableCell className="font-mono text-xs">/v1/documents/analyze</TableCell>
-                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
-                      Extração de Razão Social, CNPJ, Quadro Societário e validação de autenticidade (documentoscopy).
-                    </TableCell>
-                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">RG/CNH dos Sócios</TableCell>
-                    <TableCell><Badge variant="outline">UploadDocs</Badge></TableCell>
-                    <TableCell className="font-mono text-xs">/v1/documents/analyze</TableCell>
-                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
-                      OCR de dados (Nome, CPF, RG, Filiação), validação de template e verificação de face no documento.
-                    </TableCell>
-                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Comprovante de Endereço</TableCell>
-                    <TableCell><Badge variant="outline">UploadDocs</Badge></TableCell>
-                    <TableCell className="font-mono text-xs">/v1/documents/analyze</TableCell>
-                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
-                      Extração de Logradouro, Número, CEP e Data de Emissão (validação &lt; 90 dias).
-                    </TableCell>
-                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Selfie (Liveness)</TableCell>
-                    <TableCell><Badge variant="outline">LivenessStep</Badge></TableCell>
-                    <TableCell className="font-mono text-xs">/v1/liveness/sessions</TableCell>
-                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
-                      Prova de vida ativa (movimentos) ou passiva. Gera score de vivacidade e imagem para Facematch.
-                    </TableCell>
-                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Facematch (Selfie vs RG)</TableCell>
-                    <TableCell><Badge variant="outline">LivenessStep</Badge></TableCell>
-                    <TableCell className="font-mono text-xs">/v1/facematch</TableCell>
-                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
-                      Comparação 1:1 entre a Selfie do Liveness e a foto extraída do RG/CNH enviado. Gera Similarity Score.
-                    </TableCell>
-                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-          <Alert>
-            <AlertTriangle className="h-4 w-4" />
-            <AlertTitle>Importante</AlertTitle>
-            <AlertDescription>
-              As integrações com a CAF devem ser feitas exclusivamente via backend. 
-              Nunca exponha as chaves de autenticação no frontend.
-            </AlertDescription>
-          </Alert>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Configuração CAF</CardTitle>
-              <CardDescription>
-                API Base: <code className="bg-slate-100 px-2 py-1 rounded">https://api.combateafraude.com/v1</code>
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>API Token (Bearer)</Label>
-                  <div className="flex gap-2">
-                    <Input type="password" placeholder="••••••••••••••••" className="font-mono" />
-                    <Button variant="outline" size="icon">
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  <p className="text-xs text-[var(--pagsmile-blue)]/70">Configurado via variáveis de ambiente (CAF_API_TOKEN)</p>
-                </div>
-                <div className="space-y-2">
-                  <Label>Template ID (Transaction)</Label>
-                  <Input placeholder="62b620ee3f07fb0009361111" />
+          {/* Mapping Table */}
+          <div className="bg-white rounded-2xl border border-[#002443]/5 overflow-hidden">
+            <div className="p-5 border-b border-[#002443]/5">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[#2bc196]/10 flex items-center justify-center"><FileText className="w-4 h-4 text-[#2bc196]" /></div>
+                <div>
+                  <h3 className="text-sm font-bold text-[#002443]">Mapeamento: Documentos</h3>
+                  <p className="text-xs text-[#002443]/40">Como cada documento é processado pelos endpoints da CAF</p>
                 </div>
               </div>
-
-              <div className="space-y-2">
-                <Label>Ambiente</Label>
-                <Select defaultValue="sandbox">
-                  <SelectTrigger className="w-48">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="sandbox">Sandbox</SelectItem>
-                    <SelectItem value="production">Produção</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Serviços Disponíveis</CardTitle>
-              <CardDescription>Selecione os serviços que deseja utilizar</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {cafServices.map(service => {
-                  const Icon = service.icon;
-                  return (
-                    <div key={service.id} className="flex items-start gap-3 p-4 border rounded-lg">
-                      <div className="p-2 rounded-lg bg-purple-50">
-                        <Icon className="w-5 h-5 text-purple-600" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <p className="font-medium text-sm">{service.name}</p>
-                          <Switch />
-                        </div>
-                        <p className="text-xs text-[var(--pagsmile-blue)]/70 mt-1">{service.desc}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Documentação</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <a href="https://docs.caf.io/caf-api" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 border rounded-lg hover:bg-slate-50 transition-colors">
-                  <FileText className="w-5 h-5 text-[var(--pagsmile-blue)]/80" />
-                  <div>
-                    <p className="font-medium">CAF API Reference</p>
-                    <p className="text-sm text-[var(--pagsmile-blue)]/70">Documentação completa da API</p>
-                  </div>
-                  <ExternalLink className="w-4 h-4 ml-auto text-[var(--pagsmile-blue)]/50" />
-                </a>
-                <a href="https://docs.caf.io/caf-sdk" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 border rounded-lg hover:bg-slate-50 transition-colors">
-                  <Plug className="w-5 h-5 text-[var(--pagsmile-blue)]/80" />
-                  <div>
-                    <p className="font-medium">CAF SDKs</p>
-                    <p className="text-sm text-[var(--pagsmile-blue)]/70">Web, iOS e Android</p>
-                  </div>
-                  <ExternalLink className="w-4 h-4 ml-auto text-[var(--pagsmile-blue)]/50" />
-                </a>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        
-        {/* BigDataCorp Tab */}
-        <TabsContent value="bigdatacorp" className="space-y-6">
-
-          {/* Mapeamento Microscópico de Integração - BigDataCorp */}
-          <Card className="border-blue-200 shadow-sm">
-            <CardHeader className="bg-blue-50/50">
-              <div className="flex items-center gap-2">
-                <Database className="w-5 h-5 text-blue-600" />
-                <CardTitle className="text-blue-900">Mapeamento de Integração: Dados & Validações</CardTitle>
-              </div>
-              <CardDescription className="text-blue-700">
-                Visão detalhada de cada pergunta do questionário conectada aos datasets da BigDataCorp.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[200px]">Pergunta / Campo</TableHead>
-                    <TableHead className="w-[150px]">Página/Step</TableHead>
-                    <TableHead className="w-[250px]">Endpoint / Dataset BDC</TableHead>
-                    <TableHead>Ação & Resultado Esperado</TableHead>
-                    <TableHead className="w-[100px]">Status</TableHead>
+            </div>
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-[#f4f4f4]">
+                  <TableHead className="text-[10px] font-bold text-[#002443]/40 uppercase">Documento</TableHead>
+                  <TableHead className="text-[10px] font-bold text-[#002443]/40 uppercase">Step</TableHead>
+                  <TableHead className="text-[10px] font-bold text-[#002443]/40 uppercase">Endpoint CAF</TableHead>
+                  <TableHead className="text-[10px] font-bold text-[#002443]/40 uppercase">Resultado</TableHead>
+                  <TableHead className="text-[10px] font-bold text-[#002443]/40 uppercase">Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {[
+                  { doc: 'Contrato Social / MEI', step: 'UploadDocs', endpoint: '/v1/documents/analyze', result: 'Extração de Razão Social, CNPJ, Quadro Societário' },
+                  { doc: 'RG/CNH dos Sócios', step: 'UploadDocs', endpoint: '/v1/documents/analyze', result: 'OCR de dados (Nome, CPF, RG, Filiação)' },
+                  { doc: 'Comprovante de Endereço', step: 'UploadDocs', endpoint: '/v1/documents/analyze', result: 'Extração de Logradouro, CEP, Data Emissão' },
+                  { doc: 'Selfie (Liveness)', step: 'LivenessStep', endpoint: '/v1/liveness/sessions', result: 'Score de vivacidade + imagem para Facematch' },
+                  { doc: 'Facematch (Selfie vs RG)', step: 'LivenessStep', endpoint: '/v1/facematch', result: 'Comparação 1:1, Similarity Score' },
+                ].map((row, i) => (
+                  <TableRow key={i}>
+                    <TableCell className="font-medium text-sm text-[#002443]">{row.doc}</TableCell>
+                    <TableCell><Badge variant="outline" className="text-[10px] border-[#002443]/10">{row.step}</Badge></TableCell>
+                    <TableCell className="font-mono text-xs text-[#36706c]">{row.endpoint}</TableCell>
+                    <TableCell className="text-xs text-[#002443]/60">{row.result}</TableCell>
+                    <TableCell><Badge className="bg-[#2bc196]/10 text-[#2bc196] text-[10px] border-0">Mapeado</Badge></TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {/* Dados Básicos */}
-                  <TableRow className="bg-slate-50/50">
-                    <TableCell colSpan={5} className="font-semibold text-xs text-[var(--pagsmile-blue)]/70 uppercase tracking-wider py-2">
-                      Dados Cadastrais da Empresa
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">CNPJ</TableCell>
-                    <TableCell>Step 1: Identificação</TableCell>
-                    <TableCell className="font-mono text-xs text-blue-700 break-all">
-                      /empresas/basic_data
-                    </TableCell>
-                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
-                      <span className="font-semibold text-blue-600">Valida:</span> Existência e Status Ativo.<br/>
-                      <span className="font-semibold text-green-600">Preenche:</span> Razão Social, Nome Fantasia, Data Abertura.
-                    </TableCell>
-                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Endereço Comercial</TableCell>
-                    <TableCell>Step 3: Endereço</TableCell>
-                    <TableCell className="font-mono text-xs text-blue-700 break-all">
-                      /empresas/addresses_extended
-                    </TableCell>
-                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
-                      <span className="font-semibold text-green-600">Preenche:</span> Logradouro, Número, Bairro, Cidade, UF, CEP.<br/>
-                      Confirma se o endereço bate com o cadastro na Receita.
-                    </TableCell>
-                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Site / Domínio</TableCell>
-                    <TableCell>Step 1: Identificação</TableCell>
-                    <TableCell className="font-mono text-xs text-blue-700 break-all">
-                      /empresas/domains_extended
-                    </TableCell>
-                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
-                      Identifica domínios registrados em nome do CNPJ para sugerir site oficial.
-                    </TableCell>
-                    <TableCell><Badge className="bg-yellow-100 text-yellow-800">Em Análise</Badge></TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Atividade (CNAE/MCC)</TableCell>
-                    <TableCell>Step 4: Atividade</TableCell>
-                    <TableCell className="font-mono text-xs text-blue-700 break-all">
-                      /empresas/merchant_category_data
-                    </TableCell>
-                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
-                      Valida se o MCC da empresa é compatível com o que ela declara vender (Risco de Forbidden Business).
-                    </TableCell>
-                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
-                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
 
-                  {/* Sócios e Contatos */}
-                  <TableRow className="bg-slate-50/50">
-                    <TableCell colSpan={5} className="font-semibold text-xs text-[var(--pagsmile-blue)]/70 uppercase tracking-wider py-2">
-                      Sócios, Contatos e UBO
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Quadro Societário</TableCell>
-                    <TableCell>Step 7 / Seção Sócios</TableCell>
-                    <TableCell className="font-mono text-xs text-blue-700 break-all">
-                      /empresas/relationships
-                    </TableCell>
-                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
-                      Lista quem são os sócios, administradores e representantes legais para validação cruzada.
-                    </TableCell>
-                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Contatos (Email/Tel)</TableCell>
-                    <TableCell>Step 7: Responsáveis</TableCell>
-                    <TableCell className="font-mono text-xs text-blue-700 break-all">
-                      /empresas/phones_extended<br/>
-                      /empresas/emails_extended
-                    </TableCell>
-                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
-                      Enriquece dados de contato da empresa e sócios para o cadastro.
-                    </TableCell>
-                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Beneficiário Final (UBO)</TableCell>
-                    <TableCell>Seção UBO</TableCell>
-                    <TableCell className="font-mono text-xs text-blue-700 break-all">
-                      /marketplace/partner_ultimate_beneficial_owners
-                    </TableCell>
-                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
-                      Identifica pessoas físicas que controlam a empresa (compliance regulatório 3978).
-                    </TableCell>
-                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
-                  </TableRow>
-
-                  {/* Risco e Compliance */}
-                  <TableRow className="bg-slate-50/50">
-                    <TableCell colSpan={5} className="font-semibold text-xs text-[var(--pagsmile-blue)]/70 uppercase tracking-wider py-2">
-                      Risco Operacional e PLD
-                    </TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">Faturamento Estimado</TableCell>
-                    <TableCell>Step 5: Volumetria</TableCell>
-                    <TableCell className="font-mono text-xs text-blue-700 break-all">
-                      /empresas/activity_indicators
-                    </TableCell>
-                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
-                      Compara faturamento declarado vs. estimado de mercado. Alerta se divergência > 50%.
-                    </TableCell>
-                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">KYC Empresa</TableCell>
-                    <TableCell>Background Check</TableCell>
-                    <TableCell className="font-mono text-xs text-blue-700 break-all">
-                      /empresas/kyc
-                    </TableCell>
-                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
-                      Processos, Dívidas, Protestos, Listas Restritivas (OFAC/ONU). Gera Score de Risco.
-                    </TableCell>
-                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell className="font-medium">KYC Sócios</TableCell>
-                    <TableCell>Background Check</TableCell>
-                    <TableCell className="font-mono text-xs text-blue-700 break-all">
-                      /empresas/owners_kyc
-                    </TableCell>
-                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/80">
-                      PEP (Pessoa Exposta Politicamente), Mídia Negativa, Antecedentes Criminais dos sócios.
-                    </TableCell>
-                    <TableCell><Badge className="bg-green-100 text-green-800">Mapeado</Badge></TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Configuração BigDataCorp</CardTitle>
-              <CardDescription>
-                API Base: <code className="bg-slate-100 px-2 py-1 rounded">https://app.bigdatacorp.com.br</code>
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Access Token</Label>
-                  <div className="flex gap-2">
-                    <Input type="password" placeholder="••••••••••••••••" className="font-mono" />
-                    <Button variant="outline" size="icon">
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                  </div>
-                  <p className="text-xs text-[var(--pagsmile-blue)]/70">Configurado via variáveis de ambiente (BIGDATACORP_TOKEN)</p>
-                </div>
-                <div className="space-y-2">
-                  <Label>Webhook Callback Key</Label>
-                  <Input placeholder="Identificador para webhooks" />
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Ambiente</Label>
-                <Select defaultValue="sandbox">
-                  <SelectTrigger className="w-48">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="sandbox">Sandbox</SelectItem>
-                    <SelectItem value="production">Produção</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Datasets Disponíveis</CardTitle>
-              <CardDescription>Serviços de consulta de dados</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {bdcServices.map(service => {
-                  const Icon = service.icon;
-                  return (
-                    <div key={service.id} className="flex items-start gap-3 p-4 border rounded-lg">
-                      <div className="p-2 rounded-lg bg-blue-50">
-                        <Icon className="w-5 h-5 text-blue-600" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <p className="font-medium text-sm">{service.name}</p>
-                          <Switch />
-                        </div>
-                        <p className="text-xs text-[var(--pagsmile-blue)]/70 mt-1">{service.desc}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Documentação</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <a href="https://docs.bigdatacorp.com.br/plataforma/reference/empresas_kyc" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 border rounded-lg hover:bg-slate-50 transition-colors">
-                  <Building2 className="w-5 h-5 text-[var(--pagsmile-blue)]/80" />
-                  <div>
-                    <p className="font-medium">KYC Empresas</p>
-                    <p className="text-sm text-[var(--pagsmile-blue)]/70">Compliance empresarial</p>
-                  </div>
-                  <ExternalLink className="w-4 h-4 ml-auto text-[var(--pagsmile-blue)]/50" />
-                </a>
-                <a href="https://docs.bigdatacorp.com.br/app/reference/onboarding-web" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 border rounded-lg hover:bg-slate-50 transition-colors">
-                  <ScanFace className="w-5 h-5 text-[var(--pagsmile-blue)]/80" />
-                  <div>
-                    <p className="font-medium">Onboarding Web</p>
-                    <p className="text-sm text-[var(--pagsmile-blue)]/70">Liveness e Biometria</p>
-                  </div>
-                  <ExternalLink className="w-4 h-4 ml-auto text-[var(--pagsmile-blue)]/50" />
-                </a>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        
-        {/* Webhooks Tab */}
-        <TabsContent value="webhooks" className="space-y-6">
-          <Alert className="bg-blue-50 border-blue-200">
-             <Webhook className="h-4 w-4 text-blue-600" />
-             <AlertTitle className="text-blue-800">Arquitetura Orientada a Eventos</AlertTitle>
-             <AlertDescription className="text-blue-700">
-               Utilizamos webhooks para receber atualizações assíncronas (ex: análise de documentos concluída, score de fraude atualizado) sem travar a experiência do usuário.
-             </AlertDescription>
-          </Alert>
-          <Card>
-            <CardHeader>
-              <CardTitle>Configuração de Webhooks</CardTitle>
-              <CardDescription>Endpoints para receber callbacks das integrações</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <Alert>
-                <Webhook className="h-4 w-4" />
-                <AlertTitle>URLs de Webhook</AlertTitle>
-                <AlertDescription>
-                  Configure estas URLs nos painéis da CAF e BigDataCorp para receber os resultados das validações.
-                </AlertDescription>
-              </Alert>
-
-              <div className="space-y-4">
-                <div className="p-4 border rounded-lg space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label>Webhook CAF</Label>
-                    <Badge variant="outline">POST</Badge>
-                  </div>
-                  <div className="flex gap-2">
-                    <Input 
-                      readOnly 
-                      value="https://api.seudominio.com/webhooks/caf" 
-                      className="font-mono text-sm"
-                    />
-                    <Button variant="outline" size="icon" onClick={() => copyToClipboard('https://api.seudominio.com/webhooks/caf')}>
-                      <Copy className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="p-4 border rounded-lg space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label>Webhook BigDataCorp</Label>
-                    <Badge variant="outline">POST</Badge>
-                  </div>
-                  <div className="flex gap-2">
-                    <Input 
-                      readOnly 
-                      value="https://api.seudominio.com/webhooks/bigdatacorp" 
-                      className="font-mono text-sm"
-                    />
-                    <Button variant="outline" size="icon" onClick={() => copyToClipboard('https://api.seudominio.com/webhooks/bigdatacorp')}>
-                      <Copy className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Webhook Secret (Validação)</Label>
+          {/* Config */}
+          <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 space-y-5">
+            <h3 className="text-base font-bold text-[#002443]">Configuração CAF</h3>
+            <p className="text-xs text-[#002443]/40">API Base: <code className="bg-[#f4f4f4] px-2 py-0.5 rounded-lg text-[#36706c]">https://api.combateafraude.com/v1</code></p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label className="text-xs text-[#002443]/50">API Token (Bearer)</Label>
                 <div className="flex gap-2">
-                  <Input type="password" placeholder="••••••••••••••••" className="font-mono" />
-                  <Button variant="outline">Gerar Novo</Button>
+                  <Input type="password" placeholder="••••••••••••••••" className="font-mono border-[#002443]/10" />
+                  <Button variant="outline" size="icon" className="border-[#002443]/10"><Eye className="w-4 h-4 text-[#002443]/40" /></Button>
                 </div>
+                <p className="text-[10px] text-[#002443]/30">Configurado via variáveis de ambiente (CAF_API_TOKEN)</p>
               </div>
-            </CardContent>
-          </Card>
+              <div className="space-y-1.5">
+                <Label className="text-xs text-[#002443]/50">Template ID (Transaction)</Label>
+                <Input placeholder="62b620ee3f07fb0009361111" className="border-[#002443]/10" />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs text-[#002443]/50">Ambiente</Label>
+              <Select defaultValue="sandbox">
+                <SelectTrigger className="w-48 border-[#002443]/10"><SelectValue /></SelectTrigger>
+                <SelectContent><SelectItem value="sandbox">Sandbox</SelectItem><SelectItem value="production">Produção</SelectItem></SelectContent>
+              </Select>
+            </div>
+          </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Eventos Suportados</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <p className="font-medium text-sm">CAF</p>
-                  <ul className="text-sm text-[var(--pagsmile-blue)]/80 space-y-1">
-                    <li>• transaction.completed</li>
-                    <li>• transaction.approved</li>
-                    <li>• transaction.reproved</li>
-                    <li>• onboarding.completed</li>
-                    <li>• face_auth.attempt</li>
-                  </ul>
-                </div>
-                <div className="space-y-2">
-                  <p className="font-medium text-sm">BigDataCorp</p>
-                  <ul className="text-sm text-[var(--pagsmile-blue)]/80 space-y-1">
-                    <li>• onboarding.ok (STATUS_CODE: 2)</li>
-                    <li>• onboarding.timeout (STATUS_CODE: -201)</li>
-                    <li>• onboarding.max_retries (STATUS_CODE: -202)</li>
-                    <li>• onboarding.closed (STATUS_CODE: -400)</li>
-                  </ul>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Services */}
+          <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 space-y-4">
+            <h3 className="text-base font-bold text-[#002443]">Serviços Disponíveis</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {cafServices.map(service => {
+                const Icon = service.icon;
+                return (
+                  <div key={service.id} className="flex items-start gap-3 p-4 rounded-xl border border-[#002443]/5 hover:shadow-sm transition-shadow">
+                    <div className="w-9 h-9 rounded-lg bg-[#2bc196]/10 flex items-center justify-center shrink-0">
+                      <Icon className="w-4 h-4 text-[#2bc196]" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <p className="font-semibold text-sm text-[#002443]">{service.name}</p>
+                        <Switch className="data-[state=checked]:bg-[#2bc196]" />
+                      </div>
+                      <p className="text-xs text-[#002443]/40 mt-1">{service.desc}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Docs */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {[
+              { href: 'https://docs.caf.io/caf-api', icon: FileText, title: 'CAF API Reference', desc: 'Documentação completa da API' },
+              { href: 'https://docs.caf.io/caf-sdk', icon: Plug, title: 'CAF SDKs', desc: 'Web, iOS e Android' },
+            ].map((doc, i) => (
+              <a key={i} href={doc.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 rounded-2xl border border-[#002443]/5 hover:shadow-sm transition-shadow bg-white">
+                <doc.icon className="w-5 h-5 text-[#002443]/40" />
+                <div className="flex-1"><p className="font-semibold text-sm text-[#002443]">{doc.title}</p><p className="text-xs text-[#002443]/40">{doc.desc}</p></div>
+                <ExternalLink className="w-4 h-4 text-[#002443]/20" />
+              </a>
+            ))}
+          </div>
         </TabsContent>
 
-        {/* Logs Tab */}
-        <TabsContent value="logs" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Logs de Integração</CardTitle>
-                <Button variant="outline" size="sm">
-                  <RefreshCw className="w-4 h-4 mr-2" />
-                  Atualizar
-                </Button>
+        {/* BigDataCorp Tab */}
+        <TabsContent value="bigdatacorp" className="space-y-6 mt-6">
+          {/* BDC Mapping Table */}
+          <div className="bg-white rounded-2xl border border-[#002443]/5 overflow-hidden">
+            <div className="p-5 border-b border-[#002443]/5">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[#002443]/5 flex items-center justify-center"><Database className="w-4 h-4 text-[#002443]" /></div>
+                <div>
+                  <h3 className="text-sm font-bold text-[#002443]">Mapeamento: Dados & Validações</h3>
+                  <p className="text-xs text-[#002443]/40">Conexão de cada campo ao dataset da BigDataCorp</p>
+                </div>
               </div>
-            </CardHeader>
-            <CardContent>
-              {logsLoading ? (
-                <div className="flex justify-center py-8">
-                  <Loader2 className="w-6 h-6 animate-spin text-[var(--pagsmile-blue)]/50" />
-                </div>
-              ) : integrationLogs.length === 0 ? (
-                <div className="text-center py-8 text-[var(--pagsmile-blue)]/70">
-                  <Activity className="w-12 h-12 mx-auto mb-4 text-slate-300" />
-                  <p>Nenhum log de integração encontrado</p>
-                </div>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Data/Hora</TableHead>
-                      <TableHead>Provedor</TableHead>
-                      <TableHead>Serviço</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Resultado</TableHead>
-                      <TableHead>Duração</TableHead>
-                      <TableHead></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {integrationLogs.map(log => (
-                      <TableRow key={log.id}>
-                        <TableCell className="text-sm">
-                          {log.created_date ? new Date(log.created_date).toLocaleString('pt-BR') : '-'}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{log.provider}</Badge>
-                        </TableCell>
-                        <TableCell className="text-sm font-mono">{log.service_type}</TableCell>
-                        <TableCell>{getStatusBadge(log.status)}</TableCell>
-                        <TableCell>
-                          {log.result_status && (
-                            <Badge className={
-                              log.result_status === 'APPROVED' ? 'bg-green-100 text-green-800' :
-                              log.result_status === 'REPROVED' ? 'bg-red-100 text-red-800' :
-                              'bg-yellow-100 text-yellow-800'
-                            }>
-                              {log.result_status}
-                            </Badge>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-sm text-[var(--pagsmile-blue)]/70">
-                          {log.duration_ms ? `${log.duration_ms}ms` : '-'}
-                        </TableCell>
-                        <TableCell>
-                          <Button variant="ghost" size="sm">
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                        </TableCell>
+            </div>
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-[#f4f4f4]">
+                  <TableHead className="text-[10px] font-bold text-[#002443]/40 uppercase">Campo</TableHead>
+                  <TableHead className="text-[10px] font-bold text-[#002443]/40 uppercase">Step</TableHead>
+                  <TableHead className="text-[10px] font-bold text-[#002443]/40 uppercase">Endpoint BDC</TableHead>
+                  <TableHead className="text-[10px] font-bold text-[#002443]/40 uppercase">Resultado</TableHead>
+                  <TableHead className="text-[10px] font-bold text-[#002443]/40 uppercase">Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {[
+                  { section: 'Dados Cadastrais' },
+                  { field: 'CNPJ', step: 'Step 1', endpoint: '/empresas/basic_data', result: 'Valida existência, preenche Razão Social' },
+                  { field: 'Endereço', step: 'Step 3', endpoint: '/empresas/addresses_extended', result: 'Preenche e confirma com Receita' },
+                  { field: 'Atividade (CNAE/MCC)', step: 'Step 4', endpoint: '/empresas/merchant_category_data', result: 'Valida MCC vs atividade declarada' },
+                  { section: 'Sócios e UBO' },
+                  { field: 'Quadro Societário', step: 'Step 7', endpoint: '/empresas/relationships', result: 'Lista sócios e representantes legais' },
+                  { field: 'Beneficiário Final', step: 'Seção UBO', endpoint: '/marketplace/partner_ultimate_beneficial_owners', result: 'Identifica PFs que controlam a empresa' },
+                  { section: 'Risco e PLD' },
+                  { field: 'Faturamento Estimado', step: 'Step 5', endpoint: '/empresas/activity_indicators', result: 'Compara declarado vs estimado (alerta >50%)' },
+                  { field: 'KYC Empresa', step: 'Background', endpoint: '/empresas/kyc', result: 'Processos, dívidas, listas restritivas' },
+                  { field: 'KYC Sócios', step: 'Background', endpoint: '/empresas/owners_kyc', result: 'PEP, mídia negativa, antecedentes' },
+                ].map((row, i) => {
+                  if (row.section) {
+                    return (
+                      <TableRow key={i} className="bg-[#f4f4f4]/50">
+                        <TableCell colSpan={5} className="text-[10px] font-bold text-[#002443]/30 uppercase tracking-[0.15em] py-2">{row.section}</TableCell>
                       </TableRow>
+                    );
+                  }
+                  return (
+                    <TableRow key={i}>
+                      <TableCell className="font-medium text-sm text-[#002443]">{row.field}</TableCell>
+                      <TableCell className="text-xs text-[#002443]/50">{row.step}</TableCell>
+                      <TableCell className="font-mono text-xs text-[#36706c]">{row.endpoint}</TableCell>
+                      <TableCell className="text-xs text-[#002443]/60">{row.result}</TableCell>
+                      <TableCell><Badge className="bg-[#2bc196]/10 text-[#2bc196] text-[10px] border-0">Mapeado</Badge></TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* BDC Config */}
+          <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 space-y-5">
+            <h3 className="text-base font-bold text-[#002443]">Configuração BigDataCorp</h3>
+            <p className="text-xs text-[#002443]/40">API Base: <code className="bg-[#f4f4f4] px-2 py-0.5 rounded-lg text-[#36706c]">https://app.bigdatacorp.com.br</code></p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label className="text-xs text-[#002443]/50">Access Token</Label>
+                <div className="flex gap-2">
+                  <Input type="password" placeholder="••••••••••••••••" className="font-mono border-[#002443]/10" />
+                  <Button variant="outline" size="icon" className="border-[#002443]/10"><Eye className="w-4 h-4 text-[#002443]/40" /></Button>
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs text-[#002443]/50">Webhook Callback Key</Label>
+                <Input placeholder="Identificador para webhooks" className="border-[#002443]/10" />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs text-[#002443]/50">Ambiente</Label>
+              <Select defaultValue="sandbox">
+                <SelectTrigger className="w-48 border-[#002443]/10"><SelectValue /></SelectTrigger>
+                <SelectContent><SelectItem value="sandbox">Sandbox</SelectItem><SelectItem value="production">Produção</SelectItem></SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* BDC Services */}
+          <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 space-y-4">
+            <h3 className="text-base font-bold text-[#002443]">Datasets Disponíveis</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {bdcServices.map(service => {
+                const Icon = service.icon;
+                return (
+                  <div key={service.id} className="flex items-start gap-3 p-4 rounded-xl border border-[#002443]/5 hover:shadow-sm transition-shadow">
+                    <div className="w-9 h-9 rounded-lg bg-[#002443]/5 flex items-center justify-center shrink-0">
+                      <Icon className="w-4 h-4 text-[#002443]" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <p className="font-semibold text-sm text-[#002443]">{service.name}</p>
+                        <Switch className="data-[state=checked]:bg-[#2bc196]" />
+                      </div>
+                      <p className="text-xs text-[#002443]/40 mt-1">{service.desc}</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* Webhooks */}
+        <TabsContent value="webhooks" className="space-y-6 mt-6">
+          <div className="bg-[#36706c]/5 border border-[#36706c]/10 rounded-2xl p-4 flex items-start gap-3">
+            <Plug className="w-4 h-4 text-[#36706c] mt-0.5 shrink-0" />
+            <p className="text-xs text-[#002443]/60">Utilizamos webhooks para receber atualizações assíncronas (análise de documentos concluída, score de fraude atualizado) sem travar a experiência do usuário.</p>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 space-y-5">
+            <h3 className="text-base font-bold text-[#002443]">URLs de Webhook</h3>
+            {[
+              { label: 'Webhook CAF', url: 'https://api.seudominio.com/webhooks/caf' },
+              { label: 'Webhook BigDataCorp', url: 'https://api.seudominio.com/webhooks/bigdatacorp' },
+            ].map((wh, i) => (
+              <div key={i} className="p-4 rounded-xl border border-[#002443]/5 space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs text-[#002443]/50">{wh.label}</Label>
+                  <Badge variant="outline" className="text-[10px] border-[#002443]/10">POST</Badge>
+                </div>
+                <div className="flex gap-2">
+                  <Input readOnly value={wh.url} className="font-mono text-xs bg-[#f4f4f4] border-[#002443]/5" />
+                  <Button variant="outline" size="icon" className="border-[#002443]/10" onClick={() => copyToClipboard(wh.url)}><Copy className="w-4 h-4 text-[#002443]/40" /></Button>
+                </div>
+              </div>
+            ))}
+            <div className="space-y-1.5">
+              <Label className="text-xs text-[#002443]/50">Webhook Secret</Label>
+              <div className="flex gap-2">
+                <Input type="password" placeholder="••••••••••••••••" className="font-mono border-[#002443]/10" />
+                <Button variant="outline" className="rounded-xl border-[#002443]/10 text-[#002443]/70 text-sm">Gerar Novo</Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-[#002443]/5 p-6">
+            <h3 className="text-base font-bold text-[#002443] mb-4">Eventos Suportados</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[
+                { title: 'CAF', events: ['transaction.completed', 'transaction.approved', 'transaction.reproved', 'onboarding.completed', 'face_auth.attempt'] },
+                { title: 'BigDataCorp', events: ['onboarding.ok (STATUS_CODE: 2)', 'onboarding.timeout (STATUS_CODE: -201)', 'onboarding.max_retries (STATUS_CODE: -202)', 'onboarding.closed (STATUS_CODE: -400)'] },
+              ].map((group, i) => (
+                <div key={i}>
+                  <p className="text-xs font-bold text-[#002443]/40 uppercase tracking-wider mb-2">{group.title}</p>
+                  <ul className="space-y-1.5">
+                    {group.events.map((ev, j) => (
+                      <li key={j} className="text-xs text-[#002443]/60 font-mono bg-[#f4f4f4] px-3 py-1.5 rounded-lg">• {ev}</li>
                     ))}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* Logs */}
+        <TabsContent value="logs" className="mt-6">
+          <div className="bg-white rounded-2xl border border-[#002443]/5 overflow-hidden">
+            <div className="p-5 border-b border-[#002443]/5 flex items-center justify-between">
+              <h3 className="text-base font-bold text-[#002443]">Logs de Integração</h3>
+              <Button variant="outline" size="sm" className="rounded-xl border-[#002443]/10">
+                <RefreshCw className="w-4 h-4 mr-2 text-[#002443]/40" /> Atualizar
+              </Button>
+            </div>
+            {logsLoading ? (
+              <div className="flex justify-center py-16"><Loader2 className="w-6 h-6 animate-spin text-[#2bc196]" /></div>
+            ) : integrationLogs.length === 0 ? (
+              <div className="text-center py-16">
+                <div className="w-16 h-16 rounded-2xl bg-[#f4f4f4] flex items-center justify-center mx-auto mb-4"><Activity className="w-7 h-7 text-[#002443]/20" /></div>
+                <p className="text-sm text-[#002443]/50">Nenhum log de integração encontrado</p>
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-[#f4f4f4]">
+                    {['Data/Hora', 'Provedor', 'Serviço', 'Status', 'Resultado', 'Duração', ''].map((h, i) => (
+                      <TableHead key={i} className="text-[10px] font-bold text-[#002443]/40 uppercase">{h}</TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {integrationLogs.map(log => (
+                    <TableRow key={log.id}>
+                      <TableCell className="text-xs text-[#002443]/60">{log.created_date ? new Date(log.created_date).toLocaleString('pt-BR') : '-'}</TableCell>
+                      <TableCell><Badge variant="outline" className="text-[10px] border-[#002443]/10">{log.provider}</Badge></TableCell>
+                      <TableCell className="text-xs font-mono text-[#36706c]">{log.service_type}</TableCell>
+                      <TableCell>{getStatusBadge(log.status)}</TableCell>
+                      <TableCell>
+                        {log.result_status && (
+                          <Badge className={`text-[10px] border-0 ${
+                            log.result_status === 'APPROVED' ? 'bg-[#2bc196]/10 text-[#2bc196]' :
+                            log.result_status === 'REPROVED' ? 'bg-red-50 text-red-500' :
+                            'bg-[#002443]/5 text-[#002443]/60'
+                          }`}>{log.result_status}</Badge>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-xs text-[#002443]/40">{log.duration_ms ? `${log.duration_ms}ms` : '-'}</TableCell>
+                      <TableCell><Button variant="ghost" size="sm" className="h-8 w-8 p-0"><Eye className="w-4 h-4 text-[#002443]/30" /></Button></TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </div>
         </TabsContent>
       </Tabs>
     </div>

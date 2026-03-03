@@ -5,25 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
+  Dialog, DialogContent, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import { 
   History, Search, Download, RefreshCw, Loader2,
@@ -42,7 +30,6 @@ export default function Auditoria() {
   const [selectedLog, setSelectedLog] = useState(null);
   const itemsPerPage = 20;
 
-  // Reset page when filters change
   React.useEffect(() => { setCurrentPage(1); }, [searchTerm, actionFilter, actorTypeFilter, dateFilter, entityFilter]);
 
   const { data: auditLogs = [], isLoading, refetch } = useQuery({
@@ -51,94 +38,63 @@ export default function Auditoria() {
   });
 
   const actionConfig = {
-    'CREATE': { color: 'bg-blue-100 text-blue-800', icon: Plus, label: 'Criação' },
-    'UPDATE': { color: 'bg-yellow-100 text-yellow-800', icon: Edit, label: 'Atualização' },
-    'DELETE': { color: 'bg-red-100 text-red-800', icon: Trash2, label: 'Exclusão' },
-    'VIEW': { color: 'bg-slate-100 text-[var(--pagsmile-blue)]', icon: Eye, label: 'Visualização' },
-    'APPROVAL': { color: 'bg-green-100 text-green-800', icon: CheckCircle2, label: 'Aprovação' },
-    'REJECTION': { color: 'bg-red-100 text-red-800', icon: XCircle, label: 'Rejeição' },
-    'VALIDATION': { color: 'bg-purple-100 text-purple-800', icon: AlertTriangle, label: 'Validação' },
-  };
-
-  const actorTypeConfig = {
-    'user': { icon: User, label: 'Usuário' },
-    'system': { icon: Settings, label: 'Sistema' },
-    'helena_ai': { icon: Bot, label: 'Helena IA' },
+    'CREATE': { bg: 'bg-[#36706c]/10', text: 'text-[#36706c]', icon: Plus, label: 'Criação' },
+    'UPDATE': { bg: 'bg-[#002443]/5', text: 'text-[#002443]', icon: Edit, label: 'Atualização' },
+    'DELETE': { bg: 'bg-red-50', text: 'text-red-500', icon: Trash2, label: 'Exclusão' },
+    'VIEW': { bg: 'bg-[#f4f4f4]', text: 'text-[#002443]/60', icon: Eye, label: 'Visualização' },
+    'APPROVAL': { bg: 'bg-[#2bc196]/10', text: 'text-[#2bc196]', icon: CheckCircle2, label: 'Aprovação' },
+    'REJECTION': { bg: 'bg-red-50', text: 'text-red-500', icon: XCircle, label: 'Rejeição' },
+    'VALIDATION': { bg: 'bg-[#5cf7cf]/10', text: 'text-[#36706c]', icon: AlertTriangle, label: 'Validação' },
   };
 
   const getActionBadge = (action) => {
     const config = actionConfig[action] || actionConfig['UPDATE'];
     const Icon = config.icon;
-    return (
-      <Badge className={`${config.color} gap-1 border-0`}>
-        <Icon className="w-3 h-3" />
-        {config.label}
-      </Badge>
-    );
+    return <Badge className={`${config.bg} ${config.text} gap-1 border-0`}><Icon className="w-3 h-3" />{config.label}</Badge>;
   };
 
-  const getActorIcon = (actorType) => {
-    const config = actorTypeConfig[actorType] || actorTypeConfig['user'];
-    const Icon = config.icon;
-    return <Icon className="w-4 h-4 text-[var(--pagsmile-blue)]/50" />;
+  const getActorIcon = (changedBy) => {
+    if (changedBy === 'HELENA_AI') return <Bot className="w-4 h-4 text-[#2bc196]" />;
+    if (changedBy === 'System') return <Settings className="w-4 h-4 text-[#002443]/40" />;
+    return <User className="w-4 h-4 text-[#002443]/40" />;
   };
 
-  // Filtrar logs
   const filteredLogs = React.useMemo(() => {
     return auditLogs.filter(log => {
       const matchesSearch = !searchTerm || 
         log.actionDescription?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         log.changedBy?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         log.entityId?.toLowerCase().includes(searchTerm.toLowerCase());
-      
       const matchesAction = actionFilter === 'all' || log.actionType === actionFilter;
       const matchesActorType = actorTypeFilter === 'all' || 
         (actorTypeFilter === 'helena_ai' && log.changedBy === 'HELENA_AI') ||
         (actorTypeFilter === 'system' && log.changedBy === 'System') ||
         (actorTypeFilter === 'user' && log.changedBy !== 'HELENA_AI' && log.changedBy !== 'System');
-
       let matchesDate = true;
       if (dateFilter !== 'all' && log.changeDate) {
         const logDate = new Date(log.changeDate);
         const now = new Date();
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        
-        if (dateFilter === 'today') {
-          matchesDate = logDate >= today;
-        } else if (dateFilter === 'week') {
-          const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-          matchesDate = logDate >= weekAgo;
-        } else if (dateFilter === 'month') {
-          const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-          matchesDate = logDate >= monthStart;
-        }
+        if (dateFilter === 'today') matchesDate = logDate >= today;
+        else if (dateFilter === 'week') matchesDate = logDate >= new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+        else if (dateFilter === 'month') matchesDate = logDate >= new Date(now.getFullYear(), now.getMonth(), 1);
       }
-      
       const matchesEntity = !entityFilter || log.entityName === entityFilter;
       return matchesSearch && matchesAction && matchesActorType && matchesDate && matchesEntity;
     });
   }, [auditLogs, searchTerm, actionFilter, actorTypeFilter, dateFilter, entityFilter]);
 
-  // Paginação
   const totalPages = Math.ceil(filteredLogs.length / itemsPerPage);
-  const paginatedLogs = filteredLogs.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const paginatedLogs = filteredLogs.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const handleExport = () => {
     const csvContent = [
       ['Data', 'Ação', 'Descrição', 'Ator', 'Entidade', 'ID'].join(','),
       ...filteredLogs.map(log => [
         log.changeDate ? new Date(log.changeDate).toLocaleString('pt-BR') : '',
-        log.actionType,
-        `"${log.actionDescription || ''}"`,
-        log.changedBy,
-        log.entityName,
-        log.entityId
+        log.actionType, `"${log.actionDescription || ''}"`, log.changedBy, log.entityName, log.entityId
       ].join(','))
     ].join('\n');
-
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
@@ -146,190 +102,120 @@ export default function Auditoria() {
     link.click();
   };
 
+  const stats = [
+    { label: 'Total de Registros', value: auditLogs.length, color: '#002443' },
+    { label: 'Aprovações', value: auditLogs.filter(l => l.actionType === 'APPROVAL').length, color: '#2bc196' },
+    { label: 'Rejeições', value: auditLogs.filter(l => l.actionType === 'REJECTION').length, color: '#002443' },
+    { label: 'Ações Helena IA', value: auditLogs.filter(l => l.changedBy === 'HELENA_AI').length, color: '#36706c' },
+  ];
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-slate-100">
-            <History className="w-6 h-6 text-[var(--pagsmile-blue)]/80" />
+          <div className="w-10 h-10 rounded-xl bg-[#002443]/5 flex items-center justify-center">
+            <History className="w-5 h-5 text-[#002443]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Auditoria de Compliance</h1>
-            <p className="text-[var(--pagsmile-blue)]/70">Registro completo de todas as ações do sistema</p>
+            <h1 className="text-2xl font-bold text-[#002443]">Auditoria de Compliance</h1>
+            <p className="text-sm text-[#002443]/60">Registro completo de todas as ações do sistema</p>
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={handleExport}>
-            <Download className="w-4 h-4 mr-2" />
-            Exportar
+          <Button variant="outline" onClick={handleExport} className="border-[#002443]/10 hover:bg-[#f4f4f4] rounded-xl">
+            <Download className="w-4 h-4 mr-2 text-[#002443]/50" /> <span className="text-[#002443]/70">Exportar</span>
           </Button>
-          <Button variant="outline" onClick={() => refetch()}>
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Atualizar
+          <Button variant="outline" onClick={() => refetch()} className="border-[#002443]/10 hover:bg-[#f4f4f4] rounded-xl">
+            <RefreshCw className="w-4 h-4 mr-2 text-[#002443]/50" /> <span className="text-[#002443]/70">Atualizar</span>
           </Button>
         </div>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          { label: 'Total de Registros', value: auditLogs.length, color: 'bg-slate-100', textColor: 'text-[var(--pagsmile-blue)]' },
-          { label: 'Aprovações', value: auditLogs.filter(l => l.actionType === 'APPROVAL').length, color: 'bg-green-100', textColor: 'text-green-800' },
-          { label: 'Rejeições', value: auditLogs.filter(l => l.actionType === 'REJECTION').length, color: 'bg-red-100', textColor: 'text-red-800' },
-          { label: 'Ações Helena IA', value: auditLogs.filter(l => l.changedBy === 'HELENA_AI').length, color: 'bg-purple-100', textColor: 'text-purple-800' },
-        ].map((stat, idx) => (
-          <div key={idx} className={`${stat.color} rounded-xl p-4`}>
-            <p className={`text-2xl font-bold ${stat.textColor}`}>{stat.value}</p>
-            <p className="text-sm text-[var(--pagsmile-blue)]/80">{stat.label}</p>
+        {stats.map((s, i) => (
+          <div key={i} className="bg-white rounded-2xl border border-[#002443]/5 p-4">
+            <p className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</p>
+            <p className="text-xs text-[#002443]/50">{s.label}</p>
           </div>
         ))}
       </div>
 
-      {/* Filtros */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4">
-        <div className="flex flex-col md:flex-row gap-4 justify-between">
+      {/* Filters */}
+      <div className="bg-white rounded-2xl border border-[#002443]/5 p-4">
+        <div className="flex flex-col md:flex-row gap-3 justify-between">
           <div className="flex gap-2 flex-wrap items-center">
-            <Filter className="w-4 h-4 text-[var(--pagsmile-blue)]/50" />
-            
-            <Select value={actionFilter} onValueChange={setActionFilter}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="Tipo de Ação" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas as Ações</SelectItem>
-                <SelectItem value="CREATE">Criação</SelectItem>
-                <SelectItem value="UPDATE">Atualização</SelectItem>
-                <SelectItem value="DELETE">Exclusão</SelectItem>
-                <SelectItem value="APPROVAL">Aprovação</SelectItem>
-                <SelectItem value="REJECTION">Rejeição</SelectItem>
-                <SelectItem value="VALIDATION">Validação</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={entityFilter || 'all'} onValueChange={(v) => setEntityFilter(v === 'all' ? null : v)}>
-              <SelectTrigger className="w-44">
-                <SelectValue placeholder="Entidade" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas as Entidades</SelectItem>
-                <SelectItem value="Proposal">Propostas</SelectItem>
-                <SelectItem value="ComplianceRule">Regras de Compliance</SelectItem>
-                <SelectItem value="OnboardingCase">Onboarding Cases</SelectItem>
-                <SelectItem value="Lead">Leads</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={actorTypeFilter} onValueChange={setActorTypeFilter}>
-              <SelectTrigger className="w-36">
-                <SelectValue placeholder="Ator" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="user">Usuários</SelectItem>
-                <SelectItem value="helena_ai">Helena IA</SelectItem>
-                <SelectItem value="system">Sistema</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={dateFilter} onValueChange={setDateFilter}>
-              <SelectTrigger className="w-36">
-                <SelectValue placeholder="Período" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todo período</SelectItem>
-                <SelectItem value="today">Hoje</SelectItem>
-                <SelectItem value="week">Esta semana</SelectItem>
-                <SelectItem value="month">Este mês</SelectItem>
-              </SelectContent>
-            </Select>
-
+            <Filter className="w-4 h-4 text-[#002443]/30" />
+            {[
+              { value: actionFilter, onChange: setActionFilter, placeholder: 'Ação', width: 'w-40', options: [
+                { v: 'all', l: 'Todas as Ações' }, { v: 'CREATE', l: 'Criação' }, { v: 'UPDATE', l: 'Atualização' }, { v: 'DELETE', l: 'Exclusão' }, { v: 'APPROVAL', l: 'Aprovação' }, { v: 'REJECTION', l: 'Rejeição' }, { v: 'VALIDATION', l: 'Validação' }
+              ]},
+              { value: entityFilter || 'all', onChange: (v) => setEntityFilter(v === 'all' ? null : v), placeholder: 'Entidade', width: 'w-44', options: [
+                { v: 'all', l: 'Todas Entidades' }, { v: 'Proposal', l: 'Propostas' }, { v: 'ComplianceRule', l: 'Regras' }, { v: 'OnboardingCase', l: 'Onboarding' }, { v: 'Lead', l: 'Leads' }
+              ]},
+              { value: actorTypeFilter, onChange: setActorTypeFilter, placeholder: 'Ator', width: 'w-36', options: [
+                { v: 'all', l: 'Todos' }, { v: 'user', l: 'Usuários' }, { v: 'helena_ai', l: 'Helena IA' }, { v: 'system', l: 'Sistema' }
+              ]},
+              { value: dateFilter, onChange: setDateFilter, placeholder: 'Período', width: 'w-36', options: [
+                { v: 'all', l: 'Todo período' }, { v: 'today', l: 'Hoje' }, { v: 'week', l: 'Esta semana' }, { v: 'month', l: 'Este mês' }
+              ]},
+            ].map((filter, idx) => (
+              <Select key={idx} value={filter.value} onValueChange={filter.onChange}>
+                <SelectTrigger className={`${filter.width} border-[#002443]/10 text-sm`}><SelectValue placeholder={filter.placeholder} /></SelectTrigger>
+                <SelectContent>{filter.options.map(o => <SelectItem key={o.v} value={o.v}>{o.l}</SelectItem>)}</SelectContent>
+              </Select>
+            ))}
             {(actionFilter !== 'all' || actorTypeFilter !== 'all' || dateFilter !== 'all' || entityFilter) && (
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => {
-                  setActionFilter('all');
-                  setActorTypeFilter('all');
-                  setDateFilter('all');
-                  setEntityFilter(null);
-                }}
-              >
+              <button onClick={() => { setActionFilter('all'); setActorTypeFilter('all'); setDateFilter('all'); setEntityFilter(null); }} className="text-xs text-[#2bc196] hover:text-[#36706c] font-medium">
                 Limpar filtros
-              </Button>
+              </button>
             )}
           </div>
-          
           <div className="relative w-full md:w-80">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/50" />
-            <Input
-              placeholder="Buscar por descrição, ator ou ID..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9"
-            />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/30" />
+            <Input placeholder="Buscar por descrição, ator ou ID..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-9 border-[#002443]/10" />
           </div>
         </div>
       </div>
 
-      {/* Tabela */}
-      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+      {/* Table */}
+      <div className="bg-white rounded-2xl border border-[#002443]/5 overflow-hidden">
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" />
-          </div>
+          <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" /></div>
         ) : paginatedLogs.length === 0 ? (
-          <div className="text-center py-12">
-            <History className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/40 mb-4" />
-            <p className="text-[var(--pagsmile-blue)]/70">Nenhum registro encontrado</p>
+          <div className="text-center py-20">
+            <div className="w-16 h-16 rounded-2xl bg-[#f4f4f4] flex items-center justify-center mx-auto mb-4"><History className="w-7 h-7 text-[#002443]/20" /></div>
+            <p className="text-sm text-[#002443]/50">Nenhum registro encontrado</p>
           </div>
         ) : (
           <Table>
             <TableHeader>
-              <TableRow className="bg-slate-50">
-                <TableHead>Data/Hora</TableHead>
-                <TableHead>Ação</TableHead>
-                <TableHead>Descrição</TableHead>
-                <TableHead>Ator</TableHead>
-                <TableHead>Entidade</TableHead>
-                <TableHead className="text-right">Detalhes</TableHead>
+              <TableRow className="bg-[#f4f4f4]">
+                {['Data/Hora', 'Ação', 'Descrição', 'Ator', 'Entidade', ''].map((h, i) => (
+                  <TableHead key={i} className={`text-[10px] font-bold text-[#002443]/40 uppercase ${i === 5 ? 'text-right' : ''}`}>{h}</TableHead>
+                ))}
               </TableRow>
             </TableHeader>
             <TableBody>
               {paginatedLogs.map((log) => (
-                <TableRow key={log.id} className="hover:bg-slate-50">
+                <TableRow key={log.id} className="hover:bg-[#f4f4f4]/50">
                   <TableCell className="text-sm">
-                    <div>
-                      <p className="font-medium">
-                        {log.changeDate ? new Date(log.changeDate).toLocaleDateString('pt-BR') : '-'}
-                      </p>
-                      <p className="text-xs text-[var(--pagsmile-blue)]/50">
-                        {log.changeDate ? new Date(log.changeDate).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : ''}
-                      </p>
-                    </div>
+                    <p className="font-medium text-[#002443]">{log.changeDate ? new Date(log.changeDate).toLocaleDateString('pt-BR') : '-'}</p>
+                    <p className="text-[10px] text-[#002443]/30">{log.changeDate ? new Date(log.changeDate).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : ''}</p>
                   </TableCell>
                   <TableCell>{getActionBadge(log.actionType)}</TableCell>
-                  <TableCell className="max-w-xs truncate text-sm">
-                    {log.actionDescription || '-'}
-                  </TableCell>
+                  <TableCell className="max-w-xs truncate text-xs text-[#002443]/60">{log.actionDescription || '-'}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      {getActorIcon(log.changedBy === 'HELENA_AI' ? 'helena_ai' : log.changedBy === 'System' ? 'system' : 'user')}
-                      <span className="text-sm">{log.changedBy || '-'}</span>
+                      {getActorIcon(log.changedBy)}
+                      <span className="text-xs text-[#002443]/60">{log.changedBy || '-'}</span>
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="font-normal text-xs">
-                      {log.entityName}
-                    </Badge>
-                  </TableCell>
+                  <TableCell><Badge variant="outline" className="text-[10px] border-[#002443]/10 text-[#002443]/50">{log.entityName}</Badge></TableCell>
                   <TableCell className="text-right">
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => setSelectedLog(log)}
-                    >
-                      <Eye className="w-4 h-4" />
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => setSelectedLog(log)}>
+                      <Eye className="w-4 h-4 text-[#002443]/30" />
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -338,30 +224,17 @@ export default function Auditoria() {
           </Table>
         )}
 
-        {/* Paginação */}
         {filteredLogs.length > 0 && (
-          <div className="px-4 py-3 border-t border-slate-200 flex items-center justify-between">
-            <p className="text-sm text-[var(--pagsmile-blue)]/70">
-              Mostrando {((currentPage - 1) * itemsPerPage) + 1} a {Math.min(currentPage * itemsPerPage, filteredLogs.length)} de {filteredLogs.length} registros
+          <div className="px-5 py-3 border-t border-[#002443]/5 flex items-center justify-between">
+            <p className="text-xs text-[#002443]/40">
+              {((currentPage - 1) * itemsPerPage) + 1} a {Math.min(currentPage * itemsPerPage, filteredLogs.length)} de {filteredLogs.length}
             </p>
             <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                disabled={currentPage === 1}
-              >
+              <Button variant="outline" size="sm" className="rounded-lg border-[#002443]/10" onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} disabled={currentPage === 1}>
                 <ChevronLeft className="w-4 h-4" />
               </Button>
-              <span className="text-sm text-[var(--pagsmile-blue)]/80">
-                Página {currentPage} de {totalPages || 1}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                disabled={currentPage === totalPages || totalPages === 0}
-              >
+              <span className="text-xs text-[#002443]/50">{currentPage} / {totalPages || 1}</span>
+              <Button variant="outline" size="sm" className="rounded-lg border-[#002443]/10" onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} disabled={currentPage === totalPages || totalPages === 0}>
                 <ChevronRight className="w-4 h-4" />
               </Button>
             </div>
@@ -369,55 +242,25 @@ export default function Auditoria() {
         )}
       </div>
 
-      {/* Modal de Detalhes */}
+      {/* Detail Modal */}
       <Dialog open={!!selectedLog} onOpenChange={() => setSelectedLog(null)}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Detalhes do Registro</DialogTitle>
-          </DialogHeader>
+        <DialogContent className="max-w-lg rounded-2xl">
+          <DialogHeader><DialogTitle className="text-[#002443]">Detalhes do Registro</DialogTitle></DialogHeader>
           {selectedLog && (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-[var(--pagsmile-blue)]/70">Data/Hora</p>
-                  <p className="font-medium">
-                    {selectedLog.changeDate ? new Date(selectedLog.changeDate).toLocaleString('pt-BR') : '-'}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-[var(--pagsmile-blue)]/70">Tipo de Ação</p>
-                  {getActionBadge(selectedLog.actionType)}
-                </div>
-                <div>
-                  <p className="text-sm text-[var(--pagsmile-blue)]/70">Ator</p>
-                  <p className="font-medium">{selectedLog.changedBy}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-[var(--pagsmile-blue)]/70">Entidade</p>
-                  <p className="font-medium">{selectedLog.entityName}</p>
-                </div>
+                <div><p className="text-xs text-[#002443]/40">Data/Hora</p><p className="font-medium text-sm text-[#002443]">{selectedLog.changeDate ? new Date(selectedLog.changeDate).toLocaleString('pt-BR') : '-'}</p></div>
+                <div><p className="text-xs text-[#002443]/40 mb-1">Ação</p>{getActionBadge(selectedLog.actionType)}</div>
+                <div><p className="text-xs text-[#002443]/40">Ator</p><p className="font-medium text-sm text-[#002443]">{selectedLog.changedBy}</p></div>
+                <div><p className="text-xs text-[#002443]/40">Entidade</p><p className="font-medium text-sm text-[#002443]">{selectedLog.entityName}</p></div>
               </div>
-              <div>
-                <p className="text-sm text-[var(--pagsmile-blue)]/70">Descrição</p>
-                <p className="font-medium">{selectedLog.actionDescription}</p>
-              </div>
-              <div>
-                <p className="text-sm text-[var(--pagsmile-blue)]/70">ID da Entidade</p>
-                <p className="font-mono text-sm bg-slate-50 p-2 rounded">{selectedLog.entityId}</p>
-              </div>
+              <div><p className="text-xs text-[#002443]/40">Descrição</p><p className="text-sm text-[#002443]">{selectedLog.actionDescription}</p></div>
+              <div><p className="text-xs text-[#002443]/40">ID da Entidade</p><p className="font-mono text-xs bg-[#f4f4f4] p-2 rounded-xl text-[#36706c]">{selectedLog.entityId}</p></div>
               {selectedLog.details && (
-                <div>
-                  <p className="text-sm text-[var(--pagsmile-blue)]/70 mb-2">Detalhes Adicionais</p>
-                  <pre className="bg-slate-50 p-3 rounded text-xs overflow-auto max-h-40">
-                    {JSON.stringify(selectedLog.details, null, 2)}
-                  </pre>
-                </div>
+                <div><p className="text-xs text-[#002443]/40 mb-1">Detalhes Adicionais</p><pre className="bg-[#f4f4f4] p-3 rounded-xl text-xs overflow-auto max-h-40 text-[#002443]/70">{JSON.stringify(selectedLog.details, null, 2)}</pre></div>
               )}
               {selectedLog.ipAddress && (
-                <div>
-                  <p className="text-sm text-[var(--pagsmile-blue)]/70">Endereço IP</p>
-                  <p className="font-mono text-sm">{selectedLog.ipAddress}</p>
-                </div>
+                <div><p className="text-xs text-[#002443]/40">IP</p><p className="font-mono text-xs text-[#002443]/60">{selectedLog.ipAddress}</p></div>
               )}
             </div>
           )}
