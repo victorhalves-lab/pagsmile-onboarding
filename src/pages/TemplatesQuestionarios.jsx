@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { 
   Plus, FileText, Edit, Trash2, Loader2, 
-  Users, Building2, Briefcase, Shield, ShoppingCart, Network
+  Users, Building2, Briefcase, Shield, ShoppingCart, Network, Copy
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -191,6 +191,23 @@ export default function TemplatesQuestionarios() {
                     />
                   </div>
                   
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={() => {
+                      const baseUrl = window.location.origin;
+                      const path = template.category === 'LEAD_GENERATION' 
+                        ? '/lead-questionnaire' 
+                        : '/compliance-onboarding-start';
+                      const url = `${baseUrl}${path}?templateId=${template.id}`;
+                      navigator.clipboard.writeText(url);
+                      toast.success('Link público copiado!');
+                    }}
+                    title="Copiar Link Público"
+                  >
+                    <Copy className="w-4 h-4 text-[var(--pagsmile-green)]" />
+                  </Button>
+
                   <Link to={createPageUrl('EditorQuestionario') + `?id=${template.id}`}>
                     <Button variant="ghost" size="icon">
                       <Edit className="w-4 h-4" />

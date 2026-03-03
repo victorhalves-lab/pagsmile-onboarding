@@ -11,6 +11,7 @@ export default function LeadQuestionnaire() {
   const navigate = useNavigate();
   const urlParams = new URLSearchParams(window.location.search);
   const linkCode = urlParams.get('ref');
+  const paramTemplateId = urlParams.get('templateId');
 
   // Buscar link de onboarding se existir
   const { data: onboardingLink } = useQuery({
@@ -27,6 +28,10 @@ export default function LeadQuestionnaire() {
   const { data: template, isLoading } = useQuery({
     queryKey: ['leadTemplate', onboardingLink?.questionnaireTemplateId],
     queryFn: async () => {
+      if (paramTemplateId) {
+        const templates = await base44.entities.QuestionnaireTemplate.filter({ id: paramTemplateId });
+        if (templates[0]) return templates[0];
+      }
       if (onboardingLink?.questionnaireTemplateId) {
         const templates = await base44.entities.QuestionnaireTemplate.filter({ 
           id: onboardingLink.questionnaireTemplateId 
