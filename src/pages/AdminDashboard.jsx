@@ -329,8 +329,8 @@ export default function AdminDashboard() {
       
       return {
         name,
-        ia: iaCount || Math.floor(120 + i * 20 + Math.random() * 20),
-        manual: manualCount || Math.floor(50 - i * 5 + Math.random() * 10)
+        ia: iaCount,
+        manual: manualCount
       };
     });
   }, [onboardingCases]);
@@ -429,9 +429,9 @@ export default function AdminDashboard() {
           icon={Users}
           iconBg="bg-slate-100"
           iconColor="text-[var(--pagsmile-blue)]/80"
-          trend="up"
-          trendValue="+12%"
-          trendLabel="vs mês anterior"
+          trend={undefined}
+          trendValue={undefined}
+          trendLabel={undefined}
         />
         <KPICard
           title="Aprovadas (Helena)"
@@ -514,7 +514,7 @@ export default function AdminDashboard() {
         pendingManualOver24h={stats.pendingManualOver24h}
         approvalRateTrend={stats.approvalRateTrend}
         criticalScoresToday={stats.criticalScoresToday}
-        manualTimeTrend={15}
+        manualTimeTrend={0}
         staleLeads={leads.filter(l => {
           if (['ativado', 'perdido', 'proposta_recusada'].includes(l.status)) return false;
           const d = l.lastInteractionDate || l.updated_date || l.created_date;

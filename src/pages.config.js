@@ -78,6 +78,7 @@ import LeadQuestionnaire from './pages/LeadQuestionnaire';
 import LeadSuccess from './pages/LeadSuccess';
 import LivenessFacematchStep from './pages/LivenessFacematchStep';
 import LivenessSimulation from './pages/LivenessSimulation';
+import MessageTemplates from './pages/MessageTemplates';
 import OnboardingCompletion from './pages/OnboardingCompletion';
 import PipelineComercial from './pages/PipelineComercial';
 import PropostaPublica from './pages/PropostaPublica';
@@ -86,7 +87,6 @@ import QuestionariosLeads from './pages/QuestionariosLeads';
 import QuestionariosRecebidos from './pages/QuestionariosRecebidos';
 import RegrasDeCompliance from './pages/RegrasDeCompliance';
 import TemplatesQuestionarios from './pages/TemplatesQuestionarios';
-import MessageTemplates from './pages/MessageTemplates';
 import __Layout from './Layout.jsx';
 
 
@@ -122,6 +122,7 @@ export const PAGES = {
     "LeadSuccess": LeadSuccess,
     "LivenessFacematchStep": LivenessFacematchStep,
     "LivenessSimulation": LivenessSimulation,
+    "MessageTemplates": MessageTemplates,
     "OnboardingCompletion": OnboardingCompletion,
     "PipelineComercial": PipelineComercial,
     "PropostaPublica": PropostaPublica,
@@ -130,7 +131,6 @@ export const PAGES = {
     "QuestionariosRecebidos": QuestionariosRecebidos,
     "RegrasDeCompliance": RegrasDeCompliance,
     "TemplatesQuestionarios": TemplatesQuestionarios,
-    "MessageTemplates": MessageTemplates,
 }
 
 export const pagesConfig = {

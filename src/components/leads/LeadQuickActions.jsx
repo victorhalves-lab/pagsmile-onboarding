@@ -51,7 +51,7 @@ export default function LeadQuickActions({ lead }) {
       icon: FileText,
       variant: 'outline',
       className: 'border-blue-300 text-blue-700 hover:bg-blue-50',
-      onClick: () => navigate(createPageUrl('CriarProposta') + `?leadId=${lead.id}`)
+      onClick: () => navigate(createPageUrl('CriarProposta') + `?lead=${lead.id}`)
     });
   }
 

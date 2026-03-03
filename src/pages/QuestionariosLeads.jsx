@@ -186,7 +186,7 @@ export default function QuestionariosLeads() {
   const handleGerarProposta = (q) => {
     const leadId = q.lead_id;
     if (leadId) {
-      navigate(createPageUrl('CriarProposta') + `?leadId=${leadId}`);
+      navigate(createPageUrl('CriarProposta') + `?lead=${leadId}`);
     } else {
       toast.info('Vincule a um lead primeiro para gerar proposta');
     }
