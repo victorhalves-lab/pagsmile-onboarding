@@ -203,6 +203,7 @@ export default function Layout({ children, currentPageName }) {
       items: [
         { label: 'Gerar Link', path: 'GerarLinkOnboarding', icon: LinkIcon },
         { label: 'Templates', path: 'TemplatesQuestionarios', icon: FileText },
+        { label: 'Templates de Mensagem', path: 'MessageTemplates', icon: FileText },
         { label: 'Regras & Workflows', path: 'RegrasDeCompliance', icon: Settings },
       ]
     },
