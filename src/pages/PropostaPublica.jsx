@@ -66,6 +66,44 @@ export default function PropostaPublica() {
   // Mutations
   const aceitarMutation = useMutation({
     mutationFn: async () => {
+      // Determine compliance template based on lead's businessSubCategory
+      let complianceUrl = null;
+      if (proposta.leadId) {
+        const leads = await base44.entities.Lead.filter({ id: proposta.leadId });
+        const lead = leads[0];
+        if (lead) {
+          const subCat = lead.businessSubCategory;
+          const COMPLIANCE_TEMPLATES = {
+            'MERCHAN': '69a691da6b5ed4982b8a4055',
+            'GATEWAY': '69a691da6b5ed4982b8a4056',
+            'MARKETPLACE': '69a691da6b5ed4982b8a4057',
+          };
+          const templateId = COMPLIANCE_TEMPLATES[subCat];
+          if (templateId) {
+            const compliancePages = {
+              'MERCHAN': 'ComplianceFullKYC',
+              'GATEWAY': 'ComplianceFullKYC',
+              'MARKETPLACE': 'ComplianceFullKYC',
+            };
+            const page = compliancePages[subCat] || 'ComplianceFullKYC';
+            const refCode = subCat === 'MERCHAN' ? 'COMPMERCH' : subCat === 'GATEWAY' ? 'COMPGATEW' : 'COMPMKTPL';
+            complianceUrl = `${window.location.origin}${createPageUrl(page)}?ref=${refCode}&leadId=${proposta.leadId}`;
+          
+            // Update lead with recommended compliance template
+            await base44.entities.Lead.update(proposta.leadId, {
+              status: 'proposta_aceita',
+              recommendedComplianceTemplateId: templateId,
+              lastInteractionDate: new Date().toISOString()
+            });
+          } else {
+            await base44.entities.Lead.update(proposta.leadId, {
+              status: 'proposta_aceita',
+              lastInteractionDate: new Date().toISOString()
+            });
+          }
+        }
+      }
+
       await base44.entities.Proposal.update(proposta.id, {
         status: 'aceita',
         acceptedDate: new Date().toISOString(),
@@ -79,17 +117,19 @@ export default function PropostaPublica() {
         activityDate: new Date().toISOString()
       });
 
-      if (proposta.leadId) {
-        await base44.entities.Lead.update(proposta.leadId, {
-          status: 'proposta_aceita',
-          lastInteractionDate: new Date().toISOString()
-        });
-      }
+      return complianceUrl;
     },
-    onSuccess: () => {
+    onSuccess: (complianceUrl) => {
       toast.success('Proposta aceita com sucesso!');
       queryClient.invalidateQueries({ queryKey: ['proposta_publica', token] });
       setShowAceiteModal(false);
+      
+      // Redirect to compliance questionnaire after a brief delay
+      if (complianceUrl) {
+        setTimeout(() => {
+          window.location.href = complianceUrl;
+        }, 2000);
+      }
     }
   });
 
