@@ -1,0 +1,105 @@
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '../../utils';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Eye, Phone, FileText, Shield, AlertTriangle, Clock } from 'lucide-react';
+import moment from 'moment';
+
+const RISK_CONFIG = {
+  BAIXO: { label: 'Baixo', color: 'bg-green-100 text-green-700' },
+  MEDIO: { label: 'Médio', color: 'bg-amber-100 text-amber-700' },
+  ALTO: { label: 'Alto', color: 'bg-orange-100 text-orange-700' },
+  CRITICO: { label: 'Crítico', color: 'bg-red-100 text-red-700' },
+};
+
+const getScoreBg = (score) => {
+  if (score >= 70) return 'bg-green-500';
+  if (score >= 40) return 'bg-amber-500';
+  return 'bg-red-500';
+};
+
+export default function LeadKanbanCard({ lead, onAction }) {
+  const navigate = useNavigate();
+  const riskCfg = RISK_CONFIG[lead.priscilaRiskLevel];
+  const daysSinceUpdate = lead.lastInteractionDate
+    ? moment().diff(moment(lead.lastInteractionDate), 'days')
+    : lead.created_date ? moment().diff(moment(lead.created_date), 'days') : null;
+  const isStale = daysSinceUpdate !== null && daysSinceUpdate > 5;
+
+  return (
+    <div className="space-y-2">
+      {/* Name and company */}
+      <p className="text-sm font-medium text-[var(--pagsmile-blue)] truncate">
+        {lead.companyName || lead.fullName}
+      </p>
+      <p className="text-[10px] text-[var(--pagsmile-blue)]/50 truncate">
+        {lead.contactName || lead.email}
+      </p>
+
+      {/* Score + Risk row */}
+      <div className="flex items-center gap-2 flex-wrap">
+        {lead.priscilaQualityScore != null && (
+          <div className="flex items-center gap-1">
+            <div className={`w-2 h-2 rounded-full ${getScoreBg(lead.priscilaQualityScore)}`} />
+            <span className="text-xs font-bold text-[var(--pagsmile-blue)]">
+              {lead.priscilaQualityScore}
+            </span>
+          </div>
+        )}
+        {riskCfg && (
+          <Badge className={`text-[9px] px-1.5 py-0 ${riskCfg.color}`}>
+            {riskCfg.label}
+          </Badge>
+        )}
+        {isStale && (
+          <Badge variant="outline" className="text-[9px] px-1.5 py-0 text-amber-600 border-amber-300 bg-amber-50 gap-0.5">
+            <Clock className="w-2.5 h-2.5" />
+            {daysSinceUpdate}d
+          </Badge>
+        )}
+      </div>
+
+      {/* TPV */}
+      {lead.tpvMensal > 0 && (
+        <p className="text-xs font-mono text-[var(--pagsmile-green)]">
+          R$ {lead.tpvMensal.toLocaleString('pt-BR')}/mês
+        </p>
+      )}
+
+      {/* Last interaction */}
+      {lead.lastInteractionDate && (
+        <p className="text-[9px] text-[var(--pagsmile-blue)]/40">
+          Último contato: {moment(lead.lastInteractionDate).fromNow()}
+        </p>
+      )}
+
+      {/* Action buttons */}
+      <div className="flex gap-1 pt-1 flex-wrap">
+        <Button
+          variant="ghost" size="sm" className="h-6 px-2 text-[10px]"
+          onClick={(e) => { e.stopPropagation(); navigate(createPageUrl('LeadDetails') + `?id=${lead.id}`); }}
+        >
+          <Eye className="w-3 h-3 mr-0.5" /> Ver
+        </Button>
+        {['questionario_preenchido', 'analisado_priscila'].includes(lead.status) && (
+          <Button
+            variant="default" size="sm"
+            className="h-6 px-2 text-[10px] bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white"
+            onClick={(e) => { e.stopPropagation(); onAction('contact', lead); }}
+          >
+            <Phone className="w-3 h-3 mr-0.5" /> Contato
+          </Button>
+        )}
+        {['em_contato_comercial', 'analisado_priscila'].includes(lead.status) && lead.priscilaRiskLevel !== 'CRITICO' && (
+          <Button
+            variant="outline" size="sm" className="h-6 px-2 text-[10px]"
+            onClick={(e) => { e.stopPropagation(); navigate(createPageUrl('CriarProposta') + `?lead=${lead.id}`); }}
+          >
+            <FileText className="w-3 h-3 mr-0.5" /> Proposta
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
