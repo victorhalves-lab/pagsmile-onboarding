@@ -50,7 +50,7 @@ export default function CardOutrasTaxas({ rates, onUpdateRates }) {
 
       {/* TPV Mínimo */}
       <div className="space-y-2 pt-3 border-t border-white/5">
-        <Label className={labelCls}>TPV Mínimo Garantido</Label>
+        <Label className={labelCls}>TPV Mínimo Mensal Garantido</Label>
         <div className="grid grid-cols-3 gap-2">
           {[{ k: 'mes1', l: 'Mês 1' }, { k: 'mes2', l: 'Mês 2' }, { k: 'mes3', l: 'Mês 3 em diante' }].map(m => (
             <div key={m.k} className="space-y-1">
