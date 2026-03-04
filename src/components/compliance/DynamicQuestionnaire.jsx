@@ -67,28 +67,100 @@ function getIconForQuestion(questionText) {
   return ICON_MAPPINGS.default;
 }
 
+// Gera um título descritivo para um grupo de perguntas baseado no conteúdo semântico
+function generateStepTitle(questions) {
+  const allText = questions.map(q => q.text.toLowerCase()).join(' ');
+  
+  // Ordem importa: verificações mais específicas primeiro
+  if (/cnpj|razão social|nome fantasia/.test(allText)) return 'Identificação da Empresa';
+  if (/tipo de empresa|porte|natureza jurídica|constituição/.test(allText)) return 'Tipo e Porte da Empresa';
+  if (/cep|endereço|estado|cidade|bairro|logradouro|complemento/.test(allText) && /principal|sede/.test(allText)) return 'Endereço Principal';
+  if (/cep|endereço|estado|cidade|bairro|logradouro/.test(allText)) return 'Endereço e Localização';
+  if (/descrição da atividade|descrição do negócio|atividade principal|objeto social/.test(allText)) return 'Descrição da Atividade';
+  if (/website|url|domínio|site|app|aplicativo/.test(allText)) return 'Presença Digital';
+  if (/outros negócios|possui outros|empresas relacionadas|grupo econômico/.test(allText)) return 'Empresas Relacionadas';
+  if (/qual o modelo|modelo de negócio|b2b|b2c|tipo de operação/.test(allText)) return 'Modelo de Negócio';
+  if (/volume mensal|tpv|volume transacion|faturamento/.test(allText)) return 'Volume Transacional';
+  if (/ticket médio|valor médio|ticket/.test(allText)) return 'Ticket Médio e Valores';
+  if (/produto|serviço|o que vende|categoria/.test(allText) && !/compliance|pld/.test(allText)) return 'Produtos e Serviços';
+  if (/canal de venda|e-commerce|loja física|online/.test(allText)) return 'Canais de Venda';
+  if (/cliente|público|consumidor|perfil.*cliente|target/.test(allText) && !/compliance/.test(allText)) return 'Perfil de Clientes';
+  if (/sócio|proprietário|quadro societário|participação|ubo|beneficiário final/.test(allText)) return 'Estrutura Societária';
+  if (/representante|responsável|contato|cargo|diretor|gerente/.test(allText)) return 'Responsáveis e Contatos';
+  if (/cpf.*responsável|rg|documento.*pessoal|identidade/.test(allText)) return 'Documentos Pessoais';
+  if (/compliance|programa de compliance|política|regulament/.test(allText) && /pld|lavagem|financiamento/.test(allText)) return 'PLD/FT e Compliance';
+  if (/compliance|programa de compliance|política/.test(allText)) return 'Programa de Compliance';
+  if (/pep|pessoa.*politicamente|exposta/.test(allText)) return 'PEP e Pessoas Expostas';
+  if (/sanção|sanções|lista restritiva|embargo|ofac/.test(allText)) return 'Sanções e Listas Restritivas';
+  if (/risco|mitigação|controle|monitoramento/.test(allText)) return 'Gestão de Riscos';
+  if (/pld|lavagem|financiamento.*terrorismo|prevenção/.test(allText)) return 'Prevenção à Lavagem';
+  if (/sac|atendimento|ouvidoria|suporte|reclamação/.test(allText)) return 'SAC e Atendimento';
+  if (/email|telefone|contato/.test(allText) && !/sócio|responsável/.test(allText)) return 'Dados de Contato';
+  if (/internacional|exterior|cross.?border|câmbio/.test(allText)) return 'Operações Internacionais';
+  if (/marketplace|seller|sub.?merchant|plataforma/.test(allText)) return 'Estrutura de Marketplace';
+  if (/cartão|bandeira|adquirente|credenciadora|maquininha/.test(allText)) return 'Operações com Cartão';
+  if (/licença|licenciamento|autorização|regulador|bacen/.test(allText)) return 'Licenciamento e Regulação';
+  if (/declaração|veracidade|autorizo|termo|confirmo/.test(allText)) return 'Declarações e Termos';
+  if (/entrega|logística|prazo|frete|envio/.test(allText)) return 'Entrega e Logística';
+  if (/cancelamento|reembolso|chargeback|disputa|estorno/.test(allText)) return 'Cancelamento e Disputas';
+  if (/recorrência|assinatura|subscription|cobrança recorrente/.test(allText)) return 'Modelo de Recorrência';
+  if (/governança|diretoria|conselho|estrutura.*gestão/.test(allText)) return 'Governança Corporativa';
+  if (/kyc|know your customer|verificação.*identidade/.test(allText)) return 'Verificação de Identidade';
+  
+  // Fallback: usa o ícone mapeado para gerar um título genérico
+  const Icon = getIconForQuestion(questions[0].text);
+  const iconTitles = {
+    [Building2]: 'Dados Cadastrais',
+    [MapPin]: 'Endereço',
+    [Briefcase]: 'Informações do Negócio',
+    [TrendingUp]: 'Dados Financeiros',
+    [Users]: 'Perfil de Clientes',
+    [UserCircle]: 'Responsáveis',
+    [MessageSquare]: 'Contato',
+    [ShieldCheck]: 'Compliance',
+    [ShieldAlert]: 'Riscos e PEP',
+    [AlertTriangle]: 'Pontos de Atenção',
+    [Shield]: 'PLD/FT',
+    [Globe]: 'Operações Internacionais',
+    [CheckCircle]: 'Confirmação',
+  };
+  
+  return iconTitles[Icon] || 'Informações Adicionais';
+}
+
 // Agrupa perguntas em steps lógicos
 function groupQuestionsIntoSteps(questions, questionsPerStep = 4) {
   const steps = [];
   let currentStep = [];
-  let currentStepTitle = '';
 
   questions.forEach((q, index) => {
-    if (currentStep.length === 0) {
-      currentStepTitle = q.text.split(' ').slice(0, 2).join(' ');
-    }
-    
     currentStep.push(q);
     
     if (currentStep.length >= questionsPerStep || index === questions.length - 1) {
-      const Icon = getIconForQuestion(currentStep[0].text);
+      const stepQuestions = [...currentStep];
+      const Icon = getIconForQuestion(stepQuestions[0].text);
+      const title = generateStepTitle(stepQuestions);
       steps.push({
         id: `step_${steps.length + 1}`,
-        title: currentStepTitle,
+        title,
         icon: Icon,
-        questions: [...currentStep]
+        questions: stepQuestions
       });
       currentStep = [];
+    }
+  });
+
+  // Desambiguar títulos repetidos adicionando numeração
+  const titleCount = {};
+  steps.forEach(step => {
+    titleCount[step.title] = (titleCount[step.title] || 0) + 1;
+  });
+  
+  const titleIndex = {};
+  steps.forEach(step => {
+    if (titleCount[step.title] > 1) {
+      titleIndex[step.title] = (titleIndex[step.title] || 0) + 1;
+      step.title = `${step.title} (${titleIndex[step.title]}/${titleCount[step.title]})`;
     }
   });
 
