@@ -605,7 +605,45 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
           renderConfirmation()
         ) : (
           <div className="space-y-6">
-            {steps[currentStep]?.map(q => renderQuestion(q))}
+            {steps[currentStep]?.map(q => {
+              const rendered = renderQuestion(q);
+              
+              // Após o Ticket Médio, mostrar o campo calculado de transações
+              if (q.id === TICKET_MEDIO_QUESTION_ID) {
+                const tpv = parseFloat(formData[TPV_QUESTION_ID]) || 0;
+                const ticketMedio = parseFloat(formData[TICKET_MEDIO_QUESTION_ID]) || 0;
+                const transacoes = tpv > 0 && ticketMedio > 0 ? Math.round(tpv / ticketMedio) : 0;
+                
+                return (
+                  <React.Fragment key={q.id}>
+                    {rendered}
+                    <div className="space-y-2">
+                      <Label className="text-sm font-semibold text-[var(--pagsmile-blue)]">
+                        Estimativa de transações por mês
+                        <span className="text-xs font-normal text-[var(--pagsmile-blue)]/50 ml-2">(calculado automaticamente: TPV ÷ Ticket Médio)</span>
+                      </Label>
+                      <div className="relative">
+                        <Input
+                          type="number"
+                          value={transacoes || ''}
+                          readOnly
+                          className="h-12 rounded-xl bg-slate-50 cursor-not-allowed"
+                          placeholder="Preencha TPV e Ticket Médio acima"
+                        />
+                      </div>
+                      {transacoes > 0 && (
+                        <p className="text-xs text-[var(--pagsmile-green)] flex items-center gap-1">
+                          <CheckCircle className="w-3 h-3" />
+                          ≈ {transacoes.toLocaleString('pt-BR')} transações/mês
+                        </p>
+                      )}
+                    </div>
+                  </React.Fragment>
+                );
+              }
+              
+              return rendered;
+            })}
           </div>
         )}
 
