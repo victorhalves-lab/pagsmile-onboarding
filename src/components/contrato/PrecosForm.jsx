@@ -5,8 +5,8 @@ import { Lock, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 const BANDEIRAS = ['visa', 'mastercard', 'elo', 'amex', 'outras'];
-const FAIXAS = ['avista', 'de2a6x', 'de7a12x'];
-const FAIXAS_LABELS = { avista: 'À Vista', de2a6x: '2-6x', de7a12x: '7-12x' };
+const FAIXAS = ['avista', 'de2a6x', 'de7a12x', 'de13a21x'];
+const FAIXAS_LABELS = { avista: 'À Vista', de2a6x: '2-6x', de7a12x: '7-12x', de13a21x: '13-21x' };
 const BANDEIRA_LABELS = { visa: 'Visa', mastercard: 'Master', elo: 'Elo', amex: 'Amex', outras: 'Outras' };
 
 export default function PrecosForm({ contract, onChange, preFilledFields = [] }) {
