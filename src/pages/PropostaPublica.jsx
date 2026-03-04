@@ -424,7 +424,7 @@ export default function PropostaPublica() {
       <Card className="mb-8">
         <CardContent className="py-4">
           <h2 className="font-bold text-base text-[#002443] mb-4">
-            Tabela de Parcelas (1x a 12x) por Bandeira
+            Tabela de Parcelas por Bandeira
           </h2>
           <ParcelasTableDetalhada taxas={rates} taxaRAV={taxaRAV} prazo={prazo} />
         </CardContent>

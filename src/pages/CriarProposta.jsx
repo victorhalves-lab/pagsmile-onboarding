@@ -105,10 +105,10 @@ export default function CriarProposta() {
 
   const buildPropostaData = async (status) => {
     const taxas = rates.cartao || {};
-    const credito_1x = {}, credito_2_6x = {}, credito_7_12x = {}, debito = {};
+    const credito_1x = {}, credito_2_6x = {}, credito_7_12x = {}, credito_13_21x = {}, debito = {};
     ['visa', 'mastercard', 'elo', 'amex', 'outras'].forEach(b => {
       const d = taxas[b] || {};
-      credito_1x[b] = parseTaxa(d.avista); credito_2_6x[b] = parseTaxa(d.de2a6x); credito_7_12x[b] = parseTaxa(d.de7a12x);
+      credito_1x[b] = parseTaxa(d.avista); credito_2_6x[b] = parseTaxa(d.de2a6x); credito_7_12x[b] = parseTaxa(d.de7a12x); credito_13_21x[b] = parseTaxa(d.de13a21x);
       debito[b] = Math.round(parseTaxa(d.avista) * 0.6 * 100) / 100;
     });
     let criadoPor = 'sistema';
@@ -119,7 +119,7 @@ export default function CriarProposta() {
       clienteNome: form.clienteNome, clienteCnpj: form.clienteCnpj.replace(/\D/g, ''),
       clienteContato: form.clienteContato, clienteMcc: form.clienteMcc,
       rates: {
-        cartao: taxas, credito_1x, credito_2_6x, credito_7_12x, debito,
+        cartao: taxas, credito_1x, credito_2_6x, credito_7_12x, credito_13_21x, debito,
         pix: { tipo: rates.pix?.tipo || 'percentual', valor: parseTaxa(rates.pix?.valor) },
         boleto: parseTaxa(rates.boleto), antifraude: parseTaxa(rates.alertaPreChargeback),
         feeTransacao: parseTaxa(rates.feeTransacao), alertaPreChargeback: parseTaxa(rates.alertaPreChargeback),
