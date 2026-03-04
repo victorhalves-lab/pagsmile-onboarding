@@ -83,8 +83,27 @@ export default function CriarProposta() {
         clienteCnpj: (lead.cpfCnpj || '').replace(/\D/g, ''),
         clienteMcc: lead.mcc || '', clienteContato: lead.contactName || '',
       }));
+
+      // Auto-preencher com taxas da PRISCILA se usePriscila=1
+      if (usePriscila && lead.priscilaAnalysisReport?.taxasSugeridas) {
+        const tx = lead.priscilaAnalysisReport.taxasSugeridas;
+        setRates(prev => ({
+          ...prev,
+          cartao: tx.cartao || prev.cartao,
+          pix: tx.pix || prev.pix,
+          boleto: tx.boleto ?? prev.boleto,
+          feeTransacao: tx.feeTransacao ?? prev.feeTransacao,
+          antifraude: tx.antifraude ?? prev.antifraude,
+          alertaPreChargeback: tx.alertaPreChargeback ?? prev.alertaPreChargeback,
+          minimoGarantido: tx.minimoGarantido || prev.minimoGarantido,
+        }));
+        if (tx.rav?.prazo) setForm(prev => ({ ...prev, prazoRecebimento: tx.rav.prazo }));
+        if (tx.rav?.taxa) setForm(prev => ({ ...prev, taxaAntecipacao: tx.rav.taxa, usaAntecipacao: true }));
+        if (tx.percentualAntecipacao) setForm(prev => ({ ...prev, percentualAntecipacao: tx.percentualAntecipacao }));
+        toast.success('Taxas sugeridas pela PRISCILA aplicadas!');
+      }
     }
-  }, [lead, editId]);
+  }, [lead, editId, usePriscila]);
 
   const updateForm = (field, value) => { setForm(prev => ({ ...prev, [field]: value })); setErrors(prev => ({ ...prev, [field]: undefined })); };
   const updateRates = (newRates) => setRates(newRates);
