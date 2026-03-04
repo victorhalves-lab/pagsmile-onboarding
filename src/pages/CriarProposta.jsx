@@ -121,7 +121,7 @@ export default function CriarProposta() {
       rates: {
         cartao: taxas, credito_1x, credito_2_6x, credito_7_12x, credito_13_21x, debito,
         pix: { tipo: rates.pix?.tipo || 'percentual', valor: parseTaxa(rates.pix?.valor) },
-        boleto: parseTaxa(rates.boleto), antifraude: parseTaxa(rates.alertaPreChargeback),
+        boleto: parseTaxa(rates.boleto), antifraude: parseTaxa(rates.antifraude),
         feeTransacao: parseTaxa(rates.feeTransacao), alertaPreChargeback: parseTaxa(rates.alertaPreChargeback),
         minimoGarantido: { mes1: parseTaxa(rates.minimoGarantido?.mes1), mes2: parseTaxa(rates.minimoGarantido?.mes2), mes3: parseTaxa(rates.minimoGarantido?.mes3) },
         rav: { taxa: parseTaxa(form.taxaAntecipacao), prazo: form.prazoRecebimento },
