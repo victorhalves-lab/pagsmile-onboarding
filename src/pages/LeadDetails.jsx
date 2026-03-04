@@ -19,7 +19,7 @@ import {
   ArrowLeft, Loader2, Building2, Mail, Phone, Globe,
   ShieldCheck, AlertTriangle, TrendingUp, Clock,
   FileText, Send, XCircle, CheckCircle2, User,
-  ShoppingCart, Network
+  ShoppingCart, Network, Download, ExternalLink
 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
@@ -309,17 +309,51 @@ export default function LeadDetails() {
             <CardHeader><CardTitle className="flex items-center gap-2"><FileText className="w-5 h-5" /> Dados do Questionário</CardTitle></CardHeader>
             <CardContent>
               {lead.questionnaireData && Object.keys(lead.questionnaireData).length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {Object.entries(lead.questionnaireData)
-                    .filter(([k]) => !k.startsWith('aceite_'))
-                    .map(([key, value]) => (
-                    <div key={key} className="border-b border-slate-100 pb-2">
-                      <p className="text-xs text-[var(--pagsmile-blue)]/50 font-medium">{key}</p>
-                      <p className="text-sm text-[var(--pagsmile-blue)]">
-                        {Array.isArray(value) ? value.join(', ') : typeof value === 'boolean' ? (value ? 'Sim' : 'Não') : String(value || '-')}
-                      </p>
-                    </div>
-                  ))}
+                <div className="space-y-6">
+                  {/* Documentos enviados */}
+                  {(() => {
+                    const fileEntries = Object.entries(lead.questionnaireData).filter(
+                      ([k, v]) => !k.startsWith('aceite_') && typeof v === 'string' && (v.startsWith('http') && (v.includes('/storage/') || v.includes('supabase')))
+                    );
+                    if (fileEntries.length === 0) return null;
+                    return (
+                      <div className="bg-slate-50 rounded-xl p-4 space-y-3">
+                        <h4 className="text-sm font-semibold flex items-center gap-2"><FileText className="w-4 h-4 text-[var(--pagsmile-green)]" /> Documentos Enviados</h4>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {fileEntries.map(([key, value]) => (
+                            <div key={key} className="flex items-center gap-3 bg-white rounded-lg border border-slate-200 p-3">
+                              <FileText className="w-5 h-5 text-[var(--pagsmile-blue)]/40 shrink-0" />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs text-[var(--pagsmile-blue)]/50 font-medium truncate">{key}</p>
+                              </div>
+                              <div className="flex gap-1 shrink-0">
+                                <a href={value} target="_blank" rel="noopener noreferrer" className="p-1.5 rounded-md hover:bg-slate-100 transition-colors" title="Visualizar">
+                                  <ExternalLink className="w-4 h-4 text-[var(--pagsmile-blue)]/60" />
+                                </a>
+                                <a href={value} download className="p-1.5 rounded-md hover:bg-slate-100 transition-colors" title="Baixar">
+                                  <Download className="w-4 h-4 text-[var(--pagsmile-green)]" />
+                                </a>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* Respostas do questionário */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {Object.entries(lead.questionnaireData)
+                      .filter(([k, v]) => !k.startsWith('aceite_') && !(typeof v === 'string' && v.startsWith('http') && (v.includes('/storage/') || v.includes('supabase'))))
+                      .map(([key, value]) => (
+                      <div key={key} className="border-b border-slate-100 pb-2">
+                        <p className="text-xs text-[var(--pagsmile-blue)]/50 font-medium">{key}</p>
+                        <p className="text-sm text-[var(--pagsmile-blue)]">
+                          {Array.isArray(value) ? value.join(', ') : typeof value === 'boolean' ? (value ? 'Sim' : 'Não') : String(value || '-')}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               ) : (
                 <p className="text-center py-8 text-[var(--pagsmile-blue)]/60">Dados do questionário não disponíveis</p>

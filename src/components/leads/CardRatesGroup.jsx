@@ -71,6 +71,12 @@ export default function CardRatesGroup({ questions, formData, updateField }) {
                           updateField(q.id, val);
                         }
                       }}
+                      onBlur={(e) => {
+                        const val = e.target.value;
+                        if (val !== '' && !isNaN(parseFloat(val))) {
+                          updateField(q.id, parseFloat(val).toFixed(2));
+                        }
+                      }}
                       placeholder="0,00"
                       className="h-10 rounded-lg pr-7 text-sm"
                     />
