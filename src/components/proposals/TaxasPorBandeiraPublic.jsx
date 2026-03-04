@@ -5,6 +5,7 @@ const BANDEIRAS = [
   { id: 'mastercard', label: 'Mastercard', color: 'bg-orange-50 border-orange-200' },
   { id: 'elo', label: 'Elo', color: 'bg-yellow-50 border-yellow-200' },
   { id: 'amex', label: 'Amex', color: 'bg-purple-50 border-purple-200' },
+  { id: 'outras', label: 'Outras', color: 'bg-slate-50 border-slate-200' },
 ];
 
 const FAIXAS = [
