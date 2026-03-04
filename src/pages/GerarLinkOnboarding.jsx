@@ -69,13 +69,18 @@ export default function GerarLinkOnboarding() {
       { key: 'LEAD', label: 'Questionário Comercial', desc: 'Formulário completo para captação de leads', icon: ClipboardList, color: '#2bc196', url: `${base}${createPageUrl('LeadQuestionnaire')}?templateId=69a5ccbeafab70a7ca2184ad` },
       { key: 'LEAD_SIMP', label: 'Questionário Simplificado', desc: 'Versão rápida pós-reunião com taxas', icon: Zap, color: '#36706c', url: `${base}${createPageUrl('QuestionarioSimplificadoPublico')}` },
     ],
-    compliance: [
+    compliance_by_type: [
       { key: 'GENERIC', label: 'Genérico', desc: 'Merchant escolhe o perfil', icon: Globe, color: '#002443', url: `${base}${createPageUrl('ComplianceOnboardingStart')}` },
       { key: 'PIX', label: 'Pix', desc: 'Compliance simplificado Pix', icon: CreditCard, color: '#2bc196', url: `${base}${createPageUrl('CompliancePixOnly')}` },
       { key: 'FULL', label: 'Full KYC', desc: 'Compliance completo', icon: Shield, color: '#002443', url: `${base}${createPageUrl('ComplianceFullKYC')}` },
       { key: 'LITE', label: 'Lite', desc: 'PMEs simplificado', icon: Zap, color: '#36706c', url: `${base}${createPageUrl('ComplianceLite')}` },
       { key: 'ECOMMERCE', label: 'E-commerce', desc: 'Lojas virtuais', icon: ShoppingCart, color: '#002443', url: `${base}${createPageUrl('ComplianceEcommerce')}` },
       { key: 'SAAS', label: 'SaaS', desc: 'Recorrência / fast track', icon: Cloud, color: '#36706c', url: `${base}${createPageUrl('ComplianceSaaS')}` },
+    ],
+    compliance_by_business: [
+      { key: 'MERCHANT', label: 'Merchant', desc: 'Estabelecimento comercial padrão', icon: CreditCard, color: '#2bc196', url: `${base}${createPageUrl('ComplianceOnboardingStart')}?businessSubCategory=MERCHAN` },
+      { key: 'GATEWAY', label: 'Gateway', desc: 'Integrador / facilitador de pagamentos', icon: Globe, color: '#002443', url: `${base}${createPageUrl('ComplianceOnboardingStart')}?businessSubCategory=GATEWAY` },
+      { key: 'MARKETPLACE', label: 'Marketplace', desc: 'Plataforma com sellers / sub-merchants', icon: ShoppingCart, color: '#36706c', url: `${base}${createPageUrl('ComplianceOnboardingStart')}?businessSubCategory=MARKETPLACE` },
     ]
   };
 
