@@ -235,9 +235,43 @@ IMPORTANTE:
             }
           }
         },
-        recomendacao: { type: "string", description: "Recomendação para o time sobre como proceder" }
+        recomendacao: { type: "string", description: "Recomendação para o time sobre como proceder" },
+        taxasSugeridas: {
+          type: "object",
+          description: "Taxas comerciais sugeridas pela PRISCILA",
+          properties: {
+            justificativa: { type: "string", description: "Justificativa geral para as taxas sugeridas" },
+            cartao: {
+              type: "object",
+              properties: {
+                visa: { type: "object", properties: { avista: { type: "number" }, de2a6x: { type: "number" }, de7a12x: { type: "number" }, de13a21x: { type: "number" } } },
+                mastercard: { type: "object", properties: { avista: { type: "number" }, de2a6x: { type: "number" }, de7a12x: { type: "number" }, de13a21x: { type: "number" } } },
+                elo: { type: "object", properties: { avista: { type: "number" }, de2a6x: { type: "number" }, de7a12x: { type: "number" }, de13a21x: { type: "number" } } },
+                amex: { type: "object", properties: { avista: { type: "number" }, de2a6x: { type: "number" }, de7a12x: { type: "number" }, de13a21x: { type: "number" } } },
+                outras: { type: "object", properties: { avista: { type: "number" }, de2a6x: { type: "number" }, de7a12x: { type: "number" }, de13a21x: { type: "number" } } }
+              }
+            },
+            debito: {
+              type: "object",
+              properties: {
+                visa: { type: "number" },
+                mastercard: { type: "number" },
+                elo: { type: "number" },
+                outras: { type: "number" }
+              }
+            },
+            pix: { type: "object", properties: { tipo: { type: "string", enum: ["percentual", "fixo"] }, valor: { type: "number" } } },
+            boleto: { type: "number", description: "Valor fixo por boleto (R$)" },
+            antifraude: { type: "number", description: "Valor por transação (R$)" },
+            feeTransacao: { type: "number", description: "Fee por transação (R$)" },
+            alertaPreChargeback: { type: "number", description: "Valor por alerta (R$)" },
+            percentualAntecipacao: { type: "number", description: "% ao mês" },
+            rav: { type: "object", properties: { taxa: { type: "number" }, prazo: { type: "string" } } },
+            minimoGarantido: { type: "object", properties: { mes1: { type: "number" }, mes2: { type: "number" }, mes3: { type: "number" } } }
+          }
+        }
       },
-      required: ["score", "riskLevel", "decisionPath", "resumoExecutivo", "dimensoes", "pontosFortes", "pontosDeAtencao", "pontosDeRisco", "recomendacao"]
+      required: ["score", "riskLevel", "decisionPath", "resumoExecutivo", "dimensoes", "pontosFortes", "pontosDeAtencao", "pontosDeRisco", "recomendacao", "taxasSugeridas"]
     };
     
     console.log(`[PRISCILA] Invocando LLM...`);
