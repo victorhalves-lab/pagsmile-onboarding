@@ -164,11 +164,19 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
   const [mccQuestionId, setMccQuestionId] = useState(null);
   const autoSaveRef = useRef(null);
 
-  // Agrupar perguntas em steps (5 perguntas por step)
+  // Filtrar perguntas visíveis (remover as ocultadas por CARD_RATE_QUESTION_IDS e HIDDEN_QUESTION_IDS)
+  // e perguntas de grupos percentuais que não são trigger (serão renderizadas pelo trigger)
+  const visibleQuestions = questions.filter(q => {
+    if (CARD_RATE_QUESTION_IDS.includes(q.id)) return false;
+    if (GROUPED_PERCENT_IDS.includes(q.id) && !PERCENT_GROUPS.some(g => g.trigger === q.id)) return false;
+    return true;
+  });
+
+  // Agrupar perguntas visíveis em steps (5 perguntas por step)
   const QUESTIONS_PER_STEP = 5;
   const steps = [];
-  for (let i = 0; i < questions.length; i += QUESTIONS_PER_STEP) {
-    steps.push(questions.slice(i, i + QUESTIONS_PER_STEP));
+  for (let i = 0; i < visibleQuestions.length; i += QUESTIONS_PER_STEP) {
+    steps.push(visibleQuestions.slice(i, i + QUESTIONS_PER_STEP));
   }
   // Adicionar step de confirmação
   const totalSteps = steps.length + 1;
