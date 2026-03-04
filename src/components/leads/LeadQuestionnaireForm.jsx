@@ -26,6 +26,19 @@ import BusinessTypeExplainer from './BusinessTypeExplainer';
 import PercentDistributionRow from './PercentDistributionRow';
 import CardRatesGroup from './CardRatesGroup';
 import MCCSearchModal from './MCCSearchModal';
+import { MCC_LIST } from './mccData';
+
+function MCCNameDisplay({ mccCode }) {
+  const found = MCC_LIST.find(m => m.mcc === mccCode.padStart(4, '0'));
+  if (!found) return null;
+  return (
+    <div className="flex items-center gap-2 bg-[#2bc196]/5 border border-[#2bc196]/20 rounded-xl px-4 py-2.5">
+      <CheckCircle className="w-4 h-4 text-[#2bc196] shrink-0" />
+      <span className="text-sm font-medium text-[#002443]">{found.name}</span>
+      <span className="text-xs text-[#002443]/50">({found.nameEn})</span>
+    </div>
+  );
+}
 
 // IDs das perguntas que devem ser removidas (duplicadas/redundantes)
 const HIDDEN_QUESTION_IDS = [
