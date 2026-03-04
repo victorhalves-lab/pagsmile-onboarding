@@ -566,7 +566,50 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
           />
         )}
 
-        {question.type === 'SELECT' && (
+        {isMCCQuestion(question) && (
+          <div className="space-y-3">
+            <div className="flex gap-3">
+              <div className="relative flex-1">
+                <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/40" />
+                <Input
+                  value={value}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, '').slice(0, 4);
+                    updateField(question.id, val);
+                  }}
+                  placeholder="Digite o código MCC (4 dígitos)"
+                  className="h-12 rounded-xl pl-11 font-mono text-lg tracking-wider"
+                  maxLength={4}
+                />
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setMccQuestionId(question.id);
+                  setMccModalOpen(true);
+                }}
+                className="h-12 px-5 rounded-xl shrink-0"
+              >
+                <Search className="w-4 h-4 mr-2" />
+                Buscar MCC
+              </Button>
+            </div>
+            {value && value.length === 4 && (() => {
+              const { MCC_LIST } = require('./mccData');
+              const found = MCC_LIST.find(m => m.mcc === value.padStart(4, '0'));
+              return found ? (
+                <div className="flex items-center gap-2 bg-[#2bc196]/5 border border-[#2bc196]/20 rounded-xl px-4 py-2.5">
+                  <CheckCircle className="w-4 h-4 text-[#2bc196] shrink-0" />
+                  <span className="text-sm font-medium text-[#002443]">{found.name}</span>
+                  <span className="text-xs text-[#002443]/50">({found.nameEn})</span>
+                </div>
+              ) : null;
+            })()}
+          </div>
+        )}
+
+        {!isMCCQuestion(question) && question.type === 'SELECT' && (
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {(question.options || []).map((opt, i) => {
