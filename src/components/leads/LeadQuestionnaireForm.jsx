@@ -78,6 +78,28 @@ const PARCELAMENTO_DISTRIBUTION_IDS = {
   parcela_7_12: '69a5cd22afab70a7ca2184f1',
 };
 
+// IDs das taxas de cartão (renderizados como grupo via CardRatesGroup)
+const CARD_RATE_QUESTION_IDS = [
+  '69a5cd44afab70a7ca218502', // À Vista - Visa
+  '69a5cd44afab70a7ca218503', // À Vista - Mastercard
+  '69a8621316a6e3a86682f6e3', // À Vista - Amex
+  '69a8621316a6e3a86682f6e4', // À Vista - Elo
+  '69a5cd45afab70a7ca218504', // À Vista - Outras
+  '69a5cd45afab70a7ca218505', // 2-6x - Visa
+  '69a5cd45afab70a7ca218506', // 2-6x - Mastercard
+  '69a8621316a6e3a86682f6e5', // 2-6x - Amex
+  '69a8621316a6e3a86682f6e6', // 2-6x - Elo
+  '69a5cd45afab70a7ca218507', // 2-6x - Outras
+  '69a5cd45afab70a7ca218508', // 7-12x - Visa
+  '69a5cd45afab70a7ca218509', // 7-12x - Mastercard
+  '69a8621316a6e3a86682f6e7', // 7-12x - Amex
+  '69a8621316a6e3a86682f6e8', // 7-12x - Elo
+  '69a5cd45afab70a7ca21850a', // 7-12x - Outras
+];
+
+// O primeiro ID de taxa de cartão serve como trigger para renderizar o grupo inteiro
+const CARD_RATE_TRIGGER_ID = '69a5cd44afab70a7ca218502';
+
 // Todos os IDs que devem ser ocultados da renderização normal (serão renderizados como grupo)
 const GROUPED_PERCENT_IDS = [
   ...Object.values(TPV_DISTRIBUTION_IDS),
