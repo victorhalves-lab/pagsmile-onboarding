@@ -595,17 +595,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
                 Buscar MCC
               </Button>
             </div>
-            {value && value.length === 4 && (() => {
-              const { MCC_LIST } = require('./mccData');
-              const found = MCC_LIST.find(m => m.mcc === value.padStart(4, '0'));
-              return found ? (
-                <div className="flex items-center gap-2 bg-[#2bc196]/5 border border-[#2bc196]/20 rounded-xl px-4 py-2.5">
-                  <CheckCircle className="w-4 h-4 text-[#2bc196] shrink-0" />
-                  <span className="text-sm font-medium text-[#002443]">{found.name}</span>
-                  <span className="text-xs text-[#002443]/50">({found.nameEn})</span>
-                </div>
-              ) : null;
-            })()}
+            {value && value.length === 4 && <MCCNameDisplay mccCode={value} />}
           </div>
         )}
 
