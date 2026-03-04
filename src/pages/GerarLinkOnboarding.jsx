@@ -10,7 +10,7 @@ import {
   Link as LinkIcon, Copy, Check, ExternalLink, Info,
   Plus, BarChart3, Trash2, Loader2, RefreshCw,
   TrendingUp, MousePointer, FileCheck, ChevronDown, ChevronUp,
-  ClipboardList, Shield, Zap, ShoppingCart, Cloud, CreditCard, Globe
+  ClipboardList, Shield, Zap, ShoppingCart, Cloud, CreditCard, Globe, Briefcase
 } from 'lucide-react';
 import { toast } from 'sonner';
 import LinkAnalyticsDashboard from '../components/analytics/LinkAnalyticsDashboard';
