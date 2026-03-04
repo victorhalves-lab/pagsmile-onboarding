@@ -188,7 +188,7 @@ Deno.serve(async (req) => {
     const contract = await base44.asServiceRole.entities.Contract.create(contractData);
 
     // 8. Notificar no Slack (#comercial-sub)
-    const accessToken = await base44.asServiceRole.connectors.getAccessToken("slackbot");
+    const { accessToken } = await base44.asServiceRole.connectors.getConnection("slackbot");
 
     // Buscar canal #comercial-sub
     const channelsRes = await fetch('https://slack.com/api/conversations.list', {
