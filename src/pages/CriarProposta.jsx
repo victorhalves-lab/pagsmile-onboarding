@@ -145,7 +145,7 @@ export default function CriarProposta() {
   const handleGerarProposta = async () => {
     if (!validate()) { toast.error('Preencha todos os campos obrigatórios'); return; }
     setSaving(true);
-    const data = await buildPropostaData('rascunho');
+    const data = await buildPropostaData('enviada');
     let created;
     if (editId) { await base44.entities.Proposal.update(editId, data); created = { id: editId }; }
     else { created = await base44.entities.Proposal.create(data); }
