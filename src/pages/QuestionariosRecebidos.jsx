@@ -341,7 +341,7 @@ export default function QuestionariosRecebidos() {
     link.click();
   };
 
-  const isLoading = casesLoading || merchantsLoading;
+  const isLoadingAll = casesLoading || merchantsLoading;
 
   return (
     <div className="space-y-6">
