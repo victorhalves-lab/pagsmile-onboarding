@@ -18,7 +18,7 @@ import {
 import {
   Building2, User, Briefcase, DollarSign, PieChart, Clock,
   CreditCard, Package, FileText, CheckCircle, ArrowLeft, 
-  ArrowRight, Loader2, ShieldCheck, HelpCircle
+  ArrowRight, Loader2, ShieldCheck, HelpCircle, Search, Hash
 } from 'lucide-react';
 import { toast } from 'sonner';
 import LeadStepNavigation from './LeadStepNavigation';
