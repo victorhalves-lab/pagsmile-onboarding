@@ -414,7 +414,7 @@ export default function PropostaPublica() {
         </Card>
         <Card>
           <CardContent className="py-4 text-center flex flex-col justify-center h-full">
-            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">TAXA RAV (ANTECIPAÇÃO)</p>
+            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">TAXA DE ANTECIPAÇÃO</p>
             <p className="text-lg font-bold text-amber-600">{taxaRAV}% a.m.</p>
           </CardContent>
         </Card>

@@ -50,7 +50,7 @@ export default function ParcelasTableDetalhada({ taxas, taxaRAV = 0, prazo = 'D+
                     <th className="text-left py-2 px-3 font-semibold text-[#002443]/70">Parcelas</th>
                     <th className="text-right py-2 px-3 font-semibold text-[#002443]/70">Base</th>
                     {taxaRAV > 0 && prazo !== 'FLUXO' && (
-                      <th className="text-right py-2 px-3 font-semibold text-amber-600">RAV</th>
+                      <th className="text-right py-2 px-3 font-semibold text-amber-600">Antecipação</th>
                     )}
                     <th className="text-right py-2 px-3 font-semibold text-[#2bc196]">Final</th>
                   </tr>

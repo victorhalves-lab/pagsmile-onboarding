@@ -5,7 +5,7 @@ const FAIXAS_LABELS = { 1: 'Cash', 2: '2x-6x', 3: '2x-6x', 4: '2x-6x', 5: '2x-6x
 export function calcularTabelaParcelas(taxas, taxaRAV, prazo) {
   const prazoDias = prazo === 'FLUXO' ? 0 : (parseInt(String(prazo).replace('D+', '')) || 1);
   const rows = [];
-  const maxParcelas = (parseFloat(taxas?.de13a21x || 0) > 0) ? 21 : 12;
+  const maxParcelas = 21;
 
   for (let parcela = 1; parcela <= maxParcelas; parcela++) {
     let taxaBase = 0;
@@ -56,7 +56,7 @@ export default function ParcelasTable({ taxas, taxaRAV = 0, prazo = 'D+1', compa
             <th className="text-left py-1.5 px-2 font-semibold text-[#002443]/70">Faixa</th>
             <th className="text-right py-1.5 px-2 font-semibold text-[#002443]/70">Base</th>
             {taxaRAV > 0 && prazo !== 'FLUXO' && (
-              <th className="text-right py-1.5 px-2 font-semibold text-[#002443]/70">RAV</th>
+              <th className="text-right py-1.5 px-2 font-semibold text-[#002443]/70">Antecipação</th>
             )}
             <th className="text-right py-1.5 px-2 font-semibold text-[#2bc196]">Final</th>
           </tr>

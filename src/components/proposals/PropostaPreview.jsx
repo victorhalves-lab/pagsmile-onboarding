@@ -19,8 +19,7 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
   const getPrazoDias = (p) => { if (p === 'FLUXO') return 0; if (p.startsWith('D+')) return parseInt(p.split('+')[1]); return 1; };
   const prazoDias = getPrazoDias(prazo);
 
-  const has13to21 = parseVal(taxas.de13a21x) > 0;
-  const maxParcelas = has13to21 ? 21 : 12;
+  const maxParcelas = 21;
   const rows = [];
   for (let parcela = 1; parcela <= maxParcelas; parcela++) {
     let taxaBase = 0, faixaLabel = '', faixaColor = '';
@@ -60,10 +59,10 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
       </div>
 
       {/* Table */}
-      <div className="rounded-xl bg-white/[0.03] border border-white/5 overflow-hidden mb-5 max-h-[500px] overflow-y-auto">
+      <div className="rounded-xl bg-white/[0.03] border border-white/5 overflow-hidden mb-5">
         {/* Header */}
         <div className="grid grid-cols-5 text-[9px] text-white/20 font-bold uppercase tracking-wider py-2 px-3 bg-white/[0.02]">
-          <div>Parc.</div><div>Faixa</div><div className="text-right">Base</div><div className="text-right">RAV</div><div className="text-right">Final</div>
+          <div>Parc.</div><div>Faixa</div><div className="text-right">Base</div><div className="text-right">Antecip.</div><div className="text-right">Final</div>
         </div>
         {/* Rows */}
         {rows.map(row => (
@@ -85,7 +84,7 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
         <div className="grid grid-cols-3 gap-2">
           {[
             { label: 'Prazo', value: prazo, color: 'text-white' },
-            { label: 'RAV', value: `${fmtPct(taxaRAV)} a.m.`, color: 'text-[#2bc196]' },
+            { label: 'Taxa de Antecipação', value: `${fmtPct(taxaRAV)} a.m.`, color: 'text-[#2bc196]' },
             { label: 'PIX', value: rates.pix?.tipo === 'fixo' ? `R$ ${parseVal(rates.pix?.valor).toFixed(2)}` : fmtPct(rates.pix?.valor), color: 'text-white' },
           ].map((s, i) => (
             <div key={i} className="bg-white/[0.03] border border-white/5 rounded-xl p-3 text-center">
