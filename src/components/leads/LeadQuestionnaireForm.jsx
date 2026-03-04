@@ -23,6 +23,7 @@ import {
 import { toast } from 'sonner';
 import LeadStepNavigation from './LeadStepNavigation';
 import BusinessTypeExplainer from './BusinessTypeExplainer';
+import PercentDistributionRow from './PercentDistributionRow';
 
 // IDs das perguntas que devem ser removidas (duplicadas/redundantes)
 const HIDDEN_QUESTION_IDS = [
@@ -50,6 +51,69 @@ const DESCRIPTION_QUESTION_ID = '69a5cd07afab70a7ca2184d9';
 const TPV_QUESTION_ID = '69a5cd11afab70a7ca2184e0';
 const TICKET_MEDIO_QUESTION_ID = '69a5cd11afab70a7ca2184e1';
 const TRANSACOES_MES_QUESTION_ID = '69a5cd11afab70a7ca2184e2';
+
+// === GRUPOS DE PERCENTUAIS (renderizados lado a lado) ===
+// Distribuição TPV: Cartão de Crédito + PIX + Boleto = 100%
+const TPV_DISTRIBUTION_IDS = {
+  cartao: '69a5cd22afab70a7ca2184e9',
+  pix: '69a5cd22afab70a7ca2184ea',
+  boleto: '69a5cd22afab70a7ca2184eb',
+};
+
+// Distribuição Bandeiras: Visa + Master + Elo + Amex + Outras = 100%
+const BANDEIRA_DISTRIBUTION_IDS = {
+  visa: '69a5cd22afab70a7ca2184ec',
+  master: '69a5cd22afab70a7ca2184ed',
+  elo_amex_outras: '69a5cd22afab70a7ca2184ee',
+};
+
+// Distribuição Parcelamento: À Vista + 2-6x + 7-12x = 100%
+const PARCELAMENTO_DISTRIBUTION_IDS = {
+  vista: '69a5cd22afab70a7ca2184ef',
+  parcela_2_6: '69a5cd22afab70a7ca2184f0',
+  parcela_7_12: '69a5cd22afab70a7ca2184f1',
+};
+
+// Todos os IDs que devem ser ocultados da renderização normal (serão renderizados como grupo)
+const GROUPED_PERCENT_IDS = [
+  ...Object.values(TPV_DISTRIBUTION_IDS),
+  ...Object.values(BANDEIRA_DISTRIBUTION_IDS),
+  ...Object.values(PARCELAMENTO_DISTRIBUTION_IDS),
+];
+
+// Configuração dos grupos para renderização
+const PERCENT_GROUPS = [
+  {
+    trigger: TPV_DISTRIBUTION_IDS.cartao, // primeiro ID do grupo -> renderiza o grupo inteiro
+    title: 'Distribuição do seu TPV (%) — Cartão de Crédito, PIX e Boleto',
+    required: true,
+    fields: [
+      { id: TPV_DISTRIBUTION_IDS.cartao, label: 'Cartão de Crédito', placeholder: '60' },
+      { id: TPV_DISTRIBUTION_IDS.pix, label: 'PIX', placeholder: '30' },
+      { id: TPV_DISTRIBUTION_IDS.boleto, label: 'Boleto', placeholder: '10' },
+    ],
+  },
+  {
+    trigger: BANDEIRA_DISTRIBUTION_IDS.visa,
+    title: 'Percentual de vendas por bandeira (%)',
+    required: false,
+    fields: [
+      { id: BANDEIRA_DISTRIBUTION_IDS.visa, label: 'Visa', placeholder: '50' },
+      { id: BANDEIRA_DISTRIBUTION_IDS.master, label: 'Mastercard', placeholder: '35' },
+      { id: BANDEIRA_DISTRIBUTION_IDS.elo_amex_outras, label: 'Elo / Amex / Outras', placeholder: '15' },
+    ],
+  },
+  {
+    trigger: PARCELAMENTO_DISTRIBUTION_IDS.vista,
+    title: 'Percentual de crédito por parcelamento (%)',
+    required: false,
+    fields: [
+      { id: PARCELAMENTO_DISTRIBUTION_IDS.vista, label: 'À Vista (1x)', placeholder: '40' },
+      { id: PARCELAMENTO_DISTRIBUTION_IDS.parcela_2_6, label: '2x a 6x', placeholder: '40' },
+      { id: PARCELAMENTO_DISTRIBUTION_IDS.parcela_7_12, label: '7x a 12x', placeholder: '20' },
+    ],
+  },
+];
 
 const STORAGE_KEY = 'lead_questionnaire_data';
 
@@ -160,6 +224,26 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
         }
       }
     }
+    
+    // Validar grupos de percentuais que estão neste step
+    const stepQuestionIds = new Set(steps[currentStep].map(q => q.id));
+    for (const group of PERCENT_GROUPS) {
+      if (!stepQuestionIds.has(group.trigger)) continue;
+      const vals = group.fields.map(f => parseFloat(formData[f.id]) || 0);
+      const anyFilled = group.fields.some(f => formData[f.id] !== undefined && formData[f.id] !== '' && formData[f.id] !== null);
+      const total = vals.reduce((a, b) => a + b, 0);
+      
+      if (group.required) {
+        if (!anyFilled || Math.abs(total - 100) > 0.01) {
+          toast.error(`"${group.title}" — a soma deve ser exatamente 100% (atual: ${total.toFixed(0)}%)`);
+          return false;
+        }
+      } else if (anyFilled && Math.abs(total - 100) > 0.01) {
+        toast.error(`"${group.title}" — se preenchido, a soma deve ser 100% (atual: ${total.toFixed(0)}%)`);
+        return false;
+      }
+    }
+    
     return true;
   };
 
@@ -288,6 +372,27 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
 
   const renderQuestion = (question) => {
     if (!shouldShowQuestion(question)) return null;
+    
+    // Se a pergunta é parte de um grupo de percentuais, não renderizar individualmente
+    if (GROUPED_PERCENT_IDS.includes(question.id)) {
+      // Se é o trigger (primeiro ID do grupo), renderizar o grupo inteiro
+      const group = PERCENT_GROUPS.find(g => g.trigger === question.id);
+      if (group) {
+        return (
+          <PercentDistributionRow
+            key={question.id}
+            title={group.title}
+            fields={group.fields}
+            formData={formData}
+            updateField={updateField}
+            required={group.required}
+          />
+        );
+      }
+      // Se não é trigger, pular (já foi renderizado pelo trigger)
+      return null;
+    }
+    
     const value = formData[question.id] || '';
 
     return (
