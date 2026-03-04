@@ -94,6 +94,151 @@ const SEV_COLORS = {
   CRITICA: 'text-red-600',
 };
 
+const BANDEIRA_LABELS = { visa: 'Visa', mastercard: 'Master', elo: 'Elo', amex: 'Amex', outras: 'Outras' };
+const FAIXA_LABELS = { avista: '1x', de2a6x: '2-6x', de7a12x: '7-12x', de13a21x: '13-21x' };
+
+function SuggestedRatesSection({ taxas, leadId }) {
+  const navigate = useNavigate();
+  const [expanded, setExpanded] = useState(true);
+
+  if (!taxas) return null;
+
+  const handleApplyRates = () => {
+    // Navigate to CriarProposta with priscila rates pre-loaded via URL
+    navigate(createPageUrl('CriarProposta') + `?lead=${leadId}&usePriscila=1`);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <button onClick={() => setExpanded(!expanded)} className="flex items-center gap-2">
+          <CreditCard className="w-4 h-4 text-[#2bc196]" />
+          <h4 className="text-sm font-semibold">Taxas Sugeridas</h4>
+          {expanded ? <ChevronDown className="w-3 h-3 text-[#002443]/40" /> : <ChevronRight className="w-3 h-3 text-[#002443]/40" />}
+        </button>
+        <Button size="sm" onClick={handleApplyRates} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white h-7 text-xs gap-1">
+          <Zap className="w-3 h-3" /> Aplicar na Proposta
+        </Button>
+      </div>
+
+      {expanded && (
+        <div className="space-y-4">
+          {/* Justificativa */}
+          {taxas.justificativa && (
+            <p className="text-xs text-[#002443]/60 bg-purple-50 border border-purple-200 rounded-lg p-3 leading-relaxed">
+              {taxas.justificativa}
+            </p>
+          )}
+
+          {/* Cartão Crédito */}
+          {taxas.cartao && (
+            <div className="rounded-xl border border-[#002443]/5 overflow-hidden">
+              <div className="bg-[#f4f4f4] px-3 py-2">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50">Crédito (MDR %)</p>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="border-b border-[#002443]/5">
+                      <th className="text-left px-3 py-2 font-medium text-[#002443]/50">Bandeira</th>
+                      {Object.entries(FAIXA_LABELS).map(([k, v]) => (
+                        <th key={k} className="text-center px-3 py-2 font-medium text-[#002443]/50">{v}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.entries(taxas.cartao).map(([band, vals]) => (
+                      <tr key={band} className="border-b border-[#002443]/5 last:border-0">
+                        <td className="px-3 py-2 font-semibold">{BANDEIRA_LABELS[band] || band}</td>
+                        {Object.keys(FAIXA_LABELS).map(faixa => (
+                          <td key={faixa} className="text-center px-3 py-2 font-mono">
+                            {vals?.[faixa] != null ? `${vals[faixa]}%` : '-'}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* Débito */}
+          {taxas.debito && (
+            <div className="rounded-xl border border-[#002443]/5 overflow-hidden">
+              <div className="bg-[#f4f4f4] px-3 py-2">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50">Débito (%)</p>
+              </div>
+              <div className="grid grid-cols-4 gap-2 p-3">
+                {Object.entries(taxas.debito).map(([band, val]) => (
+                  <div key={band} className="text-center">
+                    <p className="text-[10px] text-[#002443]/40">{BANDEIRA_LABELS[band] || band}</p>
+                    <p className="text-sm font-mono font-bold">{val != null ? `${val}%` : '-'}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Outras taxas */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {taxas.pix && (
+              <div className="rounded-xl border border-[#002443]/5 p-3 text-center">
+                <p className="text-[10px] text-[#002443]/40 font-medium">Pix</p>
+                <p className="text-sm font-mono font-bold">{taxas.pix.tipo === 'fixo' ? `R$ ${taxas.pix.valor}` : `${taxas.pix.valor}%`}</p>
+              </div>
+            )}
+            {taxas.boleto != null && (
+              <div className="rounded-xl border border-[#002443]/5 p-3 text-center">
+                <p className="text-[10px] text-[#002443]/40 font-medium">Boleto</p>
+                <p className="text-sm font-mono font-bold">R$ {taxas.boleto}</p>
+              </div>
+            )}
+            {taxas.antifraude != null && (
+              <div className="rounded-xl border border-[#002443]/5 p-3 text-center">
+                <p className="text-[10px] text-[#002443]/40 font-medium">Antifraude</p>
+                <p className="text-sm font-mono font-bold">R$ {taxas.antifraude}</p>
+              </div>
+            )}
+            {taxas.feeTransacao != null && (
+              <div className="rounded-xl border border-[#002443]/5 p-3 text-center">
+                <p className="text-[10px] text-[#002443]/40 font-medium">Fee Transação</p>
+                <p className="text-sm font-mono font-bold">R$ {taxas.feeTransacao}</p>
+              </div>
+            )}
+            {taxas.alertaPreChargeback != null && (
+              <div className="rounded-xl border border-[#002443]/5 p-3 text-center">
+                <p className="text-[10px] text-[#002443]/40 font-medium">Alerta Pré-CB</p>
+                <p className="text-sm font-mono font-bold">R$ {taxas.alertaPreChargeback}</p>
+              </div>
+            )}
+            {taxas.percentualAntecipacao != null && (
+              <div className="rounded-xl border border-[#002443]/5 p-3 text-center">
+                <p className="text-[10px] text-[#002443]/40 font-medium">Antecipação</p>
+                <p className="text-sm font-mono font-bold">{taxas.percentualAntecipacao}% a.m.</p>
+              </div>
+            )}
+            {taxas.rav && (
+              <div className="rounded-xl border border-[#002443]/5 p-3 text-center">
+                <p className="text-[10px] text-[#002443]/40 font-medium">RAV / Prazo</p>
+                <p className="text-sm font-mono font-bold">{taxas.rav.prazo}{taxas.rav.taxa ? ` (${taxas.rav.taxa}%)` : ''}</p>
+              </div>
+            )}
+            {taxas.minimoGarantido && (
+              <div className="rounded-xl border border-[#002443]/5 p-3 text-center">
+                <p className="text-[10px] text-[#002443]/40 font-medium">Mín. Garantido</p>
+                <p className="text-xs font-mono font-bold">
+                  R$ {taxas.minimoGarantido.mes1 || 0} / {taxas.minimoGarantido.mes2 || 0} / {taxas.minimoGarantido.mes3 || 0}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function PriscilaPanel({ lead, leadId }) {
   const queryClient = useQueryClient();
 
