@@ -24,9 +24,38 @@ import { toast } from 'sonner';
 import LeadStepNavigation from './LeadStepNavigation';
 import BusinessTypeExplainer from './BusinessTypeExplainer';
 
+// IDs das perguntas que devem ser removidas (duplicadas/redundantes)
+const HIDDEN_QUESTION_IDS = [
+  '69a65e03864a4c3f8c03117e', // "Qual o modelo de negócio da sua empresa?" (duplicada da etapa 1)
+  '69a5cd07afab70a7ca2184dc', // "Qual o principal tipo de produto/serviço que sua empresa vende/transaciona?" (redundante)
+  '69a5cd11afab70a7ca2184e2', // "Quantas transações por mês..." (será calculado automaticamente)
+];
+
+// IDs das perguntas que precisam de campo "Outro" para descrição
+const QUESTIONS_WITH_OTHER_DESCRIPTION = [
+  '69a5cd07afab70a7ca2184d8', // "Qual o principal tipo de produto/serviço que sua empresa oferece?"
+  '69a5cd07afab70a7ca2184dd', // "Selecione as categorias de produtos..."
+];
+
+// IDs das perguntas de valores monetários
+const MONETARY_QUESTION_IDS = [
+  '69a5cd11afab70a7ca2184e0', // TPV Mensal
+  '69a5cd11afab70a7ca2184e1', // Ticket Médio
+];
+
+// ID da pergunta "Descreva brevemente todos os produtos/serviços..."
+const DESCRIPTION_QUESTION_ID = '69a5cd07afab70a7ca2184d9';
+
+// IDs para cálculo automático de transações
+const TPV_QUESTION_ID = '69a5cd11afab70a7ca2184e0';
+const TICKET_MEDIO_QUESTION_ID = '69a5cd11afab70a7ca2184e1';
+const TRANSACOES_MES_QUESTION_ID = '69a5cd11afab70a7ca2184e2';
+
 const STORAGE_KEY = 'lead_questionnaire_data';
 
-export default function LeadQuestionnaireForm({ template, questions, linkCode, onSubmit }) {
+export default function LeadQuestionnaireForm({ template, questions: rawQuestions, linkCode, onSubmit }) {
+  // Filtrar perguntas ocultas (duplicadas/redundantes)
+  const questions = rawQuestions.filter(q => !HIDDEN_QUESTION_IDS.includes(q.id));
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -60,7 +89,21 @@ export default function LeadQuestionnaireForm({ template, questions, linkCode, o
   }, [formData]);
 
   const updateField = useCallback((fieldId, value) => {
-    setFormData(prev => ({ ...prev, [fieldId]: value }));
+    setFormData(prev => {
+      const newData = { ...prev, [fieldId]: value };
+      
+      // Cálculo automático de transações por mês (TPV / Ticket Médio)
+      if (fieldId === TPV_QUESTION_ID || fieldId === TICKET_MEDIO_QUESTION_ID) {
+        const tpv = parseFloat(fieldId === TPV_QUESTION_ID ? value : prev[TPV_QUESTION_ID]) || 0;
+        const ticketMedio = parseFloat(fieldId === TICKET_MEDIO_QUESTION_ID ? value : prev[TICKET_MEDIO_QUESTION_ID]) || 0;
+        
+        if (tpv > 0 && ticketMedio > 0) {
+          newData[TRANSACOES_MES_QUESTION_ID] = Math.round(tpv / ticketMedio);
+        }
+      }
+      
+      return newData;
+    });
   }, []);
 
   // Verificar lógica condicional
@@ -78,6 +121,15 @@ export default function LeadQuestionnaireForm({ template, questions, linkCode, o
     }
   };
 
+  // Verificar se pergunta precisa de campo "Outro" para descrição
+  const needsOtherDescription = (questionId, value) => {
+    if (!QUESTIONS_WITH_OTHER_DESCRIPTION.includes(questionId)) return false;
+    if (Array.isArray(value)) {
+      return value.some(v => v?.toLowerCase().includes('outro'));
+    }
+    return String(value || '').toLowerCase().includes('outro');
+  };
+
   // Validar step atual
   const validateStep = () => {
     if (currentStep >= steps.length) return true;
@@ -90,9 +142,20 @@ export default function LeadQuestionnaireForm({ template, questions, linkCode, o
           toast.error(`Por favor, preencha: "${q.text}"`);
           return false;
         }
-        // Validações específicas
-        if (q.validationRules?.minLength && String(val).length < q.validationRules.minLength) {
-          toast.error(`"${q.text}" deve ter no mínimo ${q.validationRules.minLength} caracteres`);
+        
+        // Validação de mínimo de caracteres
+        const minLength = q.id === DESCRIPTION_QUESTION_ID ? 75 : q.validationRules?.minLength;
+        if (minLength && String(val).length < minLength) {
+          toast.error(`"${q.text}" deve ter no mínimo ${minLength} caracteres`);
+          return false;
+        }
+      }
+      
+      // Validar campo "Outro" se selecionado
+      if (needsOtherDescription(q.id, formData[q.id])) {
+        const otherDesc = formData[`${q.id}_outro_descricao`];
+        if (!otherDesc || otherDesc.trim().length < 10) {
+          toast.error(`Por favor, descreva "Outros" em "${q.text}" (mínimo 10 caracteres)`);
           return false;
         }
       }
@@ -241,22 +304,53 @@ export default function LeadQuestionnaireForm({ template, questions, linkCode, o
         )}
 
         {question.type === 'TEXT' && (
-          <Input
-            value={value}
-            onChange={(e) => updateField(question.id, e.target.value)}
-            placeholder={question.placeholder || ''}
-            className="h-12 rounded-xl"
-          />
+          <>
+            {question.id === DESCRIPTION_QUESTION_ID ? (
+              <div className="space-y-2">
+                <Textarea
+                  value={value}
+                  onChange={(e) => updateField(question.id, e.target.value)}
+                  placeholder={question.placeholder || ''}
+                  className="min-h-[120px] rounded-xl resize-none"
+                  maxLength={500}
+                />
+                <div className="flex justify-between items-center text-xs">
+                  <span className={`${String(value).length < 75 ? 'text-amber-600' : 'text-[var(--pagsmile-green)]'}`}>
+                    {String(value).length < 75 
+                      ? `Faltam ${75 - String(value).length} caracteres (mínimo 75)` 
+                      : '✓ Mínimo atingido'}
+                  </span>
+                  <span className="text-[var(--pagsmile-blue)]/50">
+                    {String(value).length}/500
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <Input
+                value={value}
+                onChange={(e) => updateField(question.id, e.target.value)}
+                placeholder={question.placeholder || ''}
+                className="h-12 rounded-xl"
+              />
+            )}
+          </>
         )}
 
         {question.type === 'NUMBER' && (
-          <Input
-            type="number"
-            value={value}
-            onChange={(e) => updateField(question.id, e.target.value)}
-            placeholder={question.placeholder || ''}
-            className="h-12 rounded-xl"
-          />
+          <div className="relative">
+            {MONETARY_QUESTION_IDS.includes(question.id) && (
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--pagsmile-blue)]/60 font-semibold">
+                R$
+              </span>
+            )}
+            <Input
+              type="number"
+              value={value}
+              onChange={(e) => updateField(question.id, e.target.value)}
+              placeholder={question.placeholder || ''}
+              className={`h-12 rounded-xl ${MONETARY_QUESTION_IDS.includes(question.id) ? 'pl-12' : ''}`}
+            />
+          </div>
         )}
 
         {question.type === 'EMAIL' && (
@@ -298,59 +392,93 @@ export default function LeadQuestionnaireForm({ template, questions, linkCode, o
         )}
 
         {question.type === 'SELECT' && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {(question.options || []).map((opt, i) => {
-              const isSelected = value === opt;
-              return (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => updateField(question.id, opt)}
-                  className={`relative p-4 text-left rounded-2xl border transition-all duration-200 flex items-start gap-3 ${
-                    isSelected 
-                      ? 'border-[#2bc196] bg-[#2bc196]/5 shadow-sm ring-1 ring-[#2bc196]' 
-                      : 'border-slate-200 bg-white hover:border-[#2bc196]/30 hover:bg-slate-50'
-                  }`}
-                >
-                  <div className={`mt-0.5 flex-shrink-0 w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${
-                    isSelected ? 'border-[#2bc196] bg-[#2bc196]' : 'border-slate-300 bg-white'
-                  }`}>
-                    {isSelected && <CheckCircle className="w-3.5 h-3.5 text-white" />}
-                  </div>
-                  <span className={`font-medium text-sm leading-tight ${isSelected ? 'text-[#002443]' : 'text-[#002443]/70'}`}>
-                    {opt}
-                  </span>
-                </button>
-              );
-            })}
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {(question.options || []).map((opt, i) => {
+                const isSelected = value === opt;
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => updateField(question.id, opt)}
+                    className={`relative p-4 text-left rounded-2xl border transition-all duration-200 flex items-start gap-3 ${
+                      isSelected 
+                        ? 'border-[#2bc196] bg-[#2bc196]/5 shadow-sm ring-1 ring-[#2bc196]' 
+                        : 'border-slate-200 bg-white hover:border-[#2bc196]/30 hover:bg-slate-50'
+                    }`}
+                  >
+                    <div className={`mt-0.5 flex-shrink-0 w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${
+                      isSelected ? 'border-[#2bc196] bg-[#2bc196]' : 'border-slate-300 bg-white'
+                    }`}>
+                      {isSelected && <CheckCircle className="w-3.5 h-3.5 text-white" />}
+                    </div>
+                    <span className={`font-medium text-sm leading-tight ${isSelected ? 'text-[#002443]' : 'text-[#002443]/70'}`}>
+                      {opt}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            
+            {/* Campo de descrição para "Outros" */}
+            {QUESTIONS_WITH_OTHER_DESCRIPTION.includes(question.id) && needsOtherDescription(question.id, value) && (
+              <div className="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                <Label className="text-sm font-semibold text-[var(--pagsmile-blue)] mb-2 block">
+                  Descreva o que seria "Outros" <span className="text-red-500">*</span>
+                </Label>
+                <Textarea
+                  value={formData[`${question.id}_outro_descricao`] || ''}
+                  onChange={(e) => updateField(`${question.id}_outro_descricao`, e.target.value)}
+                  placeholder="Especifique detalhadamente..."
+                  className="min-h-[80px] rounded-xl resize-none"
+                />
+              </div>
+            )}
           </div>
         )}
 
         {question.type === 'MULTI_SELECT' && (
-          <div className="flex flex-wrap gap-2">
-            {(question.options || []).map((opt, i) => {
-              const selected = Array.isArray(value) ? value.includes(opt) : false;
-              return (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => {
-                    const current = Array.isArray(value) ? value : [];
-                    const updated = selected
-                      ? current.filter(v => v !== opt)
-                      : [...current, opt];
-                    updateField(question.id, updated);
-                  }}
-                  className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 border ${
-                    selected
-                      ? 'bg-[#2bc196] text-white border-[#2bc196] shadow-sm scale-[1.02]'
-                      : 'bg-white text-[#002443]/70 border-slate-200 hover:border-[#2bc196]/50 hover:bg-slate-50'
-                  }`}
-                >
-                  {opt}
-                </button>
-              );
-            })}
+          <div className="space-y-4">
+            <div className="flex flex-wrap gap-2">
+              {(question.options || []).map((opt, i) => {
+                const selected = Array.isArray(value) ? value.includes(opt) : false;
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => {
+                      const current = Array.isArray(value) ? value : [];
+                      const updated = selected
+                        ? current.filter(v => v !== opt)
+                        : [...current, opt];
+                      updateField(question.id, updated);
+                    }}
+                    className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 border ${
+                      selected
+                        ? 'bg-[#2bc196] text-white border-[#2bc196] shadow-sm scale-[1.02]'
+                        : 'bg-white text-[#002443]/70 border-slate-200 hover:border-[#2bc196]/50 hover:bg-slate-50'
+                    }`}
+                  >
+                    {opt}
+                  </button>
+                );
+              })}
+            </div>
+            
+            {/* Campo de descrição para "Outros" */}
+            {QUESTIONS_WITH_OTHER_DESCRIPTION.includes(question.id) && needsOtherDescription(question.id, value) && (
+              <div className="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                <Label className="text-sm font-semibold text-[var(--pagsmile-blue)] mb-2 block">
+                  Descreva o que seria "Outros" <span className="text-red-500">*</span>
+                </Label>
+                <Textarea
+                  value={formData[`${question.id}_outro_descricao`] || ''}
+                  onChange={(e) => updateField(`${question.id}_outro_descricao`, e.target.value)}
+                  placeholder="Especifique detalhadamente..."
+                  className="min-h-[80px] rounded-xl resize-none"
+                />
+              </div>
+            )}
           </div>
         )}
 
