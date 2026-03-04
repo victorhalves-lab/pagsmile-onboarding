@@ -214,6 +214,14 @@ export default function LeadQuestionnaireForm({ template, questions, linkCode, o
     onSubmit({ ...leadData, id: lead.id });
   };
 
+  const isBusinessTypeQuestion = (question) => {
+    const text = (question.text || '').toLowerCase();
+    const opts = (question.options || []).map(o => o.toLowerCase()).join(' ');
+    const combined = text + ' ' + opts;
+    return (combined.includes('merchant') || combined.includes('merchan')) &&
+           (combined.includes('gateway') || combined.includes('marketplace'));
+  };
+
   const renderQuestion = (question) => {
     if (!shouldShowQuestion(question)) return null;
     const value = formData[question.id] || '';
@@ -224,6 +232,7 @@ export default function LeadQuestionnaireForm({ template, questions, linkCode, o
           {question.text}
           {question.isRequired && <span className="text-red-500 ml-1">*</span>}
         </Label>
+        {isBusinessTypeQuestion(question) && <BusinessTypeExplainer />}
         {question.helpText && (
           <p className="text-xs text-[var(--pagsmile-blue)]/60 flex items-center gap-1">
             <HelpCircle className="w-3 h-3" />
