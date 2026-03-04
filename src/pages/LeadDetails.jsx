@@ -242,66 +242,7 @@ export default function LeadDetails() {
         </TabsContent>
 
         <TabsContent value="priscila" className="mt-4">
-          <Card>
-            <CardHeader><CardTitle className="flex items-center gap-2"><ShieldCheck className="w-5 h-5 text-purple-600" /> Relatório PRISCILA</CardTitle></CardHeader>
-            <CardContent>
-              {lead.priscilaAnalysisReport ? (
-                <div className="space-y-4">
-                  {lead.priscilaAnalysisReport.resumoExecutivo && (
-                    <div>
-                      <h4 className="font-semibold text-sm text-[var(--pagsmile-blue)] mb-1">Resumo Executivo</h4>
-                      <p className="text-sm text-[var(--pagsmile-blue)]/80">{lead.priscilaAnalysisReport.resumoExecutivo}</p>
-                    </div>
-                  )}
-                  {lead.priscilaAnalysisReport.pontosFortes?.length > 0 && (
-                    <div>
-                      <h4 className="font-semibold text-sm text-green-700 mb-1">Pontos Fortes</h4>
-                      <ul className="space-y-1">
-                        {lead.priscilaAnalysisReport.pontosFortes.map((p, i) => (
-                          <li key={i} className="text-sm flex items-start gap-2">
-                            <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 shrink-0" />
-                            {p.descricao || p}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  {lead.priscilaAnalysisReport.pontosDeAtencao?.length > 0 && (
-                    <div>
-                      <h4 className="font-semibold text-sm text-amber-700 mb-1">Pontos de Atenção</h4>
-                      <ul className="space-y-1">
-                        {lead.priscilaAnalysisReport.pontosDeAtencao.map((p, i) => (
-                          <li key={i} className="text-sm flex items-start gap-2">
-                            <AlertTriangle className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
-                            {p.descricao || p}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  {lead.priscilaAnalysisReport.pontosDeRisco?.length > 0 && (
-                    <div>
-                      <h4 className="font-semibold text-sm text-red-700 mb-1">Pontos de Risco</h4>
-                      <ul className="space-y-1">
-                        {lead.priscilaAnalysisReport.pontosDeRisco.map((p, i) => (
-                          <li key={i} className="text-sm flex items-start gap-2">
-                            <XCircle className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
-                            {p.descricao || p}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <ShieldCheck className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/30 mb-3" />
-                  <p className="text-[var(--pagsmile-blue)]/60">Análise PRISCILA ainda não disponível</p>
-                  <p className="text-xs text-[var(--pagsmile-blue)]/40 mt-1">A análise será executada automaticamente após a submissão</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <PriscilaPanel lead={lead} leadId={leadId} />
         </TabsContent>
 
         <TabsContent value="questionnaire" className="mt-4">
