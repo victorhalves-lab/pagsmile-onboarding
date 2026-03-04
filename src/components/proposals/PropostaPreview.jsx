@@ -56,7 +56,7 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
 
       {/* Compact table - ALL 21 rows visible */}
       <div className="rounded-xl bg-white/[0.03] border border-white/5 overflow-hidden mb-4">
-        <div className="grid grid-cols-5 text-[8px] text-white/20 font-bold uppercase tracking-wider py-1.5 px-2 bg-white/[0.02]">
+        <div className="grid grid-cols-5 text-[8px] text-white font-bold uppercase tracking-wider py-1.5 px-2 bg-white/[0.02]">
           <div>Parc.</div><div>Faixa</div><div className="text-right">Base</div><div className="text-right">Antecip.</div><div className="text-right">Final</div>
         </div>
         {rows.map(row => (
