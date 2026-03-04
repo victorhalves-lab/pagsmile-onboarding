@@ -391,7 +391,7 @@ export default function AdminDashboard() {
     });
   }, [onboardingCases, merchantMap, searchTerm, activeTab, merchantTypeFilter, dateFilter, sortField, sortOrder]);
 
-  const isLoading = casesLoading || merchantsLoading;
+  const isLoadingAll = casesLoading || merchantsLoading;
 
   // Cálculo de percentuais para os cards principais
   const helenaApprovalPercent = stats.totalHelenaAnalyses > 0 
