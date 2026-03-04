@@ -206,13 +206,14 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
     const protocolo = generateProtocolo();
     const qualityScore = calculateQualityScore();
 
-    // Determinar businessSubCategory
+    // Determinar businessSubCategory a partir da primeira pergunta (order 1)
     let businessSubCategory = 'MERCHAN';
-    for (const q of questions) {
-      if (q.text?.toLowerCase().includes('o que sua empresa é') || q.text?.toLowerCase().includes('tipo de empresa')) {
-        const answer = formData[q.id];
-        if (answer?.toLowerCase().includes('gateway')) businessSubCategory = 'GATEWAY';
-        else if (answer?.toLowerCase().includes('marketplace')) businessSubCategory = 'MARKETPLACE';
+    for (const q of rawQuestions) {
+      const text = (q.text || '').toLowerCase();
+      if (text.includes('sua empresa é principalmente') || text.includes('o que sua empresa é') || text.includes('tipo de empresa')) {
+        const answer = String(formData[q.id] || '').toLowerCase();
+        if (answer.includes('gateway')) businessSubCategory = 'GATEWAY';
+        else if (answer.includes('marketplace')) businessSubCategory = 'MARKETPLACE';
         else businessSubCategory = 'MERCHAN';
         break;
       }
@@ -248,7 +249,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
       recommendedComplianceTemplateId,
       tpvMensal: parseFloat(findFieldValue(['tpv']) || '0') || 0,
       ticketMedio: parseFloat(findFieldValue(['ticket']) || '0') || 0,
-      transacoesMes: parseFloat(findFieldValue(['transações', 'transacoes']) || '0') || 0,
+      transacoesMes: parseFloat(formData[TRANSACOES_MES_QUESTION_ID] || '0') || 0,
       expectativaCrescimento: findFieldValue(['crescimento']) || '',
       protocolo,
       origemLead: new URLSearchParams(window.location.search).get('utm_source') || '',
