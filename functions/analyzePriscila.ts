@@ -101,11 +101,59 @@ CLASSIFICAÇÃO FINAL:
 - 40-59: ALTO risco → REVISAO_MANUAL (precisa de análise humana antes de avançar)
 - 0-39: CRITICO risco → REJEITAR (não deve avançar no funil)
 
+═══════════════════════════════════════════════════════════
+SUGESTÃO DE PRECIFICAÇÃO COMERCIAL
+═══════════════════════════════════════════════════════════
+
+Com base no perfil de risco, TPV, MCC, tipo de negócio e dados declarados, sugira taxas comerciais competitivas que equilibrem margem e atratividade. 
+
+Considere:
+- Segmentos de maior risco = taxas maiores
+- TPV alto = possibilidade de taxas menores (volume justifica)
+- Gateway vs Merchan vs Marketplace (gateways geralmente têm taxas menores por volume)
+- MCC de alto risco (jogos, cripto, adult) = taxas premium
+
+Sugira TODAS as taxas abaixo:
+
+**Cartão de Crédito (MDR % por bandeira e faixa):**
+- Visa, Mastercard, Elo, Amex, Outras
+- Para cada bandeira: à vista (1x), 2x a 6x, 7x a 12x, 13x a 21x
+
+**Débito (% por bandeira):**
+- Visa, Mastercard, Elo, Outras
+
+**Pix:**
+- Tipo: percentual ou fixo
+- Valor sugerido
+
+**Boleto:** valor fixo por boleto (R$)
+**Antifraude:** valor por transação (R$)
+**Fee por Transação:** valor por transação (R$)
+**Alerta Pré-Chargeback:** valor por alerta (R$)
+**Antecipação:** percentual ao mês (%)
+**RAV (prazo de recebimento):** D+1, D+2, D+15, D+30
+**Mínimo Garantido:** valor mensal sugerido para os 3 primeiros meses (R$)
+
+As taxas sugeridas devem ser REALISTAS para o mercado brasileiro de pagamentos.
+Referências típicas do mercado:
+- Crédito à vista: 1.8% a 4.5%
+- Crédito 2-6x: 2.5% a 6%
+- Crédito 7-12x: 3% a 8%
+- Crédito 13-21x: 4% a 10%
+- Débito: 1% a 2.5%
+- Pix: 0.5% a 1.5% ou R$ 0.50 a R$ 2.00 fixo
+- Boleto: R$ 2.00 a R$ 5.00
+- Antifraude: R$ 0.05 a R$ 0.50
+- Fee transação: R$ 0.10 a R$ 0.50
+- Antecipação: 1% a 3% a.m.
+- Mínimo garantido: R$ 500 a R$ 10.000/mês
+
 IMPORTANTE:
 - Seja objetivo e baseado em dados concretos.
 - Não invente informações. Se um dado não foi fornecido, registre como lacuna e penalize proporcionalmente.
 - Para cada ponto de risco, cite a evidência específica dos dados do lead.
-- O resumo executivo deve ter no máximo 3 frases.`;
+- O resumo executivo deve ter no máximo 3 frases.
+- As taxas sugeridas devem ser justificadas pelo perfil de risco e dados do lead.`;
 
     const responseSchema = {
       type: "object",
