@@ -447,7 +447,7 @@ export default function PropostaPublica() {
       </Card>
 
       {/* Floating Action Bar */}
-      {['enviada', 'visualizada', 'rascunho'].includes(proposta.status) && (
+      {['enviada', 'visualizada'].includes(proposta.status) && (
         <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-md border-t border-slate-200 z-50 md:relative md:bg-transparent md:backdrop-blur-none md:border-none md:p-0 flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4 md:mb-8 shadow-[0_-10px_40px_rgba(0,36,67,0.08)] md:shadow-none pb-safe">
           <Button
             onClick={() => setShowAceiteModal(true)}
