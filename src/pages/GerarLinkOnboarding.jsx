@@ -222,16 +222,33 @@ export default function GerarLinkOnboarding() {
 
       {/* === SECTION: Links de Compliance === */}
       {activeSection === 'compliance' && (
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-8 h-8 rounded-xl bg-[#002443]/5 flex items-center justify-center"><Shield className="w-4 h-4 text-[#002443]" /></div>
-            <div>
-              <h2 className="text-base font-bold text-[#002443]">Links de Compliance</h2>
-              <p className="text-xs text-[#002443]/40">Questionários KYC/KYB para diferentes perfis de merchant</p>
+        <div className="space-y-6">
+          {/* Por Sub-Categoria de Negócio */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 rounded-xl bg-[#2bc196]/10 flex items-center justify-center"><Briefcase className="w-4 h-4 text-[#2bc196]" /></div>
+              <div>
+                <h2 className="text-base font-bold text-[#002443]">Por Tipo de Negócio</h2>
+                <p className="text-xs text-[#002443]/40">Links diretos por sub-categoria: Merchant, Gateway ou Marketplace</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {quickLinks.compliance_by_business.map(item => <QuickLinkCard key={item.key} item={item} />)}
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {quickLinks.compliance.map(item => <QuickLinkCard key={item.key} item={item} />)}
+
+          {/* Por Tipo de Compliance */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 rounded-xl bg-[#002443]/5 flex items-center justify-center"><Shield className="w-4 h-4 text-[#002443]" /></div>
+              <div>
+                <h2 className="text-base font-bold text-[#002443]">Por Tipo de Compliance</h2>
+                <p className="text-xs text-[#002443]/40">Questionários KYC/KYB específicos por modelo</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {quickLinks.compliance_by_type.map(item => <QuickLinkCard key={item.key} item={item} />)}
+            </div>
           </div>
         </div>
       )}
