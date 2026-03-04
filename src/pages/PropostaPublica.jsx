@@ -150,7 +150,7 @@ export default function PropostaPublica() {
 
       if (proposta.leadId) {
         await base44.entities.Lead.update(proposta.leadId, {
-          status: 'proposta_recusada',
+          status: 'em_contato_comercial',
           lastInteractionDate: new Date().toISOString()
         });
       }
