@@ -526,7 +526,7 @@ export default function QuestionariosRecebidos() {
 
       {/* Tabela */}
       <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
-        {isLoading ? (
+        {isLoadingAll ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" />
           </div>
