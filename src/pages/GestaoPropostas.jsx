@@ -84,7 +84,7 @@ export default function GestaoPropostas() {
       ...proposta,
       codigo: `PROP-${year}-${seq}`,
       status: 'rascunho',
-      tokenPublico: Math.random().toString(36).substring(2, 15),
+      tokenPublico: Array.from({ length: 64 }, () => 'abcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random() * 36))).join(''),
       sentDate: null,
       acceptedDate: null,
       rejectedDate: null,
