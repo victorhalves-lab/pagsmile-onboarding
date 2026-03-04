@@ -399,6 +399,11 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
            (combined.includes('gateway') || combined.includes('marketplace'));
   };
 
+  const isMCCQuestion = (question) => {
+    const text = (question.text || '').toLowerCase();
+    return text.includes('mcc') && !isBusinessTypeQuestion(question);
+  };
+
   const renderQuestion = (question) => {
     if (!shouldShowQuestion(question)) return null;
     
