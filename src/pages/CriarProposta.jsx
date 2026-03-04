@@ -68,7 +68,7 @@ export default function CriarProposta() {
       setRates({
         cartao: r.cartao || {}, pix: r.pix || { tipo: 'percentual', valor: '' },
         boleto: r.boleto || '', feeTransacao: r.feeTransacao || '',
-        alertaPreChargeback: r.alertaPreChargeback || r.antifraude || '',
+        antifraude: r.antifraude || '', alertaPreChargeback: r.alertaPreChargeback || '',
         minimoGarantido: typeof r.minimoGarantido === 'object' ? r.minimoGarantido : { mes1: r.minimoGarantido || '', mes2: r.minimoGarantido || '', mes3: r.minimoGarantido || '' },
       });
     }
