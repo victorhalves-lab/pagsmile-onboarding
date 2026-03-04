@@ -423,6 +423,8 @@ export default function QuestionariosLeads() {
                                   toast.success('Status atualizado para "Em Contato"');
                                 } else if (btn.action === 'proposal') {
                                   navigate(createPageUrl('CriarProposta') + `?lead=${lead.id}`);
+                                } else if (btn.action === 'responses') {
+                                  setResponsesModalLead(lead);
                                 }
                               }}
                             >
