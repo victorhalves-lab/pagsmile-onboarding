@@ -359,69 +359,27 @@ export default function DynamicQuestionnaire({
   const currentStepData = steps[currentStep - 1];
 
   return (
-    <div className="flex gap-8 items-start">
-      {/* Sidebar de Navegação */}
-      <div className="hidden lg:block w-72 sticky top-24 space-y-6">
-        <div className="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
-          <div className="flex items-center gap-2 mb-3">
-            <div className={`px-2 py-1 rounded-lg text-xs font-semibold ${badgeColor}`}>
-              {badgeLabel || templateModel?.toUpperCase()}
-            </div>
-            <h3 className="font-bold text-[var(--pagsmile-blue)] text-sm">
-              {template.name}
-            </h3>
-          </div>
-          <div className="h-2 bg-slate-100 rounded-full overflow-hidden mb-3">
-            <div 
-              className="h-full bg-[var(--pagsmile-green)] transition-all duration-500 ease-out"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-          <p className="text-xs text-slate-500">
-            Passo {currentStep} de {steps.length}
-          </p>
+    <div className="max-w-3xl mx-auto">
+      {/* Header com badge */}
+      <div className="flex items-center gap-2 mb-4">
+        <div className={`px-2 py-1 rounded-lg text-xs font-semibold ${badgeColor}`}>
+          {badgeLabel || templateModel?.toUpperCase()}
         </div>
-
-        <StepNavigation
-          steps={steps.map((s, i) => ({
-            id: s.id,
-            title: `${i + 1}. ${s.title}`,
-            icon: s.icon
-          }))}
-          currentStep={currentStep}
-          onStepClick={setCurrentStep}
-          className="bg-white rounded-2xl p-3 shadow-sm border border-slate-100"
-        />
+        <h3 className="font-bold text-[var(--pagsmile-blue)] text-sm">
+          {template.name}
+        </h3>
       </div>
 
-      {/* Conteúdo Principal */}
-      <div className="flex-1 min-w-0">
-        {/* Mobile Progress */}
-        <div className="lg:hidden mb-6">
-          <div className="flex items-center gap-2 mb-2">
-            <div className={`px-2 py-1 rounded-lg text-xs font-semibold ${badgeColor}`}>
-              {badgeLabel || templateModel?.toUpperCase()}
-            </div>
-            <span className="text-sm text-[var(--pagsmile-blue)]/70">
-              Passo {currentStep} de {steps.length}
-            </span>
-          </div>
-          <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-[var(--pagsmile-green)] transition-all duration-500 ease-out"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-        </div>
+      {/* Navegação horizontal no topo */}
+      <StepNavigation
+        steps={steps}
+        totalSteps={steps.length}
+        currentStep={currentStep}
+        onStepClick={setCurrentStep}
+        className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 mb-6"
+      />
 
-        <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100 modern-shadow">
-          {/* Título do Step */}
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-[#002443] flex items-center gap-3">
-              {currentStepData.icon && <currentStepData.icon className="w-6 h-6 text-[var(--pagsmile-green)]" />}
-              {currentStepData.title}
-            </h2>
-          </div>
+      <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100 modern-shadow">
 
           {/* Banner de pré-preenchimento */}
           {hasPrefill && currentStep === 1 && (
