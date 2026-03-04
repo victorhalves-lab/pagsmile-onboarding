@@ -21,13 +21,14 @@ import {
 import {
   Search, ClipboardList, Download, Eye, Trash2, Loader2, X,
   ShoppingCart, Network, Building2, ArrowUpDown, RefreshCw, Zap,
-  Phone, FileText, AlertTriangle, Shield, TrendingUp
+  Phone, FileText, AlertTriangle, Shield, TrendingUp, MessageSquareText
 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
 import QuestionarioSimplificadoCard from '../components/questionario-simplificado/QuestionarioSimplificadoCard';
 import LeadSLAIndicator from '../components/leads/LeadSLAIndicator';
 import LeadQualifierBadge from '../components/leads/LeadQualifierBadge';
+import QuestionnaireResponsesModal from '../components/leads/QuestionnaireResponsesModal';
 
 const STATUS_CONFIG = {
   questionario_preenchido: { label: 'Novo', color: 'bg-blue-100 text-blue-700', icon: '🔵' },
