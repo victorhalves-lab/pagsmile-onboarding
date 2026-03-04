@@ -25,6 +25,7 @@ import LeadStepNavigation from './LeadStepNavigation';
 import BusinessTypeExplainer from './BusinessTypeExplainer';
 import PercentDistributionRow from './PercentDistributionRow';
 import CardRatesGroup from './CardRatesGroup';
+import MCCSearchModal from './MCCSearchModal';
 
 // IDs das perguntas que devem ser removidas (duplicadas/redundantes)
 const HIDDEN_QUESTION_IDS = [
