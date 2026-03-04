@@ -322,12 +322,16 @@ export default function AdminDashboard() {
 
   // Dados para gráfico de tendência (últimos 6 meses simulados)
   const trendData = React.useMemo(() => {
-    const months = ['Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-    return months.map((name, i) => {
-      // Filtrar por mês real se houver dados suficientes
+    const now = new Date();
+    const months = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.push({ name: d.toLocaleString('pt-BR', { month: 'short' }).replace('.', ''), month: d.getMonth(), year: d.getFullYear() });
+    }
+    return months.map(({ name, month, year }) => {
       const monthCases = onboardingCases.filter(c => {
         const d = new Date(c.created_date);
-        return d.getMonth() === (6 + i) % 12; // Jul=6, Ago=7, etc
+        return d.getMonth() === month && d.getFullYear() === year;
       });
       
       const iaCount = monthCases.filter(c => c.iaDecision === 'Aprovado' || c.iaDecision === 'Recusado').length;
