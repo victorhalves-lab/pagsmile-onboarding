@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import LeadStepNavigation from './LeadStepNavigation';
+import BusinessTypeExplainer from './BusinessTypeExplainer';
 
 const STORAGE_KEY = 'lead_questionnaire_data';
 
