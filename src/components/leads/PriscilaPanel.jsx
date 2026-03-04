@@ -393,6 +393,11 @@ export default function PriscilaPanel({ lead, leadId }) {
           </div>
         )}
 
+        {/* Taxas Sugeridas */}
+        {report.taxasSugeridas && (
+          <SuggestedRatesSection taxas={report.taxasSugeridas} leadId={lead.id} />
+        )}
+
         {/* Recomendação */}
         {report.recomendacao && (
           <div className="p-4 rounded-xl bg-purple-50 border border-purple-200">
