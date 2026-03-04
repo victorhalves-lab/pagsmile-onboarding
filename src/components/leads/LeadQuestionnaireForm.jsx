@@ -451,8 +451,14 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
             )}
             <Input
               type="number"
+              min="0"
               value={value}
-              onChange={(e) => updateField(question.id, e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val === '' || parseFloat(val) >= 0) {
+                  updateField(question.id, val);
+                }
+              }}
               placeholder={question.placeholder || ''}
               className={`h-12 rounded-xl ${MONETARY_QUESTION_IDS.includes(question.id) ? 'pl-12' : ''}`}
             />
