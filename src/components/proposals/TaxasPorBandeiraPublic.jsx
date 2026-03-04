@@ -11,6 +11,7 @@ const FAIXAS = [
   { label: 'À Vista (1x)', key: '1x' },
   { label: '2x a 6x', key: '2_6x' },
   { label: '7x a 12x', key: '7_12x' },
+  { label: '13x a 21x', key: '13_21x' },
 ];
 
 function getTaxa(taxas, bandeira, faixa) {
@@ -19,11 +20,13 @@ function getTaxa(taxas, bandeira, faixa) {
   if (faixa === '1x' && taxas.credito_1x?.[bandeira] !== undefined) return taxas.credito_1x[bandeira];
   if (faixa === '2_6x' && taxas.credito_2_6x?.[bandeira] !== undefined) return taxas.credito_2_6x[bandeira];
   if (faixa === '7_12x' && taxas.credito_7_12x?.[bandeira] !== undefined) return taxas.credito_7_12x[bandeira];
+  if (faixa === '13_21x' && taxas.credito_13_21x?.[bandeira] !== undefined) return taxas.credito_13_21x[bandeira];
   // Formato cartão (compat)
   if (taxas.cartao?.[bandeira]) {
     if (faixa === '1x') return taxas.cartao[bandeira].avista;
     if (faixa === '2_6x') return taxas.cartao[bandeira].de2a6x;
     if (faixa === '7_12x') return taxas.cartao[bandeira].de7a12x;
+    if (faixa === '13_21x') return taxas.cartao[bandeira].de13a21x;
   }
   return null;
 }

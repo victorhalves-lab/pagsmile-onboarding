@@ -19,12 +19,15 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
   const getPrazoDias = (p) => { if (p === 'FLUXO') return 0; if (p.startsWith('D+')) return parseInt(p.split('+')[1]); return 1; };
   const prazoDias = getPrazoDias(prazo);
 
+  const has13to21 = parseVal(taxas.de13a21x) > 0;
+  const maxParcelas = has13to21 ? 21 : 12;
   const rows = [];
-  for (let parcela = 1; parcela <= 12; parcela++) {
+  for (let parcela = 1; parcela <= maxParcelas; parcela++) {
     let taxaBase = 0, faixaLabel = '', faixaColor = '';
     if (parcela === 1) { taxaBase = parseVal(taxas.avista); faixaLabel = '1x'; faixaColor = '#2bc196'; }
     else if (parcela <= 6) { taxaBase = parseVal(taxas.de2a6x); faixaLabel = '2-6x'; faixaColor = '#5cf7cf'; }
-    else { taxaBase = parseVal(taxas.de7a12x); faixaLabel = '7-12x'; faixaColor = '#36706c'; }
+    else if (parcela <= 12) { taxaBase = parseVal(taxas.de7a12x); faixaLabel = '7-12x'; faixaColor = '#36706c'; }
+    else { taxaBase = parseVal(taxas.de13a21x); faixaLabel = '13-21x'; faixaColor = '#002443'; }
 
     let taxaAntecipacao = 0;
     if (prazo !== 'FLUXO' && taxaRAV > 0) {

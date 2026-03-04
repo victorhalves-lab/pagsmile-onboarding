@@ -1,19 +1,22 @@
 import React from 'react';
 
-const FAIXAS_LABELS = { 1: 'Cash', 2: '2x-6x', 3: '2x-6x', 4: '2x-6x', 5: '2x-6x', 6: '2x-6x', 7: '7x-12x', 8: '7x-12x', 9: '7x-12x', 10: '7x-12x', 11: '7x-12x', 12: '7x-12x' };
+const FAIXAS_LABELS = { 1: 'Cash', 2: '2x-6x', 3: '2x-6x', 4: '2x-6x', 5: '2x-6x', 6: '2x-6x', 7: '7x-12x', 8: '7x-12x', 9: '7x-12x', 10: '7x-12x', 11: '7x-12x', 12: '7x-12x', 13: '13x-21x', 14: '13x-21x', 15: '13x-21x', 16: '13x-21x', 17: '13x-21x', 18: '13x-21x', 19: '13x-21x', 20: '13x-21x', 21: '13x-21x' };
 
 export function calcularTabelaParcelas(taxas, taxaRAV, prazo) {
   const prazoDias = prazo === 'FLUXO' ? 0 : (parseInt(String(prazo).replace('D+', '')) || 1);
   const rows = [];
+  const maxParcelas = (parseFloat(taxas?.de13a21x || 0) > 0) ? 21 : 12;
 
-  for (let parcela = 1; parcela <= 12; parcela++) {
+  for (let parcela = 1; parcela <= maxParcelas; parcela++) {
     let taxaBase = 0;
     if (parcela === 1) {
       taxaBase = parseFloat(taxas?.avista || taxas?.vista || 0) || 0;
     } else if (parcela <= 6) {
       taxaBase = parseFloat(taxas?.de2a6x || taxas?.parcelado_2_6 || 0) || 0;
-    } else {
+    } else if (parcela <= 12) {
       taxaBase = parseFloat(taxas?.de7a12x || taxas?.parcelado_7_12 || 0) || 0;
+    } else {
+      taxaBase = parseFloat(taxas?.de13a21x || 0) || 0;
     }
 
     let taxaAntecipacao = 0;

@@ -18,6 +18,7 @@ const FAIXAS_SPEC = [
   { id: 'avista', label: 'À Vista', sub: '1x' },
   { id: 'de2a6x', label: '2x a 6x', sub: 'parcelado' },
   { id: 'de7a12x', label: '7x a 12x', sub: 'parcelado' },
+  { id: 'de13a21x', label: '13x a 21x', sub: 'parcelado' },
 ];
 
 function BrandLogo({ brand, isActive }) {
@@ -76,7 +77,7 @@ export default function CardTaxasCartao({ rates, onUpdateRates, selectedBrand, s
       </div>
 
       {/* Rate Inputs */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-4 gap-3">
         {FAIXAS_SPEC.map(f => (
           <div key={f.id} className="space-y-2">
             <div className="text-center">

@@ -17,6 +17,7 @@ function getTaxasForBandeira(taxas, bandeira) {
       avista: taxas.credito_1x?.[bandeira] || 0,
       de2a6x: taxas.credito_2_6x?.[bandeira] || 0,
       de7a12x: taxas.credito_7_12x?.[bandeira] || 0,
+      de13a21x: taxas.credito_13_21x?.[bandeira] || 0,
     };
   }
   // Formato cartao compat
