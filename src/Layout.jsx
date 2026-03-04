@@ -193,6 +193,7 @@ export default function Layout({ children, currentPageName }) {
       icon: Shield,
       items: [
         { label: 'Dashboard', path: 'AdminDashboard', icon: LayoutDashboard },
+        { label: 'Links de Compliance', path: 'LinksCompliance', icon: LinkIcon },
         { label: 'Questionários Recebidos', path: 'QuestionariosRecebidos', icon: FileCheck },
         { label: 'Análise de Casos', path: 'AnaliseDeCasos', icon: ClipboardList, hidden: true },
         { label: 'Gestão de Documentos', path: 'GestaoDocumentos', icon: FileText },
