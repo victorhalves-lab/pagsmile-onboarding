@@ -150,6 +150,8 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [mccModalOpen, setMccModalOpen] = useState(false);
+  const [mccQuestionId, setMccQuestionId] = useState(null);
   const autoSaveRef = useRef(null);
 
   // Agrupar perguntas em steps (5 perguntas por step)
