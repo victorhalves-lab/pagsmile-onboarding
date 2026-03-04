@@ -24,6 +24,7 @@ import { toast } from 'sonner';
 import LeadStepNavigation from './LeadStepNavigation';
 import BusinessTypeExplainer from './BusinessTypeExplainer';
 import PercentDistributionRow from './PercentDistributionRow';
+import CardRatesGroup from './CardRatesGroup';
 
 // IDs das perguntas que devem ser removidas (duplicadas/redundantes)
 const HIDDEN_QUESTION_IDS = [
