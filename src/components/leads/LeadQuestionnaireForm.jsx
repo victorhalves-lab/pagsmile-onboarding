@@ -954,6 +954,17 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
           Seus dados estão protegidos e serão tratados com confidencialidade.
         </p>
       </div>
+
+      {/* Modal de busca MCC */}
+      <MCCSearchModal
+        isOpen={mccModalOpen}
+        onClose={() => setMccModalOpen(false)}
+        onSelect={(mccCode) => {
+          if (mccQuestionId) {
+            updateField(mccQuestionId, mccCode);
+          }
+        }}
+      />
     </div>
   );
 }
