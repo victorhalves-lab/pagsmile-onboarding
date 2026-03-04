@@ -8,7 +8,7 @@ import { ArrowLeft, ArrowRight, Check, Loader2 } from 'lucide-react';
 import { 
   Building2, FileText, MapPin, Briefcase, TrendingUp, 
   Users, UserCircle, ShieldAlert, CheckCircle, Shield,
-  Globe, AlertTriangle, MessageSquare, ShieldCheck
+  Globe, AlertTriangle, MessageSquare, ShieldCheck, CreditCard
 } from 'lucide-react';
 import StepNavigation from './StepNavigation';
 import DynamicQuestionRenderer from './DynamicQuestionRenderer';
