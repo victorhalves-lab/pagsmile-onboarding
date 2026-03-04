@@ -232,6 +232,14 @@ export default function PropostaPublica() {
   // Already responded
   if (['aceita', 'recusada'].includes(proposta.status)) {
     const isAceita = proposta.status === 'aceita';
+    
+    // Build compliance URL dynamically for accepted proposals
+    const getComplianceUrl = () => {
+      if (!isAceita || !proposta.leadId) return null;
+      return `${window.location.origin}${createPageUrl('ComplianceFullKYC')}?leadId=${proposta.leadId}`;
+    };
+    const complianceUrl = getComplianceUrl();
+
     return (
       <div className="max-w-lg mx-auto py-20 text-center">
         {isAceita ? (
@@ -245,9 +253,9 @@ export default function PropostaPublica() {
         <p className="text-[#002443]/60">
           {isAceita ? 'Obrigado! Agora você será direcionado ao questionário de Compliance.' : 'Esta proposta já foi respondida.'}
         </p>
-        {isAceita && proposta.complianceRedirectUrl && (
+        {isAceita && complianceUrl && (
           <Button
-            onClick={() => window.location.href = proposta.complianceRedirectUrl}
+            onClick={() => window.location.href = complianceUrl}
             className="mt-6 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-8 h-12 rounded-2xl font-bold"
           >
             <Shield className="w-4 h-4 mr-2" />
