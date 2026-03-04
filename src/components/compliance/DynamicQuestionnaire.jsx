@@ -380,7 +380,6 @@ export default function DynamicQuestionnaire({
       />
 
       <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100 modern-shadow">
-
           {/* Banner de pré-preenchimento */}
           {hasPrefill && currentStep === 1 && (
             <div className="mb-6 p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-3">
