@@ -178,22 +178,54 @@ export default function QuestionnaireResponsesModal({ open, onClose, lead }) {
                       {sections.find(s => s.id === activeSec)?.label}
                     </h3>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
+                    {activeSec === 'arquivos' ? (
+                    <div className="space-y-3">
                       {filteredQuestions.map(q => (
-                        <div key={q.id} className="space-y-1">
-                          <p className="text-xs text-white/40 font-medium">{q.text}</p>
-                          <p className="text-sm text-white font-medium leading-relaxed">
-                            {q.type === 'TEXT' && String(q.value).startsWith('http') ? (
-                              <a href={String(q.value)} target="_blank" rel="noopener noreferrer" className="text-[#2bc196] hover:underline flex items-center gap-1">
-                                {String(q.value)} <ExternalLink className="w-3 h-3" />
-                              </a>
-                            ) : (
-                              formatValue(q.value)
-                            )}
-                          </p>
+                        <div key={q.id} className="flex items-center justify-between bg-white/5 rounded-xl px-4 py-3 border border-white/10">
+                          <div className="flex items-center gap-3 min-w-0">
+                            <Paperclip className="w-4 h-4 text-[#2bc196] shrink-0" />
+                            <div className="min-w-0">
+                              <p className="text-sm text-white font-medium truncate">{q.text}</p>
+                              <p className="text-xs text-white/40 truncate">{String(q.value).split('/').pop()}</p>
+                            </div>
+                          </div>
+                          <div className="flex gap-2 shrink-0">
+                            <a href={String(q.value)} target="_blank" rel="noopener noreferrer">
+                              <Button size="sm" variant="ghost" className="text-[#2bc196] hover:text-[#2bc196] hover:bg-[#2bc196]/10 h-8 text-xs">
+                                <ExternalLink className="w-3 h-3 mr-1" /> Abrir
+                              </Button>
+                            </a>
+                            <a href={String(q.value)} download>
+                              <Button size="sm" variant="ghost" className="text-white/60 hover:text-white hover:bg-white/10 h-8 text-xs">
+                                <Download className="w-3 h-3 mr-1" /> Baixar
+                              </Button>
+                            </a>
+                          </div>
                         </div>
                       ))}
                     </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
+                      {filteredQuestions.map(q => {
+                        const isUrl = typeof q.value === 'string' && (String(q.value).startsWith('http') || String(q.value).startsWith('www'));
+                        const isFileUrl = typeof q.value === 'string' && String(q.value).match(/\.(pdf|png|jpg|jpeg|doc|docx)$/i);
+                        return (
+                          <div key={q.id} className={`space-y-1 ${q.type === 'TEXT' && String(q.value).length > 100 ? 'md:col-span-2' : ''}`}>
+                            <p className="text-xs text-white/40 font-medium">{q.text}</p>
+                            <p className="text-sm text-white font-medium leading-relaxed">
+                              {isUrl ? (
+                                <a href={String(q.value).startsWith('http') ? String(q.value) : `https://${q.value}`} target="_blank" rel="noopener noreferrer" className="text-[#2bc196] hover:underline flex items-center gap-1 break-all">
+                                  {String(q.value)} <ExternalLink className="w-3 h-3 shrink-0" />
+                                </a>
+                              ) : (
+                                formatValue(q.value)
+                              )}
+                            </p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                   </div>
                 )}
               </div>
