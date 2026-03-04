@@ -92,7 +92,7 @@ const PARCELAMENTO_DISTRIBUTION_IDS = {
   parcela_7_12: '69a5cd22afab70a7ca2184f1',
 };
 
-// IDs das taxas de cartão (renderizados como grupo via CardRatesGroup)
+// IDs das taxas de cartão por bandeira (OCULTADOS - substituídos pela distribuição de parcelamento)
 const CARD_RATE_QUESTION_IDS = [
   '69a5cd44afab70a7ca218502', // À Vista - Visa
   '69a5cd44afab70a7ca218503', // À Vista - Mastercard
@@ -110,9 +110,6 @@ const CARD_RATE_QUESTION_IDS = [
   '69a8621316a6e3a86682f6e8', // 7-12x - Elo
   '69a5cd45afab70a7ca21850a', // 7-12x - Outras
 ];
-
-// O primeiro ID de taxa de cartão serve como trigger para renderizar o grupo inteiro
-const CARD_RATE_TRIGGER_ID = '69a5cd44afab70a7ca218502';
 
 // Todos os IDs que devem ser ocultados da renderização normal (serão renderizados como grupo)
 const GROUPED_PERCENT_IDS = [
