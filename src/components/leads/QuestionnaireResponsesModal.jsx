@@ -124,8 +124,8 @@ export default function QuestionnaireResponsesModal({ open, onClose, lead }) {
 
         <div className="flex max-h-[calc(85vh-72px)]">
           {/* Sidebar nav */}
-          <div className="w-56 shrink-0 border-r border-white/10 bg-[#0a1628]">
-            <ScrollArea className="h-full py-2">
+          <div className="w-56 shrink-0 border-r border-white/10 bg-[#0a1628] flex flex-col">
+            <ScrollArea className="flex-1 py-2">
               {isLoading ? (
                 <div className="flex justify-center py-8">
                   <Loader2 className="w-5 h-5 animate-spin text-[#2bc196]" />
@@ -155,6 +155,15 @@ export default function QuestionnaireResponsesModal({ open, onClose, lead }) {
                 </nav>
               )}
             </ScrollArea>
+            {/* Status footer */}
+            {lead?.status && (
+              <div className="px-3 py-3 border-t border-white/10">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-[#2bc196]"></span>
+                  <span className="text-xs text-white/60 capitalize">{(lead.status || '').replace(/_/g, ' ')}</span>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Content */}
