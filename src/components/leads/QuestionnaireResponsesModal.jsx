@@ -58,24 +58,51 @@ export default function QuestionnaireResponsesModal({ open, onClose, lead }) {
 
   const questionnaireData = lead?.questionnaireData || {};
 
-  const { sections, mappedQuestions } = useMemo(() => {
-    if (!questions.length) return { sections: [], mappedQuestions: [] };
+  const { sections, mappedQuestions, fileQuestions } = useMemo(() => {
+    if (!questions.length) return { sections: [], mappedQuestions: [], fileQuestions: [] };
 
+    const files = [];
     const mapped = questions
       .filter(q => questionnaireData[q.id] !== undefined && questionnaireData[q.id] !== '')
-      .map(q => ({
-        id: q.id,
-        text: q.text,
-        value: questionnaireData[q.id],
-        order: q.order,
-        type: q.type,
-        section: assignSection(q.order),
-      }));
+      .map(q => {
+        const isFile = q.type === 'FILE_UPLOAD' || (typeof questionnaireData[q.id] === 'string' && questionnaireData[q.id].match(/\.(pdf|png|jpg|jpeg|doc|docx)$/i));
+        if (isFile) {
+          files.push({ id: q.id, text: q.text, value: questionnaireData[q.id], order: q.order, type: q.type, section: 'arquivos' });
+        }
+        return {
+          id: q.id,
+          text: q.text,
+          value: questionnaireData[q.id],
+          order: q.order,
+          type: q.type,
+          section: isFile ? 'arquivos' : assignSection(q.order),
+        };
+      });
 
-    const usedSections = [...new Set(mapped.map(m => m.section))];
+    // Also detect "_outro_descricao" keys in questionnaireData
+    const allMapped = [...mapped];
+    Object.keys(questionnaireData).forEach(key => {
+      if (key.endsWith('_outro_descricao') && questionnaireData[key]) {
+        const parentQ = questions.find(q => q.id === key.replace('_outro_descricao', ''));
+        if (parentQ) {
+          allMapped.push({
+            id: key,
+            text: `${parentQ.text} — Detalhes "Outros"`,
+            value: questionnaireData[key],
+            order: parentQ.order + 0.5,
+            type: 'TEXT',
+            section: assignSection(parentQ.order),
+          });
+        }
+      }
+    });
+
+    allMapped.sort((a, b) => a.order - b.order);
+
+    const usedSections = [...new Set(allMapped.map(m => m.section))];
     const orderedSections = SECTION_CONFIG.filter(s => usedSections.includes(s.id));
 
-    return { sections: orderedSections, mappedQuestions: mapped };
+    return { sections: orderedSections, mappedQuestions: allMapped, fileQuestions: files };
   }, [questions, questionnaireData]);
 
   const activeSec = activeSection || sections[0]?.id;
