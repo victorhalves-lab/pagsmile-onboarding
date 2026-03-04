@@ -451,7 +451,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
           {question.text}
           {question.isRequired && <span className="text-red-500 ml-1">*</span>}
         </Label>
-        {isBusinessTypeQuestion(question) && <BusinessTypeExplainer />}
+        {isBusinessTypeQuestion(question) && currentStep === 0 && <BusinessTypeExplainer />}
         {question.helpText && (
           <p className="text-xs text-[var(--pagsmile-blue)]/60 flex items-center gap-1">
             <HelpCircle className="w-3 h-3" />
