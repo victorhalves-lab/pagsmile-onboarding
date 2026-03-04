@@ -62,10 +62,10 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
         {rows.map(row => (
           <div key={row.parcela} className="grid grid-cols-5 items-center px-2 py-[5px] border-t border-white/[0.03]">
             <div className="text-[11px] font-bold text-white">{row.parcela}x</div>
-            <div><span className="text-[8px] px-1 py-0.5 rounded bg-white/5 text-white/40 font-semibold">{row.faixaLabel}</span></div>
-            <div className="text-[10px] text-right text-white/40 font-mono">{fmtPct(row.taxaBase)}</div>
+            <div><span className="text-[8px] px-1 py-0.5 rounded bg-white/5 text-white/70 font-semibold">{row.faixaLabel}</span></div>
+            <div className="text-[10px] text-right text-white/70 font-mono">{fmtPct(row.taxaBase)}</div>
             <div className="text-[10px] text-right font-mono">
-              {row.taxaAntecipacao > 0 ? <span className="text-[#5cf7cf]">+{fmtPct(row.taxaAntecipacao)}</span> : <span className="text-white/10">—</span>}
+              {row.taxaAntecipacao > 0 ? <span className="text-[#5cf7cf]">+{fmtPct(row.taxaAntecipacao)}</span> : <span className="text-white/30">—</span>}
             </div>
             <div className="text-[11px] text-right font-bold text-[#2bc196]">{fmtPct(row.taxaFinal)}</div>
           </div>
