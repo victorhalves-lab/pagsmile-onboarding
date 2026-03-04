@@ -113,103 +113,107 @@ export default function EditorContrato() {
   ];
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate(createPageUrl('GestaoContratos'))}>
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold text-[#002443]">Editor de Contrato</h1>
-              <Badge className={statusCfg.color}>{statusCfg.label}</Badge>
+    <div className="flex h-screen overflow-hidden -m-4 lg:-m-8">
+      {/* Left Column - Forms */}
+      <div className="flex-1 flex flex-col min-w-0 bg-[#f4f4f4]">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-[#002443]/5 shrink-0">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" onClick={() => navigate(createPageUrl('GestaoContratos'))} className="rounded-xl">
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-lg font-bold text-[#002443]">Editor de Contrato</h1>
+                <Badge className={statusCfg.color}>{statusCfg.label}</Badge>
+              </div>
+              <p className="text-xs text-[#002443]/50">
+                {formData.codigo || '---'} • {formData.clientName || 'Sem nome'}
+              </p>
             </div>
-            <p className="text-sm text-[#002443]/50 mt-0.5">
-              {formData.codigo || '---'} • {formData.clientName || 'Sem nome'} • CNPJ: {formData.clientCnpj || '---'}
-            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            {hasChanges && (
+              <Badge className="bg-amber-100 text-amber-700">Alterações não salvas</Badge>
+            )}
+            <Button variant="outline" onClick={() => saveMutation.mutate(formData)} disabled={saveMutation.isPending} className="rounded-xl border-[#002443]/10 text-sm">
+              {saveMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+              Salvar
+            </Button>
+            <Button onClick={handleGenerateContract} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl px-5 font-bold">
+              <Eye className="w-4 h-4 mr-2" /> Gerar Contrato
+            </Button>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          {hasChanges && (
-            <Badge className="bg-amber-100 text-amber-700">Alterações não salvas</Badge>
+
+        {/* Status Bar */}
+        <div className="flex items-center gap-4 px-6 py-2 bg-white border-b border-[#002443]/5 shrink-0">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-green-600" />
+            <span className="text-xs font-medium text-green-700">{preFilledCount} campos preenchidos</span>
+          </div>
+          {missingCount > 0 && (
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-amber-600" />
+              <span className="text-xs font-medium text-amber-700">{missingCount} pendentes</span>
+            </div>
           )}
-          <Button 
-            variant="outline" 
-            onClick={() => saveMutation.mutate(formData)}
-            disabled={saveMutation.isPending}
-          >
-            {saveMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
-            Salvar
-          </Button>
-          <Button 
-            onClick={handleGenerateContract}
-            className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
-          >
-            <Eye className="w-4 h-4 mr-2" />
-            Gerar Contrato
-          </Button>
+          {formData.proposalLocked && (
+            <div className="flex items-center gap-2">
+              <Shield className="w-4 h-4 text-blue-600" />
+              <span className="text-xs font-medium text-blue-700">Taxas travadas</span>
+            </div>
+          )}
+        </div>
+
+        {/* Tabs + Form */}
+        <div className="flex-1 overflow-y-auto p-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="w-full justify-start bg-white border border-[#002443]/5 p-1 rounded-xl mb-4">
+              {TABS.map(tab => {
+                const Icon = tab.icon;
+                return (
+                  <TabsTrigger key={tab.id} value={tab.id} className="flex items-center gap-2 data-[state=active]:bg-[#2bc196]/10 data-[state=active]:text-[#002443] rounded-lg">
+                    <Icon className="w-4 h-4" />
+                    <span className="hidden sm:inline">{tab.label}</span>
+                  </TabsTrigger>
+                );
+              })}
+            </TabsList>
+
+            <div className="bg-white rounded-2xl border border-[#002443]/5 p-6">
+              <TabsContent value="cliente" className="mt-0">
+                <ClienteForm contract={formData} onChange={handleFieldChange} preFilledFields={formData.preFilledFields || []} />
+              </TabsContent>
+              <TabsContent value="modulos" className="mt-0">
+                <ModulosForm contract={formData} onChange={handleFieldChange} />
+              </TabsContent>
+              <TabsContent value="precos" className="mt-0">
+                <PrecosForm contract={formData} onChange={handleFieldChange} preFilledFields={formData.preFilledFields || []} />
+              </TabsContent>
+              <TabsContent value="slas" className="mt-0">
+                <SLAsForm contract={formData} onChange={handleFieldChange} />
+              </TabsContent>
+              <TabsContent value="assinatura" className="mt-0">
+                <AssinaturaForm contract={formData} onChange={handleFieldChange} />
+              </TabsContent>
+            </div>
+          </Tabs>
         </div>
       </div>
 
-      {/* Status Bar */}
-      <div className="flex items-center gap-4 p-3 bg-white rounded-xl border border-[#002443]/5">
-        <div className="flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-green-600" />
-          <span className="text-xs font-medium text-green-700">{preFilledCount} campos preenchidos automaticamente</span>
+      {/* Right Column - Preview do Contrato */}
+      <div className="w-[520px] bg-white border-l border-[#002443]/10 flex flex-col shrink-0 hidden lg:flex">
+        <div className="px-6 py-3 border-b border-[#002443]/5 bg-[#002443]/[0.02]">
+          <h2 className="text-sm font-bold text-[#002443]">Preview do Contrato</h2>
+          <p className="text-[10px] text-[#002443]/40">Atualizado em tempo real conforme preenchimento</p>
         </div>
-        {missingCount > 0 && (
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-amber-600" />
-            <span className="text-xs font-medium text-amber-700">{missingCount} campos pendentes</span>
+        <div className="flex-1 overflow-y-auto">
+          <div className="transform scale-[0.65] origin-top-left w-[154%]">
+            <ConteudoContrato contract={formData} />
           </div>
-        )}
-        {formData.proposalLocked && (
-          <div className="flex items-center gap-2">
-            <Shield className="w-4 h-4 text-blue-600" />
-            <span className="text-xs font-medium text-blue-700">Taxas da proposta travadas</span>
-          </div>
-        )}
+        </div>
       </div>
-
-      {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="w-full justify-start bg-white border border-[#002443]/5 p-1 rounded-xl">
-          {TABS.map(tab => {
-            const Icon = tab.icon;
-            return (
-              <TabsTrigger 
-                key={tab.id} 
-                value={tab.id}
-                className="flex items-center gap-2 data-[state=active]:bg-[#2bc196]/10 data-[state=active]:text-[#002443] rounded-lg"
-              >
-                <Icon className="w-4 h-4" />
-                <span className="hidden sm:inline">{tab.label}</span>
-              </TabsTrigger>
-            );
-          })}
-        </TabsList>
-
-        <Card className="mt-4 bg-white border border-[#002443]/5">
-          <CardContent className="p-6">
-            <TabsContent value="cliente" className="mt-0">
-              <ClienteForm contract={formData} onChange={handleFieldChange} preFilledFields={formData.preFilledFields || []} />
-            </TabsContent>
-            <TabsContent value="modulos" className="mt-0">
-              <ModulosForm contract={formData} onChange={handleFieldChange} />
-            </TabsContent>
-            <TabsContent value="precos" className="mt-0">
-              <PrecosForm contract={formData} onChange={handleFieldChange} preFilledFields={formData.preFilledFields || []} />
-            </TabsContent>
-            <TabsContent value="slas" className="mt-0">
-              <SLAsForm contract={formData} onChange={handleFieldChange} />
-            </TabsContent>
-            <TabsContent value="assinatura" className="mt-0">
-              <AssinaturaForm contract={formData} onChange={handleFieldChange} />
-            </TabsContent>
-          </CardContent>
-        </Card>
-      </Tabs>
     </div>
   );
 }
