@@ -62,6 +62,9 @@ const getActionButtons = (lead, navigate) => {
   if (['questionario_preenchido', 'analisado_priscila', 'em_contato_comercial'].includes(lead.status) && lead.priscilaRiskLevel !== 'CRITICO') {
     actions.push({ label: 'Gerar Proposta', icon: FileText, variant: 'outline', action: 'proposal' });
   }
+  if (lead.questionnaireData) {
+    actions.push({ label: 'Ver Respostas', icon: MessageSquareText, variant: 'outline', action: 'responses' });
+  }
   return actions;
 };
 
