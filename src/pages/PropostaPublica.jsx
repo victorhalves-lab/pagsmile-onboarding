@@ -387,7 +387,7 @@ export default function PropostaPublica() {
       </Card>
 
       {/* Outros Métodos */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
         <Card>
           <CardContent className="py-4 text-center flex flex-col justify-center h-full">
             <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">PIX</p>
@@ -403,6 +403,14 @@ export default function PropostaPublica() {
             <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">BOLETO</p>
             <p className="text-lg font-bold text-[#002443]">
               R$ {(parseFloat(rates.boleto) || 0).toFixed(2).replace('.', ',')}
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="py-4 text-center flex flex-col justify-center h-full">
+            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">ANTIFRAUDE</p>
+            <p className="text-lg font-bold text-[#002443]">
+              R$ {(parseFloat(rates.antifraude) || 0).toFixed(2).replace('.', ',')}
             </p>
           </CardContent>
         </Card>

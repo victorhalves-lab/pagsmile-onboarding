@@ -44,7 +44,9 @@ export default function CardOutrasTaxas({ rates, onUpdateRates }) {
           <TaxaInput value={rates?.feeTransacao || ''} onChange={(val) => updateField('feeTransacao', val)} placeholder="0,00" prefix="R$" className={`${inputCls} text-right pl-10`} /></div>
         <div className="space-y-1"><Label className={labelCls}>Taxa Boleto</Label>
           <TaxaInput value={rates?.boleto || ''} onChange={(val) => updateField('boleto', val)} placeholder="0,00" prefix="R$" className={`${inputCls} text-right pl-10`} /></div>
-        <div className="col-span-2 space-y-1"><Label className={labelCls}>Alerta Pré-Chargeback</Label>
+        <div className="space-y-1"><Label className={labelCls}>Taxa de Antifraude</Label>
+          <TaxaInput value={rates?.antifraude || ''} onChange={(val) => updateField('antifraude', val)} placeholder="0,00" prefix="R$" className={`${inputCls} text-right pl-10`} /></div>
+        <div className="space-y-1"><Label className={labelCls}>Alerta Pré-Chargeback</Label>
           <TaxaInput value={rates?.alertaPreChargeback || ''} onChange={(val) => updateField('alertaPreChargeback', val)} placeholder="0,00" prefix="R$" className={`${inputCls} text-right pl-10`} /></div>
       </div>
 
