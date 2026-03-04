@@ -78,6 +78,7 @@ export default function QuestionariosLeads() {
   const [activeTab, setActiveTab] = useState('completo');
   const [riskFilter, setRiskFilter] = useState('all');
   const [sortBy, setSortBy] = useState('date');
+  const [responsesModalLead, setResponsesModalLead] = useState(null);
 
   // Reset page when filters change
   React.useEffect(() => { setPage(1); }, [search, statusFilter, periodoFilter, riskFilter, sortBy]);
