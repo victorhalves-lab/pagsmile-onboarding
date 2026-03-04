@@ -41,6 +41,8 @@ export default function CriarProposta() {
     minimoGarantido: { mes1: '', mes2: '', mes3: '' },
   });
 
+  const usePriscila = urlParams.get('usePriscila') === '1';
+
   const { data: lead } = useQuery({
     queryKey: ['lead-for-proposal', leadId],
     queryFn: async () => { const leads = await base44.entities.Lead.filter({ id: leadId }); return leads[0] || null; },
