@@ -93,6 +93,7 @@ import QuestionariosLeads from './pages/QuestionariosLeads';
 import QuestionariosRecebidos from './pages/QuestionariosRecebidos';
 import RegrasDeCompliance from './pages/RegrasDeCompliance';
 import TemplatesQuestionarios from './pages/TemplatesQuestionarios';
+import LinksCompliance from './pages/LinksCompliance';
 import __Layout from './Layout.jsx';
 
 
@@ -143,6 +144,7 @@ export const PAGES = {
     "QuestionariosRecebidos": QuestionariosRecebidos,
     "RegrasDeCompliance": RegrasDeCompliance,
     "TemplatesQuestionarios": TemplatesQuestionarios,
+    "LinksCompliance": LinksCompliance,
 }
 
 export const pagesConfig = {
