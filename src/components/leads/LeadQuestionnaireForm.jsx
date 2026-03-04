@@ -399,6 +399,22 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
   const renderQuestion = (question) => {
     if (!shouldShowQuestion(question)) return null;
     
+    // Se a pergunta é parte das taxas de cartão, renderizar como grupo
+    if (CARD_RATE_QUESTION_IDS.includes(question.id)) {
+      if (question.id === CARD_RATE_TRIGGER_ID) {
+        const cardRateQuestions = questions.filter(q => CARD_RATE_QUESTION_IDS.includes(q.id));
+        return (
+          <CardRatesGroup
+            key="card-rates-group"
+            questions={cardRateQuestions}
+            formData={formData}
+            updateField={updateField}
+          />
+        );
+      }
+      return null;
+    }
+    
     // Se a pergunta é parte de um grupo de percentuais, não renderizar individualmente
     if (GROUPED_PERCENT_IDS.includes(question.id)) {
       // Se é o trigger (primeiro ID do grupo), renderizar o grupo inteiro
