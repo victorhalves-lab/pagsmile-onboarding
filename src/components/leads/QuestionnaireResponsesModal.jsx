@@ -4,19 +4,20 @@ import { base44 } from '@/api/base44Client';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Building2, User, Briefcase, DollarSign, PieChart, Clock, ShoppingBag, FileText, ExternalLink, X } from 'lucide-react';
+import { Loader2, Building2, User, Briefcase, DollarSign, PieChart, Clock, ShoppingBag, FileText, ExternalLink, X, CreditCard, Paperclip, History, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const SECTION_CONFIG = [
   { id: 'empresa', label: 'Dados da Empresa', icon: Building2, orderRange: [1, 6] },
   { id: 'contato', label: 'Dados do Contato', icon: User, orderRange: [7, 10] },
   { id: 'negocio', label: 'Modelo de Negócio', icon: Briefcase, orderRange: [11, 20] },
-  { id: 'financeiro', label: 'Dados Financeiros', icon: DollarSign, orderRange: [21, 30] },
-  { id: 'distribuicao', label: 'Distribuição', icon: PieChart, orderRange: [31, 40] },
-  { id: 'antecipacao', label: 'Antecipação', icon: Clock, orderRange: [41, 50] },
-  { id: 'taxas', label: 'Taxas Atuais', icon: DollarSign, orderRange: [51, 70] },
-  { id: 'produtos', label: 'Produtos', icon: ShoppingBag, orderRange: [71, 80] },
-  { id: 'outros', label: 'Outros', icon: FileText, orderRange: [81, 999] },
+  { id: 'financeiro', label: 'Dados Financeiros', icon: DollarSign, orderRange: [21, 31] },
+  { id: 'antecipacao', label: 'Antecipação', icon: Clock, orderRange: [32, 37] },
+  { id: 'processador', label: 'Processador / Taxas', icon: CreditCard, orderRange: [38, 58] },
+  { id: 'produtos', label: 'Produtos', icon: ShoppingBag, orderRange: [59, 65] },
+  { id: 'complementar', label: 'Complementares', icon: FileText, orderRange: [66, 80] },
+  { id: 'arquivos', label: 'Arquivos', icon: Paperclip, orderRange: [-1, -1] }, // virtual section for file uploads
+  { id: 'historico', label: 'Histórico', icon: History, orderRange: [81, 999] },
 ];
 
 function assignSection(order) {
