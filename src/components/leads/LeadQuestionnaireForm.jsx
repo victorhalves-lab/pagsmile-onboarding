@@ -36,6 +36,9 @@ const HIDDEN_QUESTION_IDS = [
 const QUESTIONS_WITH_OTHER_DESCRIPTION = [
   '69a5cd07afab70a7ca2184d8', // "Qual o principal tipo de produto/serviço que sua empresa oferece?"
   '69a5cd07afab70a7ca2184dd', // "Selecione as categorias de produtos..."
+  '69a5cd44afab70a7ca2184ff', // "Processador de pagamento atual"
+  '69a5cd07afab70a7ca2184da', // "Sua empresa atua em qual(is) modelo(s) de negócio?"
+  '69a5cd07afab70a7ca2184de', // "Quais os seus principais canais de venda?"
 ];
 
 // IDs das perguntas de valores monetários
