@@ -88,13 +88,13 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
         </div>
 
         <div className="bg-white/[0.03] border border-white/5 rounded-xl p-2">
-          <p className="text-[7px] text-white/20 font-bold uppercase tracking-widest text-center mb-1">TPV Mínimo Garantido</p>
+          <p className="text-[8px] text-[#2bc196] font-bold uppercase tracking-widest text-center mb-1">TPV Mínimo Mensal Garantido</p>
           <div className="flex items-center justify-center gap-2 text-[9px]">
-            <span className="text-white/50">M1: <span className="font-bold text-white">R$ {parseVal(rates.minimoGarantido?.mes1).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></span>
-            <span className="text-white/10">→</span>
-            <span className="text-white/50">M2: <span className="font-bold text-white">R$ {parseVal(rates.minimoGarantido?.mes2).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></span>
-            <span className="text-white/10">→</span>
-            <span className="text-[#2bc196] font-bold">M3+: R$ {parseVal(rates.minimoGarantido?.mes3).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
+            <span className="text-white">Mês 1: <span className="font-bold text-white">R$ {parseVal(rates.minimoGarantido?.mes1).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></span>
+            <span className="text-white/40">→</span>
+            <span className="text-white">Mês 2: <span className="font-bold text-white">R$ {parseVal(rates.minimoGarantido?.mes2).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span></span>
+            <span className="text-white/40">→</span>
+            <span className="text-[#2bc196] font-bold">Mês 3 em diante: R$ {parseVal(rates.minimoGarantido?.mes3).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</span>
           </div>
         </div>
       </div>
