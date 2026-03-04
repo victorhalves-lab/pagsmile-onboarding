@@ -76,12 +76,12 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
       <div className="space-y-2">
         <div className="grid grid-cols-3 gap-2">
           {[
-            { label: 'Prazo', value: prazo, color: 'text-white' },
-            { label: 'Taxa de Antecipação', value: `${fmtPct(taxaRAV)} a.m.`, color: 'text-[#2bc196]' },
-            { label: 'PIX', value: rates.pix?.tipo === 'fixo' ? `R$ ${parseVal(rates.pix?.valor).toFixed(2)}` : fmtPct(rates.pix?.valor), color: 'text-white' },
+            { label: 'Prazo', value: prazo, color: 'text-[#2bc196]' },
+            { label: 'Taxa de Antecipação', value: `${fmtPct(taxaRAV)} a.m.`, color: 'text-white' },
+            { label: 'PIX', value: rates.pix?.tipo === 'fixo' ? `R$ ${parseVal(rates.pix?.valor).toFixed(2)}` : fmtPct(rates.pix?.valor), color: 'text-[#2bc196]' },
           ].map((s, i) => (
             <div key={i} className="bg-white/[0.03] border border-white/5 rounded-xl p-2 text-center">
-              <p className="text-[7px] text-white/20 font-bold uppercase tracking-widest">{s.label}</p>
+              <p className="text-[8px] text-white font-bold uppercase tracking-widest">{s.label}</p>
               <p className={`text-xs font-bold ${s.color}`}>{s.value}</p>
             </div>
           ))}
