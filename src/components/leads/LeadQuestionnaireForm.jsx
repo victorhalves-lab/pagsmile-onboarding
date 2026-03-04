@@ -484,28 +484,41 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
           </>
         )}
 
-        {question.type === 'NUMBER' && (
-          <div className="relative">
-            {MONETARY_QUESTION_IDS.includes(question.id) && (
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--pagsmile-blue)]/60 font-semibold">
-                R$
-              </span>
-            )}
-            <Input
-              type="number"
-              min="0"
-              value={value}
-              onChange={(e) => {
-                const val = e.target.value;
-                if (val === '' || parseFloat(val) >= 0) {
-                  updateField(question.id, val);
-                }
-              }}
-              placeholder={question.placeholder || ''}
-              className={`h-12 rounded-xl ${MONETARY_QUESTION_IDS.includes(question.id) ? 'pl-12' : ''}`}
-            />
-          </div>
-        )}
+        {question.type === 'NUMBER' && (() => {
+          const qText = (question.text || '').toLowerCase();
+          const isPercent = qText.includes('(%)') || qText.includes('% ');
+          const isCurrency = qText.includes('(r$)') || qText.includes('r$') || MONETARY_QUESTION_IDS.includes(question.id);
+          const prefix = isCurrency ? 'R$' : isPercent ? '%' : null;
+          return (
+            <div className="relative">
+              {prefix && (
+                <span className={`absolute ${prefix === 'R$' ? 'left-4' : 'right-4'} top-1/2 -translate-y-1/2 text-[var(--pagsmile-blue)]/60 font-semibold text-sm`}>
+                  {prefix}
+                </span>
+              )}
+              <Input
+                type="number"
+                min="0"
+                step="0.01"
+                value={value}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val === '' || parseFloat(val) >= 0) {
+                    updateField(question.id, val);
+                  }
+                }}
+                onBlur={(e) => {
+                  const val = e.target.value;
+                  if (val !== '' && !isNaN(parseFloat(val))) {
+                    updateField(question.id, parseFloat(val).toFixed(2));
+                  }
+                }}
+                placeholder={question.placeholder || ''}
+                className={`h-12 rounded-xl ${isCurrency ? 'pl-12' : ''} ${isPercent ? 'pr-10' : ''}`}
+              />
+            </div>
+          );
+        })()}
 
         {question.type === 'EMAIL' && (
           <Input
@@ -633,6 +646,43 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
                 />
               </div>
             )}
+          </div>
+        )}
+
+        {question.type === 'FILE_UPLOAD' && (
+          <div className="space-y-2">
+            <div className="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:border-[#2bc196]/50 transition-colors">
+              <input
+                type="file"
+                accept=".pdf,.png,.jpg,.jpeg"
+                className="hidden"
+                id={`file-${question.id}`}
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  toast.info('Enviando arquivo...');
+                  const { file_url } = await base44.integrations.Core.UploadFile({ file });
+                  updateField(question.id, file_url);
+                  toast.success('Arquivo enviado com sucesso!');
+                }}
+              />
+              {formData[question.id] ? (
+                <div className="space-y-2">
+                  <CheckCircle className="w-8 h-8 text-[var(--pagsmile-green)] mx-auto" />
+                  <p className="text-sm font-medium text-[var(--pagsmile-green)]">Arquivo enviado</p>
+                  <div className="flex gap-2 justify-center">
+                    <a href={formData[question.id]} target="_blank" rel="noopener noreferrer" className="text-xs text-[var(--pagsmile-green)] underline">Ver arquivo</a>
+                    <button type="button" onClick={() => updateField(question.id, '')} className="text-xs text-red-500 underline">Remover</button>
+                  </div>
+                </div>
+              ) : (
+                <label htmlFor={`file-${question.id}`} className="cursor-pointer space-y-2">
+                  <FileText className="w-8 h-8 text-[var(--pagsmile-blue)]/30 mx-auto" />
+                  <p className="text-sm font-medium text-[var(--pagsmile-blue)]/70">Clique para enviar arquivo</p>
+                  <p className="text-xs text-[var(--pagsmile-blue)]/40">PDF, PNG, JPG (máx. 10MB)</p>
+                </label>
+              )}
+            </div>
           </div>
         )}
 
