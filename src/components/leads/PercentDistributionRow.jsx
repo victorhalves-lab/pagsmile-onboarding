@@ -41,11 +41,18 @@ export default function PercentDistributionRow({ title, fields, formData, update
                 type="number"
                 min="0"
                 max="100"
+                step="0.01"
                 value={formData[field.id] ?? ''}
                 onChange={(e) => {
                   const val = e.target.value;
                   if (val === '' || (parseFloat(val) >= 0 && parseFloat(val) <= 100)) {
                     updateField(field.id, val);
+                  }
+                }}
+                onBlur={(e) => {
+                  const val = e.target.value;
+                  if (val !== '' && !isNaN(parseFloat(val))) {
+                    updateField(field.id, parseFloat(val).toFixed(2));
                   }
                 }}
                 placeholder={field.placeholder || '0'}
