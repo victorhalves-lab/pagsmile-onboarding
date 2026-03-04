@@ -631,7 +631,7 @@ export default function AdminDashboard() {
 
       {/* Tabela */}
       <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-        {isLoading ? (
+        {isLoadingAll ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
           </div>
