@@ -27,6 +27,7 @@ import LeadQuickActions from '../components/leads/LeadQuickActions';
 import LeadProposals from '../components/leads/LeadProposals';
 import LeadSLAIndicator from '../components/leads/LeadSLAIndicator';
 import LeadQualifierPanel from '../components/leads/LeadQualifierPanel';
+import PriscilaPanel from '../components/leads/PriscilaPanel';
 
 const STATUS_CONFIG = {
   questionario_preenchido: { label: 'Questionário Preenchido', color: 'bg-blue-100 text-blue-700' },
