@@ -49,7 +49,7 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
             className={`flex-1 py-1.5 rounded-lg text-[10px] font-bold transition-all ${
               selectedBrand === b.id
                 ? 'bg-[#2bc196] text-[#002443]'
-                : 'bg-white/5 text-white/20 hover:text-white/40 hover:bg-white/[0.08]'
+                : 'bg-white/5 text-white/60 hover:text-white hover:bg-white/[0.08]'
             }`}>{b.label}</button>
         ))}
       </div>
