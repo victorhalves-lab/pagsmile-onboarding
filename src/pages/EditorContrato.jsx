@@ -18,6 +18,7 @@ import ModulosForm from '@/components/contrato/ModulosForm';
 import PrecosForm from '@/components/contrato/PrecosForm';
 import SLAsForm from '@/components/contrato/SLAsForm';
 import AssinaturaForm from '@/components/contrato/AssinaturaForm';
+import ConteudoContrato from '@/components/contrato/ConteudoContrato';
 
 const STATUS_CONFIG = {
   pre_generated: { label: 'Pré-gerado', color: 'bg-amber-100 text-amber-800' },
