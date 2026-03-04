@@ -330,9 +330,9 @@ export default function Layout({ children, currentPageName }) {
           <div className="p-5 border-b border-white/10">
             <div className="flex items-center gap-3">
               <img 
-                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/9bd38c4f7_Logo-modo-claro.png" 
+                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png" 
                 alt="Pagsmile" 
-                className="h-8 w-auto brightness-0 invert"
+                className="h-8 w-auto"
               />
             </div>
           </div>
@@ -398,9 +398,9 @@ export default function Layout({ children, currentPageName }) {
                 {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
               <img 
-                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/9bd38c4f7_Logo-modo-claro.png" 
+                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png" 
                 alt="Pagsmile" 
-                className="h-6 brightness-0 invert"
+                className="h-6"
               />
             </div>
             <Button
