@@ -113,7 +113,7 @@ export default function EditorContrato() {
   ];
 
   return (
-    <div className="flex h-screen overflow-hidden -m-4 lg:-m-8">
+    <div className="flex h-[calc(100vh-4rem)] overflow-hidden">
       {/* Left Column - Forms */}
       <div className="flex-1 flex flex-col min-w-0 bg-[#f4f4f4]">
         {/* Header */}
