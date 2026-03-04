@@ -474,6 +474,13 @@ export default function QuestionariosLeads() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Questionnaire Responses Modal */}
+      <QuestionnaireResponsesModal
+        open={!!responsesModalLead}
+        onClose={() => setResponsesModalLead(null)}
+        lead={responsesModalLead}
+      />
       </TabsContent>
       </Tabs>
     </div>
