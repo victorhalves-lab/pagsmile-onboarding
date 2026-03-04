@@ -37,7 +37,7 @@ export default function CriarProposta() {
   const [rates, setRates] = useState({
     cartao: {},
     pix: { tipo: 'percentual', valor: '' },
-    boleto: '', feeTransacao: '', alertaPreChargeback: '',
+    boleto: '', feeTransacao: '', antifraude: '', alertaPreChargeback: '',
     minimoGarantido: { mes1: '', mes2: '', mes3: '' },
   });
 
