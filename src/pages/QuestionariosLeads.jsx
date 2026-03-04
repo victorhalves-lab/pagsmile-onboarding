@@ -410,10 +410,10 @@ export default function QuestionariosLeads() {
                               variant={btn.variant === 'default' ? 'default' : 'outline'}
                               size="sm"
                               className={btn.variant === 'default' ? 'bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white h-7 text-xs' : 'h-7 text-xs'}
-                              onClick={() => {
+                              onClick={async () => {
                                 if (btn.action === 'contact') {
-                                  base44.entities.Lead.update(lead.id, { status: 'em_contato_comercial', lastInteractionDate: new Date().toISOString() });
-                                  base44.entities.LeadActivity.create({ leadId: lead.id, activityType: 'contato_iniciado', description: 'Contato iniciado', performedBy: 'admin', activityDate: new Date().toISOString() });
+                                  await base44.entities.Lead.update(lead.id, { status: 'em_contato_comercial', lastInteractionDate: new Date().toISOString() });
+                                  await base44.entities.LeadActivity.create({ leadId: lead.id, activityType: 'contato_iniciado', description: 'Contato iniciado', performedBy: 'admin', activityDate: new Date().toISOString() });
                                   queryClient.invalidateQueries({ queryKey: ['leads-questionarios'] });
                                   toast.success('Status atualizado para "Em Contato"');
                                 } else if (btn.action === 'proposal') {
