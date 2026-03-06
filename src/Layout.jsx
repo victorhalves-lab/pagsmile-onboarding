@@ -178,6 +178,11 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
+  // Gate: se não é página pública e o código admin não foi verificado, mostra tela de login
+  if (!isPublicPage && isAuthenticated && !adminVerified) {
+    return <AdminLoginScreen onSuccess={() => setAdminVerified(true)} />;
+  }
+
   // Menu items com estrutura hierárquica
   const menuStructure = [
     {
