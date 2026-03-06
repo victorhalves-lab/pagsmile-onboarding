@@ -52,7 +52,10 @@ import AnaliseDeCasos from './pages/AnaliseDeCasos';
 import Auditoria from './pages/Auditoria';
 import ComplianceEcommerce from './pages/ComplianceEcommerce';
 import ComplianceFullKYC from './pages/ComplianceFullKYC';
+import ComplianceGateway from './pages/ComplianceGateway';
 import ComplianceLite from './pages/ComplianceLite';
+import ComplianceMarketplace from './pages/ComplianceMarketplace';
+import ComplianceMerchant from './pages/ComplianceMerchant';
 import ComplianceOnboardingStart from './pages/ComplianceOnboardingStart';
 import CompliancePixOnly from './pages/CompliancePixOnly';
 import ComplianceSaaS from './pages/ComplianceSaaS';
@@ -94,9 +97,6 @@ import QuestionariosLeads from './pages/QuestionariosLeads';
 import QuestionariosRecebidos from './pages/QuestionariosRecebidos';
 import RegrasDeCompliance from './pages/RegrasDeCompliance';
 import TemplatesQuestionarios from './pages/TemplatesQuestionarios';
-import ComplianceMerchant from './pages/ComplianceMerchant';
-import ComplianceGateway from './pages/ComplianceGateway';
-import ComplianceMarketplace from './pages/ComplianceMarketplace';
 import __Layout from './Layout.jsx';
 
 
@@ -106,7 +106,10 @@ export const PAGES = {
     "Auditoria": Auditoria,
     "ComplianceEcommerce": ComplianceEcommerce,
     "ComplianceFullKYC": ComplianceFullKYC,
+    "ComplianceGateway": ComplianceGateway,
     "ComplianceLite": ComplianceLite,
+    "ComplianceMarketplace": ComplianceMarketplace,
+    "ComplianceMerchant": ComplianceMerchant,
     "ComplianceOnboardingStart": ComplianceOnboardingStart,
     "CompliancePixOnly": CompliancePixOnly,
     "ComplianceSaaS": ComplianceSaaS,
@@ -148,9 +151,6 @@ export const PAGES = {
     "QuestionariosRecebidos": QuestionariosRecebidos,
     "RegrasDeCompliance": RegrasDeCompliance,
     "TemplatesQuestionarios": TemplatesQuestionarios,
-    "ComplianceMerchant": ComplianceMerchant,
-    "ComplianceGateway": ComplianceGateway,
-    "ComplianceMarketplace": ComplianceMarketplace,
 }
 
 export const pagesConfig = {
