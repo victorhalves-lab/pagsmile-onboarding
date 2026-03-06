@@ -24,6 +24,7 @@ import {
   Stamp
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import AdminLoginScreen from '@/components/admin/AdminLoginScreen';
 
 export default function Layout({ children, currentPageName }) {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
