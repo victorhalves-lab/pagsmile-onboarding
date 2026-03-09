@@ -81,9 +81,11 @@ export default function LeadProposals({ leadId }) {
                     <Button variant="ghost" size="sm" className="h-7 w-7 p-0"><Eye className="w-3.5 h-3.5" /></Button>
                   </Link>
                   {p.tokenPublico && (
-                    <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => copyLink(p)}>
-                      <Link2 className="w-3.5 h-3.5" />
-                    </Button>
+                    <a href={`${window.location.origin}/PropostaPublica?token=${p.tokenPublico}`} target="_blank" rel="noopener noreferrer">
+                      <Button variant="ghost" size="sm" className="h-7 w-7 p-0" title="Abrir proposta pública">
+                        <Link2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </a>
                   )}
                 </div>
               </div>

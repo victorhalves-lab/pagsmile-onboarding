@@ -234,10 +234,12 @@ export default function GestaoPropostas() {
                             <Pencil className="w-4 h-4" />
                           </Button>
                         )}
-                        {p.status !== 'rascunho' && (
-                          <Button variant="ghost" size="sm" onClick={() => copyLink(p)}>
-                            <Link2 className="w-4 h-4" />
-                          </Button>
+                        {p.status !== 'rascunho' && p.tokenPublico && (
+                          <a href={`${window.location.origin}/PropostaPublica?token=${p.tokenPublico}`} target="_blank" rel="noopener noreferrer">
+                            <Button variant="ghost" size="sm" title="Abrir proposta pública">
+                              <Link2 className="w-4 h-4" />
+                            </Button>
+                          </a>
                         )}
                         <Button variant="ghost" size="sm" onClick={() => duplicar(p)}>
                           <Copy className="w-4 h-4" />
