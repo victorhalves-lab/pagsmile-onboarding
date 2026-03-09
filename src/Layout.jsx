@@ -178,8 +178,8 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
-  // Gate: se não é página pública e o código admin não foi verificado, mostra tela de login
-  if (!isPublicPage && isAuthenticated && !adminVerified) {
+  // Gate: TODA página não-pública exige código admin, independente de autenticação
+  if (!isPublicPage && !adminVerified) {
     return <AdminLoginScreen onSuccess={() => setAdminVerified(true)} />;
   }
 
