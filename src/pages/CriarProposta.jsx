@@ -37,7 +37,7 @@ export default function CriarProposta() {
   const [rates, setRates] = useState({
     cartao: {},
     pix: { tipo: 'percentual', valor: '' },
-    boleto: '', feeTransacao: '', antifraude: '', alertaPreChargeback: '',
+    boleto: '', feeTransacao: '', antifraude: '', alertaPreChargeback: '', taxa3ds: '',
     minimoGarantido: { mes1: '', mes2: '', mes3: '' },
   });
 
@@ -71,6 +71,7 @@ export default function CriarProposta() {
         cartao: r.cartao || {}, pix: r.pix || { tipo: 'percentual', valor: '' },
         boleto: r.boleto || '', feeTransacao: r.feeTransacao || '',
         antifraude: r.antifraude || '', alertaPreChargeback: r.alertaPreChargeback || '',
+        taxa3ds: r.taxa3ds || '',
         minimoGarantido: typeof r.minimoGarantido === 'object' ? r.minimoGarantido : { mes1: r.minimoGarantido || '', mes2: r.minimoGarantido || '', mes3: r.minimoGarantido || '' },
       });
     }
@@ -125,12 +126,16 @@ export default function CriarProposta() {
   const gerarToken = () => { const c = 'abcdefghijklmnopqrstuvwxyz0123456789'; let t = ''; for (let i = 0; i < 64; i++) t += c.charAt(Math.floor(Math.random() * c.length)); return t; };
 
   const buildPropostaData = async (status) => {
-    const taxas = rates.cartao || {};
+    const taxasRaw = rates.cartao || {};
+    // Converter TODAS as taxas de cartão de string para number
+    const cartaoNumerico = {};
     const credito_1x = {}, credito_2_6x = {}, credito_7_12x = {}, credito_13_21x = {}, debito = {};
     ['visa', 'mastercard', 'elo', 'amex', 'outras'].forEach(b => {
-      const d = taxas[b] || {};
-      credito_1x[b] = parseTaxa(d.avista); credito_2_6x[b] = parseTaxa(d.de2a6x); credito_7_12x[b] = parseTaxa(d.de7a12x); credito_13_21x[b] = parseTaxa(d.de13a21x);
-      debito[b] = Math.round(parseTaxa(d.avista) * 0.6 * 100) / 100;
+      const d = taxasRaw[b] || {};
+      const av = parseTaxa(d.avista), p26 = parseTaxa(d.de2a6x), p712 = parseTaxa(d.de7a12x), p1321 = parseTaxa(d.de13a21x);
+      cartaoNumerico[b] = { avista: av, de2a6x: p26, de7a12x: p712, de13a21x: p1321 };
+      credito_1x[b] = av; credito_2_6x[b] = p26; credito_7_12x[b] = p712; credito_13_21x[b] = p1321;
+      debito[b] = Math.round(av * 0.6 * 100) / 100;
     });
     let criadoPor = 'sistema';
     try { const user = await base44.auth.me(); criadoPor = user?.email || user?.id || 'sistema'; } catch (e) {}
@@ -140,10 +145,11 @@ export default function CriarProposta() {
       clienteNome: form.clienteNome, clienteCnpj: form.clienteCnpj.replace(/\D/g, ''),
       clienteContato: form.clienteContato, clienteMcc: form.clienteMcc,
       rates: {
-        cartao: taxas, credito_1x, credito_2_6x, credito_7_12x, credito_13_21x, debito,
+        cartao: cartaoNumerico, credito_1x, credito_2_6x, credito_7_12x, credito_13_21x, debito,
         pix: { tipo: rates.pix?.tipo || 'percentual', valor: parseTaxa(rates.pix?.valor) },
         boleto: parseTaxa(rates.boleto), antifraude: parseTaxa(rates.antifraude),
         feeTransacao: parseTaxa(rates.feeTransacao), alertaPreChargeback: parseTaxa(rates.alertaPreChargeback),
+        taxa3ds: parseTaxa(rates.taxa3ds),
         minimoGarantido: { mes1: parseTaxa(rates.minimoGarantido?.mes1), mes2: parseTaxa(rates.minimoGarantido?.mes2), mes3: parseTaxa(rates.minimoGarantido?.mes3) },
         rav: { taxa: parseTaxa(form.taxaAntecipacao), prazo: form.prazoRecebimento },
         percentualAntecipacao: parseTaxa(form.percentualAntecipacao),
