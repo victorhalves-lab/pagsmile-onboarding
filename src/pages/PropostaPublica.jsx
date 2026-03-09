@@ -158,6 +158,16 @@ export default function PropostaPublica() {
         activityDate: new Date().toISOString()
       });
 
+      base44.analytics.track({
+        eventName: 'proposta_contraproposta',
+        properties: {
+          proposal_id: proposta.id,
+          proposal_code: proposta.codigo || '',
+          client_name: proposta.clienteNome || '',
+          success: true
+        }
+      });
+
       if (proposta.leadId) {
         await base44.entities.Lead.update(proposta.leadId, {
           status: 'em_contato_comercial',
