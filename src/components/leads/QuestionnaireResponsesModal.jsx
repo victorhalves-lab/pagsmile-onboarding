@@ -17,15 +17,17 @@ import PercentDistributionDisplay, { DISTRIBUTION_QUESTION_IDS } from './Percent
 
 const SECTION_CONFIG = [
   { id: 'empresa', label: 'Dados da Empresa', icon: Building2, color: 'from-blue-500/20 to-blue-600/10', accent: 'text-blue-400', orderRange: [1, 6] },
-  { id: 'contato', label: 'Dados do Contato', icon: User, color: 'from-violet-500/20 to-violet-600/10', accent: 'text-violet-400', orderRange: [7, 10] },
-  { id: 'negocio', label: 'Modelo de Negócio', icon: Briefcase, color: 'from-amber-500/20 to-amber-600/10', accent: 'text-amber-400', orderRange: [11, 20] },
-  { id: 'financeiro', label: 'Dados Financeiros', icon: DollarSign, color: 'from-emerald-500/20 to-emerald-600/10', accent: 'text-emerald-400', orderRange: [21, 31] },
-  { id: 'distribuicao', label: 'Distribuição TPV', icon: PieChart, color: 'from-indigo-500/20 to-indigo-600/10', accent: 'text-indigo-400', orderRange: [32, 37] },
-  { id: 'processador', label: 'Processador / Taxas', icon: CreditCard, color: 'from-rose-500/20 to-rose-600/10', accent: 'text-rose-400', orderRange: [38, 58] },
-  { id: 'produtos', label: 'Produtos & Serviços', icon: ShoppingBag, color: 'from-orange-500/20 to-orange-600/10', accent: 'text-orange-400', orderRange: [59, 65] },
+  { id: 'contato', label: 'Contato', icon: User, color: 'from-violet-500/20 to-violet-600/10', accent: 'text-violet-400', orderRange: [7, 9.9] },
+  { id: 'negocio', label: 'Modelo de Negócio', icon: Briefcase, color: 'from-amber-500/20 to-amber-600/10', accent: 'text-amber-400', orderRange: [10, 17] },
+  { id: 'financeiro', label: 'Volume & Financeiro', icon: DollarSign, color: 'from-emerald-500/20 to-emerald-600/10', accent: 'text-emerald-400', orderRange: [18, 22] },
+  { id: 'distribuicao', label: 'Distribuição TPV', icon: PieChart, color: 'from-indigo-500/20 to-indigo-600/10', accent: 'text-indigo-400', orderRange: [23, 31] },
+  { id: 'antecipacao', label: 'Antecipação & Débito', icon: Clock, color: 'from-cyan-500/20 to-cyan-600/10', accent: 'text-cyan-400', orderRange: [32, 37] },
+  { id: 'processador', label: 'Processador Atual', icon: CreditCard, color: 'from-rose-500/20 to-rose-600/10', accent: 'text-rose-400', orderRange: [38, 40] },
+  { id: 'taxas_cartao', label: 'Taxas de Cartão', icon: CreditCard, color: 'from-pink-500/20 to-pink-600/10', accent: 'text-pink-400', orderRange: [41, 50] },
+  { id: 'taxas_outras', label: 'PIX, Boleto & Outras', icon: DollarSign, color: 'from-teal-500/20 to-teal-600/10', accent: 'text-teal-400', orderRange: [51, 58] },
+  { id: 'produtos', label: 'Produtos & Integrações', icon: ShoppingBag, color: 'from-orange-500/20 to-orange-600/10', accent: 'text-orange-400', orderRange: [59, 65] },
   { id: 'complementar', label: 'Complementares', icon: FileText, color: 'from-slate-500/20 to-slate-600/10', accent: 'text-slate-400', orderRange: [66, 80] },
-  { id: 'arquivos', label: 'Arquivos Enviados', icon: Paperclip, color: 'from-teal-500/20 to-teal-600/10', accent: 'text-teal-400', orderRange: [-1, -1] },
-  { id: 'historico', label: 'Histórico', icon: History, color: 'from-gray-500/20 to-gray-600/10', accent: 'text-gray-400', orderRange: [81, 999] },
+  { id: 'arquivos', label: 'Arquivos Enviados', icon: Paperclip, color: 'from-emerald-500/20 to-emerald-600/10', accent: 'text-emerald-400', orderRange: [-1, -1] },
 ];
 
 // IDs handled by special components (won't render as individual rows)
