@@ -193,10 +193,10 @@ export default function QuestionnaireResponsesModal({ open, onClose, lead }) {
       usedSections.push('distribuicao');
     }
 
-    // Add processador section if card rate questions exist
+    // Add taxas_cartao section if card rate questions exist
     const hasCardRateQuestions = questions.some(q => CARD_RATE_QUESTION_IDS.includes(q.id));
-    if (hasCardRateQuestions && !usedSections.includes('processador')) {
-      usedSections.push('processador');
+    if (hasCardRateQuestions && !usedSections.includes('taxas_cartao')) {
+      usedSections.push('taxas_cartao');
     }
 
     const orderedSections = SECTION_CONFIG.filter(s => usedSections.includes(s.id));
