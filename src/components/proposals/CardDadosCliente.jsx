@@ -3,7 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { User, Building2, Hash, Phone } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { User, Building2, Hash, Phone, Network } from 'lucide-react';
 import CnpjInput from './CnpjInput';
 
 export default function CardDadosCliente({ form, errors, onUpdate }) {
@@ -19,6 +20,9 @@ export default function CardDadosCliente({ form, errors, onUpdate }) {
       onUpdate('clienteCnpj', (selected.cpfCnpj || '').replace(/\D/g, ''));
       onUpdate('clienteMcc', selected.mcc || '');
       onUpdate('clienteContato', selected.contactName || '');
+      if (selected.businessSubCategory) {
+        onUpdate('businessSubCategory', selected.businessSubCategory);
+      }
     }
   };
 
@@ -67,11 +71,29 @@ export default function CardDadosCliente({ form, errors, onUpdate }) {
         </div>
       </div>
 
-      <div className="space-y-1">
-        <Label className={labelCls}>Contato *</Label>
-        <Input value={form.clienteContato || ''} onChange={(e) => onUpdate('clienteContato', e.target.value)} placeholder="Nome do contato principal"
-          className={`${inputCls} ${errors?.clienteContato ? 'border-red-400/50' : ''}`} />
-        {errors?.clienteContato && <p className={errorCls}>{errors.clienteContato}</p>}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1">
+          <Label className={labelCls}>Contato *</Label>
+          <Input value={form.clienteContato || ''} onChange={(e) => onUpdate('clienteContato', e.target.value)} placeholder="Nome do contato principal"
+            className={`${inputCls} ${errors?.clienteContato ? 'border-red-400/50' : ''}`} />
+          {errors?.clienteContato && <p className={errorCls}>{errors.clienteContato}</p>}
+        </div>
+        <div className="space-y-1">
+          <Label className={labelCls}>
+            <span className="flex items-center gap-1"><Network className="w-3 h-3" /> Modelo de Negócio *</span>
+          </Label>
+          <Select value={form.businessSubCategory || ''} onValueChange={(val) => onUpdate('businessSubCategory', val)}>
+            <SelectTrigger className={`${inputCls} ${errors?.businessSubCategory ? 'border-red-400/50' : ''}`}>
+              <SelectValue placeholder="Selecione..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="MERCHAN">Merchant (Venda Direta)</SelectItem>
+              <SelectItem value="GATEWAY">Gateway</SelectItem>
+              <SelectItem value="MARKETPLACE">Marketplace</SelectItem>
+            </SelectContent>
+          </Select>
+          {errors?.businessSubCategory && <p className={errorCls}>{errors.businessSubCategory}</p>}
+        </div>
       </div>
     </div>
   );
