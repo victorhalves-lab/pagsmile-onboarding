@@ -98,6 +98,7 @@ import QuestionariosRecebidos from './pages/QuestionariosRecebidos';
 import RegrasDeCompliance from './pages/RegrasDeCompliance';
 import TemplatesQuestionarios from './pages/TemplatesQuestionarios';
 import PropostaDetalhes from './pages/PropostaDetalhes';
+import ComplianceDinamico from './pages/ComplianceDinamico';
 import __Layout from './Layout.jsx';
 
 
@@ -153,6 +154,7 @@ export const PAGES = {
     "RegrasDeCompliance": RegrasDeCompliance,
     "TemplatesQuestionarios": TemplatesQuestionarios,
     "PropostaDetalhes": PropostaDetalhes,
+    "ComplianceDinamico": ComplianceDinamico,
 }
 
 export const pagesConfig = {
