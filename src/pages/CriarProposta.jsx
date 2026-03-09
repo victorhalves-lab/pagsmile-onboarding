@@ -14,7 +14,10 @@ import PropostaPreview from '@/components/proposals/PropostaPreview';
 
 const parseTaxa = (val) => {
   if (!val && val !== 0) return 0;
-  const num = typeof val === 'string' ? parseFloat(val.replace(',', '.')) : val;
+  if (typeof val === 'number') return isNaN(val) ? 0 : val;
+  // Remove pontos de milhar e troca vírgula decimal por ponto
+  const cleaned = String(val).replace(/\./g, '').replace(',', '.');
+  const num = parseFloat(cleaned);
   return isNaN(num) ? 0 : num;
 };
 
