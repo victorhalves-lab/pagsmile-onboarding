@@ -9,7 +9,7 @@ const BANDEIRAS = [
 ];
 
 export default function PropostaPreview({ form, rates, selectedBrand, onBandeiraChange }) {
-  const parseVal = (val) => { if (!val) return 0; return typeof val === 'string' ? parseFloat(val.replace(',', '.')) : val; };
+  const parseVal = (val) => { if (!val && val !== 0) return 0; if (typeof val === 'number') return isNaN(val) ? 0 : val; const cleaned = String(val).replace(/\./g, '').replace(',', '.'); const num = parseFloat(cleaned); return isNaN(num) ? 0 : num; };
   const fmtPct = (val) => { const num = typeof val === 'number' ? val : parseVal(val); return isNaN(num) ? '0.00%' : `${num.toFixed(2)}%`; };
 
   const taxas = rates.cartao?.[selectedBrand] || {};
@@ -74,11 +74,12 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
 
       {/* Footer Stats */}
       <div className="space-y-2">
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           {[
             { label: 'Prazo', value: prazo, color: 'text-[#2bc196]' },
-            { label: 'Taxa de Antecipação', value: `${fmtPct(taxaRAV)} a.m.`, color: 'text-white' },
-            { label: 'PIX', value: rates.pix?.tipo === 'fixo' ? `R$ ${parseVal(rates.pix?.valor).toFixed(2)}` : fmtPct(rates.pix?.valor), color: 'text-[#2bc196]' },
+            { label: 'Antecipação', value: `${fmtPct(taxaRAV)} a.m.`, color: 'text-white' },
+            { label: 'PIX', value: rates.pix?.tipo === 'fixo' ? `R$ ${parseVal(rates.pix?.valor).toLocaleString('pt-BR', {minimumFractionDigits: 2})}` : fmtPct(rates.pix?.valor), color: 'text-[#2bc196]' },
+            { label: '3DS', value: `R$ ${parseVal(rates.taxa3ds).toLocaleString('pt-BR', {minimumFractionDigits: 2})}`, color: 'text-white' },
           ].map((s, i) => (
             <div key={i} className="bg-white/[0.03] border border-white/5 rounded-xl p-2 text-center">
               <p className="text-[8px] text-white font-bold uppercase tracking-widest">{s.label}</p>
