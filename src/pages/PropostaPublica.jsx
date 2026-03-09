@@ -395,13 +395,13 @@ export default function PropostaPublica() {
       </Card>
 
       {/* Outros Métodos */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
         <Card>
           <CardContent className="py-4 text-center flex flex-col justify-center h-full">
             <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">PIX</p>
             <p className="text-lg font-bold text-[#2bc196]">
               {rates.pix?.tipo === 'fixo'
-                ? `R$ ${(parseFloat(rates.pix?.valor) || 0).toFixed(2).replace('.', ',')}`
+                ? `R$ ${(parseFloat(rates.pix?.valor) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
                 : `${(parseFloat(rates.pix?.valor) || 0).toFixed(2).replace('.', ',')}%`}
             </p>
           </CardContent>
@@ -410,7 +410,15 @@ export default function PropostaPublica() {
           <CardContent className="py-4 text-center flex flex-col justify-center h-full">
             <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">BOLETO</p>
             <p className="text-lg font-bold text-[#002443]">
-              R$ {(parseFloat(rates.boleto) || 0).toFixed(2).replace('.', ',')}
+              R$ {(parseFloat(rates.boleto) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="py-4 text-center flex flex-col justify-center h-full">
+            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">FEE POR TRANSAÇÃO</p>
+            <p className="text-lg font-bold text-[#002443]">
+              R$ {(parseFloat(rates.feeTransacao) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
             </p>
           </CardContent>
         </Card>
@@ -418,10 +426,30 @@ export default function PropostaPublica() {
           <CardContent className="py-4 text-center flex flex-col justify-center h-full">
             <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">ANTIFRAUDE</p>
             <p className="text-lg font-bold text-[#002443]">
-              R$ {(parseFloat(rates.antifraude) || 0).toFixed(2).replace('.', ',')}
+              R$ {(parseFloat(rates.antifraude) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
             </p>
           </CardContent>
         </Card>
+        <Card>
+          <CardContent className="py-4 text-center flex flex-col justify-center h-full">
+            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">3DS</p>
+            <p className="text-lg font-bold text-[#002443]">
+              R$ {(parseFloat(rates.taxa3ds) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="py-4 text-center flex flex-col justify-center h-full">
+            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">ALERTA PRÉ-CHARGEBACK</p>
+            <p className="text-lg font-bold text-[#002443]">
+              R$ {(parseFloat(rates.alertaPreChargeback) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Prazo e Antecipação */}
+      <div className="grid grid-cols-2 gap-4 mb-6">
         <Card>
           <CardContent className="py-4 text-center flex flex-col justify-center h-full">
             <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">PRAZO DE RECEBIMENTO</p>
