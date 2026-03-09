@@ -432,7 +432,22 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
   const renderQuestion = (question) => {
     if (!shouldShowQuestion(question)) return null;
     
-    // Perguntas de taxas de cartão por bandeira são ocultadas (não se aplica mais)
+    // Taxas de cartão por bandeira — renderizar como grupo via CardRatesGroup
+    if (question.id === CARD_RATE_TRIGGER_ID) {
+      // Só mostra se o merchant usa cartão (conditionalLogic da pergunta dependente)
+      const usaCartao = formData['69a5cd44afab70a7ca218501'];
+      if (usaCartao === true || usaCartao === 'true') {
+        return (
+          <CardRatesGroup
+            key="card-rates-group"
+            questions={cardRateQuestions}
+            formData={formData}
+            updateField={updateField}
+          />
+        );
+      }
+      return null;
+    }
     if (CARD_RATE_QUESTION_IDS.includes(question.id)) {
       return null;
     }
