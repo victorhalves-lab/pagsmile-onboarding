@@ -66,42 +66,41 @@ export default function PropostaPublica() {
   // Mutations
   const aceitarMutation = useMutation({
     mutationFn: async () => {
-      // Determine compliance template based on lead's businessSubCategory
+      // Determine compliance template based on proposal's businessSubCategory (or fall back to lead's)
       let complianceUrl = null;
-      if (proposta.leadId) {
+      let subCat = proposta.businessSubCategory;
+
+      // If proposal doesn't have it, try to get from lead
+      if (!subCat && proposta.leadId) {
         const leads = await base44.entities.Lead.filter({ id: proposta.leadId });
         const lead = leads[0];
-        if (lead) {
-          const subCat = lead.businessSubCategory;
-          const COMPLIANCE_TEMPLATES = {
-            'MERCHAN': '69a691da6b5ed4982b8a4055',
-            'GATEWAY': '69a691da6b5ed4982b8a4056',
-            'MARKETPLACE': '69a691da6b5ed4982b8a4057',
-          };
-          const templateId = COMPLIANCE_TEMPLATES[subCat];
-          if (templateId) {
-            const compliancePages = {
-              'MERCHAN': 'ComplianceFullKYC',
-              'GATEWAY': 'ComplianceFullKYC',
-              'MARKETPLACE': 'ComplianceFullKYC',
-            };
-            const page = compliancePages[subCat] || 'ComplianceFullKYC';
-            const refCode = subCat === 'MERCHAN' ? 'COMPMERCH' : subCat === 'GATEWAY' ? 'COMPGATEW' : 'COMPMKTPL';
-            complianceUrl = `${window.location.origin}${createPageUrl(page)}?ref=${refCode}&leadId=${proposta.leadId}`;
-          
-            // Update lead with recommended compliance template
-            await base44.entities.Lead.update(proposta.leadId, {
-              status: 'proposta_aceita',
-              recommendedComplianceTemplateId: templateId,
-              lastInteractionDate: new Date().toISOString()
-            });
-          } else {
-            await base44.entities.Lead.update(proposta.leadId, {
-              status: 'proposta_aceita',
-              lastInteractionDate: new Date().toISOString()
-            });
-          }
-        }
+        if (lead) subCat = lead.businessSubCategory;
+      }
+
+      const COMPLIANCE_TEMPLATES = {
+        'MERCHAN': '69a691da6b5ed4982b8a4055',
+        'GATEWAY': '69a691da6b5ed4982b8a4056',
+        'MARKETPLACE': '69a691da6b5ed4982b8a4057',
+      };
+      const COMPLIANCE_MODELS = {
+        'MERCHAN': 'merchant',
+        'GATEWAY': 'gateway',
+        'MARKETPLACE': 'marketplace',
+      };
+      const templateId = subCat ? COMPLIANCE_TEMPLATES[subCat] : null;
+      const model = subCat ? COMPLIANCE_MODELS[subCat] : null;
+
+      if (model) {
+        complianceUrl = `${window.location.origin}${createPageUrl('ComplianceDinamico')}?model=${model}&leadId=${proposta.leadId || ''}`;
+      }
+
+      if (proposta.leadId) {
+        const leadUpdate = {
+          status: 'proposta_aceita',
+          lastInteractionDate: new Date().toISOString()
+        };
+        if (templateId) leadUpdate.recommendedComplianceTemplateId = templateId;
+        await base44.entities.Lead.update(proposta.leadId, leadUpdate);
       }
 
       await base44.entities.Proposal.update(proposta.id, {
@@ -235,8 +234,11 @@ export default function PropostaPublica() {
     
     // Build compliance URL dynamically for accepted proposals
     const getComplianceUrl = () => {
-      if (!isAceita || !proposta.leadId) return null;
-      return `${window.location.origin}${createPageUrl('ComplianceFullKYC')}?leadId=${proposta.leadId}`;
+      if (!isAceita) return null;
+      const subCat = proposta.businessSubCategory;
+      const modelMap = { 'MERCHAN': 'merchant', 'GATEWAY': 'gateway', 'MARKETPLACE': 'marketplace' };
+      const model = modelMap[subCat] || 'merchant';
+      return `${window.location.origin}${createPageUrl('ComplianceDinamico')}?model=${model}&leadId=${proposta.leadId || ''}`;
     };
     const complianceUrl = getComplianceUrl();
 
