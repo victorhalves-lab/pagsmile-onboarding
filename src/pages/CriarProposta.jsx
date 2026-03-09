@@ -32,6 +32,7 @@ export default function CriarProposta() {
 
   const [form, setForm] = useState({
     clienteNome: '', clienteCnpj: '', clienteMcc: '', clienteContato: '',
+    businessSubCategory: '',
     prazoRecebimento: 'D+1', usaAntecipacao: false, percentualAntecipacao: '',
     taxaAntecipacao: '',
     dataValidade: new Date(new Date().setDate(new Date().getDate() + 15)),
@@ -63,6 +64,7 @@ export default function CriarProposta() {
       setForm({
         clienteNome: existingProposal.clienteNome || '', clienteCnpj: existingProposal.clienteCnpj || '',
         clienteMcc: existingProposal.clienteMcc || '', clienteContato: existingProposal.clienteContato || '',
+        businessSubCategory: existingProposal.businessSubCategory || '',
         prazoRecebimento: existingProposal.rates?.rav?.prazo || 'D+1',
         usaAntecipacao: !!existingProposal.rates?.rav?.taxa,
         percentualAntecipacao: existingProposal.rates?.percentualAntecipacao || '',
@@ -86,6 +88,7 @@ export default function CriarProposta() {
         ...prev, clienteNome: lead.companyName || lead.fullName || '',
         clienteCnpj: (lead.cpfCnpj || '').replace(/\D/g, ''),
         clienteMcc: lead.mcc || '', clienteContato: lead.contactName || '',
+        businessSubCategory: lead.businessSubCategory || prev.businessSubCategory,
       }));
 
       // Auto-preencher com taxas da PRISCILA se usePriscila=1
@@ -118,6 +121,7 @@ export default function CriarProposta() {
     if (!form.clienteCnpj || form.clienteCnpj.replace(/\D/g, '').length !== 14) newErrors.clienteCnpj = 'CNPJ inválido (14 dígitos)';
     if (!form.clienteMcc) newErrors.clienteMcc = 'Obrigatório';
     if (!form.clienteContato) newErrors.clienteContato = 'Obrigatório';
+    if (!form.businessSubCategory) newErrors.businessSubCategory = 'Selecione o modelo de negócio';
     const hasAnyCardRate = Object.values(rates.cartao || {}).some(b => b && (b.avista || b.de2a6x || b.de7a12x));
     if (!hasAnyCardRate) newErrors.cartao = 'Preencha ao menos uma taxa de cartão';
     if (rates.pix?.valor && isNaN(parseTaxa(rates.pix.valor))) newErrors.pix = 'Valor inválido';
@@ -145,6 +149,7 @@ export default function CriarProposta() {
     return {
       leadId: leadId || '', codigo: existingProposal?.codigo || gerarCodigo(),
       proposalName: `Proposta - ${form.clienteNome}`, status, origem: 'manual',
+      businessSubCategory: form.businessSubCategory,
       clienteNome: form.clienteNome, clienteCnpj: form.clienteCnpj.replace(/\D/g, ''),
       clienteContato: form.clienteContato, clienteMcc: form.clienteMcc,
       rates: {
