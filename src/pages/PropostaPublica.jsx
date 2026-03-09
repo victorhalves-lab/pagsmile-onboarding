@@ -460,6 +460,11 @@ export default function PropostaPublica() {
           <CardContent className="py-4 text-center flex flex-col justify-center h-full">
             <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">TAXA DE ANTECIPAÇÃO</p>
             <p className="text-lg font-bold text-amber-600">{taxaRAV}% a.m.</p>
+            {parseFloat(rates.percentualAntecipacao) > 0 && (
+              <p className="text-xs text-[#002443]/60 mt-1.5">
+                Percentual antecipável: <span className="font-bold text-[#002443]">{parseFloat(rates.percentualAntecipacao)}%</span>
+              </p>
+            )}
           </CardContent>
         </Card>
       </div>
