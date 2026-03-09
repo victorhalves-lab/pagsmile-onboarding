@@ -198,6 +198,17 @@ export default function PropostaPublica() {
         activityDate: new Date().toISOString()
       });
 
+      base44.analytics.track({
+        eventName: 'proposta_recusada',
+        properties: {
+          proposal_id: proposta.id,
+          proposal_code: proposta.codigo || '',
+          client_name: proposta.clienteNome || '',
+          motivo: data.motivo || '',
+          success: true
+        }
+      });
+
       if (proposta.leadId) {
         await base44.entities.Lead.update(proposta.leadId, {
           status: 'proposta_recusada',
