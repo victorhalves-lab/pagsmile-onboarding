@@ -162,6 +162,7 @@ export default function GestaoPropostas() {
               <TableRow>
                 <TableHead>Número</TableHead>
                 <TableHead>Empresa</TableHead>
+                <TableHead>Modelo</TableHead>
                 <TableHead>CNPJ</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Timeline</TableHead>
@@ -172,7 +173,7 @@ export default function GestaoPropostas() {
             <TableBody>
               {filtered.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-12">
+                  <TableCell colSpan={8} className="text-center py-12">
                     <FileText className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/30 mb-3" />
                     <p className="text-[var(--pagsmile-blue)]/60">Nenhuma proposta encontrada</p>
                     <Button variant="link" onClick={() => navigate(createPageUrl('CriarProposta'))} className="mt-2 text-[var(--pagsmile-green)]">
@@ -189,6 +190,17 @@ export default function GestaoPropostas() {
                       <span className="font-mono text-sm text-[var(--pagsmile-green)]">{p.codigo || '-'}</span>
                     </TableCell>
                     <TableCell className="font-medium text-sm">{p.clienteNome || '-'}</TableCell>
+                    <TableCell>
+                      {p.businessSubCategory ? (
+                        <Badge className={`text-[10px] border-0 ${
+                          p.businessSubCategory === 'GATEWAY' ? 'bg-indigo-100 text-indigo-700' :
+                          p.businessSubCategory === 'MARKETPLACE' ? 'bg-amber-100 text-amber-700' :
+                          'bg-emerald-100 text-emerald-700'
+                        }`}>
+                          {p.businessSubCategory === 'MERCHAN' ? 'Merchant' : p.businessSubCategory === 'GATEWAY' ? 'Gateway' : 'Marketplace'}
+                        </Badge>
+                      ) : <span className="text-xs text-slate-400">—</span>}
+                    </TableCell>
                     <TableCell className="text-sm text-[var(--pagsmile-blue)]/60">{p.clienteCnpj || '-'}</TableCell>
                     <TableCell><Badge className={sCfg.color}>{sCfg.label}</Badge></TableCell>
                     <TableCell>
