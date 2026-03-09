@@ -289,12 +289,12 @@ export default function QuestionnaireResponsesModal({ open, onClose, lead }) {
                     // For special sections, show special count
                     let countLabel = `${answered}/${total}`;
                     if (sec.id === 'distribuicao') countLabel = '3 grupos';
-                    if (sec.id === 'processador') {
+                    if (sec.id === 'taxas_cartao') {
                       const cardAnswered = CARD_RATE_QUESTION_IDS.filter(id => {
                         const v = questionnaireData[id];
                         return v !== undefined && v !== null && v !== '';
                       }).length;
-                      countLabel = `${answered}/${total} + ${cardAnswered} taxas`;
+                      countLabel = `${cardAnswered} taxas`;
                     }
 
                     return (
