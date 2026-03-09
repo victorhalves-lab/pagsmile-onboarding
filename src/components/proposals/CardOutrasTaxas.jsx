@@ -41,13 +41,15 @@ export default function CardOutrasTaxas({ rates, onUpdateRates }) {
       {/* Other fees grid */}
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1"><Label className={labelCls}>Fee por Transação</Label>
-          <TaxaInput value={rates?.feeTransacao || ''} onChange={(val) => updateField('feeTransacao', val)} placeholder="0,00" prefix="R$" className={`${inputCls} text-right pl-10`} /></div>
+          <TaxaInput value={rates?.feeTransacao || ''} onChange={(val) => updateField('feeTransacao', val)} placeholder="0,00" prefix="R$" isCurrency className={`${inputCls} text-right pl-10`} /></div>
         <div className="space-y-1"><Label className={labelCls}>Taxa Boleto</Label>
-          <TaxaInput value={rates?.boleto || ''} onChange={(val) => updateField('boleto', val)} placeholder="0,00" prefix="R$" className={`${inputCls} text-right pl-10`} /></div>
+          <TaxaInput value={rates?.boleto || ''} onChange={(val) => updateField('boleto', val)} placeholder="0,00" prefix="R$" isCurrency className={`${inputCls} text-right pl-10`} /></div>
         <div className="space-y-1"><Label className={labelCls}>Taxa de Antifraude</Label>
-          <TaxaInput value={rates?.antifraude || ''} onChange={(val) => updateField('antifraude', val)} placeholder="0,00" prefix="R$" className={`${inputCls} text-right pl-10`} /></div>
+          <TaxaInput value={rates?.antifraude || ''} onChange={(val) => updateField('antifraude', val)} placeholder="0,00" prefix="R$" isCurrency className={`${inputCls} text-right pl-10`} /></div>
         <div className="space-y-1"><Label className={labelCls}>Alerta Pré-Chargeback</Label>
-          <TaxaInput value={rates?.alertaPreChargeback || ''} onChange={(val) => updateField('alertaPreChargeback', val)} placeholder="0,00" prefix="R$" className={`${inputCls} text-right pl-10`} /></div>
+          <TaxaInput value={rates?.alertaPreChargeback || ''} onChange={(val) => updateField('alertaPreChargeback', val)} placeholder="0,00" prefix="R$" isCurrency className={`${inputCls} text-right pl-10`} /></div>
+        <div className="space-y-1"><Label className={labelCls}>Custo 3DS</Label>
+          <TaxaInput value={rates?.taxa3ds || ''} onChange={(val) => updateField('taxa3ds', val)} placeholder="0,00" prefix="R$" isCurrency className={`${inputCls} text-right pl-10`} /></div>
       </div>
 
       {/* TPV Mínimo */}
