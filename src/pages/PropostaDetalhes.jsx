@@ -170,6 +170,12 @@ export default function PropostaDetalhes() {
           <InfoRow label="CNPJ" value={proposta.clienteCnpj} />
           <InfoRow label="Contato" value={proposta.clienteContato} />
           <InfoRow label="MCC" value={proposta.clienteMcc} />
+          <InfoRow label="Modelo de Negócio" value={
+            proposta.businessSubCategory === 'MERCHAN' ? 'Merchant' :
+            proposta.businessSubCategory === 'GATEWAY' ? 'Gateway' :
+            proposta.businessSubCategory === 'MARKETPLACE' ? 'Marketplace' :
+            proposta.businessSubCategory || '—'
+          } />
           <InfoRow label="Responsável" value={proposta.responsavelNome} />
         </Section>
 
