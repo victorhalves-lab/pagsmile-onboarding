@@ -281,9 +281,9 @@ export default function PropostaPublica() {
         
         <div className="relative z-10">
           <img
-            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/9bd38c4f7_Logo-modo-claro.png"
+            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/df6449845_Logo-modo-escuro.png"
             alt="Pagsmile"
-            className="h-12 mx-auto mb-6 brightness-0 invert"
+            className="h-12 mx-auto mb-6"
           />
           <Badge className="bg-[#2bc196]/20 text-[#5cf7cf] hover:bg-[#2bc196]/30 border-none mb-4 px-4 py-1.5 text-sm">
             Proposta Exclusiva
