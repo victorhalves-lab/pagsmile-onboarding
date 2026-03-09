@@ -226,7 +226,7 @@ export default function GestaoPropostas() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
-                        <Button variant="ghost" size="sm" onClick={() => navigate(createPageUrl('CriarProposta') + `?edit=${p.id}`)}>
+                        <Button variant="ghost" size="sm" onClick={() => navigate(createPageUrl('PropostaDetalhes') + `?id=${p.id}`)} title="Ver detalhes da proposta">
                           <Eye className="w-4 h-4" />
                         </Button>
                         {['rascunho', 'enviada', 'visualizada'].includes(p.status) && (
