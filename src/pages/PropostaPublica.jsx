@@ -116,6 +116,17 @@ export default function PropostaPublica() {
         activityDate: new Date().toISOString()
       });
 
+      base44.analytics.track({
+        eventName: 'proposta_aceita',
+        properties: {
+          proposal_id: proposta.id,
+          proposal_code: proposta.codigo || '',
+          client_name: proposta.clienteNome || '',
+          business_sub_category: proposta.businessSubCategory || '',
+          success: true
+        }
+      });
+
       return complianceUrl;
     },
     onSuccess: (complianceUrl) => {

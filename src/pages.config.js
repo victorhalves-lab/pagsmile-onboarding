@@ -50,6 +50,7 @@
 import AdminDashboard from './pages/AdminDashboard';
 import AnaliseDeCasos from './pages/AnaliseDeCasos';
 import Auditoria from './pages/Auditoria';
+import ComplianceDinamico from './pages/ComplianceDinamico';
 import ComplianceEcommerce from './pages/ComplianceEcommerce';
 import ComplianceFullKYC from './pages/ComplianceFullKYC';
 import ComplianceGateway from './pages/ComplianceGateway';
@@ -91,14 +92,13 @@ import MessageTemplates from './pages/MessageTemplates';
 import OnboardingCompletion from './pages/OnboardingCompletion';
 import PipelineComercial from './pages/PipelineComercial';
 import PreviewContrato from './pages/PreviewContrato';
+import PropostaDetalhes from './pages/PropostaDetalhes';
 import PropostaPublica from './pages/PropostaPublica';
 import QuestionarioSimplificadoPublico from './pages/QuestionarioSimplificadoPublico';
 import QuestionariosLeads from './pages/QuestionariosLeads';
 import QuestionariosRecebidos from './pages/QuestionariosRecebidos';
 import RegrasDeCompliance from './pages/RegrasDeCompliance';
 import TemplatesQuestionarios from './pages/TemplatesQuestionarios';
-import PropostaDetalhes from './pages/PropostaDetalhes';
-import ComplianceDinamico from './pages/ComplianceDinamico';
 import __Layout from './Layout.jsx';
 
 
@@ -106,6 +106,7 @@ export const PAGES = {
     "AdminDashboard": AdminDashboard,
     "AnaliseDeCasos": AnaliseDeCasos,
     "Auditoria": Auditoria,
+    "ComplianceDinamico": ComplianceDinamico,
     "ComplianceEcommerce": ComplianceEcommerce,
     "ComplianceFullKYC": ComplianceFullKYC,
     "ComplianceGateway": ComplianceGateway,
@@ -147,14 +148,13 @@ export const PAGES = {
     "OnboardingCompletion": OnboardingCompletion,
     "PipelineComercial": PipelineComercial,
     "PreviewContrato": PreviewContrato,
+    "PropostaDetalhes": PropostaDetalhes,
     "PropostaPublica": PropostaPublica,
     "QuestionarioSimplificadoPublico": QuestionarioSimplificadoPublico,
     "QuestionariosLeads": QuestionariosLeads,
     "QuestionariosRecebidos": QuestionariosRecebidos,
     "RegrasDeCompliance": RegrasDeCompliance,
     "TemplatesQuestionarios": TemplatesQuestionarios,
-    "PropostaDetalhes": PropostaDetalhes,
-    "ComplianceDinamico": ComplianceDinamico,
 }
 
 export const pagesConfig = {
