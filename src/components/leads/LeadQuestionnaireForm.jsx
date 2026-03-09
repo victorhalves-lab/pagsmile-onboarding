@@ -167,10 +167,14 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
   const [mccQuestionId, setMccQuestionId] = useState(null);
   const autoSaveRef = useRef(null);
 
-  // Filtrar perguntas visíveis (remover as ocultadas por CARD_RATE_QUESTION_IDS e HIDDEN_QUESTION_IDS)
-  // e perguntas de grupos percentuais que não são trigger (serão renderizadas pelo trigger)
+  // Perguntas de taxa de cartão (para passar ao CardRatesGroup)
+  const cardRateQuestions = questions.filter(q => CARD_RATE_QUESTION_IDS.includes(q.id));
+
+  // Filtrar perguntas visíveis:
+  // - Taxas de cartão: ocultar individualmente, renderizar via trigger (primeiro ID)
+  // - Grupos percentuais: ocultar individualmente, renderizar via trigger
   const visibleQuestions = questions.filter(q => {
-    if (CARD_RATE_QUESTION_IDS.includes(q.id)) return false;
+    if (CARD_RATE_QUESTION_IDS.includes(q.id) && q.id !== CARD_RATE_TRIGGER_ID) return false;
     if (GROUPED_PERCENT_IDS.includes(q.id) && !PERCENT_GROUPS.some(g => g.trigger === q.id)) return false;
     return true;
   });
