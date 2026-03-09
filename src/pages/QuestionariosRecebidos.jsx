@@ -36,6 +36,7 @@ import {
   ChevronLeft, ChevronRight, Brain, FileText,
   Inbox, ChevronDown, Shield
 } from 'lucide-react';
+import CaseExpandedDetail from '@/components/compliance/CaseExpandedDetail';
 
 export default function QuestionariosRecebidos() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -749,50 +750,11 @@ export default function QuestionariosRecebidos() {
                   {expandedRow === c.id && (
                     <TableRow className="bg-[#f4f4f4]/50">
                       <TableCell colSpan={11} className="p-4">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div className="bg-white rounded-xl p-4 border border-[#002443]/5">
-                            <h4 className="text-xs font-bold text-[#002443] mb-2 uppercase tracking-wider">Resumo IA</h4>
-                            <p className="text-xs text-[#282828]/60">
-                              {scoresMap[c.id]?.sumario_executivo || scoresMap[c.id]?.parecer_final || c.iaExplanation || 'Análise não disponível.'}
-                            </p>
-                          </div>
-                          <div className="bg-white rounded-xl p-4 border border-[#002443]/5">
-                            <h4 className="text-xs font-bold text-[#002443] mb-2 uppercase tracking-wider">Red Flags</h4>
-                            {(scoresMap[c.id]?.red_flags || c.redFlags || []).length > 0 ? (
-                              <ul className="space-y-1">
-                                {(scoresMap[c.id]?.red_flags || c.redFlags || []).slice(0, 3).map((flag, i) => (
-                                  <li key={i} className="flex items-start gap-1.5 text-xs text-red-600">
-                                    <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
-                                    <span className="line-clamp-2">{flag}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            ) : (
-                              <p className="text-xs text-[#282828]/40">Nenhum red flag identificado.</p>
-                            )}
-                          </div>
-                          <div className="bg-white rounded-xl p-4 border border-[#002443]/5">
-                            <h4 className="text-xs font-bold text-[#002443] mb-2 uppercase tracking-wider">Scores Detalhados</h4>
-                            <div className="space-y-2">
-                              <div className="flex justify-between text-xs">
-                                <span className="text-[#282828]/50">Questionário (SQ)</span>
-                                <span className="font-bold">{scoresMap[c.id]?.score_questionario || '-'}</span>
-                              </div>
-                              <div className="flex justify-between text-xs">
-                                <span className="text-[#282828]/50">Validação Ext. (SVE)</span>
-                                <span className="font-bold">{scoresMap[c.id]?.score_validacao_externa || '-'}</span>
-                              </div>
-                              <div className="flex justify-between text-xs">
-                                <span className="text-[#282828]/50">Geral Composto (SGC)</span>
-                                <span className="font-bold text-[#2bc196]">{scoresMap[c.id]?.score_geral_composto || '-'}</span>
-                              </div>
-                              <div className="flex justify-between text-xs">
-                                <span className="text-[#282828]/50">Recomendação</span>
-                                <span className="font-semibold">{scoresMap[c.id]?.recomendacao_final || c.iaDecision || '-'}</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                        <CaseExpandedDetail 
+                          caseData={c} 
+                          scoresMap={scoresMap} 
+                          templatesMap={templatesMap} 
+                        />
                       </TableCell>
                     </TableRow>
                   )}
