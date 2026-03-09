@@ -69,7 +69,7 @@ Deno.serve(async (req) => {
       }
     ];
 
-    const slackToken = await base44.asServiceRole.connectors.getAccessToken('slackbot');
+    const { accessToken: slackToken } = await base44.asServiceRole.connectors.getConnection('slackbot');
     const slackResult = await sendSlackMessage(
       slackToken,
       SLACK_CHANNEL,
