@@ -220,7 +220,7 @@ export default function QuestionnaireResponsesModal({ open, onClose, lead }) {
   };
 
   // Check if current section has special components
-  const showCardRates = activeSec === 'processador' && allQuestions.some(q => CARD_RATE_QUESTION_IDS.includes(q.id));
+  const showCardRates = activeSec === 'taxas_cartao' && allQuestions.some(q => CARD_RATE_QUESTION_IDS.includes(q.id));
   const showDistribution = activeSec === 'distribuicao';
 
   return (
