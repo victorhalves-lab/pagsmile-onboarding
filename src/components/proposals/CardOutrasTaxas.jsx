@@ -35,6 +35,7 @@ export default function CardOutrasTaxas({ rates, onUpdateRates }) {
         </div>
         <TaxaInput value={rates?.pix?.valor || ''} onChange={(val) => updatePix('valor', val)} placeholder="0,00"
           prefix={pixTipo === 'fixo' ? 'R$' : undefined} suffix={pixTipo === 'percentual' ? '%' : undefined}
+          isCurrency={pixTipo === 'fixo'}
           className={`${inputCls} text-right ${pixTipo === 'fixo' ? 'pl-10' : 'pr-10'}`} />
       </div>
 
@@ -59,7 +60,7 @@ export default function CardOutrasTaxas({ rates, onUpdateRates }) {
           {[{ k: 'mes1', l: 'Mês 1' }, { k: 'mes2', l: 'Mês 2' }, { k: 'mes3', l: 'Mês 3 em diante' }].map(m => (
             <div key={m.k} className="space-y-1">
               <p className="text-[9px] text-white text-center">{m.l}</p>
-              <TaxaInput value={rates?.minimoGarantido?.[m.k] || ''} onChange={(val) => updateField('minimoGarantido', { ...rates.minimoGarantido, [m.k]: val })} placeholder="0,00" prefix="R$" className={`${inputCls} text-right pl-10 text-sm`} />
+              <TaxaInput value={rates?.minimoGarantido?.[m.k] || ''} onChange={(val) => updateField('minimoGarantido', { ...rates.minimoGarantido, [m.k]: val })} placeholder="0,00" prefix="R$" isCurrency className={`${inputCls} text-right pl-10 text-sm`} />
             </div>
           ))}
         </div>
