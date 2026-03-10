@@ -258,7 +258,7 @@ export default function DynamicDocumentUploader({
   useEffect(() => {
     if (onAllRequiredUploaded) {
       const allMandatoryUploaded = mandatoryDocs.length === 0 || 
-        mandatoryDocs.every(d => documents[d.documentTypeId || d.id]?.url);
+        mandatoryDocs.every(d => documents[d._docKey || d.documentTypeId || d.id]?.url);
       const selfieUploaded = !!documents['__selfie_com_documento__']?.url;
       onAllRequiredUploaded(allMandatoryUploaded && selfieUploaded);
     }
