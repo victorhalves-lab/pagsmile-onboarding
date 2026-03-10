@@ -174,13 +174,7 @@ export default function AnaliseDeCasos() {
     return <Badge className={colors[status] || colors['Pendente']}>{status}</Badge>;
   };
 
-  // Agrupar respostas por seção
-  const groupedResponses = responses.reduce((acc, response) => {
-    const section = response.questionText?.split(' - ')[0] || 'Geral';
-    if (!acc[section]) acc[section] = [];
-    acc[section].push(response);
-    return acc;
-  }, {});
+
 
   if (caseLoading) {
     return (
