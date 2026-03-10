@@ -251,12 +251,13 @@ export default function DynamicDocumentUploader({
     }
   }, [documents, storageKey]);
 
-  // Verificar se todos os documentos obrigatórios foram enviados
+  // Verificar se todos os documentos obrigatórios + selfie foram enviados
   useEffect(() => {
     if (onAllRequiredUploaded) {
       const allMandatoryUploaded = mandatoryDocs.length === 0 || 
         mandatoryDocs.every(d => documents[d.documentTypeId || d.id]?.url);
-      onAllRequiredUploaded(allMandatoryUploaded);
+      const selfieUploaded = !!documents['__selfie_com_documento__']?.url;
+      onAllRequiredUploaded(allMandatoryUploaded && selfieUploaded);
     }
   }, [onAllRequiredUploaded, documents, requiredDocs]);
 
