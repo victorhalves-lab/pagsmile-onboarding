@@ -257,13 +257,7 @@ export default function DynamicDocumentUploadPage({
         </Button>
       </div>
 
-      {/* Modal de Verificação de Identidade */}
-      <IdentityVerificationModal
-        isOpen={showVerificationModal}
-        onClose={() => setShowVerificationModal(false)}
-        caseId={createdCaseId}
-        flowType={flowType}
-      />
+      {/* Selfie e documentos são enviados juntos — sem modal de verificação */}
     </div>
   );
 }
