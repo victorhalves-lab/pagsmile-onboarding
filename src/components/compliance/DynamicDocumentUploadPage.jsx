@@ -26,8 +26,6 @@ export default function DynamicDocumentUploadPage({
   const [documents, setDocuments] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [allRequiredUploaded, setAllRequiredUploaded] = useState(false);
-  const [showVerificationModal, setShowVerificationModal] = useState(false);
-  const [createdCaseId, setCreatedCaseId] = useState(null);
 
   // Buscar template
   const { data: template, isLoading: loadingTemplate } = useQuery({
