@@ -318,6 +318,9 @@ export default function DynamicQuestionnaire({
     if (template?.id) {
       localStorage.setItem('current_template_id', template.id);
     }
+    if (templateModel) {
+      localStorage.setItem('current_compliance_model', templateModel);
+    }
     if (onComplete) {
       onComplete({ formData, template, questions });
     } else {
