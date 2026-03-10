@@ -85,10 +85,36 @@ export default function OnboardingCompletion() {
           </div>
         </div>
 
+        {/* Disclaimer CAF - Obrigatório */}
+        <div className="bg-amber-500/20 border border-amber-500/40 rounded-2xl p-6 mb-8 text-left">
+          <div className="flex items-start gap-4">
+            <div className="p-2 rounded-lg bg-amber-500/20 shrink-0">
+              <Shield className="w-6 h-6 text-amber-400" />
+            </div>
+            <div>
+              <h3 className="font-bold text-white text-lg mb-2">⚠️ Etapa Obrigatória - Verificação CAF</h3>
+              <p className="text-slate-300 text-sm mb-4">
+                Para que seu processo de compliance seja aprovado, é <strong className="text-white">obrigatório</strong> preencher o formulário de verificação da CAF. 
+                Sem o preenchimento deste formulário, seu cadastro <strong className="text-white">não poderá ser finalizado</strong>.
+              </p>
+              <a
+                href="https://cadastro.io/9f7d5853b6dc373b07c2498557ffc410"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 hover:scale-[1.02] shadow-lg"
+              >
+                Preencher Formulário CAF
+                <ArrowRight className="w-4 h-4" />
+              </a>
+            </div>
+          </div>
+        </div>
+
         {/* Botão */}
         <Button
           onClick={() => navigate(createPageUrl('AdminDashboard'))}
-          className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white px-8"
+          variant="ghost"
+          className="text-slate-400 hover:text-white px-8"
         >
           Ir para o Dashboard
           <ArrowRight className="w-4 h-4 ml-2" />
