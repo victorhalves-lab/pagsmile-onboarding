@@ -60,9 +60,12 @@ export default function DynamicDocumentUploadPage({
 
   const handleSubmit = async () => {
     // Verificar documentos obrigatórios
-    const requiredDocs = template?.requiredDocuments || [];
+    const requiredDocs = (template?.requiredDocuments || []).map((doc, index) => ({
+      ...doc,
+      _docKey: doc.documentTypeId || doc.id || `doc_${index}_${(doc.label || '').replace(/\s+/g, '_').toLowerCase().slice(0, 30)}`
+    }));
     const mandatoryDocs = requiredDocs.filter(d => d.required);
-    const missingDocs = mandatoryDocs.filter(d => !documents[d.documentTypeId || d.id]?.url);
+    const missingDocs = mandatoryDocs.filter(d => !documents[d._docKey]?.url);
     
     if (missingDocs.length > 0) {
       toast.error(`Envie todos os documentos obrigatórios. Faltam ${missingDocs.length}: ${missingDocs.map(d => d.label || d.name).join(', ')}`);
