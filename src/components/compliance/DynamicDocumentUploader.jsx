@@ -296,10 +296,10 @@ export default function DynamicDocumentUploader({
   const optionalDocs = requiredDocs.filter(d => !d.required);
 
   const uploadedCount = Object.keys(documents).length;
-  const requiredCount = mandatoryDocs.length;
-  const progress = requiredCount > 0 ? Math.round((
-    mandatoryDocs.filter(d => documents[d.documentTypeId || d.id]?.url).length / requiredCount
-  ) * 100) : 100;
+  const totalRequired = mandatoryDocs.length + 1; // +1 para selfie
+  const mandatoryUploaded = mandatoryDocs.filter(d => documents[d.documentTypeId || d.id]?.url).length;
+  const selfieUploaded = documents['__selfie_com_documento__']?.url ? 1 : 0;
+  const progress = Math.round(((mandatoryUploaded + selfieUploaded) / totalRequired) * 100);
 
   if (requiredDocs.length === 0) {
     return (
