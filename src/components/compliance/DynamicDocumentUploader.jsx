@@ -300,7 +300,7 @@ export default function DynamicDocumentUploader({
 
   const uploadedCount = Object.keys(documents).length;
   const totalRequired = mandatoryDocs.length + 1; // +1 para selfie
-  const mandatoryUploaded = mandatoryDocs.filter(d => documents[d.documentTypeId || d.id]?.url).length;
+  const mandatoryUploaded = mandatoryDocs.filter(d => documents[d._docKey || d.documentTypeId || d.id]?.url).length;
   const selfieUploaded = documents['__selfie_com_documento__']?.url ? 1 : 0;
   const progress = Math.round(((mandatoryUploaded + selfieUploaded) / totalRequired) * 100);
 
