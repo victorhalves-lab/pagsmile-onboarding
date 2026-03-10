@@ -143,10 +143,13 @@ export default function DynamicDocumentUploadPage({
       }
 
       // Criar uploads de documentos (incluindo selfie)
-      const requiredDocs = template?.requiredDocuments || [];
+      const allTemplateDocs = (template?.requiredDocuments || []).map((doc, index) => ({
+        ...doc,
+        _docKey: doc.documentTypeId || doc.id || `doc_${index}_${(doc.label || '').replace(/\s+/g, '_').toLowerCase().slice(0, 30)}`
+      }));
       const documentUploads = Object.entries(documents).map(([docId, docData]) => {
         const isSelfie = docId === '__selfie_com_documento__';
-        const docDef = isSelfie ? null : requiredDocs.find(d => (d.documentTypeId || d.id) === docId);
+        const docDef = isSelfie ? null : allTemplateDocs.find(d => d._docKey === docId);
         return {
           onboardingCaseId: onboardingCase.id,
           documentTypeId: isSelfie ? 'selfie_com_documento' : docId,
