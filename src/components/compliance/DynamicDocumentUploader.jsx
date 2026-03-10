@@ -341,12 +341,12 @@ export default function DynamicDocumentUploader({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {mandatoryDocs.map((doc) => (
               <DocumentCard
-                key={doc.documentTypeId || doc.id}
+                key={doc._docKey}
                 doc={doc}
-                uploadedFile={documents[doc.documentTypeId || doc.id]}
+                uploadedFile={documents[doc._docKey]}
                 onUpload={handleUpload}
                 onRemove={handleRemove}
-                isUploading={uploadingDoc === (doc.documentTypeId || doc.id)}
+                isUploading={uploadingDoc === doc._docKey}
               />
             ))}
           </div>
