@@ -165,6 +165,7 @@ export default function DynamicDocumentUploadPage({
       localStorage.removeItem(formDataStorageKey);
       localStorage.removeItem(documentsStorageKey);
       localStorage.removeItem('current_template_id');
+      localStorage.removeItem('current_compliance_model');
 
       toast.success('Documentos enviados com sucesso!');
 
