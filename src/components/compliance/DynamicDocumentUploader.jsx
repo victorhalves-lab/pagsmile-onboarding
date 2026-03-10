@@ -74,7 +74,7 @@ function DocumentCard({ doc, uploadedFile, onUpload, onRemove, isUploading }) {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => onRemove(doc.documentTypeId || doc.id)}
+                onClick={() => onRemove(doc._docKey || doc.documentTypeId || doc.id)}
                 className="text-red-500 hover:text-red-700 hover:bg-red-50 h-7 px-2"
               >
                 <Trash2 className="w-3 h-3" />
