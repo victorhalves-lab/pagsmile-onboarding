@@ -324,7 +324,7 @@ export default function DynamicDocumentUploader({
         </div>
         <Progress value={progress} className="h-2" />
         <p className="text-xs text-slate-500 mt-2">
-          {mandatoryDocs.filter(d => documents[d.documentTypeId || d.id]?.url).length} de {requiredCount} documentos obrigatórios enviados
+          {mandatoryUploaded + selfieUploaded} de {totalRequired} itens obrigatórios enviados (incluindo selfie)
         </p>
       </div>
 
