@@ -227,8 +227,11 @@ export default function DynamicDocumentUploader({
 }) {
   const [uploadingDoc, setUploadingDoc] = useState(null);
 
-  // Documentos do template
-  const requiredDocs = template?.requiredDocuments || [];
+  // Documentos do template — gerar IDs determinísticos se não existirem
+  const requiredDocs = (template?.requiredDocuments || []).map((doc, index) => ({
+    ...doc,
+    _docKey: doc.documentTypeId || doc.id || `doc_${index}_${(doc.label || '').replace(/\s+/g, '_').toLowerCase().slice(0, 30)}`
+  }));
 
   // Carregar documentos salvos do localStorage
   useEffect(() => {
