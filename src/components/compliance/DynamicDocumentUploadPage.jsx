@@ -139,14 +139,15 @@ export default function DynamicDocumentUploadPage({
         await base44.entities.QuestionnaireResponse.bulkCreate(responsesToCreate);
       }
 
-      // Criar uploads de documentos
+      // Criar uploads de documentos (incluindo selfie)
       const requiredDocs = template?.requiredDocuments || [];
       const documentUploads = Object.entries(documents).map(([docId, docData]) => {
-        const docDef = requiredDocs.find(d => (d.documentTypeId || d.id) === docId);
+        const isSelfie = docId === '__selfie_com_documento__';
+        const docDef = isSelfie ? null : requiredDocs.find(d => (d.documentTypeId || d.id) === docId);
         return {
           onboardingCaseId: onboardingCase.id,
-          documentTypeId: docId,
-          documentName: docDef?.label || docDef?.name || docId,
+          documentTypeId: isSelfie ? 'selfie_com_documento' : docId,
+          documentName: isSelfie ? 'Selfie com Documento' : (docDef?.label || docDef?.name || docId),
           fileUrl: docData.url,
           fileName: docData.name,
           fileSize: docData.size,
@@ -167,9 +168,8 @@ export default function DynamicDocumentUploadPage({
 
       toast.success('Documentos enviados com sucesso!');
 
-      // Abrir modal de verificação de identidade
-      setCreatedCaseId(onboardingCase.id);
-      setShowVerificationModal(true);
+      // Ir direto para tela de conclusão
+      navigate(createPageUrl('OnboardingCompletion') + `?caseId=${onboardingCase.id}`);
 
     } catch (error) {
       console.error('Erro ao submeter:', error);
