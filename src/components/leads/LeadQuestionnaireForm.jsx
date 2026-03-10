@@ -357,8 +357,18 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
       }
     }
 
-    // Buscar template de compliance vinculado
+    // Buscar template de compliance vinculado dinamicamente pela businessSubCategory
     let recommendedComplianceTemplateId = template.linkedComplianceTemplateId || '';
+    if (!recommendedComplianceTemplateId) {
+      const complianceTemplates = await base44.entities.QuestionnaireTemplate.filter({
+        category: 'COMPLIANCE',
+        subCategory: businessSubCategory,
+        isActive: true
+      });
+      if (complianceTemplates.length > 0) {
+        recommendedComplianceTemplateId = complianceTemplates[0].id;
+      }
+    }
 
     // Encontrar valores relevantes
     const findFieldValue = (keywords) => {
