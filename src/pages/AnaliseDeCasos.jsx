@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import IAAnalysisPanel from '../components/compliance/IAAnalysisPanel';
+import ComplianceResponsesPanel from '../components/compliance/ComplianceResponsesPanel';
 
 export default function AnaliseDeCasos() {
   const navigate = useNavigate();
@@ -401,37 +402,7 @@ export default function AnaliseDeCasos() {
         <TabsContent value="responses">
           <div className="bg-white rounded-xl border border-slate-200 p-6">
             <h3 className="text-lg font-bold text-[var(--pagsmile-blue)] mb-6">Respostas do Questionário</h3>
-            {responses.length === 0 ? (
-              <div className="text-center py-12">
-                <FileCheck className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-                <p className="text-[var(--pagsmile-blue)]/70 font-medium">Nenhuma resposta registrada</p>
-              </div>
-            ) : (
-              <div className="space-y-6">
-                {Object.entries(groupedResponses).map(([section, sectionResponses]) => (
-                  <div key={section} className="border border-slate-200 rounded-lg overflow-hidden">
-                    <div className="bg-slate-50 px-4 py-3 border-b border-slate-200">
-                      <h4 className="font-semibold text-[var(--pagsmile-blue)]">{section}</h4>
-                    </div>
-                    <div className="divide-y divide-slate-100">
-                      {sectionResponses.map((response, idx) => (
-                        <div key={idx} className="p-4 hover:bg-slate-50">
-                          <p className="text-sm text-[var(--pagsmile-blue)]/70 font-semibold mb-1">
-                            {response.questionText?.replace(`${section} - `, '') || `Pergunta ${idx + 1}`}
-                          </p>
-                          <p className="font-semibold text-[var(--pagsmile-blue)]">
-                            {response.valueText || 
-                             response.valueNumber || 
-                             (response.valueBoolean !== undefined ? (response.valueBoolean ? 'Sim' : 'Não') : 
-                             response.valueArray?.join(', ') || '-')}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            <ComplianceResponsesPanel caseId={caseId} />
           </div>
         </TabsContent>
 
