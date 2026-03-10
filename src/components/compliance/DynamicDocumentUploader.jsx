@@ -32,7 +32,7 @@ function DocumentCard({ doc, uploadedFile, onUpload, onRemove, isUploading }) {
       return;
     }
 
-    onUpload(doc.documentTypeId || doc.id, file);
+    onUpload(doc._docKey || doc.documentTypeId || doc.id, file);
     e.target.value = '';
   };
 
