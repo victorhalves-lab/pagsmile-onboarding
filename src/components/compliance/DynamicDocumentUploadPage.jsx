@@ -69,6 +69,12 @@ export default function DynamicDocumentUploadPage({
       return;
     }
 
+    // Verificar selfie com documento
+    if (!documents['__selfie_com_documento__']?.url) {
+      toast.error('Envie a selfie com o documento (RG ou CNH) para continuar.');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
