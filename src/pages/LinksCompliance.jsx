@@ -41,9 +41,9 @@ export default function LinksCompliance() {
   };
 
   const quickLinksByBusiness = [
-    { key: 'MERCHANT', label: 'Merchant', desc: 'Estabelecimento comercial padrão', icon: CreditCard, color: '#2bc196', url: `${base}${createPageUrl('ComplianceOnboardingStart')}?businessSubCategory=MERCHAN` },
-    { key: 'GATEWAY', label: 'Gateway', desc: 'Integrador / facilitador de pagamentos', icon: Globe, color: '#002443', url: `${base}${createPageUrl('ComplianceOnboardingStart')}?businessSubCategory=GATEWAY` },
-    { key: 'MARKETPLACE', label: 'Marketplace', desc: 'Plataforma com sellers / sub-merchants', icon: ShoppingCart, color: '#36706c', url: `${base}${createPageUrl('ComplianceOnboardingStart')}?businessSubCategory=MARKETPLACE` },
+    { key: 'MERCHANT', label: 'Merchant', desc: 'Estabelecimento comercial padrão', icon: CreditCard, color: '#2bc196', url: `${base}${createPageUrl('ComplianceDinamico')}?model=merchant` },
+    { key: 'GATEWAY', label: 'Gateway', desc: 'Integrador / facilitador de pagamentos', icon: Globe, color: '#002443', url: `${base}${createPageUrl('ComplianceDinamico')}?model=gateway` },
+    { key: 'MARKETPLACE', label: 'Marketplace', desc: 'Plataforma com sellers / sub-merchants', icon: ShoppingCart, color: '#36706c', url: `${base}${createPageUrl('ComplianceDinamico')}?model=marketplace` },
   ];
 
   const quickLinksByType = [
