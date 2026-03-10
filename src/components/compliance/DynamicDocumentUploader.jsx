@@ -280,6 +280,20 @@ export default function DynamicDocumentUploader({
         </div>
       </div>
 
+      {/* Selfie com Documento — obrigatório para todos os fluxos */}
+      <div className="mt-2">
+        <h3 className="text-sm font-bold text-[#002443] mb-3 flex items-center gap-2">
+          <Camera className="w-4 h-4 text-[#2bc196]" />
+          Verificação de Identidade
+        </h3>
+        <SelfieCard
+          uploadedFile={documents['__selfie_com_documento__']}
+          onUpload={(file) => handleUpload('__selfie_com_documento__', file)}
+          onRemove={() => handleRemove('__selfie_com_documento__')}
+          isUploading={uploadingDoc === '__selfie_com_documento__'}
+        />
+      </div>
+
       {/* Requisitos */}
       <div className="bg-white border border-slate-200 rounded-xl p-4">
         <div className="flex items-start gap-3">
