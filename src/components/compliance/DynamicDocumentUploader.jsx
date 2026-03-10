@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { 
   FileUp, CheckCircle2, AlertCircle, Trash2, 
-  Shield, Lock, Loader2, Upload, File
+  Shield, Lock, Loader2, Upload, File, Camera, User
 } from 'lucide-react';
 import { toast } from 'sonner';
 
