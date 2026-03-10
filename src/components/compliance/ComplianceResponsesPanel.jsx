@@ -1,0 +1,240 @@
+import React, { useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
+import { Loader2, FileCheck, Search, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import ResponsesSectionNav from './ResponsesSectionNav';
+import ResponseCard from './ResponseCard';
+
+function cleanSectionName(rawSection) {
+  if (!rawSection) return 'Geral';
+  // Remove leading numbers, dots, dashes
+  let name = rawSection.replace(/^\d+[\.\-\s]*/, '').trim();
+  // Capitalize first letter
+  if (name) name = name.charAt(0).toUpperCase() + name.slice(1);
+  return name || 'Geral';
+}
+
+function extractSection(questionText) {
+  if (!questionText) return 'Geral';
+  // Try "Section - Question" pattern
+  const dashSplit = questionText.split(' - ');
+  if (dashSplit.length > 1) return cleanSectionName(dashSplit[0]);
+  // Try "1. Section" pattern
+  const dotSplit = questionText.match(/^(\d+\.?\s+.+?)(?:\s*[-:])(.+)/);
+  if (dotSplit) return cleanSectionName(dotSplit[1]);
+  return 'Geral';
+}
+
+function deduplicateResponses(responses) {
+  const seen = new Map();
+  
+  for (const r of responses) {
+    // Create a normalized key from the question text (lowercased, trimmed)
+    const qText = (r.questionText || '').toLowerCase().trim();
+    // Also check the actual question portion (after section separator)
+    const parts = qText.split(' - ');
+    const questionPart = parts.length > 1 ? parts.slice(1).join(' - ').trim() : qText;
+    
+    // Use question text as dedup key
+    const key = questionPart;
+    
+    if (!seen.has(key)) {
+      seen.set(key, r);
+    } else {
+      // Keep the one with a value, or the most recent one
+      const existing = seen.get(key);
+      const existingHasValue = existing.valueText || existing.valueNumber !== undefined || existing.valueBoolean !== undefined || (existing.valueArray && existing.valueArray.length > 0);
+      const newHasValue = r.valueText || r.valueNumber !== undefined || r.valueBoolean !== undefined || (r.valueArray && r.valueArray.length > 0);
+      
+      if (!existingHasValue && newHasValue) {
+        seen.set(key, r);
+      }
+    }
+  }
+  
+  return Array.from(seen.values());
+}
+
+function getDisplayValue(response) {
+  if (response.valueText) return response.valueText;
+  if (response.valueNumber !== undefined && response.valueNumber !== null) return response.valueNumber;
+  if (response.valueBoolean !== undefined && response.valueBoolean !== null) return response.valueBoolean;
+  if (response.valueArray && response.valueArray.length > 0) return response.valueArray;
+  return null;
+}
+
+function getDisplayQuestion(response, section) {
+  const q = response.questionText || 'Pergunta';
+  // Remove section prefix if present
+  const prefix = section + ' - ';
+  if (q.startsWith(prefix)) return q.slice(prefix.length);
+  // Also try with numbers
+  const cleanQ = q.replace(/^\d+[\.\-\s]*/, '').trim();
+  if (cleanQ.startsWith(section)) {
+    return cleanQ.slice(section.length).replace(/^\s*[-:]\s*/, '').trim() || q;
+  }
+  return q;
+}
+
+export default function ComplianceResponsesPanel({ caseId }) {
+  const [activeSection, setActiveSection] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const { data: rawResponses = [], isLoading } = useQuery({
+    queryKey: ['responses-panel', caseId],
+    queryFn: () => base44.entities.QuestionnaireResponse.filter({ onboardingCaseId: caseId }),
+    enabled: !!caseId
+  });
+
+  const { sections, groupedResponses, totalAnswered, totalQuestions } = useMemo(() => {
+    if (!rawResponses.length) return { sections: [], groupedResponses: {}, totalAnswered: 0, totalQuestions: 0 };
+
+    // Deduplicate
+    const responses = deduplicateResponses(rawResponses);
+
+    // Group by section
+    const groups = {};
+    for (const r of responses) {
+      const section = extractSection(r.questionText);
+      if (!groups[section]) groups[section] = [];
+      groups[section].push(r);
+    }
+
+    // Build section list with counts
+    const sectionList = Object.entries(groups).map(([name, items]) => ({
+      name,
+      count: items.filter(r => getDisplayValue(r) !== null).length,
+      total: items.length,
+    }));
+
+    // Sort: sections with more answers first, then alphabetically
+    sectionList.sort((a, b) => {
+      if (a.name === 'Geral') return 1;
+      if (b.name === 'Geral') return -1;
+      return b.count - a.count || a.name.localeCompare(b.name);
+    });
+
+    const totalA = responses.filter(r => getDisplayValue(r) !== null).length;
+
+    return {
+      sections: sectionList,
+      groupedResponses: groups,
+      totalAnswered: totalA,
+      totalQuestions: responses.length,
+    };
+  }, [rawResponses]);
+
+  // Active section
+  const currentSection = activeSection || sections[0]?.name;
+  const currentResponses = (groupedResponses[currentSection] || []);
+
+  // Search filter
+  const filteredResponses = searchTerm
+    ? currentResponses.filter(r =>
+        (r.questionText || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        String(getDisplayValue(r) || '').toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : currentResponses;
+
+  const completionPercent = totalQuestions > 0 ? Math.round((totalAnswered / totalQuestions) * 100) : 0;
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16">
+        <Loader2 className="w-8 h-8 animate-spin text-[#2bc196] mb-3" />
+        <p className="text-[#002443]/40 text-sm">Carregando respostas...</p>
+      </div>
+    );
+  }
+
+  if (rawResponses.length === 0) {
+    return (
+      <div className="text-center py-16">
+        <FileCheck className="w-12 h-12 mx-auto text-[#002443]/15 mb-4" />
+        <p className="text-[#002443]/50 font-medium">Nenhuma resposta registrada</p>
+        <p className="text-sm text-[#002443]/30 mt-1">O questionário ainda não foi preenchido</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-5">
+      {/* Stats bar */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-gradient-to-r from-[#002443]/[0.03] to-[#2bc196]/[0.05] rounded-xl p-4 border border-[#002443]/5">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-[#2bc196]" />
+            <span className="text-sm font-semibold text-[#002443]">
+              {totalAnswered} de {totalQuestions} respondidas
+            </span>
+          </div>
+          <div className="w-32">
+            <Progress value={completionPercent} className="h-2" />
+          </div>
+          <span className="text-xs font-bold text-[#2bc196]">{completionPercent}%</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <Badge className="bg-[#002443]/5 text-[#002443]/70 border-0 text-xs">
+            {sections.length} seções
+          </Badge>
+          {rawResponses.length !== deduplicateResponses(rawResponses).length && (
+            <Badge className="bg-amber-50 text-amber-600 border-0 text-xs">
+              <AlertCircle className="w-3 h-3 mr-1" />
+              {rawResponses.length - deduplicateResponses(rawResponses).length} duplicadas removidas
+            </Badge>
+          )}
+        </div>
+      </div>
+
+      {/* Search */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/30" />
+        <Input
+          placeholder="Buscar pergunta ou resposta..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="pl-9 bg-white border-[#002443]/8 focus:border-[#2bc196]/40"
+        />
+      </div>
+
+      {/* Section navigation */}
+      <ResponsesSectionNav
+        sections={sections}
+        activeSection={currentSection}
+        onSelect={(s) => { setActiveSection(s); setSearchTerm(''); }}
+      />
+
+      {/* Section content header */}
+      {currentSection && (
+        <div className="flex items-center justify-between">
+          <h4 className="text-sm font-bold text-[#002443]">{currentSection}</h4>
+          <span className="text-xs text-[#002443]/40">
+            {filteredResponses.filter(r => getDisplayValue(r) !== null).length} de {filteredResponses.length} preenchidas
+          </span>
+        </div>
+      )}
+
+      {/* Responses grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {filteredResponses.map((r, idx) => (
+          <ResponseCard
+            key={r.id || idx}
+            question={getDisplayQuestion(r, currentSection)}
+            value={getDisplayValue(r)}
+            type={r.questionType}
+          />
+        ))}
+      </div>
+
+      {filteredResponses.length === 0 && searchTerm && (
+        <div className="text-center py-8">
+          <Search className="w-8 h-8 mx-auto text-[#002443]/15 mb-2" />
+          <p className="text-sm text-[#002443]/40">Nenhum resultado para "{searchTerm}"</p>
+        </div>
+      )}
+    </div>
+  );
+}
