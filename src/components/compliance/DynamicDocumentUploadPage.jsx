@@ -9,7 +9,6 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import DynamicDocumentUploader from './DynamicDocumentUploader';
-import IdentityVerificationModal from './IdentityVerificationModal';
 
 export default function DynamicDocumentUploadPage({
   templateId,
