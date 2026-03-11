@@ -1,9 +1,4 @@
 import React from 'react';
-import { PieChart } from 'lucide-react';
-
-/**
- * Exibe grupos de distribuição percentual (TPV, Bandeiras, Parcelamento) no modal de respostas.
- */
 
 const DISTRIBUTION_GROUPS = [
   {
@@ -35,7 +30,6 @@ const DISTRIBUTION_GROUPS = [
   },
 ];
 
-// Export the IDs for the parent to know which questions are handled here
 export const DISTRIBUTION_QUESTION_IDS = DISTRIBUTION_GROUPS.flatMap(g => g.fields.map(f => f.id));
 
 export default function PercentDistributionDisplay({ questionnaireData }) {
@@ -44,35 +38,34 @@ export default function PercentDistributionDisplay({ questionnaireData }) {
       {DISTRIBUTION_GROUPS.map(group => {
         const values = group.fields.map(f => {
           const raw = questionnaireData[f.id];
-          return {
-            ...f,
-            value: raw !== undefined && raw !== null && raw !== '' ? parseFloat(raw) : null,
-          };
+          return { ...f, value: raw !== undefined && raw !== null && raw !== '' ? parseFloat(raw) : null };
         });
         const total = values.reduce((sum, v) => sum + (v.value || 0), 0);
         const hasAny = values.some(v => v.value !== null);
 
         return (
-          <div key={group.title} className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-sm">{group.icon}</span>
-              <span className="text-xs font-bold text-white/60 uppercase tracking-wider">{group.title}</span>
+          <div key={group.title} className="bg-[#f8fafc] border border-[#e2e8f0] rounded-xl p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-base">{group.icon}</span>
+              <span className="text-xs font-bold text-[#002443]/70 uppercase tracking-wider">{group.title}</span>
               {hasAny && (
-                <span className={`text-[10px] ml-auto px-2 py-0.5 rounded-full font-bold ${
-                  Math.abs(total - 100) < 0.1 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'
+                <span className={`text-[10px] ml-auto px-2.5 py-1 rounded-full font-bold border ${
+                  Math.abs(total - 100) < 0.1
+                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                    : 'bg-amber-50 text-amber-700 border-amber-200'
                 }`}>
                   Total: {total.toFixed(0)}%
                 </span>
               )}
             </div>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-4">
               {values.map(v => (
-                <div key={v.id} className="text-center">
-                  <p className="text-[10px] text-white/40 mb-1">{v.label}</p>
+                <div key={v.id} className="text-center bg-white rounded-lg border border-[#e2e8f0] p-3">
+                  <p className="text-[10px] text-[#002443]/50 mb-1 font-medium">{v.label}</p>
                   {v.value !== null ? (
-                    <p className="text-lg font-bold text-cyan-400">{v.value.toFixed(0)}%</p>
+                    <p className="text-2xl font-bold text-indigo-600">{v.value.toFixed(0)}%</p>
                   ) : (
-                    <p className="text-sm text-white/15">—</p>
+                    <p className="text-lg text-[#002443]/15 font-bold">—</p>
                   )}
                 </div>
               ))}
