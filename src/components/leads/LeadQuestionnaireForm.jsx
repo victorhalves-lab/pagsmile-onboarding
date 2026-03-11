@@ -608,7 +608,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
           />
         )}
 
-        {isMCCQuestion(question) && (
+        {isMCCQuestion(question) ? (
           <div className="space-y-3">
             <div className="flex gap-3">
               <div className="relative flex-1">
@@ -639,7 +639,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
             </div>
             {value && value.length === 4 && <MCCNameDisplay mccCode={value} />}
           </div>
-        )}
+        ) : null}
 
         {!isMCCQuestion(question) && question.type === 'SELECT' && (
           <div className="space-y-4">
