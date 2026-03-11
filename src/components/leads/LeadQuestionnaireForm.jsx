@@ -254,7 +254,9 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
     const stepQuestions = steps[currentStep].filter(shouldShowQuestion);
     
     for (const q of stepQuestions) {
-      if (q.isRequired) {
+      // Todas as perguntas são obrigatórias (exceto FILE_UPLOAD)
+      const isRequired = q.type !== 'FILE_UPLOAD' ? true : q.isRequired;
+      if (isRequired) {
         const val = formData[q.id];
         if (val === undefined || val === null || val === '' || (Array.isArray(val) && val.length === 0)) {
           toast.error(`Por favor, preencha: "${q.text}"`);
