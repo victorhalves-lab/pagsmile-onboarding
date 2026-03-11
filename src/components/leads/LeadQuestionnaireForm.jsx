@@ -490,7 +490,8 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
       <div key={question.id} className="space-y-2">
         <Label className="text-sm font-semibold text-[var(--pagsmile-blue)]">
           {question.text}
-          {question.isRequired && <span className="text-red-500 ml-1">*</span>}
+          {question.type !== 'FILE_UPLOAD' && <span className="text-red-500 ml-1">*</span>}
+          {question.type === 'FILE_UPLOAD' && question.isRequired && <span className="text-red-500 ml-1">*</span>}
         </Label>
         {isBusinessTypeQuestion(question) && currentStep === 0 && <BusinessTypeExplainer />}
         {question.helpText && (
