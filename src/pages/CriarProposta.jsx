@@ -4,13 +4,14 @@ import { createPageUrl } from '../utils';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Save, FileText, Loader2 } from 'lucide-react';
+import { ArrowLeft, Save, FileText, Loader2, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import CardDadosCliente from '@/components/proposals/CardDadosCliente';
 import CardTaxasCartao from '@/components/proposals/CardTaxasCartao';
 import CardAntecipacao from '@/components/proposals/CardAntecipacao';
 import CardOutrasTaxas from '@/components/proposals/CardOutrasTaxas';
 import PropostaPreview from '@/components/proposals/PropostaPreview';
+import CopyRatesModal from '@/components/proposals/CopyRatesModal';
 
 const parseTaxa = (val) => {
   if (!val && val !== 0) return 0;
