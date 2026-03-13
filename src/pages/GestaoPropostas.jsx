@@ -253,8 +253,11 @@ export default function GestaoPropostas() {
                             </Button>
                           </a>
                         )}
-                        <Button variant="ghost" size="sm" onClick={() => duplicar(p)}>
+                        <Button variant="ghost" size="sm" onClick={() => duplicar(p)} title="Duplicar proposta">
                           <Copy className="w-4 h-4" />
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => navigate(createPageUrl('CriarProposta') + `?templateFromId=${p.id}`)} title="Nova proposta com estas taxas">
+                          <FilePlus2 className="w-4 h-4" />
                         </Button>
                         <Button variant="ghost" size="sm" onClick={() => setHistoryProposalId(p.id)} title="Histórico">
                           <History className="w-4 h-4" />
