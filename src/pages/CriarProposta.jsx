@@ -277,6 +277,17 @@ export default function CriarProposta() {
           </div>
         </div>
       </div>
+
+      <CopyRatesModal
+        isOpen={isCopyModalOpen}
+        onClose={() => setIsCopyModalOpen(false)}
+        currentProposalId={editId}
+        onSelect={async (selectedId) => {
+          setIsCopyModalOpen(false);
+          const proposals = await base44.entities.Proposal.filter({ id: selectedId });
+          if (proposals[0]) applyCopiedRates(proposals[0]);
+        }}
+      />
     </div>
   );
 }
