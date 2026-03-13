@@ -27,7 +27,9 @@ export default function CriarProposta() {
   const urlParams = new URLSearchParams(window.location.search);
   const leadId = urlParams.get('lead') || urlParams.get('lead_id') || urlParams.get('leadId');
   const editId = urlParams.get('edit');
+  const templateFromId = urlParams.get('templateFromId');
   const [saving, setSaving] = useState(false);
+  const [isCopyModalOpen, setIsCopyModalOpen] = useState(false);
   const [errors, setErrors] = useState({});
   const [selectedBrand, setSelectedBrand] = useState('mastercard');
 
