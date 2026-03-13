@@ -249,6 +249,9 @@ export default function CriarProposta() {
           </div>
         </div>
         <div className="flex items-center gap-3">
+          <Button variant="ghost" onClick={() => setIsCopyModalOpen(true)} className="text-white/60 hover:text-white hover:bg-white/5 rounded-xl text-sm">
+            <Copy className="w-4 h-4 mr-2" /> Copiar Taxas
+          </Button>
           <Button variant="ghost" onClick={handleSalvarRascunho} disabled={saving} className="text-white/60 hover:text-white hover:bg-white/5 rounded-xl text-sm">
             {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />} Rascunho
           </Button>
