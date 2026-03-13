@@ -50,6 +50,39 @@ export default function CriarProposta() {
 
   const usePriscila = urlParams.get('usePriscila') === '1';
 
+  const { data: templateProposal } = useQuery({
+    queryKey: ['template-proposal', templateFromId],
+    queryFn: async () => { const proposals = await base44.entities.Proposal.filter({ id: templateFromId }); return proposals[0] || null; },
+    enabled: !!templateFromId && !editId
+  });
+
+  const applyCopiedRates = (sourceProposal) => {
+    if (!sourceProposal?.rates) { toast.error('Proposta sem taxas para copiar.'); return; }
+    const r = sourceProposal.rates;
+    setForm(prev => ({
+      ...prev,
+      prazoRecebimento: r.rav?.prazo || prev.prazoRecebimento,
+      usaAntecipacao: !!r.rav?.taxa,
+      percentualAntecipacao: r.percentualAntecipacao ?? prev.percentualAntecipacao,
+      taxaAntecipacao: r.rav?.taxa ?? prev.taxaAntecipacao,
+    }));
+    setRates({
+      cartao: r.cartao || {},
+      pix: r.pix || { tipo: 'percentual', valor: '' },
+      boleto: r.boleto ?? '',
+      feeTransacao: r.feeTransacao ?? '',
+      antifraude: r.antifraude ?? '',
+      alertaPreChargeback: r.alertaPreChargeback ?? '',
+      taxa3ds: r.taxa3ds ?? '',
+      minimoGarantido: typeof r.minimoGarantido === 'object' ? r.minimoGarantido : { mes1: r.minimoGarantido ?? '', mes2: r.minimoGarantido ?? '', mes3: r.minimoGarantido ?? '' },
+    });
+    toast.success('Taxas e condições comerciais copiadas!');
+  };
+
+  useEffect(() => {
+    if (templateProposal) applyCopiedRates(templateProposal);
+  }, [templateProposal]);
+
   const { data: lead } = useQuery({
     queryKey: ['lead-for-proposal', leadId],
     queryFn: async () => { const leads = await base44.entities.Lead.filter({ id: leadId }); return leads[0] || null; },
