@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import {
   Search, Plus, Eye, Pencil, Send, Link2, Copy, Trash2,
-  Loader2, X, AlertTriangle, FileText, List, Clock, CheckCircle, XCircle, History
+  Loader2, X, AlertTriangle, FileText, List, Clock, CheckCircle, XCircle, History, FilePlus2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
