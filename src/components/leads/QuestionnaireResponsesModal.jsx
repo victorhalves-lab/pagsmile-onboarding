@@ -52,21 +52,38 @@ function formatValue(value, questionText) {
   const num = parseFloat(str);
   const qLower = (questionText || '').toLowerCase();
 
-  // Detectar campos de telefone/celular — nunca formatar como moeda
-  const isPhone = qLower.includes('celular') || qLower.includes('telefone') || qLower.includes('phone') || qLower.includes('whatsapp') || qLower.includes('fone');
-  if (isPhone) return str;
+  // ── BLACKLIST: campos que NUNCA devem ser formatados como moeda ──
+  const isNeverMoney =
+    qLower.includes('celular') || qLower.includes('telefone') || qLower.includes('phone') ||
+    qLower.includes('whatsapp') || qLower.includes('fone') ||
+    qLower.includes('transaç') || qLower.includes('transac') ||  // transações, transacao
+    qLower.includes('quantidade') || qLower.includes('quantas') ||
+    qLower.includes('cnpj') || qLower.includes('cpf') ||
+    qLower.includes('cep') || qLower.includes('número') || qLower.includes('numero') ||
+    qLower.includes('mcc') ||
+    qLower.includes('prazo') || qLower.includes('dias') || qLower.includes('meses');
+  if (isNeverMoney && !isNaN(num)) {
+    return num % 1 === 0 ? num.toLocaleString('pt-BR') : str;
+  }
 
-  const isMoney = qLower.includes('tpv') || qLower.includes('ticket') || qLower.includes('faturamento') ||
-    qLower.includes('(r$)') || qLower.includes('r$') || qLower.includes('valor');
+  // ── PERCENTUAL: detectar campos de taxa/percentual ──
+  const isPercent = qLower.includes('(%)') || qLower.includes('percentual') ||
+    qLower.includes('distribuição') || qLower.includes('% ') ||
+    qLower.includes('taxa de cartão') || qLower.includes('taxa de débito') ||
+    qLower.includes('taxa pix') || qLower.includes('taxa antifraude');
+  if (isPercent && !isNaN(num)) return `${num.toFixed(2).replace('.', ',')}%`;
+
+  // ── WHITELIST: campos que SÃO valor monetário ──
+  const isMoney =
+    qLower.includes('tpv') || qLower.includes('ticket') || qLower.includes('faturamento') ||
+    qLower.includes('(r$)') || qLower.includes('r$') ||
+    qLower.includes('valor') || qLower.includes('receita') ||
+    qLower.includes('custo') || qLower.includes('preço') || qLower.includes('preco') ||
+    qLower.includes('boleto') || qLower.includes('fee') || qLower.includes('3ds') ||
+    qLower.includes('chargeback') || qLower.includes('mínimo garantido');
   if (isMoney && !isNaN(num) && num > 0) {
     return `R$ ${num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   }
-
-  const isPercent = qLower.includes('(%)') || qLower.includes('percentual') || qLower.includes('distribuição') || qLower.includes('% ');
-  if (isPercent && !isNaN(num)) return `${num.toFixed(2).replace('.', ',')}%`;
-
-  // Só formatar como R$ se a pergunta explicitamente indica valor monetário (já coberto acima)
-  // Removida a regra genérica de num >= 1000 que causava falsos positivos (telefone, CNPJ, etc.)
 
   return str;
 }
