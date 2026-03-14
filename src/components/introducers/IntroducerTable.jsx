@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Pencil, Link as LinkIcon, Eye, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../../utils';
+import InviteIntroducerButton from './InviteIntroducerButton';
 
 const getScoreColor = (score) => {
   if (score >= 70) return 'text-green-600 bg-green-50 border-green-200';
@@ -85,6 +86,7 @@ export default function IntroducerTable({ introducers, leads, proposals, onEdit 
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
+                      <InviteIntroducerButton introducer={intro} />
                       <Button variant="ghost" size="sm" onClick={() => onEdit(intro)} className="h-7"><Pencil className="w-3.5 h-3.5" /></Button>
                       <Link to={createPageUrl('QuestionariosLeads') + `?introducer=${intro.referralCode}`}>
                         <Button variant="ghost" size="sm" className="h-7"><Eye className="w-3.5 h-3.5" /></Button>
