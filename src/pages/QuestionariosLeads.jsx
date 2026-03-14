@@ -21,7 +21,7 @@ import {
 import {
   Search, ClipboardList, Download, Eye, Trash2, Loader2, X,
   ShoppingCart, Network, Building2, ArrowUpDown, RefreshCw, Zap,
-  Phone, FileText, AlertTriangle, Shield, TrendingUp, MessageSquareText
+  Phone, FileText, AlertTriangle, Shield, TrendingUp, MessageSquareText, UserPlus
 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
