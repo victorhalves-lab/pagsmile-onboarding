@@ -47,10 +47,15 @@ export default function GestaoPropostas() {
   const [deleteId, setDeleteId] = useState(null);
   const [historyProposalId, setHistoryProposalId] = useState(null);
 
-  const { data: propostas = [], isLoading } = useQuery({
+  const [activeTab, setActiveTab] = useState('lista');
+
+  const { data: allPropostas = [], isLoading } = useQuery({
     queryKey: ['propostas'],
-    queryFn: () => base44.entities.Proposal.list('-created_date', 200)
+    queryFn: () => base44.entities.Proposal.list('-created_date', 500)
   });
+
+  // Filtra apenas versões atuais para a lista principal
+  const propostas = useMemo(() => allPropostas.filter(p => p.isCurrentVersion !== false), [allPropostas]);
 
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.Proposal.delete(id),
@@ -92,6 +97,10 @@ export default function GestaoPropostas() {
       sentDate: null,
       acceptedDate: null,
       rejectedDate: null,
+      version: 1,
+      previousVersionId: null,
+      rootProposalId: null,
+      isCurrentVersion: true,
     };
     delete newProposta.id;
     delete newProposta.created_date;
@@ -100,6 +109,31 @@ export default function GestaoPropostas() {
     const created = await base44.entities.Proposal.create(newProposta);
     queryClient.invalidateQueries({ queryKey: ['propostas'] });
     toast.success('Proposta duplicada!');
+    navigate(createPageUrl('CriarProposta') + `?edit=${created.id}`);
+  };
+
+  const criarNovaVersao = async (proposta) => {
+    const year = new Date().getFullYear();
+    const seq = String(Math.floor(Math.random() * 99999)).padStart(5, '0');
+    const { id, created_date, updated_date, created_by, publicLinkCode, tokenPublico, sentDate, acceptedDate, rejectedDate, rejectedReason, counterProposalDetails, ...dataToCopy } = proposta;
+    const newVersion = (proposta.version || 1) + 1;
+    const rootId = proposta.rootProposalId || proposta.id;
+
+    const newProposta = {
+      ...dataToCopy,
+      codigo: `PROP-${year}-${seq}`,
+      status: 'rascunho',
+      tokenPublico: Array.from({ length: 64 }, () => 'abcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random() * 36))).join(''),
+      version: newVersion,
+      previousVersionId: proposta.id,
+      rootProposalId: rootId,
+      isCurrentVersion: true,
+    };
+
+    const created = await base44.entities.Proposal.create(newProposta);
+    await base44.entities.Proposal.update(proposta.id, { isCurrentVersion: false });
+    queryClient.invalidateQueries({ queryKey: ['propostas'] });
+    toast.success(`Nova versão V${newVersion} criada!`);
     navigate(createPageUrl('CriarProposta') + `?edit=${created.id}`);
   };
 
@@ -136,148 +170,177 @@ export default function GestaoPropostas() {
       {/* Metrics Dashboard */}
       <ProposalMetrics propostas={propostas} />
 
-      {/* Filters */}
-      <div className="flex flex-wrap gap-3 items-center">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/40" />
-          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar por número, empresa ou CNPJ..." className="pl-10 h-10" />
-        </div>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[160px] h-10"><SelectValue placeholder="Status" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
-            {Object.entries(STATUS_CONFIG).map(([k, v]) => (
-              <SelectItem key={k} value={k}>{v.icon} {v.label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {(search || statusFilter !== 'all') && (
-          <Button variant="ghost" size="sm" onClick={() => { setSearch(''); setStatusFilter('all'); }}>
-            <X className="w-4 h-4" />
-          </Button>
-        )}
-      </div>
+      {/* Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="bg-white border border-[#002443]/5">
+          <TabsTrigger value="lista" className="gap-2 data-[state=active]:bg-[#2bc196]/10 data-[state=active]:text-[#002443]">
+            <List className="w-4 h-4" /> Lista de Propostas
+          </TabsTrigger>
+          <TabsTrigger value="empresa" className="gap-2 data-[state=active]:bg-[#2bc196]/10 data-[state=active]:text-[#002443]">
+            <Building2 className="w-4 h-4" /> Propostas por Empresa
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Table */}
-      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Número</TableHead>
-                <TableHead>Empresa</TableHead>
-                <TableHead>Modelo</TableHead>
-                <TableHead>CNPJ</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Timeline</TableHead>
-                <TableHead>Validade</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filtered.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={8} className="text-center py-12">
-                    <FileText className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/30 mb-3" />
-                    <p className="text-[var(--pagsmile-blue)]/60">Nenhuma proposta encontrada</p>
-                    <Button variant="link" onClick={() => navigate(createPageUrl('CriarProposta'))} className="mt-2 text-[var(--pagsmile-green)]">
-                      Nova Proposta
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ) : filtered.map(p => {
-                const sCfg = STATUS_CONFIG[p.status] || STATUS_CONFIG.rascunho;
-                const expiring = isExpiring(p);
-                return (
-                  <TableRow key={p.id} className="hover:bg-[#f4f4f4] transition-colors">
-                    <TableCell>
-                      <span className="font-mono text-sm text-[var(--pagsmile-green)]">{p.codigo || '-'}</span>
-                    </TableCell>
-                    <TableCell className="font-medium text-sm">{p.clienteNome || '-'}</TableCell>
-                    <TableCell>
-                      {p.businessSubCategory ? (
-                        <Badge className={`text-[10px] border-0 ${
-                          p.businessSubCategory === 'GATEWAY' ? 'bg-indigo-100 text-indigo-700' :
-                          p.businessSubCategory === 'MARKETPLACE' ? 'bg-amber-100 text-amber-700' :
-                          'bg-emerald-100 text-emerald-700'
-                        }`}>
-                          {p.businessSubCategory === 'MERCHAN' ? 'Merchant' : p.businessSubCategory === 'GATEWAY' ? 'Gateway' : 'Marketplace'}
-                        </Badge>
-                      ) : <span className="text-xs text-slate-400">—</span>}
-                    </TableCell>
-                    <TableCell className="text-sm text-[var(--pagsmile-blue)]/60">{p.clienteCnpj || '-'}</TableCell>
-                    <TableCell><Badge className={sCfg.color}>{sCfg.label}</Badge></TableCell>
-                    <TableCell>
-                      <div className="flex flex-col gap-0.5 text-[10px]">
-                        {p.sentDate && (
-                          <div className="flex items-center gap-1 text-blue-600">
-                            <Send className="w-2.5 h-2.5" />
-                            Enviada {moment(p.sentDate).format('DD/MM')}
-                          </div>
-                        )}
-                        {p.acceptedDate && (
-                          <div className="flex items-center gap-1 text-green-600">
-                            <CheckCircle className="w-2.5 h-2.5" />
-                            Aceita {moment(p.acceptedDate).format('DD/MM')}
-                          </div>
-                        )}
-                        {p.rejectedDate && (
-                          <div className="flex items-center gap-1 text-red-600">
-                            <XCircle className="w-2.5 h-2.5" />
-                            Recusada {moment(p.rejectedDate).format('DD/MM')}
-                          </div>
-                        )}
-                        {!p.sentDate && !p.acceptedDate && !p.rejectedDate && (
-                          <span className="text-slate-400">Criada {moment(p.created_date).format('DD/MM')}</span>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-1">
-                        {expiring && <AlertTriangle className="w-3 h-3 text-amber-500" />}
-                        <span className={`text-xs ${expiring ? 'text-amber-600 font-medium' : 'text-[var(--pagsmile-blue)]/60'}`}>
-                          {p.validUntil ? moment(p.validUntil).format('DD/MM/YY') : '-'}
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <Button variant="ghost" size="sm" onClick={() => navigate(createPageUrl('PropostaDetalhes') + `?id=${p.id}`)} title="Ver detalhes da proposta">
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                        {['rascunho', 'enviada', 'visualizada'].includes(p.status) && (
-                          <Button variant="ghost" size="sm" onClick={() => navigate(createPageUrl('CriarProposta') + `?edit=${p.id}`)}>
-                            <Pencil className="w-4 h-4" />
-                          </Button>
-                        )}
-                        {p.status !== 'rascunho' && p.tokenPublico && (
-                          <a href={`${window.location.origin}/PropostaPublica?token=${p.tokenPublico}`} target="_blank" rel="noopener noreferrer">
-                            <Button variant="ghost" size="sm" title="Abrir proposta pública">
-                              <Link2 className="w-4 h-4" />
-                            </Button>
-                          </a>
-                        )}
-                        <Button variant="ghost" size="sm" onClick={() => duplicar(p)} title="Duplicar proposta">
-                          <Copy className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={() => navigate(createPageUrl('CriarProposta') + `?templateFromId=${p.id}`)} title="Nova proposta com estas taxas">
-                          <FilePlus2 className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={() => setHistoryProposalId(p.id)} title="Histórico">
-                          <History className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={() => setDeleteId(p.id)} className="text-red-500 hover:text-red-700">
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
+        <TabsContent value="lista" className="space-y-4 mt-4">
+          {/* Filters */}
+          <div className="flex flex-wrap gap-3 items-center">
+            <div className="relative flex-1 min-w-[200px]">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/40" />
+              <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar por número, empresa ou CNPJ..." className="pl-10 h-10" />
+            </div>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[160px] h-10"><SelectValue placeholder="Status" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos</SelectItem>
+                {Object.entries(STATUS_CONFIG).map(([k, v]) => (
+                  <SelectItem key={k} value={k}>{v.icon} {v.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {(search || statusFilter !== 'all') && (
+              <Button variant="ghost" size="sm" onClick={() => { setSearch(''); setStatusFilter('all'); }}>
+                <X className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
+
+          {/* Table */}
+          <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Número</TableHead>
+                    <TableHead>Empresa</TableHead>
+                    <TableHead>Modelo</TableHead>
+                    <TableHead>CNPJ</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Timeline</TableHead>
+                    <TableHead>Validade</TableHead>
+                    <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
+                </TableHeader>
+                <TableBody>
+                  {filtered.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={8} className="text-center py-12">
+                        <FileText className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/30 mb-3" />
+                        <p className="text-[var(--pagsmile-blue)]/60">Nenhuma proposta encontrada</p>
+                        <Button variant="link" onClick={() => navigate(createPageUrl('CriarProposta'))} className="mt-2 text-[var(--pagsmile-green)]">
+                          Nova Proposta
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ) : filtered.map(p => {
+                    const sCfg = STATUS_CONFIG[p.status] || STATUS_CONFIG.rascunho;
+                    const expiring = isExpiring(p);
+                    const isFinalized = !['rascunho'].includes(p.status);
+                    return (
+                      <TableRow key={p.id} className="hover:bg-[#f4f4f4] transition-colors">
+                        <TableCell>
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-mono text-sm text-[var(--pagsmile-green)]">{p.codigo || '-'}</span>
+                            {(p.version || 1) > 1 && (
+                              <span className="text-[9px] bg-[#2bc196]/10 text-[#2bc196] px-1.5 py-0.5 rounded font-bold">v{p.version}</span>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="font-medium text-sm">{p.clienteNome || '-'}</TableCell>
+                        <TableCell>
+                          {p.businessSubCategory ? (
+                            <Badge className={`text-[10px] border-0 ${
+                              p.businessSubCategory === 'GATEWAY' ? 'bg-indigo-100 text-indigo-700' :
+                              p.businessSubCategory === 'MARKETPLACE' ? 'bg-amber-100 text-amber-700' :
+                              'bg-emerald-100 text-emerald-700'
+                            }`}>
+                              {p.businessSubCategory === 'MERCHAN' ? 'Merchant' : p.businessSubCategory === 'GATEWAY' ? 'Gateway' : 'Marketplace'}
+                            </Badge>
+                          ) : <span className="text-xs text-slate-400">—</span>}
+                        </TableCell>
+                        <TableCell className="text-sm text-[var(--pagsmile-blue)]/60">{p.clienteCnpj || '-'}</TableCell>
+                        <TableCell><Badge className={sCfg.color}>{sCfg.label}</Badge></TableCell>
+                        <TableCell>
+                          <div className="flex flex-col gap-0.5 text-[10px]">
+                            {p.sentDate && (
+                              <div className="flex items-center gap-1 text-blue-600">
+                                <Send className="w-2.5 h-2.5" />
+                                Enviada {moment(p.sentDate).format('DD/MM')}
+                              </div>
+                            )}
+                            {p.acceptedDate && (
+                              <div className="flex items-center gap-1 text-green-600">
+                                <CheckCircle className="w-2.5 h-2.5" />
+                                Aceita {moment(p.acceptedDate).format('DD/MM')}
+                              </div>
+                            )}
+                            {p.rejectedDate && (
+                              <div className="flex items-center gap-1 text-red-600">
+                                <XCircle className="w-2.5 h-2.5" />
+                                Recusada {moment(p.rejectedDate).format('DD/MM')}
+                              </div>
+                            )}
+                            {!p.sentDate && !p.acceptedDate && !p.rejectedDate && (
+                              <span className="text-slate-400">Criada {moment(p.created_date).format('DD/MM')}</span>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-1">
+                            {expiring && <AlertTriangle className="w-3 h-3 text-amber-500" />}
+                            <span className={`text-xs ${expiring ? 'text-amber-600 font-medium' : 'text-[var(--pagsmile-blue)]/60'}`}>
+                              {p.validUntil ? moment(p.validUntil).format('DD/MM/YY') : '-'}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <Button variant="ghost" size="sm" onClick={() => navigate(createPageUrl('PropostaDetalhes') + `?id=${p.id}`)} title="Ver detalhes">
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                            {p.status === 'rascunho' && (
+                              <Button variant="ghost" size="sm" onClick={() => navigate(createPageUrl('CriarProposta') + `?edit=${p.id}`)} title="Editar rascunho">
+                                <Pencil className="w-4 h-4" />
+                              </Button>
+                            )}
+                            {isFinalized && (
+                              <Button variant="ghost" size="sm" onClick={() => criarNovaVersao(p)} title="Criar nova versão">
+                                <GitBranch className="w-4 h-4 text-[#2bc196]" />
+                              </Button>
+                            )}
+                            {p.status !== 'rascunho' && p.tokenPublico && (
+                              <a href={`${window.location.origin}/PropostaPublica?token=${p.tokenPublico}`} target="_blank" rel="noopener noreferrer">
+                                <Button variant="ghost" size="sm" title="Abrir proposta pública">
+                                  <Link2 className="w-4 h-4" />
+                                </Button>
+                              </a>
+                            )}
+                            <Button variant="ghost" size="sm" onClick={() => duplicar(p)} title="Duplicar proposta">
+                              <Copy className="w-4 h-4" />
+                            </Button>
+                            <Button variant="ghost" size="sm" onClick={() => navigate(createPageUrl('CriarProposta') + `?templateFromId=${p.id}`)} title="Nova proposta com estas taxas">
+                              <FilePlus2 className="w-4 h-4" />
+                            </Button>
+                            <Button variant="ghost" size="sm" onClick={() => setHistoryProposalId(p.id)} title="Histórico">
+                              <History className="w-4 h-4" />
+                            </Button>
+                            <Button variant="ghost" size="sm" onClick={() => setDeleteId(p.id)} className="text-red-500 hover:text-red-700">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="empresa" className="mt-4">
+          <ProposalsByCompanyTab propostas={allPropostas} />
+        </TabsContent>
+      </Tabs>
 
       {/* History Modal */}
       <ProposalHistoryModal
