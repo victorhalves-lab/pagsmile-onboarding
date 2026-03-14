@@ -1,10 +1,11 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Pencil, Calendar, Send, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { ArrowLeft, Pencil, Calendar, Send, CheckCircle, XCircle, Clock, GitBranch } from 'lucide-react';
 import moment from 'moment';
 
 export default function PropostaRevisaoHeader({ proposta, statusConfig, onBack, onEdit }) {
+  const isRascunho = proposta.status === 'rascunho';
   const canEdit = ['rascunho', 'enviada', 'visualizada'].includes(proposta.status);
 
   return (
@@ -17,6 +18,9 @@ export default function PropostaRevisaoHeader({ proposta, statusConfig, onBack, 
           <div className="flex items-center gap-3 flex-wrap">
             <h1 className="text-xl font-bold text-white">{proposta.codigo || 'Proposta'}</h1>
             <Badge className={statusConfig.color}>{statusConfig.label}</Badge>
+            {(proposta.version || 1) > 1 && (
+              <span className="text-[10px] bg-[#2bc196]/20 text-[#5cf7cf] px-2 py-0.5 rounded-md font-bold">v{proposta.version}</span>
+            )}
           </div>
           <p className="text-white/50 text-sm mt-1">
             {proposta.clienteNome || 'Sem cliente'} — Revisão interna
@@ -24,7 +28,8 @@ export default function PropostaRevisaoHeader({ proposta, statusConfig, onBack, 
         </div>
         {canEdit && (
           <Button onClick={onEdit} className="bg-white/10 hover:bg-white/20 text-white gap-2 rounded-xl">
-            <Pencil className="w-4 h-4" /> Editar Proposta
+            {isRascunho ? <Pencil className="w-4 h-4" /> : <GitBranch className="w-4 h-4" />}
+            {isRascunho ? 'Editar Proposta' : 'Nova Versão'}
           </Button>
         )}
       </div>

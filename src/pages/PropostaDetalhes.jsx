@@ -112,7 +112,10 @@ export default function PropostaDetalhes() {
         proposta={proposta}
         statusConfig={sCfg}
         onBack={() => navigate(createPageUrl('GestaoPropostas'))}
-        onEdit={() => navigate(createPageUrl('CriarProposta') + `?edit=${proposta.id}`)}
+        onEdit={proposta.status === 'rascunho'
+          ? () => navigate(createPageUrl('CriarProposta') + `?edit=${proposta.id}`)
+          : criarNovaVersao
+        }
       />
 
       {/* Link Público - Seção principal de ação */}
