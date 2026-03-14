@@ -51,6 +51,8 @@ export default function CardOutrasTaxas({ rates, onUpdateRates }) {
           <TaxaInput value={rates?.alertaPreChargeback || ''} onChange={(val) => updateField('alertaPreChargeback', val)} placeholder="0,00" prefix="R$" isCurrency className={`${inputCls} text-right pl-10`} /></div>
         <div className="space-y-1"><Label className={labelCls}>Custo 3DS</Label>
           <TaxaInput value={rates?.taxa3ds || ''} onChange={(val) => updateField('taxa3ds', val)} placeholder="0,00" prefix="R$" isCurrency className={`${inputCls} text-right pl-10`} /></div>
+        <div className="space-y-1"><Label className={labelCls}>Valor de Setup</Label>
+          <TaxaInput value={rates?.setup || ''} onChange={(val) => updateField('setup', val)} placeholder="0,00" prefix="R$" isCurrency className={`${inputCls} text-right pl-10`} /></div>
       </div>
 
       {/* TPV Mínimo */}
