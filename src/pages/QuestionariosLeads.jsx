@@ -271,6 +271,10 @@ export default function QuestionariosLeads() {
             <Zap className="w-3 h-3" />
             Simplificado ({questionariosSimplificados.length})
           </TabsTrigger>
+          <TabsTrigger value="introducers" className="gap-1">
+            <UserPlus className="w-3 h-3" />
+            De Introducers ({leads.filter(l => l.introducerReferralCode).length})
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="simplificado" className="mt-4">
