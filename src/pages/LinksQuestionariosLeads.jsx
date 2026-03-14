@@ -151,6 +151,36 @@ export default function LinksQuestionariosLeads() {
           </CardFooter>
         </Card>
       </div>
+
+      {/* Card Gerar Link por Introducer */}
+      <Card className="rounded-2xl border border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow overflow-hidden lg:col-span-2">
+        <div className="h-1.5 bg-gradient-to-r from-purple-500 to-[#2bc196]" />
+        <CardContent className="py-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-purple-100">
+                <UserPlus className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-[#002443]">Gerar Link por Introducer</h3>
+                <p className="text-[#282828]/50 text-xs mt-0.5">Crie links rastreáveis vinculados a parceiros de indicação</p>
+              </div>
+            </div>
+            <Button
+              onClick={() => setIntroducerModalOpen(true)}
+              className="bg-purple-600 hover:bg-purple-700 text-white rounded-lg"
+            >
+              <UserPlus className="w-4 h-4 mr-2" />
+              Gerar Link de Introducer
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <IntroducerLinkGeneratorModal
+        open={introducerModalOpen}
+        onOpenChange={setIntroducerModalOpen}
+      />
     </div>
   );
 }
