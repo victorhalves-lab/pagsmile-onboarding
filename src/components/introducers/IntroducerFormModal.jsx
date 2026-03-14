@@ -20,7 +20,7 @@ function nameToReferralCode(name) {
 }
 
 export default function IntroducerFormModal({ open, onClose, introducer, onSave, isSaving }) {
-  const [form, setForm] = useState({ name: '', referralCode: '', contactEmail: '', contactPhone: '', status: 'active', notes: '' });
+  const [form, setForm] = useState({ name: '', referralCode: '', contactEmail: '', contactPhone: '', status: 'active', notes: '', commissionRate: '' });
   const [codeManuallyEdited, setCodeManuallyEdited] = useState(false);
 
   useEffect(() => {
@@ -32,10 +32,11 @@ export default function IntroducerFormModal({ open, onClose, introducer, onSave,
         contactPhone: introducer.contactPhone || '',
         status: introducer.status || 'active',
         notes: introducer.notes || '',
+        commissionRate: introducer.commissionRate || '',
       });
       setCodeManuallyEdited(true); // ao editar, não sobrescrever o código existente
     } else {
-      setForm({ name: '', referralCode: '', contactEmail: '', contactPhone: '', status: 'active', notes: '' });
+      setForm({ name: '', referralCode: '', contactEmail: '', contactPhone: '', status: 'active', notes: '', commissionRate: '' });
       setCodeManuallyEdited(false);
     }
   }, [introducer, open]);
@@ -89,8 +90,13 @@ export default function IntroducerFormModal({ open, onClose, introducer, onSave,
               <Input value={form.contactPhone} onChange={e => setForm(p => ({ ...p, contactPhone: e.target.value }))} placeholder="(11) 99999-9999" className="h-10 rounded-xl" />
             </div>
           </div>
-          <div className="space-y-1.5">
-            <Label className="text-xs font-bold text-[#002443]/50">Status</Label>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold text-[#002443]/50">Comissão (%)</Label>
+              <Input type="number" step="0.1" value={form.commissionRate} onChange={e => setForm(p => ({ ...p, commissionRate: e.target.value ? parseFloat(e.target.value) : '' }))} placeholder="Ex: 1.5" className="h-10 rounded-xl" />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold text-[#002443]/50">Status</Label>
             <Select value={form.status} onValueChange={v => setForm(p => ({ ...p, status: v }))}>
               <SelectTrigger className="h-10 rounded-xl"><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -98,6 +104,7 @@ export default function IntroducerFormModal({ open, onClose, introducer, onSave,
                 <SelectItem value="inactive">Inativo</SelectItem>
               </SelectContent>
             </Select>
+            </div>
           </div>
           <div className="space-y-1.5">
             <Label className="text-xs font-bold text-[#002443]/50">Observações</Label>
