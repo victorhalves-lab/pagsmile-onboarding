@@ -426,6 +426,11 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
       origemLead: new URLSearchParams(window.location.search).get('utm_source') || '',
       onboardingLinkCode: linkCode || '',
       questionnaireData: formData,
+      expectedRates: (formData[USA_CARTAO_QUESTION_ID] === false || formData[USA_CARTAO_QUESTION_ID] === 'false')
+        ? Object.fromEntries(
+            EXPECTED_RATE_KEYS.map(k => [k, parseFloat((formData._expectedRates || {})[k]) || 0])
+          )
+        : undefined,
       priscilaQualityScore: qualityScore,
       priscilaRiskLevel: 'EM_ANALISE',
       lastInteractionDate: new Date().toISOString()
