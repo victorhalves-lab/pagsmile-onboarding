@@ -25,6 +25,7 @@ import LeadStepNavigation from './LeadStepNavigation';
 import BusinessTypeExplainer from './BusinessTypeExplainer';
 import PercentDistributionRow from './PercentDistributionRow';
 import CardRatesGroup from './CardRatesGroup';
+import ExpectedRatesInput from './ExpectedRatesInput';
 import MCCSearchModal from './MCCSearchModal';
 import { MCC_LIST } from './mccData';
 
@@ -113,6 +114,12 @@ const CARD_RATE_QUESTION_IDS = [
 
 // O primeiro ID do grupo de taxas de cartão - usado como trigger para renderizar o CardRatesGroup
 const CARD_RATE_TRIGGER_ID = '69a5cd44afab70a7ca218502';
+
+// ID da pergunta "Você opera com cartão de crédito hoje?"
+const USA_CARTAO_QUESTION_ID = '69a5cd44afab70a7ca218501';
+
+// Campos obrigatórios de expectativa de taxas
+const EXPECTED_RATE_KEYS = ['mdr1x', 'mdr2a6x', 'mdr7a12x', 'antecipacao', 'feeTransacao', 'antifraude', 'taxa3ds'];
 
 // Todos os IDs que devem ser ocultados da renderização normal (serão renderizados como grupo)
 const GROUPED_PERCENT_IDS = [
@@ -281,8 +288,22 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
       }
     }
     
-    // Validar grupos de percentuais que estão neste step
+    // Validar expectativa de taxas (obrigatório quando NÃO opera com cartão)
     const stepQuestionIds = new Set(steps[currentStep].map(q => q.id));
+    const usaCartaoValue = formData[USA_CARTAO_QUESTION_ID];
+    const naoOperaCartao = usaCartaoValue === false || usaCartaoValue === 'false';
+    
+    if (naoOperaCartao && stepQuestionIds.has(USA_CARTAO_QUESTION_ID)) {
+      const rates = formData._expectedRates || {};
+      for (const key of EXPECTED_RATE_KEYS) {
+        if (rates[key] === undefined || rates[key] === null || rates[key] === '') {
+          toast.error('Por favor, preencha todos os campos de "Expectativa de Taxas"');
+          return false;
+        }
+      }
+    }
+
+    // Validar grupos de percentuais que estão neste step
     for (const group of PERCENT_GROUPS) {
       if (!stepQuestionIds.has(group.trigger)) continue;
       const vals = group.fields.map(f => parseFloat(formData[f.id]) || 0);
@@ -444,10 +465,27 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
   const renderQuestion = (question) => {
     if (!shouldShowQuestion(question)) return null;
     
+    // Expectativa de taxas — renderizar quando NÃO opera com cartão
+    if (question.id === USA_CARTAO_QUESTION_ID) {
+      const usaCartaoVal = formData[USA_CARTAO_QUESTION_ID];
+      const naoOpera = usaCartaoVal === false || usaCartaoVal === 'false';
+      return (
+        <React.Fragment key={`${question.id}-wrapper`}>
+          {renderQuestionDefault(question)}
+          {naoOpera && (
+            <ExpectedRatesInput
+              formData={formData}
+              updateField={updateField}
+            />
+          )}
+        </React.Fragment>
+      );
+    }
+
     // Taxas de cartão por bandeira — renderizar como grupo via CardRatesGroup
     if (question.id === CARD_RATE_TRIGGER_ID) {
       // Só mostra se o merchant usa cartão (conditionalLogic da pergunta dependente)
-      const usaCartao = formData['69a5cd44afab70a7ca218501'];
+      const usaCartao = formData[USA_CARTAO_QUESTION_ID];
       if (usaCartao === true || usaCartao === 'true') {
         return (
           <CardRatesGroup
