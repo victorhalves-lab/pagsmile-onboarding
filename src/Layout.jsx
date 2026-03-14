@@ -180,6 +180,20 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
+  // Introducer: redireciona para o portal dedicado
+  const isIntroducerUser = user?.role === 'introducer';
+  const isIntroducerPage = currentPageName === 'IntroducerDashboard';
+  
+  if (!isPublicPage && isIntroducerUser && !isIntroducerPage) {
+    window.location.href = '/IntroducerDashboard';
+    return null;
+  }
+  
+  // IntroducerDashboard tem seu próprio layout, não precisa do admin gate
+  if (isIntroducerPage) {
+    return <div>{children}</div>;
+  }
+
   // Gate: TODA página não-pública exige código admin, independente de autenticação
   if (!isPublicPage && !adminVerified) {
     return <AdminLoginScreen onSuccess={() => setAdminVerified(true)} />;
