@@ -62,7 +62,14 @@ export default function IntroducerFormModal({ open, onClose, introducer, onSave,
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <Label className="text-xs font-bold text-[#002443]/50">Nome *</Label>
-              <Input value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} placeholder="Nome do parceiro" className="h-10 rounded-xl" />
+              <Input value={form.name} onChange={e => {
+                const newName = e.target.value;
+                const updates = { name: newName };
+                if (!codeManuallyEdited) {
+                  updates.referralCode = nameToReferralCode(newName);
+                }
+                setForm(p => ({ ...p, ...updates }));
+              }} placeholder="Nome do parceiro" className="h-10 rounded-xl" />
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs font-bold text-[#002443]/50">Código UTM *</Label>
