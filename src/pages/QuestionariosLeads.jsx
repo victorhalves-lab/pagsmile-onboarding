@@ -82,9 +82,17 @@ export default function QuestionariosLeads() {
   const [riskFilter, setRiskFilter] = useState('all');
   const [sortBy, setSortBy] = useState('date');
   const [responsesModalLead, setResponsesModalLead] = useState(null);
+  const [introducerFilter, setIntroducerFilter] = useState('all');
+
+  // Read introducer filter from URL
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const intro = params.get('introducer');
+    if (intro) setIntroducerFilter(intro);
+  }, []);
 
   // Reset page when filters change
-  React.useEffect(() => { setPage(1); }, [search, statusFilter, periodoFilter, riskFilter, sortBy]);
+  React.useEffect(() => { setPage(1); }, [search, statusFilter, periodoFilter, riskFilter, sortBy, introducerFilter]);
   const itemsPerPage = 10;
 
   const { data: leads = [], isLoading, refetch } = useQuery({
@@ -127,13 +135,14 @@ export default function QuestionariosLeads() {
       else result = result.filter(l => moment(l.created_date).isAfter(now.clone().subtract(days, 'days')));
     }
     if (riskFilter !== 'all') result = result.filter(l => l.priscilaRiskLevel === riskFilter);
+    if (introducerFilter !== 'all') result = result.filter(l => l.introducerReferralCode === introducerFilter);
     // Sort
     if (sortBy === 'score_desc') result = [...result].sort((a, b) => (b.priscilaQualityScore || 0) - (a.priscilaQualityScore || 0));
     else if (sortBy === 'score_asc') result = [...result].sort((a, b) => (a.priscilaQualityScore || 0) - (b.priscilaQualityScore || 0));
     else if (sortBy === 'tpv') result = [...result].sort((a, b) => (b.tpvMensal || 0) - (a.tpvMensal || 0));
     else result = [...result].sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
     return result;
-  }, [leads, search, statusFilter, periodoFilter, riskFilter, sortBy]);
+  }, [leads, search, statusFilter, periodoFilter, riskFilter, sortBy, introducerFilter]);
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const paginatedLeads = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
@@ -142,7 +151,18 @@ export default function QuestionariosLeads() {
   const thisMonth = leads.filter(l => moment(l.created_date).isSame(moment(), 'month')).length;
   const aguardando = leads.filter(l => ['questionario_preenchido', 'analisado_priscila'].includes(l.status)).length;
 
-  const hasFilters = search || statusFilter !== 'all' || periodoFilter !== 'all' || riskFilter !== 'all';
+  const hasFilters = search || statusFilter !== 'all' || periodoFilter !== 'all' || riskFilter !== 'all' || introducerFilter !== 'all';
+
+  // Get unique introducer codes from leads for filter dropdown
+  const introducerOptions = useMemo(() => {
+    const map = new Map();
+    leads.forEach(l => {
+      if (l.introducerReferralCode && l.introducerName) {
+        map.set(l.introducerReferralCode, l.introducerName);
+      }
+    });
+    return Array.from(map.entries()); // [[code, name], ...]
+  }, [leads]);
 
   // Stats aprimorados
   const highScoreLeads = leads.filter(l => (l.priscilaQualityScore || 0) >= 70).length;
@@ -319,8 +339,19 @@ export default function QuestionariosLeads() {
             <SelectItem value="tpv">Maior TPV</SelectItem>
           </SelectContent>
         </Select>
+        {introducerOptions.length > 0 && (
+          <Select value={introducerFilter} onValueChange={setIntroducerFilter}>
+            <SelectTrigger className="w-[180px] h-10"><SelectValue placeholder="Introducer" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos os Introducers</SelectItem>
+              {introducerOptions.map(([code, name]) => (
+                <SelectItem key={code} value={code}>{name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
         {hasFilters && (
-          <Button variant="ghost" size="sm" onClick={() => { setSearch(''); setStatusFilter('all'); setPeriodoFilter('all'); setRiskFilter('all'); }}>
+          <Button variant="ghost" size="sm" onClick={() => { setSearch(''); setStatusFilter('all'); setPeriodoFilter('all'); setRiskFilter('all'); setIntroducerFilter('all'); }}>
             <X className="w-4 h-4 mr-1" /> Limpar
           </Button>
         )}
@@ -340,6 +371,7 @@ export default function QuestionariosLeads() {
                 <TableHead>Lead IA</TableHead>
                 <TableHead>Risco</TableHead>
                 <TableHead>TPV Mensal</TableHead>
+                <TableHead>Introducer</TableHead>
                 <TableHead>Data</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
@@ -347,7 +379,7 @@ export default function QuestionariosLeads() {
             <TableBody>
               {paginatedLeads.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={10} className="text-center py-12">
+                  <TableCell colSpan={11} className="text-center py-12">
                     <ClipboardList className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/30 mb-3" />
                     <p className="text-[var(--pagsmile-blue)]/60">
                       {hasFilters ? 'Nenhum resultado com esses filtros' : 'Nenhum questionário recebido'}
@@ -396,6 +428,11 @@ export default function QuestionariosLeads() {
                       <span className="text-sm font-mono">
                         {lead.tpvMensal ? `R$ ${lead.tpvMensal.toLocaleString('pt-BR')}` : '-'}
                       </span>
+                    </TableCell>
+                    <TableCell>
+                      {lead.introducerName ? (
+                        <Badge className="bg-purple-100 text-purple-700 text-[10px] border-0">{lead.introducerName}</Badge>
+                      ) : <span className="text-[10px] text-slate-300">—</span>}
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col gap-1">
