@@ -66,7 +66,8 @@ export default function Layout({ children, currentPageName }) {
     'LeadSuccess',
     'PropostaPublica',
     'QuestionarioSimplificadoPublico',
-    'ComplianceDinamico'
+    'ComplianceDinamico',
+    'IntroducerDashboard'
   ];
 
   const isPublicPage = publicPages.includes(currentPageName);
