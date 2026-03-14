@@ -232,7 +232,7 @@ export default function CriarProposta() {
     }
     toast.success('Proposta gerada com sucesso!');
     setSaving(false);
-    navigate(createPageUrl('GestaoPropostas'));
+    navigate(createPageUrl('PropostaDetalhes') + `?id=${created.id}`);
   };
 
   return (
