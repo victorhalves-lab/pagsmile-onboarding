@@ -27,12 +27,17 @@ export default function GerarLinkOnboarding() {
   const [pForm, setPForm] = useState({
     linkType: 'LEAD_QUESTIONNAIRE', complianceType: 'GENERIC',
     commercialAgentName: '', utmSource: '', utmMedium: '', utmCampaign: '', utmContent: '', expiresAt: '',
-    questionnaireTemplateId: ''
+    questionnaireTemplateId: '', introducerId: ''
   });
 
   const { data: templates = [] } = useQuery({
     queryKey: ['questionnaireTemplates'],
     queryFn: () => base44.entities.QuestionnaireTemplate.filter({ isActive: true })
+  });
+
+  const { data: introducers = [] } = useQuery({
+    queryKey: ['introducers-active'],
+    queryFn: () => base44.entities.Introducer.filter({ status: 'active' })
   });
 
   const { data: links = [], isLoading: linksLoading, refetch } = useQuery({
@@ -43,7 +48,12 @@ export default function GerarLinkOnboarding() {
   const createLinkMutation = useMutation({
     mutationFn: async (data) => {
       const uniqueCode = Math.random().toString(36).substring(2, 10).toUpperCase();
-      return base44.entities.OnboardingLink.create({ ...data, uniqueCode, isActive: true, clickCount: 0, submissionCount: 0, completedCount: 0 });
+      // Se tem introducer selecionado, inclui dados dele
+      const selectedIntroducer = introducers.find(i => i.id === data.introducerId);
+      const introducerFields = selectedIntroducer 
+        ? { introducerId: selectedIntroducer.id, introducerReferralCode: selectedIntroducer.referralCode }
+        : {};
+      return base44.entities.OnboardingLink.create({ ...data, ...introducerFields, uniqueCode, isActive: true, clickCount: 0, submissionCount: 0, completedCount: 0 });
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['onboardingLinks'] }); toast.success('Link criado!'); setShowPersonalizado(false); }
   });
@@ -317,6 +327,25 @@ export default function GerarLinkOnboarding() {
                     className={`px-3 py-2 rounded-xl border text-xs font-medium transition-all ${
                       pForm.questionnaireTemplateId === t.id ? 'border-[#2bc196] bg-[#2bc196]/5 text-[#2bc196]' : 'border-[#002443]/5 text-[#002443]/40 hover:border-[#002443]/15'
                     }`}>{t.name}</button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Introducer */}
+          {introducers.length > 0 && (
+            <div className="space-y-2">
+              <Label className="text-[10px] font-bold text-[#002443]/30 uppercase tracking-[0.15em]">Introducer (Parceiro de Indicação)</Label>
+              <div className="flex gap-2 flex-wrap">
+                <button onClick={() => setPForm(prev => ({ ...prev, introducerId: '', utmSource: prev.utmSource }))}
+                  className={`px-3 py-2 rounded-xl border text-xs font-medium transition-all ${
+                    !pForm.introducerId ? 'border-[#2bc196] bg-[#2bc196]/5 text-[#2bc196]' : 'border-[#002443]/5 text-[#002443]/40 hover:border-[#002443]/15'
+                  }`}>Nenhum</button>
+                {introducers.map(intro => (
+                  <button key={intro.id} onClick={() => setPForm(prev => ({ ...prev, introducerId: intro.id, utmSource: intro.referralCode }))}
+                    className={`px-3 py-2 rounded-xl border text-xs font-medium transition-all ${
+                      pForm.introducerId === intro.id ? 'border-[#2bc196] bg-[#2bc196]/5 text-[#2bc196]' : 'border-[#002443]/5 text-[#002443]/40 hover:border-[#002443]/15'
+                    }`}>{intro.name} <span className="text-[9px] opacity-50">({intro.referralCode})</span></button>
                 ))}
               </div>
             </div>
