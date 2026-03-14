@@ -42,6 +42,32 @@ export default function AnaliseDeCasos() {
   const [showRequestInfoDialog, setShowRequestInfoDialog] = useState(false);
   const [isDownloadingZip, setIsDownloadingZip] = useState(false);
 
+  const handleDownloadAllDocuments = async () => {
+    setIsDownloadingZip(true);
+    try {
+      const response = await base44.functions.invoke('downloadCaseDocuments', {
+        onboardingCaseId: caseId
+      });
+      const data = response.data;
+      // response.data can be an ArrayBuffer or a Blob depending on axios config
+      const blob = data instanceof Blob ? data : new Blob([data], { type: 'application/zip' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `documentos_${merchant?.fullName || caseId}.zip`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast.success('Download dos documentos iniciado!');
+    } catch (error) {
+      console.error('Erro ao baixar documentos:', error);
+      toast.error('Falha ao baixar documentos. Tente novamente.');
+    } finally {
+      setIsDownloadingZip(false);
+    }
+  };
+
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
     queryFn: () => base44.auth.me()
