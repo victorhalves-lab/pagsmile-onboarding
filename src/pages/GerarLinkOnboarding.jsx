@@ -376,6 +376,24 @@ export default function GerarLinkOnboarding() {
             </div>
           </div>
 
+          {/* Preview dinâmica do link */}
+          {(pForm.utmSource || pForm.utmMedium || pForm.utmCampaign || pForm.introducerId) && (
+            <div className="p-4 rounded-xl bg-[#002443]/5 border border-[#002443]/10 space-y-2">
+              <p className="text-[10px] font-bold text-[#002443]/40 uppercase tracking-wider">Preview do Link</p>
+              <p className="text-xs font-mono text-[#002443]/60 break-all leading-relaxed">
+                {base}/{(() => {
+                  if (pForm.linkType === 'LEAD_QUESTIONNAIRE') return 'LeadQuestionnaire';
+                  if (pForm.linkType === 'LEAD_SIMPLIFICADO') return 'QuestionarioSimplificadoPublico';
+                  return 'ComplianceOnboardingStart';
+                })()}?ref=XXXXXXXX
+                {pForm.utmSource ? `&utm_source=${pForm.utmSource}` : ''}
+                {pForm.utmMedium ? `&utm_medium=${pForm.utmMedium}` : ''}
+                {pForm.utmCampaign ? `&utm_campaign=${pForm.utmCampaign}` : ''}
+                {pForm.utmContent ? `&utm_content=${pForm.utmContent}` : ''}
+              </p>
+            </div>
+          )}
+
           <Button onClick={() => createLinkMutation.mutate(pForm)} disabled={createLinkMutation.isPending}
             className="w-full bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl h-11 font-bold">
             {createLinkMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
