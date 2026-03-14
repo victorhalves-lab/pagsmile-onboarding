@@ -29,6 +29,7 @@ import QuestionarioSimplificadoCard from '../components/questionario-simplificad
 import LeadSLAIndicator from '../components/leads/LeadSLAIndicator';
 import LeadQualifierBadge from '../components/leads/LeadQualifierBadge';
 import QuestionnaireResponsesModal from '../components/leads/QuestionnaireResponsesModal';
+import IntroducerLeadsTab from '../components/leads/IntroducerLeadsTab';
 
 const STATUS_CONFIG = {
   questionario_preenchido: { label: 'Novo', color: 'bg-blue-100 text-blue-700', icon: '🔵' },
