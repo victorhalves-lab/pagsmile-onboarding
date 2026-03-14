@@ -13,6 +13,7 @@ import IntroducerLinkGeneratorModal from '../components/introducers/IntroducerLi
 
 export default function LinksQuestionariosLeads() {
   const [copied, setCopied] = useState(null);
+  const [introducerModalOpen, setIntroducerModalOpen] = useState(false);
   const queryClient = useQueryClient();
 
   // Links genéricos
