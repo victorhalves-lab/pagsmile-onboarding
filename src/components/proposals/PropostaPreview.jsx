@@ -80,6 +80,7 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
             { label: 'Antecipação', value: `${fmtPct(taxaRAV)} a.m.`, color: 'text-white' },
             { label: 'PIX', value: rates.pix?.tipo === 'fixo' ? `R$ ${parseVal(rates.pix?.valor).toLocaleString('pt-BR', {minimumFractionDigits: 2})}` : fmtPct(rates.pix?.valor), color: 'text-[#2bc196]' },
             { label: '3DS', value: `R$ ${parseVal(rates.taxa3ds).toLocaleString('pt-BR', {minimumFractionDigits: 2})}`, color: 'text-white' },
+            { label: 'Setup', value: `R$ ${parseVal(rates.setup).toLocaleString('pt-BR', {minimumFractionDigits: 2})}`, color: 'text-white' },
           ].map((s, i) => (
             <div key={i} className="bg-white/[0.03] border border-white/5 rounded-xl p-2 text-center">
               <p className="text-[8px] text-white font-bold uppercase tracking-widest">{s.label}</p>

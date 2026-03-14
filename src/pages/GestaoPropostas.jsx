@@ -17,13 +17,17 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import {
+  Tabs, TabsContent, TabsList, TabsTrigger,
+} from '@/components/ui/tabs';
+import {
   Search, Plus, Eye, Pencil, Send, Link2, Copy, Trash2,
-  Loader2, X, AlertTriangle, FileText, List, Clock, CheckCircle, XCircle, History, FilePlus2
+  Loader2, X, AlertTriangle, FileText, List, Clock, CheckCircle, XCircle, History, FilePlus2, Building2, GitBranch
 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
 import ProposalMetrics from '../components/proposals/ProposalMetrics';
 import ProposalHistoryModal from '../components/proposals/ProposalHistoryModal';
+import ProposalsByCompanyTab from '../components/proposals/ProposalsByCompanyTab';
 
 const STATUS_CONFIG = {
   rascunho: { label: 'Rascunho', color: 'bg-slate-100 text-slate-700', icon: '⚪' },

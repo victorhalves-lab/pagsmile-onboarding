@@ -77,6 +77,7 @@ export default function PropostaRevisaoResumo({ proposta }) {
           <InfoRow label="Antifraude" value={rates.antifraude} prefix="R$" />
           <InfoRow label="Alerta Pré-Chargeback" value={rates.alertaPreChargeback} prefix="R$" />
           <InfoRow label="Custo 3DS" value={rates.taxa3ds} prefix="R$" />
+          <InfoRow label="Valor de Setup" value={rates.setup} prefix="R$" />
           {rates.minimoGarantido && (
             <>
               <div className="pt-2 mt-2 border-t border-[#002443]/5">
