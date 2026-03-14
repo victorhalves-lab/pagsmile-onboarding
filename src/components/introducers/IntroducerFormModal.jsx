@@ -8,8 +8,20 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
+function nameToReferralCode(name) {
+  return name
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remove acentos
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '') // remove caracteres especiais
+    .replace(/\s+/g, '-') // espaços → hifens
+    .replace(/-+/g, '-') // hifens duplicados
+    .replace(/^-|-$/g, ''); // remove hifens no início/fim
+}
+
 export default function IntroducerFormModal({ open, onClose, introducer, onSave, isSaving }) {
   const [form, setForm] = useState({ name: '', referralCode: '', contactEmail: '', contactPhone: '', status: 'active', notes: '' });
+  const [codeManuallyEdited, setCodeManuallyEdited] = useState(false);
 
   useEffect(() => {
     if (introducer) {
@@ -21,8 +33,10 @@ export default function IntroducerFormModal({ open, onClose, introducer, onSave,
         status: introducer.status || 'active',
         notes: introducer.notes || '',
       });
+      setCodeManuallyEdited(true); // ao editar, não sobrescrever o código existente
     } else {
       setForm({ name: '', referralCode: '', contactEmail: '', contactPhone: '', status: 'active', notes: '' });
+      setCodeManuallyEdited(false);
     }
   }, [introducer, open]);
 
