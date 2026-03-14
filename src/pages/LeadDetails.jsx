@@ -28,6 +28,7 @@ import LeadProposals from '../components/leads/LeadProposals';
 import LeadSLAIndicator from '../components/leads/LeadSLAIndicator';
 import LeadQualifierPanel from '../components/leads/LeadQualifierPanel';
 import PriscilaPanel from '../components/leads/PriscilaPanel';
+import IARiskPanel from '../components/leads/IARiskPanel';
 
 const STATUS_CONFIG = {
   questionario_preenchido: { label: 'Questionário Preenchido', color: 'bg-blue-100 text-blue-700' },
@@ -159,6 +160,7 @@ export default function LeadDetails() {
       <Tabs defaultValue="overview">
         <TabsList>
           <TabsTrigger value="overview">Visão Geral</TabsTrigger>
+          <TabsTrigger value="iarisk">Risco IA Avançado</TabsTrigger>
           <TabsTrigger value="leadqualifier">Lead Qualifier IA</TabsTrigger>
           <TabsTrigger value="priscila">Análise PRISCILA</TabsTrigger>
           <TabsTrigger value="questionnaire">Questionário</TabsTrigger>
@@ -236,6 +238,10 @@ export default function LeadDetails() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="iarisk" className="mt-4">
+          <IARiskPanel lead={lead} />
         </TabsContent>
 
         <TabsContent value="leadqualifier" className="mt-4">
