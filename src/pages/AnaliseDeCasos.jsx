@@ -39,6 +39,7 @@ export default function AnaliseDeCasos() {
   const [showApproveDialog, setShowApproveDialog] = useState(false);
   const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [showRequestInfoDialog, setShowRequestInfoDialog] = useState(false);
+  const [isDownloadingZip, setIsDownloadingZip] = useState(false);
 
   const { data: user } = useQuery({
     queryKey: ['currentUser'],
