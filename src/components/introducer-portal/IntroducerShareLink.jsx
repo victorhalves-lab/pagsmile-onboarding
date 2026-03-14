@@ -1,0 +1,73 @@
+import React, { useState } from 'react';
+import { Copy, Check, Link as LinkIcon, ExternalLink } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { createPageUrl } from '../../utils';
+
+export default function IntroducerShareLink({ introducer }) {
+  const [copied, setCopied] = useState(null);
+
+  const base = window.location.origin;
+  const links = [
+    {
+      key: 'completo',
+      label: 'Questionário Completo',
+      desc: 'Para leads que ainda não passaram por reunião',
+      url: `${base}${createPageUrl('LeadQuestionnaire')}?utm_source=${introducer.referralCode}&utm_medium=referral`,
+    },
+    {
+      key: 'simplificado',
+      label: 'Questionário Simplificado',
+      desc: 'Para leads pós-reunião com taxas',
+      url: `${base}${createPageUrl('QuestionarioSimplificadoPublico')}?utm_source=${introducer.referralCode}&utm_medium=referral`,
+    },
+  ];
+
+  const handleCopy = async (url, key) => {
+    await navigator.clipboard.writeText(url);
+    setCopied(key);
+    toast.success('Link copiado!');
+    setTimeout(() => setCopied(null), 2000);
+  };
+
+  return (
+    <div className="bg-white rounded-2xl border border-[#002443]/5 p-5">
+      <div className="flex items-center gap-2 mb-4">
+        <LinkIcon className="w-5 h-5 text-[#2bc196]" />
+        <h3 className="text-sm font-bold text-[#002443]">Seus Links de Indicação</h3>
+      </div>
+      <p className="text-xs text-[#002443]/50 mb-4">
+        Compartilhe esses links com seus contatos. Todos os leads serão rastreados automaticamente.
+      </p>
+      <div className="space-y-3">
+        {links.map(link => (
+          <div key={link.key} className="flex items-center gap-3 p-3 rounded-xl bg-[#f4f4f4] border border-[#002443]/5">
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-[#002443]">{link.label}</p>
+              <p className="text-[10px] text-[#002443]/40">{link.desc}</p>
+              <p className="text-[9px] font-mono text-[#002443]/30 truncate mt-1">{link.url}</p>
+            </div>
+            <div className="flex gap-1 shrink-0">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleCopy(link.url, link.key)}
+                className={`h-8 px-3 rounded-lg ${copied === link.key ? 'bg-[#2bc196] text-white' : ''}`}
+              >
+                {copied === link.key ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => window.open(link.url, '_blank')}
+                className="h-8 px-2 rounded-lg"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+              </Button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
