@@ -28,6 +28,7 @@ import {
 import { toast } from 'sonner';
 import IAAnalysisPanel from '../components/compliance/IAAnalysisPanel';
 import ComplianceResponsesPanel from '../components/compliance/ComplianceResponsesPanel';
+import { Archive } from 'lucide-react';
 
 export default function AnaliseDeCasos() {
   const navigate = useNavigate();
