@@ -367,6 +367,22 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
     const protocolo = generateProtocolo();
     const qualityScore = calculateQualityScore();
 
+    // Buscar Introducer pelo utm_source da URL
+    let introducerData = {};
+    const urlParams = new URLSearchParams(window.location.search);
+    const utmSource = urlParams.get('utm_source') || '';
+    if (utmSource) {
+      const introducers = await base44.entities.Introducer.filter({ referralCode: utmSource, status: 'active' });
+      if (introducers.length > 0) {
+        const introducer = introducers[0];
+        introducerData = {
+          introducerId: introducer.id,
+          introducerReferralCode: introducer.referralCode,
+          introducerName: introducer.name,
+        };
+      }
+    }
+
     // Determinar businessSubCategory a partir da primeira pergunta (order 1)
     let businessSubCategory = 'MERCHAN';
     for (const q of rawQuestions) {
@@ -423,9 +439,10 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
       transacoesMes: parseFloat(formData[TRANSACOES_MES_QUESTION_ID] || '0') || 0,
       expectativaCrescimento: findFieldValue(['crescimento']) || '',
       protocolo,
-      origemLead: new URLSearchParams(window.location.search).get('utm_source') || '',
+      origemLead: utmSource,
       onboardingLinkCode: linkCode || '',
       questionnaireData: formData,
+      ...introducerData,
       expectedRates: (formData[USA_CARTAO_QUESTION_ID] === false || formData[USA_CARTAO_QUESTION_ID] === 'false')
         ? Object.fromEntries(
             EXPECTED_RATE_KEYS.map(k => [k, parseFloat((formData._expectedRates || {})[k]) || 0])
