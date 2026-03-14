@@ -21,7 +21,8 @@ import {
   Shield,
   FileText,
   History,
-  Stamp
+  Stamp,
+  UserPlus
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import AdminLoginScreen from '@/components/admin/AdminLoginScreen';
@@ -196,6 +197,7 @@ export default function Layout({ children, currentPageName }) {
         { label: 'Pipeline Comercial', path: 'PipelineComercial', icon: Users },
         { label: 'Gestão de Propostas', path: 'GestaoPropostas', icon: FileText },
         { label: 'Criar Proposta', path: 'CriarProposta', icon: FileCheck },
+        { label: 'Introducers', path: 'GestaoIntroducers', icon: UserPlus },
       ]
     },
     {
