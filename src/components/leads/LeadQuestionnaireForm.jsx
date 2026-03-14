@@ -162,7 +162,7 @@ const PERCENT_GROUPS = [
   },
 ];
 
-const STORAGE_KEY = 'lead_questionnaire_data';
+const STORAGE_KEY = 'lead_questionnaire_data'; // v2
 
 export default function LeadQuestionnaireForm({ template, questions: rawQuestions, linkCode, onSubmit }) {
   // Filtrar perguntas ocultas (duplicadas/redundantes)
