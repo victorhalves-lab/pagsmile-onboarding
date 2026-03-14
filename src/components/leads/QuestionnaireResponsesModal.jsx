@@ -16,7 +16,7 @@ import PercentDistributionDisplay, { DISTRIBUTION_QUESTION_IDS } from './Percent
 
 const SECTION_CONFIG = [
   { id: 'empresa', label: 'Dados da Empresa', icon: Building2, accent: 'bg-blue-500', orderRange: [1, 6] },
-  { id: 'contato', label: 'Contato', icon: User, accent: 'bg-violet-500', orderRange: [7, 9.9] },
+  { id: 'contato', label: 'Contato', icon: User, accent: 'bg-violet-500', orderRange: [7, 9.99] },
   { id: 'negocio', label: 'Modelo de Negócio', icon: Briefcase, accent: 'bg-amber-500', orderRange: [10, 17] },
   { id: 'financeiro', label: 'Volume & Financeiro', icon: DollarSign, accent: 'bg-emerald-500', orderRange: [18, 22] },
   { id: 'distribuicao', label: 'Distribuição TPV', icon: PieChart, accent: 'bg-indigo-500', orderRange: [23, 31] },
