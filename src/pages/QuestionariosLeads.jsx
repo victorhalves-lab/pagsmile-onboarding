@@ -300,6 +300,14 @@ export default function QuestionariosLeads() {
           )}
         </TabsContent>
 
+        <TabsContent value="introducers" className="mt-4">
+          <IntroducerLeadsTab
+            leads={leads}
+            onDelete={setDeleteTarget}
+            onViewResponses={setResponsesModalLead}
+          />
+        </TabsContent>
+
         <TabsContent value="completo" className="mt-4 space-y-6">
       {/* Filters */}
       <div className="flex flex-wrap gap-3 items-center">
