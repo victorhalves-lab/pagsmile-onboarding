@@ -73,7 +73,10 @@ export default function IntroducerFormModal({ open, onClose, introducer, onSave,
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs font-bold text-[#002443]/50">Código UTM *</Label>
-              <Input value={form.referralCode} onChange={e => setForm(p => ({ ...p, referralCode: e.target.value.toLowerCase().replace(/\s/g, '') }))} placeholder="ex: agenciax" className="h-10 rounded-xl font-mono" />
+              <Input value={form.referralCode} onChange={e => {
+                setCodeManuallyEdited(true);
+                setForm(p => ({ ...p, referralCode: e.target.value.toLowerCase().replace(/\s/g, '') }));
+              }} placeholder="ex: agenciax" className="h-10 rounded-xl font-mono" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
