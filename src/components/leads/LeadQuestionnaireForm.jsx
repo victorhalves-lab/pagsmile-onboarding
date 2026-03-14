@@ -841,6 +841,66 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
     );
   };
 
+  const renderQuestion = (question) => {
+    if (!shouldShowQuestion(question)) return null;
+    
+    // Expectativa de taxas — renderizar quando NÃO opera com cartão
+    if (question.id === USA_CARTAO_QUESTION_ID) {
+      const usaCartaoVal = formData[USA_CARTAO_QUESTION_ID];
+      const naoOpera = usaCartaoVal === false || usaCartaoVal === 'false';
+      return (
+        <React.Fragment key={`${question.id}-wrapper`}>
+          {renderQuestionDefault(question)}
+          {naoOpera && (
+            <ExpectedRatesInput
+              formData={formData}
+              updateField={updateField}
+            />
+          )}
+        </React.Fragment>
+      );
+    }
+
+    // Taxas de cartão por bandeira — renderizar como grupo via CardRatesGroup
+    if (question.id === CARD_RATE_TRIGGER_ID) {
+      const usaCartao = formData[USA_CARTAO_QUESTION_ID];
+      if (usaCartao === true || usaCartao === 'true') {
+        return (
+          <CardRatesGroup
+            key="card-rates-group"
+            questions={cardRateQuestions}
+            formData={formData}
+            updateField={updateField}
+          />
+        );
+      }
+      return null;
+    }
+    if (CARD_RATE_QUESTION_IDS.includes(question.id)) {
+      return null;
+    }
+    
+    // Se a pergunta é parte de um grupo de percentuais, não renderizar individualmente
+    if (GROUPED_PERCENT_IDS.includes(question.id)) {
+      const group = PERCENT_GROUPS.find(g => g.trigger === question.id);
+      if (group) {
+        return (
+          <PercentDistributionRow
+            key={question.id}
+            title={group.title}
+            fields={group.fields}
+            formData={formData}
+            updateField={updateField}
+            required={group.required}
+          />
+        );
+      }
+      return null;
+    }
+
+    return renderQuestionDefault(question);
+  };
+
   // Step de confirmação
   const renderConfirmation = () => (
     <div className="space-y-6">
