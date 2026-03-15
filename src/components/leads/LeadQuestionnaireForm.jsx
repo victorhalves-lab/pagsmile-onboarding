@@ -18,7 +18,7 @@ import {
 import {
   Building2, User, Briefcase, DollarSign, PieChart, Clock,
   CreditCard, Package, FileText, CheckCircle, ArrowLeft, 
-  ArrowRight, Loader2, ShieldCheck, HelpCircle, Search, Hash
+  ArrowRight, Loader2, ShieldCheck, HelpCircle, Search, Hash, AlertCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
 import LeadStepNavigation from './LeadStepNavigation';
@@ -29,6 +29,9 @@ import ExpectedRatesInput from './ExpectedRatesInput';
 import MCCSearchModal from './MCCSearchModal';
 import { MCC_LIST } from './mccData';
 import ProductTypePercentages, { PRODUCT_TYPE_QUESTION_ID } from './ProductTypePercentages';
+import AutoSaveIndicator from './AutoSaveIndicator';
+import FormFieldError from './FormFieldError';
+import ConfirmationReview from './ConfirmationReview';
 
 function MCCNameDisplay({ mccCode }) {
   const found = MCC_LIST.find(m => m.mcc === mccCode.padStart(4, '0'));
@@ -173,7 +176,10 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mccModalOpen, setMccModalOpen] = useState(false);
   const [mccQuestionId, setMccQuestionId] = useState(null);
+  const [validationErrors, setValidationErrors] = useState({});
+  const [lastSaved, setLastSaved] = useState(null);
   const autoSaveRef = useRef(null);
+  const firstErrorRef = useRef(null);
 
   // Perguntas de taxa de cartão (para passar ao CardRatesGroup)
   const cardRateQuestions = questions.filter(q => CARD_RATE_QUESTION_IDS.includes(q.id));
@@ -204,15 +210,21 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
     }
   }, []);
 
-  // Auto-save a cada segundo
+  // Auto-save a cada 2 segundos
   useEffect(() => {
     autoSaveRef.current = setInterval(() => {
       if (Object.keys(formData).length > 0) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+        setLastSaved(new Date());
       }
-    }, 1000);
+    }, 2000);
     return () => clearInterval(autoSaveRef.current);
   }, [formData]);
+
+  // Limpar erros quando o usuário muda de step
+  useEffect(() => {
+    setValidationErrors({});
+  }, [currentStep]);
 
   const updateField = useCallback((fieldId, value) => {
     setFormData(prev => {
@@ -262,51 +274,47 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
     return String(value || '').toLowerCase().includes('outro');
   };
 
-  // Validar step atual
+  // Validar step atual — acumula todos os erros
   const validateStep = () => {
     if (currentStep >= steps.length) return true;
     const stepQuestions = steps[currentStep].filter(shouldShowQuestion);
+    const errors = {};
     
     for (const q of stepQuestions) {
-      // Todas as perguntas são obrigatórias (exceto FILE_UPLOAD)
       const isRequired = q.type !== 'FILE_UPLOAD' ? true : q.isRequired;
       if (isRequired) {
         const val = formData[q.id];
         if (val === undefined || val === null || val === '' || (Array.isArray(val) && val.length === 0)) {
-          toast.error(`Por favor, preencha: "${q.text}"`);
-          return false;
+          errors[q.id] = 'Este campo é obrigatório';
+          continue;
         }
         
-        // Validação de mínimo de caracteres
         const minLength = q.id === DESCRIPTION_QUESTION_ID ? 75 : q.validationRules?.minLength;
         if (minLength && String(val).length < minLength) {
-          toast.error(`"${q.text}" deve ter no mínimo ${minLength} caracteres`);
-          return false;
+          errors[q.id] = `Mínimo de ${minLength} caracteres (atual: ${String(val).length})`;
         }
       }
       
-      // Validar campo "Outro" se selecionado
       if (needsOtherDescription(q.id, formData[q.id])) {
         const otherDesc = formData[`${q.id}_outro_descricao`];
         if (!otherDesc || otherDesc.trim().length < 10) {
-          toast.error(`Por favor, descreva "Outros" em "${q.text}" (mínimo 10 caracteres)`);
-          return false;
+          errors[`${q.id}_outro`] = 'Descreva "Outros" (mínimo 10 caracteres)';
         }
       }
     }
     
-    // Validar expectativa de taxas (obrigatório quando NÃO opera com cartão)
+    // Validar expectativa de taxas
     const stepQuestionIds = new Set(steps[currentStep].map(q => q.id));
     const usaCartaoValue = formData[USA_CARTAO_QUESTION_ID];
     const naoOperaCartao = usaCartaoValue === false || usaCartaoValue === 'false';
     
     if (naoOperaCartao && stepQuestionIds.has(USA_CARTAO_QUESTION_ID)) {
       const rates = formData._expectedRates || {};
-      for (const key of EXPECTED_RATE_KEYS) {
-        if (rates[key] === undefined || rates[key] === null || rates[key] === '') {
-          toast.error('Por favor, preencha todos os campos de "Expectativa de Taxas"');
-          return false;
-        }
+      const missingRates = EXPECTED_RATE_KEYS.filter(key => 
+        rates[key] === undefined || rates[key] === null || rates[key] === ''
+      );
+      if (missingRates.length > 0) {
+        errors['_expectedRates'] = 'Preencha todos os campos de Expectativa de Taxas';
       }
     }
 
@@ -318,28 +326,37 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
         const total = selectedTypes.reduce((sum, t) => sum + (parseFloat(pcts[t]) || 0), 0);
         const allFilled = selectedTypes.every(t => pcts[t] !== undefined && pcts[t] !== '' && pcts[t] !== null);
         if (!allFilled || Math.abs(total - 100) > 0.01) {
-          toast.error(`Percentual de faturamento por tipo de produto/serviço — a soma deve ser exatamente 100% (atual: ${total.toFixed(0)}%)`);
-          return false;
+          errors['_product_percentages'] = `A soma deve ser 100% (atual: ${total.toFixed(0)}%)`;
         }
       }
     }
 
-    // Validar grupos de percentuais que estão neste step
+    // Validar grupos de percentuais
     for (const group of PERCENT_GROUPS) {
       if (!stepQuestionIds.has(group.trigger)) continue;
       const vals = group.fields.map(f => parseFloat(formData[f.id]) || 0);
       const anyFilled = group.fields.some(f => formData[f.id] !== undefined && formData[f.id] !== '' && formData[f.id] !== null);
       const total = vals.reduce((a, b) => a + b, 0);
       
-      if (group.required) {
-        if (!anyFilled || Math.abs(total - 100) > 0.01) {
-          toast.error(`"${group.title}" — a soma deve ser exatamente 100% (atual: ${total.toFixed(0)}%)`);
-          return false;
-        }
+      if (group.required && (!anyFilled || Math.abs(total - 100) > 0.01)) {
+        errors[group.trigger] = `A soma deve ser 100% (atual: ${total.toFixed(0)}%)`;
       } else if (anyFilled && Math.abs(total - 100) > 0.01) {
-        toast.error(`"${group.title}" — se preenchido, a soma deve ser 100% (atual: ${total.toFixed(0)}%)`);
-        return false;
+        errors[group.trigger] = `Se preenchido, a soma deve ser 100% (atual: ${total.toFixed(0)}%)`;
       }
+    }
+
+    setValidationErrors(errors);
+    
+    if (Object.keys(errors).length > 0) {
+      toast.error('Por favor, corrija os campos destacados em vermelho.');
+      // Scroll para o primeiro erro
+      setTimeout(() => {
+        const firstErrorEl = document.querySelector('[data-field-error="true"]');
+        if (firstErrorEl) {
+          firstErrorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+      return false;
     }
     
     return true;
@@ -507,9 +524,12 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
 
   const renderQuestionDefault = (question) => {
     const value = formData[question.id] || '';
+    const fieldError = validationErrors[question.id];
+    const hasError = !!fieldError;
+    const errorBorderClass = hasError ? 'border-red-400 ring-1 ring-red-300' : '';
 
     return (
-      <div key={question.id} className="space-y-2">
+      <div key={question.id} className="space-y-2" data-field-error={hasError ? "true" : undefined}>
         <Label className="text-sm font-semibold text-[var(--pagsmile-blue)]">
           {question.text}
           {question.type !== 'FILE_UPLOAD' && <span className="text-red-500 ml-1">*</span>}
@@ -531,7 +551,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
                   value={value}
                   onChange={(e) => updateField(question.id, e.target.value)}
                   placeholder={question.placeholder || ''}
-                  className="min-h-[120px] rounded-xl resize-none"
+                  className={`min-h-[120px] rounded-xl resize-none ${errorBorderClass}`}
                   maxLength={500}
                 />
                 <div className="flex justify-between items-center text-xs">
@@ -546,12 +566,15 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
                 </div>
               </div>
             ) : (
-              <Input
-                value={value}
-                onChange={(e) => updateField(question.id, e.target.value)}
-                placeholder={question.placeholder || ''}
-                className="h-12 rounded-xl"
-              />
+              <>
+                <Input
+                  value={value}
+                  onChange={(e) => updateField(question.id, e.target.value)}
+                  placeholder={question.placeholder || ''}
+                  className={`h-12 rounded-xl ${errorBorderClass}`}
+                />
+                <FormFieldError error={fieldError} />
+              </>
             )}
           </>
         )}
@@ -586,48 +609,66 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
                   }
                 }}
                 placeholder={question.placeholder || ''}
-                className={`h-12 rounded-xl ${isCurrency ? 'pl-12' : ''} ${isPercent ? 'pr-10' : ''}`}
+                className={`h-12 rounded-xl ${isCurrency ? 'pl-12' : ''} ${isPercent ? 'pr-10' : ''} ${errorBorderClass}`}
               />
             </div>
+          );
+          return (
+            <>
+              {element}
+              <FormFieldError error={fieldError} />
+            </>
           );
         })()}
 
         {question.type === 'EMAIL' && (
-          <Input
-            type="email"
-            value={value}
-            onChange={(e) => updateField(question.id, e.target.value)}
-            placeholder={question.placeholder || 'email@empresa.com'}
-            className="h-12 rounded-xl"
-          />
+          <>
+            <Input
+              type="email"
+              value={value}
+              onChange={(e) => updateField(question.id, e.target.value)}
+              placeholder={question.placeholder || 'email@empresa.com'}
+              className={`h-12 rounded-xl ${errorBorderClass}`}
+            />
+            <FormFieldError error={fieldError} />
+          </>
         )}
 
         {question.type === 'PHONE' && (
-          <Input
-            type="tel"
-            value={value}
-            onChange={(e) => updateField(question.id, e.target.value)}
-            placeholder={question.placeholder || '(11) 99999-9999'}
-            className="h-12 rounded-xl"
-          />
+          <>
+            <Input
+              type="tel"
+              value={value}
+              onChange={(e) => updateField(question.id, e.target.value)}
+              placeholder={question.placeholder || '(11) 99999-9999'}
+              className={`h-12 rounded-xl ${errorBorderClass}`}
+            />
+            <FormFieldError error={fieldError} />
+          </>
         )}
 
         {question.type === 'CPF_CNPJ' && (
-          <Input
-            value={value}
-            onChange={(e) => updateField(question.id, e.target.value)}
-            placeholder={question.placeholder || 'Digite o CPF ou CNPJ'}
-            className="h-12 rounded-xl"
-          />
+          <>
+            <Input
+              value={value}
+              onChange={(e) => updateField(question.id, e.target.value)}
+              placeholder={question.placeholder || 'Digite o CPF ou CNPJ'}
+              className={`h-12 rounded-xl ${errorBorderClass}`}
+            />
+            <FormFieldError error={fieldError} />
+          </>
         )}
 
         {question.type === 'DATE' && (
-          <Input
-            type="date"
-            value={value}
-            onChange={(e) => updateField(question.id, e.target.value)}
-            className="h-12 rounded-xl"
-          />
+          <>
+            <Input
+              type="date"
+              value={value}
+              onChange={(e) => updateField(question.id, e.target.value)}
+              className={`h-12 rounded-xl ${errorBorderClass}`}
+            />
+            <FormFieldError error={fieldError} />
+          </>
         )}
 
         {isMCCQuestion(question) ? (
@@ -694,7 +735,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
             
             {/* Campo de descrição para "Outros" */}
             {QUESTIONS_WITH_OTHER_DESCRIPTION.includes(question.id) && needsOtherDescription(question.id, value) && (
-              <div className="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+              <div className={`mt-4 p-4 bg-slate-50 rounded-xl border ${validationErrors[`${question.id}_outro`] ? 'border-red-300' : 'border-slate-200'}`}>
                 <Label className="text-sm font-semibold text-[var(--pagsmile-blue)] mb-2 block">
                   Descreva o que seria "Outros" <span className="text-red-500">*</span>
                 </Label>
@@ -702,10 +743,12 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
                   value={formData[`${question.id}_outro_descricao`] || ''}
                   onChange={(e) => updateField(`${question.id}_outro_descricao`, e.target.value)}
                   placeholder="Especifique detalhadamente..."
-                  className="min-h-[80px] rounded-xl resize-none"
+                  className={`min-h-[80px] rounded-xl resize-none ${validationErrors[`${question.id}_outro`] ? 'border-red-400 ring-1 ring-red-300' : ''}`}
                 />
+                <FormFieldError error={validationErrors[`${question.id}_outro`]} />
               </div>
             )}
+            <FormFieldError error={fieldError} />
           </div>
         )}
 
@@ -739,7 +782,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
             
             {/* Campo de descrição para "Outros" */}
             {QUESTIONS_WITH_OTHER_DESCRIPTION.includes(question.id) && needsOtherDescription(question.id, value) && (
-              <div className="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+              <div className={`mt-4 p-4 bg-slate-50 rounded-xl border ${validationErrors[`${question.id}_outro`] ? 'border-red-300' : 'border-slate-200'}`}>
                 <Label className="text-sm font-semibold text-[var(--pagsmile-blue)] mb-2 block">
                   Descreva o que seria "Outros" <span className="text-red-500">*</span>
                 </Label>
@@ -747,10 +790,12 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
                   value={formData[`${question.id}_outro_descricao`] || ''}
                   onChange={(e) => updateField(`${question.id}_outro_descricao`, e.target.value)}
                   placeholder="Especifique detalhadamente..."
-                  className="min-h-[80px] rounded-xl resize-none"
+                  className={`min-h-[80px] rounded-xl resize-none ${validationErrors[`${question.id}_outro`] ? 'border-red-400 ring-1 ring-red-300' : ''}`}
                 />
+                <FormFieldError error={validationErrors[`${question.id}_outro`]} />
               </div>
             )}
+            <FormFieldError error={fieldError} />
           </div>
         )}
 
@@ -792,34 +837,37 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
         )}
 
         {question.type === 'BOOLEAN' && (
-          <div className="flex bg-slate-100 p-1.5 rounded-xl w-full sm:w-72 relative shadow-inner">
-            <button
-              type="button"
-              onClick={() => updateField(question.id, true)}
-              className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all z-10 ${
-                value === true ? 'text-white' : 'text-[#002443]/50 hover:text-[#002443]'
-              }`}
-            >
-              Sim
-            </button>
-            <button
-              type="button"
-              onClick={() => updateField(question.id, false)}
-              className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all z-10 ${
-                value === false ? 'text-white' : 'text-[#002443]/50 hover:text-[#002443]'
-              }`}
-            >
-              Não
-            </button>
-            {/* Fundo animado (Pílula) */}
-            <div 
-              className="absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-[#2bc196] rounded-lg transition-all duration-300 ease-in-out shadow-sm"
-              style={{
-                left: value === true ? '6px' : value === false ? 'calc(50% + 0px)' : '6px',
-                opacity: value === '' || value === undefined ? 0 : 1
-              }}
-            />
-          </div>
+          <>
+            <div className={`flex bg-slate-100 p-1.5 rounded-xl w-full sm:w-72 relative shadow-inner ${hasError ? 'ring-1 ring-red-300' : ''}`}>
+              <button
+                type="button"
+                onClick={() => updateField(question.id, true)}
+                className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all z-10 ${
+                  value === true ? 'text-white' : 'text-[#002443]/50 hover:text-[#002443]'
+                }`}
+              >
+                Sim
+              </button>
+              <button
+                type="button"
+                onClick={() => updateField(question.id, false)}
+                className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all z-10 ${
+                  value === false ? 'text-white' : 'text-[#002443]/50 hover:text-[#002443]'
+                }`}
+              >
+                Não
+              </button>
+              {/* Fundo animado (Pílula) */}
+              <div 
+                className="absolute top-1.5 bottom-1.5 w-[calc(50%-6px)] bg-[#2bc196] rounded-lg transition-all duration-300 ease-in-out shadow-sm"
+                style={{
+                  left: value === true ? '6px' : value === false ? 'calc(50% + 0px)' : '6px',
+                  opacity: value === '' || value === undefined ? 0 : 1
+                }}
+              />
+            </div>
+            <FormFieldError error={fieldError} />
+          </>
         )}
       </div>
     );
