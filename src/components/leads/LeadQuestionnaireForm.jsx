@@ -564,6 +564,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
                     {String(value).length}/500
                   </span>
                 </div>
+                <FormFieldError error={fieldError} />
               </div>
             ) : (
               <>
