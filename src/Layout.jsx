@@ -22,14 +22,23 @@ import {
   FileText,
   History,
   Stamp,
-  UserPlus
+  UserPlus,
+  PanelLeftClose,
+  PanelLeft,
+  Home as HomeIcon,
+  Wrench,
+  BookOpen
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import AdminLoginScreen from '@/components/admin/AdminLoginScreen';
 
 export default function Layout({ children, currentPageName }) {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [expandedSections, setExpandedSections] = React.useState([]);
+  const [collapsed, setCollapsed] = React.useState(() => {
+    return localStorage.getItem('sidebar_collapsed') === 'true';
+  });
 
   const { data: authData } = useQuery({
     queryKey: ['user'],
@@ -47,28 +56,13 @@ export default function Layout({ children, currentPageName }) {
   const isAuthenticated = authData?.isAuthenticated;
   const isAdmin = user?.role === 'admin';
 
-  // Páginas públicas (fluxo de onboarding do merchant via link)
   const publicPages = [
-    'ContratoPublico',
-    'ComplianceOnboardingStart',
-    'CompliancePixOnly',
-    'ComplianceFullKYC',
-    'ComplianceLite',
-    'ComplianceSaaS',
-    'DocumentUploadPix',
-    'DocumentUploadFull',
-    'DocumentUploadLite',
-    'DocumentUploadSaaS',
-    'LivenessFacematchStep',
-    'LivenessSimulation',
-    'OnboardingCompletion',
-    'LeadQuestionnaire',
-    'LeadSuccess',
-    'PropostaPublica',
-    'QuestionarioSimplificadoPublico',
-    'ComplianceDinamico'
+    'ContratoPublico','ComplianceOnboardingStart','CompliancePixOnly','ComplianceFullKYC',
+    'ComplianceLite','ComplianceSaaS','DocumentUploadPix','DocumentUploadFull',
+    'DocumentUploadLite','DocumentUploadSaaS','LivenessFacematchStep','LivenessSimulation',
+    'OnboardingCompletion','LeadQuestionnaire','LeadSuccess','PropostaPublica',
+    'QuestionarioSimplificadoPublico','ComplianceDinamico'
   ];
-
   const isPublicPage = publicPages.includes(currentPageName);
 
   const [adminVerified, setAdminVerified] = React.useState(() => {
@@ -76,103 +70,66 @@ export default function Layout({ children, currentPageName }) {
   });
 
   const toggleSection = (sectionId) => {
-    setExpandedSections(prev => 
-      prev.includes(sectionId) 
-        ? []
-        : [sectionId]
-    );
+    if (collapsed) {
+      setCollapsed(false);
+      localStorage.setItem('sidebar_collapsed', 'false');
+      setExpandedSections([sectionId]);
+      return;
+    }
+    setExpandedSections(prev => prev.includes(sectionId) ? [] : [sectionId]);
   };
 
-  // Layout público para fluxo de onboarding (via link)
+  const toggleCollapsed = () => {
+    const next = !collapsed;
+    setCollapsed(next);
+    localStorage.setItem('sidebar_collapsed', String(next));
+    if (next) setExpandedSections([]);
+  };
+
+  // Auto-expand section containing active page
+  React.useEffect(() => {
+    if (collapsed) return;
+    const activeSection = menuStructure.find(s => s.items.some(i => i.path === currentPageName));
+    if (activeSection && !expandedSections.includes(activeSection.id)) {
+      setExpandedSections([activeSection.id]);
+    }
+  }, [currentPageName, collapsed]);
+
+  // Public layout
   if (isPublicPage) {
     return (
       <div className="min-h-screen font-sans antialiased bg-[#f4f4f4]">
         <style>{`
           @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
-
           :root {
-            --pagsmile-green: #2bc196;
-            --pagsmile-green-light: #5cf7cf;
-            --pagsmile-blue: #002443;
-            --pagsmile-blue-light: #003366;
-            --pagsmile-gray: #f4f4f4;
-            --font-sans: 'Plus Jakarta Sans', sans-serif;
-
-            /* Override Shadcn default colors */
-            --foreground: #002443;
-            --primary: #2bc196;
-            --primary-foreground: #ffffff;
-            --secondary: #002443;
-            --secondary-foreground: #ffffff;
-            --muted: #f4f4f4;
-            --muted-foreground: #002443;
-            --accent: #2bc196;
-            --accent-foreground: #ffffff;
-            --card: #ffffff;
-            --card-foreground: #002443;
-            --popover: #ffffff;
-            --popover-foreground: #002443;
-            --border: #e2e8f0;
-            --input: #e2e8f0;
-            --ring: #2bc196;
+            --pagsmile-green: #2bc196; --pagsmile-green-light: #5cf7cf;
+            --pagsmile-blue: #002443; --pagsmile-blue-light: #003366;
+            --pagsmile-gray: #f4f4f4; --font-sans: 'Plus Jakarta Sans', sans-serif;
+            --foreground: #002443; --primary: #2bc196; --primary-foreground: #ffffff;
+            --secondary: #002443; --secondary-foreground: #ffffff;
+            --muted: #f4f4f4; --muted-foreground: #002443;
+            --accent: #2bc196; --accent-foreground: #ffffff;
+            --card: #ffffff; --card-foreground: #002443;
+            --popover: #ffffff; --popover-foreground: #002443;
+            --border: #e2e8f0; --input: #e2e8f0; --ring: #2bc196;
           }
-
-          body {
-            font-family: var(--font-sans);
-            color: #002443;
-          }
-
-          * {
-            color: inherit;
-          }
-
-          h1, h2, h3, h4, h5, h6, p, span, label, div {
-            color: #002443;
-          }
-
-          .text-muted-foreground {
-            color: #002443 !important;
-            opacity: 0.7;
-          }
-
-          .text-foreground {
-            color: #002443 !important;
-          }
-
-          .text-primary {
-            color: #2bc196 !important;
-          }
-
-          .bg-primary {
-            background-color: #2bc196 !important;
-          }
-
-          .text-black, .text-gray-900, .text-gray-800, .text-gray-700, .text-gray-600, .text-gray-500, .text-slate-900, .text-slate-800, .text-slate-700, .text-slate-600, .text-slate-500 {
-            color: #002443 !important;
-          }
-
-          .modern-shadow {
-            box-shadow: 0 4px 20px rgba(0, 36, 67, 0.05);
-          }
-
-          .glass-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-          }
+          body { font-family: var(--font-sans); color: #002443; }
+          * { color: inherit; }
+          h1,h2,h3,h4,h5,h6,p,span,label,div { color: #002443; }
+          .text-muted-foreground { color: #002443 !important; opacity: 0.7; }
+          .text-foreground { color: #002443 !important; }
+          .text-primary { color: #2bc196 !important; }
+          .bg-primary { background-color: #2bc196 !important; }
+          .text-black,.text-gray-900,.text-gray-800,.text-gray-700,.text-gray-600,.text-gray-500,.text-slate-900,.text-slate-800,.text-slate-700,.text-slate-600,.text-slate-500 { color: #002443 !important; }
+          .modern-shadow { box-shadow: 0 4px 20px rgba(0,36,67,0.05); }
+          .glass-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); }
         `}</style>
-
         <div className="fixed top-0 left-0 w-full h-2 bg-gradient-to-r from-[var(--pagsmile-blue)] via-[var(--pagsmile-green)] to-[var(--pagsmile-green-light)] z-[60]" />
-
         <div className="fixed left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[var(--pagsmile-blue)] via-[var(--pagsmile-green)] to-[var(--pagsmile-green-light)] z-[60]" />
         <div className="fixed top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[var(--pagsmile-blue)] via-[var(--pagsmile-green)] to-[var(--pagsmile-green-light)] z-[60]" />
-
         <main className="pt-8 pb-8 px-4 md:px-8 max-w-7xl mx-auto min-h-screen">
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-            {children}
-          </div>
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">{children}</div>
         </main>
-
         <footer className="py-4 text-center text-xs text-[var(--pagsmile-blue)]/40">
           <p>&copy; {new Date().getFullYear()} Pagsmile.</p>
         </footer>
@@ -180,26 +137,17 @@ export default function Layout({ children, currentPageName }) {
     );
   }
 
-  // Introducer: redireciona para o portal dedicado
   const isIntroducerUser = user?.role === 'introducer';
   const isIntroducerPage = currentPageName === 'IntroducerDashboard';
-  
   if (!isPublicPage && isIntroducerUser && !isIntroducerPage) {
     window.location.href = '/IntroducerDashboard';
     return null;
   }
-  
-  // IntroducerDashboard tem seu próprio layout, não precisa do admin gate
-  if (isIntroducerPage) {
-    return <div>{children}</div>;
-  }
-
-  // Gate: TODA página não-pública exige código admin, independente de autenticação
+  if (isIntroducerPage) return <div>{children}</div>;
   if (!isPublicPage && !adminVerified) {
     return <AdminLoginScreen onSuccess={() => setAdminVerified(true)} />;
   }
 
-  // Menu items com estrutura hierárquica
   const menuStructure = [
     {
       id: 'leads',
@@ -239,7 +187,7 @@ export default function Layout({ children, currentPageName }) {
     {
       id: 'tools',
       label: 'Ferramentas',
-      icon: Settings,
+      icon: Wrench,
       items: [
         { label: 'Gerar Link', path: 'GerarLinkOnboarding', icon: LinkIcon },
         { label: 'Templates', path: 'TemplatesQuestionarios', icon: FileText },
@@ -267,62 +215,111 @@ export default function Layout({ children, currentPageName }) {
     }
   ];
 
-  const NavItem = ({ item, isActive, onClick }) => {
+  // Check if a section has the active page
+  const sectionHasActive = (section) => section.items.some(i => i.path === currentPageName);
+
+  const sidebarWidth = collapsed ? 'w-[72px]' : 'w-64';
+  const mainMargin = collapsed ? 'lg:ml-[72px]' : 'lg:ml-64';
+
+  // ── Nav Item ──
+  const NavItem = ({ item, isActive, onClick, isCollapsed }) => {
     const Icon = item.icon;
-    return (
+    const content = (
       <Link
         to={createPageUrl(item.path)}
         onClick={onClick}
-        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 text-sm font-medium relative ${
-          isActive
-            ? 'bg-white/10 text-[#5cf7cf] font-semibold'
+        className={`group flex items-center gap-3 rounded-lg transition-all duration-200 text-[13px] font-medium relative
+          ${isCollapsed ? 'px-0 py-2.5 justify-center' : 'px-3 py-2'}
+          ${isActive
+            ? 'bg-[#2bc196]/15 text-[#5cf7cf] font-semibold'
             : item.highlight && !isActive
             ? 'text-[#2bc196] hover:bg-white/5'
-            : 'text-white/60 hover:text-white hover:bg-white/5'
-        }`}
+            : 'text-white/55 hover:text-white/90 hover:bg-white/5'
+          }`}
       >
         {isActive && (
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-[#5cf7cf] rounded-r-full" />
+          <div className="absolute left-0 top-1 bottom-1 w-[3px] bg-[#2bc196] rounded-r-full" />
         )}
-        <Icon className={`w-4 h-4 ${isActive ? 'text-[#5cf7cf]' : item.highlight ? 'text-[#2bc196]' : 'text-white/40'}`} />
-        <span className="flex-1">{item.label}</span>
-        {item.highlight && !isActive && (
-          <span className="w-2 h-2 rounded-full bg-[#2bc196] animate-pulse"></span>
-        )}
-        {item.badge && (
-          <span className="text-[10px] bg-white/10 text-white/70 px-1.5 py-0.5 rounded-md">{item.badge}</span>
+        <Icon className={`w-[18px] h-[18px] flex-shrink-0 ${isActive ? 'text-[#2bc196]' : item.highlight ? 'text-[#2bc196]' : 'text-white/35 group-hover:text-white/60'}`} />
+        {!isCollapsed && <span className="flex-1 truncate">{item.label}</span>}
+        {!isCollapsed && item.highlight && !isActive && (
+          <span className="w-1.5 h-1.5 rounded-full bg-[#2bc196] animate-pulse" />
         )}
       </Link>
     );
+
+    if (isCollapsed) {
+      return (
+        <Tooltip delayDuration={0}>
+          <TooltipTrigger asChild>{content}</TooltipTrigger>
+          <TooltipContent side="right" className="bg-[#002443] text-white border-white/10 text-xs font-medium">
+            {item.label}
+          </TooltipContent>
+        </Tooltip>
+      );
+    }
+    return content;
   };
 
-  const NavSection = ({ section, isMobile = false }) => {
+  // ── Nav Section ──
+  const NavSection = ({ section, isMobile = false, isCollapsed = false }) => {
     const isExpanded = expandedSections.includes(section.id);
+    const hasActive = sectionHasActive(section);
     const SectionIcon = section.icon;
     const visibleItems = section.items.filter(item => !item.hidden);
-    
+
+    // Collapsed: show just the section icon
+    if (isCollapsed) {
+      return (
+        <Tooltip delayDuration={0}>
+          <TooltipTrigger asChild>
+            <button
+              onClick={() => toggleSection(section.id)}
+              className={`flex items-center justify-center w-full py-2.5 rounded-lg transition-all duration-200
+                ${hasActive ? 'bg-[#2bc196]/10 text-[#2bc196]' : 'text-white/40 hover:text-white/70 hover:bg-white/5'}`}
+            >
+              <SectionIcon className={`w-5 h-5 ${hasActive ? 'text-[#2bc196]' : 'text-white/35'}`} />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="right" className="bg-[#002443] text-white border-white/10 text-xs font-medium">
+            {section.label}
+          </TooltipContent>
+        </Tooltip>
+      );
+    }
+
     return (
-      <div className="mb-1">
+      <div>
+        {/* Section Header */}
         <button
-        onClick={() => toggleSection(section.id)}
-        className={`flex items-center gap-2.5 w-full px-3 py-2.5 text-xs font-bold tracking-wide transition-all duration-200 rounded-lg ${
-          isExpanded 
-            ? 'text-[#5cf7cf] bg-white/5' 
-            : 'text-white/70 hover:text-white/90 hover:bg-white/5'
-        }`}
+          onClick={() => toggleSection(section.id)}
+          className={`flex items-center gap-2.5 w-full px-3 py-2.5 text-[11px] font-bold uppercase tracking-wider transition-all duration-200 rounded-lg
+            ${isExpanded 
+              ? 'text-[#2bc196] bg-[#2bc196]/8' 
+              : hasActive
+              ? 'text-[#2bc196]/70 hover:bg-white/5'
+              : 'text-white/40 hover:text-white/60 hover:bg-white/5'
+            }`}
         >
-        <SectionIcon className={`w-4 h-4 ${isExpanded ? 'text-[#2bc196]' : 'text-white/30'}`} />
-        <span className="flex-1 text-left">{section.label}</span>
-        {isExpanded ? <ChevronDown className="w-3.5 h-3.5 text-[#2bc196]/60" /> : <ChevronRight className="w-3.5 h-3.5 text-white/20" />}
+          <SectionIcon className={`w-[18px] h-[18px] flex-shrink-0 ${isExpanded ? 'text-[#2bc196]' : hasActive ? 'text-[#2bc196]/60' : 'text-white/25'}`} />
+          <span className="flex-1 text-left">{section.label}</span>
+          {hasActive && !isExpanded && <span className="w-1.5 h-1.5 rounded-full bg-[#2bc196]" />}
+          {isExpanded 
+            ? <ChevronDown className="w-3.5 h-3.5 text-[#2bc196]/50" /> 
+            : <ChevronRight className="w-3.5 h-3.5 text-white/20" />
+          }
         </button>
+
+        {/* Sub Items */}
         {isExpanded && (
-          <div className="mt-0.5 space-y-0.5 pl-1">
+          <div className="mt-1 ml-3 pl-3 border-l-2 border-[#2bc196]/20 space-y-0.5 pb-1">
             {visibleItems.map(item => (
               <NavItem 
                 key={item.path} 
                 item={item} 
                 isActive={currentPageName === item.path}
                 onClick={isMobile ? () => setMobileMenuOpen(false) : undefined}
+                isCollapsed={false}
               />
             ))}
           </div>
@@ -331,155 +328,229 @@ export default function Layout({ children, currentPageName }) {
     );
   };
 
+  // ── Separator ──
+  const SectionDivider = ({ isCollapsed }) => (
+    <div className={`my-2 ${isCollapsed ? 'mx-2' : 'mx-3'}`}>
+      <div className="h-px bg-white/8" />
+    </div>
+  );
+
+  // Group sections for dividers: primary [leads, compliance, contratos] | secondary [tools, integrations] | admin
+  const primarySections = menuStructure.filter(s => ['leads', 'compliance', 'contratos'].includes(s.id));
+  const secondarySections = menuStructure.filter(s => ['tools', 'integrations'].includes(s.id));
+  const adminSections = menuStructure.filter(s => s.id === 'admin');
+
+  const renderSections = (sections, isMobile = false) => (
+    <div className="space-y-0.5">
+      {sections.map(section => (
+        <NavSection key={section.id} section={section} isMobile={isMobile} isCollapsed={collapsed && !isMobile} />
+      ))}
+    </div>
+  );
+
   return (
-    <div className="min-h-screen bg-[#f4f4f4] flex font-sans">
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+    <TooltipProvider>
+      <div className="min-h-screen bg-[#f4f4f4] flex font-sans">
+        <style>{`
+          @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+          :root {
+            --pagsmile-green: #2bc196; --pagsmile-green-light: #5cf7cf;
+            --pagsmile-blue: #002443; --pagsmile-blue-light: #003366;
+            --pagsmile-gray: #f4f4f4; --font-sans: 'Plus Jakarta Sans', sans-serif;
+          }
+          body { font-family: var(--font-sans); color: var(--pagsmile-blue); }
+        `}</style>
 
-        :root {
-          --pagsmile-green: #2bc196;
-          --pagsmile-green-light: #5cf7cf;
-          --pagsmile-blue: #002443;
-          --pagsmile-blue-light: #003366;
-          --pagsmile-gray: #f4f4f4;
-          --font-sans: 'Plus Jakarta Sans', sans-serif;
-        }
-
-        body {
-          font-family: var(--font-sans);
-          color: var(--pagsmile-blue);
-        }
-      `}</style>
-
-      {/* Sidebar - Desktop (Dark Premium) */}
-      {isAuthenticated && (
-        <aside className="hidden lg:flex flex-col w-64 bg-[#002443] min-h-screen fixed left-0 top-0 z-20">
-          {/* Logo */}
-          <div className="p-5 border-b border-white/10">
-            <div className="flex items-center gap-3">
-              <img 
-                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png" 
-                alt="Pagsmile" 
-                className="h-8 w-auto"
-              />
-            </div>
-          </div>
-
-          {/* Navigation */}
-          <nav className="flex-1 px-3 py-4 overflow-y-auto sidebar-nav">
-            {/* Home link */}
-            <div className="mb-2">
-              <NavItem 
-                item={{ label: 'Home', path: 'Home', icon: LayoutDashboard }} 
-                isActive={currentPageName === 'Home'} 
-              />
+        {/* ═══════ Desktop Sidebar ═══════ */}
+        {isAuthenticated && (
+          <aside className={`hidden lg:flex flex-col ${sidebarWidth} bg-[#002443] min-h-screen fixed left-0 top-0 z-20 transition-all duration-300 ease-in-out`}>
+            
+            {/* Logo */}
+            <div className={`border-b border-white/8 flex items-center ${collapsed ? 'px-3 py-4 justify-center' : 'px-5 py-4'}`}>
+              {collapsed ? (
+                <div className="w-8 h-8 rounded-lg bg-[#2bc196] flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">P</span>
+                </div>
+              ) : (
+                <img 
+                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png" 
+                  alt="Pagsmile" 
+                  className="h-7 w-auto"
+                />
+              )}
             </div>
 
-            {menuStructure.map(section => (
-              <NavSection key={section.id} section={section} />
-            ))}
-
-            {/* How It Works - standalone */}
-            <div className="mt-3 pt-3 border-t border-white/10">
-              <NavItem 
-                item={{ label: 'How It Works', path: 'HowItWorks', icon: FileText }} 
-                isActive={currentPageName === 'HowItWorks'} 
-              />
-            </div>
-          </nav>
-
-          {/* User Info & Logout */}
-          <div className="p-4 border-t border-white/10 bg-white/5">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-9 h-9 rounded-full bg-[#2bc196] flex items-center justify-center text-white shadow-sm">
-                <span className="text-sm font-semibold">
-                  {user?.full_name?.charAt(0) || 'U'}
-                </span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-white truncate">{user?.full_name}</p>
-                <p className="text-xs text-white/50 truncate">{isAdmin ? 'Administrador' : 'Usuário'}</p>
-              </div>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => base44.auth.logout()}
-              className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-500/10 font-medium"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Sair
-            </Button>
-          </div>
-        </aside>
-      )}
-
-      {/* Mobile Header */}
-      {isAuthenticated && (
-        <div className="lg:hidden fixed top-0 left-0 right-0 bg-[#002443] z-50">
-          <div className="flex items-center justify-between px-4 py-3">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-white/80"
-              >
-                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-              </button>
-              <img 
-                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png" 
-                alt="Pagsmile" 
-                className="h-6"
-              />
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => base44.auth.logout()}
-              className="text-white/60 hover:text-white hover:bg-white/10"
-            >
-              <LogOut className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Mobile Sidebar */}
-      {isAuthenticated && mobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 bg-black/60 z-40" onClick={() => setMobileMenuOpen(false)}>
-          <aside className="w-64 bg-[#002443] h-full pt-16 overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <nav className="px-3 py-4">
-              {/* Home link */}
-              <div className="mb-2">
+            {/* Navigation */}
+            <nav className={`flex-1 ${collapsed ? 'px-2' : 'px-3'} py-3 overflow-y-auto sidebar-nav`}>
+              
+              {/* Home */}
+              <div className="mb-1">
                 <NavItem 
-                  item={{ label: 'Home', path: 'Home', icon: LayoutDashboard }} 
+                  item={{ label: 'Home', path: 'Home', icon: HomeIcon }} 
                   isActive={currentPageName === 'Home'}
-                  onClick={() => setMobileMenuOpen(false)}
+                  isCollapsed={collapsed}
                 />
               </div>
 
-              {menuStructure.map(section => (
-                <NavSection key={section.id} section={section} isMobile />
-              ))}
+              <SectionDivider isCollapsed={collapsed} />
 
-              {/* How It Works - standalone */}
-              <div className="mt-3 pt-3 border-t border-white/10">
+              {/* Primary: Leads, Compliance, Contratos */}
+              {!collapsed && <div className="px-3 mb-1"><span className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/20">Operações</span></div>}
+              {renderSections(primarySections)}
+
+              <SectionDivider isCollapsed={collapsed} />
+
+              {/* Secondary: Tools, Integrations */}
+              {!collapsed && <div className="px-3 mb-1"><span className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/20">Sistema</span></div>}
+              {renderSections(secondarySections)}
+
+              <SectionDivider isCollapsed={collapsed} />
+
+              {/* Admin */}
+              {renderSections(adminSections)}
+
+              {/* How It Works */}
+              <div className="mt-2">
                 <NavItem 
-                  item={{ label: 'How It Works', path: 'HowItWorks', icon: FileText }} 
+                  item={{ label: 'How It Works', path: 'HowItWorks', icon: BookOpen }} 
                   isActive={currentPageName === 'HowItWorks'}
-                  onClick={() => setMobileMenuOpen(false)}
+                  isCollapsed={collapsed}
                 />
               </div>
             </nav>
-          </aside>
-        </div>
-      )}
 
-      {/* Main Content */}
-      <main className={`flex-1 ${isAuthenticated ? 'lg:ml-64' : ''} bg-[#f4f4f4] min-h-screen`}>
-        <div className={`p-4 lg:p-8 ${isAuthenticated ? 'pt-20 lg:pt-8' : ''}`}>
-          {children}
-        </div>
-      </main>
-    </div>
+            {/* Collapse Toggle */}
+            <div className={`border-t border-white/8 ${collapsed ? 'px-2' : 'px-3'} py-2`}>
+              <button
+                onClick={toggleCollapsed}
+                className="flex items-center justify-center w-full py-2 rounded-lg text-white/30 hover:text-white/60 hover:bg-white/5 transition-all duration-200"
+              >
+                {collapsed 
+                  ? <PanelLeft className="w-[18px] h-[18px]" />
+                  : <><PanelLeftClose className="w-[18px] h-[18px]" /><span className="text-xs ml-2">Recolher</span></>
+                }
+              </button>
+            </div>
+
+            {/* User Info & Logout */}
+            <div className={`border-t border-white/8 bg-white/[0.03] ${collapsed ? 'px-2 py-3' : 'px-4 py-3'}`}>
+              {collapsed ? (
+                <Tooltip delayDuration={0}>
+                  <TooltipTrigger asChild>
+                    <div className="flex justify-center">
+                      <div className="w-9 h-9 rounded-full bg-[#2bc196] flex items-center justify-center text-white cursor-default">
+                        <span className="text-sm font-semibold">{user?.full_name?.charAt(0) || 'U'}</span>
+                      </div>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="right" className="bg-[#002443] text-white border-white/10">
+                    <p className="text-xs font-semibold">{user?.full_name}</p>
+                    <p className="text-[10px] text-white/50">{isAdmin ? 'Administrador' : 'Usuário'}</p>
+                  </TooltipContent>
+                </Tooltip>
+              ) : (
+                <>
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 rounded-full bg-[#2bc196] flex items-center justify-center text-white flex-shrink-0">
+                      <span className="text-xs font-semibold">{user?.full_name?.charAt(0) || 'U'}</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold text-white truncate">{user?.full_name}</p>
+                      <p className="text-[10px] text-white/40 truncate">{isAdmin ? 'Administrador' : 'Usuário'}</p>
+                    </div>
+                  </div>
+                </>
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => base44.auth.logout()}
+                className={`w-full text-red-400/70 hover:text-red-300 hover:bg-red-500/10 font-medium text-xs ${collapsed ? 'justify-center px-0' : 'justify-start'}`}
+              >
+                <LogOut className="w-3.5 h-3.5" />
+                {!collapsed && <span className="ml-1.5">Sair</span>}
+              </Button>
+            </div>
+          </aside>
+        )}
+
+        {/* ═══════ Mobile Header ═══════ */}
+        {isAuthenticated && (
+          <div className="lg:hidden fixed top-0 left-0 right-0 bg-[#002443] z-50">
+            <div className="flex items-center justify-between px-4 py-3">
+              <div className="flex items-center gap-3">
+                <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-white/80">
+                  {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                </button>
+                <img 
+                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png" 
+                  alt="Pagsmile" className="h-6"
+                />
+              </div>
+              <Button variant="ghost" size="sm" onClick={() => base44.auth.logout()} className="text-white/60 hover:text-white hover:bg-white/10">
+                <LogOut className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* ═══════ Mobile Sidebar ═══════ */}
+        {isAuthenticated && mobileMenuOpen && (
+          <div className="lg:hidden fixed inset-0 bg-black/60 z-40" onClick={() => setMobileMenuOpen(false)}>
+            <aside className="w-72 bg-[#002443] h-full pt-16 overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+              <nav className="px-3 py-4">
+                <div className="mb-1">
+                  <NavItem 
+                    item={{ label: 'Home', path: 'Home', icon: HomeIcon }} 
+                    isActive={currentPageName === 'Home'}
+                    onClick={() => setMobileMenuOpen(false)}
+                    isCollapsed={false}
+                  />
+                </div>
+
+                <SectionDivider isCollapsed={false} />
+                <div className="px-3 mb-1"><span className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/20">Operações</span></div>
+                <div className="space-y-0.5">
+                  {primarySections.map(section => (
+                    <NavSection key={section.id} section={section} isMobile isCollapsed={false} />
+                  ))}
+                </div>
+
+                <SectionDivider isCollapsed={false} />
+                <div className="px-3 mb-1"><span className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/20">Sistema</span></div>
+                <div className="space-y-0.5">
+                  {secondarySections.map(section => (
+                    <NavSection key={section.id} section={section} isMobile isCollapsed={false} />
+                  ))}
+                </div>
+
+                <SectionDivider isCollapsed={false} />
+                <div className="space-y-0.5">
+                  {adminSections.map(section => (
+                    <NavSection key={section.id} section={section} isMobile isCollapsed={false} />
+                  ))}
+                </div>
+
+                <div className="mt-2">
+                  <NavItem 
+                    item={{ label: 'How It Works', path: 'HowItWorks', icon: BookOpen }} 
+                    isActive={currentPageName === 'HowItWorks'}
+                    onClick={() => setMobileMenuOpen(false)}
+                    isCollapsed={false}
+                  />
+                </div>
+              </nav>
+            </aside>
+          </div>
+        )}
+
+        {/* ═══════ Main Content ═══════ */}
+        <main className={`flex-1 ${isAuthenticated ? mainMargin : ''} bg-[#f4f4f4] min-h-screen transition-all duration-300 ease-in-out`}>
+          <div className={`p-4 lg:p-8 ${isAuthenticated ? 'pt-20 lg:pt-8' : ''}`}>
+            {children}
+          </div>
+        </main>
+      </div>
+    </TooltipProvider>
   );
 }
