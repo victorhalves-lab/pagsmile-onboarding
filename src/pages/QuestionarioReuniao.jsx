@@ -24,12 +24,15 @@ export default function QuestionarioReuniao() {
   const queryClient = useQueryClient();
   const [saving, setSaving] = useState(false);
 
+  const urlParams = new URLSearchParams(window.location.search);
+  const editId = urlParams.get('id');
+
   const { data: user } = useQuery({
     queryKey: ['current-user'],
     queryFn: () => base44.auth.me()
   });
 
-  const [form, setForm] = useState({
+  const defaultForm = {
     clientFullName: '', clientCpfCnpj: '', clientEmail: '', clientPhone: '',
     clientWebsite: '', contactName: '', contactRole: '',
     businessType: '', businessDescription: '', salesChannels: '',
@@ -43,7 +46,56 @@ export default function QuestionarioReuniao() {
     antiFraudProvider: '', antiFraudCost: '',
     currentChallenges: '', criticalFeatures: '', implementationTimeline: '',
     notes: ''
+  };
+
+  const [form, setForm] = useState(defaultForm);
+  const [loadedExisting, setLoadedExisting] = useState(false);
+
+  // Load existing questionnaire for editing
+  const { data: existingQuestionnaire, isLoading: loadingExisting } = useQuery({
+    queryKey: ['edit-questionnaire', editId],
+    queryFn: () => base44.entities.InternalCommercialQuestionnaire.filter({ id: editId }),
+    enabled: !!editId,
   });
+
+  React.useEffect(() => {
+    if (existingQuestionnaire?.length > 0 && !loadedExisting) {
+      const q = existingQuestionnaire[0];
+      setForm({
+        clientFullName: q.clientFullName || '',
+        clientCpfCnpj: q.clientCpfCnpj || '',
+        clientEmail: q.clientEmail === 'pendente@revisar.com' ? '' : (q.clientEmail || ''),
+        clientPhone: q.clientPhone || '',
+        clientWebsite: q.clientWebsite || '',
+        contactName: q.contactName || '',
+        contactRole: q.contactRole || '',
+        businessType: q.businessType || '',
+        businessDescription: q.businessDescription || '',
+        salesChannels: q.salesChannels || '',
+        revenueBreakdown: q.revenueBreakdown?.length > 0 ? q.revenueBreakdown : [{ product: '', percentage: 0 }],
+        monthlyTpv: q.monthlyTpv != null ? String(q.monthlyTpv) : '',
+        averageTicket: q.averageTicket != null ? String(q.averageTicket) : '',
+        monthlyTransactions: q.monthlyTransactions != null ? String(q.monthlyTransactions) : '',
+        growthExpectation: q.growthExpectation || '',
+        preferredPaymentMethods: q.preferredPaymentMethods || [],
+        currentMdr1x: q.currentMdr1x != null ? String(q.currentMdr1x) : '',
+        currentMdr2to6x: q.currentMdr2to6x != null ? String(q.currentMdr2to6x) : '',
+        currentMdr7to12x: q.currentMdr7to12x != null ? String(q.currentMdr7to12x) : '',
+        currentPixRate: q.currentPixRate != null ? String(q.currentPixRate) : '',
+        currentBoletoRate: q.currentBoletoRate != null ? String(q.currentBoletoRate) : '',
+        anticipationType: q.anticipationType || '',
+        anticipationRate: q.anticipationRate != null ? String(q.anticipationRate) : '',
+        transactionFee: q.transactionFee != null ? String(q.transactionFee) : '',
+        antiFraudProvider: q.antiFraudProvider || '',
+        antiFraudCost: q.antiFraudCost != null ? String(q.antiFraudCost) : '',
+        currentChallenges: q.currentChallenges || '',
+        criticalFeatures: q.criticalFeatures || '',
+        implementationTimeline: q.implementationTimeline || '',
+        notes: q.notes || '',
+      });
+      setLoadedExisting(true);
+    }
+  }, [existingQuestionnaire, loadedExisting]);
 
   const updateField = (field, value) => setForm(prev => ({ ...prev, [field]: value }));
 
