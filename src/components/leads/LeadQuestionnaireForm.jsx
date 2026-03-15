@@ -680,7 +680,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
                     updateField(question.id, val);
                   }}
                   placeholder="Digite o código MCC (4 dígitos)"
-                  className="h-12 rounded-xl pl-11 font-mono text-lg tracking-wider"
+                  className={`h-12 rounded-xl pl-11 font-mono text-lg tracking-wider ${errorBorderClass}`}
                   maxLength={4}
                 />
               </div>
@@ -698,6 +698,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
               </Button>
             </div>
             {value && value.length === 4 && <MCCNameDisplay mccCode={value} />}
+            <FormFieldError error={fieldError} />
           </div>
         ) : null}
 
