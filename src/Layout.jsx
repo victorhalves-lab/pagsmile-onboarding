@@ -152,6 +152,7 @@ export default function Layout({ children, currentPageName }) {
         { label: 'Criar Proposta', path: 'CriarProposta', icon: FileCheck },
         { label: 'Introducers', path: 'GestaoIntroducers', icon: UserPlus },
         { label: 'Questionário Reunião', path: 'QuestionarioReuniao', icon: ClipboardList },
+        { label: 'Questionário com Robô', path: 'ProcessMeetingNotes', icon: Brain },
       ]
     },
     {
