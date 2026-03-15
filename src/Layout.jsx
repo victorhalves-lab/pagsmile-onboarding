@@ -66,7 +66,7 @@ export default function Layout({ children, currentPageName }) {
   const isPublicPage = publicPages.includes(currentPageName);
 
   const [adminVerified, setAdminVerified] = React.useState(() => {
-    return sessionStorage.getItem('admin_verified') === 'true';
+    try { return sessionStorage.getItem('admin_verified') === 'true'; } catch { return false; }
   });
 
   const toggleSection = (sectionId) => {
