@@ -209,12 +209,27 @@ export default function Layout({ children, currentPageName }) {
   ];
 
   // Auto-expand section containing active page
+  const prevPageRef = React.useRef(currentPageName);
   React.useEffect(() => {
     if (collapsed) return;
-    const activeSection = menuStructure.find(s => s.items.some(i => i.path === currentPageName));
-    if (activeSection && !expandedSections.includes(activeSection.id)) {
-      setExpandedSections([activeSection.id]);
+    // Only find and expand on initial mount or when page actually changes
+    const sectionIds = ['leads', 'compliance', 'contratos', 'tools', 'integrations', 'admin'];
+    const findSection = () => {
+      for (const section of menuStructure) {
+        if (section.items.some(i => i.path === currentPageName)) {
+          return section.id;
+        }
+      }
+      return null;
+    };
+    const activeSectionId = findSection();
+    if (activeSectionId) {
+      setExpandedSections(prev => {
+        if (prev.length === 1 && prev[0] === activeSectionId) return prev; // no change needed
+        return [activeSectionId];
+      });
     }
+    prevPageRef.current = currentPageName;
   }, [currentPageName, collapsed]);
 
   // Check if a section has the active page
