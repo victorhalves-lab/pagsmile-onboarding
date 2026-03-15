@@ -86,6 +86,100 @@ export default function Layout({ children, currentPageName }) {
     if (next) setExpandedSections([]);
   };
 
+  const menuStructure = [
+    {
+      id: 'leads',
+      label: 'Leads & Propostas',
+      icon: Inbox,
+      items: [
+        { label: 'Links de Questionários', path: 'LinksQuestionariosLeads', icon: LinkIcon },
+        { label: 'Questionários Recebidos', path: 'QuestionariosLeads', icon: ClipboardList, highlight: true },
+        { label: 'Pipeline Comercial', path: 'PipelineComercial', icon: Users },
+        { label: 'Gestão de Propostas', path: 'GestaoPropostas', icon: FileText },
+        { label: 'Criar Proposta', path: 'CriarProposta', icon: FileCheck },
+        { label: 'Introducers', path: 'GestaoIntroducers', icon: UserPlus },
+        { label: 'Questionário Reunião', path: 'QuestionarioReuniao', icon: ClipboardList },
+        { label: 'Questionário com Robô', path: 'ProcessMeetingNotes', icon: Brain },
+      ]
+    },
+    {
+      id: 'compliance',
+      label: 'Compliance',
+      icon: Shield,
+      items: [
+        { label: 'Dashboard', path: 'AdminDashboard', icon: LayoutDashboard },
+        { label: 'Links de Compliance', path: 'LinksCompliance', icon: LinkIcon },
+        { label: 'Questionários Recebidos', path: 'QuestionariosRecebidos', icon: FileCheck },
+        { label: 'Análise de Casos', path: 'AnaliseDeCasos', icon: ClipboardList, hidden: true },
+        { label: 'Gestão de Documentos', path: 'GestaoDocumentos', icon: FileText },
+        { label: 'Revalidação', path: 'GestaoRevalidacao', icon: History },
+      ]
+    },
+    {
+      id: 'contratos',
+      label: 'Contratos',
+      icon: Stamp,
+      items: [
+        { label: 'Gestão de Contratos', path: 'GestaoContratos', icon: FileText },
+        { label: 'Criar Contrato', path: 'CriarContrato', icon: FileCheck },
+      ]
+    },
+    {
+      id: 'tools',
+      label: 'Ferramentas',
+      icon: Wrench,
+      items: [
+        { label: 'Gerar Link', path: 'GerarLinkOnboarding', icon: LinkIcon },
+        { label: 'Templates', path: 'TemplatesQuestionarios', icon: FileText },
+        { label: 'Templates de Mensagem', path: 'MessageTemplates', icon: FileText },
+        { label: 'Regras & Workflows', path: 'RegrasDeCompliance', icon: Settings },
+      ]
+    },
+    {
+      id: 'integrations',
+      label: 'Integrações',
+      icon: Plug,
+      items: [
+        { label: 'CAF & BigDataCorp', path: 'IntegracoesExternas', icon: Plug },
+        { label: 'Helena IA', path: 'HelenaIA', icon: Brain },
+      ]
+    },
+    {
+      id: 'admin',
+      label: 'Administração',
+      icon: Settings,
+      items: [
+        { label: 'Configurações', path: 'Configuracoes', icon: Settings },
+        { label: 'Auditoria', path: 'Auditoria', icon: History },
+      ]
+    }
+  ];
+
+  // Auto-expand section containing active page (hooks MUST be before any early return)
+  const prevPageRef = React.useRef(currentPageName);
+  React.useEffect(() => {
+    if (collapsed) return;
+    const findSection = () => {
+      for (const section of menuStructure) {
+        if (section.items.some(i => i.path === currentPageName)) {
+          return section.id;
+        }
+      }
+      return null;
+    };
+    const activeSectionId = findSection();
+    if (activeSectionId) {
+      setExpandedSections(prev => {
+        if (prev.length === 1 && prev[0] === activeSectionId) return prev;
+        return [activeSectionId];
+      });
+    }
+    prevPageRef.current = currentPageName;
+  }, [currentPageName, collapsed]);
+
+  // Check if a section has the active page
+  const sectionHasActive = (section) => section.items.some(i => i.path === currentPageName);
+
   // Public layout
   if (isPublicPage) {
     return (
