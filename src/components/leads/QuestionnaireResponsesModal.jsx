@@ -33,7 +33,7 @@ const SECTION_CONFIG = [
 const SPECIAL_IDS = new Set([...CARD_RATE_QUESTION_IDS, ...DISTRIBUTION_QUESTION_IDS]);
 
 // Keys to ignore from questionnaireData (internal/system keys)
-const IGNORED_KEYS = new Set(['aceite_termos', 'aceite_privacidade']);
+const IGNORED_KEYS = new Set(['aceite_termos', 'aceite_privacidade', '_product_percentages', '_expectedRates']);
 
 function assignSection(order) {
   for (const sec of SECTION_CONFIG) {
@@ -104,6 +104,44 @@ function ResponseValue({ question }) {
           <span key={i} className="inline-flex px-3 py-1.5 rounded-lg bg-[#2bc196]/8 border border-[#2bc196]/15 text-xs font-semibold text-[#002443]">
             {item}
           </span>
+        ))}
+      </div>
+    );
+  }
+
+  // Product type percentages display
+  if (type === '_PRODUCT_PCT' && typeof value === 'object') {
+    const shortName = (opt) => {
+      const idx = opt.indexOf('(');
+      return idx > 0 ? opt.substring(0, idx).trim() : opt;
+    };
+    const total = Object.values(value).reduce((s, v) => s + (parseFloat(v) || 0), 0);
+    return (
+      <div className="space-y-2">
+        {Object.entries(value).map(([label, pct]) => (
+          <div key={label} className="flex items-center gap-3">
+            <span className="text-xs font-medium text-[#002443]/70 min-w-[160px]">{shortName(label)}</span>
+            <div className="flex-1 max-w-[200px] h-5 bg-slate-100 rounded-full overflow-hidden">
+              <div className="h-full bg-[#2bc196] rounded-full transition-all" style={{ width: `${Math.min(parseFloat(pct) || 0, 100)}%` }} />
+            </div>
+            <span className="text-sm font-bold text-[#002443] w-12 text-right">{parseFloat(pct) || 0}%</span>
+          </div>
+        ))}
+        <div className="text-xs text-[#002443]/40 pt-1 border-t border-slate-100">Total: {total.toFixed(0)}%</div>
+      </div>
+    );
+  }
+
+  // Expected rates display
+  if (type === '_EXPECTED_RATES' && typeof value === 'object') {
+    const rateLabels = { mdr1x: 'MDR 1x', mdr2a6x: 'MDR 2-6x', mdr7a12x: 'MDR 7-12x', antecipacao: 'Antecipação', feeTransacao: 'Fee Transação', antifraude: 'Antifraude', taxa3ds: '3DS' };
+    return (
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        {Object.entries(value).map(([key, val]) => (
+          <div key={key} className="bg-slate-50 rounded-lg px-3 py-2 border border-slate-100">
+            <span className="text-[10px] text-[#002443]/50 block">{rateLabels[key] || key}</span>
+            <span className="text-sm font-bold text-indigo-600">{parseFloat(val)?.toFixed(2)}%</span>
+          </div>
         ))}
       </div>
     );
@@ -190,7 +228,35 @@ export default function QuestionnaireResponsesModal({ open, onClose, lead }) {
         };
       });
 
-    // 2. Detect "_outro_descricao" keys
+    // 2. Inject _product_percentages as a virtual question
+    const productPcts = questionnaireData._product_percentages;
+    if (productPcts && typeof productPcts === 'object' && Object.keys(productPcts).length > 0) {
+      mapped.push({
+        id: '_product_percentages',
+        text: 'Percentual de faturamento por tipo de produto/serviço',
+        value: productPcts,
+        hasValue: true,
+        order: 11.05,
+        type: '_PRODUCT_PCT',
+        section: 'negocio',
+      });
+    }
+
+    // 2b. Inject _expectedRates as a virtual question
+    const expectedRates = questionnaireData._expectedRates;
+    if (expectedRates && typeof expectedRates === 'object' && Object.keys(expectedRates).length > 0) {
+      mapped.push({
+        id: '_expectedRates',
+        text: 'Expectativa de Taxas (sem cartão atualmente)',
+        value: expectedRates,
+        hasValue: true,
+        order: 40.5,
+        type: '_EXPECTED_RATES',
+        section: 'processador',
+      });
+    }
+
+    // 3. Detect "_outro_descricao" keys
     Object.keys(questionnaireData).forEach(key => {
       if (key.endsWith('_outro_descricao') && questionnaireData[key]) {
         mappedIds.add(key);
