@@ -28,6 +28,7 @@ import CardRatesGroup from './CardRatesGroup';
 import ExpectedRatesInput from './ExpectedRatesInput';
 import MCCSearchModal from './MCCSearchModal';
 import { MCC_LIST } from './mccData';
+import ProductTypePercentages, { PRODUCT_TYPE_QUESTION_ID } from './ProductTypePercentages';
 
 function MCCNameDisplay({ mccCode }) {
   const found = MCC_LIST.find(m => m.mcc === mccCode.padStart(4, '0'));
@@ -241,7 +242,13 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
     switch (operator) {
       case 'equals': return String(depValue) === String(expectedValue);
       case 'not_equals': return String(depValue) !== String(expectedValue);
-      case 'contains': return String(depValue || '').includes(expectedValue);
+      case 'contains': {
+        // Suporte para arrays (MULTI_SELECT) e strings
+        if (Array.isArray(depValue)) {
+          return depValue.some(v => String(v).includes(expectedValue));
+        }
+        return String(depValue || '').includes(expectedValue);
+      }
       default: return true;
     }
   };
@@ -298,6 +305,20 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
       for (const key of EXPECTED_RATE_KEYS) {
         if (rates[key] === undefined || rates[key] === null || rates[key] === '') {
           toast.error('Por favor, preencha todos os campos de "Expectativa de Taxas"');
+          return false;
+        }
+      }
+    }
+
+    // Validar percentuais de tipo de produto/serviço
+    if (stepQuestionIds.has(PRODUCT_TYPE_QUESTION_ID)) {
+      const selectedTypes = formData[PRODUCT_TYPE_QUESTION_ID];
+      if (Array.isArray(selectedTypes) && selectedTypes.length > 0) {
+        const pcts = formData._product_percentages || {};
+        const total = selectedTypes.reduce((sum, t) => sum + (parseFloat(pcts[t]) || 0), 0);
+        const allFilled = selectedTypes.every(t => pcts[t] !== undefined && pcts[t] !== '' && pcts[t] !== null);
+        if (!allFilled || Math.abs(total - 100) > 0.01) {
+          toast.error(`Percentual de faturamento por tipo de produto/serviço — a soma deve ser exatamente 100% (atual: ${total.toFixed(0)}%)`);
           return false;
         }
       }
@@ -806,7 +827,17 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
 
   const renderQuestion = (question) => {
     if (!shouldShowQuestion(question)) return null;
-    
+
+    // Após a pergunta principal de tipos de produto, renderizar os percentuais
+    if (question.id === PRODUCT_TYPE_QUESTION_ID) {
+      return (
+        <React.Fragment key={`${question.id}-with-pct`}>
+          {renderQuestionDefault(question)}
+          <ProductTypePercentages formData={formData} updateField={updateField} />
+        </React.Fragment>
+      );
+    }
+
     // Expectativa de taxas — renderizar quando NÃO opera com cartão
     if (question.id === USA_CARTAO_QUESTION_ID) {
       const usaCartaoVal = formData[USA_CARTAO_QUESTION_ID];
