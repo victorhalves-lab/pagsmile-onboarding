@@ -207,6 +207,15 @@ export default function Layout({ children, currentPageName }) {
     }
   ];
 
+  // Auto-expand section containing active page
+  React.useEffect(() => {
+    if (collapsed) return;
+    const activeSection = menuStructure.find(s => s.items.some(i => i.path === currentPageName));
+    if (activeSection && !expandedSections.includes(activeSection.id)) {
+      setExpandedSections([activeSection.id]);
+    }
+  }, [currentPageName, collapsed]);
+
   // Check if a section has the active page
   const sectionHasActive = (section) => section.items.some(i => i.path === currentPageName);
 
