@@ -86,15 +86,6 @@ export default function Layout({ children, currentPageName }) {
     if (next) setExpandedSections([]);
   };
 
-  // Auto-expand section containing active page
-  React.useEffect(() => {
-    if (collapsed) return;
-    const activeSection = menuStructure.find(s => s.items.some(i => i.path === currentPageName));
-    if (activeSection && !expandedSections.includes(activeSection.id)) {
-      setExpandedSections([activeSection.id]);
-    }
-  }, [currentPageName, collapsed]);
-
   // Public layout
   if (isPublicPage) {
     return (
