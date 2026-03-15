@@ -106,12 +106,9 @@ export default function QuestionarioReuniao() {
     }
     setSaving(true);
 
-    const protocolo = `MR-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 99999)).padStart(5, '0')}`;
-
     // Clean numeric fields
-    const data = {
+    const cleanedData = {
       ...form,
-      protocolo,
       commercialAgentName: user?.full_name || 'Admin',
       status: 'preenchido',
       monthlyTpv: form.monthlyTpv ? Number(form.monthlyTpv) : undefined,
@@ -129,65 +126,118 @@ export default function QuestionarioReuniao() {
     };
 
     // Remove empty strings
-    Object.keys(data).forEach(k => { if (data[k] === '') delete data[k]; });
+    Object.keys(cleanedData).forEach(k => { if (cleanedData[k] === '') delete cleanedData[k]; });
 
-    const questionnaire = await base44.entities.InternalCommercialQuestionnaire.create(data);
+    if (editId && existingQuestionnaire?.length > 0) {
+      // UPDATE existing questionnaire
+      const existing = existingQuestionnaire[0];
+      await base44.entities.InternalCommercialQuestionnaire.update(editId, cleanedData);
 
-    // Create a Lead from this questionnaire
-    const lead = await base44.entities.Lead.create({
-      email: form.clientEmail,
-      fullName: form.clientFullName,
-      cpfCnpj: form.clientCpfCnpj || undefined,
-      phone: form.clientPhone || undefined,
-      companyName: form.clientFullName,
-      website: form.clientWebsite || undefined,
-      contactName: form.contactName || undefined,
-      contactRole: form.contactRole || undefined,
-      status: 'questionario_preenchido',
-      businessSubCategory: form.businessType,
-      tpvMensal: data.monthlyTpv || undefined,
-      ticketMedio: data.averageTicket || undefined,
-      transacoesMes: data.monthlyTransactions || undefined,
-      expectativaCrescimento: form.growthExpectation || undefined,
-      protocolo,
-      origemLead: 'reuniao_comercial',
-      lastInteractionDate: new Date().toISOString(),
-      expectedRates: {
-        mdr1x: data.currentMdr1x,
-        mdr2a6x: data.currentMdr2to6x,
-        mdr7a12x: data.currentMdr7to12x,
-        antecipacao: data.anticipationRate,
-        feeTransacao: data.transactionFee,
-        antifraude: data.antiFraudCost,
-      },
-      questionnaireData: {
-        origem: 'reuniao_comercial',
-        questionnaireId: questionnaire.id,
-        businessDescription: form.businessDescription,
-        salesChannels: form.salesChannels,
-        revenueBreakdown: data.revenueBreakdown,
-        preferredPaymentMethods: form.preferredPaymentMethods,
-        currentPixRate: data.currentPixRate,
-        currentBoletoRate: data.currentBoletoRate,
-        anticipationType: form.anticipationType,
-        antiFraudProvider: form.antiFraudProvider,
-        antiFraudCost: data.antiFraudCost,
-        currentChallenges: form.currentChallenges,
-        criticalFeatures: form.criticalFeatures,
-        implementationTimeline: form.implementationTimeline,
-        notes: form.notes,
+      // If no lead yet, create one
+      if (!existing.leadId) {
+        const protocolo = existing.protocolo || `MR-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 99999)).padStart(5, '0')}`;
+        const lead = await base44.entities.Lead.create({
+          email: form.clientEmail,
+          fullName: form.clientFullName,
+          cpfCnpj: form.clientCpfCnpj || undefined,
+          phone: form.clientPhone || undefined,
+          companyName: form.clientFullName,
+          website: form.clientWebsite || undefined,
+          contactName: form.contactName || undefined,
+          contactRole: form.contactRole || undefined,
+          status: 'questionario_preenchido',
+          businessSubCategory: form.businessType,
+          tpvMensal: cleanedData.monthlyTpv || undefined,
+          ticketMedio: cleanedData.averageTicket || undefined,
+          transacoesMes: cleanedData.monthlyTransactions || undefined,
+          expectativaCrescimento: form.growthExpectation || undefined,
+          protocolo,
+          origemLead: existing.origemIA ? 'ia_reuniao' : 'reuniao_comercial',
+          lastInteractionDate: new Date().toISOString(),
+          expectedRates: {
+            mdr1x: cleanedData.currentMdr1x,
+            mdr2a6x: cleanedData.currentMdr2to6x,
+            mdr7a12x: cleanedData.currentMdr7to12x,
+            antecipacao: cleanedData.anticipationRate,
+            feeTransacao: cleanedData.transactionFee,
+            antifraude: cleanedData.antiFraudCost,
+          },
+          questionnaireData: {
+            origem: existing.origemIA ? 'ia_reuniao' : 'reuniao_comercial',
+            questionnaireId: editId,
+            businessDescription: form.businessDescription,
+            salesChannels: form.salesChannels,
+          }
+        });
+        await base44.entities.InternalCommercialQuestionnaire.update(editId, { leadId: lead.id });
       }
-    });
 
-    // Link questionnaire to lead
-    await base44.entities.InternalCommercialQuestionnaire.update(questionnaire.id, { leadId: lead.id });
+      queryClient.invalidateQueries({ queryKey: ['leads-questionarios'] });
+      queryClient.invalidateQueries({ queryKey: ['internal-questionnaires'] });
+      queryClient.invalidateQueries({ queryKey: ['ai-questionnaires'] });
+      setSaving(false);
+      toast.success('Questionário atualizado com sucesso!');
+      navigate(createPageUrl('QuestionariosLeads'));
+    } else {
+      // CREATE new
+      const protocolo = `MR-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 99999)).padStart(5, '0')}`;
+      cleanedData.protocolo = protocolo;
 
-    queryClient.invalidateQueries({ queryKey: ['leads-questionarios'] });
-    queryClient.invalidateQueries({ queryKey: ['internal-questionnaires'] });
+      const questionnaire = await base44.entities.InternalCommercialQuestionnaire.create(cleanedData);
 
-    setSaving(false);
-    toast.success('Questionário salvo e lead criado com sucesso!');
-    navigate(createPageUrl('QuestionariosLeads'));
+      const lead = await base44.entities.Lead.create({
+        email: form.clientEmail,
+        fullName: form.clientFullName,
+        cpfCnpj: form.clientCpfCnpj || undefined,
+        phone: form.clientPhone || undefined,
+        companyName: form.clientFullName,
+        website: form.clientWebsite || undefined,
+        contactName: form.contactName || undefined,
+        contactRole: form.contactRole || undefined,
+        status: 'questionario_preenchido',
+        businessSubCategory: form.businessType,
+        tpvMensal: cleanedData.monthlyTpv || undefined,
+        ticketMedio: cleanedData.averageTicket || undefined,
+        transacoesMes: cleanedData.monthlyTransactions || undefined,
+        expectativaCrescimento: form.growthExpectation || undefined,
+        protocolo,
+        origemLead: 'reuniao_comercial',
+        lastInteractionDate: new Date().toISOString(),
+        expectedRates: {
+          mdr1x: cleanedData.currentMdr1x,
+          mdr2a6x: cleanedData.currentMdr2to6x,
+          mdr7a12x: cleanedData.currentMdr7to12x,
+          antecipacao: cleanedData.anticipationRate,
+          feeTransacao: cleanedData.transactionFee,
+          antifraude: cleanedData.antiFraudCost,
+        },
+        questionnaireData: {
+          origem: 'reuniao_comercial',
+          questionnaireId: questionnaire.id,
+          businessDescription: form.businessDescription,
+          salesChannels: form.salesChannels,
+          revenueBreakdown: cleanedData.revenueBreakdown,
+          preferredPaymentMethods: form.preferredPaymentMethods,
+          currentPixRate: cleanedData.currentPixRate,
+          currentBoletoRate: cleanedData.currentBoletoRate,
+          anticipationType: form.anticipationType,
+          antiFraudProvider: form.antiFraudProvider,
+          antiFraudCost: cleanedData.antiFraudCost,
+          currentChallenges: form.currentChallenges,
+          criticalFeatures: form.criticalFeatures,
+          implementationTimeline: form.implementationTimeline,
+          notes: form.notes,
+        }
+      });
+
+      await base44.entities.InternalCommercialQuestionnaire.update(questionnaire.id, { leadId: lead.id });
+
+      queryClient.invalidateQueries({ queryKey: ['leads-questionarios'] });
+      queryClient.invalidateQueries({ queryKey: ['internal-questionnaires'] });
+      setSaving(false);
+      toast.success('Questionário salvo e lead criado com sucesso!');
+      navigate(createPageUrl('QuestionariosLeads'));
+    }
   };
 
   return (
