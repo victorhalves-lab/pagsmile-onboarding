@@ -160,6 +160,7 @@ export default function Layout({ children, currentPageName }) {
         { label: 'Gestão de Propostas', path: 'GestaoPropostas', icon: FileText },
         { label: 'Criar Proposta', path: 'CriarProposta', icon: FileCheck },
         { label: 'Introducers', path: 'GestaoIntroducers', icon: UserPlus },
+        { label: 'Questionário Reunião', path: 'QuestionarioReuniao', icon: ClipboardList },
       ]
     },
     {

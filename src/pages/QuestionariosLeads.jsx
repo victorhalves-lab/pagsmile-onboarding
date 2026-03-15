@@ -21,7 +21,7 @@ import {
 import {
   Search, ClipboardList, Download, Eye, Trash2, Loader2, X,
   ShoppingCart, Network, Building2, ArrowUpDown, RefreshCw, Zap,
-  Phone, FileText, AlertTriangle, Shield, TrendingUp, MessageSquareText, UserPlus
+  Phone, FileText, AlertTriangle, Shield, TrendingUp, MessageSquareText, UserPlus, Briefcase
 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
@@ -30,6 +30,7 @@ import LeadSLAIndicator from '../components/leads/LeadSLAIndicator';
 import LeadQualifierBadge from '../components/leads/LeadQualifierBadge';
 import QuestionnaireResponsesModal from '../components/leads/QuestionnaireResponsesModal';
 import IntroducerLeadsTab from '../components/leads/IntroducerLeadsTab';
+import MeetingQuestionnaireTab from '../components/meeting-questionnaire/MeetingQuestionnaireTab';
 
 const STATUS_CONFIG = {
   questionario_preenchido: { label: 'Novo', color: 'bg-blue-100 text-blue-700', icon: '🔵' },
@@ -275,6 +276,10 @@ export default function QuestionariosLeads() {
             <UserPlus className="w-3 h-3" />
             De Introducers ({leads.filter(l => l.introducerReferralCode).length})
           </TabsTrigger>
+          <TabsTrigger value="reuniao" className="gap-1">
+            <Briefcase className="w-3 h-3" />
+            Questionário Reunião
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="simplificado" className="mt-4">
@@ -306,6 +311,10 @@ export default function QuestionariosLeads() {
             onDelete={setDeleteTarget}
             onViewResponses={setResponsesModalLead}
           />
+        </TabsContent>
+
+        <TabsContent value="reuniao" className="mt-4">
+          <MeetingQuestionnaireTab />
         </TabsContent>
 
         <TabsContent value="completo" className="mt-4 space-y-6">
