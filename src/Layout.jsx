@@ -37,7 +37,7 @@ export default function Layout({ children, currentPageName }) {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [expandedSections, setExpandedSections] = React.useState([]);
   const [collapsed, setCollapsed] = React.useState(() => {
-    return localStorage.getItem('sidebar_collapsed') === 'true';
+    try { return localStorage.getItem('sidebar_collapsed') === 'true'; } catch { return false; }
   });
 
   const { data: authData } = useQuery({
