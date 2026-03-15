@@ -943,60 +943,10 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
     return renderQuestionDefault(question);
   };
 
-  // Step de confirmação
-  const renderConfirmation = () => (
-    <div className="space-y-6">
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[var(--pagsmile-green)]/10 mb-4">
-          <CheckCircle className="w-8 h-8 text-[var(--pagsmile-green)]" />
-        </div>
-        <h2 className="text-xl font-bold text-[var(--pagsmile-blue)]">Confirmação e Termos</h2>
-        <p className="text-sm text-[var(--pagsmile-blue)]/70 mt-1">Revise e aceite os termos para enviar</p>
-      </div>
-
-      <div className="bg-slate-50 rounded-xl p-6 space-y-4">
-        <h3 className="font-semibold text-[var(--pagsmile-blue)]">Resumo dos dados</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-          {questions.filter(q => formData[q.id]).slice(0, 8).map(q => (
-            <div key={q.id} className="flex flex-col">
-              <span className="text-[var(--pagsmile-blue)]/60 text-xs">{q.text}</span>
-              <span className="font-medium text-[var(--pagsmile-blue)] truncate">
-                {Array.isArray(formData[q.id]) ? formData[q.id].join(', ') : String(formData[q.id])}
-              </span>
-            </div>
-          ))}
-        </div>
-        {questions.filter(q => formData[q.id]).length > 8 && (
-          <p className="text-xs text-[var(--pagsmile-blue)]/50">
-            E mais {questions.filter(q => formData[q.id]).length - 8} campos preenchidos...
-          </p>
-        )}
-      </div>
-
-      <div className="space-y-4 bg-white border border-slate-200 rounded-xl p-6">
-        <div className="flex items-start gap-3">
-          <Checkbox
-            checked={formData.aceite_termos || false}
-            onCheckedChange={(checked) => updateField('aceite_termos', checked)}
-            id="termos"
-          />
-          <Label htmlFor="termos" className="text-sm leading-relaxed cursor-pointer">
-            Li e aceito os <span className="text-[var(--pagsmile-green)] font-semibold">Termos de Uso</span> da plataforma Pagsmile.
-          </Label>
-        </div>
-        <div className="flex items-start gap-3">
-          <Checkbox
-            checked={formData.aceite_privacidade || false}
-            onCheckedChange={(checked) => updateField('aceite_privacidade', checked)}
-            id="privacidade"
-          />
-          <Label htmlFor="privacidade" className="text-sm leading-relaxed cursor-pointer">
-            Li e aceito a <span className="text-[var(--pagsmile-green)] font-semibold">Política de Privacidade</span> da Pagsmile.
-          </Label>
-        </div>
-      </div>
-    </div>
-  );
+  const handleGoToStep = (stepIdx) => {
+    setCurrentStep(stepIdx);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const isLastStep = currentStep === totalSteps - 1;
   const isConfirmationStep = currentStep >= steps.length;
@@ -1016,6 +966,9 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
         <p className="text-[var(--pagsmile-blue)]/70 mt-2">
           {template.description || 'Preencha os dados abaixo para iniciar seu cadastro'}
         </p>
+        <div className="mt-3 flex justify-center">
+          <AutoSaveIndicator lastSaved={lastSaved} />
+        </div>
       </div>
 
       {/* Step Navigation */}
@@ -1029,7 +982,14 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
       {/* Formulário */}
       <div className="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm mt-6">
         {isConfirmationStep ? (
-          renderConfirmation()
+          <ConfirmationReview
+            questions={questions}
+            formData={formData}
+            steps={steps}
+            onGoToStep={handleGoToStep}
+            updateField={updateField}
+            shouldShowQuestion={shouldShowQuestion}
+          />
         ) : (
           <div className="space-y-6">
             {steps[currentStep]?.map(q => {
