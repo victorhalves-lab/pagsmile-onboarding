@@ -13,7 +13,7 @@ import { CheckCircle, AlertTriangle } from 'lucide-react';
  * - updateField: function
  * - required: boolean
  */
-export default function PercentDistributionRow({ title, fields, formData, updateField, required = true }) {
+export default function PercentDistributionRow({ title, fields, formData, updateField, required = true, error }) {
   const values = fields.map(f => parseFloat(formData[f.id]) || 0);
   const total = values.reduce((a, b) => a + b, 0);
   const allFilled = fields.every(f => formData[f.id] !== undefined && formData[f.id] !== '' && formData[f.id] !== null);
@@ -65,6 +65,14 @@ export default function PercentDistributionRow({ title, fields, formData, update
           </div>
         ))}
       </div>
+
+      {/* Erro de validação */}
+      {error && !hasAnyValue && (
+        <div className="flex items-center gap-1.5 text-xs text-red-500 mt-1">
+          <AlertTriangle className="w-3 h-3 shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
 
       {/* Barra de total */}
       {hasAnyValue && (

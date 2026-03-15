@@ -13,7 +13,7 @@ const RATE_FIELDS = [
   { key: 'taxa3ds', label: 'Taxa de 3DS', suffix: 'R$', icon: Lock, placeholder: '0.05' },
 ];
 
-export default function ExpectedRatesInput({ formData, updateField }) {
+export default function ExpectedRatesInput({ formData, updateField, error }) {
   const rates = formData._expectedRates || {};
 
   const handleChange = (key, value) => {
@@ -46,6 +46,14 @@ export default function ExpectedRatesInput({ formData, updateField }) {
         Expectativa de Taxas
         <span className="text-red-500 ml-1">*</span>
       </Label>
+
+      {/* Erro de validação */}
+      {error && (
+        <div className="flex items-center gap-1.5 text-xs text-red-500 px-1">
+          <Info className="w-3 h-3 shrink-0 text-red-500" />
+          <span>{error}</span>
+        </div>
+      )}
 
       {/* Grid de campos */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
