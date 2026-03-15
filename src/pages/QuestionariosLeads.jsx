@@ -21,7 +21,7 @@ import {
 import {
   Search, ClipboardList, Download, Eye, Trash2, Loader2, X,
   ShoppingCart, Network, Building2, ArrowUpDown, RefreshCw, Zap,
-  Phone, FileText, AlertTriangle, Shield, TrendingUp, MessageSquareText, UserPlus, Briefcase
+  Phone, FileText, AlertTriangle, Shield, TrendingUp, MessageSquareText, UserPlus, Briefcase, Bot
 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
@@ -31,6 +31,7 @@ import LeadQualifierBadge from '../components/leads/LeadQualifierBadge';
 import QuestionnaireResponsesModal from '../components/leads/QuestionnaireResponsesModal';
 import IntroducerLeadsTab from '../components/leads/IntroducerLeadsTab';
 import MeetingQuestionnaireTab from '../components/meeting-questionnaire/MeetingQuestionnaireTab';
+import AIQuestionnaireTab from '../components/meeting-questionnaire/AIQuestionnaireTab';
 
 const STATUS_CONFIG = {
   questionario_preenchido: { label: 'Novo', color: 'bg-blue-100 text-blue-700', icon: '🔵' },
@@ -280,6 +281,10 @@ export default function QuestionariosLeads() {
             <Briefcase className="w-3 h-3" />
             Questionário Reunião
           </TabsTrigger>
+          <TabsTrigger value="ai" className="gap-1">
+            <Bot className="w-3 h-3" />
+            Questionário com Robô
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="simplificado" className="mt-4">
@@ -315,6 +320,10 @@ export default function QuestionariosLeads() {
 
         <TabsContent value="reuniao" className="mt-4">
           <MeetingQuestionnaireTab />
+        </TabsContent>
+
+        <TabsContent value="ai" className="mt-4">
+          <AIQuestionnaireTab />
         </TabsContent>
 
         <TabsContent value="completo" className="mt-4 space-y-6">
