@@ -252,8 +252,12 @@ export default function QuestionarioReuniao() {
             <ClipboardList className="w-6 h-6 text-[#5cf7cf]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">Questionário de Reunião</h1>
-            <p className="text-sm text-white/60">Preencha durante a reunião comercial com o cliente</p>
+            <h1 className="text-2xl font-bold text-white">
+              {editId ? 'Revisar Questionário' : 'Questionário de Reunião'}
+            </h1>
+            <p className="text-sm text-white/60">
+              {editId ? 'Revise e complete os dados preenchidos pela IA' : 'Preencha durante a reunião comercial com o cliente'}
+            </p>
           </div>
         </div>
       </div>
@@ -267,9 +271,9 @@ export default function QuestionarioReuniao() {
       {/* Submit */}
       <div className="flex justify-end gap-3 pb-8">
         <Button variant="outline" onClick={() => navigate(createPageUrl('QuestionariosLeads'))}>Cancelar</Button>
-        <Button onClick={handleSubmit} disabled={saving} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white">
+        <Button onClick={handleSubmit} disabled={saving || loadingExisting} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white">
           {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
-          Salvar e Criar Lead
+          {editId ? 'Salvar Revisão e Criar Lead' : 'Salvar e Criar Lead'}
         </Button>
       </div>
     </div>
