@@ -585,37 +585,34 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
           const isCurrency = qText.includes('(r$)') || qText.includes('r$') || MONETARY_QUESTION_IDS.includes(question.id);
           const prefix = isCurrency ? 'R$' : isPercent ? '%' : null;
           return (
-            <div className="relative">
-              {prefix && (
-                <span className={`absolute ${prefix === 'R$' ? 'left-4' : 'right-4'} top-1/2 -translate-y-1/2 text-[var(--pagsmile-blue)]/60 font-semibold text-sm`}>
-                  {prefix}
-                </span>
-              )}
-              <Input
-                type="number"
-                min="0"
-                step="0.01"
-                value={value}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  if (val === '' || parseFloat(val) >= 0) {
-                    updateField(question.id, val);
-                  }
-                }}
-                onBlur={(e) => {
-                  const val = e.target.value;
-                  if (val !== '' && !isNaN(parseFloat(val))) {
-                    updateField(question.id, parseFloat(val).toFixed(2));
-                  }
-                }}
-                placeholder={question.placeholder || ''}
-                className={`h-12 rounded-xl ${isCurrency ? 'pl-12' : ''} ${isPercent ? 'pr-10' : ''} ${errorBorderClass}`}
-              />
-            </div>
-          );
-          return (
             <>
-              {element}
+              <div className="relative">
+                {prefix && (
+                  <span className={`absolute ${prefix === 'R$' ? 'left-4' : 'right-4'} top-1/2 -translate-y-1/2 text-[var(--pagsmile-blue)]/60 font-semibold text-sm`}>
+                    {prefix}
+                  </span>
+                )}
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={value}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === '' || parseFloat(val) >= 0) {
+                      updateField(question.id, val);
+                    }
+                  }}
+                  onBlur={(e) => {
+                    const val = e.target.value;
+                    if (val !== '' && !isNaN(parseFloat(val))) {
+                      updateField(question.id, parseFloat(val).toFixed(2));
+                    }
+                  }}
+                  placeholder={question.placeholder || ''}
+                  className={`h-12 rounded-xl ${isCurrency ? 'pl-12' : ''} ${isPercent ? 'pr-10' : ''} ${errorBorderClass}`}
+                />
+              </div>
               <FormFieldError error={fieldError} />
             </>
           );
