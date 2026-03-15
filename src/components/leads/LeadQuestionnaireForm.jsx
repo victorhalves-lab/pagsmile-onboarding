@@ -881,7 +881,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
       return (
         <React.Fragment key={`${question.id}-with-pct`}>
           {renderQuestionDefault(question)}
-          <ProductTypePercentages formData={formData} updateField={updateField} />
+          <ProductTypePercentages formData={formData} updateField={updateField} error={validationErrors['_product_percentages']} />
         </React.Fragment>
       );
     }
@@ -897,6 +897,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
             <ExpectedRatesInput
               formData={formData}
               updateField={updateField}
+              error={validationErrors['_expectedRates']}
             />
           )}
         </React.Fragment>
@@ -934,6 +935,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
             formData={formData}
             updateField={updateField}
             required={group.required}
+            error={validationErrors[group.trigger]}
           />
         );
       }
