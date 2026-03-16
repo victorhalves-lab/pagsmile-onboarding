@@ -9,9 +9,9 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { code } = await req.json();
-
-    const adminCode = Deno.env.get("ADMIN_ACCESS_CODE");
+    const body = await req.json();
+    const code = body.code || '';
+    const adminCode = Deno.env.get("ADMIN_ACCESS_CODE") || '';
 
     if (!adminCode) {
       return Response.json({ error: 'Admin code not configured' }, { status: 500 });
@@ -19,9 +19,9 @@ Deno.serve(async (req) => {
 
     if (code === adminCode) {
       return Response.json({ success: true });
-    } else {
-      return Response.json({ success: false, error: 'Código inválido' }, { status: 403 });
     }
+
+    return Response.json({ success: false, error: 'Código inválido' }, { status: 403 });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
