@@ -84,6 +84,7 @@ function getDisplayQuestion(response, section) {
 export default function ComplianceResponsesPanel({ caseId, questionnaireTemplateId }) {
   const [activeSection, setActiveSection] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
 
   const { data: rawResponses = [], isLoading } = useQuery({
     queryKey: ['responses-panel', caseId],
@@ -179,16 +180,18 @@ export default function ComplianceResponsesPanel({ caseId, questionnaireTemplate
     );
   }
 
-  const [downloadingPdf, setDownloadingPdf] = useState(false);
-
   const handleExportPdf = async () => {
     setDownloadingPdf(true);
     try {
-      const response = await base44.functions.invoke('generateCompliancePdf', {
-        onboardingCaseId: caseId
+      const response = await base44.functions.fetch('generateCompliancePdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ onboardingCaseId: caseId })
       });
-      const data = response.data;
-      const blob = data instanceof Blob ? data : new Blob([data], { type: 'application/pdf' });
+      if (!response.ok) {
+        throw new Error('Erro ao gerar PDF');
+      }
+      const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;

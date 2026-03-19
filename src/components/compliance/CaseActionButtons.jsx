@@ -15,12 +15,16 @@ export default function CaseActionButtons({ caseId, merchantName, documentsCount
     }
     setDownloadingZip(true);
     try {
-      const response = await base44.functions.invoke('downloadCaseDocuments', { 
-        onboardingCaseId: caseId 
+      const response = await base44.functions.fetch('downloadCaseDocuments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ onboardingCaseId: caseId })
       });
-      
-      const data = response.data;
-      const blob = data instanceof Blob ? data : new Blob([data], { type: 'application/zip' });
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ error: 'Erro desconhecido' }));
+        throw new Error(err.error || 'Erro ao baixar');
+      }
+      const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -42,12 +46,16 @@ export default function CaseActionButtons({ caseId, merchantName, documentsCount
   const handleDownloadPdf = async () => {
     setDownloadingPdf(true);
     try {
-      const response = await base44.functions.invoke('generateCompliancePdf', {
-        onboardingCaseId: caseId
+      const response = await base44.functions.fetch('generateCompliancePdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ onboardingCaseId: caseId })
       });
-
-      const data = response.data;
-      const blob = data instanceof Blob ? data : new Blob([data], { type: 'application/pdf' });
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ error: 'Erro desconhecido' }));
+        throw new Error(err.error || 'Erro ao gerar PDF');
+      }
+      const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
