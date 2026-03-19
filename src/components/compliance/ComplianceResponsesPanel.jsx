@@ -1,10 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Loader2, FileCheck, Search, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Loader2, FileCheck, Search, CheckCircle2, AlertCircle, FileText } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { toast } from 'sonner';
 import ResponsesSectionNav from './ResponsesSectionNav';
 import ResponseCard from './ResponseCard';
 
@@ -177,6 +179,33 @@ export default function ComplianceResponsesPanel({ caseId, questionnaireTemplate
     );
   }
 
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
+
+  const handleExportPdf = async () => {
+    setDownloadingPdf(true);
+    try {
+      const response = await base44.functions.invoke('generateCompliancePdf', {
+        onboardingCaseId: caseId
+      });
+      const data = response.data;
+      const blob = data instanceof Blob ? data : new Blob([data], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `compliance_respostas_${caseId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success('PDF gerado com sucesso!');
+    } catch (err) {
+      console.error('PDF export error:', err);
+      toast.error('Erro ao gerar PDF.');
+    } finally {
+      setDownloadingPdf(false);
+    }
+  };
+
   return (
     <div className="space-y-5">
       {/* Stats bar */}
@@ -203,6 +232,16 @@ export default function ComplianceResponsesPanel({ caseId, questionnaireTemplate
               {rawResponses.length - deduplicateResponses(rawResponses).length} duplicadas removidas
             </Badge>
           )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportPdf}
+            disabled={downloadingPdf}
+            className="text-[#002443]/70 border-[#002443]/10 hover:bg-[#2bc196]/5 hover:border-[#2bc196]/30 hover:text-[#2bc196] text-xs rounded-lg ml-2"
+          >
+            {downloadingPdf ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <FileText className="w-3.5 h-3.5 mr-1.5" />}
+            Exportar PDF
+          </Button>
         </div>
       </div>
 
