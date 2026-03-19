@@ -424,7 +424,7 @@ export default function AnaliseDeCasos() {
         <TabsContent value="responses">
           <div className="bg-white rounded-xl border border-slate-200 p-6">
             <h3 className="text-lg font-bold text-[var(--pagsmile-blue)] mb-6">Respostas do Questionário</h3>
-            <ComplianceResponsesPanel caseId={caseId} />
+            <ComplianceResponsesPanel caseId={caseId} questionnaireTemplateId={onboardingCase?.questionnaireTemplateId} />
           </div>
         </TabsContent>
 
