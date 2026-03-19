@@ -29,8 +29,10 @@ Deno.serve(async (req) => {
   for (const doc of documents) {
     if (!doc.fileUrl) continue;
 
-    // Generate unique file name
-    let baseName = doc.fileName || doc.documentName || 'documento';
+    // Generate unique file name — sanitize to ASCII-safe characters
+    let baseName = (doc.fileName || doc.documentName || 'documento')
+      .replace(/[^a-zA-Z0-9.\-_]/g, '_');
+
     if (nameCount[baseName]) {
       nameCount[baseName]++;
       const parts = baseName.split('.');
@@ -47,7 +49,7 @@ Deno.serve(async (req) => {
     try {
       let downloadUrl = doc.fileUrl;
 
-      // If it's a private file (b44s:// or private storage), get a signed URL
+      // If it's a private file, get a signed URL
       if (doc.fileUrl.startsWith('b44s://') || doc.fileUrl.includes('/private/')) {
         const { signed_url } = await base44.asServiceRole.integrations.Core.CreateFileSignedUrl({
           file_uri: doc.fileUrl,
@@ -62,8 +64,13 @@ Deno.serve(async (req) => {
         continue;
       }
 
-      const arrayBuffer = await response.arrayBuffer();
-      zip.file(baseName, arrayBuffer);
+      const content = await response.arrayBuffer();
+      if (!content || content.byteLength === 0) {
+        console.warn(`Skipping empty file: ${baseName}`);
+        continue;
+      }
+
+      zip.file(baseName, new Uint8Array(content));
     } catch (err) {
       console.error(`Error downloading ${baseName}:`, err.message);
       continue;
@@ -75,13 +82,13 @@ Deno.serve(async (req) => {
     return Response.json({ error: 'Could not download any documents' }, { status: 500 });
   }
 
-  const zipBuffer = await zip.generateAsync({ type: 'uint8array' });
+  const zipBuffer = await zip.generateAsync({ type: 'uint8array', compression: 'DEFLATE' });
 
   return new Response(zipBuffer, {
     status: 200,
     headers: {
       'Content-Type': 'application/zip',
-      'Content-Disposition': `attachment; filename="documentos_${onboardingCaseId}.zip"`,
+      'Content-Disposition': `attachment; filename="documentos.zip"`,
     },
   });
 });
