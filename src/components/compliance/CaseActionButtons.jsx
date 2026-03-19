@@ -17,9 +17,8 @@ export default function CaseActionButtons({ caseId, merchantName, documentsCount
     try {
       const response = await base44.functions.invoke('downloadCaseDocuments', { 
         onboardingCaseId: caseId 
-      });
+      }, { responseType: 'arraybuffer' });
       
-      // Response.data is the raw binary from axios
       const blob = new Blob([response.data], { type: 'application/zip' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -44,7 +43,7 @@ export default function CaseActionButtons({ caseId, merchantName, documentsCount
     try {
       const response = await base44.functions.invoke('generateCompliancePdf', {
         onboardingCaseId: caseId
-      });
+      }, { responseType: 'arraybuffer' });
 
       const blob = new Blob([response.data], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
