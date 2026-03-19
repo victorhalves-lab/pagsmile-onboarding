@@ -79,7 +79,7 @@ function getDisplayQuestion(response, section) {
   return q;
 }
 
-export default function ComplianceResponsesPanel({ caseId }) {
+export default function ComplianceResponsesPanel({ caseId, questionnaireTemplateId }) {
   const [activeSection, setActiveSection] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -89,33 +89,50 @@ export default function ComplianceResponsesPanel({ caseId }) {
     enabled: !!caseId
   });
 
+  // Fetch questions for ordering
+  const { data: questions = [] } = useQuery({
+    queryKey: ['questions-order', questionnaireTemplateId],
+    queryFn: () => base44.entities.Question.filter({ questionnaireTemplateId }),
+    enabled: !!questionnaireTemplateId
+  });
+
   const { sections, groupedResponses, totalAnswered, totalQuestions } = useMemo(() => {
     if (!rawResponses.length) return { sections: [], groupedResponses: {}, totalAnswered: 0, totalQuestions: 0 };
 
-    // Deduplicate
-    const responses = deduplicateResponses(rawResponses);
+    // Build question order map
+    const questionOrderMap = {};
+    questions.forEach(q => {
+      questionOrderMap[q.id] = q.order ?? 999;
+    });
 
-    // Group by section
+    // Sort responses by question order first
+    const orderedResponses = [...rawResponses].sort((a, b) => {
+      const orderA = questionOrderMap[a.questionId] ?? 999;
+      const orderB = questionOrderMap[b.questionId] ?? 999;
+      return orderA - orderB;
+    });
+
+    // Deduplicate (preserving order)
+    const responses = deduplicateResponses(orderedResponses);
+
+    // Group by section (preserving insertion order from sorted responses)
     const groups = {};
+    const sectionInsertionOrder = [];
     for (const r of responses) {
       const section = extractSection(r.questionText);
-      if (!groups[section]) groups[section] = [];
+      if (!groups[section]) {
+        groups[section] = [];
+        sectionInsertionOrder.push(section);
+      }
       groups[section].push(r);
     }
 
-    // Build section list with counts
-    const sectionList = Object.entries(groups).map(([name, items]) => ({
+    // Build section list preserving the insertion order (which follows question order)
+    const sectionList = sectionInsertionOrder.map(name => ({
       name,
-      count: items.filter(r => getDisplayValue(r) !== null).length,
-      total: items.length,
+      count: groups[name].filter(r => getDisplayValue(r) !== null).length,
+      total: groups[name].length,
     }));
-
-    // Sort: sections with more answers first, then alphabetically
-    sectionList.sort((a, b) => {
-      if (a.name === 'Geral') return 1;
-      if (b.name === 'Geral') return -1;
-      return b.count - a.count || a.name.localeCompare(b.name);
-    });
 
     const totalA = responses.filter(r => getDisplayValue(r) !== null).length;
 
@@ -125,7 +142,7 @@ export default function ComplianceResponsesPanel({ caseId }) {
       totalAnswered: totalA,
       totalQuestions: responses.length,
     };
-  }, [rawResponses]);
+  }, [rawResponses, questions]);
 
   // Active section
   const currentSection = activeSection || sections[0]?.name;

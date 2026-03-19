@@ -753,7 +753,8 @@ export default function QuestionariosRecebidos() {
                         <CaseExpandedDetail 
                           caseData={c} 
                           scoresMap={scoresMap} 
-                          templatesMap={templatesMap} 
+                          templatesMap={templatesMap}
+                          merchantMap={merchantMap}
                         />
                       </TableCell>
                     </TableRow>
