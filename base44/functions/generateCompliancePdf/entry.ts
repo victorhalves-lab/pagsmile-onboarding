@@ -13,19 +13,20 @@ Deno.serve(async (req) => {
     return Response.json({ error: 'onboardingCaseId is required' }, { status: 400 });
   }
 
-  // Fetch case, merchant, responses and questions in parallel
-  const [cases, responses, merchants] = await Promise.all([
-    base44.asServiceRole.entities.OnboardingCase.filter({ id: onboardingCaseId }),
-    base44.asServiceRole.entities.QuestionnaireResponse.filter({ onboardingCaseId }),
-    base44.asServiceRole.entities.Merchant.list(),
-  ]);
-
-  const caseData = cases[0];
+  // Fetch case data
+  const allCases = await base44.asServiceRole.entities.OnboardingCase.list();
+  const caseData = allCases.find(c => c.id === onboardingCaseId);
   if (!caseData) {
     return Response.json({ error: 'Case not found' }, { status: 404 });
   }
 
-  const merchant = merchants.find(m => m.id === caseData.merchantId);
+  // Fetch responses and merchant info
+  const [responses, allMerchants] = await Promise.all([
+    base44.asServiceRole.entities.QuestionnaireResponse.filter({ onboardingCaseId }),
+    base44.asServiceRole.entities.Merchant.list(),
+  ]);
+
+  const merchant = allMerchants.find(m => m.id === caseData.merchantId);
 
   // Fetch questions for ordering
   let questions = [];
