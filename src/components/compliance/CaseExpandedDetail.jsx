@@ -6,6 +6,7 @@ import {
   CheckCircle2, XCircle, Clock, AlertTriangle, FileText,
   Brain, Shield, Paperclip, Loader2, ExternalLink
 } from 'lucide-react';
+import CaseActionButtons from './CaseActionButtons';
 
 function DocStatusIcon({ status }) {
   if (status === 'Validado') return <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />;
@@ -24,7 +25,7 @@ function ValidationStatusBadge({ status }) {
   return <Badge className={`${colors[status] || colors.Pendente} text-[10px] border-0`}>{status}</Badge>;
 }
 
-export default function CaseExpandedDetail({ caseData, scoresMap, templatesMap }) {
+export default function CaseExpandedDetail({ caseData, scoresMap, templatesMap, merchantMap }) {
   const score = scoresMap?.[caseData.id];
   const template = templatesMap?.[caseData.questionnaireTemplateId];
   const requiredDocs = template?.requiredDocuments || [];
@@ -51,7 +52,17 @@ export default function CaseExpandedDetail({ caseData, scoresMap, templatesMap }
   });
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="space-y-4">
+      {/* Action Buttons */}
+      <div className="flex items-center justify-between bg-white rounded-xl p-3 border border-[#002443]/5">
+        <span className="text-xs font-bold text-[#002443] uppercase tracking-wider">Ações Rápidas</span>
+        <CaseActionButtons
+          caseId={caseData.id}
+          merchantName={merchantMap?.[caseData.merchantId]?.fullName || ''}
+          documentsCount={uploads.length}
+        />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {/* IA Summary */}
       <div className="bg-white rounded-xl p-4 border border-[#002443]/5">
         <div className="flex items-center gap-2 mb-3">
@@ -174,6 +185,7 @@ export default function CaseExpandedDetail({ caseData, scoresMap, templatesMap }
             </div>
           ))}
         </div>
+      </div>
       </div>
     </div>
   );
