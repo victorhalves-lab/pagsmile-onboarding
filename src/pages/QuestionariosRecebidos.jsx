@@ -820,12 +820,12 @@ export default function QuestionariosRecebidos() {
         )}
       </div>
 
-        </TabsContent>
+      </TabsContent>
 
-        <TabsContent value="drafts" className="mt-4">
-          <DraftsTab />
-        </TabsContent>
-      </Tabs>
+      <TabsContent value="drafts" className="mt-4">
+        <DraftsTab />
+      </TabsContent>
+    </Tabs>
     </div>
   );
 }
