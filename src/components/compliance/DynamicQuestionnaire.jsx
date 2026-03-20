@@ -370,6 +370,12 @@ export default function DynamicQuestionnaire({
     if (templateModel) {
       localStorage.setItem('current_compliance_model', templateModel);
     }
+    // Save phase transition to documents
+    saveProgressNow({
+      currentStep: 1,
+      currentPhase: 'documents',
+      formData
+    });
     if (onComplete) {
       onComplete({ formData, template, questions });
     } else {
