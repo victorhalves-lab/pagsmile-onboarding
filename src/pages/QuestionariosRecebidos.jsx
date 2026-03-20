@@ -36,9 +36,12 @@ import {
   ChevronLeft, ChevronRight, Brain, FileText,
   Inbox, ChevronDown, Shield
 } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CaseExpandedDetail from '@/components/compliance/CaseExpandedDetail';
+import DraftsTab from '@/components/compliance/DraftsTab';
 
 export default function QuestionariosRecebidos() {
+  const [activeTab, setActiveTab] = useState('received');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [merchantTypeFilter, setMerchantTypeFilter] = useState('all');
