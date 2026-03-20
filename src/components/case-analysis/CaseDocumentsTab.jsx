@@ -68,7 +68,7 @@ export default function CaseDocumentsTab({ documents, caseId, merchantName }) {
         {documents.length > 0 && (
           <Button variant="outline" size="sm" onClick={handleDownloadAllDocuments} disabled={isDownloadingZip}>
             {isDownloadingZip ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Archive className="w-4 h-4 mr-2" />}
-            {isDownloadingZip ? 'Preparando ZIP...' : 'Baixar Todos (ZIP)'}
+            {isDownloadingZip ? `Baixando ${downloadProgress}` : 'Baixar Todos (ZIP)'}
           </Button>
         )}
       </div>
