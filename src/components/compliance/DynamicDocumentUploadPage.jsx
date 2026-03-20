@@ -211,6 +211,9 @@ export default function DynamicDocumentUploadPage({
 
       toast.success('Documentos enviados com sucesso!');
 
+      // Mark session as completed
+      await completeSession();
+
       // Ir direto para tela de conclusão
       navigate(createPageUrl('OnboardingCompletion') + `?caseId=${onboardingCase.id}`);
 
