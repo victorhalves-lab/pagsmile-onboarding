@@ -34,7 +34,7 @@ import {
   Loader2, MoreHorizontal, Mail, Download,
   ArrowUpDown, Building2, User, Filter,
   ChevronLeft, ChevronRight, Brain, FileText,
-  Inbox, ChevronDown, Shield
+  Inbox, ChevronDown, Shield, FileEdit
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CaseExpandedDetail from '@/components/compliance/CaseExpandedDetail';
