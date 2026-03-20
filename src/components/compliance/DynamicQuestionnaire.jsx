@@ -240,12 +240,31 @@ export default function DynamicQuestionnaire({
     linkCode
   });
 
-  // Carregar dados salvos + pré-preencher com dados do Lead
+  // Restore session data if available (from server)
+  useEffect(() => {
+    if (sessionLoaded && savedFormData && Object.keys(savedFormData).length > 0 && !sessionRestored) {
+      setFormData(prev => {
+        // Merge: server data as base, local data on top
+        const merged = { ...savedFormData, ...prev };
+        return Object.keys(merged).length > Object.keys(prev).length ? merged : prev;
+      });
+      if (savedStep && savedStep > 1) {
+        setCurrentStep(savedStep);
+      }
+      setSessionRestored(true);
+    }
+  }, [sessionLoaded, savedFormData, savedStep, sessionRestored]);
+
+  // Carregar dados salvos do localStorage
   useEffect(() => {
     if (storageKey) {
       const savedData = localStorage.getItem(storageKey);
       if (savedData) {
-        setFormData(JSON.parse(savedData));
+        setFormData(prev => {
+          const local = JSON.parse(savedData);
+          // Only set if we don't already have data
+          return Object.keys(prev).length === 0 ? local : prev;
+        });
       }
     }
   }, [storageKey]);
