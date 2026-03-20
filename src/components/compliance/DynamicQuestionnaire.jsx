@@ -336,7 +336,14 @@ export default function DynamicQuestionnaire({
         return;
       }
       trackPageComplete({ stepNumber: currentStep });
-      setCurrentStep(currentStep + 1);
+      const nextStep = currentStep + 1;
+      setCurrentStep(nextStep);
+      // Save step change immediately
+      saveProgressNow({
+        currentStep: nextStep,
+        currentPhase: 'questionnaire',
+        formData
+      });
       window.scrollTo(0, 0);
     }
   };
