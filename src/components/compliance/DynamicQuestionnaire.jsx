@@ -285,12 +285,18 @@ export default function DynamicQuestionnaire({
     }
   }, [hasPrefill, JSON.stringify(prefillData)]);
 
-  // Salvar dados
+  // Salvar dados localmente e no servidor (debounced)
   useEffect(() => {
     if (storageKey && Object.keys(formData).length > 0) {
       localStorage.setItem(storageKey, JSON.stringify(formData));
+      // Auto-save to server (debounced inside hook)
+      saveProgress({
+        currentStep,
+        currentPhase: 'questionnaire',
+        formData
+      });
     }
-  }, [formData, storageKey]);
+  }, [formData, storageKey, currentStep, saveProgress]);
 
   const handleFieldChange = (questionId, value) => {
     setFormData(prev => ({ ...prev, [questionId]: value }));
