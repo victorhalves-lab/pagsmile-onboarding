@@ -9,6 +9,8 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import DynamicDocumentUploader from './DynamicDocumentUploader';
+import { useComplianceSession } from '../../hooks/useComplianceSession';
+import AutoSaveIndicator from './AutoSaveIndicator';
 
 export default function DynamicDocumentUploadPage({
   templateId,
