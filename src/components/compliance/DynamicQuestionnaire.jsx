@@ -418,14 +418,21 @@ export default function DynamicQuestionnaire({
 
   return (
     <div className="max-w-3xl mx-auto">
-      {/* Header com badge */}
-      <div className="flex items-center gap-2 mb-4">
-        <div className={`px-2 py-1 rounded-lg text-xs font-semibold ${badgeColor}`}>
-          {badgeLabel || templateModel?.toUpperCase()}
+      {/* Header com badge + Auto-save indicator */}
+      <div className="flex items-center justify-between gap-2 mb-4 flex-wrap">
+        <div className="flex items-center gap-2">
+          <div className={`px-2 py-1 rounded-lg text-xs font-semibold ${badgeColor}`}>
+            {badgeLabel || templateModel?.toUpperCase()}
+          </div>
+          <h3 className="font-bold text-[var(--pagsmile-blue)] text-sm">
+            {template.name}
+          </h3>
         </div>
-        <h3 className="font-bold text-[var(--pagsmile-blue)] text-sm">
-          {template.name}
-        </h3>
+        <AutoSaveIndicator
+          saving={isSaving}
+          lastSaved={sessionLoaded}
+          resumeUrl={getResumeUrl()}
+        />
       </div>
 
       {/* Navegação horizontal no topo */}
