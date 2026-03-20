@@ -286,15 +286,15 @@ export default function AnaliseDeCasos() {
             <div>
               <p className="text-sm text-[var(--pagsmile-blue)]/70 font-semibold">Score de Risco</p>
               <p className={`text-3xl font-bold ${
-                (complianceScore?.score || onboardingCase.riskScore || 0) >= 75 ? 'text-green-600' :
-                (complianceScore?.score || onboardingCase.riskScore || 0) >= 40 ? 'text-orange-600' : 'text-red-600'
+                (complianceScore?.score_geral_composto ? Math.round(complianceScore.score_geral_composto / 10) : onboardingCase.riskScore || 0) >= 75 ? 'text-green-600' :
+                (complianceScore?.score_geral_composto ? Math.round(complianceScore.score_geral_composto / 10) : onboardingCase.riskScore || 0) >= 40 ? 'text-orange-600' : 'text-red-600'
               }`}>
-                {complianceScore?.score || onboardingCase.riskScore || '-'}
+                {complianceScore?.score_geral_composto ? Math.round(complianceScore.score_geral_composto / 10) : onboardingCase.riskScore || '-'}
               </p>
             </div>
             <div className={`p-3 rounded-xl ${
-              (complianceScore?.score || onboardingCase.riskScore || 0) >= 75 ? 'bg-green-100' :
-              (complianceScore?.score || onboardingCase.riskScore || 0) >= 40 ? 'bg-orange-100' : 'bg-red-100'
+              (complianceScore?.score_geral_composto ? Math.round(complianceScore.score_geral_composto / 10) : onboardingCase.riskScore || 0) >= 75 ? 'bg-green-100' :
+              (complianceScore?.score_geral_composto ? Math.round(complianceScore.score_geral_composto / 10) : onboardingCase.riskScore || 0) >= 40 ? 'bg-orange-100' : 'bg-red-100'
             }`}>
               <Scale className="w-6 h-6" />
             </div>
