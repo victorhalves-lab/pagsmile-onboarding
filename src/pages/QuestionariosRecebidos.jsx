@@ -358,21 +358,41 @@ export default function QuestionariosRecebidos() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">Questionários Recebidos</h1>
-              <p className="text-white/60 text-sm mt-1">Todas as submissões de compliance dos merchants</p>
+              <p className="text-white/60 text-sm mt-1">Submissões de compliance e rascunhos dos merchants</p>
             </div>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={handleExport} className="border-white/20 text-white hover:bg-white/10 rounded-xl bg-transparent">
-              <Download className="w-4 h-4 mr-2" />
-              Exportar
-            </Button>
-            <Button variant="outline" onClick={() => refetchCases()} className="border-white/20 text-white hover:bg-white/10 rounded-xl bg-transparent">
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Atualizar
-            </Button>
+            {activeTab === 'received' && (
+              <>
+                <Button variant="outline" onClick={handleExport} className="border-white/20 text-white hover:bg-white/10 rounded-xl bg-transparent">
+                  <Download className="w-4 h-4 mr-2" />
+                  Exportar
+                </Button>
+                <Button variant="outline" onClick={() => refetchCases()} className="border-white/20 text-white hover:bg-white/10 rounded-xl bg-transparent">
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Atualizar
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="bg-white border border-[#002443]/10 p-1 rounded-xl">
+          <TabsTrigger value="received" className="rounded-lg data-[state=active]:bg-[#002443] data-[state=active]:text-white gap-2 px-4">
+            <FileCheck className="w-4 h-4" />
+            Recebidos
+            <Badge className="bg-[#2bc196]/20 text-[#002443] text-xs ml-1 border-0">{stats.total}</Badge>
+          </TabsTrigger>
+          <TabsTrigger value="drafts" className="rounded-lg data-[state=active]:bg-[#002443] data-[state=active]:text-white gap-2 px-4">
+            <FileEdit className="w-4 h-4" />
+            Rascunhos
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="received" className="space-y-6 mt-4">
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
