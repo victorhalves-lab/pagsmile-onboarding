@@ -1,34 +1,64 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FileText, Loader2, Eye, Archive } from 'lucide-react';
 import { toast } from 'sonner';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 export default function CaseDocumentsTab({ documents, caseId, merchantName }) {
   const [isDownloadingZip, setIsDownloadingZip] = useState(false);
+  const [downloadProgress, setDownloadProgress] = useState('');
 
   const handleDownloadAllDocuments = async () => {
-    setIsDownloadingZip(true);
-    try {
-      const response = await base44.functions.invoke('downloadCaseDocuments', { onboardingCaseId: caseId });
-      const data = response.data;
-      const blob = data instanceof Blob ? data : new Blob([data], { type: 'application/zip' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `documentos_${merchantName || caseId}.zip`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-      toast.success('Download dos documentos iniciado!');
-    } catch (error) {
-      console.error('Erro ao baixar documentos:', error);
-      toast.error('Falha ao baixar documentos. Tente novamente.');
-    } finally {
-      setIsDownloadingZip(false);
+    const docsWithUrl = documents.filter(d => d.fileUrl);
+    if (docsWithUrl.length === 0) {
+      toast.info('Nenhum documento com arquivo disponível para baixar.');
+      return;
     }
+
+    setIsDownloadingZip(true);
+    setDownloadProgress(`0 / ${docsWithUrl.length}`);
+
+    const zip = new JSZip();
+    let successCount = 0;
+    let failCount = 0;
+
+    for (let i = 0; i < docsWithUrl.length; i++) {
+      const doc = docsWithUrl[i];
+      setDownloadProgress(`${i + 1} / ${docsWithUrl.length}`);
+      try {
+        const response = await fetch(doc.fileUrl);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const blob = await response.blob();
+        const fileName = doc.fileName || doc.documentName || `documento_${i + 1}`;
+        zip.file(fileName, blob);
+        successCount++;
+      } catch (err) {
+        console.warn(`Falha ao baixar ${doc.fileName || doc.documentName}:`, err);
+        failCount++;
+      }
+    }
+
+    if (successCount === 0) {
+      toast.error('Não foi possível baixar nenhum documento.');
+      setIsDownloadingZip(false);
+      setDownloadProgress('');
+      return;
+    }
+
+    setDownloadProgress('Gerando ZIP...');
+    const zipBlob = await zip.generateAsync({ type: 'blob' });
+    saveAs(zipBlob, `documentos_${merchantName || caseId}.zip`);
+
+    if (failCount > 0) {
+      toast.warning(`ZIP gerado! ${successCount} baixados, ${failCount} falharam.`);
+    } else {
+      toast.success(`ZIP com ${successCount} documentos baixado com sucesso!`);
+    }
+
+    setIsDownloadingZip(false);
+    setDownloadProgress('');
   };
 
   return (
