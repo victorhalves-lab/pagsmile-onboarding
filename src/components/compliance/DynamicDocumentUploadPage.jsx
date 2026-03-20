@@ -262,6 +262,13 @@ export default function DynamicDocumentUploadPage({
             {badgeLabel || template.name}
           </div>
         </div>
+        <div className="flex justify-center mt-3">
+          <AutoSaveIndicator
+            saving={false}
+            lastSaved={sessionLoaded}
+            resumeUrl={getResumeUrl()}
+          />
+        </div>
       </div>
 
       {/* Upload de Documentos */}
