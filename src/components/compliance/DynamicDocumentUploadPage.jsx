@@ -29,6 +29,40 @@ export default function DynamicDocumentUploadPage({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [allRequiredUploaded, setAllRequiredUploaded] = useState(false);
 
+  // Session for save & resume
+  const {
+    sessionLoaded,
+    savedDocumentsData,
+    saveProgress,
+    saveProgressNow,
+    completeSession,
+    getResumeUrl
+  } = useComplianceSession({
+    flowType: flowType || templateModel,
+    templateModel: templateModel || 'unknown',
+    storageKey: formDataStorageKey
+  });
+
+  // Restore documents from session
+  useEffect(() => {
+    if (sessionLoaded && savedDocumentsData && Object.keys(savedDocumentsData).length > 0) {
+      setDocuments(prev => {
+        if (Object.keys(prev).length === 0) return savedDocumentsData;
+        return prev;
+      });
+    }
+  }, [sessionLoaded, savedDocumentsData]);
+
+  // Auto-save documents to server when they change
+  useEffect(() => {
+    if (Object.keys(documents).length > 0) {
+      saveProgress({
+        currentPhase: 'documents',
+        documentsData: documents
+      });
+    }
+  }, [documents, saveProgress]);
+
   // Buscar template
   const { data: template, isLoading: loadingTemplate } = useQuery({
     queryKey: ['template', templateId, templateModel],
