@@ -11,6 +11,7 @@ import GestaoIntroducers from './pages/GestaoIntroducers';
 import IntroducerDashboard from './pages/IntroducerDashboard';
 import QuestionarioReuniao from './pages/QuestionarioReuniao';
 import ProcessMeetingNotes from './pages/ProcessMeetingNotes';
+import ComplianceResume from './pages/ComplianceResume';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
