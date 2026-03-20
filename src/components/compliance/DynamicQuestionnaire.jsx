@@ -183,8 +183,23 @@ export default function DynamicQuestionnaire({
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({});
+  const [sessionRestored, setSessionRestored] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const linkCode = localStorage.getItem('onboarding_link_code');
+
+  // Session management for save & resume
+  const {
+    sessionToken,
+    isLoading: sessionLoading,
+    sessionLoaded,
+    savedFormData,
+    savedStep,
+    savedPhase,
+    saveProgress,
+    saveProgressNow,
+    getResumeUrl
+  } = useComplianceSession({ flowType, templateModel, storageKey });
 
   // Buscar template
   const { data: template, isLoading: loadingTemplate } = useQuery({
