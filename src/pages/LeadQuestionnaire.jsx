@@ -97,6 +97,7 @@ export default function LeadQuestionnaire() {
       template={template}
       questions={questions}
       linkCode={linkCode}
+      onboardingLink={onboardingLink}
       onSubmit={handleSubmit}
     />
   );

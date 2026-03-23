@@ -168,7 +168,7 @@ const PERCENT_GROUPS = [
 
 const STORAGE_KEY = 'lead_questionnaire_data'; // v2
 
-export default function LeadQuestionnaireForm({ template, questions: rawQuestions, linkCode, onSubmit }) {
+export default function LeadQuestionnaireForm({ template, questions: rawQuestions, linkCode, onboardingLink, onSubmit }) {
   // Filtrar perguntas ocultas (duplicadas/redundantes)
   const questions = rawQuestions.filter(q => !HIDDEN_QUESTION_IDS.includes(q.id));
   const [currentStep, setCurrentStep] = useState(0);
@@ -405,18 +405,36 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
     const protocolo = generateProtocolo();
     const qualityScore = calculateQualityScore();
 
-    // Buscar Introducer pelo utm_source da URL
+    // Buscar Introducer: priorizar onboardingLink, depois utm_source da URL
     let introducerData = {};
     const urlParams = new URLSearchParams(window.location.search);
     const utmSource = urlParams.get('utm_source') || '';
-    if (utmSource) {
+    
+    if (onboardingLink?.introducerId) {
+      const introducers = await base44.entities.Introducer.filter({ id: onboardingLink.introducerId });
+      if (introducers.length > 0) {
+        introducerData = {
+          introducerId: introducers[0].id,
+          introducerReferralCode: introducers[0].referralCode,
+          introducerName: introducers[0].name,
+        };
+      }
+    } else if (onboardingLink?.introducerReferralCode) {
+      const introducers = await base44.entities.Introducer.filter({ referralCode: onboardingLink.introducerReferralCode, status: 'active' });
+      if (introducers.length > 0) {
+        introducerData = {
+          introducerId: introducers[0].id,
+          introducerReferralCode: introducers[0].referralCode,
+          introducerName: introducers[0].name,
+        };
+      }
+    } else if (utmSource) {
       const introducers = await base44.entities.Introducer.filter({ referralCode: utmSource, status: 'active' });
       if (introducers.length > 0) {
-        const introducer = introducers[0];
         introducerData = {
-          introducerId: introducer.id,
-          introducerReferralCode: introducer.referralCode,
-          introducerName: introducer.name,
+          introducerId: introducers[0].id,
+          introducerReferralCode: introducers[0].referralCode,
+          introducerName: introducers[0].name,
         };
       }
     }
