@@ -71,6 +71,28 @@ export default function LeadQuestionnairePix() {
     const proto = `PIX-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 99999)).padStart(5, '0')}`;
     const bizMap = { Gateway: 'GATEWAY', Seller: 'MERCHAN', Marketplace: 'MARKETPLACE' };
 
+    // Buscar dados do Introducer se existir no link
+    let introducerData = {};
+    if (onboardingLink?.introducerId) {
+      const introducers = await base44.entities.Introducer.filter({ id: onboardingLink.introducerId });
+      if (introducers.length > 0) {
+        introducerData = {
+          introducerId: introducers[0].id,
+          introducerReferralCode: introducers[0].referralCode,
+          introducerName: introducers[0].name,
+        };
+      }
+    } else if (onboardingLink?.introducerReferralCode) {
+      const introducers = await base44.entities.Introducer.filter({ referralCode: onboardingLink.introducerReferralCode, status: 'active' });
+      if (introducers.length > 0) {
+        introducerData = {
+          introducerId: introducers[0].id,
+          introducerReferralCode: introducers[0].referralCode,
+          introducerName: introducers[0].name,
+        };
+      }
+    }
+
     const lead = await base44.entities.Lead.create({
       email: form.email,
       fullName: form.companyName,
@@ -86,8 +108,7 @@ export default function LeadQuestionnairePix() {
       protocolo: proto,
       origemLead: linkCode ? `link_pix_${linkCode}` : 'questionario_pix_publico',
       onboardingLinkCode: linkCode || undefined,
-      introducerReferralCode: onboardingLink?.introducerReferralCode || undefined,
-      introducerName: undefined,
+      ...introducerData,
       lastInteractionDate: new Date().toISOString(),
       questionnaireData: {
         origem: 'questionario_pix_publico',
