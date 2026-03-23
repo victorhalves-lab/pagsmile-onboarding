@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Copy, ExternalLink, Link as LinkIcon, Plus, Check, Briefcase, Zap, Loader2, ArrowRight, UserPlus } from 'lucide-react';
+import { CardDescription, CardFooter } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -20,6 +21,7 @@ export default function LinksQuestionariosLeads() {
   const genericLinks = {
     LEAD: `${window.location.origin}${createPageUrl('LeadQuestionnaire')}`,
     LEAD_SIMPLIFICADO: `${window.location.origin}${createPageUrl('QuestionarioSimplificadoPublico')}`,
+    LEAD_PIX: `${window.location.origin}${createPageUrl('LeadQuestionnairePix')}`,
   };
 
   const handleCopy = async (text, id) => {
@@ -44,7 +46,7 @@ export default function LinksQuestionariosLeads() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Card Questionário Completo */}
         <Card className="rounded-2xl border border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
           <div className="h-1.5 bg-gradient-to-r from-[#2bc196] to-[#5cf7cf]" />
@@ -146,6 +148,58 @@ export default function LinksQuestionariosLeads() {
               type="LEAD_SIMPLIFICADO" 
               label="Gerar Link Rastreável" 
               basePage="QuestionarioSimplificadoPublico"
+              icon={Zap}
+            />
+          </CardFooter>
+        </Card>
+        {/* Card Questionário PIX */}
+        <Card className="rounded-2xl border border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+          <div className="h-1.5 bg-gradient-to-r from-[#002443] to-[#2bc196]" />
+          <CardHeader className="pt-5">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-[#002443]/10">
+                  <Zap className="w-5 h-5 text-[#002443]" />
+                </div>
+                <div>
+                  <CardTitle className="text-base font-bold text-[#002443]">Questionário PIX</CardTitle>
+                  <CardDescription className="text-[#282828]/50 text-xs mt-0.5">Para clientes com interesse exclusivo em PIX</CardDescription>
+                </div>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.LEAD_PIX, '_blank')} className="border-[#002443]/10 text-[#002443] hover:bg-[#002443]/5 rounded-lg">
+                <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
+                Visualizar
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40">Link Padrão</Label>
+              <div className="flex gap-2">
+                <Input readOnly value={genericLinks.LEAD_PIX} className="font-mono text-xs bg-[#f4f4f4] border-[#002443]/5 rounded-lg" />
+                <Button 
+                  onClick={() => handleCopy(genericLinks.LEAD_PIX, 'lead-pix')}
+                  className={`rounded-lg ${copied === 'lead-pix' ? 'bg-[#2bc196]' : 'bg-[#002443] hover:bg-[#002443]/90'}`}
+                >
+                  {copied === 'lead-pix' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                </Button>
+              </div>
+            </div>
+            
+            <div className="bg-[#f4f4f4] p-4 rounded-xl text-sm text-[#002443]/80 border border-[#002443]/5">
+              <p className="font-semibold text-[#002443] text-xs mb-2">Use este questionário quando:</p>
+              <ul className="list-disc pl-4 space-y-1 text-xs text-[#282828]/60">
+                <li>O cliente tem interesse exclusivo em pagamentos via PIX</li>
+                <li>Precisa coletar dados de volume e ticket médio PIX</li>
+                <li>Quer comparar propostas de concorrentes</li>
+              </ul>
+            </div>
+          </CardContent>
+          <CardFooter>
+            <LinkGenerator 
+              type="LEAD_QUESTIONNAIRE" 
+              label="Gerar Link Rastreável" 
+              basePage="LeadQuestionnairePix"
               icon={Zap}
             />
           </CardFooter>

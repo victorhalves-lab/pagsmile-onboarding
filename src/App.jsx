@@ -12,6 +12,8 @@ import IntroducerDashboard from './pages/IntroducerDashboard';
 import QuestionarioReuniao from './pages/QuestionarioReuniao';
 import ProcessMeetingNotes from './pages/ProcessMeetingNotes';
 import ComplianceResume from './pages/ComplianceResume';
+import QuestionarioReuniaoPix from './pages/QuestionarioReuniaoPix';
+import LeadQuestionnairePix from './pages/LeadQuestionnairePix';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -68,6 +70,8 @@ const AuthenticatedApp = () => {
       <Route path="/ProcessMeetingNotes" element={<LayoutWrapper currentPageName="ProcessMeetingNotes"><ProcessMeetingNotes /></LayoutWrapper>} />
       <Route path="/IntroducerDashboard" element={<IntroducerDashboard />} />
       <Route path="/ComplianceResume" element={<LayoutWrapper currentPageName="ComplianceResume"><ComplianceResume /></LayoutWrapper>} />
+      <Route path="/QuestionarioReuniaoPix" element={<LayoutWrapper currentPageName="QuestionarioReuniaoPix"><QuestionarioReuniaoPix /></LayoutWrapper>} />
+      <Route path="/LeadQuestionnairePix" element={<LayoutWrapper currentPageName="LeadQuestionnairePix"><LeadQuestionnairePix /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

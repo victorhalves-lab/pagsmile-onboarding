@@ -32,6 +32,7 @@ import QuestionnaireResponsesModal from '../components/leads/QuestionnaireRespon
 import IntroducerLeadsTab from '../components/leads/IntroducerLeadsTab';
 import MeetingQuestionnaireTab from '../components/meeting-questionnaire/MeetingQuestionnaireTab';
 import AIQuestionnaireTab from '../components/meeting-questionnaire/AIQuestionnaireTab';
+import PixMeetingQuestionnaireTab from '../components/pix-questionnaire/PixMeetingQuestionnaireTab';
 
 const STATUS_CONFIG = {
   questionario_preenchido: { label: 'Novo', color: 'bg-blue-100 text-blue-700', icon: '🔵' },
@@ -281,6 +282,10 @@ export default function QuestionariosLeads() {
             <Briefcase className="w-3 h-3" />
             Questionário Reunião
           </TabsTrigger>
+          <TabsTrigger value="reuniao_pix" className="gap-1">
+            <Zap className="w-3 h-3" />
+            Reunião PIX
+          </TabsTrigger>
           <TabsTrigger value="ai" className="gap-1">
             <Bot className="w-3 h-3" />
             Questionário com Robô
@@ -320,6 +325,10 @@ export default function QuestionariosLeads() {
 
         <TabsContent value="reuniao" className="mt-4">
           <MeetingQuestionnaireTab />
+        </TabsContent>
+
+        <TabsContent value="reuniao_pix" className="mt-4">
+          <PixMeetingQuestionnaireTab />
         </TabsContent>
 
         <TabsContent value="ai" className="mt-4">
