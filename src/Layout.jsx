@@ -60,7 +60,7 @@ export default function Layout({ children, currentPageName }) {
     'ContratoPublico','ComplianceOnboardingStart','CompliancePixOnly','ComplianceFullKYC',
     'ComplianceLite','ComplianceSaaS','DocumentUploadPix','DocumentUploadFull',
     'DocumentUploadLite','DocumentUploadSaaS','LivenessFacematchStep','LivenessSimulation',
-    'OnboardingCompletion','LeadQuestionnaire','LeadSuccess','PropostaPublica',
+    'OnboardingCompletion','LeadQuestionnaire','LeadQuestionnairePix','LeadSuccess','PropostaPublica',
     'QuestionarioSimplificadoPublico','ComplianceDinamico','ComplianceResume'
   ];
   const isPublicPage = publicPages.includes(currentPageName);
