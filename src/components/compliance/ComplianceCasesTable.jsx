@@ -13,7 +13,7 @@ import {
 import {
   Clock, CheckCircle2, AlertTriangle, XCircle, FileCheck,
   Loader2, MoreHorizontal, Mail, Eye, ArrowUpDown, Building2, User,
-  Brain, FileText, ChevronLeft, ChevronRight, ChevronDown
+  Brain, FileText, ChevronLeft, ChevronRight, ChevronDown, UserPlus
 } from 'lucide-react';
 import CaseExpandedDetail from '@/components/compliance/CaseExpandedDetail';
 
@@ -74,7 +74,7 @@ export default function ComplianceCasesTable({
   selectedRows, setSelectedRows, expandedRow, setExpandedRow,
   sortField, sortOrder, setSortField, setSortOrder,
   currentPage, setCurrentPage, itemsPerPage, totalPages,
-  templatesMap, isLoading,
+  templatesMap, isLoading, linksMap = {}, introducerMap = {},
 }) {
   return (
     <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
@@ -117,6 +117,7 @@ export default function ComplianceCasesTable({
                 </button>
               </TableHead>
               <TableHead>Tempo na Fila</TableHead>
+              <TableHead>Introducer</TableHead>
               <TableHead>Analista</TableHead>
               <TableHead>
                 <button className="flex items-center gap-1 hover:text-[var(--pagsmile-blue)] font-semibold"
@@ -171,6 +172,21 @@ export default function ComplianceCasesTable({
                         return <span className={`text-xs font-semibold px-2 py-1 rounded-lg ${bgColor}`}>{time}</span>;
                       })()}
                     </TableCell>
+                    <TableCell>
+                      {(() => {
+                        const link = c.onboardingLinkCode ? linksMap[c.onboardingLinkCode] : null;
+                        const introducer = link?.introducerId ? introducerMap[link.introducerId] : null;
+                        if (introducer) {
+                          return (
+                            <div className="flex items-center gap-1.5">
+                              <UserPlus className="w-3.5 h-3.5 text-[#2bc196]" />
+                              <span className="text-sm font-medium text-[var(--pagsmile-blue)]">{introducer.name}</span>
+                            </div>
+                          );
+                        }
+                        return <span className="text-sm text-[var(--pagsmile-blue)]/40">-</span>;
+                      })()}
+                    </TableCell>
                     <TableCell><span className="text-sm text-[var(--pagsmile-blue)]/80">{c.assignedAnalystName || '-'}</span></TableCell>
                     <TableCell>
                       <div>
@@ -201,7 +217,7 @@ export default function ComplianceCasesTable({
                   </TableRow>
                   {expandedRow === c.id && (
                     <TableRow className="bg-[#f4f4f4]/50">
-                      <TableCell colSpan={11} className="p-4">
+                      <TableCell colSpan={12} className="p-4">
                         <CaseExpandedDetail caseData={c} scoresMap={scoresMap} templatesMap={templatesMap} merchantMap={merchantMap} />
                       </TableCell>
                     </TableRow>

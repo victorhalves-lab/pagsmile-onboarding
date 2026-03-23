@@ -58,6 +58,11 @@ export default function QuestionariosRecebidos() {
     queryFn: () => base44.entities.OnboardingLink.list()
   });
 
+  const { data: introducers = [] } = useQuery({
+    queryKey: ['introducers'],
+    queryFn: () => base44.entities.Introducer.list()
+  });
+
   // ── Data Maps ──
   const merchantMap = React.useMemo(() => {
     const map = {};
@@ -82,6 +87,12 @@ export default function QuestionariosRecebidos() {
     onboardingLinks.forEach(l => { map[l.uniqueCode] = l; });
     return map;
   }, [onboardingLinks]);
+
+  const introducerMap = React.useMemo(() => {
+    const map = {};
+    introducers.forEach(i => { map[i.id] = i; });
+    return map;
+  }, [introducers]);
 
   // ── Helpers ──
   const getCaseModel = (c) => {
@@ -261,6 +272,7 @@ export default function QuestionariosRecebidos() {
             currentPage={currentPage} setCurrentPage={setCurrentPage}
             itemsPerPage={itemsPerPage} totalPages={totalPages}
             templatesMap={templatesMap} isLoading={isLoadingAll}
+            linksMap={linksMap} introducerMap={introducerMap}
           />
         </TabsContent>
 
