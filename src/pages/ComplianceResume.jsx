@@ -14,6 +14,7 @@ const FLOW_PAGES = {
   merchant: { questionnaire: 'ComplianceDinamico', documents: 'DocumentUploadFull' },
   gateway: { questionnaire: 'ComplianceDinamico', documents: 'DocumentUploadFull' },
   marketplace: { questionnaire: 'ComplianceDinamico', documents: 'DocumentUploadFull' },
+  subseller: { questionnaire: 'SubsellerQuestionnaire', documents: 'SubsellerQuestionnaire' },
 };
 
 const STORAGE_KEYS = {
