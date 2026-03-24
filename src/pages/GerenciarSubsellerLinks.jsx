@@ -11,15 +11,6 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-function generateUniqueCode() {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let code = 'SUB_';
-  for (let i = 0; i < 12; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return code;
-}
-
 export default function GerenciarSubsellerLinks() {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
@@ -49,26 +40,22 @@ export default function GerenciarSubsellerLinks() {
     enabled: !!selectedMerchant?.id
   });
 
-  // Gerar link
+  // Gerar link via backend function
   const createLinkMutation = useMutation({
     mutationFn: async () => {
-      const code = generateUniqueCode();
-      await base44.entities.OnboardingLink.create({
-        linkType: 'SUBSELLER_COMPLIANCE',
-        uniqueCode: code,
+      const response = await base44.functions.invoke('generateSubsellerLink', {
         parentMerchantId: selectedMerchant.id,
         parentMerchantName: selectedMerchant.fullName || selectedMerchant.companyName,
-        isActive: true,
-        clickCount: 0,
-        submissionCount: 0,
-        completedCount: 0,
       });
-      return code;
+      return response.data;
     },
-    onSuccess: (code) => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['subsellerLinks'] });
       toast.success('Link gerado com sucesso!');
-      copyLink(code);
+      copyLink(data.link.uniqueCode);
+    },
+    onError: (error) => {
+      toast.error('Erro ao gerar link: ' + (error.response?.data?.error || error.message));
     }
   });
 

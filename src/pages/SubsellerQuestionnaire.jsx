@@ -167,11 +167,14 @@ export default function SubsellerQuestionnaire() {
       isSubseller: !!parentId,
     });
 
-    // Criar OnboardingCase
+    // Criar OnboardingCase com o template real
+    const templateId = onboardingLink?.questionnaireTemplateId || '69c2dd1e313acdf27a637aba';
     const onboardingCase = await base44.entities.OnboardingCase.create({
       merchantId: merchant.id,
-      questionnaireTemplateId: 'subseller_compliance',
+      questionnaireTemplateId: templateId,
+      submissionDate: new Date().toISOString(),
       status: 'Pendente',
+      onboardingLinkId: onboardingLink?.id,
       onboardingLinkCode: linkCode,
       priority: 'medium',
       parentMerchantId: parentId,
@@ -210,19 +213,19 @@ export default function SubsellerQuestionnaire() {
       await base44.entities.QuestionnaireResponse.bulkCreate(responses);
     }
 
-    // Criar uploads de documentos
+    // Criar uploads de documentos (com IDs reais dos DocumentTypes)
     const docMappings = [
-      { key: 'contratoSocial', label: 'Contrato Social' },
-      { key: 'cartaoCnpj', label: 'Cartão CNPJ' },
-      { key: 'docResponsavel', label: 'Foto Documento Responsável Legal' },
-      { key: 'selfieResponsavel', label: 'Selfie Responsável Legal' },
+      { key: 'contratoSocial', docTypeId: '69c2dd1e313acdf27a637abb', label: 'Contrato Social' },
+      { key: 'cartaoCnpj', docTypeId: '69c2dd1e313acdf27a637abc', label: 'Cartão CNPJ' },
+      { key: 'docResponsavel', docTypeId: '69c2dd1e313acdf27a637abd', label: 'Documento do Responsável Legal' },
+      { key: 'selfieResponsavel', docTypeId: '69c2dd1e313acdf27a637abe', label: 'Selfie do Responsável Legal' },
     ];
 
     const docUploads = docMappings
       .filter(d => documents[d.key]?.url)
       .map(d => ({
         onboardingCaseId: onboardingCase.id,
-        documentTypeId: d.key,
+        documentTypeId: d.docTypeId,
         documentName: d.label,
         fileUrl: documents[d.key].url,
         fileName: documents[d.key].name,
@@ -236,10 +239,19 @@ export default function SubsellerQuestionnaire() {
       await base44.entities.DocumentUpload.bulkCreate(docUploads);
     }
 
-    // Atualizar contador do link
+    // Atualizar contadores do link
     if (onboardingLink) {
       await base44.entities.OnboardingLink.update(onboardingLink.id, {
-        submissionCount: (onboardingLink.submissionCount || 0) + 1
+        submissionCount: (onboardingLink.submissionCount || 0) + 1,
+        completedCount: (onboardingLink.completedCount || 0) + 1
+      });
+    }
+
+    // Incrementar usageCount do template
+    const templates = await base44.entities.QuestionnaireTemplate.filter({ id: templateId });
+    if (templates[0]) {
+      await base44.entities.QuestionnaireTemplate.update(templates[0].id, {
+        usageCount: (templates[0].usageCount || 0) + 1
       });
     }
 
@@ -255,7 +267,11 @@ export default function SubsellerQuestionnaire() {
     );
   }
 
-  if (!linkCode || (onboardingLink && onboardingLink.linkType !== 'SUBSELLER_COMPLIANCE')) {
+  // Verificar expiração do link
+  const isExpired = onboardingLink?.expiresAt && new Date(onboardingLink.expiresAt) < new Date();
+  const isInactive = onboardingLink && !onboardingLink.isActive;
+
+  if (!linkCode || (onboardingLink && onboardingLink.linkType !== 'SUBSELLER_COMPLIANCE') || isExpired || isInactive) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] max-w-md mx-auto text-center px-4">
         <AlertTriangle className="w-16 h-16 text-amber-500 mb-4" />
