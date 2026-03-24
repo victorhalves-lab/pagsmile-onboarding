@@ -21,7 +21,7 @@ export default function GerenciarSubsellerLinks() {
   // Buscar merchants aprovados (sellers)
   const { data: merchants = [], isLoading: loadingMerchants } = useQuery({
     queryKey: ['approvedMerchants'],
-    queryFn: () => base44.entities.Merchant.filter({ onboardingStatus: 'Aprovado', isSubseller: false }),
+    queryFn: () => base44.entities.Merchant.filter({ onboardingStatus: 'Aprovado' }),
   });
 
   // Buscar links de subsellers do merchant selecionado
