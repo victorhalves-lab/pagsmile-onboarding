@@ -7,8 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
   Link as LinkIcon, Copy, Check, Search, Loader2, 
-  Building2, Users, Plus, ExternalLink 
+  Building2, Users, Plus, ExternalLink, ToggleLeft, ToggleRight, Calendar
 } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 
 export default function GerenciarSubsellerLinks() {
@@ -56,6 +57,17 @@ export default function GerenciarSubsellerLinks() {
     },
     onError: (error) => {
       toast.error('Erro ao gerar link: ' + (error.response?.data?.error || error.message));
+    }
+  });
+
+  // Toggle ativo/inativo
+  const toggleLinkMutation = useMutation({
+    mutationFn: async ({ linkId, isActive }) => {
+      await base44.entities.OnboardingLink.update(linkId, { isActive: !isActive });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['subsellerLinks'] });
+      toast.success('Status do link atualizado!');
     }
   });
 
@@ -195,26 +207,50 @@ export default function GerenciarSubsellerLinks() {
                     <div className="space-y-3">
                       {subsellerLinks.map(link => {
                         const url = `${window.location.origin}/SubsellerQuestionnaire?ref=${link.uniqueCode}`;
+                        const isExpired = link.expiresAt && new Date(link.expiresAt) < new Date();
                         return (
-                          <div key={link.id} className="border border-slate-200 rounded-xl p-4">
+                          <div key={link.id} className={`border rounded-xl p-4 ${!link.isActive || isExpired ? 'border-red-200 bg-red-50/30' : 'border-slate-200'}`}>
                             <div className="flex items-center justify-between gap-3">
                               <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 flex-wrap">
                                   <code className="text-xs bg-slate-100 px-2 py-1 rounded font-mono">
                                     {link.uniqueCode}
                                   </code>
-                                  {link.isActive ? (
+                                  {isExpired ? (
+                                    <Badge className="bg-red-100 text-red-700 text-[10px]">Expirado</Badge>
+                                  ) : link.isActive ? (
                                     <Badge className="bg-emerald-100 text-emerald-700 text-[10px]">Ativo</Badge>
                                   ) : (
                                     <Badge className="bg-red-100 text-red-700 text-[10px]">Inativo</Badge>
                                   )}
                                 </div>
                                 <p className="text-xs text-slate-400 mt-1 truncate">{url}</p>
+                                {link.expiresAt && (
+                                  <p className="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1">
+                                    <Calendar className="w-3 h-3" />
+                                    Expira: {new Date(link.expiresAt).toLocaleDateString('pt-BR')}
+                                  </p>
+                                )}
+                                <p className="text-[10px] text-slate-400 mt-0.5">
+                                  Criado: {link.created_date ? new Date(link.created_date).toLocaleDateString('pt-BR') : '—'}
+                                </p>
                               </div>
-                              <div className="flex items-center gap-2">
-                                <div className="text-center px-3">
+                              <div className="flex items-center gap-3">
+                                <div className="text-center px-2">
                                   <p className="text-lg font-bold text-[var(--pagsmile-blue)]">{link.submissionCount || 0}</p>
                                   <p className="text-[10px] text-slate-400">Submissões</p>
+                                </div>
+                                <div className="text-center px-2">
+                                  <p className="text-lg font-bold text-[var(--pagsmile-blue)]">{link.completedCount || 0}</p>
+                                  <p className="text-[10px] text-slate-400">Concluídos</p>
+                                </div>
+                                <div className="flex flex-col items-center gap-1">
+                                  <Switch
+                                    checked={link.isActive}
+                                    onCheckedChange={() => toggleLinkMutation.mutate({ linkId: link.id, isActive: link.isActive })}
+                                    disabled={toggleLinkMutation.isPending}
+                                  />
+                                  <span className="text-[9px] text-slate-400">{link.isActive ? 'Ativo' : 'Inativo'}</span>
                                 </div>
                                 <Button 
                                   variant="outline" 
