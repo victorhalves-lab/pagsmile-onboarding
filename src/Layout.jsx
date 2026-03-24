@@ -113,6 +113,7 @@ export default function Layout({ children, currentPageName }) {
         { label: 'Análise de Casos', path: 'AnaliseDeCasos', icon: ClipboardList, hidden: true },
         { label: 'Gestão de Documentos', path: 'GestaoDocumentos', icon: FileText },
         { label: 'Revalidação', path: 'GestaoRevalidacao', icon: History },
+        { label: 'Links Subcontas', path: 'GerenciarSubsellerLinks', icon: Users },
       ]
     },
     {

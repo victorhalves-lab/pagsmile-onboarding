@@ -14,6 +14,8 @@ import ProcessMeetingNotes from './pages/ProcessMeetingNotes';
 import ComplianceResume from './pages/ComplianceResume';
 import QuestionarioReuniaoPix from './pages/QuestionarioReuniaoPix';
 import LeadQuestionnairePix from './pages/LeadQuestionnairePix';
+import SubsellerQuestionnaire from './pages/SubsellerQuestionnaire';
+import GerenciarSubsellerLinks from './pages/GerenciarSubsellerLinks';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -72,6 +74,8 @@ const AuthenticatedApp = () => {
       <Route path="/ComplianceResume" element={<LayoutWrapper currentPageName="ComplianceResume"><ComplianceResume /></LayoutWrapper>} />
       <Route path="/QuestionarioReuniaoPix" element={<LayoutWrapper currentPageName="QuestionarioReuniaoPix"><QuestionarioReuniaoPix /></LayoutWrapper>} />
       <Route path="/LeadQuestionnairePix" element={<LayoutWrapper currentPageName="LeadQuestionnairePix"><LeadQuestionnairePix /></LayoutWrapper>} />
+      <Route path="/SubsellerQuestionnaire" element={<LayoutWrapper currentPageName="SubsellerQuestionnaire"><SubsellerQuestionnaire /></LayoutWrapper>} />
+      <Route path="/GerenciarSubsellerLinks" element={<LayoutWrapper currentPageName="GerenciarSubsellerLinks"><GerenciarSubsellerLinks /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

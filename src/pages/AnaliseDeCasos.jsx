@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, User, FileCheck, FileText, Shield, History, UserCheck, Brain } from 'lucide-react';
+import { Loader2, User, FileCheck, FileText, Shield, History, UserCheck, Brain, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import IAAnalysisPanel from '../components/compliance/IAAnalysisPanel';
 import ComplianceResponsesPanel from '../components/compliance/ComplianceResponsesPanel';
@@ -17,6 +17,7 @@ import CaseValidationsTab from '../components/case-analysis/CaseValidationsTab';
 import CaseHistoryTab from '../components/case-analysis/CaseHistoryTab';
 import CaseReviewTab from '../components/case-analysis/CaseReviewTab';
 import CaseReviewDialogs from '../components/case-analysis/CaseReviewDialogs';
+import CaseSubsellersTab from '../components/case-analysis/CaseSubsellersTab';
 
 export default function AnaliseDeCasos() {
   const navigate = useNavigate();
@@ -159,6 +160,7 @@ export default function AnaliseDeCasos() {
           <TabsTrigger value="validations" className="gap-1"><Shield className="w-4 h-4" /> Validações ({validations.length})</TabsTrigger>
           <TabsTrigger value="history" className="gap-1"><History className="w-4 h-4" /> Histórico</TabsTrigger>
           <TabsTrigger value="review" className="gap-1"><UserCheck className="w-4 h-4" /> Revisão</TabsTrigger>
+          <TabsTrigger value="subsellers" className="gap-1"><Users className="w-4 h-4" /> Subcontas</TabsTrigger>
         </TabsList>
 
         <TabsContent value="ia-analysis">
@@ -188,6 +190,10 @@ export default function AnaliseDeCasos() {
 
         <TabsContent value="history">
           <CaseHistoryTab auditLogs={auditLogs} />
+        </TabsContent>
+
+        <TabsContent value="subsellers">
+          <CaseSubsellersTab merchantId={merchant?.id} />
         </TabsContent>
 
         <TabsContent value="review">
