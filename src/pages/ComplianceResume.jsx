@@ -111,6 +111,9 @@ export default function ComplianceResume() {
         if (['merchant', 'gateway', 'marketplace'].includes(model) && targetPage === 'ComplianceDinamico') {
           url += `?model=${model}`;
         }
+        if (model === 'subseller' && sess.linkCode) {
+          url += `?ref=${sess.linkCode}`;
+        }
 
         // Brief display then redirect
         setTimeout(() => {
