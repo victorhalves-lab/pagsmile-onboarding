@@ -84,6 +84,27 @@ Deno.serve(async (req) => {
       onboardingCaseId: caseId
     });
     
+    // Buscar resultado de enriquecimento CNPJ (se já existir no ComplianceScore)
+    let cnpjEnrichmentData = null;
+    if (merchant?.cpfCnpj && merchant.type === 'PJ') {
+      const cnpjClean = (merchant.cpfCnpj || '').replace(/\D/g, '');
+      if (cnpjClean.length === 14) {
+        try {
+          const cnpjRes = await base44.asServiceRole.functions.invoke('brasilApiCnpj', { cnpj: cnpjClean });
+          if (cnpjRes?.data && !cnpjRes.data.error) {
+            const enrichRes = await base44.asServiceRole.functions.invoke('analyzeCnpjEnrichment', {
+              cnpjDataArray: { ...cnpjRes.data, cnpj: cnpjClean },
+              onboardingCaseId: caseId
+            });
+            cnpjEnrichmentData = enrichRes?.data;
+            console.log(`[SENTINEL] Enriquecimento CNPJ: Score ${cnpjEnrichmentData?.consolidated?.averageScore}/100 (${cnpjEnrichmentData?.consolidated?.riskLevel})`);
+          }
+        } catch (e) {
+          console.warn(`[SENTINEL] Enriquecimento CNPJ falhou: ${e.message}`);
+        }
+      }
+    }
+    
     console.log(`[SENTINEL] Dados carregados: ${responses.length} respostas, ${externalValidations.length} validações, ${documents.length} documentos`);
     
     // ═══════════════════════════════════════════════════════════
