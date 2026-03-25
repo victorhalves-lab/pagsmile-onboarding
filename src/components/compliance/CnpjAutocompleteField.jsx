@@ -165,6 +165,12 @@ export default function CnpjAutocompleteField({
           </p>
         </div>
       )}
+
+      {/* Painel de análise de enriquecimento */}
+      <CnpjEnrichmentPanel 
+        enrichmentResult={enrichmentResult} 
+        isLoading={enrichmentLoading} 
+      />
     </div>
   );
 }
