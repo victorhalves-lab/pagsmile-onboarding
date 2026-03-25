@@ -308,6 +308,10 @@ export default function DynamicQuestionnaire({
   // Para Compliance: todos os 12+ campos cadastrais (A1-A11)
   const handleCnpjAutocomplete = (apiData) => {
     setCnpjAutocompleteData(apiData);
+    // Persistir os dados brutos da API no formData para uso posterior (analyzeCnpjEnrichment)
+    if (apiData) {
+      setFormData(prev => ({ ...prev, __cnpj_raw_data: apiData }));
+    }
     if (!apiData || !questions.length) return;
 
     // Mapear campos da API para perguntas com base no texto da pergunta (case-insensitive)
