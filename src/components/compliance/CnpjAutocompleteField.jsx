@@ -20,6 +20,8 @@ export default function CnpjAutocompleteField({
   const { data, isLoading, error, validationError, consultarCnpj, reset } = useCnpjAutocomplete();
   const [displayValue, setDisplayValue] = useState('');
   const [hasConsulted, setHasConsulted] = useState(false);
+  const [enrichmentResult, setEnrichmentResult] = useState(null);
+  const [enrichmentLoading, setEnrichmentLoading] = useState(false);
 
   // Sincronizar valor externo
   useEffect(() => {
