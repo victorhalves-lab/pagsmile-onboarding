@@ -146,20 +146,28 @@ export default function IntroducerLinkGeneratorModal({ open, onOpenChange }) {
             )}
           </div>
 
-          {/* Link Type */}
+          {/* Lead Template Select */}
           <div className="space-y-1.5">
-            <Label className="text-xs font-semibold">Tipo de Questionário</Label>
-            <Select value={linkType} onValueChange={setLinkType}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="LEAD_QUESTIONNAIRE">
-                  <span className="flex items-center gap-2"><Briefcase className="w-3 h-3" /> Completo</span>
-                </SelectItem>
-                <SelectItem value="LEAD_SIMPLIFICADO">
-                  <span className="flex items-center gap-2"><Zap className="w-3 h-3" /> Simplificado</span>
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            <Label className="text-xs font-semibold">Questionário de Lead *</Label>
+            {leadTemplates.length === 0 ? (
+              <div className="flex items-center gap-2 text-xs text-slate-400 py-2">
+                <Loader2 className="w-3 h-3 animate-spin" /> Carregando templates...
+              </div>
+            ) : (
+              <Select value={selectedTemplateId} onValueChange={setSelectedTemplateId}>
+                <SelectTrigger><SelectValue placeholder="Selecione o questionário" /></SelectTrigger>
+                <SelectContent>
+                  {leadTemplates.map(t => (
+                    <SelectItem key={t.id} value={t.id}>
+                      <span className="flex items-center gap-2">
+                        {(t.model || '').toLowerCase().includes('pix') ? <Zap className="w-3 h-3 text-[#2bc196]" /> : <Briefcase className="w-3 h-3 text-[#002443]" />}
+                        {t.name}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
 
           {/* Optional fields */}
