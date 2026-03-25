@@ -815,12 +815,21 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
 
         {question.type === 'EMAIL' && (
           <>
-            <Input
-              type="email"
+            <EmailInput
               value={value}
-              onChange={(e) => updateField(question.id, e.target.value)}
+              onChange={(val) => updateField(question.id, val)}
               placeholder={question.placeholder || 'email@empresa.com'}
-              className={`h-12 rounded-xl ${errorBorderClass}`}
+              hasError={hasError}
+              questionId={question.id}
+              onSiteSuggestion={(suggestedSite) => {
+                // Sugerir site baseado no domínio do e-mail (P5)
+                if (isV2Template) {
+                  const siteQ = questions.find(q => (q.text || '').toLowerCase().includes('site da empresa'));
+                  if (siteQ && !formData[siteQ.id]) {
+                    updateField(siteQ.id, suggestedSite);
+                  }
+                }
+              }}
             />
             <FormFieldError error={fieldError} />
           </>
@@ -828,12 +837,11 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
 
         {question.type === 'PHONE' && (
           <>
-            <Input
-              type="tel"
+            <PhoneInput
               value={value}
-              onChange={(e) => updateField(question.id, e.target.value)}
+              onChange={(val) => updateField(question.id, val)}
               placeholder={question.placeholder || '(11) 99999-9999'}
-              className={`h-12 rounded-xl ${errorBorderClass}`}
+              hasError={hasError}
             />
             <FormFieldError error={fieldError} />
           </>
