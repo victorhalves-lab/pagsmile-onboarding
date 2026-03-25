@@ -244,14 +244,20 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
     setValidationErrors({});
   }, [currentStep]);
 
+  // Encontrar IDs dinâmicos de TPV e Ticket Médio (funciona tanto para v1 quanto v2)
+  const tpvQuestion = questions.find(q => q.id === TPV_QUESTION_ID || (q.type === 'NUMBER' && (q.text || '').toLowerCase().includes('tpv')));
+  const ticketMedioQuestion = questions.find(q => q.id === TICKET_MEDIO_QUESTION_ID || (q.type === 'NUMBER' && (q.text || '').toLowerCase().includes('ticket')));
+  const tpvId = tpvQuestion?.id;
+  const ticketMedioId = ticketMedioQuestion?.id;
+
   const updateField = useCallback((fieldId, value) => {
     setFormData(prev => {
       const newData = { ...prev, [fieldId]: value };
       
       // Cálculo automático de transações por mês (TPV / Ticket Médio)
-      if (fieldId === TPV_QUESTION_ID || fieldId === TICKET_MEDIO_QUESTION_ID) {
-        const tpv = parseFloat(fieldId === TPV_QUESTION_ID ? value : prev[TPV_QUESTION_ID]) || 0;
-        const ticketMedio = parseFloat(fieldId === TICKET_MEDIO_QUESTION_ID ? value : prev[TICKET_MEDIO_QUESTION_ID]) || 0;
+      if (tpvId && ticketMedioId && (fieldId === tpvId || fieldId === ticketMedioId)) {
+        const tpv = parseFloat(fieldId === tpvId ? value : prev[tpvId]) || 0;
+        const ticketMedio = parseFloat(fieldId === ticketMedioId ? value : prev[ticketMedioId]) || 0;
         
         if (tpv > 0 && ticketMedio > 0) {
           newData[TRANSACOES_MES_QUESTION_ID] = Math.round(tpv / ticketMedio);
@@ -260,7 +266,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
       
       return newData;
     });
-  }, []);
+  }, [tpvId, ticketMedioId]);
 
   // Verificar lógica condicional
   const shouldShowQuestion = (question) => {
