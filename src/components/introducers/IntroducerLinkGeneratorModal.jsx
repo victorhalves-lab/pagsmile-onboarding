@@ -18,6 +18,7 @@ export default function IntroducerLinkGeneratorModal({ open, onOpenChange }) {
   const queryClient = useQueryClient();
   const [selectedIntroducerId, setSelectedIntroducerId] = useState('');
   const [linkType, setLinkType] = useState('LEAD_QUESTIONNAIRE');
+  const [selectedTemplateId, setSelectedTemplateId] = useState('');
   const [agentName, setAgentName] = useState('');
   const [utmMedium, setUtmMedium] = useState('referral');
   const [utmCampaign, setUtmCampaign] = useState('');
