@@ -5,12 +5,16 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { HelpCircle, CheckCircle, Lock } from 'lucide-react';
+import { HelpCircle, CheckCircle, Lock, AlertTriangle as AlertTriangleIcon, ShieldAlert } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import CnpjAutocompleteField from './CnpjAutocompleteField';
+import CepAutocompleteField from './CepAutocompleteField';
+import EmailValidationField from './EmailValidationField';
+import PhoneValidationField from './PhoneValidationField';
+import Top5CnpjField from './Top5CnpjField';
 
 // Componente que renderiza UMA pergunta com base no tipo
-function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpjAutocomplete }) {
+function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpjAutocomplete, onCepData }) {
   const { type, text, options = [], placeholder, helpText, isRequired } = question;
   const textLower = (text || '').toLowerCase();
 
@@ -18,7 +22,7 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
     onChange(question.id, newValue);
   };
 
-  // Detectar se é campo CNPJ gatilho (tipo CPF_CNPJ com texto "CNPJ" e é a primeira pergunta CPF_CNPJ do formulário)
+  // Detectar se é campo CNPJ gatilho
   const isCnpjTrigger = type === 'CPF_CNPJ' && textLower === 'cnpj';
   if (isCnpjTrigger) {
     return (
@@ -34,8 +38,75 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
     );
   }
 
+  // Detectar campo CEP (autocomplete via ViaCEP)
+  const isCepField = textLower === 'cep' || textLower === 'cep do endereço' || textLower === 'cep do escritório' || textLower === 'cep do ubo';
+  if (isCepField) {
+    return (
+      <CepAutocompleteField
+        value={value || ''}
+        onChange={onChange}
+        onAddressData={onCepData}
+        questionId={question.id}
+        isRequired={isRequired}
+        label={text}
+      />
+    );
+  }
+
+  // Detectar campos de e-mail que precisam de validação MX
+  const isEmailValidation = type === 'EMAIL' || (type === 'TEXT' && (
+    textLower.includes('e-mail') || textLower.includes('email')
+  ) && !textLower.includes('receita'));
+  if (isEmailValidation) {
+    return (
+      <EmailValidationField
+        value={value || ''}
+        onChange={onChange}
+        questionId={question.id}
+        isRequired={isRequired}
+        label={text}
+        emailReceitaFederal={cnpjAutocompleteData?.email}
+        helpText={helpText}
+      />
+    );
+  }
+
+  // Detectar campos de telefone que precisam de validação DDD
+  const isPhoneValidation = type === 'PHONE' || (type === 'TEXT' && (
+    textLower.includes('telefone') || textLower.includes('celular')
+  ) && !textLower.includes('receita'));
+  if (isPhoneValidation) {
+    return (
+      <PhoneValidationField
+        value={value || ''}
+        onChange={onChange}
+        questionId={question.id}
+        isRequired={isRequired}
+        label={text}
+        empresaUf={cnpjAutocompleteData?.endereco?.uf}
+        helpText={helpText}
+      />
+    );
+  }
+
+  // Detectar campos Top 5 (Clientes/Sellers/Sub-Merchants)
+  const isTop5 = textLower.includes('top 5') || textLower.includes('maiores clientes') ||
+    textLower.includes('maiores sellers') || textLower.includes('maiores sub-merchants') ||
+    textLower.includes('maiores sub merchants');
+  if (isTop5) {
+    return (
+      <Top5CnpjField
+        value={value || []}
+        onChange={onChange}
+        questionId={question.id}
+        label={text}
+        maxItems={5}
+        checkAnexoI={textLower.includes('sub-merchant') || textLower.includes('sub merchant')}
+      />
+    );
+  }
+
   // Detectar campos auto-preenchidos via CNPJ (readonly display fields)
-  // Campos de dados oficiais da Receita que não devem ser editados pelo usuário
   const isAutofilledReadonly = cnpjAutocompleteData && (
     textLower === 'razão social' ||
     textLower === 'nome fantasia' ||
@@ -44,7 +115,9 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
     textLower.includes('situação cadastral') ||
     textLower.includes('capital social') ||
     textLower.includes('porte da empresa') ||
-    textLower.includes('data de início')
+    textLower.includes('data de início') ||
+    textLower.includes('e-mail da receita') ||
+    textLower.includes('telefone da receita')
   );
 
   if (isAutofilledReadonly && value) {
@@ -178,7 +251,7 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
 }
 
 // Componente que renderiza UMA pergunta completa com label
-function QuestionItem({ question, value, onChange, prefillSource, cnpjAutocompleteData, onCnpjAutocomplete }) {
+function QuestionItem({ question, value, onChange, prefillSource, cnpjAutocompleteData, onCnpjAutocomplete, onCepData }) {
   const textLower = (question.text || '').toLowerCase();
   const isCnpjTrigger = question.type === 'CPF_CNPJ' && textLower === 'cnpj';
   const isAutoSource = cnpjAutocompleteData && value && (
@@ -231,6 +304,7 @@ function QuestionItem({ question, value, onChange, prefillSource, cnpjAutocomple
         onChange={onChange}
         cnpjAutocompleteData={cnpjAutocompleteData}
         onCnpjAutocomplete={onCnpjAutocomplete}
+        onCepData={onCepData}
       />
     </div>
   );
@@ -280,13 +354,14 @@ export default function DynamicQuestionRenderer({
   formData, 
   onFieldChange,
   currentStep,
-  questionsPerStep = 5, // Quantas perguntas por step
+  questionsPerStep = 5,
   showTitle = true,
   stepTitle = null,
-  allQuestions = [], // Todas as perguntas para avaliar lógica condicional corretamente
-  prefillSources = {}, // Mapa de questionId → fonte do pré-preenchimento
+  allQuestions = [],
+  prefillSources = {},
   cnpjAutocompleteData = null,
-  onCnpjAutocomplete
+  onCnpjAutocomplete,
+  onCepData
 }) {
   // Se currentStep for definido, filtramos as perguntas para aquele step
   const displayQuestions = currentStep !== undefined
@@ -324,6 +399,7 @@ export default function DynamicQuestionRenderer({
             prefillSource={prefillSources[question.id]}
             cnpjAutocompleteData={cnpjAutocompleteData}
             onCnpjAutocomplete={onCnpjAutocomplete}
+            onCepData={onCepData}
           />
         ))}
       </div>
