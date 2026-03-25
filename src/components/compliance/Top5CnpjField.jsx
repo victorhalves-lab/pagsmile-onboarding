@@ -141,11 +141,32 @@ export default function Top5CnpjField({
           </div>
           
           {item.status === 'ok' && (
-            <div className="flex gap-2 flex-wrap ml-7">
-              <Badge className="bg-emerald-50 text-emerald-700 text-[10px]">
-                <CheckCircle className="w-3 h-3 mr-1" /> {item.nome}
-              </Badge>
-              <Badge variant="outline" className="text-[10px]">{item.ramo}</Badge>
+            <div className="space-y-1.5 ml-7">
+              <div className="flex gap-2 flex-wrap">
+                <Badge className="bg-emerald-50 text-emerald-700 text-[10px]">
+                  <CheckCircle className="w-3 h-3 mr-1" /> {item.nome}
+                </Badge>
+                <Badge variant="outline" className="text-[10px]">{item.ramo}</Badge>
+                {item.isProibido && (
+                  <Badge className="bg-red-100 text-red-800 text-[10px]">
+                    <ShieldAlert className="w-3 h-3 mr-1" /> Atividade Proibida (Anexo I)
+                  </Badge>
+                )}
+                {item.isRestrito && !item.isProibido && (
+                  <Badge className="bg-amber-100 text-amber-800 text-[10px]">
+                    <AlertTriangle className="w-3 h-3 mr-1" /> Atividade Restrita
+                  </Badge>
+                )}
+              </div>
+              {item.screeningFlags && item.screeningFlags.length > 0 && (
+                <div className="p-2 bg-red-50 border border-red-200 rounded-lg">
+                  {item.screeningFlags.map((flag, fi) => (
+                    <p key={fi} className="text-xs text-red-700 flex items-center gap-1">
+                      <ShieldAlert className="w-3 h-3 flex-shrink-0" /> {flag}
+                    </p>
+                  ))}
+                </div>
+              )}
             </div>
           )}
           {item.status === 'inactive' && (
