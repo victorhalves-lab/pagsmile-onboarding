@@ -189,11 +189,13 @@ INSTRUÇÕES DE ANÁLISE
 
 ${hasExternalValidations ? 'Execute as 3 FASES de análise:' : 'Execute apenas a FASE 1 (questionário):'}
 
-**FASE 1 - Análise do Questionário (Peso 45%):**
+**FASE 1 - Análise do Questionário + Enriquecimento CNPJ (Peso 45%):**
 - Verifique completude e validade dos dados
 - Identifique inconsistências e contradições
 - Avalie qualidade das justificativas textuais
 - Detecte red flags regulatórios (PEP, sanções, atividades de risco)
+- IMPORTANTE: Incorpore as flags do Enriquecimento CNPJ na sua análise (idade da empresa, MEI, QSA, domínio, geo, CNAE)
+- Considere o score de enriquecimento como fator ponderador (se disponível)
 - Gere Score do Questionário (SQ): 0-1000
 
 ${hasExternalValidations ? `**FASE 2 - Validações Externas (Peso 35%):**
