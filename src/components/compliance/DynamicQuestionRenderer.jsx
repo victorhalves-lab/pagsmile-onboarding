@@ -443,6 +443,7 @@ export default function DynamicQuestionRenderer({
             cnpjAutocompleteData={cnpjAutocompleteData}
             onCnpjAutocomplete={onCnpjAutocomplete}
             onCepData={onCepData}
+            fieldAlerts={complianceAlerts[question.id]}
           />
         ))}
       </div>
