@@ -15,6 +15,7 @@ import DynamicQuestionRenderer from './DynamicQuestionRenderer';
 import { useOnboardingAnalytics } from '../analytics/useOnboardingAnalytics';
 import { useLeadPrefill } from './useLeadPrefill';
 import { useComplianceSession } from '../../hooks/useComplianceSession';
+import useComplianceFlags from '../../hooks/useComplianceFlags';
 import AutoSaveIndicator from './AutoSaveIndicator';
 import { toast } from 'sonner';
 
