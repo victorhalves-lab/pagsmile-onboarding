@@ -537,14 +537,8 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
   };
 
   const calculateQualityScore = () => {
-    let score = 50; // Base
-    if (formData.tpv_mensal && parseFloat(formData.tpv_mensal) > 100000) score += 10;
-    if (formData.site) score += 5;
-    if (formData.desafios_atuais && formData.desafios_atuais.length > 30) score += 5;
-    if (formData.contato_cargo && ['Sócio', 'Diretor', 'C-Level'].includes(formData.contato_cargo)) score += 10;
-    if (formData.expectativa_crescimento === 'Mais de 100%') score += 10;
-    if (formData.proposta_concorrente_url) score += 5;
-    return Math.min(100, score);
+    // Usar score aprimorado baseado em dados de enriquecimento do CNPJ
+    return computeLeadScore(formData, questions, cnpjApiData);
   };
 
   const handleSubmit = async () => {
