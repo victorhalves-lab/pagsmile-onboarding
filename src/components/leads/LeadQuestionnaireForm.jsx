@@ -184,7 +184,14 @@ const isAutofilledByApi = (question, cnpjData) => {
 
 export default function LeadQuestionnaireForm({ template, questions: rawQuestions, linkCode, onboardingLink, onSubmit }) {
   // Filtrar perguntas ocultas (duplicadas/redundantes)
-  const questions = rawQuestions.filter(q => !HIDDEN_QUESTION_IDS.includes(q.id));
+  // Também ocultar "Quantidade de Transações por Mês" pois é calculada automaticamente (TPV / Ticket Médio)
+  const questions = rawQuestions.filter(q => {
+    if (HIDDEN_QUESTION_IDS.includes(q.id)) return false;
+    // Ocultar campo de transações por mês (será calculado automaticamente)
+    const qText = (q.text || '').toLowerCase();
+    if (q.type === 'NUMBER' && (qText.includes('quantidade de transações') || qText.includes('transações por mês'))) return false;
+    return true;
+  });
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
