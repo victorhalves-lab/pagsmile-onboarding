@@ -97,6 +97,7 @@ export default function IntroducerLinkGeneratorModal({ open, onOpenChange }) {
   const handleReset = () => {
     setSelectedIntroducerId('');
     setLinkType('LEAD_QUESTIONNAIRE');
+    setSelectedTemplateId('');
     setAgentName('');
     setUtmMedium('referral');
     setUtmCampaign('');
