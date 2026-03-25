@@ -331,7 +331,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
           continue;
         }
         
-        const minLength = q.id === DESCRIPTION_QUESTION_ID ? 75 : q.validationRules?.minLength;
+        const minLength = q.validationRules?.minLength || (q.id === DESCRIPTION_QUESTION_ID ? 75 : undefined);
         if (minLength && String(val).length < minLength) {
           errors[q.id] = `Mínimo de ${minLength} caracteres (atual: ${String(val).length})`;
         }
