@@ -37,6 +37,7 @@ import CurrencyInput from './CurrencyInput';
 import PhoneInput from './PhoneInput';
 import EmailInput from './EmailInput';
 import CnaeCoherenceAlert from './CnaeCoherenceAlert';
+import SiteValidationBadge from './SiteValidationBadge';
 import { computeSilentFlags, computeLeadScore } from '@/hooks/useLeadSilentFlags';
 
 function MCCNameDisplay({ mccCode }) {
