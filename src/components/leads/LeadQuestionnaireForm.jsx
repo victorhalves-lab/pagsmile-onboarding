@@ -456,6 +456,17 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
     const errors = {};
     
     for (const q of stepQuestions) {
+      // Address field: validate sub-fields + confirmation
+      if (isV2Template && isAddressQuestion(q)) {
+        const addr = formData[q.id] || {};
+        if (!addr.cep || !addr.logradouro || !addr.numero || !addr.bairro || !addr.cidade || !addr.uf) {
+          errors[q.id] = 'Preencha todos os campos obrigatórios do endereço';
+        } else if (!formData[`${q.id}_confirmed`]) {
+          errors[`${q.id}_confirmed`] = 'Você precisa confirmar o endereço antes de prosseguir';
+        }
+        continue;
+      }
+
       const isRequired = q.type !== 'FILE_UPLOAD' ? true : q.isRequired;
       if (isRequired) {
         const val = formData[q.id];
