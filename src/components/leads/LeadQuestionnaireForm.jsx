@@ -582,7 +582,8 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
   };
 
   const renderQuestionDefault = (question) => {
-    const value = formData[question.id] || '';
+    const rawValue = formData[question.id];
+    const value = rawValue !== undefined && rawValue !== null ? rawValue : '';
     const fieldError = validationErrors[question.id];
     const hasError = !!fieldError;
     const errorBorderClass = hasError ? 'border-red-400 ring-1 ring-red-300' : '';
