@@ -11,9 +11,9 @@ import { CreditCard } from 'lucide-react';
 const BANDEIRA_ORDER = ['Visa', 'Mastercard', 'Amex', 'Elo', 'Outras'];
 
 const CATEGORY_ORDER = [
-  { label: 'Cartão de Crédito à Vista (1x)', prefix: 'Taxa de Cartão à Vista (1x)' },
-  { label: 'Cartão de Crédito 2 a 6x', prefix: 'Taxa de Cartão 2-6x' },
-  { label: 'Cartão de Crédito 7 a 12x', prefix: 'Taxa de Cartão 7-12x' },
+  { label: 'Cartão de Crédito à Vista (1x)', prefixes: ['Taxa de Cartão à Vista (1x)', 'MDR Crédito À Vista'] },
+  { label: 'Cartão de Crédito 2 a 6x', prefixes: ['Taxa de Cartão 2-6x', 'MDR Crédito 2-6x'] },
+  { label: 'Cartão de Crédito 7 a 12x', prefixes: ['Taxa de Cartão 7-12x', 'MDR Crédito 7-12x'] },
 ];
 
 function extractBandeira(text) {
@@ -23,8 +23,8 @@ function extractBandeira(text) {
   return null;
 }
 
-function matchesCategory(text, prefix) {
-  return text.startsWith(prefix);
+function matchesCategory(text, prefixes) {
+  return prefixes.some(prefix => text.startsWith(prefix) || text.includes(prefix));
 }
 
 export default function CardRatesGroup({ questions, formData, updateField }) {
@@ -32,7 +32,7 @@ export default function CardRatesGroup({ questions, formData, updateField }) {
   const categories = CATEGORY_ORDER.map(cat => {
     const catQuestions = BANDEIRA_ORDER.map(bandeira => {
       return questions.find(q => 
-        matchesCategory(q.text, cat.prefix) && extractBandeira(q.text) === bandeira
+        matchesCategory(q.text, cat.prefixes) && extractBandeira(q.text) === bandeira
       );
     }).filter(Boolean);
 
