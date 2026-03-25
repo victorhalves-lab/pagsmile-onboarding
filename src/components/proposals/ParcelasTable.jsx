@@ -19,14 +19,20 @@ export function calcularTabelaParcelas(taxas, taxaRAV, prazo) {
       taxaBase = parseFloat(taxas?.de13a21x || 0) || 0;
     }
 
+    // Antecipação: cada sub-parcela i (de 1 a N) vence em D+(i*30).
+    // Custo de antecipar sub-parcela i para D+prazo = RAV * max(0, i*30 - prazo) / 30
+    // CET antecipação = média das N sub-parcelas
     let taxaAntecipacao = 0;
     if (prazo !== 'FLUXO' && taxaRAV > 0) {
-      const diasVencimento = parcela * 30;
-      const diasAntecipados = diasVencimento - prazoDias;
-      if (diasAntecipados > 0) {
-        const mesesAntecipados = diasAntecipados / 30;
-        taxaAntecipacao = mesesAntecipados * taxaRAV;
+      let somaAntecip = 0;
+      for (let i = 1; i <= parcela; i++) {
+        const diasVencimento = i * 30;
+        const diasAntecipados = diasVencimento - prazoDias;
+        if (diasAntecipados > 0) {
+          somaAntecip += (diasAntecipados / 30) * taxaRAV;
+        }
       }
+      taxaAntecipacao = somaAntecip / parcela;
     }
 
     rows.push({
