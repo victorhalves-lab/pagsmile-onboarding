@@ -1171,6 +1171,20 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
       );
     }
 
+    // Address field with CEP autocomplete + confirmation
+    if (isV2Template && isAddressQuestion(question)) {
+      return (
+        <LeadAddressField
+          key={question.id}
+          formData={formData}
+          updateField={updateField}
+          cnpjApiData={cnpjApiData}
+          addressFieldId={question.id}
+          validationErrors={validationErrors}
+        />
+      );
+    }
+
     // Após a pergunta principal de tipos de produto, renderizar os percentuais
     if (question.id === PRODUCT_TYPE_QUESTION_ID) {
       return (
