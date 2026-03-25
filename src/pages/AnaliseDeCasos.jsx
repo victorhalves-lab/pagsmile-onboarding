@@ -18,6 +18,7 @@ import CaseHistoryTab from '../components/case-analysis/CaseHistoryTab';
 import CaseReviewTab from '../components/case-analysis/CaseReviewTab';
 import CaseReviewDialogs from '../components/case-analysis/CaseReviewDialogs';
 import CaseSubsellersTab from '../components/case-analysis/CaseSubsellersTab';
+import CnpjEnrichmentSummaryCard from '../components/case-analysis/CnpjEnrichmentSummaryCard';
 
 export default function AnaliseDeCasos() {
   const navigate = useNavigate();
