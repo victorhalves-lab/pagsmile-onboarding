@@ -135,34 +135,44 @@ async function handleRegistroBr(dominio) {
 }
 
 async function handleCnae(cnaeFiscal) {
-  // Convert integer to formatted code: 6201500 → 6201-5/00
   const s = String(cnaeFiscal).padStart(7, '0');
-  // BrasilAPI expects: XXXX-X/XX format (without dot before group)
-  const formatted = `${s.slice(0,4)}-${s.slice(4,5)}/${s.slice(5,7)}`;
+  const formatted = `${s.slice(0,2)}.${s.slice(2,4)}-${s.slice(4,5)}/${s.slice(5,7)}`;
+  const divisao = s.slice(0, 2);
   
-  const res = await fetch(`https://brasilapi.com.br/api/cnae/v2/${formatted}`);
-  if (!res.ok) {
-    // Try alternative format with dot: XX.XX-X/XX
-    const altFormatted = `${s.slice(0,2)}.${s.slice(2,4)}-${s.slice(4,5)}/${s.slice(5,7)}`;
-    const res2 = await fetch(`https://brasilapi.com.br/api/cnae/v2/${altFormatted}`);
-    if (!res2.ok) return { code: cnaeFiscal, formatted, error: `CNAE não encontrado` };
-    const data2 = await res2.json();
-    return {
-      code: cnaeFiscal, formatted: altFormatted,
-      descricao: data2.descricao || '',
-      grupo: data2.grupo ? { id: data2.grupo.id, descricao: data2.grupo.descricao } : null,
-      divisao: data2.divisao ? { id: data2.divisao.id, descricao: data2.divisao.descricao } : null,
-      secao: data2.secao ? { id: data2.secao.id, descricao: data2.secao.descricao } : null
-    };
-  }
-  const data = await res.json();
+  // BrasilAPI CNAE v2 endpoint is unreliable — generate hierarchy from code structure
+  // Division (2 digits), Group (3 digits), Class (5 digits), Subclass (7 digits)
+  // Known sections mapping (first 2 digits → section letter)
+  const DIVISAO_SECAO = {
+    '01':'A','02':'A','03':'A','05':'B','06':'B','07':'B','08':'B','09':'B',
+    '10':'C','11':'C','12':'C','13':'C','14':'C','15':'C','16':'C','17':'C','18':'C','19':'C',
+    '20':'C','21':'C','22':'C','23':'C','24':'C','25':'C','26':'C','27':'C','28':'C','29':'C',
+    '30':'C','31':'C','32':'C','33':'C','35':'D','36':'E','37':'E','38':'E','39':'E',
+    '41':'F','42':'F','43':'F','45':'G','46':'G','47':'G','49':'H','50':'H','51':'H','52':'H','53':'H',
+    '55':'I','56':'I','58':'J','59':'J','60':'J','61':'J','62':'J','63':'J',
+    '64':'K','65':'K','66':'K','68':'L','69':'M','70':'M','71':'M','72':'M','73':'M','74':'M','75':'M',
+    '77':'N','78':'N','79':'N','80':'N','81':'N','82':'N','84':'O','85':'P',
+    '86':'Q','87':'Q','88':'Q','90':'R','91':'R','92':'R','93':'R','94':'S','95':'S','96':'S','97':'T','99':'U'
+  };
+  const SECAO_NOMES = {
+    'A':'Agricultura','B':'Indústrias extrativas','C':'Indústrias de transformação',
+    'D':'Eletricidade e gás','E':'Água e esgoto','F':'Construção',
+    'G':'Comércio','H':'Transporte','I':'Alojamento e alimentação',
+    'J':'Informação e comunicação','K':'Atividades financeiras','L':'Atividades imobiliárias',
+    'M':'Atividades profissionais','N':'Atividades administrativas','O':'Administração pública',
+    'P':'Educação','Q':'Saúde','R':'Artes e cultura','S':'Outras atividades de serviços',
+    'T':'Serviços domésticos','U':'Organismos internacionais'
+  };
+  
+  const secaoId = DIVISAO_SECAO[divisao] || '?';
+  const secaoNome = SECAO_NOMES[secaoId] || 'Não classificado';
+  
   return {
     code: cnaeFiscal,
     formatted,
-    descricao: data.descricao || '',
-    grupo: data.grupo ? { id: data.grupo.id, descricao: data.grupo.descricao } : null,
-    divisao: data.divisao ? { id: data.divisao.id, descricao: data.divisao.descricao } : null,
-    secao: data.secao ? { id: data.secao.id, descricao: data.secao.descricao } : null
+    divisao: { id: divisao, descricao: `Divisão ${divisao}` },
+    secao: { id: secaoId, descricao: `Seção ${secaoId} — ${secaoNome}` },
+    grupo: { id: s.slice(0, 3), descricao: `Grupo ${s.slice(0, 3)}` },
+    hierarquia: `Seção ${secaoId} — ${secaoNome} → Divisão ${divisao} → Classe ${formatted}`
   };
 }
 
