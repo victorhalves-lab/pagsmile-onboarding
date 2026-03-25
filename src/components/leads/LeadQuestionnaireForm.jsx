@@ -614,7 +614,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
 
         {question.type === 'TEXT' && (
           <>
-            {question.id === DESCRIPTION_QUESTION_ID ? (
+            {(question.id === DESCRIPTION_QUESTION_ID || (question.validationRules?.minLength >= 50 && (question.text || '').toLowerCase().includes('descrev'))) ? (
               <div className="space-y-2">
                 <Textarea
                   value={value}
