@@ -5,15 +5,57 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle, CheckCircle, Lock } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import CnpjAutocompleteField from './CnpjAutocompleteField';
 
 // Componente que renderiza UMA pergunta com base no tipo
-function QuestionField({ question, value, onChange }) {
+function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpjAutocomplete }) {
   const { type, text, options = [], placeholder, helpText, isRequired } = question;
+  const textLower = (text || '').toLowerCase();
 
   const handleChange = (newValue) => {
     onChange(question.id, newValue);
   };
+
+  // Detectar se é campo CNPJ gatilho (order 1 e tipo CPF_CNPJ com texto "CNPJ")
+  const isCnpjTrigger = type === 'CPF_CNPJ' && textLower === 'cnpj' && question.order === 1;
+  if (isCnpjTrigger) {
+    return (
+      <CnpjAutocompleteField
+        value={value || ''}
+        onChange={onChange}
+        onAutocompleteData={onCnpjAutocomplete}
+        questionId={question.id}
+        isRequired={isRequired}
+        blockOnInactive={true}
+        helpText={helpText}
+      />
+    );
+  }
+
+  // Detectar campos auto-preenchidos via CNPJ (readonly display fields)
+  const isAutofilledReadonly = cnpjAutocompleteData && (
+    textLower.includes('cnae principal') ||
+    textLower.includes('cnaes secundários') ||
+    textLower.includes('situação cadastral') ||
+    textLower.includes('capital social') ||
+    textLower.includes('porte da empresa') ||
+    textLower.includes('data de início')
+  );
+
+  if (isAutofilledReadonly && value) {
+    return (
+      <div className="relative">
+        <Input
+          value={value || ''}
+          readOnly
+          className="h-11 bg-emerald-50/30 border-emerald-200 cursor-not-allowed"
+        />
+        <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#002443]/30" />
+      </div>
+    );
+  }
 
   switch (type) {
     case 'TEXT':
@@ -133,30 +175,58 @@ function QuestionField({ question, value, onChange }) {
 }
 
 // Componente que renderiza UMA pergunta completa com label
-function QuestionItem({ question, value, onChange, prefillSource }) {
+function QuestionItem({ question, value, onChange, prefillSource, cnpjAutocompleteData, onCnpjAutocomplete }) {
+  const textLower = (question.text || '').toLowerCase();
+  const isCnpjTrigger = question.type === 'CPF_CNPJ' && textLower === 'cnpj' && question.order === 1;
+  const isAutoSource = cnpjAutocompleteData && value && (
+    textLower.includes('razão social') || textLower.includes('nome fantasia') ||
+    textLower.includes('tipo de empresa') || textLower.includes('cnae') ||
+    textLower.includes('situação cadastral') || textLower.includes('capital social') ||
+    textLower.includes('porte da empresa') || textLower.includes('data de início') ||
+    textLower === 'cep' || textLower === 'logradouro' || textLower === 'bairro' ||
+    textLower === 'cidade' || textLower === 'uf' || textLower === 'número' ||
+    textLower === 'complemento' || textLower.includes('e-mail da receita') ||
+    textLower.includes('telefone da receita')
+  );
+
   return (
     <div className="space-y-2">
-      <div className="flex items-start gap-2">
-        <Label className="text-sm font-semibold text-[#002443]">
-          {question.text}
-          {question.isRequired && <span className="text-red-500 ml-1">*</span>}
-        </Label>
-        {question.helpText && (
-          <div className="group relative">
-            <HelpCircle className="w-4 h-4 text-slate-400 cursor-help" />
-            <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-2 bg-slate-800 text-white text-xs rounded-lg shadow-lg z-50">
-              {question.helpText}
+      {/* O CnpjAutocompleteField renderiza seu próprio label */}
+      {!isCnpjTrigger && (
+        <div className="flex items-start gap-2 flex-wrap">
+          <Label className="text-sm font-semibold text-[#002443]">
+            {question.text}
+            {question.isRequired && <span className="text-red-500 ml-1">*</span>}
+          </Label>
+          {isAutoSource && (
+            <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] gap-1">
+              <CheckCircle className="w-3 h-3" />
+              Receita Federal
+            </Badge>
+          )}
+          {question.helpText && (
+            <div className="group relative">
+              <HelpCircle className="w-4 h-4 text-slate-400 cursor-help" />
+              <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-2 bg-slate-800 text-white text-xs rounded-lg shadow-lg z-50">
+                {question.helpText}
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
       {prefillSource && (
         <div className="flex items-center gap-1.5 text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md w-fit">
           <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
           Preenchido automaticamente com dados do questionário de leads
         </div>
       )}
-      <QuestionField question={question} value={value} onChange={onChange} />
+      <QuestionField
+        question={question}
+        value={value}
+        onChange={onChange}
+        cnpjAutocompleteData={cnpjAutocompleteData}
+        onCnpjAutocomplete={onCnpjAutocomplete}
+      />
     </div>
   );
 }
@@ -209,7 +279,9 @@ export default function DynamicQuestionRenderer({
   showTitle = true,
   stepTitle = null,
   allQuestions = [], // Todas as perguntas para avaliar lógica condicional corretamente
-  prefillSources = {} // Mapa de questionId → fonte do pré-preenchimento
+  prefillSources = {}, // Mapa de questionId → fonte do pré-preenchimento
+  cnpjAutocompleteData = null,
+  onCnpjAutocomplete
 }) {
   // Se currentStep for definido, filtramos as perguntas para aquele step
   const displayQuestions = currentStep !== undefined
@@ -245,6 +317,8 @@ export default function DynamicQuestionRenderer({
             value={formData[question.id]}
             onChange={onFieldChange}
             prefillSource={prefillSources[question.id]}
+            cnpjAutocompleteData={cnpjAutocompleteData}
+            onCnpjAutocomplete={onCnpjAutocomplete}
           />
         ))}
       </div>
