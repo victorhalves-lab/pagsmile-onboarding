@@ -403,7 +403,8 @@ export default function DynamicQuestionRenderer({
   prefillSources = {},
   cnpjAutocompleteData = null,
   onCnpjAutocomplete,
-  onCepData
+  onCepData,
+  complianceAlerts = {}
 }) {
   // Se currentStep for definido, filtramos as perguntas para aquele step
   const displayQuestions = currentStep !== undefined
