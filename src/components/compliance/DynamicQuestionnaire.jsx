@@ -390,8 +390,20 @@ export default function DynamicQuestionnaire({
     return missingFields;
   };
 
+  // Validação de bloqueio: CNPJ inativo impede avanço
+  const isCnpjBlocked = () => {
+    if (!cnpjAutocompleteData) return false;
+    // Se situação cadastral não é ATIVA (código 2), bloquear
+    return cnpjAutocompleteData.situacao_cadastral !== 2;
+  };
+
   const handleNext = () => {
     if (currentStep < steps.length) {
+      // Verificar se CNPJ inativo bloqueia o avanço
+      if (isCnpjBlocked()) {
+        toast.error('O CNPJ informado não está com situação ATIVA na Receita Federal. Apenas empresas ativas podem prosseguir.');
+        return;
+      }
       const missing = validateCurrentStep();
       if (missing.length > 0) {
         toast.error(`Preencha todos os campos obrigatórios (${missing.length} campo${missing.length > 1 ? 's' : ''} pendente${missing.length > 1 ? 's' : ''}).`);
@@ -418,6 +430,11 @@ export default function DynamicQuestionnaire({
   };
 
   const handleSubmit = () => {
+    // Verificar bloqueio CNPJ inativo antes de submeter
+    if (isCnpjBlocked()) {
+      toast.error('O CNPJ informado não está com situação ATIVA na Receita Federal. Apenas empresas ativas podem prosseguir.');
+      return;
+    }
     const missing = validateCurrentStep();
     if (missing.length > 0) {
       toast.error(`Preencha todos os campos obrigatórios (${missing.length} campo${missing.length > 1 ? 's' : ''} pendente${missing.length > 1 ? 's' : ''}).`);

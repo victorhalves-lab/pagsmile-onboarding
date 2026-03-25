@@ -18,8 +18,8 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
     onChange(question.id, newValue);
   };
 
-  // Detectar se é campo CNPJ gatilho (order 1 e tipo CPF_CNPJ com texto "CNPJ")
-  const isCnpjTrigger = type === 'CPF_CNPJ' && textLower === 'cnpj' && question.order === 1;
+  // Detectar se é campo CNPJ gatilho (tipo CPF_CNPJ com texto "CNPJ" e é a primeira pergunta CPF_CNPJ do formulário)
+  const isCnpjTrigger = type === 'CPF_CNPJ' && textLower === 'cnpj';
   if (isCnpjTrigger) {
     return (
       <CnpjAutocompleteField
@@ -177,7 +177,7 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
 // Componente que renderiza UMA pergunta completa com label
 function QuestionItem({ question, value, onChange, prefillSource, cnpjAutocompleteData, onCnpjAutocomplete }) {
   const textLower = (question.text || '').toLowerCase();
-  const isCnpjTrigger = question.type === 'CPF_CNPJ' && textLower === 'cnpj' && question.order === 1;
+  const isCnpjTrigger = question.type === 'CPF_CNPJ' && textLower === 'cnpj';
   const isAutoSource = cnpjAutocompleteData && value && (
     textLower.includes('razão social') || textLower.includes('nome fantasia') ||
     textLower.includes('tipo de empresa') || textLower.includes('cnae') ||
