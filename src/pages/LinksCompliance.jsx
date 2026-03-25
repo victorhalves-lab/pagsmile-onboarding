@@ -46,6 +46,12 @@ export default function LinksCompliance() {
     { key: 'MARKETPLACE', label: 'Marketplace', desc: 'Plataforma com sellers / sub-merchants', icon: ShoppingCart, color: '#36706c', url: `${base}${createPageUrl('ComplianceDinamico')}?model=marketplace` },
   ];
 
+  const quickLinksV2 = [
+    { key: 'MERCHANT_V2', label: 'Merchant v2.0', desc: 'Autocomplete — CNPJ preenche 14 campos', icon: CreditCard, color: '#2bc196', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceMerchantAutocomplete` },
+    { key: 'GATEWAY_V2', label: 'Gateway v2.0', desc: 'Autocomplete — 80 perguntas + 19 docs', icon: Globe, color: '#002443', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceGatewayAutocomplete` },
+    { key: 'MARKETPLACE_V2', label: 'Marketplace v2.0', desc: 'Autocomplete — 85 perguntas + 16 docs', icon: ShoppingCart, color: '#36706c', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceMarketplaceAutocomplete` },
+  ];
+
   const quickLinksByType = [
     { key: 'GENERIC', label: 'Genérico', desc: 'Merchant escolhe o perfil', icon: Globe, color: '#002443', url: `${base}${createPageUrl('ComplianceOnboardingStart')}` },
     { key: 'PIX', label: 'Pix', desc: 'Compliance simplificado Pix', icon: CreditCard, color: '#2bc196', url: `${base}${createPageUrl('CompliancePixOnly')}` },
@@ -161,12 +167,27 @@ export default function LinksCompliance() {
       {/* Links Rápidos */}
       {activeTab === 'links' && (
         <div className="space-y-6">
-          {/* Por Tipo de Negócio */}
+          {/* v2.0 Autocomplete */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-[#2bc196]/10 flex items-center justify-center"><Briefcase className="w-4 h-4 text-[#2bc196]" /></div>
               <div>
-                <h2 className="text-base font-bold text-[#002443]">Por Tipo de Negócio</h2>
+                <h2 className="text-base font-bold text-[#002443]">v2.0 — Autocomplete por CNPJ</h2>
+                <p className="text-xs text-[#002443]/40">Novos questionários com preenchimento automático e validação avançada</p>
+              </div>
+              <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0 text-[10px] ml-2">NOVO</Badge>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {quickLinksV2.map(item => <QuickLinkCard key={item.key} item={item} />)}
+            </div>
+          </div>
+
+          {/* Por Tipo de Negócio (v1) */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-[#002443]/5 flex items-center justify-center"><Briefcase className="w-4 h-4 text-[#002443]/60" /></div>
+              <div>
+                <h2 className="text-base font-bold text-[#002443]">Por Tipo de Negócio (v1)</h2>
                 <p className="text-xs text-[#002443]/40">Links diretos por sub-categoria: Merchant, Gateway ou Marketplace</p>
               </div>
             </div>

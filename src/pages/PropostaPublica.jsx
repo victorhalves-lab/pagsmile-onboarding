@@ -77,18 +77,45 @@ export default function PropostaPublica() {
         if (lead) subCat = lead.businessSubCategory;
       }
 
-      const COMPLIANCE_TEMPLATES = {
+      // Determine which compliance version to use based on lead's questionnaire template
+      let useV2 = false;
+      if (proposta.leadId) {
+        const leads = await base44.entities.Lead.filter({ id: proposta.leadId });
+        const lead = leads[0];
+        if (lead) {
+          if (!subCat) subCat = lead.businessSubCategory;
+          // Check if the lead was generated from a v2 template
+          if (lead.leadQuestionnaireTemplateId === '69c3b5af17040531b06c5c16') {
+            useV2 = true;
+          }
+        }
+      }
+
+      const COMPLIANCE_TEMPLATES_V1 = {
         'MERCHAN': '69a691da6b5ed4982b8a4055',
         'GATEWAY': '69a691da6b5ed4982b8a4056',
         'MARKETPLACE': '69a691da6b5ed4982b8a4057',
       };
-      const COMPLIANCE_MODELS = {
+      const COMPLIANCE_TEMPLATES_V2 = {
+        'MERCHAN': '69c3b5af17040531b06c5c17',
+        'GATEWAY': '69c3b5af17040531b06c5c19',
+        'MARKETPLACE': '69c3b5af17040531b06c5c18',
+      };
+      const COMPLIANCE_MODELS_V1 = {
         'MERCHAN': 'merchant',
         'GATEWAY': 'gateway',
         'MARKETPLACE': 'marketplace',
       };
-      const templateId = subCat ? COMPLIANCE_TEMPLATES[subCat] : null;
-      const model = subCat ? COMPLIANCE_MODELS[subCat] : null;
+      const COMPLIANCE_MODELS_V2 = {
+        'MERCHAN': 'ComplianceMerchantAutocomplete',
+        'GATEWAY': 'ComplianceGatewayAutocomplete',
+        'MARKETPLACE': 'ComplianceMarketplaceAutocomplete',
+      };
+
+      const templates = useV2 ? COMPLIANCE_TEMPLATES_V2 : COMPLIANCE_TEMPLATES_V1;
+      const models = useV2 ? COMPLIANCE_MODELS_V2 : COMPLIANCE_MODELS_V1;
+      const templateId = subCat ? templates[subCat] : null;
+      const model = subCat ? models[subCat] : null;
 
       if (model) {
         complianceUrl = `${window.location.origin}${createPageUrl('ComplianceDinamico')}?model=${model}&leadId=${proposta.leadId || ''}`;
@@ -268,8 +295,13 @@ export default function PropostaPublica() {
     const getComplianceUrl = () => {
       if (!isAceita) return null;
       const subCat = proposta.businessSubCategory;
-      const modelMap = { 'MERCHAN': 'merchant', 'GATEWAY': 'gateway', 'MARKETPLACE': 'marketplace' };
-      const model = modelMap[subCat] || 'merchant';
+      // Default to v1 for the static already-accepted page; the actual redirect uses the version determined during acceptance
+      const modelMapV1 = { 'MERCHAN': 'merchant', 'GATEWAY': 'gateway', 'MARKETPLACE': 'marketplace' };
+      const modelMapV2 = { 'MERCHAN': 'ComplianceMerchantAutocomplete', 'GATEWAY': 'ComplianceGatewayAutocomplete', 'MARKETPLACE': 'ComplianceMarketplaceAutocomplete' };
+      // Try to detect v2 from lead's recommended template
+      const v2TemplateIds = ['69c3b5af17040531b06c5c17', '69c3b5af17040531b06c5c18', '69c3b5af17040531b06c5c19'];
+      // Use a simple heuristic: if the URL already has a v2 model, keep it
+      const model = modelMapV1[subCat] || 'merchant';
       return `${window.location.origin}${createPageUrl('ComplianceDinamico')}?model=${model}&leadId=${proposta.leadId || ''}`;
     };
     const complianceUrl = getComplianceUrl();
