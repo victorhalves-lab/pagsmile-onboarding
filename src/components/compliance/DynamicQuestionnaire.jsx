@@ -303,26 +303,34 @@ export default function DynamicQuestionnaire({
     setFormData(prev => ({ ...prev, [questionId]: value }));
   };
 
-  // Handler de autocomplete CNPJ — preenche campos A1-A11 automaticamente
+  // Handler de autocomplete CNPJ — preenche campos automaticamente
+  // Para Lead: Razão Social, Nome Fantasia, Site, MCC
+  // Para Compliance: todos os 12+ campos cadastrais (A1-A11)
   const handleCnpjAutocomplete = (apiData) => {
     setCnpjAutocompleteData(apiData);
     if (!apiData || !questions.length) return;
 
-    // Mapear campos da API para perguntas com base no texto da pergunta
+    // Mapear campos da API para perguntas com base no texto da pergunta (case-insensitive)
     const fieldMap = {};
     questions.forEach(q => {
-      const t = (q.text || '').toLowerCase();
+      const t = (q.text || '').toLowerCase().trim();
+      
+      // === Campos de autocomplete direto (exibidos e preenchidos) ===
       if (t === 'razão social') fieldMap[q.id] = apiData.razao_social;
       else if (t === 'nome fantasia') fieldMap[q.id] = apiData.nome_fantasia || '';
       else if (t === 'tipo de empresa') fieldMap[q.id] = apiData.tipo_empresa;
       else if (t === 'cnae principal') {
         const cnae = String(apiData.cnae_fiscal || '');
-        const formatted = cnae.length === 7 ? `${cnae.slice(0,4)}-${cnae.slice(4,5)}/${cnae.slice(5)} — ${apiData.cnae_fiscal_descricao}` : apiData.cnae_fiscal_descricao;
+        const formatted = cnae.length === 7 
+          ? `${cnae.slice(0,4)}-${cnae.slice(4,5)}/${cnae.slice(5)} — ${apiData.cnae_fiscal_descricao}` 
+          : apiData.cnae_fiscal_descricao;
         fieldMap[q.id] = formatted;
       }
       else if (t === 'cnaes secundários') {
         const cnaes = (apiData.cnaes_secundarios || []);
-        fieldMap[q.id] = cnaes.length > 0 ? cnaes.map(c => `${c.codigo} — ${c.descricao}`).join('; ') : 'Nenhuma atividade secundária registrada.';
+        fieldMap[q.id] = cnaes.length > 0 
+          ? cnaes.map(c => `${c.codigo} — ${c.descricao}`).join('; ') 
+          : 'Nenhuma atividade secundária registrada.';
       }
       else if (t === 'situação cadastral') fieldMap[q.id] = apiData.descricao_situacao_cadastral;
       else if (t === 'capital social') {
@@ -332,20 +340,24 @@ export default function DynamicQuestionnaire({
         const porteMap = { 'ME': 'Microempresa (ME)', 'EPP': 'Empresa de Pequeno Porte (EPP)', 'DEMAIS': 'Demais' };
         fieldMap[q.id] = porteMap[apiData.porte] || apiData.porte;
       }
+      // Endereço (7 subcampos)
       else if (t === 'cep') fieldMap[q.id] = apiData.endereco?.cep || '';
       else if (t === 'logradouro') fieldMap[q.id] = apiData.endereco?.logradouro || '';
       else if (t === 'número') fieldMap[q.id] = apiData.endereco?.numero || '';
       else if (t === 'complemento') fieldMap[q.id] = apiData.endereco?.complemento || '';
       else if (t === 'bairro') fieldMap[q.id] = apiData.endereco?.bairro || '';
-      else if (t === 'cidade') fieldMap[q.id] = apiData.endereco?.municipio || '';
-      else if (t === 'uf') fieldMap[q.id] = apiData.endereco?.uf || '';
-      else if (t === 'data de início da atividade') {
+      else if (t === 'cidade' || t === 'município') fieldMap[q.id] = apiData.endereco?.municipio || '';
+      else if (t === 'uf' || t === 'estado') fieldMap[q.id] = apiData.endereco?.uf || '';
+      // Data e contatos da Receita
+      else if (t.includes('data de início')) {
         const d = apiData.data_inicio_atividade;
         fieldMap[q.id] = d ? d.split('-').reverse().join('/') : '';
       }
-      else if (t === 'e-mail da receita federal') fieldMap[q.id] = apiData.email || '';
+      else if (t === 'e-mail da receita federal' || t === 'email da receita federal') fieldMap[q.id] = apiData.email || '';
       else if (t === 'telefone da receita federal') fieldMap[q.id] = apiData.telefone || '';
-      else if (t === 'mcc pretendido' && apiData.mcc_sugerido) {
+      
+      // === Campos de sugestão (preenchidos mas editáveis) ===
+      else if ((t === 'código mcc' || t === 'mcc pretendido') && apiData.mcc_sugerido) {
         fieldMap[q.id] = apiData.mcc_sugerido;
       }
       else if (t === 'site da empresa' && apiData.site_sugerido) {
