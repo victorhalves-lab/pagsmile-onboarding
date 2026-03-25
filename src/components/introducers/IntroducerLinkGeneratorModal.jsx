@@ -42,14 +42,24 @@ export default function IntroducerLinkGeneratorModal({ open, onOpenChange }) {
 
   const selectedIntroducer = introducers.find(i => i.id === selectedIntroducerId);
 
+  const getPageForTemplate = (template) => {
+    if (!template) return 'LeadQuestionnaire';
+    const model = (template.model || '').toLowerCase();
+    if (model === 'pix_lead' || model.includes('pix')) return 'LeadQuestionnairePix';
+    if (model === 'lite' || model.includes('simplificado')) return 'QuestionarioSimplificadoPublico';
+    return 'LeadQuestionnaire';
+  };
+
   const createMutation = useMutation({
     mutationFn: async () => {
       const uniqueCode = Math.random().toString(36).substring(2, 10).toUpperCase();
-      const basePage = linkType === 'LEAD_QUESTIONNAIRE' ? 'LeadQuestionnaire' : 'QuestionarioSimplificadoPublico';
+      const selectedTemplate = leadTemplates.find(t => t.id === selectedTemplateId);
+      const basePage = getPageForTemplate(selectedTemplate);
       
       const link = await base44.entities.OnboardingLink.create({
         linkType: linkType,
         uniqueCode,
+        questionnaireTemplateId: selectedTemplateId || undefined,
         commercialAgentName: agentName || undefined,
         introducerId: selectedIntroducer.id,
         introducerReferralCode: selectedIntroducer.referralCode,
