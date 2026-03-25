@@ -358,6 +358,17 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
   const ticketMedioId = ticketMedioQuestion?.id;
   const transacoesId = transacoesQuestion?.id || TRANSACOES_MES_QUESTION_ID;
 
+  // Detectar pergunta "Meios de Pagamento Desejados" V2
+  const meiosPagQ = React.useMemo(() => {
+    if (!isV2Template) return null;
+    return questions.find(q => q.type === 'MULTI_SELECT' && (q.text || '').toLowerCase().includes('meios de pagamento'));
+  }, [questions, isV2Template]);
+  
+  // Detectar perguntas de % Crédito/PIX/Boleto V2
+  const creditoPctQ = React.useMemo(() => questions.find(q => q.type === 'NUMBER' && (q.text || '').toLowerCase().includes('cartão de crédito') && (q.text || '').includes('%')), [questions]);
+  const pixPctQ = React.useMemo(() => questions.find(q => q.type === 'NUMBER' && (q.text || '').toLowerCase().includes('pix') && (q.text || '').includes('%') && !(q.text || '').toLowerCase().includes('med')), [questions]);
+  const boletoPctQ = React.useMemo(() => questions.find(q => q.type === 'NUMBER' && (q.text || '').toLowerCase().includes('boleto') && (q.text || '').includes('%')), [questions]);
+
   const updateField = useCallback((fieldId, value) => {
     setFormData(prev => {
       const newData = { ...prev, [fieldId]: value };
@@ -372,9 +383,23 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
         }
       }
       
+      // P71: Auto-selecionar "Meios de Pagamento Desejados" baseado nos %
+      if (meiosPagQ && (fieldId === creditoPctQ?.id || fieldId === pixPctQ?.id || fieldId === boletoPctQ?.id)) {
+        const meios = [];
+        const credVal = parseFloat(fieldId === creditoPctQ?.id ? value : (prev[creditoPctQ?.id] || 0)) || 0;
+        const pixVal = parseFloat(fieldId === pixPctQ?.id ? value : (prev[pixPctQ?.id] || 0)) || 0;
+        const bolVal = parseFloat(fieldId === boletoPctQ?.id ? value : (prev[boletoPctQ?.id] || 0)) || 0;
+        if (credVal > 0) meios.push('Cartão de Crédito');
+        if (pixVal > 0) meios.push('PIX');
+        if (bolVal > 0) meios.push('Boleto');
+        if (meios.length > 0) {
+          newData[meiosPagQ.id] = meios;
+        }
+      }
+      
       return newData;
     });
-  }, [tpvId, ticketMedioId, transacoesId]);
+  }, [tpvId, ticketMedioId, transacoesId, meiosPagQ, creditoPctQ, pixPctQ, boletoPctQ]);
 
   // Verificar lógica condicional
   const shouldShowQuestion = (question) => {
