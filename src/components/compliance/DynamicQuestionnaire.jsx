@@ -632,6 +632,7 @@ export default function DynamicQuestionnaire({
             cnpjAutocompleteData={cnpjAutocompleteData}
             onCnpjAutocomplete={handleCnpjAutocomplete}
             onCepData={handleCepData}
+            complianceAlerts={complianceAlerts}
           />
 
           {/* Botões de Ação */}
