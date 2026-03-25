@@ -300,11 +300,18 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
 
   // Verificar se pergunta precisa de campo "Outro" para descrição
   const needsOtherDescription = (questionId, value) => {
-    if (!QUESTIONS_WITH_OTHER_DESCRIPTION.includes(questionId)) return false;
-    if (Array.isArray(value)) {
-      return value.some(v => v?.toLowerCase().includes('outro'));
+    // Check by ID (V1) or check if value contains "Outro" for any MULTI_SELECT/SELECT
+    const hasOtherSelected = Array.isArray(value) 
+      ? value.some(v => v?.toLowerCase().includes('outro'))
+      : String(value || '').toLowerCase().includes('outro');
+    if (!hasOtherSelected) return false;
+    // For V1 IDs, use explicit list; for V2, detect by question having "Outro" in options
+    if (QUESTIONS_WITH_OTHER_DESCRIPTION.includes(questionId)) return true;
+    const q = questions.find(q => q.id === questionId);
+    if (q && (q.type === 'SELECT' || q.type === 'MULTI_SELECT')) {
+      return (q.options || []).some(o => o.toLowerCase().includes('outro'));
     }
-    return String(value || '').toLowerCase().includes('outro');
+    return false;
   };
 
   // Validar step atual — acumula todos os erros
