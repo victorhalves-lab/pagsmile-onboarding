@@ -317,7 +317,9 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
       const isRequired = q.type !== 'FILE_UPLOAD' ? true : q.isRequired;
       if (isRequired) {
         const val = formData[q.id];
-        if (val === undefined || val === null || val === '' || (Array.isArray(val) && val.length === 0)) {
+        // BOOLEAN: false is a valid answer, don't treat it as empty
+        const isEmpty = val === undefined || val === null || val === '' || (Array.isArray(val) && val.length === 0);
+        if (isEmpty && val !== false) {
           errors[q.id] = 'Este campo é obrigatório';
           continue;
         }
