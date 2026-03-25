@@ -28,8 +28,13 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
 
     let taxaAntecipacao = 0;
     if (prazo !== 'FLUXO' && taxaRAV > 0) {
-      const diasAntecipados = (parcela * 30) - prazoDias;
-      if (diasAntecipados > 0) taxaAntecipacao = (diasAntecipados / 30) * taxaRAV;
+      let somaAntecip = 0;
+      for (let i = 1; i <= parcela; i++) {
+        const diasVencimento = i * 30;
+        const diasAntecipados = diasVencimento - prazoDias;
+        if (diasAntecipados > 0) somaAntecip += (diasAntecipados / 30) * taxaRAV;
+      }
+      taxaAntecipacao = somaAntecip / parcela;
     }
     rows.push({ parcela, faixaLabel, taxaBase, taxaAntecipacao, taxaFinal: taxaBase + taxaAntecipacao });
   }
