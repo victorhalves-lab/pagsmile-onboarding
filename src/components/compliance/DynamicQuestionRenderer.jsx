@@ -209,16 +209,19 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
 
     case 'SELECT':
       return (
-        <Select value={value || ''} onValueChange={handleChange}>
-          <SelectTrigger className="h-11">
-            <SelectValue placeholder={placeholder || 'Selecione uma opção'} />
-          </SelectTrigger>
-          <SelectContent>
-            {options.map((opt, idx) => (
-              <SelectItem key={idx} value={opt}>{opt}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <>
+          <Select value={value || ''} onValueChange={handleChange}>
+            <SelectTrigger className="h-11">
+              <SelectValue placeholder={placeholder || 'Selecione uma opção'} />
+            </SelectTrigger>
+            <SelectContent>
+              {options.map((opt, idx) => (
+                <SelectItem key={idx} value={opt}>{opt}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <ComplianceFieldAlerts alerts={fieldAlerts} />
+        </>
       );
 
     case 'MULTI_SELECT':
@@ -404,7 +407,7 @@ export default function DynamicQuestionRenderer({
   cnpjAutocompleteData = null,
   onCnpjAutocomplete,
   onCepData,
-  complianceAlerts = {}
+  fieldAlertsMap = {}
 }) {
   // Se currentStep for definido, filtramos as perguntas para aquele step
   const displayQuestions = currentStep !== undefined
@@ -443,7 +446,7 @@ export default function DynamicQuestionRenderer({
             cnpjAutocompleteData={cnpjAutocompleteData}
             onCnpjAutocomplete={onCnpjAutocomplete}
             onCepData={onCepData}
-            fieldAlerts={complianceAlerts[question.id]}
+            fieldAlerts={fieldAlertsMap[question.id]}
           />
         ))}
       </div>

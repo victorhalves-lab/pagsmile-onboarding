@@ -15,8 +15,8 @@ import DynamicQuestionRenderer from './DynamicQuestionRenderer';
 import { useOnboardingAnalytics } from '../analytics/useOnboardingAnalytics';
 import { useLeadPrefill } from './useLeadPrefill';
 import { useComplianceSession } from '../../hooks/useComplianceSession';
-import useComplianceFlags from '../../hooks/useComplianceFlags';
 import AutoSaveIndicator from './AutoSaveIndicator';
+import useComplianceFlags from '../../hooks/useComplianceFlags';
 import { toast } from 'sonner';
 
 // Mapeamento de ícones por palavra-chave no título da pergunta
@@ -233,6 +233,9 @@ export default function DynamicQuestionnaire({
 
   // Agrupar perguntas em steps
   const steps = groupQuestionsIntoSteps(questions, questionsPerStep);
+
+  // Compute cross-validation flags in real-time
+  const fieldAlerts = useComplianceFlags(questions, formData, cnpjAutocompleteData);
 
   const { trackPageComplete } = useOnboardingAnalytics({
     pageName: `Compliance${templateModel?.charAt(0).toUpperCase()}${templateModel?.slice(1)}`,
@@ -629,6 +632,7 @@ export default function DynamicQuestionnaire({
             cnpjAutocompleteData={cnpjAutocompleteData}
             onCnpjAutocomplete={handleCnpjAutocomplete}
             onCepData={handleCepData}
+            fieldAlertsMap={fieldAlerts}
           />
 
           {/* Botões de Ação */}
