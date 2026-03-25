@@ -12,6 +12,9 @@ import CepAutocompleteField from './CepAutocompleteField';
 import EmailValidationField from './EmailValidationField';
 import PhoneValidationField from './PhoneValidationField';
 import Top5CnpjField from './Top5CnpjField';
+import CpfValidationField from './CpfValidationField';
+import ComplianceFieldAlerts from './ComplianceFieldAlerts';
+import SiteValidationBadge from '../leads/SiteValidationBadge';
 
 // Componente que renderiza UMA pergunta com base no tipo
 function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpjAutocomplete, onCepData }) {
