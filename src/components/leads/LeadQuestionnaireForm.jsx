@@ -1143,7 +1143,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
       return null;
     }
     
-    // Se a pergunta é parte de um grupo de percentuais, não renderizar individualmente
+    // Se a pergunta é parte de um grupo de percentuais V1, não renderizar individualmente
     if (GROUPED_PERCENT_IDS.includes(question.id)) {
       const group = PERCENT_GROUPS.find(g => g.trigger === question.id);
       if (group) {
@@ -1156,6 +1156,45 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
             updateField={updateField}
             required={group.required}
             error={validationErrors[group.trigger]}
+          />
+        );
+      }
+      return null;
+    }
+    
+    // V2: Grupos de percentuais dinâmicos
+    if (v2GroupedIds.includes(question.id)) {
+      const group = v2PercentGroups.find(g => g.trigger === question.id);
+      if (group) {
+        return (
+          <PercentDistributionRow
+            key={question.id}
+            title={group.title}
+            fields={group.fields}
+            formData={formData}
+            updateField={updateField}
+            required={group.required}
+            error={validationErrors[group.trigger]}
+          />
+        );
+      }
+      return null;
+    }
+    
+    // V2: Card rates group (MDR por bandeira) — renderizar como CardRatesGroup
+    if (v2CardRateIds.includes(question.id)) {
+      if (question.id === v2CardRateTrigger) {
+        // Verificar se processa cartão
+        if (v2ProcCartaoQ) {
+          const procCartao = formData[v2ProcCartaoQ.id];
+          if (procCartao !== true && procCartao !== 'true') return null;
+        }
+        return (
+          <CardRatesGroup
+            key="v2-card-rates-group"
+            questions={v2CardRates}
+            formData={formData}
+            updateField={updateField}
           />
         );
       }
