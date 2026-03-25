@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Copy, ExternalLink, Link as LinkIcon, Plus, Check, Briefcase, Zap, Loader2, ArrowRight, UserPlus } from 'lucide-react';
+import { Copy, ExternalLink, Link as LinkIcon, Plus, Check, Briefcase, Zap, Loader2, ArrowRight, UserPlus, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -19,6 +19,7 @@ export default function LinksQuestionariosLeads() {
   // Links genéricos
   const genericLinks = {
     LEAD: `${window.location.origin}${createPageUrl('LeadQuestionnaire')}`,
+    LEAD_V2: `${window.location.origin}${createPageUrl('LeadQuestionnaire')}?templateId=69c3b5af17040531b06c5c16`,
     LEAD_SIMPLIFICADO: `${window.location.origin}${createPageUrl('QuestionarioSimplificadoPublico')}`,
     LEAD_PIX: `${window.location.origin}${createPageUrl('LeadQuestionnairePix')}`,
   };
@@ -45,8 +46,65 @@ export default function LinksQuestionariosLeads() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Card Questionário Completo */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Card Lead v2.0 Autocomplete */}
+        <Card className="rounded-2xl border border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow overflow-hidden ring-1 ring-[#2bc196]/20">
+          <div className="h-1.5 bg-gradient-to-r from-[#2bc196] via-[#5cf7cf] to-[#2bc196]" />
+          <CardHeader className="pt-5">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-[#2bc196]/10">
+                  <Sparkles className="w-5 h-5 text-[#2bc196]" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <CardTitle className="text-base font-bold text-[#002443]">Lead Completo v2.0</CardTitle>
+                    <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0 text-[10px]">Autocomplete</Badge>
+                  </div>
+                  <CardDescription className="text-[#282828]/50 text-xs mt-0.5">CNPJ preenche 14 campos automaticamente</CardDescription>
+                </div>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.LEAD_V2, '_blank')} className="border-[#002443]/10 text-[#002443] hover:bg-[#002443]/5 rounded-lg">
+                <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
+                Visualizar
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40">Link Padrão</Label>
+              <div className="flex gap-2">
+                <Input readOnly value={genericLinks.LEAD_V2} className="font-mono text-xs bg-[#f4f4f4] border-[#002443]/5 rounded-lg" />
+                <Button 
+                  onClick={() => handleCopy(genericLinks.LEAD_V2, 'lead-v2')}
+                  className={`rounded-lg ${copied === 'lead-v2' ? 'bg-[#2bc196]' : 'bg-[#002443] hover:bg-[#002443]/90'}`}
+                >
+                  {copied === 'lead-v2' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                </Button>
+              </div>
+            </div>
+            
+            <div className="bg-[#2bc196]/5 p-4 rounded-xl text-sm text-[#002443]/80 border border-[#2bc196]/10">
+              <p className="font-semibold text-[#002443] text-xs mb-2">✨ Novo — Versão com Autocomplete:</p>
+              <ul className="list-disc pl-4 space-y-1 text-xs text-[#282828]/60">
+                <li>CNPJ preenche automaticamente Razão Social, Nome Fantasia e mais</li>
+                <li>76 perguntas com validação avançada e enriquecimento de dados</li>
+                <li>Ao aceitar proposta, direciona para Compliance v2.0 correto</li>
+              </ul>
+            </div>
+          </CardContent>
+          <CardFooter>
+            <LinkGenerator 
+              type="LEAD_QUESTIONNAIRE" 
+              label="Gerar Link Rastreável" 
+              basePage="LeadQuestionnaire"
+              baseParams="templateId=69c3b5af17040531b06c5c16"
+              icon={Sparkles}
+            />
+          </CardFooter>
+        </Card>
+
+        {/* Card Questionário Completo (v1) */}
         <Card className="rounded-2xl border border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
           <div className="h-1.5 bg-gradient-to-r from-[#2bc196] to-[#5cf7cf]" />
           <CardHeader className="pt-5">
@@ -238,7 +296,7 @@ export default function LinksQuestionariosLeads() {
   );
 }
 
-function LinkGenerator({ type, label, basePage, icon: Icon }) {
+function LinkGenerator({ type, label, basePage, baseParams, icon: Icon }) {
   const [isOpen, setIsOpen] = useState(false);
   const [agentName, setAgentName] = useState('');
   const [generatedLink, setGeneratedLink] = useState(null);
@@ -262,7 +320,8 @@ function LinkGenerator({ type, label, basePage, icon: Icon }) {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['onboardingLinks'] });
-      const url = `${window.location.origin}${createPageUrl(basePage)}?ref=${data.uniqueCode}`;
+      let url = `${window.location.origin}${createPageUrl(basePage)}?ref=${data.uniqueCode}`;
+      if (baseParams) url += `&${baseParams}`;
       setGeneratedLink(url);
       toast.success('Link rastreável gerado!');
     },
