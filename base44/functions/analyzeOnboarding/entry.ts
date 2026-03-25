@@ -169,6 +169,20 @@ ${JSON.stringify(formattedDocuments, null, 2)}
 ${hasExternalValidations ? `**Validações Externas (${externalValidations.length}):**
 ${JSON.stringify(formattedValidations, null, 2)}` : '**Validações Externas:** Ainda não disponíveis - executar apenas Fase 1'}
 
+${cnpjEnrichmentData ? `**Enriquecimento CNPJ (Receita Federal):**
+- Score de Enriquecimento: ${cnpjEnrichmentData.consolidated?.averageScore}/100 (${cnpjEnrichmentData.consolidated?.riskLevel})
+- Flags Identificadas: ${cnpjEnrichmentData.consolidated?.totalFlags || 0}
+${cnpjEnrichmentData.consolidated?.flags?.length > 0 ? '- Detalhes das Flags:\n' + cnpjEnrichmentData.consolidated.flags.map(f => `  • ${f}`).join('\n') : '- Nenhuma flag identificada'}
+${cnpjEnrichmentData.results?.[0]?.enrichment ? `
+- Idade da Empresa: ${cnpjEnrichmentData.results[0].enrichment.companyAge?.anos ?? 'N/D'} anos
+- Situação Especial: ${cnpjEnrichmentData.results[0].enrichment.situacaoEspecial?.hasSituacao ? 'SIM' : 'Nenhuma'}
+- Simples Nacional: ${cnpjEnrichmentData.results[0].enrichment.simplesNacional?.info || 'N/D'}
+- MEI: ${cnpjEnrichmentData.results[0].enrichment.mei?.optante ? 'SIM' : 'NÃO'}
+- QSA: ${cnpjEnrichmentData.results[0].enrichment.qsaAnalysis?.totalSocios || 0} sócio(s), ${cnpjEnrichmentData.results[0].enrichment.qsaAnalysis?.crossMatches?.length || 0} na base PagSmile
+- E-mail × Site: ${cnpjEnrichmentData.results[0].enrichment.emailDomain?.consistent === true ? 'Consistente' : cnpjEnrichmentData.results[0].enrichment.emailDomain?.consistent === false ? 'INCONSISTENTE' : 'N/A'}
+- UF × DDD: ${cnpjEnrichmentData.results[0].enrichment.geoConsistency?.consistent === true ? 'Consistente' : cnpjEnrichmentData.results[0].enrichment.geoConsistency?.consistent === false ? 'INCONSISTENTE' : 'N/A'}
+- CNAE Risco: ${cnpjEnrichmentData.results[0].enrichment.cnaeRisk?.flag || 'Normal'}` : ''}` : '**Enriquecimento CNPJ:** Não disponível (PF ou CNPJ não encontrado)'}
+
 ═══════════════════════════════════════════════════════════
 INSTRUÇÕES DE ANÁLISE
 ═══════════════════════════════════════════════════════════
