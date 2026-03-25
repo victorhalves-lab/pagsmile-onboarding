@@ -280,50 +280,16 @@ export default function PropostaPublica() {
     );
   }
 
-  // Already responded
-  if (['aceita', 'recusada'].includes(proposta.status)) {
-    const isAceita = proposta.status === 'aceita';
-    
-    // Build compliance URL dynamically for accepted proposals
-    const getComplianceUrl = () => {
-      if (!isAceita) return null;
-      const subCat = proposta.businessSubCategory;
-      // Default to v1 for the static already-accepted page; the actual redirect uses the version determined during acceptance
-      const modelMapV1 = { 'MERCHAN': 'merchant', 'GATEWAY': 'gateway', 'MARKETPLACE': 'marketplace' };
-      const modelMapV2 = { 'MERCHAN': 'ComplianceMerchantAutocomplete', 'GATEWAY': 'ComplianceGatewayAutocomplete', 'MARKETPLACE': 'ComplianceMarketplaceAutocomplete' };
-      // Try to detect v2 from lead's recommended template
-      const v2TemplateIds = ['69c3b5af17040531b06c5c17', '69c3b5af17040531b06c5c18', '69c3b5af17040531b06c5c19'];
-      // Use a simple heuristic: if the URL already has a v2 model, keep it
-      const model = modelMapV1[subCat] || 'merchant';
-      return `${window.location.origin}${createPageUrl('ComplianceDinamico')}?model=${model}&leadId=${proposta.leadId || ''}`;
-    };
-    const complianceUrl = getComplianceUrl();
-
-    return (
-      <div className="max-w-lg mx-auto py-20 text-center">
-        {isAceita ? (
-          <CheckCircle2 className="w-16 h-16 mx-auto text-green-500 mb-4" />
-        ) : (
-          <XCircle className="w-16 h-16 mx-auto text-red-500 mb-4" />
-        )}
-        <h1 className="text-2xl font-bold text-[#002443] mb-2">
-          Proposta {isAceita ? 'Aceita' : 'Recusada'}
-        </h1>
-        <p className="text-[#002443]/60">
-          {isAceita ? 'Obrigado! Agora você será direcionado ao questionário de Compliance.' : 'Esta proposta já foi respondida.'}
-        </p>
-        {isAceita && complianceUrl && (
-          <Button
-            onClick={() => window.location.href = complianceUrl}
-            className="mt-6 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-8 h-12 rounded-2xl font-bold"
-          >
-            <Shield className="w-4 h-4 mr-2" />
-            Iniciar Questionário de Compliance
-          </Button>
-        )}
-      </div>
-    );
-  }
+  // Already responded — show banner + full proposal
+  const isAlreadyResponded = ['aceita', 'recusada'].includes(proposta.status);
+  const getComplianceUrl = () => {
+    if (proposta.status !== 'aceita') return null;
+    const subCat = proposta.businessSubCategory;
+    const modelMapV1 = { 'MERCHAN': 'merchant', 'GATEWAY': 'gateway', 'MARKETPLACE': 'marketplace' };
+    const model = modelMapV1[subCat] || 'merchant';
+    return `${window.location.origin}${createPageUrl('ComplianceDinamico')}?model=${model}&leadId=${proposta.leadId || ''}`;
+  };
+  const complianceUrl = getComplianceUrl();
 
   const rates = proposta.rates || {};
   const taxaRAV = parseFloat(rates.rav?.taxa) || 0;
@@ -331,6 +297,30 @@ export default function PropostaPublica() {
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4" ref={propostaContentRef}>
+      {/* Status Banner for already responded proposals */}
+      {isAlreadyResponded && (
+        <div className={`rounded-2xl p-6 mb-6 text-center ${proposta.status === 'aceita' ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
+          <div className="flex items-center justify-center gap-3 mb-2">
+            {proposta.status === 'aceita' ? <CheckCircle2 className="w-8 h-8 text-green-500" /> : <XCircle className="w-8 h-8 text-red-500" />}
+            <h2 className={`text-xl font-bold ${proposta.status === 'aceita' ? 'text-green-800' : 'text-red-800'}`}>
+              Proposta {proposta.status === 'aceita' ? 'Aceita' : 'Recusada'}
+            </h2>
+          </div>
+          <p className={`text-sm ${proposta.status === 'aceita' ? 'text-green-600' : 'text-red-600'}`}>
+            {proposta.status === 'aceita' ? 'Obrigado! Veja abaixo as condições comerciais acordadas.' : 'Esta proposta foi recusada. Veja abaixo as condições que foram apresentadas.'}
+          </p>
+          {proposta.status === 'aceita' && complianceUrl && (
+            <Button
+              onClick={() => window.location.href = complianceUrl}
+              className="mt-4 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-8 h-12 rounded-2xl font-bold"
+            >
+              <Shield className="w-4 h-4 mr-2" />
+              Iniciar Questionário de Compliance
+            </Button>
+          )}
+        </div>
+      )}
+
       {/* Premium Hero Header */}
       <div className="relative overflow-hidden bg-[#002443] rounded-3xl p-8 md:p-12 mb-8 text-center shadow-xl">
         {/* Abstract Background Details */}
@@ -549,7 +539,7 @@ export default function PropostaPublica() {
       </Card>
 
       {/* Floating Action Bar */}
-      {['enviada', 'visualizada'].includes(proposta.status) && (
+      {['enviada', 'visualizada'].includes(proposta.status) && !isAlreadyResponded && (
         <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-md border-t border-slate-200 z-50 md:relative md:bg-transparent md:backdrop-blur-none md:border-none md:p-0 flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4 md:mb-8 shadow-[0_-10px_40px_rgba(0,36,67,0.08)] md:shadow-none pb-safe">
           <Button
             onClick={() => setShowAceiteModal(true)}

@@ -307,9 +307,9 @@ export default function GestaoPropostas() {
                                 <GitBranch className="w-4 h-4 text-[#2bc196]" />
                               </Button>
                             )}
-                            {p.status !== 'rascunho' && p.tokenPublico && (
+                            {p.tokenPublico && (
                               <a href={`${window.location.origin}/PropostaPublica?token=${p.tokenPublico}`} target="_blank" rel="noopener noreferrer">
-                                <Button variant="ghost" size="sm" title="Abrir proposta pública">
+                                <Button variant="ghost" size="sm" title="Ver proposta na mesa">
                                   <Link2 className="w-4 h-4" />
                                 </Button>
                               </a>

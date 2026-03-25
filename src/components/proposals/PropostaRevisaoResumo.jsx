@@ -1,5 +1,6 @@
 import React from 'react';
-import { Building2, CreditCard, Banknote, Clock, FileText, Shield, Send, XCircle } from 'lucide-react';
+import { Building2, CreditCard, Banknote, Clock, FileText, Shield, Send, XCircle, TrendingUp } from 'lucide-react';
+import ParcelasTableDetalhada from './ParcelasTableDetalhada';
 
 const BANDEIRAS = ['visa', 'mastercard', 'elo', 'amex', 'outras'];
 const FAIXAS = [
@@ -140,6 +141,13 @@ export default function PropostaRevisaoResumo({ proposta }) {
               </tbody>
             </table>
           </div>
+        </Section>
+      )}
+
+      {/* Tabela de Parcelas com Antecipação */}
+      {rates.rav?.taxa && parseFloat(rates.rav.taxa) > 0 && rates.rav?.prazo !== 'FLUXO' && (
+        <Section icon={TrendingUp} title="Tabela de Parcelas — CET com Antecipação">
+          <ParcelasTableDetalhada taxas={rates} taxaRAV={parseFloat(rates.rav.taxa) || 0} prazo={rates.rav.prazo || 'D+1'} />
         </Section>
       )}
 
