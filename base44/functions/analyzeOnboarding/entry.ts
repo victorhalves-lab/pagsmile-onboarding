@@ -86,21 +86,46 @@ Deno.serve(async (req) => {
     
     // Buscar resultado de enriquecimento CNPJ (se já existir no ComplianceScore)
     let cnpjEnrichmentData = null;
+    let sanctionsData = null;
     if (merchant?.cpfCnpj && merchant.type === 'PJ') {
       const cnpjClean = (merchant.cpfCnpj || '').replace(/\D/g, '');
       if (cnpjClean.length === 14) {
-        try {
-          const cnpjRes = await base44.asServiceRole.functions.invoke('brasilApiCnpj', { cnpj: cnpjClean });
-          if (cnpjRes?.data && !cnpjRes.data.error) {
-            const enrichRes = await base44.asServiceRole.functions.invoke('analyzeCnpjEnrichment', {
-              cnpjDataArray: { ...cnpjRes.data, cnpj: cnpjClean },
-              onboardingCaseId: caseId
+        // Enriquecimento CNPJ + Screening de Sanções em paralelo
+        const [enrichPromise, sanctionsPromise] = await Promise.allSettled([
+          (async () => {
+            const cnpjRes = await base44.asServiceRole.functions.invoke('brasilApiCnpj', { cnpj: cnpjClean });
+            if (cnpjRes?.data && !cnpjRes.data.error) {
+              const enrichRes = await base44.asServiceRole.functions.invoke('analyzeCnpjEnrichment', {
+                cnpjDataArray: { ...cnpjRes.data, cnpj: cnpjClean },
+                onboardingCaseId: caseId
+              });
+              return { cnpjData: cnpjRes.data, enrichment: enrichRes?.data };
+            }
+            return null;
+          })(),
+          (async () => {
+            const qsa = merchant.qsa || [];
+            const screenRes = await base44.asServiceRole.functions.invoke('sanctionsScreening', {
+              action: 'fullScreening',
+              cnpj: cnpjClean,
+              qsa: qsa
             });
-            cnpjEnrichmentData = enrichRes?.data;
-            console.log(`[SENTINEL] Enriquecimento CNPJ: Score ${cnpjEnrichmentData?.consolidated?.averageScore}/100 (${cnpjEnrichmentData?.consolidated?.riskLevel})`);
-          }
-        } catch (e) {
-          console.warn(`[SENTINEL] Enriquecimento CNPJ falhou: ${e.message}`);
+            return screenRes?.data;
+          })()
+        ]);
+        
+        if (enrichPromise.status === 'fulfilled' && enrichPromise.value) {
+          cnpjEnrichmentData = enrichPromise.value.enrichment;
+          console.log(`[SENTINEL] Enriquecimento CNPJ: Score ${cnpjEnrichmentData?.consolidated?.averageScore}/100`);
+        } else if (enrichPromise.status === 'rejected') {
+          console.warn(`[SENTINEL] Enriquecimento CNPJ falhou: ${enrichPromise.reason}`);
+        }
+        
+        if (sanctionsPromise.status === 'fulfilled' && sanctionsPromise.value) {
+          sanctionsData = sanctionsPromise.value;
+          console.log(`[SENTINEL] Screening sanções: ${sanctionsData?.consolidado?.flags?.length || 0} flags`);
+        } else if (sanctionsPromise.status === 'rejected') {
+          console.warn(`[SENTINEL] Screening sanções falhou: ${sanctionsPromise.reason}`);
         }
       }
     }
@@ -168,6 +193,14 @@ ${JSON.stringify(formattedDocuments, null, 2)}
 
 ${hasExternalValidations ? `**Validações Externas (${externalValidations.length}):**
 ${JSON.stringify(formattedValidations, null, 2)}` : '**Validações Externas:** Ainda não disponíveis - executar apenas Fase 1'}
+
+${sanctionsData ? `**Screening de Sanções e PEP:**
+- CEIS (Empresas Inidôneas): ${sanctionsData.empresa?.ceis?.inCeis ? 'SIM — RED FLAG' : 'Não encontrada'}
+- CNEP (Empresas Punidas): ${sanctionsData.empresa?.cnep?.inCnep ? 'SIM — RED FLAG' : 'Não encontrada'}
+- Total de Flags: ${sanctionsData.consolidado?.flags?.length || 0}
+- Nível de Risco Sanções: ${sanctionsData.consolidado?.riskLevel || 'N/D'}
+${sanctionsData.consolidado?.flags?.length > 0 ? '- Flags de Sanções:\n' + sanctionsData.consolidado.flags.map(f => `  • ${f}`).join('\n') : '- Nenhuma flag de sanções identificada'}
+${sanctionsData.socios?.length > 0 ? `- Sócios Verificados: ${sanctionsData.socios.length}` : ''}` : '**Screening de Sanções:** Não disponível (PF ou CNPJ não processado)'}
 
 ${cnpjEnrichmentData ? `**Enriquecimento CNPJ (Receita Federal):**
 - Score de Enriquecimento: ${cnpjEnrichmentData.consolidated?.averageScore}/100 (${cnpjEnrichmentData.consolidated?.riskLevel})
