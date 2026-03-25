@@ -213,7 +213,7 @@ export default function IntroducerLinkGeneratorModal({ open, onOpenChange }) {
             <Button
               className="w-full bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
               onClick={() => createMutation.mutate()}
-              disabled={!selectedIntroducerId || createMutation.isPending}
+              disabled={!selectedIntroducerId || !selectedTemplateId || createMutation.isPending}
             >
               {createMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <UserPlus className="w-4 h-4 mr-2" />}
               Gerar Link para Introducer
