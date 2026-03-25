@@ -346,6 +346,7 @@ function QuestionItem({ question, value, onChange, prefillSource, cnpjAutocomple
         cnpjAutocompleteData={cnpjAutocompleteData}
         onCnpjAutocomplete={onCnpjAutocomplete}
         onCepData={onCepData}
+        fieldAlerts={fieldAlerts}
       />
     </div>
   );
