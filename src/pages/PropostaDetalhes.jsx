@@ -32,6 +32,32 @@ export default function PropostaDetalhes() {
   const proposalId = urlParams.get('id');
 
   const queryClient = useQueryClient();
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+
+  const handleMarkAsAccepted = async () => {
+    if (!proposta) return;
+    setIsUpdatingStatus(true);
+    const now = new Date().toISOString();
+    await base44.entities.Proposal.update(proposta.id, {
+      status: 'aceita',
+      acceptedDate: now,
+    });
+    let changedBy = 'admin';
+    try { const user = await base44.auth.me(); changedBy = user?.email || 'admin'; } catch {}
+    await base44.entities.AuditLog.create({
+      entityName: 'Proposal', entityId: proposta.id, actionType: 'UPDATE',
+      actionDescription: `Proposta ${proposta.codigo} marcada como aceita manualmente por ${changedBy}`,
+      changedBy, changeDate: now,
+      details: { statusAnterior: proposta.status, statusNovo: 'aceita', acaoManual: true },
+    });
+    if (proposta.leadId) {
+      await base44.entities.Lead.update(proposta.leadId, { status: 'proposta_aceita', lastInteractionDate: now });
+    }
+    queryClient.invalidateQueries({ queryKey: ['proposta-detalhes', proposalId] });
+    queryClient.invalidateQueries({ queryKey: ['propostas'] });
+    toast.success('Proposta marcada como aceita!');
+    setIsUpdatingStatus(false);
+  };
 
   const { data: proposta, isLoading } = useQuery({
     queryKey: ['proposta-detalhes', proposalId],
@@ -116,6 +142,8 @@ export default function PropostaDetalhes() {
           ? () => navigate(createPageUrl('CriarProposta') + `?edit=${proposta.id}`)
           : criarNovaVersao
         }
+        onMarkAsAccepted={handleMarkAsAccepted}
+        isUpdatingStatus={isUpdatingStatus}
       />
 
       {/* Link Público - Seção principal de ação */}

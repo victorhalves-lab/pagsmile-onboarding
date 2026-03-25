@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Pencil, Calendar, Send, CheckCircle, XCircle, Clock, GitBranch } from 'lucide-react';
 import moment from 'moment';
 
-export default function PropostaRevisaoHeader({ proposta, statusConfig, onBack, onEdit }) {
+export default function PropostaRevisaoHeader({ proposta, statusConfig, onBack, onEdit, onMarkAsAccepted, isUpdatingStatus }) {
   const isRascunho = proposta.status === 'rascunho';
   const canEdit = ['rascunho', 'enviada', 'visualizada'].includes(proposta.status);
 
@@ -26,12 +26,20 @@ export default function PropostaRevisaoHeader({ proposta, statusConfig, onBack, 
             {proposta.clienteNome || 'Sem cliente'} — Revisão interna
           </p>
         </div>
-        {canEdit && (
-          <Button onClick={onEdit} className="bg-white/10 hover:bg-white/20 text-white gap-2 rounded-xl">
-            {isRascunho ? <Pencil className="w-4 h-4" /> : <GitBranch className="w-4 h-4" />}
-            {isRascunho ? 'Editar Proposta' : 'Nova Versão'}
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          {['enviada', 'visualizada'].includes(proposta.status) && onMarkAsAccepted && (
+            <Button onClick={onMarkAsAccepted} disabled={isUpdatingStatus} className="bg-green-500 hover:bg-green-600 text-white gap-2 rounded-xl">
+              <CheckCircle className="w-4 h-4" />
+              {isUpdatingStatus ? 'Atualizando...' : 'Marcar como Aceita'}
+            </Button>
+          )}
+          {canEdit && (
+            <Button onClick={onEdit} className="bg-white/10 hover:bg-white/20 text-white gap-2 rounded-xl">
+              {isRascunho ? <Pencil className="w-4 h-4" /> : <GitBranch className="w-4 h-4" />}
+              {isRascunho ? 'Editar Proposta' : 'Nova Versão'}
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Timeline */}
