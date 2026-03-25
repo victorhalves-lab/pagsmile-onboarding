@@ -57,6 +57,85 @@ function mapCnaeToMcc(cnaeFiscal) {
   return CNAE_MCC_MAP[cnaeStr] || null;
 }
 
+// Verificação de setor regulado (C1 — Licenciamento)
+// Divisões 64 (financeiras), 65 (seguros), 66 (auxiliares financeiros)
+function checkSetorRegulado(cnaeFiscal) {
+  const divisao = String(cnaeFiscal).substring(0, 2);
+  const reguladores = {
+    '64': { regulado: true, orgao: 'BCB — Banco Central do Brasil' },
+    '65': { regulado: true, orgao: 'SUSEP — Superintendência de Seguros Privados' },
+    '66': { regulado: true, orgao: 'CVM — Comissão de Valores Mobiliários' }
+  };
+  return reguladores[divisao] || { regulado: false, orgao: null };
+}
+
+// Listas do Anexo I — Atividades RESTRITAS e PROIBIDAS (PagSmile)
+const ATIVIDADES_RESTRITAS_CNAES = [
+  '9200301', '9200302', '9200399', // Jogos e apostas
+  '6619302', // Câmbio
+  '6622300', // Corretoras
+  '4789004', // Armas
+  '4723700', // Bebidas alcoólicas
+  '1220401', '1220402', // Tabaco
+  '4774100', // Artigos de ótica
+];
+const ATIVIDADES_PROIBIDAS_CNAES = [
+  '9200301', // Casas de bingo (quando proibido por lei)
+  '9200302', // Exploração de apostas (ilegal)
+];
+
+function checkAnexoI(cnaeFiscal, cnaesSecundarios) {
+  const allCnaes = [String(cnaeFiscal), ...(cnaesSecundarios || []).map(c => String(c.codigo))];
+  
+  const restritos = allCnaes.filter(c => ATIVIDADES_RESTRITAS_CNAES.includes(c));
+  const proibidos = allCnaes.filter(c => ATIVIDADES_PROIBIDAS_CNAES.includes(c));
+  
+  return {
+    restrito: restritos.length > 0,
+    proibido: proibidos.length > 0,
+    cnaesRestritos: restritos,
+    cnaesProibidos: proibidos,
+    bloqueado: proibidos.length > 0,
+    mensagem: proibidos.length > 0 
+      ? 'Atividade proibida conforme Anexo I. Cadastro não pode ser realizado.'
+      : restritos.length > 0 
+      ? `Atividade restrita detectada (CNAEs: ${restritos.join(', ')}). Análise adicional necessária.`
+      : null
+  };
+}
+
+// Validação cruzada de volume vs porte/capital (B4)
+function checkVolumeConsistency(porte, capitalSocial, opcaoPeloMei, opcaoPeloSimples) {
+  const limits = {};
+  if (opcaoPeloMei) {
+    limits.maxAnual = 81000;
+    limits.maxMensal = 6750;
+    limits.descricao = 'MEI (limite R$ 81K/ano)';
+  } else if (opcaoPeloSimples && porte === 'ME') {
+    limits.maxAnual = 360000;
+    limits.maxMensal = 30000;
+    limits.descricao = 'Microempresa no Simples (limite R$ 360K/ano)';
+  } else if (opcaoPeloSimples && porte === 'EPP') {
+    limits.maxAnual = 4800000;
+    limits.maxMensal = 400000;
+    limits.descricao = 'EPP no Simples (limite R$ 4.8MM/ano)';
+  } else {
+    limits.maxAnual = null;
+    limits.maxMensal = null;
+    limits.descricao = 'Demais portes';
+  }
+  
+  return limits;
+}
+
+// Sugestão de faturamento anual baseada no porte (Lead Pergunta 27)
+function sugerirFaixaFaturamento(porte, opcaoPeloSimples, opcaoPeloMei) {
+  if (opcaoPeloMei) return 'Até R$ 1 milhão';
+  if (opcaoPeloSimples && porte === 'ME') return 'Até R$ 1 milhão';
+  if (opcaoPeloSimples && porte === 'EPP') return 'R$ 1–5 milhões';
+  return null; // Sem sugestão para DEMAIS
+}
+
 async function fetchCnpjBrasilApi(cnpj) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 5000);
@@ -317,6 +396,18 @@ Deno.serve(async (req) => {
         const agora = new Date();
         return Math.floor((agora - inicio) / (365.25 * 24 * 60 * 60 * 1000));
       })(),
+      
+      // Setor regulado (C1)
+      setor_regulado: checkSetorRegulado(d.cnae_fiscal),
+      
+      // Anexo I — atividades restritas/proibidas (I5/I6)
+      anexo_i: checkAnexoI(d.cnae_fiscal, d.cnaes_secundarios),
+      
+      // Validação cruzada de volume (B4)
+      limites_volume: checkVolumeConsistency(d.porte, d.capital_social, d.opcao_pelo_mei, d.opcao_pelo_simples),
+      
+      // Sugestão de faixa de faturamento (Lead P27)
+      faixa_faturamento_sugerida: sugerirFaixaFaturamento(d.porte, d.opcao_pelo_simples, d.opcao_pelo_mei),
       
       // Fonte dos dados
       fonte: 'receita_federal'
