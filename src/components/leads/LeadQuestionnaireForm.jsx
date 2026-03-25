@@ -284,6 +284,20 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
 
   // Perguntas de taxa de cartão (para passar ao CardRatesGroup)
   const cardRateQuestions = questions.filter(q => CARD_RATE_QUESTION_IDS.includes(q.id));
+  
+  // V2 dynamic groups: detectar grupos de % por texto
+  const v2PercentGroups = React.useMemo(() => isV2Template ? detectV2PercentGroups(questions) : [], [questions, isV2Template]);
+  const v2GroupedIds = React.useMemo(() => v2PercentGroups.flatMap(g => g.ids), [v2PercentGroups]);
+  
+  // V2 card rate questions
+  const v2CardRates = React.useMemo(() => isV2Template ? detectV2CardRates(questions) : [], [questions, isV2Template]);
+  const v2CardRateIds = React.useMemo(() => v2CardRates.map(q => q.id), [v2CardRates]);
+  
+  // V2: detectar pergunta "Processa cartão" para condicionalidade
+  const v2ProcCartaoQ = React.useMemo(() => {
+    if (!isV2Template) return null;
+    return questions.find(q => q.type === 'BOOLEAN' && (q.text || '').toLowerCase().includes('processa') && (q.text || '').toLowerCase().includes('cartão'));
+  }, [questions, isV2Template]);
 
   // Filtrar perguntas visíveis:
   // - Taxas de cartão: ocultar individualmente, renderizar via trigger (primeiro ID)
