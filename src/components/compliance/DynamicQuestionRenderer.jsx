@@ -185,13 +185,16 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
 
     case 'NUMBER':
       return (
-        <Input
-          type="number"
-          value={value || ''}
-          onChange={(e) => handleChange(e.target.value)}
-          placeholder={placeholder || ''}
-          className="h-11"
-        />
+        <>
+          <Input
+            type="number"
+            value={value || ''}
+            onChange={(e) => handleChange(e.target.value)}
+            placeholder={placeholder || ''}
+            className="h-11"
+          />
+          <ComplianceFieldAlerts alerts={fieldAlerts} />
+        </>
       );
 
     case 'DATE':
