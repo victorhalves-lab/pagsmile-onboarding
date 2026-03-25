@@ -17,7 +17,8 @@ export default function LeadCnpjAutocompleteField({
   questions,
   formData,
   updateField,
-  error: externalError
+  error: externalError,
+  onCnpjDataLoaded
 }) {
   const { data, isLoading, error, validationError, consultarCnpj, reset } = useCnpjAutocomplete();
   const [displayValue, setDisplayValue] = useState('');
