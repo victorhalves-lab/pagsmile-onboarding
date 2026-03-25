@@ -118,6 +118,7 @@ export default function Top5CnpjField({
               />
               {loadingIdx === idx && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-[#2bc196]" />}
               {item.status === 'ok' && <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-500" />}
+              {item.status === 'blocked' && <Shield className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-red-600" />}
               {item.status === 'inactive' && <AlertTriangle className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-red-500" />}
             </div>
             {items.length > 1 && (
