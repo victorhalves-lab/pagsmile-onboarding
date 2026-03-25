@@ -25,7 +25,7 @@ import RiskDistributionCards from '../components/dashboard/RiskDistributionCards
 export default function HelenaIA() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [thresholds, setThresholds] = useState({ auto_approve: 80, auto_reject: 40 });
-  const [factorWeights, setFactorWeights] = useState({ cadastral: 20, financial: 20, pld: 30, documents: 15, external: 15 });
+  const [factorWeights, setFactorWeights] = useState({ cadastral: 15, financial: 15, pld: 25, documents: 15, external: 15, cnpj_enrichment: 15 });
   const queryClient = useQueryClient();
 
   const { data: helenaAnalyses = [], isLoading } = useQuery({
