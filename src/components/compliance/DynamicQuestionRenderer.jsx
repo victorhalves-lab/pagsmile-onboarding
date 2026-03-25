@@ -168,13 +168,19 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
     case 'PHONE':
     case 'CPF_CNPJ':
       return (
-        <Input
-          type={type === 'EMAIL' ? 'email' : type === 'PHONE' ? 'tel' : 'text'}
-          value={value || ''}
-          onChange={(e) => handleChange(e.target.value)}
-          placeholder={placeholder || ''}
-          className="h-11"
-        />
+        <>
+          <Input
+            type={type === 'EMAIL' ? 'email' : type === 'PHONE' ? 'tel' : 'text'}
+            value={value || ''}
+            onChange={(e) => handleChange(e.target.value)}
+            placeholder={placeholder || ''}
+            className="h-11"
+          />
+          {isSiteField && value && String(value).length > 5 && (
+            <SiteValidationBadge siteUrl={value} updateField={onChange} />
+          )}
+          <ComplianceFieldAlerts alerts={fieldAlerts} />
+        </>
       );
 
     case 'NUMBER':
