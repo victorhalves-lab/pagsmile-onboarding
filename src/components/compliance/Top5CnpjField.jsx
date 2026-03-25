@@ -3,9 +3,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Loader2, CheckCircle, AlertTriangle, Building2, Plus, X, Shield } from 'lucide-react';
+import { Loader2, CheckCircle, AlertTriangle, Building2, Plus, X, Shield, ShieldAlert } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { formatCnpj } from '@/hooks/useCnpjAutocomplete';
+
+// CNAEs proibidos (Anexo I PagSmile)
+const ATIVIDADES_PROIBIDAS_CNAES = ['9200301', '9200302'];
+const ATIVIDADES_RESTRITAS_CNAES = ['9200301', '9200302', '9200399', '6619302', '6622300', '4789004', '4723700', '1220401', '1220402', '4774100'];
 
 function validarCnpj(cnpj) {
   const digits = cnpj.replace(/\D/g, '');
@@ -58,7 +62,7 @@ export default function Top5CnpjField({
       } else {
         const d = res.data;
         const isActive = d.situacao_cadastral === 2;
-        const itemData = {
+        newItems[idx] = {
           cnpj: digits,
           nome: d.razao_social || '',
           ramo: d.cnae_fiscal_descricao || '',
@@ -69,19 +73,8 @@ export default function Top5CnpjField({
           isActive,
           situacao: d.descricao_situacao_cadastral,
           cnaeFiscal: d.cnae_fiscal,
-          anexoI: d.anexo_i || null,
-          setorRegulado: d.setor_regulado || null,
           status: isActive ? 'ok' : 'inactive'
         };
-        if (checkAnexoI && d.anexo_i) {
-          if (d.anexo_i.proibido) {
-            itemData.status = 'blocked';
-            itemData.blockReason = `Atividade PROIBIDA (Anexo I): ${d.anexo_i.descricao || d.cnae_fiscal_descricao}`;
-          } else if (d.anexo_i.restrito) {
-            itemData.restrictedFlag = `Atividade RESTRITA: ${d.anexo_i.descricao || d.cnae_fiscal_descricao}`;
-          }
-        }
-        newItems[idx] = itemData;
       }
       updateItems([...newItems]);
     }
@@ -118,7 +111,6 @@ export default function Top5CnpjField({
               />
               {loadingIdx === idx && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-[#2bc196]" />}
               {item.status === 'ok' && <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-500" />}
-              {item.status === 'blocked' && <Shield className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-red-600" />}
               {item.status === 'inactive' && <AlertTriangle className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-red-500" />}
             </div>
             {items.length > 1 && (
@@ -129,33 +121,11 @@ export default function Top5CnpjField({
           </div>
           
           {item.status === 'ok' && (
-            <div className="space-y-1.5 ml-7">
-              <div className="flex gap-2 flex-wrap">
-                <Badge className="bg-emerald-50 text-emerald-700 text-[10px]">
-                  <CheckCircle className="w-3 h-3 mr-1" /> {item.nome}
-                </Badge>
-                <Badge variant="outline" className="text-[10px]">{item.ramo}</Badge>
-                {item.porte && <Badge variant="outline" className="text-[10px]">{item.porte}</Badge>}
-              </div>
-              {item.restrictedFlag && (
-                <div className="p-2 bg-amber-50 border border-amber-200 rounded-lg">
-                  <p className="text-xs text-amber-700 flex items-center gap-1">
-                    <Shield className="w-3 h-3 flex-shrink-0" /> {item.restrictedFlag}
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
-          {item.status === 'blocked' && (
-            <div className="ml-7 space-y-1.5">
-              <div className="flex gap-2 flex-wrap">
-                <Badge className="bg-red-50 text-red-700 text-[10px]">{item.nome}</Badge>
-              </div>
-              <div className="p-2 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-xs text-red-700 font-semibold flex items-center gap-1">
-                  <Shield className="w-3 h-3 flex-shrink-0" /> {item.blockReason}
-                </p>
-              </div>
+            <div className="flex gap-2 flex-wrap ml-7">
+              <Badge className="bg-emerald-50 text-emerald-700 text-[10px]">
+                <CheckCircle className="w-3 h-3 mr-1" /> {item.nome}
+              </Badge>
+              <Badge variant="outline" className="text-[10px]">{item.ramo}</Badge>
             </div>
           )}
           {item.status === 'inactive' && (
