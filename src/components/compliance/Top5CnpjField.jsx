@@ -58,7 +58,7 @@ export default function Top5CnpjField({
       } else {
         const d = res.data;
         const isActive = d.situacao_cadastral === 2;
-        newItems[idx] = {
+        const itemData = {
           cnpj: digits,
           nome: d.razao_social || '',
           ramo: d.cnae_fiscal_descricao || '',
@@ -69,8 +69,19 @@ export default function Top5CnpjField({
           isActive,
           situacao: d.descricao_situacao_cadastral,
           cnaeFiscal: d.cnae_fiscal,
+          anexoI: d.anexo_i || null,
+          setorRegulado: d.setor_regulado || null,
           status: isActive ? 'ok' : 'inactive'
         };
+        if (checkAnexoI && d.anexo_i) {
+          if (d.anexo_i.proibido) {
+            itemData.status = 'blocked';
+            itemData.blockReason = `Atividade PROIBIDA (Anexo I): ${d.anexo_i.descricao || d.cnae_fiscal_descricao}`;
+          } else if (d.anexo_i.restrito) {
+            itemData.restrictedFlag = `Atividade RESTRITA: ${d.anexo_i.descricao || d.cnae_fiscal_descricao}`;
+          }
+        }
+        newItems[idx] = itemData;
       }
       updateItems([...newItems]);
     }
