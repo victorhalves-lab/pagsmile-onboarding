@@ -522,8 +522,10 @@ export default function DynamicQuestionnaire({
       toast.error(`Preencha todos os campos obrigatórios (${missing.length} campo${missing.length > 1 ? 's' : ''} pendente${missing.length > 1 ? 's' : ''}).`);
       return;
     }
+    // Salvar flags de compliance no formData para análise interna
+    const finalFormData = { ...formData, __complianceFlags: complianceAlerts };
     if (storageKey) {
-      localStorage.setItem(storageKey, JSON.stringify(formData));
+      localStorage.setItem(storageKey, JSON.stringify(finalFormData));
     }
     if (template?.id) {
       localStorage.setItem('current_template_id', template.id);
@@ -535,7 +537,7 @@ export default function DynamicQuestionnaire({
     saveProgressNow({
       currentStep: 1,
       currentPhase: 'documents',
-      formData
+      formData: finalFormData
     });
     if (onComplete) {
       onComplete({ formData, template, questions });
