@@ -165,8 +165,15 @@ export default function AnaliseDeCasos() {
         </TabsList>
 
         <TabsContent value="ia-analysis">
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <IAAnalysisPanel complianceScore={complianceScore} onboardingCase={onboardingCase} />
+          <div className="space-y-4">
+            <CnpjEnrichmentSummaryCard 
+              complianceScore={complianceScore}
+              onboardingCaseId={caseId}
+              merchant={merchant}
+            />
+            <div className="bg-white rounded-xl border border-slate-200 p-6">
+              <IAAnalysisPanel complianceScore={complianceScore} onboardingCase={onboardingCase} />
+            </div>
           </div>
         </TabsContent>
 
