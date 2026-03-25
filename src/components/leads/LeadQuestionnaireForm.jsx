@@ -275,7 +275,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
       
       return newData;
     });
-  }, [tpvId, ticketMedioId]);
+  }, [tpvId, ticketMedioId, transacoesId]);
 
   // Verificar lógica condicional
   const shouldShowQuestion = (question) => {
