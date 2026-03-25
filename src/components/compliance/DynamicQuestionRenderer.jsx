@@ -98,14 +98,17 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
     textLower.includes('maiores sub merchants');
   if (isTop5) {
     return (
-      <Top5CnpjField
-        value={value || []}
-        onChange={onChange}
-        questionId={question.id}
-        label={text}
-        maxItems={5}
-        checkAnexoI={textLower.includes('sub-merchant') || textLower.includes('sub merchant')}
-      />
+      <>
+        <Top5CnpjField
+          value={value || []}
+          onChange={onChange}
+          questionId={question.id}
+          label={text}
+          maxItems={5}
+          checkAnexoI={textLower.includes('sub-merchant') || textLower.includes('sub merchant') || textLower.includes('seller')}
+        />
+        <ComplianceFieldAlerts alerts={fieldAlerts} />
+      </>
     );
   }
 
@@ -209,19 +212,16 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
 
     case 'SELECT':
       return (
-        <>
-          <Select value={value || ''} onValueChange={handleChange}>
-            <SelectTrigger className="h-11">
-              <SelectValue placeholder={placeholder || 'Selecione uma opção'} />
-            </SelectTrigger>
-            <SelectContent>
-              {options.map((opt, idx) => (
-                <SelectItem key={idx} value={opt}>{opt}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <ComplianceFieldAlerts alerts={fieldAlerts} />
-        </>
+        <Select value={value || ''} onValueChange={handleChange}>
+          <SelectTrigger className="h-11">
+            <SelectValue placeholder={placeholder || 'Selecione uma opção'} />
+          </SelectTrigger>
+          <SelectContent>
+            {options.map((opt, idx) => (
+              <SelectItem key={idx} value={opt}>{opt}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       );
 
     case 'MULTI_SELECT':
@@ -407,7 +407,7 @@ export default function DynamicQuestionRenderer({
   cnpjAutocompleteData = null,
   onCnpjAutocomplete,
   onCepData,
-  fieldAlertsMap = {}
+  complianceAlerts = {}
 }) {
   // Se currentStep for definido, filtramos as perguntas para aquele step
   const displayQuestions = currentStep !== undefined
@@ -446,7 +446,7 @@ export default function DynamicQuestionRenderer({
             cnpjAutocompleteData={cnpjAutocompleteData}
             onCnpjAutocomplete={onCnpjAutocomplete}
             onCepData={onCepData}
-            fieldAlerts={fieldAlertsMap[question.id]}
+            fieldAlerts={complianceAlerts[question.id]}
           />
         ))}
       </div>
