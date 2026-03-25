@@ -631,6 +631,33 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
       return '';
     };
 
+    // Calcular flags silenciosas (NÃO exibidas ao lead)
+    const silentFlags = computeSilentFlags(formData, rawQuestions, cnpjApiData);
+    
+    // Enriquecimento CNPJ completo (para análise interna)
+    const cnpjEnrichment = cnpjApiData ? {
+      capital_social: cnpjApiData.capital_social,
+      idade_empresa_anos: cnpjApiData.idade_empresa_anos,
+      situacao_cadastral: cnpjApiData.situacao_cadastral,
+      descricao_situacao_cadastral: cnpjApiData.descricao_situacao_cadastral,
+      porte: cnpjApiData.porte,
+      opcao_pelo_simples: cnpjApiData.opcao_pelo_simples,
+      opcao_pelo_mei: cnpjApiData.opcao_pelo_mei,
+      cnae_fiscal: cnpjApiData.cnae_fiscal,
+      cnae_fiscal_descricao: cnpjApiData.cnae_fiscal_descricao,
+      cnaes_secundarios: cnpjApiData.cnaes_secundarios,
+      qsa: cnpjApiData.qsa,
+      email_receita: cnpjApiData.email,
+      telefone_receita: cnpjApiData.telefone,
+      endereco: cnpjApiData.endereco,
+      situacao_especial: cnpjApiData.situacao_especial,
+      setor_regulado: cnpjApiData.setor_regulado,
+      anexo_i: cnpjApiData.anexo_i,
+      mcc_sugerido: cnpjApiData.mcc_sugerido,
+      site_sugerido: cnpjApiData.site_sugerido,
+      limites_volume: cnpjApiData.limites_volume,
+    } : null;
+
     const leadData = {
       email: findFieldValue(['e-mail', 'email']) || '',
       fullName: findFieldValue(['razão social', 'razao social']) || findFieldValue(['nome completo']) || '',
