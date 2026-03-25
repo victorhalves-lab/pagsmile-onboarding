@@ -454,14 +454,22 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
 
     // Buscar template de compliance vinculado dinamicamente pela businessSubCategory
     let recommendedComplianceTemplateId = template.linkedComplianceTemplateId || '';
-    if (!recommendedComplianceTemplateId) {
+    if (!recommendedComplianceTemplateId || recommendedComplianceTemplateId === 'auto_by_subcategory') {
       const complianceTemplates = await base44.entities.QuestionnaireTemplate.filter({
         category: 'COMPLIANCE',
         subCategory: businessSubCategory,
         isActive: true
       });
       if (complianceTemplates.length > 0) {
-        recommendedComplianceTemplateId = complianceTemplates[0].id;
+        // If the lead was filled via a v2.0 template, prefer v2.0 compliance templates
+        const isV2Lead = template.model === 'LeadCompletoAutocomplete';
+        const v2Template = complianceTemplates.find(t => t.version === 2.0 || (t.model || '').includes('Autocomplete'));
+        const v1Template = complianceTemplates.find(t => t.version !== 2.0 && !(t.model || '').includes('Autocomplete'));
+        if (isV2Lead && v2Template) {
+          recommendedComplianceTemplateId = v2Template.id;
+        } else {
+          recommendedComplianceTemplateId = (v1Template || complianceTemplates[0]).id;
+        }
       }
     }
 
