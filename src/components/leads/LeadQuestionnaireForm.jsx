@@ -251,11 +251,13 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
     setValidationErrors({});
   }, [currentStep]);
 
-  // Encontrar IDs dinâmicos de TPV e Ticket Médio (funciona tanto para v1 quanto v2)
-  const tpvQuestion = questions.find(q => q.id === TPV_QUESTION_ID || (q.type === 'NUMBER' && (q.text || '').toLowerCase().includes('tpv')));
-  const ticketMedioQuestion = questions.find(q => q.id === TICKET_MEDIO_QUESTION_ID || (q.type === 'NUMBER' && (q.text || '').toLowerCase().includes('ticket')));
+  // Encontrar IDs dinâmicos de TPV, Ticket Médio e Transações (funciona tanto para v1 quanto v2)
+  const tpvQuestion = rawQuestions.find(q => q.id === TPV_QUESTION_ID || (q.type === 'NUMBER' && (q.text || '').toLowerCase().includes('tpv')));
+  const ticketMedioQuestion = rawQuestions.find(q => q.id === TICKET_MEDIO_QUESTION_ID || (q.type === 'NUMBER' && (q.text || '').toLowerCase().includes('ticket')));
+  const transacoesQuestion = rawQuestions.find(q => q.id === TRANSACOES_MES_QUESTION_ID || (q.type === 'NUMBER' && ((q.text || '').toLowerCase().includes('quantidade de transações') || (q.text || '').toLowerCase().includes('transações por mês'))));
   const tpvId = tpvQuestion?.id;
   const ticketMedioId = ticketMedioQuestion?.id;
+  const transacoesId = transacoesQuestion?.id || TRANSACOES_MES_QUESTION_ID;
 
   const updateField = useCallback((fieldId, value) => {
     setFormData(prev => {
