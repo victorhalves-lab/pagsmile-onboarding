@@ -1126,6 +1126,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
           formData={formData}
           updateField={updateField}
           error={validationErrors[question.id]}
+          onCnpjDataLoaded={(data) => setCnpjApiData(data)}
         />
       );
     }
