@@ -34,6 +34,10 @@ import FormFieldError from './FormFieldError';
 import ConfirmationReview from './ConfirmationReview';
 import LeadCnpjAutocompleteField from './LeadCnpjAutocompleteField';
 import CurrencyInput from './CurrencyInput';
+import PhoneInput from './PhoneInput';
+import EmailInput from './EmailInput';
+import CnaeCoherenceAlert from './CnaeCoherenceAlert';
+import { computeSilentFlags, computeLeadScore } from '@/hooks/useLeadSilentFlags';
 
 function MCCNameDisplay({ mccCode }) {
   const found = MCC_LIST.find(m => m.mcc === mccCode.padStart(4, '0'));
