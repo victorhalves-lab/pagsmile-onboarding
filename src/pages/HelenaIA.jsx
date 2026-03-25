@@ -226,6 +226,7 @@ export default function HelenaIA() {
               { id: 'pld', label: 'PLD/FT e Sanções', icon: Shield },
               { id: 'documents', label: 'Documentos', icon: FileText },
               { id: 'external', label: 'Validações Externas', icon: Activity },
+              { id: 'cnpj_enrichment', label: 'Enriquecimento CNPJ', icon: Shield },
             ].map(factor => (
               <div key={factor.id} className="flex items-center gap-4 p-3 rounded-xl border border-[#002443]/5">
                 <factor.icon className="w-4 h-4 text-[#002443]/30" />
