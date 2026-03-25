@@ -558,7 +558,7 @@ export default function DynamicQuestionnaire({
       formData: finalFormData
     });
     if (onComplete) {
-      onComplete({ formData, template, questions });
+      onComplete({ formData: finalFormData, template, questions });
     } else {
       navigate(createPageUrl(documentUploadPage));
     }
