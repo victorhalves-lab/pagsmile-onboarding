@@ -679,7 +679,20 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
       protocolo,
       origemLead: utmSource,
       onboardingLinkCode: linkCode || '',
-      questionnaireData: formData,
+      questionnaireData: {
+        ...formData,
+        _silentFlags: silentFlags,
+        _cnpjEnrichment: cnpjEnrichment,
+        _emailType: (() => {
+          const email = findFieldValue(['e-mail', 'email']) || '';
+          const freeDomains = ['gmail.com','hotmail.com','outlook.com','yahoo.com','yahoo.com.br'];
+          if (email.includes('@')) {
+            const domain = email.split('@')[1]?.toLowerCase();
+            return freeDomains.includes(domain) ? 'personal' : 'corporate';
+          }
+          return 'unknown';
+        })(),
+      },
       ...introducerData,
       expectedRates: (formData[USA_CARTAO_QUESTION_ID] === false || formData[USA_CARTAO_QUESTION_ID] === 'false')
         ? Object.fromEntries(
