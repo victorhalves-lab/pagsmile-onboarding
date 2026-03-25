@@ -70,21 +70,14 @@ export default function PropostaPublica() {
       let complianceUrl = null;
       let subCat = proposta.businessSubCategory;
 
-      // If proposal doesn't have it, try to get from lead
-      if (!subCat && proposta.leadId) {
-        const leads = await base44.entities.Lead.filter({ id: proposta.leadId });
-        const lead = leads[0];
-        if (lead) subCat = lead.businessSubCategory;
-      }
-
       // Determine which compliance version to use based on lead's questionnaire template
       let useV2 = false;
+      let lead = null;
       if (proposta.leadId) {
         const leads = await base44.entities.Lead.filter({ id: proposta.leadId });
-        const lead = leads[0];
+        lead = leads[0];
         if (lead) {
           if (!subCat) subCat = lead.businessSubCategory;
-          // Check if the lead was generated from a v2 template
           if (lead.leadQuestionnaireTemplateId === '69c3b5af17040531b06c5c16') {
             useV2 = true;
           }
