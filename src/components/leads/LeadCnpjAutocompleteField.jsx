@@ -50,6 +50,9 @@ export default function LeadCnpjAutocompleteField({
     const result = await consultarCnpj(cnpj);
     setHasConsulted(true);
     if (!result || !questions?.length) return;
+    
+    // Notificar o formulário pai sobre os dados do CNPJ (para enriquecimento + flags)
+    if (onCnpjDataLoaded) onCnpjDataLoaded(result);
 
     // Mapear campos da API para perguntas do Lead com base no texto
     questions.forEach(q => {
