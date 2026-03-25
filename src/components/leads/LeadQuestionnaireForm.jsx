@@ -472,7 +472,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
       }
     }
 
-    // Validar grupos de percentuais
+    // Validar grupos de percentuais (V1)
     for (const group of PERCENT_GROUPS) {
       if (!stepQuestionIds.has(group.trigger)) continue;
       const vals = group.fields.map(f => parseFloat(formData[f.id]) || 0);
@@ -483,6 +483,18 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
         errors[group.trigger] = `A soma deve ser 100% (atual: ${total.toFixed(0)}%)`;
       } else if (anyFilled && Math.abs(total - 100) > 0.01) {
         errors[group.trigger] = `Se preenchido, a soma deve ser 100% (atual: ${total.toFixed(0)}%)`;
+      }
+    }
+    
+    // Validar grupos de percentuais (V2 dinâmico)
+    for (const group of v2PercentGroups) {
+      if (!stepQuestionIds.has(group.trigger)) continue;
+      const vals = group.fields.map(f => parseFloat(formData[f.id]) || 0);
+      const anyFilled = group.fields.some(f => formData[f.id] !== undefined && formData[f.id] !== '' && formData[f.id] !== null);
+      const total = vals.reduce((a, b) => a + b, 0);
+      
+      if (anyFilled && Math.abs(total - 100) > 0.01) {
+        errors[group.trigger] = `A soma deve ser 100% (atual: ${total.toFixed(0)}%)`;
       }
     }
 
