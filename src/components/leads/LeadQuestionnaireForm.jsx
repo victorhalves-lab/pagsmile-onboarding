@@ -688,7 +688,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
           </>
         )}
 
-        {question.type === 'CPF_CNPJ' && (
+        {question.type === 'CPF_CNPJ' && !isLeadCnpjTrigger(question) && (
           <>
             <Input
               value={value}
@@ -917,6 +917,22 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
 
   const renderQuestion = (question) => {
     if (!shouldShowQuestion(question)) return null;
+
+    // CNPJ autocomplete field for v2.0 Lead templates
+    if (isV2Template && isLeadCnpjTrigger(question)) {
+      return (
+        <LeadCnpjAutocompleteField
+          key={question.id}
+          value={formData[question.id] || ''}
+          onChange={(qId, val) => updateField(qId, val)}
+          questionId={question.id}
+          questions={questions}
+          formData={formData}
+          updateField={updateField}
+          error={validationErrors[question.id]}
+        />
+      );
+    }
 
     // Após a pergunta principal de tipos de produto, renderizar os percentuais
     if (question.id === PRODUCT_TYPE_QUESTION_ID) {
