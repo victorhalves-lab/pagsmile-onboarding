@@ -533,7 +533,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
       recommendedComplianceTemplateId,
       tpvMensal: parseFloat(findFieldValue(['tpv']) || '0') || 0,
       ticketMedio: parseFloat(findFieldValue(['ticket']) || '0') || 0,
-      transacoesMes: parseFloat(formData[TRANSACOES_MES_QUESTION_ID] || '0') || 0,
+      transacoesMes: parseFloat(formData[transacoesId] || '0') || 0,
       expectativaCrescimento: findFieldValue(['crescimento']) || '',
       protocolo,
       origemLead: utmSource,
