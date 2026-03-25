@@ -302,9 +302,18 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
   // Filtrar perguntas visíveis:
   // - Taxas de cartão: ocultar individualmente, renderizar via trigger (primeiro ID)
   // - Grupos percentuais: ocultar individualmente, renderizar via trigger
+  // - V2 groups: also hide grouped percent fields (render via trigger)
+  // - V2 card rates: hide from individual rendering (render via first MDR question)
+  const v2CardRateTrigger = v2CardRateIds.length > 0 ? v2CardRateIds[0] : null;
   const visibleQuestions = questions.filter(q => {
+    // V1 card rates
     if (CARD_RATE_QUESTION_IDS.includes(q.id) && q.id !== CARD_RATE_TRIGGER_ID) return false;
+    // V1 percent groups
     if (GROUPED_PERCENT_IDS.includes(q.id) && !PERCENT_GROUPS.some(g => g.trigger === q.id)) return false;
+    // V2 percent groups: hide non-trigger IDs
+    if (v2GroupedIds.includes(q.id) && !v2PercentGroups.some(g => g.trigger === q.id)) return false;
+    // V2 card rates: hide non-trigger IDs
+    if (v2CardRateIds.includes(q.id) && q.id !== v2CardRateTrigger) return false;
     return true;
   });
 
