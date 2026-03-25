@@ -135,12 +135,26 @@ async function handleRegistroBr(dominio) {
 }
 
 async function handleCnae(cnaeFiscal) {
-  // Convert integer to formatted code: 6201500 → 62.01-5/00
+  // Convert integer to formatted code: 6201500 → 6201-5/00
   const s = String(cnaeFiscal).padStart(7, '0');
-  const formatted = `${s.slice(0,2)}.${s.slice(2,4)}-${s.slice(4,5)}/${s.slice(5,7)}`;
+  // BrasilAPI expects: XXXX-X/XX format (without dot before group)
+  const formatted = `${s.slice(0,4)}-${s.slice(4,5)}/${s.slice(5,7)}`;
   
   const res = await fetch(`https://brasilapi.com.br/api/cnae/v2/${formatted}`);
-  if (!res.ok) return { code: cnaeFiscal, formatted, error: `HTTP ${res.status}` };
+  if (!res.ok) {
+    // Try alternative format with dot: XX.XX-X/XX
+    const altFormatted = `${s.slice(0,2)}.${s.slice(2,4)}-${s.slice(4,5)}/${s.slice(5,7)}`;
+    const res2 = await fetch(`https://brasilapi.com.br/api/cnae/v2/${altFormatted}`);
+    if (!res2.ok) return { code: cnaeFiscal, formatted, error: `CNAE não encontrado` };
+    const data2 = await res2.json();
+    return {
+      code: cnaeFiscal, formatted: altFormatted,
+      descricao: data2.descricao || '',
+      grupo: data2.grupo ? { id: data2.grupo.id, descricao: data2.grupo.descricao } : null,
+      divisao: data2.divisao ? { id: data2.divisao.id, descricao: data2.divisao.descricao } : null,
+      secao: data2.secao ? { id: data2.secao.id, descricao: data2.secao.descricao } : null
+    };
+  }
   const data = await res.json();
   return {
     code: cnaeFiscal,
