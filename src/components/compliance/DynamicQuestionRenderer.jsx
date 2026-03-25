@@ -17,7 +17,7 @@ import ComplianceFieldAlerts from './ComplianceFieldAlerts';
 import SiteValidationBadge from '../leads/SiteValidationBadge';
 
 // Componente que renderiza UMA pergunta com base no tipo
-function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpjAutocomplete, onCepData }) {
+function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpjAutocomplete, onCepData, fieldAlerts }) {
   const { type, text, options = [], placeholder, helpText, isRequired } = question;
   const textLower = (text || '').toLowerCase();
 
