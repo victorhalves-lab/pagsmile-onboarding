@@ -40,6 +40,7 @@ export default function CnpjAutocompleteField({
     if (raw.length < 14 && hasConsulted) {
       reset();
       setHasConsulted(false);
+      setEnrichmentResult(null);
     }
 
     // Auto-trigger quando 14 dígitos
