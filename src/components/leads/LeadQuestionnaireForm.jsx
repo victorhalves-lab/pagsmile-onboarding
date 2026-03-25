@@ -32,6 +32,7 @@ import ProductTypePercentages, { PRODUCT_TYPE_QUESTION_ID } from './ProductTypeP
 import AutoSaveIndicator from './AutoSaveIndicator';
 import FormFieldError from './FormFieldError';
 import ConfirmationReview from './ConfirmationReview';
+import LeadCnpjAutocompleteField from './LeadCnpjAutocompleteField';
 
 function MCCNameDisplay({ mccCode }) {
   const found = MCC_LIST.find(m => m.mcc === mccCode.padStart(4, '0'));
@@ -168,6 +169,18 @@ const PERCENT_GROUPS = [
 
 const STORAGE_KEY = 'lead_questionnaire_data'; // v2
 
+// Detectar se uma pergunta é campo CNPJ gatilho para autocomplete (Lead v2.0)
+const isLeadCnpjTrigger = (question) => {
+  return question.type === 'CPF_CNPJ' && (question.text || '').toLowerCase().trim() === 'cnpj';
+};
+
+// Detectar se um campo foi preenchido via autocomplete CNPJ
+const isAutofilledByApi = (question, cnpjData) => {
+  if (!cnpjData) return false;
+  const t = (question.text || '').toLowerCase().trim();
+  return t === 'razão social' || t === 'nome fantasia';
+};
+
 export default function LeadQuestionnaireForm({ template, questions: rawQuestions, linkCode, onboardingLink, onSubmit }) {
   // Filtrar perguntas ocultas (duplicadas/redundantes)
   const questions = rawQuestions.filter(q => !HIDDEN_QUESTION_IDS.includes(q.id));
@@ -178,8 +191,12 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
   const [mccQuestionId, setMccQuestionId] = useState(null);
   const [validationErrors, setValidationErrors] = useState({});
   const [lastSaved, setLastSaved] = useState(null);
+  const [cnpjApiData, setCnpjApiData] = useState(null);
   const autoSaveRef = useRef(null);
   const firstErrorRef = useRef(null);
+
+  // Check if this is a v2.0 template with CNPJ autocomplete
+  const isV2Template = template?.model === 'LeadCompletoAutocomplete';
 
   // Perguntas de taxa de cartão (para passar ao CardRatesGroup)
   const cardRateQuestions = questions.filter(q => CARD_RATE_QUESTION_IDS.includes(q.id));
