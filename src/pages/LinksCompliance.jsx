@@ -8,7 +8,6 @@ import {
   TrendingUp, MousePointer, FileCheck, Loader2, Trash2,
   BarChart3, ChevronDown, ChevronUp, Plus
 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
