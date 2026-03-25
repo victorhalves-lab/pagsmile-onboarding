@@ -303,6 +303,26 @@ export default function DynamicQuestionnaire({
     setFormData(prev => ({ ...prev, [questionId]: value }));
   };
 
+  // Handler de autocomplete CEP (ViaCEP) — preenche subcampos de endereço
+  const handleCepData = (cepData) => {
+    if (!cepData || !questions.length) return;
+    const fieldMap = {};
+    questions.forEach(q => {
+      const t = (q.text || '').toLowerCase().trim();
+      if (t === 'logradouro' && cepData.logradouro) fieldMap[q.id] = cepData.logradouro;
+      else if (t === 'bairro' && cepData.bairro) fieldMap[q.id] = cepData.bairro;
+      else if ((t === 'cidade' || t === 'município') && cepData.localidade) fieldMap[q.id] = cepData.localidade;
+      else if ((t === 'uf' || t === 'estado') && cepData.uf) fieldMap[q.id] = cepData.uf;
+    });
+    setFormData(prev => {
+      const merged = { ...prev };
+      for (const [qId, val] of Object.entries(fieldMap)) {
+        if (val) merged[qId] = val;
+      }
+      return merged;
+    });
+  };
+
   // Handler de autocomplete CNPJ — preenche campos automaticamente
   // Para Lead: Razão Social, Nome Fantasia, Site, MCC
   // Para Compliance: todos os 12+ campos cadastrais (A1-A11)
@@ -367,7 +387,49 @@ export default function DynamicQuestionnaire({
       else if (t === 'site da empresa' && apiData.site_sugerido) {
         fieldMap[q.id] = apiData.site_sugerido;
       }
+      
+      // === Licenciamento (C1) — setor regulado ===
+      else if ((t === 'licenciamento' || t.includes('licenciamento') || t.includes('regulado')) && q.type === 'BOOLEAN') {
+        if (apiData.setor_regulado?.regulado) {
+          fieldMap[q.id] = true;
+        }
+      }
+      
+      // === Atividade Restrita / Proibida (I5/I6) ===
+      else if ((t.includes('produto restrito') || t.includes('atividade restrita') || t === 'i5') && q.type === 'BOOLEAN') {
+        if (apiData.anexo_i?.restrito) {
+          fieldMap[q.id] = true;
+        }
+      }
+      else if ((t.includes('produto proibido') || t.includes('atividade proibida') || t === 'i6') && q.type === 'BOOLEAN') {
+        if (apiData.anexo_i?.proibido) {
+          fieldMap[q.id] = true;
+        }
+      }
+      
+      // === Faturamento Anual sugerido (Lead Pergunta 27) ===
+      else if ((t.includes('faturamento anual') || t.includes('faixa de faturamento')) && apiData.faixa_faturamento_sugerida) {
+        fieldMap[q.id] = apiData.faixa_faturamento_sugerida;
+      }
     });
+
+    // === QSA → pré-preencher UBOs (D1-D8) e Sócios (E1-E6) ===
+    if (apiData.qsa && apiData.qsa.length > 0) {
+      // Formato: serializar QSA em texto para campos de texto livre, ou em array de objetos
+      const qsaFormatted = apiData.qsa.map(s => 
+        `${s.nome_socio} — ${s.qualificacao_socio}${s.data_entrada_sociedade ? ` (desde ${s.data_entrada_sociedade})` : ''}`
+      ).join('\n');
+      
+      questions.forEach(q => {
+        const t = (q.text || '').toLowerCase().trim();
+        if (t.includes('ubo') || t.includes('beneficiário final') || t.includes('beneficiários finais') ||
+            t.includes('quadro societário') || t.includes('sócios') || t.includes('administradores')) {
+          if (q.type === 'TEXT' && !fieldMap[q.id]) {
+            fieldMap[q.id] = qsaFormatted;
+          }
+        }
+      });
+    }
 
     setFormData(prev => {
       const merged = { ...prev };
@@ -565,6 +627,7 @@ export default function DynamicQuestionnaire({
             prefillSources={prefillSources}
             cnpjAutocompleteData={cnpjAutocompleteData}
             onCnpjAutocomplete={handleCnpjAutocomplete}
+            onCepData={handleCepData}
           />
 
           {/* Botões de Ação */}
