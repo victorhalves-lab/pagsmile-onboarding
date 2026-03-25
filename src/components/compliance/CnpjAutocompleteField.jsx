@@ -4,6 +4,8 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, CheckCircle, AlertTriangle, Building2, XCircle } from 'lucide-react';
 import useCnpjAutocomplete, { formatCnpj } from '@/hooks/useCnpjAutocomplete';
+import { base44 } from '@/api/base44Client';
+import CnpjEnrichmentPanel from './CnpjEnrichmentPanel';
 
 export default function CnpjAutocompleteField({
   value,
