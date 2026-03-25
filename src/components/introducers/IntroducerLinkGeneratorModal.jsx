@@ -30,6 +30,15 @@ export default function IntroducerLinkGeneratorModal({ open, onOpenChange }) {
     enabled: open,
   });
 
+  const { data: leadTemplates = [] } = useQuery({
+    queryKey: ['lead-templates-active'],
+    queryFn: async () => {
+      const all = await base44.entities.QuestionnaireTemplate.filter({ category: 'LEAD_GENERATION', isActive: true });
+      return all.filter(t => !t.isArchived);
+    },
+    enabled: open,
+  });
+
   const selectedIntroducer = introducers.find(i => i.id === selectedIntroducerId);
 
   const createMutation = useMutation({
