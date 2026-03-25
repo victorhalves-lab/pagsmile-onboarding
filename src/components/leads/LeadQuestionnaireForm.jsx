@@ -624,11 +624,16 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
                   maxLength={500}
                 />
                 <div className="flex justify-between items-center text-xs">
-                  <span className={`${String(value).length < 75 ? 'text-amber-600' : 'text-[var(--pagsmile-green)]'}`}>
-                    {String(value).length < 75 
-                      ? `Faltam ${75 - String(value).length} caracteres (mínimo 75)` 
-                      : '✓ Mínimo atingido'}
-                  </span>
+                  {(() => {
+                    const minLen = question.validationRules?.minLength || 75;
+                    return (
+                      <span className={`${String(value).length < minLen ? 'text-amber-600' : 'text-[var(--pagsmile-green)]'}`}>
+                        {String(value).length < minLen 
+                          ? `Faltam ${minLen - String(value).length} caracteres (mínimo ${minLen})` 
+                          : '✓ Mínimo atingido'}
+                      </span>
+                    );
+                  })()}
                   <span className="text-[var(--pagsmile-blue)]/50">
                     {String(value).length}/500
                   </span>
