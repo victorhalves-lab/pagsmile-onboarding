@@ -109,6 +109,32 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
     );
   }
 
+  // Detectar campos CPF que precisam de validação módulo 11
+  const isCpfField = type === 'CPF_CNPJ' && textLower !== 'cnpj' && (
+    textLower.includes('cpf') || textLower.includes('cpf do ubo') || 
+    textLower.includes('cpf do sócio') || textLower.includes('cpf resp')
+  );
+  if (isCpfField) {
+    return (
+      <>
+        <CpfValidationField
+          value={value || ''}
+          onChange={onChange}
+          questionId={question.id}
+          isRequired={isRequired}
+          label={text}
+          helpText={helpText}
+        />
+        <ComplianceFieldAlerts alerts={fieldAlerts} />
+      </>
+    );
+  }
+
+  // Detectar campos de site/URL que precisam de validação
+  const isSiteField = type === 'TEXT' && (
+    textLower.includes('site') || textLower.includes('url') || textLower.includes('website')
+  ) && !textLower.includes('receita');
+
   // Detectar campos auto-preenchidos via CNPJ (readonly display fields)
   const isAutofilledReadonly = cnpjAutocompleteData && (
     textLower === 'razão social' ||
