@@ -54,6 +54,20 @@ export default function CnpjAutocompleteField({
     if (result && onAutocompleteData) {
       onAutocompleteData(result);
     }
+    // Disparar análise de enriquecimento automaticamente
+    if (result && result.situacao_cadastral === 2) {
+      setEnrichmentLoading(true);
+      setEnrichmentResult(null);
+      try {
+        const enrichRes = await base44.functions.invoke('analyzeCnpjEnrichment', {
+          cnpjDataArray: { ...result, cnpj },
+        });
+        setEnrichmentResult(enrichRes.data);
+      } catch (e) {
+        console.warn('Enrichment analysis failed:', e.message);
+      }
+      setEnrichmentLoading(false);
+    }
   }, [consultarCnpj, onAutocompleteData]);
 
   const isActive = data?.situacao_cadastral === 2;
