@@ -645,7 +645,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
         {question.type === 'NUMBER' && (() => {
           const qText = (question.text || '').toLowerCase();
           const isPercent = qText.includes('(%)') || qText.includes('% ');
-          const isCurrency = qText.includes('(r$)') || qText.includes('r$') || MONETARY_QUESTION_IDS.includes(question.id);
+          const isCurrency = qText.includes('(r$)') || qText.includes('r$') || MONETARY_QUESTION_IDS.includes(question.id) || qText.includes('tpv') || qText.includes('ticket médio') || qText.includes('faturamento');
           
           if (isCurrency) {
             return (
