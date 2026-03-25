@@ -335,6 +335,20 @@ export default function DynamicQuestionnaire({
     // Persistir os dados brutos da API no formData para uso posterior (analyzeCnpjEnrichment)
     if (apiData) {
       setFormData(prev => ({ ...prev, __cnpj_raw_data: apiData }));
+      
+      // Trigger full screening in background (CEIS, CNEP, PEP sócios, países sancionados)
+      if (apiData.situacao_cadastral === 2 && apiData.qsa) {
+        const cnpj = formData[questions.find(q => (q.text || '').toLowerCase() === 'cnpj' && q.type === 'CPF_CNPJ')?.id] || '';
+        if (cnpj) {
+          base44.functions.invoke('sanctionsScreening', {
+            action: 'fullScreening',
+            cnpj,
+            qsa: apiData.qsa
+          }).then(res => {
+            setFormData(prev => ({ ...prev, __screening_result: res.data }));
+          }).catch(() => {});
+        }
+      }
     }
     if (!apiData || !questions.length) return;
 
