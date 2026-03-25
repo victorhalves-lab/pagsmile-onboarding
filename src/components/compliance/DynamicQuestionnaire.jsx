@@ -446,6 +446,10 @@ export default function DynamicQuestionnaire({
             fieldMap[q.id] = qsaFormatted;
           }
         }
+        // D3 — Nacionalidade UBO: default "Brasileira" (pais raramente vem preenchido)
+        if ((t.includes('nacionalidade') && (t.includes('ubo') || t.includes('beneficiário'))) && !fieldMap[q.id]) {
+          fieldMap[q.id] = 'Brasileira';
+        }
       });
     }
 
