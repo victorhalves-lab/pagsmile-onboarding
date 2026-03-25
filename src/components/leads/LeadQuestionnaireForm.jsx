@@ -174,6 +174,78 @@ const PERCENT_GROUPS = [
 
 const STORAGE_KEY = 'lead_questionnaire_data'; // v2
 
+// === DETECÇÃO DINÂMICA DE GRUPOS DE PERCENTUAIS (V2) ===
+// Detecta grupos de % por texto quando os IDs hardcoded V1 não existem
+function detectV2PercentGroups(allQuestions) {
+  const groups = [];
+  
+  // Grupo 1: Crédito/PIX/Boleto
+  const creditoPct = allQuestions.find(q => q.type === 'NUMBER' && (q.text || '').toLowerCase().includes('cartão de crédito') && (q.text || '').includes('%'));
+  const pixPct = allQuestions.find(q => q.type === 'NUMBER' && (q.text || '').toLowerCase().includes('pix') && (q.text || '').includes('%') && !(q.text || '').toLowerCase().includes('med'));
+  const boletoPct = allQuestions.find(q => q.type === 'NUMBER' && (q.text || '').toLowerCase().includes('boleto') && (q.text || '').includes('%'));
+  
+  if (creditoPct && pixPct && boletoPct) {
+    groups.push({
+      trigger: creditoPct.id,
+      title: 'Distribuição do seu TPV (%) — Cartão de Crédito, PIX e Boleto',
+      required: false,
+      ids: [creditoPct.id, pixPct.id, boletoPct.id],
+      fields: [
+        { id: creditoPct.id, label: 'Cartão de Crédito', placeholder: '60' },
+        { id: pixPct.id, label: 'PIX', placeholder: '30' },
+        { id: boletoPct.id, label: 'Boleto', placeholder: '10' },
+      ],
+    });
+  }
+  
+  // Grupo 2: Bandeiras (Visa/Master/Outras)
+  const visaPct = allQuestions.find(q => q.type === 'NUMBER' && (q.text || '').toLowerCase().includes('visa') && (q.text || '').includes('%'));
+  const masterPct = allQuestions.find(q => q.type === 'NUMBER' && (q.text || '').toLowerCase().includes('mastercard') && (q.text || '').includes('%'));
+  const outrasBandPct = allQuestions.find(q => q.type === 'NUMBER' && (q.text || '').toLowerCase().includes('elo') && (q.text || '').toLowerCase().includes('bandeira') && (q.text || '').includes('%'));
+  
+  if (visaPct && masterPct && outrasBandPct) {
+    groups.push({
+      trigger: visaPct.id,
+      title: 'Percentual de vendas por bandeira (%)',
+      required: false,
+      ids: [visaPct.id, masterPct.id, outrasBandPct.id],
+      fields: [
+        { id: visaPct.id, label: 'Visa', placeholder: '50' },
+        { id: masterPct.id, label: 'Mastercard', placeholder: '35' },
+        { id: outrasBandPct.id, label: 'Elo / Outras', placeholder: '15' },
+      ],
+    });
+  }
+  
+  // Grupo 3: Parcelamento (À Vista/2-6x/7-12x)
+  const vistaPct = allQuestions.find(q => q.type === 'NUMBER' && (q.text || '').toLowerCase().includes('à vista') && (q.text || '').toLowerCase().includes('parcelamento') && (q.text || '').includes('%'));
+  const parc26 = allQuestions.find(q => q.type === 'NUMBER' && (q.text || '').toLowerCase().includes('2 a 6x') && (q.text || '').includes('%'));
+  const parc712 = allQuestions.find(q => q.type === 'NUMBER' && (q.text || '').toLowerCase().includes('7 a 12x') && (q.text || '').includes('%'));
+  
+  if (vistaPct && parc26 && parc712) {
+    groups.push({
+      trigger: vistaPct.id,
+      title: 'Percentual de crédito por parcelamento (%)',
+      required: false,
+      ids: [vistaPct.id, parc26.id, parc712.id],
+      fields: [
+        { id: vistaPct.id, label: 'À Vista (1x)', placeholder: '40' },
+        { id: parc26.id, label: '2x a 6x', placeholder: '40' },
+        { id: parc712.id, label: '7x a 12x', placeholder: '20' },
+      ],
+    });
+  }
+  
+  return groups;
+}
+
+// Detectar taxas de cartão V2 (MDR por bandeira)
+function detectV2CardRates(allQuestions) {
+  return allQuestions.filter(q => 
+    q.type === 'NUMBER' && (q.text || '').toLowerCase().includes('mdr') && (q.text || '').includes('%')
+  );
+}
+
 // Detectar se uma pergunta é campo CNPJ gatilho para autocomplete (Lead v2.0)
 const isLeadCnpjTrigger = (question) => {
   return question.type === 'CPF_CNPJ' && (question.text || '').toLowerCase().trim() === 'cnpj';
