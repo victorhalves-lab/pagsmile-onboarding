@@ -1066,9 +1066,14 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
               const rendered = renderQuestion(q);
               
               // Após o Ticket Médio, mostrar o campo calculado de transações
-              if (q.id === TICKET_MEDIO_QUESTION_ID) {
-                const tpv = parseFloat(formData[TPV_QUESTION_ID]) || 0;
-                const ticketMedio = parseFloat(formData[TICKET_MEDIO_QUESTION_ID]) || 0;
+              // Também detectar campos TPV/Ticket do template v2 pelo texto
+              const isTicketMedioQ = q.id === TICKET_MEDIO_QUESTION_ID || (q.type === 'NUMBER' && (q.text || '').toLowerCase().includes('ticket'));
+              const tpvQ = steps[currentStep]?.find(sq => sq.id === TPV_QUESTION_ID || (sq.type === 'NUMBER' && (sq.text || '').toLowerCase().includes('tpv')));
+              const ticketQ = steps[currentStep]?.find(sq => sq.id === TICKET_MEDIO_QUESTION_ID || (sq.type === 'NUMBER' && (sq.text || '').toLowerCase().includes('ticket')));
+              
+              if (isTicketMedioQ && tpvQ && ticketQ) {
+                const tpv = parseFloat(formData[tpvQ.id]) || 0;
+                const ticketMedio = parseFloat(formData[ticketQ.id]) || 0;
                 const transacoes = tpv > 0 && ticketMedio > 0 ? Math.round(tpv / ticketMedio) : 0;
                 
                 return (
