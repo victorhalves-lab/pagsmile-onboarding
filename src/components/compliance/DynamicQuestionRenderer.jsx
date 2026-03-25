@@ -248,20 +248,23 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
 
     case 'BOOLEAN':
       return (
-        <RadioGroup
-          value={value === true ? 'sim' : value === false ? 'nao' : ''}
-          onValueChange={(v) => handleChange(v === 'sim')}
-          className="flex gap-6"
-        >
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value="sim" id={`${question.id}_sim`} />
-            <Label htmlFor={`${question.id}_sim`} className="font-normal cursor-pointer">Sim</Label>
-          </div>
-          <div className="flex items-center gap-2">
-            <RadioGroupItem value="nao" id={`${question.id}_nao`} />
-            <Label htmlFor={`${question.id}_nao`} className="font-normal cursor-pointer">Não</Label>
-          </div>
-        </RadioGroup>
+        <>
+          <RadioGroup
+            value={value === true ? 'sim' : value === false ? 'nao' : ''}
+            onValueChange={(v) => handleChange(v === 'sim')}
+            className="flex gap-6"
+          >
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="sim" id={`${question.id}_sim`} />
+              <Label htmlFor={`${question.id}_sim`} className="font-normal cursor-pointer">Sim</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <RadioGroupItem value="nao" id={`${question.id}_nao`} />
+              <Label htmlFor={`${question.id}_nao`} className="font-normal cursor-pointer">Não</Label>
+            </div>
+          </RadioGroup>
+          <ComplianceFieldAlerts alerts={fieldAlerts} />
+        </>
       );
 
     case 'FILE_UPLOAD':
