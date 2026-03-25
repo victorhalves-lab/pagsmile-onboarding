@@ -269,7 +269,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
         const ticketMedio = parseFloat(fieldId === ticketMedioId ? value : prev[ticketMedioId]) || 0;
         
         if (tpv > 0 && ticketMedio > 0) {
-          newData[TRANSACOES_MES_QUESTION_ID] = Math.round(tpv / ticketMedio);
+          newData[transacoesId] = Math.round(tpv / ticketMedio);
         }
       }
       
