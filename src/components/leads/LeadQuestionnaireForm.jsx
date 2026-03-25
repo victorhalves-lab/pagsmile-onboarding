@@ -822,6 +822,10 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
                   placeholder={question.placeholder || ''}
                   className={`h-12 rounded-xl ${errorBorderClass}`}
                 />
+                {/* Validação de site em background (V2) */}
+                {isV2Template && (question.text || '').toLowerCase().includes('site') && value && value.length > 5 && (
+                  <SiteValidationBadge siteUrl={value} updateField={updateField} />
+                )}
                 <FormFieldError error={fieldError} />
               </>
             )}
