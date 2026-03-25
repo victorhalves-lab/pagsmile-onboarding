@@ -253,6 +253,15 @@ const isLeadCnpjTrigger = (question) => {
   return question.type === 'CPF_CNPJ' && (question.text || '').toLowerCase().trim() === 'cnpj';
 };
 
+// Detectar se uma pergunta é o campo de endereço (27d)
+const isAddressQuestion = (question) => {
+  const t = (question.text || '').toLowerCase().trim();
+  return t.includes('endereço da empresa') || t.includes('endereço comercial') || t === 'endereço';
+};
+
+// Virtual address field ID prefix
+const ADDRESS_FIELD_ID = '_lead_address';
+
 // Detectar se um campo foi preenchido via autocomplete CNPJ
 const isAutofilledByApi = (question, cnpjData) => {
   if (!cnpjData) return false;
