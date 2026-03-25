@@ -338,8 +338,9 @@ export default function DynamicQuestionnaire({
       
       // Trigger full screening in background (CEIS, CNEP, PEP sócios, países sancionados)
       if (apiData.situacao_cadastral === 2 && apiData.qsa) {
-        const cnpj = formData[questions.find(q => (q.text || '').toLowerCase() === 'cnpj' && q.type === 'CPF_CNPJ')?.id] || '';
-        if (cnpj) {
+        const cnpjQ = questions.find(q => (q.text || '').toLowerCase() === 'cnpj' && q.type === 'CPF_CNPJ');
+        const cnpj = cnpjQ ? (formData[cnpjQ.id] || '') : '';
+        if (cnpj && cnpj.length >= 14) {
           base44.functions.invoke('sanctionsScreening', {
             action: 'fullScreening',
             cnpj,
