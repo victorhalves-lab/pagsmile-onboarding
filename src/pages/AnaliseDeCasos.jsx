@@ -186,7 +186,14 @@ export default function AnaliseDeCasos() {
         </TabsContent>
 
         <TabsContent value="validations">
-          <CaseValidationsTab validations={validations} />
+          <div className="space-y-4">
+            <CnpjEnrichmentSummaryCard 
+              complianceScore={complianceScore}
+              onboardingCaseId={caseId}
+              merchant={merchant}
+            />
+            <CaseValidationsTab validations={validations} />
+          </div>
         </TabsContent>
 
         <TabsContent value="history">
