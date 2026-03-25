@@ -212,16 +212,19 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
 
     case 'SELECT':
       return (
-        <Select value={value || ''} onValueChange={handleChange}>
-          <SelectTrigger className="h-11">
-            <SelectValue placeholder={placeholder || 'Selecione uma opção'} />
-          </SelectTrigger>
-          <SelectContent>
-            {options.map((opt, idx) => (
-              <SelectItem key={idx} value={opt}>{opt}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <>
+          <Select value={value || ''} onValueChange={handleChange}>
+            <SelectTrigger className="h-11">
+              <SelectValue placeholder={placeholder || 'Selecione uma opção'} />
+            </SelectTrigger>
+            <SelectContent>
+              {options.map((opt, idx) => (
+                <SelectItem key={idx} value={opt}>{opt}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <ComplianceFieldAlerts alerts={fieldAlerts} />
+        </>
       );
 
     case 'MULTI_SELECT':
