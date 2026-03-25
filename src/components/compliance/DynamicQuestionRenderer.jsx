@@ -35,7 +35,10 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
   }
 
   // Detectar campos auto-preenchidos via CNPJ (readonly display fields)
+  // Campos de dados oficiais da Receita que não devem ser editados pelo usuário
   const isAutofilledReadonly = cnpjAutocompleteData && (
+    textLower === 'razão social' ||
+    textLower === 'nome fantasia' ||
     textLower.includes('cnae principal') ||
     textLower.includes('cnaes secundários') ||
     textLower.includes('situação cadastral') ||
@@ -184,9 +187,11 @@ function QuestionItem({ question, value, onChange, prefillSource, cnpjAutocomple
     textLower.includes('situação cadastral') || textLower.includes('capital social') ||
     textLower.includes('porte da empresa') || textLower.includes('data de início') ||
     textLower === 'cep' || textLower === 'logradouro' || textLower === 'bairro' ||
-    textLower === 'cidade' || textLower === 'uf' || textLower === 'número' ||
+    textLower === 'cidade' || textLower === 'município' || textLower === 'uf' || 
+    textLower === 'estado' || textLower === 'número' ||
     textLower === 'complemento' || textLower.includes('e-mail da receita') ||
-    textLower.includes('telefone da receita')
+    textLower.includes('telefone da receita') || textLower === 'código mcc' ||
+    textLower === 'site da empresa'
   );
 
   return (
