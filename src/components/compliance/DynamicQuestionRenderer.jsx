@@ -292,7 +292,7 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
 }
 
 // Componente que renderiza UMA pergunta completa com label
-function QuestionItem({ question, value, onChange, prefillSource, cnpjAutocompleteData, onCnpjAutocomplete, onCepData }) {
+function QuestionItem({ question, value, onChange, prefillSource, cnpjAutocompleteData, onCnpjAutocomplete, onCepData, fieldAlerts }) {
   const textLower = (question.text || '').toLowerCase();
   const isCnpjTrigger = question.type === 'CPF_CNPJ' && textLower === 'cnpj';
   const isAutoSource = cnpjAutocompleteData && value && (
