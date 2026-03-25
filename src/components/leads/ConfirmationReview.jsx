@@ -25,6 +25,10 @@ export default function ConfirmationReview({ questions, formData, steps, onGoToS
     if (Array.isArray(val)) return val.join(', ');
     if (typeof val === 'boolean') return val ? 'Sim' : 'Não';
     if (typeof val === 'string' && val.startsWith('http')) return '📎 Arquivo enviado';
+    // Address object
+    if (val && typeof val === 'object' && val.cep) {
+      return `${val.logradouro || ''}, ${val.numero || 'S/N'}${val.complemento ? ' - ' + val.complemento : ''} — ${val.bairro || ''}, ${val.cidade || ''}/${val.uf || ''} — CEP ${val.cep}`;
+    }
     return String(val);
   };
 
