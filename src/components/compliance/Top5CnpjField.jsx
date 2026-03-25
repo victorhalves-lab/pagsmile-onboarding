@@ -62,6 +62,11 @@ export default function Top5CnpjField({
       } else {
         const d = res.data;
         const isActive = d.situacao_cadastral === 2;
+        const cnaeFiscalStr = String(d.cnae_fiscal || '');
+        const allCnaes = [cnaeFiscalStr, ...(d.cnaes_secundarios || []).map(c => String(c.codigo))];
+        const isProibido = allCnaes.some(c => ATIVIDADES_PROIBIDAS_CNAES.includes(c));
+        const isRestrito = allCnaes.some(c => ATIVIDADES_RESTRITAS_CNAES.includes(c));
+        
         newItems[idx] = {
           cnpj: digits,
           nome: d.razao_social || '',
@@ -73,8 +78,23 @@ export default function Top5CnpjField({
           isActive,
           situacao: d.descricao_situacao_cadastral,
           cnaeFiscal: d.cnae_fiscal,
+          isProibido,
+          isRestrito,
           status: isActive ? 'ok' : 'inactive'
         };
+        
+        // Background screening (CEIS/CNEP) — non-blocking
+        base44.functions.invoke('sanctionsScreening', { action: 'screenCnpj', cnpj: digits }).then(screenRes => {
+          if (screenRes.data?.hasFlags) {
+            setItems(prev => {
+              const updated = [...prev];
+              if (updated[idx]) {
+                updated[idx] = { ...updated[idx], screeningFlags: screenRes.data.flags };
+              }
+              return updated;
+            });
+          }
+        }).catch(() => {});
       }
       updateItems([...newItems]);
     }
