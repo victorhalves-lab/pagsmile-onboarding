@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { HelpCircle, CheckCircle, Lock, AlertTriangle as AlertTriangleIcon, ShieldAlert } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import CnpjAutocompleteField from './CnpjAutocompleteField';
 import CepAutocompleteField from './CepAutocompleteField';
 import EmailValidationField from './EmailValidationField';
@@ -15,9 +16,10 @@ import Top5CnpjField from './Top5CnpjField';
 import CpfValidationField from './CpfValidationField';
 import ComplianceFieldAlerts from './ComplianceFieldAlerts';
 import SiteValidationBadge from '../leads/SiteValidationBadge';
+import CurrencyInput from '../leads/CurrencyInput';
 
 // Componente que renderiza UMA pergunta com base no tipo
-function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpjAutocomplete, onCepData, fieldAlerts }) {
+function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpjAutocomplete, onCepData, fieldAlerts, hideAlerts }) {
   const { type, text, options = [], placeholder, helpText, isRequired } = question;
   const textLower = (text || '').toLowerCase();
 
@@ -139,9 +141,9 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
   ) && !textLower.includes('receita');
 
   // Detectar campos auto-preenchidos via CNPJ (readonly display fields)
+  // Ajuste 1: Nome Fantasia removido da lista readonly — sempre editável pelo cliente
   const isAutofilledReadonly = cnpjAutocompleteData && (
     textLower === 'razão social' ||
-    textLower === 'nome fantasia' ||
     textLower.includes('cnae principal') ||
     textLower.includes('cnaes secundários') ||
     textLower.includes('situação cadastral') ||
@@ -182,23 +184,45 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
           {isSiteField && value && String(value).length > 5 && (
             <SiteValidationBadge siteUrl={value} updateField={onChange} />
           )}
-          <ComplianceFieldAlerts alerts={fieldAlerts} />
+          {!hideAlerts && <ComplianceFieldAlerts alerts={fieldAlerts} />}
         </>
       );
 
-    case 'NUMBER':
+    case 'NUMBER': {
+      // Ajuste 4: Campos R$ usam formatação de moeda
+      const isCurrencyField = textLower.includes('r$') || textLower.includes('volume mensal') || 
+        textLower.includes('ticket médio') || textLower.includes('faturamento') || 
+        textLower.includes('capital social') || textLower.includes('tpv');
+      if (isCurrencyField) {
+        return (
+          <>
+            <CurrencyInput
+              value={value || ''}
+              onChange={(val) => handleChange(val)}
+              placeholder={placeholder || 'R$ 0,00'}
+              className="h-11"
+            />
+            {!hideAlerts && <ComplianceFieldAlerts alerts={fieldAlerts} />}
+          </>
+        );
+      }
       return (
         <>
           <Input
-            type="number"
-            value={value || ''}
-            onChange={(e) => handleChange(e.target.value)}
+            type="text"
+            inputMode="numeric"
+            value={value ? Number(value).toLocaleString('pt-BR') : ''}
+            onChange={(e) => {
+              const raw = e.target.value.replace(/\D/g, '');
+              handleChange(raw ? Number(raw) : '');
+            }}
             placeholder={placeholder || ''}
             className="h-11"
           />
-          <ComplianceFieldAlerts alerts={fieldAlerts} />
+          {!hideAlerts && <ComplianceFieldAlerts alerts={fieldAlerts} />}
         </>
       );
+    }
 
     case 'DATE':
       return (
@@ -211,6 +235,28 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
       );
 
     case 'SELECT':
+      // Ajuste 2: Poucos opções → botões; muitas → dropdown
+      if (options.length <= 5) {
+        return (
+          <>
+            <div className="flex flex-wrap gap-2">
+              {options.map((opt, idx) => (
+                <Button
+                  key={idx}
+                  type="button"
+                  variant={value === opt ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => handleChange(opt)}
+                  className={`h-10 px-4 text-sm font-medium rounded-lg ${value === opt ? 'bg-[#2bc196] hover:bg-[#2bc196]/90 text-white border-[#2bc196]' : 'hover:border-[#2bc196] hover:text-[#2bc196]'}`}
+                >
+                  {opt}
+                </Button>
+              ))}
+            </div>
+            {!hideAlerts && <ComplianceFieldAlerts alerts={fieldAlerts} />}
+          </>
+        );
+      }
       return (
         <>
           <Select value={value || ''} onValueChange={handleChange}>
@@ -223,55 +269,87 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
               ))}
             </SelectContent>
           </Select>
-          <ComplianceFieldAlerts alerts={fieldAlerts} />
+          {!hideAlerts && <ComplianceFieldAlerts alerts={fieldAlerts} />}
         </>
       );
 
-    case 'MULTI_SELECT':
+    case 'MULTI_SELECT': {
+      // Ajuste 2: Usar botões toggle em vez de checkboxes
       const selectedValues = value || [];
       return (
-        <div className="space-y-2">
-          {options.map((opt, idx) => (
-            <div key={idx} className="flex items-center gap-3">
-              <Checkbox
-                id={`${question.id}_${idx}`}
-                checked={selectedValues.includes(opt)}
-                onCheckedChange={(checked) => {
-                  if (checked) {
-                    handleChange([...selectedValues, opt]);
-                  } else {
+        <div className="flex flex-wrap gap-2">
+          {options.map((opt, idx) => {
+            const isSelected = selectedValues.includes(opt);
+            return (
+              <Button
+                key={idx}
+                type="button"
+                variant={isSelected ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => {
+                  if (isSelected) {
                     handleChange(selectedValues.filter(v => v !== opt));
+                  } else {
+                    handleChange([...selectedValues, opt]);
                   }
                 }}
-              />
-              <Label htmlFor={`${question.id}_${idx}`} className="font-normal cursor-pointer">
+                className={`h-9 px-4 text-sm font-medium rounded-lg ${isSelected ? 'bg-[#2bc196] hover:bg-[#2bc196]/90 text-white border-[#2bc196]' : 'hover:border-[#2bc196] hover:text-[#2bc196]'}`}
+              >
                 {opt}
-              </Label>
-            </div>
-          ))}
+              </Button>
+            );
+          })}
         </div>
       );
+    }
 
-    case 'BOOLEAN':
+    case 'BOOLEAN': {
+      // Ajuste 12: Perguntas de "Declaro/Autorizo/Comprometo" usam checkbox de aceite
+      const isDeclarationField = textLower.includes('declaro') || textLower.includes('autorizo') || 
+        textLower.includes('comprometo') || textLower.includes('declaração de veracidade');
+      if (isDeclarationField) {
+        return (
+          <>
+            <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
+              <Checkbox
+                id={`${question.id}_aceite`}
+                checked={value === true}
+                onCheckedChange={(checked) => handleChange(checked === true)}
+                className="mt-0.5"
+              />
+              <Label htmlFor={`${question.id}_aceite`} className="text-sm leading-relaxed cursor-pointer font-normal text-[#002443]/80">
+                {text}
+              </Label>
+            </div>
+            {!hideAlerts && <ComplianceFieldAlerts alerts={fieldAlerts} />}
+          </>
+        );
+      }
+      // Ajuste 2: Usar botões em vez de radio groups para Sim/Não
       return (
         <>
-          <RadioGroup
-            value={value === true ? 'sim' : value === false ? 'nao' : ''}
-            onValueChange={(v) => handleChange(v === 'sim')}
-            className="flex gap-6"
-          >
-            <div className="flex items-center gap-2">
-              <RadioGroupItem value="sim" id={`${question.id}_sim`} />
-              <Label htmlFor={`${question.id}_sim`} className="font-normal cursor-pointer">Sim</Label>
-            </div>
-            <div className="flex items-center gap-2">
-              <RadioGroupItem value="nao" id={`${question.id}_nao`} />
-              <Label htmlFor={`${question.id}_nao`} className="font-normal cursor-pointer">Não</Label>
-            </div>
-          </RadioGroup>
-          <ComplianceFieldAlerts alerts={fieldAlerts} />
+          <div className="flex gap-3">
+            <Button
+              type="button"
+              variant={value === true ? 'default' : 'outline'}
+              onClick={() => handleChange(true)}
+              className={`flex-1 h-11 font-semibold ${value === true ? 'bg-[#2bc196] hover:bg-[#2bc196]/90 text-white border-[#2bc196]' : 'hover:border-[#2bc196] hover:text-[#2bc196]'}`}
+            >
+              Sim
+            </Button>
+            <Button
+              type="button"
+              variant={value === false ? 'default' : 'outline'}
+              onClick={() => handleChange(false)}
+              className={`flex-1 h-11 font-semibold ${value === false ? 'bg-red-500 hover:bg-red-600 text-white border-red-500' : 'hover:border-red-400 hover:text-red-500'}`}
+            >
+              Não
+            </Button>
+          </div>
+          {!hideAlerts && <ComplianceFieldAlerts alerts={fieldAlerts} />}
         </>
       );
+    }
 
     case 'FILE_UPLOAD':
       return (
@@ -298,7 +376,7 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
 }
 
 // Componente que renderiza UMA pergunta completa com label
-function QuestionItem({ question, value, onChange, prefillSource, cnpjAutocompleteData, onCnpjAutocomplete, onCepData, fieldAlerts }) {
+function QuestionItem({ question, value, onChange, prefillSource, cnpjAutocompleteData, onCnpjAutocomplete, onCepData, fieldAlerts, hideAlerts }) {
   const textLower = (question.text || '').toLowerCase();
   const isCnpjTrigger = question.type === 'CPF_CNPJ' && textLower === 'cnpj';
   const isAutoSource = cnpjAutocompleteData && value && (
@@ -314,10 +392,15 @@ function QuestionItem({ question, value, onChange, prefillSource, cnpjAutocomple
     textLower === 'site da empresa'
   );
 
+  const isDeclaration = question.type === 'BOOLEAN' && (
+    textLower.includes('declaro') || textLower.includes('autorizo') || 
+    textLower.includes('comprometo') || textLower.includes('declaração de veracidade')
+  );
+
   return (
     <div className="space-y-2">
-      {/* O CnpjAutocompleteField renderiza seu próprio label */}
-      {!isCnpjTrigger && (
+      {/* O CnpjAutocompleteField renderiza seu próprio label; declarações incluem label no checkbox */}
+      {!isCnpjTrigger && !isDeclaration && (
         <div className="flex items-start gap-2 flex-wrap">
           <Label className="text-sm font-semibold text-[#002443]">
             {question.text}
@@ -353,6 +436,7 @@ function QuestionItem({ question, value, onChange, prefillSource, cnpjAutocomple
         onCnpjAutocomplete={onCnpjAutocomplete}
         onCepData={onCepData}
         fieldAlerts={fieldAlerts}
+        hideAlerts={hideAlerts}
       />
     </div>
   );
@@ -410,7 +494,8 @@ export default function DynamicQuestionRenderer({
   cnpjAutocompleteData = null,
   onCnpjAutocomplete,
   onCepData,
-  complianceAlerts = {}
+  complianceAlerts = {},
+  hideAlerts = false
 }) {
   // Se currentStep for definido, filtramos as perguntas para aquele step
   const displayQuestions = currentStep !== undefined
@@ -419,6 +504,14 @@ export default function DynamicQuestionRenderer({
 
   // Filtrar perguntas visíveis baseado na lógica condicional
   const visibleQuestions = displayQuestions.filter(question => {
+    // Ajuste 11: Ocultar campos de screening interno (resultado CEIS/CNEP/PEP) da view do cliente
+    if (hideAlerts) {
+      const t = (question.text || '').toLowerCase();
+      if (t.includes('resultado screening') || t.includes('screening ceis') || 
+          t.includes('screening cnep') || t.includes('screening pep')) {
+        return false;
+      }
+    }
     return evaluateConditionalLogic(question.conditionalLogic, formData);
   });
 
@@ -450,6 +543,7 @@ export default function DynamicQuestionRenderer({
             onCnpjAutocomplete={onCnpjAutocomplete}
             onCepData={onCepData}
             fieldAlerts={complianceAlerts[question.id]}
+            hideAlerts={hideAlerts}
           />
         ))}
       </div>
