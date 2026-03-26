@@ -23,10 +23,15 @@ export default function CnpjAutocompleteField({
   const [enrichmentResult, setEnrichmentResult] = useState(null);
   const [enrichmentLoading, setEnrichmentLoading] = useState(false);
 
-  // Sincronizar valor externo
+  // Sincronizar valor externo e auto-disparar consulta se pré-preenchido
   useEffect(() => {
     if (value && !displayValue) {
-      setDisplayValue(formatCnpj(value));
+      const raw = value.replace(/\D/g, '');
+      setDisplayValue(formatCnpj(raw));
+      // Auto-disparar consulta se CNPJ completo veio pré-preenchido (ex: do Lead)
+      if (raw.length === 14 && !hasConsulted && !data) {
+        triggerConsulta(raw);
+      }
     }
   }, [value]);
 

@@ -634,9 +634,9 @@ export default function DynamicQuestionnaire({
                 <Check className="w-4 h-4 text-emerald-600" />
               </div>
               <div>
-                <p className="text-sm font-medium text-emerald-800">Dados pré-preenchidos</p>
+                <p className="text-sm font-medium text-emerald-800">Dados pré-preenchidos do questionário comercial</p>
                 <p className="text-xs text-emerald-600">
-                  Identificamos {Object.keys(prefillSources).length} campos já informados no questionário de leads. Verifique e ajuste se necessário.
+                  {Object.keys(prefillSources).length} campos foram preenchidos automaticamente com dados já informados anteriormente. Verifique e ajuste se necessário.
                 </p>
               </div>
             </div>

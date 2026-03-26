@@ -763,7 +763,10 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
       activityDate: new Date().toISOString()
     });
 
-    // Limpar localStorage
+    // Salvar leadId no localStorage para pré-preenchimento do compliance
+    localStorage.setItem('lead_id_for_compliance', lead.id);
+
+    // Limpar localStorage do questionário
     localStorage.removeItem(STORAGE_KEY);
 
     setIsSubmitting(false);
