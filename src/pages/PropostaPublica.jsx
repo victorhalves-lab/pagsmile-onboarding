@@ -564,7 +564,7 @@ export default function PropostaPublica() {
           <h2 className="font-bold text-base text-[#002443] mb-4">
             Tabela de Parcelas por Bandeira
           </h2>
-          <ParcelasTableDetalhada taxas={rates} taxaRAV={taxaRAV} prazo={prazo} />
+          <ParcelasTableDetalhada taxas={rates} taxaRAV={taxaRAV} prazo={prazo} showSimulator={true} />
         </CardContent>
       </Card>
 

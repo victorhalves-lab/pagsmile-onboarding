@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { calcularTabelaParcelas } from './ParcelasTable';
+import AnticipationSimulator from './AnticipationSimulator';
 
 const BANDEIRAS = [
   { id: 'mastercard', label: 'Mastercard' },
@@ -11,7 +12,6 @@ const BANDEIRAS = [
 
 function getTaxasForBandeira(taxas, bandeira) {
   if (!taxas) return {};
-  // Novo formato granular
   if (taxas.credito_1x) {
     return {
       avista: taxas.credito_1x?.[bandeira] || 0,
@@ -20,20 +20,31 @@ function getTaxasForBandeira(taxas, bandeira) {
       de13a21x: taxas.credito_13_21x?.[bandeira] || 0,
     };
   }
-  // Formato cartao compat
   if (taxas.cartao?.[bandeira]) {
     return taxas.cartao[bandeira];
   }
   return {};
 }
 
-export default function ParcelasTableDetalhada({ taxas, taxaRAV = 0, prazo = 'D+1' }) {
+export default function ParcelasTableDetalhada({ taxas, taxaRAV = 0, prazo = 'D+1', showSimulator = false }) {
   const [activeBandeira, setActiveBandeira] = useState('mastercard');
+  const [simulatedPrazo, setSimulatedPrazo] = useState(prazo);
+  
+  const activePrazo = showSimulator ? simulatedPrazo : prazo;
   const currentTaxas = getTaxasForBandeira(taxas, activeBandeira);
-  const rows = calcularTabelaParcelas(currentTaxas, taxaRAV, prazo);
+  const rows = calcularTabelaParcelas(currentTaxas, taxaRAV, activePrazo);
+  const isSimulating = showSimulator && simulatedPrazo !== prazo;
 
   return (
-    <div>
+    <div className="space-y-4">
+      {showSimulator && taxaRAV > 0 && (
+        <AnticipationSimulator
+          originalPrazo={prazo}
+          activePrazo={simulatedPrazo}
+          onPrazoChange={setSimulatedPrazo}
+        />
+      )}
+
       <Tabs value={activeBandeira} onValueChange={setActiveBandeira}>
         <TabsList className="grid grid-cols-4 mb-4">
           {BANDEIRAS.map(b => (
@@ -49,8 +60,10 @@ export default function ParcelasTableDetalhada({ taxas, taxaRAV = 0, prazo = 'D+
                   <tr className="border-b-2 border-[#2bc196]/20">
                     <th className="text-left py-2 px-3 font-semibold text-[#002443]/70">Parcelas</th>
                     <th className="text-right py-2 px-3 font-semibold text-[#002443]/70">Base</th>
-                    {taxaRAV > 0 && prazo !== 'FLUXO' && (
-                      <th className="text-right py-2 px-3 font-semibold text-amber-600">Antecipação</th>
+                    {taxaRAV > 0 && activePrazo !== 'FLUXO' && (
+                      <th className="text-right py-2 px-3 font-semibold text-amber-600">
+                        Antecipação{isSimulating ? ` (${simulatedPrazo})` : ''}
+                      </th>
                     )}
                     <th className="text-right py-2 px-3 font-semibold text-[#2bc196]">Final</th>
                   </tr>
@@ -60,7 +73,7 @@ export default function ParcelasTableDetalhada({ taxas, taxaRAV = 0, prazo = 'D+
                     <tr key={r.parcela} className="border-b border-[#002443]/5 hover:bg-[#2bc196]/5">
                       <td className="py-2 px-3 font-medium">{r.parcela}x</td>
                       <td className="py-2 px-3 text-right">{r.taxaBase.toFixed(2)}%</td>
-                      {taxaRAV > 0 && prazo !== 'FLUXO' && (
+                      {taxaRAV > 0 && activePrazo !== 'FLUXO' && (
                         <td className="py-2 px-3 text-right text-amber-600">
                           {r.taxaAntecipacao > 0 ? `+${r.taxaAntecipacao.toFixed(2)}%` : '-'}
                         </td>
