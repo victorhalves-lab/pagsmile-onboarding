@@ -292,42 +292,68 @@ export function mapLeadToComplianceQuestions(lead, leadQuestions, complianceQues
 /**
  * Hook que busca o Lead associado ao link de onboarding e retorna dados para pré-preenchimento.
  * 
- * A busca funciona em 2 cenários:
- * 1. linkCode no localStorage (jornada Lead → Compliance no mesmo navegador)
- * 2. leadId na URL (link de compliance gerado internamente com referência ao Lead)
+ * IMPORTANTE: A fonte de verdade para identificar o Lead correto é:
+ * 1. leadId na URL (vindo da PropostaPublica aceita — mais confiável)
+ * 2. lead_id_for_compliance no localStorage (jornada Lead → Compliance no mesmo navegador)
+ * 3. onboarding_link_code no localStorage (fallback legado)
+ * 
+ * Quando um leadId vem na URL, ele é salvo no localStorage para persistir durante a sessão.
+ * Dados antigos do localStorage de outros leads são limpos ao detectar um leadId diferente.
  */
 export function useLeadPrefill(complianceQuestions) {
-  const linkCode = typeof window !== 'undefined' ? localStorage.getItem('onboarding_link_code') : null;
-  const leadIdFromStorage = typeof window !== 'undefined' ? localStorage.getItem('lead_id_for_compliance') : null;
   const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
   const leadIdFromUrl = urlParams?.get('leadId');
+  
+  // Se leadId veio na URL, ele é a fonte definitiva: salvar e limpar dados residuais de outros leads
+  if (typeof window !== 'undefined' && leadIdFromUrl) {
+    const previousLeadId = localStorage.getItem('lead_id_for_compliance');
+    if (previousLeadId !== leadIdFromUrl) {
+      // Novo lead detectado — limpar dados residuais do lead anterior
+      localStorage.removeItem('compliance_session_token');
+      localStorage.removeItem('compliance_data_merchant');
+      localStorage.removeItem('compliance_data_gateway');
+      localStorage.removeItem('compliance_data_marketplace');
+      localStorage.removeItem('compliance_data_merchant_v2');
+      localStorage.removeItem('compliance_data_gateway_v2');
+      localStorage.removeItem('compliance_data_marketplace_v2');
+      localStorage.removeItem('compliance_data_pix');
+      // Salvar o novo leadId como referência
+      localStorage.setItem('lead_id_for_compliance', leadIdFromUrl);
+    }
+  }
 
-  // Buscar Lead pelo linkCode, leadId na URL, ou leadId no localStorage
+  // Ler fontes de identificação do lead (após possível atualização acima)
+  const leadIdForCompliance = typeof window !== 'undefined' ? localStorage.getItem('lead_id_for_compliance') : null;
+  const linkCode = typeof window !== 'undefined' ? localStorage.getItem('onboarding_link_code') : null;
+  
+  // leadId resolvido: URL > localStorage > linkCode
+  const resolvedLeadId = leadIdFromUrl || leadIdForCompliance;
+
   const { data: lead } = useQuery({
-    queryKey: ['leadByLinkCode', linkCode, leadIdFromUrl, leadIdFromStorage],
+    queryKey: ['leadForCompliance', resolvedLeadId, linkCode],
     queryFn: async () => {
-      // Prioridade 1: leadId explícito na URL
-      if (leadIdFromUrl) {
-        const leads = await base44.entities.Lead.filter({ id: leadIdFromUrl });
+      // Prioridade 1: leadId explícito (URL ou salvo)
+      if (resolvedLeadId) {
+        const leads = await base44.entities.Lead.filter({ id: resolvedLeadId });
         return leads[0] || null;
       }
-      // Prioridade 2: leadId salvo pelo questionário de Lead
-      if (leadIdFromStorage) {
-        const leads = await base44.entities.Lead.filter({ id: leadIdFromStorage });
-        return leads[0] || null;
-      }
-      // Prioridade 3: linkCode do localStorage
+      // Prioridade 2 (fallback): linkCode do localStorage
       if (linkCode) {
         const leads = await base44.entities.Lead.filter(
           { onboardingLinkCode: linkCode },
           '-created_date',
           1
         );
-        return leads[0] || null;
+        const found = leads[0] || null;
+        // Se encontrou, salvar o leadId para futuras referências
+        if (found) {
+          localStorage.setItem('lead_id_for_compliance', found.id);
+        }
+        return found;
       }
       return null;
     },
-    enabled: !!(linkCode || leadIdFromUrl || leadIdFromStorage)
+    enabled: !!(resolvedLeadId || linkCode)
   });
 
   // Buscar perguntas do questionário de leads original (para mapear respostas por texto)

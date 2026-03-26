@@ -111,6 +111,19 @@ export default function PropostaPublica() {
       const model = subCat ? models[subCat] : null;
 
       if (model) {
+        // Limpar dados residuais de outros leads antes de redirecionar
+        // Isso garante que o novo lead comece com dados limpos
+        const keysToClean = [
+          'compliance_session_token',
+          'compliance_data_merchant', 'compliance_data_gateway', 'compliance_data_marketplace',
+          'compliance_data_merchant_v2', 'compliance_data_gateway_v2', 'compliance_data_marketplace_v2',
+          'compliance_data_pix',
+        ];
+        keysToClean.forEach(key => localStorage.removeItem(key));
+        // Salvar o leadId correto para que useLeadPrefill e useComplianceSession o usem
+        if (proposta.leadId) {
+          localStorage.setItem('lead_id_for_compliance', proposta.leadId);
+        }
         complianceUrl = `${window.location.origin}${createPageUrl('ComplianceDinamico')}?model=${model}&leadId=${proposta.leadId || ''}`;
       }
 
@@ -285,9 +298,26 @@ export default function PropostaPublica() {
   const getComplianceUrl = () => {
     if (proposta.status !== 'aceita') return null;
     const subCat = proposta.businessSubCategory;
+    // Check if lead uses v2 template
     const modelMapV1 = { 'MERCHAN': 'merchant', 'GATEWAY': 'gateway', 'MARKETPLACE': 'marketplace' };
     const model = modelMapV1[subCat] || 'merchant';
     return `${window.location.origin}${createPageUrl('ComplianceDinamico')}?model=${model}&leadId=${proposta.leadId || ''}`;
+  };
+  
+  // Ao clicar no botão de compliance da proposta já aceita, limpar dados residuais
+  const handleGoToCompliance = () => {
+    if (!complianceUrl) return;
+    const keysToClean = [
+      'compliance_session_token',
+      'compliance_data_merchant', 'compliance_data_gateway', 'compliance_data_marketplace',
+      'compliance_data_merchant_v2', 'compliance_data_gateway_v2', 'compliance_data_marketplace_v2',
+      'compliance_data_pix',
+    ];
+    keysToClean.forEach(key => localStorage.removeItem(key));
+    if (proposta.leadId) {
+      localStorage.setItem('lead_id_for_compliance', proposta.leadId);
+    }
+    window.location.href = complianceUrl;
   };
   const complianceUrl = getComplianceUrl();
 
@@ -311,7 +341,7 @@ export default function PropostaPublica() {
           </p>
           {proposta.status === 'aceita' && complianceUrl && (
             <Button
-              onClick={() => window.location.href = complianceUrl}
+              onClick={handleGoToCompliance}
               className="mt-4 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-8 h-12 rounded-2xl font-bold"
             >
               <Shield className="w-4 h-4 mr-2" />

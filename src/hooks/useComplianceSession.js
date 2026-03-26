@@ -11,8 +11,16 @@ function generateSessionToken() {
   return `cs_${Date.now()}_${token}`;
 }
 
-// Session storage key
-const SESSION_TOKEN_KEY = 'compliance_session_token';
+// Session storage key — scoped by leadId to prevent cross-lead contamination
+function getSessionTokenKey() {
+  const leadId = typeof window !== 'undefined' ? localStorage.getItem('lead_id_for_compliance') : null;
+  if (leadId) return `compliance_session_token_${leadId}`;
+  // Fallback: also check URL param
+  const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+  const urlLeadId = urlParams?.get('leadId');
+  if (urlLeadId) return `compliance_session_token_${urlLeadId}`;
+  return 'compliance_session_token';
+}
 
 export function useComplianceSession({ flowType, templateModel, storageKey }) {
   const [sessionToken, setSessionToken] = useState(null);
@@ -30,11 +38,13 @@ export function useComplianceSession({ flowType, templateModel, storageKey }) {
     async function init() {
       setIsLoading(true);
       
+      const SESSION_TOKEN_KEY = getSessionTokenKey();
+      
       // Check URL for session token first (resume link)
       const urlParams = new URLSearchParams(window.location.search);
       let token = urlParams.get('session');
       
-      // Then check localStorage
+      // Then check localStorage (scoped by leadId)
       if (!token) {
         token = localStorage.getItem(SESSION_TOKEN_KEY);
       }
@@ -69,7 +79,7 @@ export function useComplianceSession({ flowType, templateModel, storageKey }) {
       // Create new session
       const newToken = generateSessionToken();
       setSessionToken(newToken);
-      localStorage.setItem(SESSION_TOKEN_KEY, newToken);
+      localStorage.setItem(getSessionTokenKey(), newToken);
       
       try {
         await base44.functions.invoke('saveComplianceProgress', {
@@ -166,7 +176,7 @@ export function useComplianceSession({ flowType, templateModel, storageKey }) {
         flowType,
         templateModel
       });
-      localStorage.removeItem(SESSION_TOKEN_KEY);
+      localStorage.removeItem(getSessionTokenKey());
     } catch (e) {
       console.warn('Failed to complete session:', e);
     }

@@ -260,15 +260,16 @@ export default function DynamicQuestionnaire({
     }
   }, [sessionLoaded, savedFormData, savedStep, sessionRestored]);
 
-  // Carregar dados salvos do localStorage
+  // Carregar dados salvos do localStorage (apenas se pertencem ao lead atual)
   useEffect(() => {
     if (storageKey) {
       const savedData = localStorage.getItem(storageKey);
       if (savedData) {
         setFormData(prev => {
+          // Only restore if we don't already have data from session
+          if (Object.keys(prev).length > 0) return prev;
           const local = JSON.parse(savedData);
-          // Only set if we don't already have data
-          return Object.keys(prev).length === 0 ? local : prev;
+          return local;
         });
       }
     }
