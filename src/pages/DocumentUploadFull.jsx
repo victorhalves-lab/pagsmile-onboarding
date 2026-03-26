@@ -20,6 +20,25 @@ const MODEL_CONFIG = {
     badgeLabel: 'MARKETPLACE',
     badgeColor: 'bg-amber-100 text-amber-700',
   },
+  // Modelos v2.0 com autocomplete
+  ComplianceMerchantAutocomplete: {
+    formDataStorageKey: 'compliance_data_merchant_v2',
+    documentsStorageKey: 'documents_merchant_v2',
+    badgeLabel: 'MERCHANT',
+    badgeColor: 'bg-emerald-100 text-emerald-700',
+  },
+  ComplianceGatewayAutocomplete: {
+    formDataStorageKey: 'compliance_data_gateway_v2',
+    documentsStorageKey: 'documents_gateway_v2',
+    badgeLabel: 'GATEWAY',
+    badgeColor: 'bg-indigo-100 text-indigo-700',
+  },
+  ComplianceMarketplaceAutocomplete: {
+    formDataStorageKey: 'compliance_data_marketplace_v2',
+    documentsStorageKey: 'documents_marketplace_v2',
+    badgeLabel: 'MARKETPLACE',
+    badgeColor: 'bg-amber-100 text-amber-700',
+  },
 };
 
 export default function DocumentUploadFull() {
