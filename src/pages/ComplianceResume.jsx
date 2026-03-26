@@ -14,6 +14,9 @@ const FLOW_PAGES = {
   merchant: { questionnaire: 'ComplianceDinamico', documents: 'DocumentUploadFull' },
   gateway: { questionnaire: 'ComplianceDinamico', documents: 'DocumentUploadFull' },
   marketplace: { questionnaire: 'ComplianceDinamico', documents: 'DocumentUploadFull' },
+  ComplianceMerchantAutocomplete: { questionnaire: 'ComplianceDinamico', documents: 'DocumentUploadFull' },
+  ComplianceGatewayAutocomplete: { questionnaire: 'ComplianceDinamico', documents: 'DocumentUploadFull' },
+  ComplianceMarketplaceAutocomplete: { questionnaire: 'ComplianceDinamico', documents: 'DocumentUploadFull' },
   subseller: { questionnaire: 'SubsellerQuestionnaire', documents: 'SubsellerQuestionnaire' },
 };
 
@@ -26,6 +29,9 @@ const STORAGE_KEYS = {
   gateway: 'compliance_data_gateway',
   marketplace: 'compliance_data_marketplace',
   full_kyc: 'compliance_data_merchant',
+  ComplianceMerchantAutocomplete: 'compliance_data_merchant_v2',
+  ComplianceGatewayAutocomplete: 'compliance_data_gateway_v2',
+  ComplianceMarketplaceAutocomplete: 'compliance_data_marketplace_v2',
 };
 
 const DOC_STORAGE_KEYS = {
@@ -37,6 +43,9 @@ const DOC_STORAGE_KEYS = {
   gateway: 'documents_gateway',
   marketplace: 'documents_marketplace',
   full_kyc: 'documents_merchant',
+  ComplianceMerchantAutocomplete: 'documents_merchant_v2',
+  ComplianceGatewayAutocomplete: 'documents_gateway_v2',
+  ComplianceMarketplaceAutocomplete: 'documents_marketplace_v2',
 };
 
 export default function ComplianceResume() {
@@ -108,7 +117,7 @@ export default function ComplianceResume() {
 
         // Add model param for dynamic questionnaires
         let url = createPageUrl(targetPage);
-        if (['merchant', 'gateway', 'marketplace'].includes(model) && targetPage === 'ComplianceDinamico') {
+        if ((['merchant', 'gateway', 'marketplace'].includes(model) || model.startsWith('Compliance') && model.endsWith('Autocomplete')) && targetPage === 'ComplianceDinamico') {
           url += `?model=${model}`;
         }
         if (model === 'subseller' && sess.linkCode) {
