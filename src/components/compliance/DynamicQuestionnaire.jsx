@@ -4,11 +4,11 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { createPageUrl } from '../../utils';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, Check, Loader2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Loader2, ShieldCheck } from 'lucide-react';
 import { 
   Building2, FileText, MapPin, Briefcase, TrendingUp, 
   Users, UserCircle, ShieldAlert, CheckCircle, Shield,
-  Globe, AlertTriangle, MessageSquare, ShieldCheck, CreditCard
+  Globe, AlertTriangle, MessageSquare, CreditCard
 } from 'lucide-react';
 import StepNavigation from './StepNavigation';
 import DynamicQuestionRenderer from './DynamicQuestionRenderer';
@@ -598,23 +598,37 @@ export default function DynamicQuestionnaire({
   const progress = (currentStep / steps.length) * 100;
   const currentStepData = steps[currentStep - 1];
 
+  const StepIcon = currentStepData?.icon || FileText;
+
   return (
     <div className="max-w-3xl mx-auto">
-      {/* Header com badge + Auto-save indicator */}
-      <div className="flex items-center justify-between gap-2 mb-4 flex-wrap">
-        <div className="flex items-center gap-2">
-          <div className={`px-2 py-1 rounded-lg text-xs font-semibold ${badgeColor}`}>
+      {/* Header com logo, badge e auto-save */}
+      <div className="text-center mb-6">
+        <img 
+          src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/9bd38c4f7_Logo-modo-claro.png" 
+          alt="Pagsmile" 
+          className="h-7 mx-auto mb-4"
+        />
+        <div className="flex items-center justify-center gap-2 mb-1">
+          <div className={`px-2.5 py-1 rounded-lg text-xs font-bold tracking-wide ${badgeColor}`}>
             {badgeLabel || templateModel?.toUpperCase()}
           </div>
-          <h3 className="font-bold text-[var(--pagsmile-blue)] text-sm">
-            {template.name}
-          </h3>
         </div>
-        <AutoSaveIndicator
-          saving={isSaving}
-          lastSaved={sessionLoaded}
-          resumeUrl={getResumeUrl()}
-        />
+        <h1 className="text-xl md:text-2xl font-bold text-[#002443] mt-2">
+          {template.name}
+        </h1>
+        {template.description && (
+          <p className="text-sm text-[#002443]/60 mt-1 max-w-lg mx-auto">
+            {template.description}
+          </p>
+        )}
+        <div className="mt-3 flex justify-center">
+          <AutoSaveIndicator
+            saving={isSaving}
+            lastSaved={sessionLoaded}
+            resumeUrl={getResumeUrl()}
+          />
+        </div>
       </div>
 
       {/* Navegação horizontal no topo */}
@@ -627,16 +641,27 @@ export default function DynamicQuestionnaire({
       />
 
       <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100 modern-shadow">
+          {/* Step title com ícone */}
+          <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+            <div className="p-2.5 rounded-xl bg-gradient-to-br from-[#002443]/5 to-[#2bc196]/10">
+              <StepIcon className="w-5 h-5 text-[#002443]/70" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-[#002443]">{currentStepData.title}</h2>
+              <p className="text-xs text-[#002443]/50">Etapa {currentStep} de {steps.length}</p>
+            </div>
+          </div>
+
           {/* Banner de pré-preenchimento */}
           {hasPrefill && currentStep === 1 && (
-            <div className="mb-6 p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-3">
-              <div className="p-1.5 bg-emerald-100 rounded-lg">
+            <div className="mb-6 p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-3">
+              <div className="p-2 bg-emerald-100 rounded-lg">
                 <Check className="w-4 h-4 text-emerald-600" />
               </div>
               <div>
-                <p className="text-sm font-medium text-emerald-800">Dados pré-preenchidos do questionário comercial</p>
-                <p className="text-xs text-emerald-600">
-                  {Object.keys(prefillSources).length} campos foram preenchidos automaticamente com dados já informados anteriormente. Verifique e ajuste se necessário.
+                <p className="text-sm font-semibold text-emerald-800">Dados pré-preenchidos do questionário comercial</p>
+                <p className="text-xs text-emerald-600 mt-0.5">
+                  {Object.keys(prefillSources).length} campos foram preenchidos automaticamente. Verifique e ajuste se necessário.
                 </p>
               </div>
             </div>
@@ -660,9 +685,9 @@ export default function DynamicQuestionnaire({
           {/* Botões de Ação */}
           <div className="flex justify-between items-center mt-10 pt-6 border-t border-slate-100">
             <Button
-              variant="ghost"
+              variant="outline"
               onClick={currentStep === 1 ? () => navigate(createPageUrl('ComplianceOnboardingStart')) : handlePrevious}
-              className="text-slate-500 hover:text-[var(--pagsmile-blue)] hover:bg-slate-50"
+              className="text-[#002443]/60 hover:text-[#002443] border-slate-200 hover:border-slate-300 hover:bg-slate-50 h-11 px-5 rounded-xl"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               {currentStep === 1 ? 'Início' : 'Voltar'}
@@ -670,7 +695,7 @@ export default function DynamicQuestionnaire({
             
             <Button
               onClick={isLastStep ? handleSubmit : handleNext}
-              className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white px-8 h-12 rounded-xl shadow-lg shadow-green-500/20"
+              className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white px-8 h-12 rounded-xl shadow-lg shadow-green-500/20 transition-all hover:scale-[1.02]"
             >
               {isLastStep ? (
                 <>
@@ -685,6 +710,14 @@ export default function DynamicQuestionnaire({
               )}
             </Button>
           </div>
+      </div>
+
+      {/* Footer de segurança */}
+      <div className="text-center mt-6">
+        <p className="text-xs text-[#002443]/40 flex items-center justify-center gap-1">
+          <ShieldCheck className="w-3 h-3" />
+          Seus dados estão protegidos e serão tratados com confidencialidade.
+        </p>
       </div>
     </div>
   );

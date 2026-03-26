@@ -21,18 +21,18 @@ export default function LeadStepNavigation({ currentStep, totalSteps }) {
       </div>
 
       {/* Step dots */}
-      <div className="flex justify-between mt-3">
+      <div className="flex flex-wrap gap-1.5 justify-center mt-3">
         {Array.from({ length: totalSteps }).map((_, i) => (
           <div key={i} className="flex items-center">
-            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
+            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition-all duration-200 ${
               i < currentStep 
                 ? 'bg-[var(--pagsmile-green)] text-white' 
                 : i === currentStep
-                ? 'bg-[var(--pagsmile-blue)] text-white ring-4 ring-[var(--pagsmile-blue)]/20'
+                ? 'bg-[var(--pagsmile-blue)] text-white ring-3 ring-[var(--pagsmile-blue)]/20 scale-110'
                 : 'bg-slate-200 text-[var(--pagsmile-blue)]/50'
             }`}>
               {i < currentStep ? (
-                <CheckCircle className="w-4 h-4" />
+                <CheckCircle className="w-3.5 h-3.5" />
               ) : (
                 i + 1
               )}

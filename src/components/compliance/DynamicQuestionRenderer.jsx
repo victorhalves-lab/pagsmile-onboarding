@@ -160,9 +160,12 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
         <Input
           value={value || ''}
           readOnly
-          className="h-11 bg-emerald-50/30 border-emerald-200 cursor-not-allowed"
+          className="h-11 bg-emerald-50/50 border-emerald-200/80 cursor-not-allowed text-[#002443]/80 font-medium"
         />
-        <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#002443]/30" />
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+          <span className="text-[10px] font-medium text-emerald-600 hidden sm:inline">Automático</span>
+          <Lock className="w-3.5 h-3.5 text-emerald-500/60" />
+        </div>
       </div>
     );
   }
@@ -531,20 +534,24 @@ export default function DynamicQuestionRenderer({
         </div>
       )}
       
-      <div className="space-y-5">
-        {visibleQuestions.map((question) => (
-          <QuestionItem
-            key={question.id}
-            question={question}
-            value={formData[question.id]}
-            onChange={onFieldChange}
-            prefillSource={prefillSources[question.id]}
-            cnpjAutocompleteData={cnpjAutocompleteData}
-            onCnpjAutocomplete={onCnpjAutocomplete}
-            onCepData={onCepData}
-            fieldAlerts={complianceAlerts[question.id]}
-            hideAlerts={hideAlerts}
-          />
+      <div className="space-y-6">
+        {visibleQuestions.map((question, idx) => (
+          <div key={question.id}>
+            <QuestionItem
+              question={question}
+              value={formData[question.id]}
+              onChange={onFieldChange}
+              prefillSource={prefillSources[question.id]}
+              cnpjAutocompleteData={cnpjAutocompleteData}
+              onCnpjAutocomplete={onCnpjAutocomplete}
+              onCepData={onCepData}
+              fieldAlerts={complianceAlerts[question.id]}
+              hideAlerts={hideAlerts}
+            />
+            {idx < visibleQuestions.length - 1 && (
+              <div className="mt-6 border-b border-slate-100" />
+            )}
+          </div>
         ))}
       </div>
     </div>

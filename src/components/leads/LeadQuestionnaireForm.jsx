@@ -1358,7 +1358,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
       />
 
       {/* Formulário */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm mt-6">
+      <div className="bg-white rounded-3xl border border-slate-100 p-6 md:p-8 shadow-sm modern-shadow mt-6">
         {isConfirmationStep ? (
           <ConfirmationReview
             questions={questions}
@@ -1418,12 +1418,12 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
         )}
 
         {/* Botões de Navegação */}
-        <div className="flex justify-between items-center mt-8 pt-6 border-t border-slate-200">
+        <div className="flex justify-between items-center mt-8 pt-6 border-t border-slate-100">
           <Button
-            variant="ghost"
+            variant="outline"
             onClick={handlePrev}
             disabled={currentStep === 0}
-            className="text-[var(--pagsmile-blue)]/70"
+            className="text-[#002443]/60 hover:text-[#002443] border-slate-200 hover:border-slate-300 hover:bg-slate-50 h-11 px-5 rounded-xl disabled:opacity-40"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Anterior
@@ -1433,7 +1433,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
             <Button
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white px-8 h-12 rounded-xl shadow-lg"
+              className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white px-8 h-12 rounded-xl shadow-lg shadow-green-500/20 transition-all hover:scale-[1.02]"
             >
               {isSubmitting ? (
                 <>
@@ -1450,7 +1450,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
           ) : (
             <Button
               onClick={handleNext}
-              className="bg-[var(--pagsmile-blue)] hover:bg-[var(--pagsmile-blue)]/90 text-white px-8 h-12 rounded-xl"
+              className="bg-[var(--pagsmile-blue)] hover:bg-[var(--pagsmile-blue)]/90 text-white px-8 h-12 rounded-xl shadow-lg shadow-blue-900/10 transition-all hover:scale-[1.02]"
             >
               Próximo
               <ArrowRight className="w-4 h-4 ml-2" />
