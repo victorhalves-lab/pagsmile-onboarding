@@ -64,7 +64,12 @@ function getDisplayValue(response) {
   if (response.valueText) return response.valueText;
   if (response.valueNumber !== undefined && response.valueNumber !== null) return response.valueNumber;
   if (response.valueBoolean !== undefined && response.valueBoolean !== null) return response.valueBoolean;
-  if (response.valueArray && response.valueArray.length > 0) return response.valueArray;
+  if (response.valueArray && response.valueArray.length > 0) {
+    // Ensure no objects in array — stringify them
+    return response.valueArray.map(item => 
+      (item && typeof item === 'object') ? JSON.stringify(item) : item
+    );
+  }
   return null;
 }
 

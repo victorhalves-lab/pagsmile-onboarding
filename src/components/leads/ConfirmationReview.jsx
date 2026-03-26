@@ -60,6 +60,10 @@ export default function ConfirmationReview({ questions, formData, steps, onGoToS
     if (val && typeof val === 'object' && val.cep) {
       return { type: 'address', value: val };
     }
+    // Generic object — stringify safely
+    if (val && typeof val === 'object') {
+      try { return { type: 'text', value: JSON.stringify(val) }; } catch { return { type: 'text', value: '[Dados complexos]' }; }
+    }
     // Currency detection
     const t = (question.text || '').toLowerCase();
     if (t.includes('tpv') || t.includes('faturamento') || t.includes('ticket médio') || t.includes('(r$)')) {

@@ -23,7 +23,12 @@ function getTypeIcon(type, text) {
 function formatValue(value, text, type) {
   if (value === null || value === undefined || value === '') return null;
   if (typeof value === 'boolean') return value ? 'Sim' : 'Não';
-  if (Array.isArray(value)) return value;
+  if (Array.isArray(value)) return value.map(item => typeof item === 'object' ? JSON.stringify(item) : item);
+  
+  // Objects (e.g. flags, nested data) — stringify them
+  if (typeof value === 'object') {
+    try { return JSON.stringify(value, null, 2); } catch { return '[Objeto complexo]'; }
+  }
 
   const str = String(value);
   const num = parseFloat(str);

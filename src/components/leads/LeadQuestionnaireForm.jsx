@@ -597,6 +597,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
 
     setIsSubmitting(true);
 
+    try {
     const protocolo = generateProtocolo();
     const qualityScore = calculateQualityScore();
 
@@ -771,6 +772,11 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
 
     setIsSubmitting(false);
     onSubmit({ ...leadData, id: lead.id });
+    } catch (error) {
+      console.error('Erro ao enviar questionário:', error);
+      toast.error('Erro ao enviar questionário. Tente novamente.');
+      setIsSubmitting(false);
+    }
   };
 
   const isBusinessTypeQuestion = (question) => {
