@@ -39,6 +39,7 @@ import EmailInput from './EmailInput';
 import CnaeCoherenceAlert from './CnaeCoherenceAlert';
 import SiteValidationBadge from './SiteValidationBadge';
 import LeadAddressField from './LeadAddressField';
+import MultiFileUpload from './MultiFileUpload';
 import { computeSilentFlags, computeLeadScore } from '@/hooks/useLeadSilentFlags';
 
 function MCCNameDisplay({ mccCode }) {
@@ -1088,42 +1089,55 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
           </div>
         )}
 
-        {question.type === 'FILE_UPLOAD' && (
-          <div className="space-y-2">
-            <div className="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:border-[#2bc196]/50 transition-colors">
-              <input
-                type="file"
-                accept=".pdf,.png,.jpg,.jpeg"
-                className="hidden"
-                id={`file-${question.id}`}
-                onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  toast.info('Enviando arquivo...');
-                  const { file_url } = await base44.integrations.Core.UploadFile({ file });
-                  updateField(question.id, file_url);
-                  toast.success('Arquivo enviado com sucesso!');
-                }}
+        {question.type === 'FILE_UPLOAD' && (() => {
+          const isMultiUpload = (question.text || '').toLowerCase().includes('outros documentos');
+          if (isMultiUpload) {
+            return (
+              <MultiFileUpload
+                value={formData[question.id]}
+                onChange={(val) => updateField(question.id, val)}
+                questionText={question.text}
+                helpText={question.helpText}
               />
-              {formData[question.id] ? (
-                <div className="space-y-2">
-                  <CheckCircle className="w-8 h-8 text-[var(--pagsmile-green)] mx-auto" />
-                  <p className="text-sm font-medium text-[var(--pagsmile-green)]">Arquivo enviado</p>
-                  <div className="flex gap-2 justify-center">
-                    <a href={formData[question.id]} target="_blank" rel="noopener noreferrer" className="text-xs text-[var(--pagsmile-green)] underline">Ver arquivo</a>
-                    <button type="button" onClick={() => updateField(question.id, '')} className="text-xs text-red-500 underline">Remover</button>
+            );
+          }
+          return (
+            <div className="space-y-2">
+              <div className="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:border-[#2bc196]/50 transition-colors">
+                <input
+                  type="file"
+                  accept=".pdf,.png,.jpg,.jpeg"
+                  className="hidden"
+                  id={`file-${question.id}`}
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    toast.info('Enviando arquivo...');
+                    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+                    updateField(question.id, file_url);
+                    toast.success('Arquivo enviado com sucesso!');
+                  }}
+                />
+                {formData[question.id] ? (
+                  <div className="space-y-2">
+                    <CheckCircle className="w-8 h-8 text-[var(--pagsmile-green)] mx-auto" />
+                    <p className="text-sm font-medium text-[var(--pagsmile-green)]">Arquivo enviado</p>
+                    <div className="flex gap-2 justify-center">
+                      <a href={formData[question.id]} target="_blank" rel="noopener noreferrer" className="text-xs text-[var(--pagsmile-green)] underline">Ver arquivo</a>
+                      <button type="button" onClick={() => updateField(question.id, '')} className="text-xs text-red-500 underline">Remover</button>
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <label htmlFor={`file-${question.id}`} className="cursor-pointer space-y-2">
-                  <FileText className="w-8 h-8 text-[var(--pagsmile-blue)]/30 mx-auto" />
-                  <p className="text-sm font-medium text-[var(--pagsmile-blue)]/70">Clique para enviar arquivo</p>
-                  <p className="text-xs text-[var(--pagsmile-blue)]/40">PDF, PNG, JPG (máx. 10MB)</p>
-                </label>
-              )}
+                ) : (
+                  <label htmlFor={`file-${question.id}`} className="cursor-pointer space-y-2">
+                    <FileText className="w-8 h-8 text-[var(--pagsmile-blue)]/30 mx-auto" />
+                    <p className="text-sm font-medium text-[var(--pagsmile-blue)]/70">Clique para enviar arquivo</p>
+                    <p className="text-xs text-[var(--pagsmile-blue)]/40">PDF, PNG, JPG (máx. 10MB)</p>
+                  </label>
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         {question.type === 'BOOLEAN' && (
           <>
