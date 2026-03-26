@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { createPageUrl } from '../../utils';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Check, Loader2, ShieldCheck } from 'lucide-react';
+import CafeRedirectMessage from './CafeRedirectMessage';
 import { 
   Building2, FileText, MapPin, Briefcase, TrendingUp, 
   Users, UserCircle, ShieldAlert, CheckCircle, Shield,
@@ -179,6 +180,7 @@ export default function DynamicQuestionnaire({
   badgeLabel,
   badgeColor = 'bg-blue-100 text-blue-700',
   questionsPerStep = 4,
+  cafRedirectUrl,
   onComplete // Callback opcional quando completa o questionário
 }) {
   const navigate = useNavigate();
@@ -187,6 +189,8 @@ export default function DynamicQuestionnaire({
   const [sessionRestored, setSessionRestored] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [cnpjAutocompleteData, setCnpjAutocompleteData] = useState(null);
+  const [showCafRedirect, setShowCafRedirect] = useState(false);
+  const [isCompletingCaf, setIsCompletingCaf] = useState(false);
 
   const linkCode = localStorage.getItem('onboarding_link_code');
 
@@ -200,6 +204,7 @@ export default function DynamicQuestionnaire({
     savedPhase,
     saveProgress,
     saveProgressNow,
+    completeSession,
     getResumeUrl
   } = useComplianceSession({ flowType, templateModel, storageKey });
 
@@ -553,6 +558,19 @@ export default function DynamicQuestionnaire({
     if (templateModel) {
       localStorage.setItem('current_compliance_model', templateModel);
     }
+
+    // Se o modelo usa redirecionamento CAF, salvar dados e mostrar tela de redirect
+    if (cafRedirectUrl) {
+      saveProgressNow({
+        currentStep,
+        currentPhase: 'questionnaire',
+        formData: finalFormData
+      });
+      setShowCafRedirect(true);
+      window.scrollTo(0, 0);
+      return;
+    }
+
     // Save phase transition to documents
     saveProgressNow({
       currentStep: 1,
@@ -565,6 +583,21 @@ export default function DynamicQuestionnaire({
       navigate(createPageUrl(documentUploadPage));
     }
   };
+
+  // Callback quando o cliente confirma que concluiu na CAF
+  const handleCafCompletion = useCallback(async () => {
+    setIsCompletingCaf(true);
+    // Salvar dados finais com fase 'completed'
+    const finalFormData = { ...formData, __complianceFlags: complianceAlerts };
+    await saveProgressNow({
+      currentStep,
+      currentPhase: 'completed',
+      formData: finalFormData
+    });
+    await completeSession();
+    setIsCompletingCaf(false);
+    navigate(createPageUrl('OnboardingCompletion'));
+  }, [formData, complianceAlerts, currentStep, saveProgressNow, completeSession, navigate]);
 
   if (sessionLoading || loadingTemplate || loadingQuestions) {
     return (
@@ -600,6 +633,17 @@ export default function DynamicQuestionnaire({
   const currentStepData = steps[currentStep - 1];
 
   const StepIcon = currentStepData?.icon || FileText;
+
+  // Mostrar tela de redirecionamento CAF
+  if (showCafRedirect && cafRedirectUrl) {
+    return (
+      <CafeRedirectMessage
+        redirectUrl={cafRedirectUrl}
+        onConfirmCompletion={handleCafCompletion}
+        isCompleting={isCompletingCaf}
+      />
+    );
+  }
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -700,7 +744,7 @@ export default function DynamicQuestionnaire({
             >
               {isLastStep ? (
                 <>
-                  Enviar Documentos
+                  {cafRedirectUrl ? 'Finalizar Questionário' : 'Enviar Documentos'}
                   <Check className="w-4 h-4 ml-2" />
                 </>
               ) : (

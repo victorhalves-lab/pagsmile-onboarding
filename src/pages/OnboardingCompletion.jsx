@@ -78,7 +78,7 @@ export default function OnboardingCompletion() {
               <div>
                 <h3 className="font-medium text-white">Prazo Estimado</h3>
                 <p className="text-sm text-slate-400">
-                  A análise é concluída em até 3 dias úteis.
+                  O processo será concluído em até 24 horas.
                 </p>
               </div>
             </div>
