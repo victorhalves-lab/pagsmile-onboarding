@@ -46,7 +46,7 @@ export default function HowItWorks() {
           <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0">12+ Módulos</Badge>
           <Badge className="bg-blue-50 text-blue-700 border-0">50+ Páginas</Badge>
           <Badge className="bg-purple-50 text-purple-700 border-0">27+ Entidades</Badge>
-          <Badge className="bg-orange-50 text-orange-700 border-0">9 Fluxos Diagramados</Badge>
+          <Badge className="bg-orange-50 text-orange-700 border-0">10 Fluxogramas Microscópicos</Badge>
           <Badge className="bg-pink-50 text-pink-700 border-0">3 IAs (SENTINEL, PRISCILA, Lead Qualifier)</Badge>
           <Badge className="bg-red-50 text-red-700 border-0">3 Templates Compliance</Badge>
           <Badge className="bg-cyan-50 text-cyan-700 border-0">305+ Perguntas</Badge>
@@ -156,29 +156,14 @@ export default function HowItWorks() {
       {/* ═══════════════════════════════════════════════════════ */}
       {/* 6. DIAGRAMAS DE FLUXO — VISÃO MICROSCÓPICA */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="diagramas-fluxo" title="6. Diagramas de Fluxo — Visão Microscópica de Todos os Processos" icon={GitBranch} badge="9 Fluxos Completos" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="fluxogramas" title="6. Diagramas de Fluxo — Todos os Processos (Visão Microscópica)" icon={Workflow} badge="10 Fluxos Completos" expandedSections={expandedSections} toggleSection={toggleSection}>
         <FlowchartsSection />
-      </Section>
-
-      {/* ═══════════════════════════════════════════════════════ */}
-      {/* 7. FLUXOS RESUMIDOS */}
-      {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="fluxos" title="7. Fluxos Resumidos por Perspectiva" icon={Workflow} badge="4 Perspectivas" expandedSections={expandedSections} toggleSection={toggleSection}>
-        <Tabs defaultValue="merchant_flow" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-6">
-            <TabsTrigger value="merchant_flow">Merchant</TabsTrigger>
-            <TabsTrigger value="comercial">Comercial</TabsTrigger>
-            <TabsTrigger value="interno">Compliance</TabsTrigger>
-            <TabsTrigger value="ia">IA SENTINEL</TabsTrigger>
-          </TabsList>
-...
-        </Tabs>
       </Section>
 
       {/* ═══════════════════════════════════════════════════════ */}
       {/* 7. MODELO DE DADOS */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="entidades" title="8. Modelo de Dados Completo" icon={Database} badge="27+ Entidades" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="entidades" title="7. Modelo de Dados Completo" icon={Database} badge="27+ Entidades" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="space-y-4">
           {[
             { category: "Core do Onboarding", color: "border-l-[#2bc196]", entities: [
@@ -251,7 +236,7 @@ export default function HowItWorks() {
       {/* ═══════════════════════════════════════════════════════ */}
       {/* 8. INTEGRAÇÕES */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="integracoes" title="9. Integrações e Tecnologias" icon={Plug} badge="5 Provedores" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="integracoes" title="8. Integrações e Tecnologias" icon={Plug} badge="5 Provedores" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           {[
             { name: "CAF", color: "purple", items: ["Liveness (prova de vida)", "Facematch (1:1)", "Face Authentication", "Document OCR", "Documentoscopy", "Onboarding Web"] },
@@ -293,7 +278,7 @@ export default function HowItWorks() {
       {/* ═══════════════════════════════════════════════════════ */}
       {/* 9. BACKEND FUNCTIONS */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="backend" title="10. Backend Functions e Automações" icon={Server} badge="30+ Functions" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="backend" title="9. Backend Functions e Automações" icon={Server} badge="30+ Functions" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {[
             { name: "analyzeOnboarding", desc: "SENTINEL: 3 fases de análise → ComplianceScore + Findings + QualityAssessments" },
@@ -341,7 +326,7 @@ export default function HowItWorks() {
       {/* ═══════════════════════════════════════════════════════ */}
       {/* 10. PERSONAS */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="personas" title="11. Personas e Jornadas" icon={Users} badge="4 Personas" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="personas" title="10. Personas e Jornadas" icon={Users} badge="4 Personas" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {[
             { icon: Building2, color: "bg-[#2bc196]", name: "Merchant (Cliente)", desc: "Empresa que deseja se credenciar",
@@ -385,7 +370,7 @@ export default function HowItWorks() {
       {/* ═══════════════════════════════════════════════════════ */}
       {/* 11. JORNADAS DETALHADAS POR PERSONA */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="jornadas" title="12. Jornadas Detalhadas por Persona — Atividades, Benefícios e Valor" icon={Award} badge="5 Personas × Atividades Completas" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="jornadas" title="11. Jornadas Detalhadas por Persona — Atividades, Benefícios e Valor" icon={Award} badge="5 Personas × Atividades Completas" expandedSections={expandedSections} toggleSection={toggleSection}>
         <PersonasDetailedSection />
       </Section>
 
@@ -395,7 +380,7 @@ export default function HowItWorks() {
           Documentação Completa e Microscópica — Pagsmile Compliance, Onboarding, Leads, Propostas, Contratos, Introducers e Landing Pages • Versão 6.0 • {new Date().toLocaleDateString('pt-BR')}
         </p>
         <p className="text-xs text-white/40 mt-1">
-          12 Seções • 50+ Páginas • 27+ Entidades • 9 Fluxos Diagramados • 3 Templates • 3 IAs • 3 Tipos Proposta + Links Rápidos • 30+ Backend Functions • 5 Integrações • 5 Personas Detalhadas
+          11 Seções • 50+ Páginas • 27+ Entidades • 10 Fluxogramas Microscópicos • 3 Templates • 3 IAs • 3 Tipos Proposta + Links Rápidos • 30+ Backend Functions • 5 Integrações • 5 Personas Detalhadas
         </p>
       </div>
     </div>
