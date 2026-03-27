@@ -7,9 +7,11 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Save, FileText, Loader2, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import CardDadosCliente from '@/components/proposals/CardDadosCliente';
+import PartnerSelector from '@/components/proposals/PartnerSelector';
 import CardTaxasCartao from '@/components/proposals/CardTaxasCartao';
 import CardAntecipacao from '@/components/proposals/CardAntecipacao';
 import CardOutrasTaxas from '@/components/proposals/CardOutrasTaxas';
+import ProfitabilityPanel from '@/components/proposals/ProfitabilityPanel';
 import PropostaPreview from '@/components/proposals/PropostaPreview';
 import CopyRatesModal from '@/components/proposals/CopyRatesModal';
 
@@ -32,6 +34,7 @@ export default function CriarProposta() {
   const [isCopyModalOpen, setIsCopyModalOpen] = useState(false);
   const [errors, setErrors] = useState({});
   const [selectedBrand, setSelectedBrand] = useState('mastercard');
+  const [selectedPartnerId, setSelectedPartnerId] = useState(null);
 
   const [form, setForm] = useState({
     clienteNome: '', clienteCnpj: '', clienteMcc: '', clienteContato: '',
@@ -96,6 +99,13 @@ export default function CriarProposta() {
     enabled: !!editId
   });
 
+  // Load all active partners for the selected partner
+  const { data: allPartners = [] } = useQuery({
+    queryKey: ['partners-active'],
+    queryFn: () => base44.entities.Partner.filter({ isActive: true }),
+  });
+  const selectedPartner = allPartners.find(p => p.id === selectedPartnerId) || null;
+
   useEffect(() => {
     if (existingProposal) {
       setForm({
@@ -116,6 +126,9 @@ export default function CriarProposta() {
         taxa3ds: r.taxa3ds || '', setup: r.setup || '',
         minimoGarantido: typeof r.minimoGarantido === 'object' ? r.minimoGarantido : { mes1: r.minimoGarantido || '', mes2: r.minimoGarantido || '', mes3: r.minimoGarantido || '' },
       });
+      if (existingProposal.chosenPartnerId) {
+        setSelectedPartnerId(existingProposal.chosenPartnerId);
+      }
     }
   }, [existingProposal]);
 
@@ -187,6 +200,8 @@ export default function CriarProposta() {
       leadId: leadId || '', codigo: existingProposal?.codigo || gerarCodigo(),
       proposalName: `Proposta - ${form.clienteNome}`, status, origem: 'manual',
       businessSubCategory: form.businessSubCategory,
+      chosenPartnerId: selectedPartnerId || '',
+      chosenPartnerName: selectedPartner?.name || '',
       clienteNome: form.clienteNome, clienteCnpj: form.clienteCnpj.replace(/\D/g, ''),
       clienteContato: form.clienteContato, clienteMcc: form.clienteMcc,
       rates: {
@@ -266,14 +281,28 @@ export default function CriarProposta() {
         {/* Left Column - Form */}
         <div className="flex-1 overflow-y-auto p-6 space-y-5 pb-32">
           <CardDadosCliente form={form} errors={errors} onUpdate={updateForm} />
-          <CardTaxasCartao rates={rates} onUpdateRates={updateRates} selectedBrand={selectedBrand} setSelectedBrand={setSelectedBrand} />
+          <PartnerSelector
+            selectedPartnerId={selectedPartnerId}
+            onSelectPartner={setSelectedPartnerId}
+            leadMcc={form.clienteMcc}
+            leadBusinessType={form.businessSubCategory}
+            leadTpv={lead?.tpvMensal}
+          />
+          <CardTaxasCartao rates={rates} onUpdateRates={updateRates} selectedBrand={selectedBrand} setSelectedBrand={setSelectedBrand} partner={selectedPartner} clientMcc={form.clienteMcc} />
           <CardAntecipacao form={form} onUpdate={updateForm} />
-          <CardOutrasTaxas rates={rates} onUpdateRates={updateRates} />
+          <CardOutrasTaxas rates={rates} onUpdateRates={updateRates} partner={selectedPartner} />
         </div>
 
-        {/* Right Column - Preview */}
+        {/* Right Column - Preview + Profitability */}
         <div className="w-[460px] bg-[#001a33] border-l border-white/5 flex flex-col">
-          <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex-1 overflow-y-auto p-6 space-y-5">
+            <ProfitabilityPanel
+              rates={rates}
+              form={form}
+              partner={selectedPartner}
+              leadTpv={lead?.tpvMensal}
+              leadTransacoes={lead?.transacoesMes}
+            />
             <PropostaPreview form={form} rates={rates} selectedBrand={selectedBrand} onBandeiraChange={setSelectedBrand} />
           </div>
         </div>

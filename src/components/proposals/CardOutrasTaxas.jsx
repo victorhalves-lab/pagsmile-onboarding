@@ -1,9 +1,10 @@
 import React from 'react';
 import { Label } from '@/components/ui/label';
-import { Check, Banknote } from 'lucide-react';
+import { Check, Banknote, AlertTriangle } from 'lucide-react';
 import TaxaInput from './TaxaInput';
+import { getFeeLimits } from '@/lib/partnerLimits';
 
-export default function CardOutrasTaxas({ rates, onUpdateRates }) {
+export default function CardOutrasTaxas({ rates, onUpdateRates, partner }) {
   const pixTipo = rates?.pix?.tipo || 'percentual';
   const updatePix = (field, value) => onUpdateRates({ ...rates, pix: { ...rates?.pix, [field]: value } });
   const updateField = (field, value) => onUpdateRates({ ...rates, [field]: value });
@@ -41,18 +42,43 @@ export default function CardOutrasTaxas({ rates, onUpdateRates }) {
 
       {/* Other fees grid */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1"><Label className={labelCls}>Fee por Transação</Label>
-          <TaxaInput value={rates?.feeTransacao || ''} onChange={(val) => updateField('feeTransacao', val)} placeholder="0,00" prefix="R$" isCurrency className={`${inputCls} text-right pl-10`} /></div>
-        <div className="space-y-1"><Label className={labelCls}>Taxa Boleto</Label>
-          <TaxaInput value={rates?.boleto || ''} onChange={(val) => updateField('boleto', val)} placeholder="0,00" prefix="R$" isCurrency className={`${inputCls} text-right pl-10`} /></div>
-        <div className="space-y-1"><Label className={labelCls}>Taxa de Antifraude</Label>
-          <TaxaInput value={rates?.antifraude || ''} onChange={(val) => updateField('antifraude', val)} placeholder="0,00" prefix="R$" isCurrency className={`${inputCls} text-right pl-10`} /></div>
-        <div className="space-y-1"><Label className={labelCls}>Alerta Pré-Chargeback</Label>
-          <TaxaInput value={rates?.alertaPreChargeback || ''} onChange={(val) => updateField('alertaPreChargeback', val)} placeholder="0,00" prefix="R$" isCurrency className={`${inputCls} text-right pl-10`} /></div>
-        <div className="space-y-1"><Label className={labelCls}>Custo 3DS</Label>
-          <TaxaInput value={rates?.taxa3ds || ''} onChange={(val) => updateField('taxa3ds', val)} placeholder="0,00" prefix="R$" isCurrency className={`${inputCls} text-right pl-10`} /></div>
-        <div className="space-y-1"><Label className={labelCls}>Valor de Setup</Label>
-          <TaxaInput value={rates?.setup || ''} onChange={(val) => updateField('setup', val)} placeholder="0,00" prefix="R$" isCurrency className={`${inputCls} text-right pl-10`} /></div>
+        {[
+          { label: 'Fee por Transação', key: 'feeTransacao', limitKey: 'feeTransacao' },
+          { label: 'Taxa Boleto', key: 'boleto', limitKey: null },
+          { label: 'Taxa de Antifraude', key: 'antifraude', limitKey: 'antifraude' },
+          { label: 'Alerta Pré-Chargeback', key: 'alertaPreChargeback', limitKey: null },
+          { label: 'Custo 3DS', key: 'taxa3ds', limitKey: 'taxa3ds' },
+          { label: 'Valor de Setup', key: 'setup', limitKey: null },
+        ].map(field => {
+          const limits = field.limitKey && partner ? getFeeLimits(partner, field.limitKey) : null;
+          const currentVal = parseFloat(String(rates?.[field.key] || '0').replace(/\./g, '').replace(',', '.')) || 0;
+          const hasViolation = limits && currentVal > 0 && currentVal < limits.minFee;
+          return (
+            <div key={field.key} className="space-y-1">
+              <Label className={labelCls}>{field.label}</Label>
+              <TaxaInput
+                value={rates?.[field.key] || ''}
+                onChange={(val) => updateField(field.key, val)}
+                placeholder="0,00" prefix="R$" isCurrency
+                className={`${inputCls} text-right pl-10 ${hasViolation ? 'border-red-400/50 ring-1 ring-red-400/30' : ''}`}
+              />
+              {limits && (
+                <div className="space-y-0.5">
+                  <p className="text-[8px] text-white/20">
+                    Mín. parceiro: R$ {limits.partnerFee.toFixed(2).replace('.', ',')}
+                    {limits.isTuna && ' (Tuna - sem restrição)'}
+                  </p>
+                  {hasViolation && (
+                    <div className="flex items-center gap-1 text-red-400">
+                      <AlertTriangle className="w-2.5 h-2.5" />
+                      <span className="text-[8px]">Abaixo do custo do parceiro</span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {/* TPV Mínimo */}

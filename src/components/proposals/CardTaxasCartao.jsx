@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Copy, CreditCard } from 'lucide-react';
+import { Copy, CreditCard, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import TaxaInput from './TaxaInput';
+import { getMDRLimits } from '@/lib/partnerLimits';
 
 const BANDEIRAS = [
   { id: 'mastercard', label: 'Master', color: '#EB001B', secondColor: '#F79E1B' },
@@ -31,7 +32,7 @@ function BrandLogo({ brand, isActive }) {
   );
 }
 
-export default function CardTaxasCartao({ rates, onUpdateRates, selectedBrand, setSelectedBrand }) {
+export default function CardTaxasCartao({ rates, onUpdateRates, selectedBrand, setSelectedBrand, partner, clientMcc }) {
   const [syncAll, setSyncAll] = useState(false);
   const taxas = rates.cartao || {};
 
@@ -78,21 +79,39 @@ export default function CardTaxasCartao({ rates, onUpdateRates, selectedBrand, s
 
       {/* Rate Inputs */}
       <div className="grid grid-cols-4 gap-3">
-        {FAIXAS_SPEC.map(f => (
-          <div key={f.id} className="space-y-2">
-            <div className="text-center">
-              <p className="text-[10px] text-[#2bc196]/70 font-semibold uppercase tracking-wider">{f.label}</p>
-              <p className="text-[9px] text-white/20">{f.sub}</p>
+        {FAIXAS_SPEC.map(f => {
+          const limits = partner ? getMDRLimits(partner, clientMcc, selectedBrand, f.id) : null;
+          const currentVal = parseFloat(String(taxas[selectedBrand]?.[f.id] || '0').replace(',', '.')) || 0;
+          const hasViolation = limits && currentVal > 0 && (currentVal < limits.taxaMin || currentVal > limits.taxaMax);
+          return (
+            <div key={f.id} className="space-y-2">
+              <div className="text-center">
+                <p className="text-[10px] text-[#2bc196]/70 font-semibold uppercase tracking-wider">{f.label}</p>
+                <p className="text-[9px] text-white/20">{f.sub}</p>
+              </div>
+              <TaxaInput
+                value={taxas[selectedBrand]?.[f.id] || ''}
+                onChange={(val) => updateTaxa(selectedBrand, f.id, val)}
+                placeholder="0,00"
+                suffix="%"
+                className={`${inputCls} ${hasViolation ? 'border-red-400/50 ring-1 ring-red-400/30' : ''}`}
+              />
+              {limits && (
+                <div className="text-center space-y-0.5">
+                  <p className="text-[8px] text-white/20">
+                    Min: {limits.taxaMin.toFixed(2).replace('.', ',')}% — Máx: {limits.taxaMax.toFixed(2).replace('.', ',')}%
+                  </p>
+                  {hasViolation && (
+                    <div className="flex items-center justify-center gap-1 text-red-400">
+                      <AlertTriangle className="w-2.5 h-2.5" />
+                      <span className="text-[8px]">{currentVal < limits.taxaMin ? 'Abaixo do mínimo' : 'Acima do máximo'}</span>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
-            <TaxaInput
-              value={taxas[selectedBrand]?.[f.id] || ''}
-              onChange={(val) => updateTaxa(selectedBrand, f.id, val)}
-              placeholder="0,00"
-              suffix="%"
-              className={inputCls}
-            />
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Actions */}
