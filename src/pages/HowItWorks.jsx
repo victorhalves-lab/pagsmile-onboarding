@@ -12,130 +12,20 @@ import {
   Hash, CalendarClock, MessageSquare, Scale,
   Inbox, Search, Download, Filter, ArrowUpDown, ExternalLink,
   Stamp, CreditCard, ShoppingCart, Cpu, Network, 
-  DollarSign, Phone, Star, Award
+  DollarSign, Phone, Star, Award, Handshake, UserPlus, Bot
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Section, FlowStep, FeatureCard, PageDetail } from '../components/howitworks/HowItWorksShared';
 import QuestionnaireSection from '../components/howitworks/QuestionnaireSection';
 import LeadsPropostasSection from '../components/howitworks/LeadsPropostasSection';
 import ContratosSection from '../components/howitworks/ContratosSection';
+import SidebarPagesSection from '../components/howitworks/SidebarPagesSection';
 
 export default function HowItWorks() {
   const [expandedSections, setExpandedSections] = useState({});
-
-  const toggleSection = (section) => {
-    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
-  };
-
-  const Section = ({ id, title, icon: Icon, children, badge, defaultOpen = false }) => {
-    const isOpen = expandedSections[id] ?? defaultOpen;
-    return (
-      <div className="border border-slate-200 rounded-2xl overflow-hidden bg-white mb-4 shadow-sm hover:shadow-md transition-shadow">
-        <button
-          onClick={() => toggleSection(id)}
-          className="w-full flex items-center justify-between p-5 hover:bg-slate-50/50 transition-colors"
-        >
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-[#2bc196]/10 rounded-xl">
-              <Icon className="w-5 h-5 text-[#2bc196]" />
-            </div>
-            <h2 className="text-lg font-bold text-[#002443]">{title}</h2>
-            {badge && <Badge variant="secondary" className="ml-2 text-xs">{badge}</Badge>}
-          </div>
-          {isOpen ? <ChevronDown className="w-5 h-5 text-slate-400" /> : <ChevronRight className="w-5 h-5 text-slate-400" />}
-        </button>
-        {isOpen && <div className="px-5 pb-5 pt-0 border-t border-slate-100">{children}</div>}
-      </div>
-    );
-  };
-
-  const FlowStep = ({ number, title, description, icon: Icon, details, color = "bg-[#2bc196]" }) => (
-    <div className="flex gap-4 items-start relative">
-      <div className={`flex-shrink-0 w-10 h-10 ${color} text-white rounded-full flex items-center justify-center font-bold text-sm shadow-md z-10`}>
-        {number}
-      </div>
-      <div className="flex-1 pb-8 border-l-2 border-dashed border-slate-200 pl-6 -ml-5 last:border-0 last:pb-0">
-        <div className="flex items-center gap-2 mb-1">
-          {Icon && <Icon className="w-4 h-4 text-[#2bc196]" />}
-          <h4 className="font-bold text-[#002443]">{title}</h4>
-        </div>
-        <p className="text-sm text-[#002443]/70 leading-relaxed">{description}</p>
-        {details && (
-          <div className="mt-2 pl-4 border-l-2 border-[#2bc196]/20 space-y-1">
-            {details.map((d, i) => (
-              <p key={i} className="text-xs text-[#002443]/60 flex items-start gap-1.5">
-                <CircleDot className="w-3 h-3 text-[#2bc196] mt-0.5 shrink-0" />
-                {d}
-              </p>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
-  const FeatureCard = ({ title, description, icon: Icon, items, color = "bg-[#002443]/5" }) => (
-    <Card className="h-full border-slate-200">
-      <CardHeader className="pb-3">
-        <div className="flex items-center gap-3">
-          <div className={`p-2 ${color} rounded-xl`}><Icon className="w-5 h-5 text-[#002443]" /></div>
-          <CardTitle className="text-base">{title}</CardTitle>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <CardDescription className="mb-3">{description}</CardDescription>
-        {items && (
-          <ul className="space-y-1.5">
-            {items.map((item, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm text-[#002443]/80">
-                <CheckCircle2 className="w-4 h-4 text-[#2bc196] mt-0.5 flex-shrink-0" />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </CardContent>
-    </Card>
-  );
-
-  const PageDetail = ({ name, description, access, funcionalidades, techDetails }) => (
-    <div className="border border-slate-200 rounded-xl p-5 hover:border-[#2bc196]/30 transition-colors">
-      <div className="flex items-start justify-between mb-3">
-        <div>
-          <h4 className="font-bold text-[#002443] text-base">{name}</h4>
-          <p className="text-sm text-[#002443]/60 mt-0.5">{description}</p>
-        </div>
-        <Badge className={access === 'Público' ? 'bg-blue-100 text-blue-700 border-0' : 'bg-[#002443] text-white border-0'} >
-          {access}
-        </Badge>
-      </div>
-      <div className="bg-slate-50 rounded-xl p-4 mb-3">
-        <h5 className="text-xs font-bold text-[#002443]/50 uppercase tracking-wider mb-2.5">Funcionalidades Detalhadas</h5>
-        <ul className="space-y-2">
-          {funcionalidades.map((f, j) => (
-            <li key={j} className="flex items-start gap-2 text-sm text-[#002443]/80">
-              <ArrowRight className="w-3.5 h-3.5 text-[#2bc196] mt-0.5 flex-shrink-0" />
-              <span>{f}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-      {techDetails && (
-        <div className="bg-[#002443]/5 rounded-xl p-4">
-          <h5 className="text-xs font-bold text-[#002443]/50 uppercase tracking-wider mb-2.5">Detalhes Técnicos</h5>
-          <ul className="space-y-1.5">
-            {techDetails.map((t, i) => (
-              <li key={i} className="text-xs text-[#002443]/60 flex items-start gap-1.5">
-                <Hash className="w-3 h-3 text-[#002443]/30 mt-0.5 shrink-0" />
-                {t}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </div>
-  );
+  const toggleSection = (section) => setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -147,39 +37,45 @@ export default function HowItWorks() {
           </div>
           <div>
             <h1 className="text-3xl font-extrabold text-[#002443]">How It Works</h1>
-            <p className="text-[#002443]/60 text-sm">Raio-X completo e microscópico de todo o sistema de Compliance, Onboarding, Leads, Propostas e Contratos da Pagsmile</p>
+            <p className="text-[#002443]/60 text-sm">Raio-X completo, microscópico e extremamente detalhado de todo o sistema Pagsmile — todas as páginas, todas as funcionalidades, todos os fluxos</p>
           </div>
         </div>
         <div className="flex flex-wrap gap-2 mt-4">
-          <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0">8 Módulos</Badge>
-          <Badge className="bg-blue-50 text-blue-700 border-0">30+ Páginas</Badge>
-          <Badge className="bg-purple-50 text-purple-700 border-0">22+ Entidades</Badge>
+          <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0">10+ Módulos</Badge>
+          <Badge className="bg-blue-50 text-blue-700 border-0">40+ Páginas</Badge>
+          <Badge className="bg-purple-50 text-purple-700 border-0">25+ Entidades</Badge>
           <Badge className="bg-orange-50 text-orange-700 border-0">9 Fluxos de Compliance</Badge>
-          <Badge className="bg-pink-50 text-pink-700 border-0">3 Integrações IA</Badge>
-          <Badge className="bg-red-50 text-red-700 border-0">3 Templates Compliance (Merchant/Gateway/Marketplace)</Badge>
+          <Badge className="bg-pink-50 text-pink-700 border-0">3 IAs (SENTINEL, PRISCILA, Lead Qualifier)</Badge>
+          <Badge className="bg-red-50 text-red-700 border-0">3 Templates Compliance</Badge>
           <Badge className="bg-cyan-50 text-cyan-700 border-0">305+ Perguntas</Badge>
-          <Badge className="bg-amber-50 text-amber-700 border-0">48 Documentos Obrigatórios</Badge>
+          <Badge className="bg-amber-50 text-amber-700 border-0">48 Documentos</Badge>
+          <Badge className="bg-emerald-50 text-emerald-700 border-0">20+ Backend Functions</Badge>
+          <Badge className="bg-violet-50 text-violet-700 border-0">3 Tipos de Proposta</Badge>
         </div>
       </div>
 
+      {/* ═══════════════════════════════════════════════════════ */}
       {/* 1. VISÃO ESTRATÉGICA */}
-      <Section id="visao" title="1. Visão Estratégica da Solução" icon={Target} defaultOpen={true}>
+      {/* ═══════════════════════════════════════════════════════ */}
+      <Section id="visao" title="1. Visão Estratégica da Solução" icon={Target} badge="Objetivo" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="space-y-6">
           <div className="bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl p-6 text-white">
             <h3 className="text-xl font-bold mb-3">Objetivo Principal</h3>
             <p className="text-white/90 leading-relaxed text-sm mb-4">
-              Simplificar e automatizar o ciclo completo de onboarding, compliance e gestão comercial para o setor financeiro de pagamentos,
+              Simplificar e automatizar o ciclo completo de onboarding, compliance, gestão comercial, propostas e contratos para o setor financeiro de pagamentos,
               garantindo conformidade regulatória (Resolução 3978 BACEN, normas PLD/FT), mitigação de riscos,
-              e agilidade na integração de novos merchants (clientes) através de questionários digitais diferenciados por tipo de negócio (Merchant, Gateway, Marketplace),
+              e agilidade na integração de novos merchants através de questionários digitais diferenciados por tipo de negócio,
               validações externas (CAF, BigDataCorp), verificação biométrica (Liveness + Facematch),
-              análise inteligente por IA (Helena/SENTINEL), gestão de propostas comerciais e contratos automatizados.
+              análise inteligente por 3 IAs (Helena/SENTINEL para compliance, PRISCILA para qualificação de leads, Lead Qualifier para maturidade),
+              gestão de propostas comerciais com 3 modalidades (Personalizada, Padrão por Segmento, PIX),
+              contratos automatizados e portal de Introducers.
             </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
-                { label: 'Leads & Qualificação', desc: 'Captação, questionários públicos, qualificação por IA PRISCILA e Lead Qualifier' },
-                { label: 'Pipeline Comercial', desc: 'Kanban drag-and-drop com 7 estágios, métricas de receita e conversão' },
-                { label: 'Propostas & Contratos', desc: 'Geração de propostas com taxas, aceite digital e contratos automatizados' },
-                { label: 'Compliance KYC/KYB', desc: '9 fluxos de compliance, 3 templates especializados, 305+ perguntas' },
+                { label: 'Leads & Qualificação', desc: 'Captação via 4 tipos de questionário, qualificação por IA PRISCILA e Lead Qualifier, pipeline Kanban' },
+                { label: 'Propostas (3 tipos)', desc: 'Personalizada, Padrão por Segmento (taxas fixas), PIX — com link público, aceite digital e versionamento' },
+                { label: 'Compliance KYC/KYB', desc: '9 fluxos, 3 templates, 305+ perguntas, IA SENTINEL em 3 fases, validações CAF + BigDataCorp' },
+                { label: 'Contratos & Introducers', desc: 'Contratos automatizados via IA, portal Introducer co-branded, subcontas/subsellers' },
               ].map((item, i) => (
                 <div key={i} className="bg-white/10 rounded-xl p-3">
                   <p className="text-xs font-bold text-[#5cf7cf]">{item.label}</p>
@@ -191,36 +87,47 @@ export default function HowItWorks() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <FeatureCard title="Eficiência Operacional" description="Redução de 80% no tempo de análise" icon={Zap}
-              items={["Automação via Regras de Compliance", "Análise automática IA SENTINEL em 3 fases", "Fluxos 100% digitais", "Templates reutilizáveis", "Links com UTM", "Pipeline Kanban com drag-and-drop", "Propostas e contratos automatizados"]} />
+              items={["Automação via Regras de Compliance", "IA SENTINEL 3 fases", "Fluxos 100% digitais", "Auto-preenchimento de taxas por segmento", "Pipeline Kanban drag-and-drop", "Propostas com link público + aceite", "Contratos pré-gerados por IA"]} />
             <FeatureCard title="Mitigação de Riscos" description="Identificação proativa de ameaças" icon={Shield}
-              items={["CAF: Liveness, Facematch, OCR", "BigDataCorp: KYC empresa, sócios, PEP, sanções", "Scores de risco 0-1000 em 3 fases", "Red flags e alertas automáticos", "Regras personalizáveis de compliance", "3 templates com risk weights diferenciados", "Limiares customizáveis por template"]} />
-            <FeatureCard title="Conformidade Regulatória" description="Alinhamento total com regulações" icon={CheckCircle2}
-              items={["Questionários PLD/FT completos (3978 BACEN)", "Auditoria de 100% das ações (AuditLog)", "Revalidações periódicas programáveis", "Identificação de UBO (Beneficiário Final)", "Listas restritivas (OFAC/ONU/PEP)", "Due Diligence de sub-merchants/sellers", "Cláusulas de compliance em contratos"]} />
-            <FeatureCard title="Visibilidade Total" description="Controle completo para gestores" icon={BarChart3}
-              items={["Dashboard com 12+ KPIs em tempo real", "Funil de conversão completo", "Pipeline com métricas de receita", "Analytics por link de onboarding", "Distribuição de risco por faixa", "Métricas de propostas e contratos", "Exportação CSV de dados"]} />
+              items={["CAF: Liveness, Facematch, OCR", "BigDataCorp: KYC empresa/sócios/PEP", "Scores 0-1000 em 3 fases", "Red flags e alertas automáticos", "3 templates com risk weights", "Validação de limites de taxa vs custo", "Revalidação periódica programável"]} />
+            <FeatureCard title="Conformidade Regulatória" description="100% alinhado com regulações" icon={CheckCircle2}
+              items={["Questionários PLD/FT (3978 BACEN)", "Auditoria 100% (AuditLog)", "Revalidações periódicas", "Identificação de UBO", "Listas restritivas (OFAC/ONU/PEP)", "Due Diligence de sub-merchants", "Cláusulas compliance em contratos"]} />
+            <FeatureCard title="Visibilidade Total" description="20+ KPIs em tempo real" icon={BarChart3}
+              items={["Dashboard Compliance 20+ KPIs", "Home com visão 360°", "Pipeline com métricas de receita", "Analytics por link", "Distribuição de risco", "Score Distribution 0-1000", "Exportação CSV"]} />
           </div>
         </div>
       </Section>
 
-      {/* 2. MÓDULO LEADS & PROPOSTAS */}
-      <Section id="leads" title="2. Módulo: Leads & Propostas" icon={Inbox} badge="6 Funcionalidades">
+      {/* ═══════════════════════════════════════════════════════ */}
+      {/* 2. MAPA COMPLETO DE TODAS AS PÁGINAS */}
+      {/* ═══════════════════════════════════════════════════════ */}
+      <Section id="paginas" title="2. Mapa Completo de Todas as Páginas — Detalhe Microscópico" icon={Layers} badge="40+ Páginas" expandedSections={expandedSections} toggleSection={toggleSection}>
+        <SidebarPagesSection />
+      </Section>
+
+      {/* ═══════════════════════════════════════════════════════ */}
+      {/* 3. MÓDULO LEADS & PROPOSTAS */}
+      {/* ═══════════════════════════════════════════════════════ */}
+      <Section id="leads" title="3. Módulo: Leads & Propostas — Fluxos" icon={Inbox} badge="Jornada Completa" expandedSections={expandedSections} toggleSection={toggleSection}>
         <LeadsPropostasSection />
       </Section>
 
-      {/* 3. MÓDULO CONTRATOS */}
-      <Section id="contratos" title="3. Módulo: Contratos" icon={Stamp} badge="Geração Automática">
+      {/* ═══════════════════════════════════════════════════════ */}
+      {/* 4. MÓDULO CONTRATOS */}
+      {/* ═══════════════════════════════════════════════════════ */}
+      <Section id="contratos" title="4. Módulo: Contratos" icon={Stamp} badge="Geração Automática" expandedSections={expandedSections} toggleSection={toggleSection}>
         <ContratosSection />
       </Section>
 
-      {/* 4. QUESTIONÁRIOS DE COMPLIANCE — RAIO X MICROSCÓPICO */}
-      <Section id="questionarios" title="4. Questionários de Compliance — Raio-X Microscópico" icon={ClipboardList} badge="Merchant • Gateway • Marketplace">
+      {/* ═══════════════════════════════════════════════════════ */}
+      {/* 5. QUESTIONÁRIOS DE COMPLIANCE */}
+      {/* ═══════════════════════════════════════════════════════ */}
+      <Section id="questionarios" title="5. Questionários de Compliance — Raio-X Microscópico" icon={ClipboardList} badge="3 Templates" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="space-y-4">
           <div className="bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl p-5 text-white">
-            <h3 className="text-lg font-bold mb-2">3 Templates Especializados de Compliance</h3>
+            <h3 className="text-lg font-bold mb-2">3 Templates Especializados</h3>
             <p className="text-white/80 text-sm leading-relaxed mb-3">
-              Cada template foi desenhado para o perfil de risco específico do tipo de negócio. Compartilham as Seções A–J (tronco comum)
-              e se diferenciam nas seções finais: Merchant tem a Seção K de Governança/Perfil Operacional; Gateway adiciona Due Diligence de Sub-Merchants,
-              Segurança de Cartão e Perfil Transacional expandido; Marketplace adiciona Onboarding de Sellers, Contratos, Monitoramento contínuo e Perfil Transacional.
+              Cada template foi desenhado para o perfil de risco específico do tipo de negócio. Compartilham as Seções A–J (tronco comum) e se diferenciam nas seções finais.
             </p>
             <div className="grid grid-cols-3 gap-3">
               <div className="bg-white/10 rounded-xl p-3 text-center">
@@ -244,264 +151,97 @@ export default function HowItWorks() {
         </div>
       </Section>
 
-      {/* 5. FLUXOS COMPLETOS */}
-      <Section id="fluxos" title="5. Fluxos Completos da Aplicação" icon={Workflow} badge="9 Variantes">
+      {/* ═══════════════════════════════════════════════════════ */}
+      {/* 6. FLUXOS COMPLETOS */}
+      {/* ═══════════════════════════════════════════════════════ */}
+      <Section id="fluxos" title="6. Fluxos Completos da Aplicação" icon={Workflow} badge="9 Variantes + 3 Jornadas" expandedSections={expandedSections} toggleSection={toggleSection}>
         <Tabs defaultValue="merchant_flow" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-6">
-            <TabsTrigger value="merchant_flow">Jornada do Merchant</TabsTrigger>
-            <TabsTrigger value="interno">Jornada Interna</TabsTrigger>
-            <TabsTrigger value="ia">Fluxo da IA SENTINEL</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 mb-6">
+            <TabsTrigger value="merchant_flow">Merchant</TabsTrigger>
+            <TabsTrigger value="comercial">Comercial</TabsTrigger>
+            <TabsTrigger value="interno">Compliance</TabsTrigger>
+            <TabsTrigger value="ia">IA SENTINEL</TabsTrigger>
           </TabsList>
 
           <TabsContent value="merchant_flow">
-            <div className="space-y-6">
-              <div className="bg-blue-50 rounded-2xl p-6 border border-blue-100">
-                <h3 className="font-bold text-[#002443] mb-1 flex items-center gap-2">
-                  <Globe className="w-5 h-5 text-blue-600" />
-                  Jornada Completa do Merchant — Onboarding Público
-                </h3>
-                <p className="text-sm text-[#002443]/60 mb-6">Fluxo end-to-end desde o recebimento do link até a conclusão. Existem 9 variantes: PIX, Full KYC, Lite, E-commerce, SaaS, Genérico + 3 novos templates especializados (Merchant, Gateway, Marketplace).</p>
-                
-                <div className="space-y-1">
-                  <FlowStep number="1" title="Recebimento do Link de Onboarding" icon={LinkIcon}
-                    description="O merchant recebe um link exclusivo gerado pelo time comercial, contendo código único, tipo de compliance, template de questionário, e parâmetros UTM para rastreamento de origem."
-                    details={[
-                      "Formato: /ComplianceOnboardingStart?ref=<uniqueCode>",
-                      "O código é armazenado em localStorage para vincular ao caso",
-                      "Cada link possui métricas: cliques, submissões, conversões",
-                      "Links podem ter data de expiração configurável",
-                      "O campo complianceType determina qual fluxo o merchant seguirá",
-                      "Tipos: PIX, FULL, LITE, ECOMMERCE, SAAS, GENERIC",
-                      "Templates especializados: Merchant (venda direta), Gateway (sub-merchants), Marketplace (sellers)"
-                    ]} />
-                  <FlowStep number="2" title="Seleção do Fluxo — ComplianceOnboardingStart" icon={MonitorSmartphone}
-                    description="Página inicial onde o merchant visualiza as opções disponíveis e é direcionado ao questionário correspondente ao seu tipo de negócio."
-                    details={[
-                      "PIX → CompliancePixOnly (13 steps, foco essencial)",
-                      "FULL → ComplianceFullKYC (19+ steps, completo)",
-                      "LITE → ComplianceLite (12 steps, intermediário)",
-                      "SaaS → ComplianceSaaS (~10 steps, acelerado)",
-                      "E-commerce → ComplianceEcommerce (14 steps, e-commerce)",
-                      "Merchant → ComplianceMerchant (12 seções, 84 perguntas, venda direta)",
-                      "Gateway → ComplianceGateway (12+ seções, 111 perguntas, sub-merchants)",
-                      "Marketplace → ComplianceMarketplace (12+ seções, 110 perguntas, sellers)",
-                      "GENERIC → merchant escolhe entre as opções",
-                      "Analytics de 'link_click' e 'page_view' registrados automaticamente"
-                    ]} />
-                  <FlowStep number="3" title="Preenchimento do Questionário Dinâmico" icon={ClipboardList}
-                    description="Questionário multi-step com perguntas carregadas dinamicamente do template. Cada fluxo tem seções específicas com lógica condicional, risk weights e validações. Progresso salvo automaticamente."
-                    details={[
-                      "Componente DynamicQuestionnaire renderiza perguntas por step/seção",
-                      "10 tipos de campo: TEXT, NUMBER, DATE, SELECT, MULTI_SELECT, FILE_UPLOAD, BOOLEAN, EMAIL, PHONE, CPF_CNPJ",
-                      "Lógica condicional: perguntas dependem de respostas anteriores (dependsOn + operator + value)",
-                      "Risk weights por pergunta (0-50 pts) para cálculo de score",
-                      "Risk values por opção SELECT para scoring granular",
-                      "Seções comuns A-J: Cadastral, Atividade, UBO, Representante, PLD, Sanções, Licenças, Histórico, KYC, Monitoramento",
-                      "Seções diferenciadas: K (Merchant: Governança), K (Gateway: Sub-Merchants+PCI), K/M (Marketplace: Sellers+Monitoramento)",
-                      "PARTE IV: Declarações formais + dados do responsável pelo preenchimento",
-                      "Progresso salvo em localStorage a cada mudança de step",
-                      "Analytics de 'page_complete' registrado por step"
-                    ]} />
-                  <FlowStep number="4" title="Upload de Documentos" icon={FileUp}
-                    description="Após o questionário, upload dos documentos obrigatórios definidos no template. Quantidade varia: Merchant (13), Gateway (19), Marketplace (16)."
-                    details={[
-                      "Docs definidos em 'requiredDocuments' do QuestionnaireTemplate",
-                      "Obrigatórios comuns: RG/CNH, Selfie+CAF, Comprovante Endereço, CNPJ, Contrato Social, Balanço, DRE, Balancete, Política PLD, Política KYC",
-                      "Gateway adiciona: PCI DSS, Contrato sub-merchants, Política onboarding sub-merchants, Amostra base, Política fraudes, Organograma",
-                      "Marketplace adiciona: Contrato sellers, Política onboarding sellers, Amostra base sellers",
-                      "Formatos: PDF, JPG, JPEG, PNG (10MB max por arquivo)",
-                      "Upload via Core.UploadFile com barra de progresso",
-                      "Ao submeter: cria Merchant + OnboardingCase + QuestionnaireResponses + DocumentUploads"
-                    ]} />
-                  <FlowStep number="5" title="Verificação de Identidade (Liveness + Facematch)" icon={ScanFace}
-                    description="Modal de verificação biométrica com 7 estágios: welcome → instruções → scanning (3s) → selfie → documento → processing (3.5s) → completed."
-                    details={[
-                      "Modal IdentityVerificationModal gera link com sessionId único",
-                      "LivenessSimulation com 7 stages com animações e auto-avanço",
-                      "Prova de vida ativa com scan facial animado",
-                      "Comparação 1:1 selfie vs. documento (Facematch)",
-                      "Comunicação via window.postMessage entre janelas",
-                      "Em produção: integração real com CAF /v1/liveness e /v1/facematch"
-                    ]} />
-                  <FlowStep number="6" title="Conclusão — OnboardingCompletion" icon={CheckCircle2}
-                    description="Confirmação de envio, próximos passos e prazo estimado. O caso entra na fila de análise do time de compliance."
-                    details={[
-                      "Próximos Passos: Análise em Andamento, Notificação por E-mail, Prazo 3 dias úteis",
-                      "Analytics de 'onboarding_complete' registrado",
-                      "OnboardingCase fica com status 'Pendente' aguardando análise IA SENTINEL"
-                    ]} />
-                </div>
+            <div className="bg-blue-50 rounded-2xl p-6 border border-blue-100">
+              <h3 className="font-bold text-[#002443] mb-1 flex items-center gap-2"><Globe className="w-5 h-5 text-blue-600" /> Jornada do Merchant — Onboarding Público</h3>
+              <p className="text-sm text-[#002443]/60 mb-6">9 variantes de compliance + questionário de lead</p>
+              <div className="space-y-1">
+                <FlowStep number="1" title="Recebimento do Link" icon={LinkIcon} description="Link exclusivo com código único, tipo de compliance e UTMs." details={["Formato: /ComplianceOnboardingStart?ref=CODE", "Link trackado em OnboardingLink com métricas", "9 tipos de compliance: PIX, Full, Lite, E-commerce, SaaS, Merchant, Gateway, Marketplace, Genérico"]} />
+                <FlowStep number="2" title="Questionário Dinâmico" icon={ClipboardList} description="Multi-step com perguntas carregadas do template, auto-save, validação e risk weights." details={["10 tipos de campo: TEXT, NUMBER, DATE, SELECT, MULTI_SELECT, FILE_UPLOAD, BOOLEAN, EMAIL, PHONE, CPF_CNPJ", "Lógica condicional por resposta anterior", "Progresso salvo automaticamente a cada step", "Analytics de page_complete registrado"]} />
+                <FlowStep number="3" title="Upload de Documentos" icon={FileUp} description="Documentos obrigatórios definidos no template (13-19 docs dependendo do tipo)." details={["Formatos: PDF, JPG, JPEG, PNG (10MB max)", "Upload com barra de progresso", "Merchant: 13 docs, Gateway: 19 docs, Marketplace: 16 docs"]} />
+                <FlowStep number="4" title="Verificação Biométrica" icon={ScanFace} description="Liveness + Facematch com 7 estágios." details={["Welcome → Instruções → Scanning → Selfie → Documento → Processing → Completed", "Integração CAF para liveness e facematch"]} />
+                <FlowStep number="5" title="Conclusão" icon={CheckCircle2} description="Confirmação de envio. Caso entra na fila de análise SENTINEL." />
               </div>
+            </div>
+          </TabsContent>
 
-              {/* Variantes */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {[
-                  { name: "PIX Only", badge: "bg-blue-100 text-blue-700", steps: "13 steps", docs: "~4 docs", desc: "Habilitação Pix. Dados básicos, atividade, PLD essencial." },
-                  { name: "Full KYC", badge: "bg-purple-100 text-purple-700", steps: "19+ steps", docs: "12+ docs", desc: "KYC completo: UBO, sócios, licenciamento, marketplace, segurança cartão, PLD avançado." },
-                  { name: "Lite", badge: "bg-teal-100 text-teal-700", steps: "12 steps", docs: "~6 docs", desc: "Intermediário: modelo negócio, estrutura societária, compliance, riscos." },
-                  { name: "E-commerce", badge: "bg-orange-100 text-orange-700", steps: "14 steps", docs: "~8 docs", desc: "Módulos marketplace, internacional, recorrência, disputas." },
-                  { name: "SaaS Fast Track", badge: "bg-violet-100 text-violet-700", steps: "~10 steps", docs: "~4 docs", desc: "Acelerado para plataformas SaaS." },
-                  { name: "Genérico", badge: "bg-slate-100 text-slate-700", steps: "Variável", docs: "Variável", desc: "Merchant escolhe entre opções. Templates customizados." },
-                  { name: "Merchant (Novo)", badge: "bg-blue-100 text-blue-800", steps: "12 seções", docs: "13 docs", desc: "Venda Direta. 84 perguntas. Risco BAIXO. Limiares 30/80." },
-                  { name: "Gateway (Novo)", badge: "bg-red-100 text-red-800", steps: "12+ seções", docs: "19 docs", desc: "Sub-merchants. 111 perguntas. Risco ALTO. Limiares 40/85. PCI DSS." },
-                  { name: "Marketplace (Novo)", badge: "bg-amber-100 text-amber-800", steps: "12+ seções", docs: "16 docs", desc: "Sellers. 110 perguntas. Risco MÉDIO. Limiares 35/80. Monitoramento contínuo." },
-                ].map((v, i) => (
-                  <Card key={i} className="border-slate-200">
-                    <CardContent className="pt-5">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Badge className={`${v.badge} border-0`}>{v.name}</Badge>
-                        <span className="text-xs text-[#002443]/50">{v.steps} • {v.docs}</span>
-                      </div>
-                      <p className="text-xs text-[#002443]/70 leading-relaxed">{v.desc}</p>
-                    </CardContent>
-                  </Card>
-                ))}
+          <TabsContent value="comercial">
+            <div className="bg-green-50 rounded-2xl p-6 border border-green-100">
+              <h3 className="font-bold text-[#002443] mb-1 flex items-center gap-2"><DollarSign className="w-5 h-5 text-green-600" /> Jornada Comercial — Lead até Contrato</h3>
+              <p className="text-sm text-[#002443]/60 mb-6">Fluxo completo desde a captação do lead até a assinatura do contrato</p>
+              <div className="space-y-1">
+                <FlowStep number="1" title="Captação do Lead" icon={Inbox} color="bg-green-600" description="Lead preenche questionário público (4 variantes: Completo v2.0, Completo v1, Simplificado, PIX)." details={["Autocomplete CNPJ na v2.0 preenche 14 campos", "Cria Lead + LeadActivity automaticamente", "Dispara análise PRISCILA e Lead Qualifier por IA"]} />
+                <FlowStep number="2" title="Qualificação IA" icon={Brain} color="bg-green-600" description="PRISCILA: score 0-100, risco, decisão. Lead Qualifier: maturidade (EXCELENTE → INSUFICIENTE)." details={["Score de qualidade, nível de risco, caminho de decisão", "Classificação: AUTO_APROVAR, AUTO_COM_FLAG, REVISÃO, REJEITAR", "Sugestões da IA para o time de vendas"]} />
+                <FlowStep number="3" title="Pipeline Kanban" icon={BarChart3} color="bg-green-600" description="Lead aparece no Pipeline Comercial (7 colunas). Time arrasta entre colunas." details={["Colunas: Leads, Em Contato, Proposta Enviada, Aceita, Compliance, Contrato, Perdido", "Métricas de TPV e receita por coluna", "Aging alerts para leads parados"]} />
+                <FlowStep number="4" title="Proposta Comercial" icon={FileText} color="bg-green-600" description="Time cria proposta com taxas por bandeira, antecipação, fees. 3 modalidades disponíveis." details={["Personalizada: taxas editáveis por bandeira/faixa + preview em tempo real", "Padrão por Segmento: taxas fixas auto-preenchidas (readOnly), dados empresa + segmento", "PIX: proposta específica para PIX com taxa % ou fixa", "Link público com token para o cliente visualizar/aceitar/recusar"]} />
+                <FlowStep number="5" title="Aceite e Compliance" icon={Shield} color="bg-green-600" description="Cliente aceita proposta → status muda → inicia fluxo de compliance." details={["Proposta muda para 'aceita', lead muda para 'proposta_aceita'", "Template de compliance selecionado automaticamente", "Sessões anteriores de compliance são limpas"]} />
+                <FlowStep number="6" title="Contrato" icon={Stamp} color="bg-green-600" description="Após compliance aprovado, contrato é pré-gerado por IA com dados do lead + proposta." details={["IA preenche todos os campos possíveis automaticamente", "Time revisa e complementa campos faltantes", "Link público para assinatura digital pelo cliente"]} />
               </div>
             </div>
           </TabsContent>
 
           <TabsContent value="interno">
             <div className="bg-[#002443]/5 rounded-2xl p-6 border border-[#002443]/10">
-              <h3 className="font-bold text-[#002443] mb-1 flex items-center gap-2">
-                <Shield className="w-5 h-5 text-[#002443]" />
-                Jornada Completa do Time Interno — Gestão de Compliance
-              </h3>
-              <p className="text-sm text-[#002443]/60 mb-6">Fluxo do analista desde a geração do link até a decisão final e revalidação.</p>
-              
+              <h3 className="font-bold text-[#002443] mb-1 flex items-center gap-2"><Shield className="w-5 h-5 text-[#002443]" /> Jornada do Time de Compliance</h3>
+              <p className="text-sm text-[#002443]/60 mb-6">Desde a geração do link até a decisão final e revalidação</p>
               <div className="space-y-1">
-                <FlowStep number="1" title="Geração de Links (GerarLinkOnboarding + LinksCompliance + LinksQuestionariosLeads)" icon={LinkIcon} color="bg-[#002443]"
-                  description="O time gera links personalizados para cada merchant/lead com template, tipo de compliance, UTMs e agente comercial."
-                  details={[
-                    "3 páginas de gestão de links: Leads, Compliance e Onboarding geral",
-                    "Quick links por tipo de compliance (PIX, FULL, LITE, etc.)",
-                    "Quick links por template especializado (Merchant, Gateway, Marketplace)",
-                    "Métricas por link: cliques, submissões, conversões, taxa",
-                    "Dashboard de analytics por link individual",
-                    "Histórico completo com filtros e busca"
-                  ]} />
-                <FlowStep number="2" title="Monitoramento via Dashboard (AdminDashboard + Home)" icon={BarChart3} color="bg-[#002443]"
-                  description="Acompanhamento em tempo real de KPIs, gráficos e métricas de compliance, leads e propostas."
-                  details={[
-                    "Dashboard Compliance: 12+ KPI cards, Funil de Conversão, Pizza Helena, Tendência, Distribuição Score",
-                    "Home: Resumo de Compliance, Pipeline Comercial, Status de Propostas, Ações Rápidas, Atividade Recente",
-                    "Helena Insights: alertas e recomendações automáticas",
-                    "Distribuição de Risco: Baixo/Médio/Alto/Crítico",
-                    "Tabela de casos com busca, filtros, ordenação, exportação CSV"
-                  ]} />
-                <FlowStep number="3" title="Análise Automática IA SENTINEL" icon={Brain} color="bg-[#002443]"
-                  description="Quando um questionário é submetido, o agente SENTINEL analisa automaticamente em 3 fases."
-                  details={[
-                    "Fase 1 — Questionário: score_questionario (0-1000), findings por seção, quality assessments",
-                    "Fase 2 — Validações Externas: score_validacao_externa (0-1000), cruzamento CAF + BigDataCorp",
-                    "Fase 3 — Consolidação: score_geral_composto + bônus consistência + overrides + decisão final",
-                    "Recomendações: Aprovado, Aprovado com Condições, Revisão Manual, Recusado",
-                    "Findings: INFO/LOW/MEDIUM/HIGH/CRITICAL/BLOQUEANTE com evidência e dedução de pontos",
-                    "Quality Assessments: especificidade, coerência, profundidade, linguagem (1-5 cada)"
-                  ]} />
-                <FlowStep number="4" title="Revisão (QuestionariosRecebidos → AnaliseDeCasos)" icon={FileSearch} color="bg-[#002443]"
-                  description="Lista filtrável de todos os casos com navegação para análise detalhada por caso."
-                  details={[
-                    "Tabela com 10 colunas: Merchant, Modelo, Status, Score F1/F2/Final, Tempo Fila, Analista, Data, Ações",
-                    "7 filtros simultâneos + busca + ordenação + paginação (15/página)",
-                    "Exportação CSV",
-                    "Análise Detalhada: dados merchant, respostas, docs, painel IA, validações externas, auditoria",
-                    "Botões: Aprovar, Recusar, Solicitar Docs"
-                  ]} />
-                <FlowStep number="5" title="Gestão Comercial (PipelineComercial + Propostas + Contratos)" icon={DollarSign} color="bg-[#002443]"
-                  description="Pipeline Kanban, criação de propostas e geração de contratos integrados."
-                  details={[
-                    "Pipeline: 7 colunas, drag-and-drop, métricas TPV e receita por coluna",
-                    "Propostas: taxas por bandeira, antecipação, validade, link público, aceite/recusa",
-                    "Contratos: geração automática, cláusulas, módulos, SLAs, preços, assinatura digital"
-                  ]} />
-                <FlowStep number="6" title="Revalidação Periódica (GestaoRevalidacao)" icon={RefreshCw} color="bg-[#002443]"
-                  description="Ciclo de recertificação de merchants aprovados com agendamento configurável."
-                  details={[
-                    "Tipos: periódica, baseada em risco, regulatória, manual",
-                    "Frequências: mensal, trimestral, semestral, anual",
-                    "Alertas de revalidações atrasadas"
-                  ]} />
+                <FlowStep number="1" title="Geração de Links" icon={LinkIcon} color="bg-[#002443]" description="3 páginas de links (Leads, Compliance, Onboarding) com quick links por tipo e template." />
+                <FlowStep number="2" title="Dashboard 20+ KPIs" icon={BarChart3} color="bg-[#002443]" description="Dashboard Compliance com gráficos de funil, pizza Helena, tendência, distribuição de scores, risk cards." />
+                <FlowStep number="3" title="Análise IA SENTINEL" icon={Brain} color="bg-[#002443]" description="Análise automática em 3 fases (Questionário, Validações Externas, Consolidação)." />
+                <FlowStep number="4" title="Revisão Manual" icon={FileSearch} color="bg-[#002443]" description="AnaliseDeCasos com: dados merchant, respostas, docs, painel IA, validações, auditoria. Botões: Aprovar, Recusar, Solicitar Docs." />
+                <FlowStep number="5" title="Revalidação" icon={RefreshCw} color="bg-[#002443]" description="Ciclo de recertificação: periódica, baseada em risco, regulatória ou manual." />
               </div>
             </div>
           </TabsContent>
 
           <TabsContent value="ia">
-            <div className="space-y-6">
-              <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-2xl p-6 border border-purple-100">
-                <h3 className="font-bold text-[#002443] mb-2 flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-purple-500" />
-                  Fluxo de Análise da IA SENTINEL — 3 Fases
-                </h3>
-                <p className="text-sm text-[#002443]/60 mb-6">Cada caso passa por análise automatizada em 3 fases com scores independentes e recomendação consolidada.</p>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-2xl p-6 border border-purple-100">
+              <h3 className="font-bold text-[#002443] mb-2 flex items-center gap-2"><Sparkles className="w-5 h-5 text-purple-500" /> IA SENTINEL — 3 Fases</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                {[
+                  { phase: "1", title: "Questionário", color: "purple", items: ["Analisa respostas", "Qualidade textual", "Padrões evasivos", "Findings por seção", "Score 0-1000"] },
+                  { phase: "2", title: "Validações Externas", color: "blue", items: ["CAF: Liveness/Facematch", "BigDataCorp: KYC/PEP/Sanções", "Cruzamento declarado vs externo", "Divergências > 50%", "Score 0-1000"] },
+                  { phase: "3", title: "Consolidação", color: "green", items: ["Combina scores", "Bônus consistência", "Overrides red flags", "Decisão final", "Parecer + relatório"] }
+                ].map((phase, i) => (
+                  <div key={i} className="bg-white rounded-xl p-5 border border-slate-200">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className={`w-8 h-8 bg-${phase.color}-500 text-white rounded-full flex items-center justify-center font-bold text-sm`}>{phase.phase}</div>
+                      <h4 className="font-bold text-[#002443]">Fase {phase.phase}: {phase.title}</h4>
+                    </div>
+                    <ul className="space-y-1.5">
+                      {phase.items.map((item, j) => (
+                        <li key={j} className="text-xs text-[#002443]/70 flex items-start gap-1.5"><CircleDot className="w-3 h-3 text-[#2bc196] mt-0.5 shrink-0" />{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+              <div className="bg-white rounded-xl p-5 border border-slate-200">
+                <h4 className="font-bold text-[#002443] mb-3">Entidades Geradas pela IA</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {[
-                    { phase: "1", title: "Questionário", color: "purple", border: "border-purple-200", bg: "bg-white",
-                      score: "score_questionario (0-1000)", items: [
-                        "Analisa todas as respostas do questionário",
-                        "Avalia qualidade textual (especificidade, coerência, profundidade, linguagem)",
-                        "Detecta padrões evasivos",
-                        "Identifica findings por seção com severidade",
-                        "Calcula dedução de pontos por finding",
-                        "Gera Quality Assessments por campo textual",
-                        "Considera risk weights e risk values das perguntas"
-                      ]},
-                    { phase: "2", title: "Validações Externas", color: "blue", border: "border-blue-200", bg: "bg-white",
-                      score: "score_validacao_externa (0-1000)", items: [
-                        "Cruza resultados CAF: Liveness, Facematch, OCR",
-                        "Cruza resultados BigDataCorp: KYC empresa, sócios, faturamento",
-                        "Compara dados declarados vs. dados externos",
-                        "Verifica listas restritivas (OFAC, ONU, PEP)",
-                        "Verifica processos judiciais e dívidas",
-                        "Valida CNAE/MCC",
-                        "Detecta divergências significativas (> 50%)"
-                      ]},
-                    { phase: "3", title: "Consolidação", color: "green", border: "border-green-200", bg: "bg-white",
-                      score: "score_geral_composto + Decisão", items: [
-                        "Combina scores das 2 fases",
-                        "Aplica bônus de consistência",
-                        "Aplica overrides para red flags críticos",
-                        "Calcula score final consolidado",
-                        "Classifica risco geral",
-                        "Emite recomendação final",
-                        "Gera parecer e relatório completo"
-                      ]}
-                  ].map((phase, i) => (
-                    <div key={i} className={`${phase.bg} rounded-xl p-5 ${phase.border} border`}>
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className={`w-8 h-8 bg-${phase.color}-500 text-white rounded-full flex items-center justify-center font-bold text-sm`}>{phase.phase}</div>
-                        <h4 className="font-bold text-[#002443]">Fase {phase.phase}: {phase.title}</h4>
-                      </div>
-                      <div className={`text-xs bg-${phase.color}-100 text-${phase.color}-700 px-3 py-1.5 rounded-lg inline-block mb-3 font-mono`}>
-                        → {phase.score}
-                      </div>
-                      <ul className="space-y-1.5">
-                        {phase.items.map((item, j) => (
-                          <li key={j} className="text-xs text-[#002443]/70 flex items-start gap-1.5">
-                            <CircleDot className="w-3 h-3 text-[#2bc196] mt-0.5 shrink-0" />
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
+                    { entity: "ComplianceScore", desc: "Score consolidado 3 fases, classificações, recomendação, sumário, red flags, confiança 0-100" },
+                    { entity: "ComplianceFinding", desc: "Cada problema: severidade (INFO/LOW/MEDIUM/HIGH/CRITICAL/BLOQUEANTE), evidência, dedução" },
+                    { entity: "QualityAssessment", desc: "Qualidade textual: especificidade, coerência, profundidade, linguagem (1-5 cada)" },
+                    { entity: "HelenaAnalysis", desc: "Execução IA: score 0-100, decisão, breakdown, fatores, red flags, feedback analista" },
+                  ].map((e, i) => (
+                    <div key={i} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg">
+                      <Badge className="bg-purple-100 text-purple-700 font-mono text-xs border-0 shrink-0">{e.entity}</Badge>
+                      <p className="text-xs text-[#002443]/70">{e.desc}</p>
                     </div>
                   ))}
-                </div>
-
-                <div className="bg-white rounded-xl p-5 border border-slate-200">
-                  <h4 className="font-bold text-[#002443] mb-3">Entidades Geradas pela IA</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {[
-                      { entity: "ComplianceScore", desc: "Score consolidado 3 fases, classificações, recomendação, sumário executivo, pontos +/-, red flags, análise completa, confiança" },
-                      { entity: "ComplianceFinding", desc: "Cada problema: título, severidade (6 níveis), fase, seção, evidência, dedução, recomendação" },
-                      { entity: "QualityAssessment", desc: "Qualidade textual: scores 1-5 em especificidade, coerência, profundidade, linguagem, padrões evasivos" },
-                      { entity: "HelenaAnalysis", desc: "Execução IA: score 0-100, decisão, justificativa, breakdown, fatores, red flags, fontes, feedback analista" },
-                    ].map((e, i) => (
-                      <div key={i} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg">
-                        <Badge className="bg-purple-100 text-purple-700 font-mono text-xs border-0 shrink-0">{e.entity}</Badge>
-                        <p className="text-xs text-[#002443]/70">{e.desc}</p>
-                      </div>
-                    ))}
-                  </div>
                 </div>
               </div>
             </div>
@@ -509,97 +249,65 @@ export default function HowItWorks() {
         </Tabs>
       </Section>
 
-      {/* 6. PERSONAS */}
-      <Section id="personas" title="6. Personas e Jornadas" icon={Users} badge="3 Personas">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {[
-            { icon: Building2, color: "bg-[#2bc196]", name: "Merchant (Cliente Externo)", desc: "Empresa que deseja se credenciar", 
-              pages: ["ComplianceOnboardingStart", "CompliancePixOnly/FullKYC/Lite/SaaS/Ecommerce", "ComplianceMerchant/Gateway/Marketplace", "DocumentUpload (5 variantes)", "LivenessSimulation", "OnboardingCompletion", "LeadQuestionnaire + LeadSuccess", "PropostaPublica", "ContratoPublico", "QuestionarioSimplificadoPublico"],
-              ux: ["Processo intuitivo com barra de progresso", "Design responsivo (mobile-first)", "Auto-save do progresso", "Feedback visual em tempo real"] },
-            { icon: Users, color: "bg-[#3B82F6]", name: "Time Comercial", desc: "Agentes comerciais e gestores de vendas",
-              pages: ["Home — Visão geral e ações rápidas", "LinksQuestionariosLeads — Links de questionários de lead", "QuestionariosLeads — Questionários recebidos de leads", "PipelineComercial — Kanban drag-and-drop", "GestaoPropostas — Todas as propostas", "CriarProposta — Nova proposta", "GestaoContratos / CriarContrato — Contratos", "MessageTemplates — Templates de comunicação"],
-              ux: ["Pipeline visual com métricas de receita", "Qualificação automática por IA", "Propostas com link público", "Contratos automatizados"] },
-            { icon: Shield, color: "bg-[#002443]", name: "Time de Compliance (Admin)", desc: "Analistas, gestores e auditores",
-              pages: ["AdminDashboard — KPIs e gráficos", "LinksCompliance — Links de compliance", "QuestionariosRecebidos — Casos de compliance", "AnaliseDeCasos — Análise detalhada + IA", "GestaoDocumentos — Validação de docs", "TemplatesQuestionarios + EditorQuestionario", "RegrasDeCompliance — Automação", "IntegracoesExternas — CAF + BDC", "HelenaIA — Dashboard da IA", "GestaoRevalidacao — Revalidação", "Auditoria — Logs completos", "Configuracoes — Ajustes"],
-              ux: ["12+ KPIs em tempo real", "IA SENTINEL em 3 fases", "Regras automáticas", "Auditoria 100%"] },
-          ].map((persona, i) => (
-            <Card key={i} className="border-slate-200">
-              <CardHeader className="pb-2">
-                <div className="flex items-center gap-2">
-                  <div className={`w-10 h-10 ${persona.color} rounded-xl flex items-center justify-center`}><persona.icon className="w-5 h-5 text-white" /></div>
-                  <div>
-                    <CardTitle className="text-sm">{persona.name}</CardTitle>
-                    <p className="text-[10px] text-[#002443]/50">{persona.desc}</p>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div>
-                  <p className="text-[10px] font-bold text-[#002443]/40 uppercase mb-1">Páginas</p>
-                  <div className="space-y-0.5">
-                    {persona.pages.map((p, j) => (
-                      <p key={j} className="text-[10px] text-[#002443]/60 flex items-start gap-1"><ArrowRight className="w-2.5 h-2.5 text-[#2bc196] mt-0.5 shrink-0" />{p}</p>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <p className="text-[10px] font-bold text-[#002443]/40 uppercase mb-1">UX</p>
-                  {persona.ux.map((u, j) => (
-                    <p key={j} className="text-[10px] text-[#002443]/60 flex items-start gap-1"><CheckCircle2 className="w-2.5 h-2.5 text-[#2bc196] mt-0.5 shrink-0" />{u}</p>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </Section>
-
+      {/* ═══════════════════════════════════════════════════════ */}
       {/* 7. MODELO DE DADOS */}
-      <Section id="entidades" title="7. Modelo de Dados Completo" icon={Database} badge="22+ Entidades">
+      {/* ═══════════════════════════════════════════════════════ */}
+      <Section id="entidades" title="7. Modelo de Dados Completo" icon={Database} badge="25+ Entidades" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="space-y-4">
           {[
             { category: "Core do Onboarding", color: "border-l-[#2bc196]", entities: [
-              { name: "Merchant", desc: "PF/PJ: CNPJ, nome, e-mail, telefone, status onboarding (5 opções), score, serviços" },
-              { name: "OnboardingCase", desc: "Caso: merchantId, templateId, status (6 opções), scores 3 fases, decisão IA, analista, prioridade, SLA, red flags" },
+              { name: "Merchant", desc: "PF/PJ: CNPJ, nome, e-mail, telefone, status (5), score, serviços, parentMerchantId (subseller)" },
+              { name: "OnboardingCase", desc: "Caso: merchantId, templateId, status (6), scores 3 fases, decisão IA, analista, prioridade, SLA, red flags" },
               { name: "OnboardingLink", desc: "Link: uniqueCode, templateId, agente, UTMs, expiração, métricas, complianceType, linkType" },
+              { name: "ComplianceSession", desc: "Sessão: token, flowType, currentPhase/Step, formData, documentsData, status" },
             ]},
             { category: "Questionários", color: "border-l-purple-500", entities: [
-              { name: "QuestionnaireTemplate", desc: "Template: nome, modelo, tipo merchant, subCategory (MERCHAN/GATEWAY/MARKETPLACE), versão, requiredDocuments, riskThresholds" },
-              { name: "Question", desc: "Pergunta: templateId, ordem, texto, tipo (10), opções, obrigatório, conditionalLogic, riskWeight, riskValues, validationRules" },
-              { name: "QuestionnaireResponse", desc: "Resposta: caseId, questionId, valueText/Number/Boolean/Array, cópia texto e tipo" },
+              { name: "QuestionnaireTemplate", desc: "Template: nome, modelo PF/PJ, categoria, subCategory, versão, requiredDocuments, riskThresholds" },
+              { name: "Question", desc: "Pergunta: templateId, ordem, texto, tipo (10), opções, conditionalLogic, riskWeight, riskValues" },
+              { name: "QuestionnaireResponse", desc: "Resposta: caseId, questionId, value (Text/Number/Boolean/Array)" },
+              { name: "QuestionarioSimplificado", desc: "Questionário simplificado de coleta rápida de taxas" },
+              { name: "InternalCommercialQuestionnaire", desc: "Questionário interno de reunião do time comercial" },
             ]},
             { category: "Documentos", color: "border-l-orange-500", entities: [
-              { name: "DocumentType", desc: "Tipo: nome, formatos, tamanho max, tipo merchant, obrigatório, conditionalLogic, instruções" },
-              { name: "DocumentUpload", desc: "Upload: caseId, typeId, fileUrl, fileName, fileSize, fileType, status validação, notas" },
+              { name: "DocumentType", desc: "Tipo: nome, formatos, tamanho max, merchantType, obrigatório, conditionalLogic" },
+              { name: "DocumentUpload", desc: "Upload: caseId, typeId, fileUrl, fileName, validationStatus, notas" },
             ]},
             { category: "Análise IA", color: "border-l-pink-500", entities: [
-              { name: "ComplianceScore", desc: "Score 3 fases (0-1000 cada), bônus, score geral, classificação, recomendação, sumário, red flags, confiança" },
-              { name: "ComplianceFinding", desc: "Finding: severidade (6 níveis), fase, seção, fonte, título, evidência, dedução, recomendação" },
-              { name: "QualityAssessment", desc: "Qualidade: scores 1-5 (especificidade, coerência, profundidade, linguagem), padrões evasivos" },
-              { name: "HelenaAnalysis", desc: "Análise: score, decisão, justificativa, breakdown, fatores, red flags, fontes, tempo, feedback" },
+              { name: "ComplianceScore", desc: "Score 3 fases (0-1000), bônus consistência, score geral, classificação, recomendação, confiança" },
+              { name: "ComplianceFinding", desc: "Finding: severidade (6 níveis), fase, seção, evidência, dedução, recomendação" },
+              { name: "QualityAssessment", desc: "Qualidade: scores 1-5 em 4 dimensões + padrões evasivos" },
+              { name: "HelenaAnalysis", desc: "Análise: score, decisão, justificativa, breakdown, fatores, feedback" },
+              { name: "PriscilaConfig", desc: "Configuração da IA PRISCILA para análise de leads" },
             ]},
             { category: "Validações Externas", color: "border-l-cyan-500", entities: [
-              { name: "ExternalValidationResult", desc: "Resultado: provedor, tipo, endpoint, resultData, score, status, erro, timestamp" },
-              { name: "IntegrationConfig", desc: "Config: provedor, ativo, ambiente, URLs, webhook, template, serviços, settings" },
-              { name: "IntegrationLog", desc: "Log: provedor, serviço (20+ tipos), request/response/callback, scores, red flags, duração" },
+              { name: "ExternalValidationResult", desc: "Resultado: provedor, tipo, resultData, score, status" },
+              { name: "IntegrationConfig", desc: "Config: provedor CAF/BigDataCorp, ambiente, URLs, serviços" },
+              { name: "IntegrationLog", desc: "Log: provedor, serviço (20+ tipos), request/response, duração" },
             ]},
             { category: "Leads & Propostas", color: "border-l-blue-500", entities: [
-              { name: "Lead", desc: "26 campos: e-mail, nome, CNPJ, status (11 valores), tipo negócio, scores PRISCILA, Lead Qualifier, TPV, protocolo" },
-              { name: "LeadActivity", desc: "Atividades: contato, status alterado, proposta enviada, follow-up, nota" },
-              { name: "Proposal", desc: "Proposta: leadId, taxas por bandeira, antecipação, status, validade, link público" },
+              { name: "Lead", desc: "30+ campos: dados empresa, status (11), scores PRISCILA/Qualifier, TPV, introducer, expectedRates" },
+              { name: "LeadActivity", desc: "Atividades: contato, status, proposta, follow-up, nota" },
+              { name: "Proposal", desc: "Proposta: leadId, taxas por bandeira, antecipação, status (8), versionamento, link público" },
+              { name: "StandardProposal", desc: "Proposta Padrão: templateName, segment, taxas fixas, dados empresa, link público" },
+              { name: "PixProposal", desc: "Proposta PIX: leadId, taxa PIX (%/fixo), TPV mínimo, link público" },
               { name: "Contract", desc: "Contrato: leadId, proposalId, dados cliente, módulos, SLAs, preços, cláusulas, assinatura" },
+              { name: "Partner", desc: "Parceiro adquirente: nome, modelo, taxas MDR por MCC, fees, antecipação, isPrincipal" },
+              { name: "PartnerCost", desc: "Custo detalhado do parceiro por MCC/bandeira" },
+            ]},
+            { category: "Introducers", color: "border-l-violet-500", entities: [
+              { name: "Introducer", desc: "Nome, tipo (individual/company), referralCode, comissão, landing page, taxas padrão por segmento" },
             ]},
             { category: "Gestão e Auditoria", color: "border-l-slate-500", entities: [
-              { name: "ComplianceRule", desc: "Regra: nome, tipo (6), prioridade, condições, operador, ações, ativa, execuções" },
-              { name: "RevalidationSchedule", desc: "Agendamento: merchantId, data, tipo (4), frequência (4), status, triggeredBy" },
-              { name: "AuditLog", desc: "Auditoria: entidade, entityId, ação (7 tipos), quem, quando, detalhes, IP" },
-              { name: "OnboardingAnalytics", desc: "Analytics: linkId, sessionId, eventType (6), página, step, flowType, metadados" },
+              { name: "ComplianceRule", desc: "Regra: tipo, condições, ações, prioridade, execuções" },
+              { name: "RevalidationSchedule", desc: "Agendamento: merchantId, tipo, frequência, status" },
+              { name: "AuditLog", desc: "Auditoria: entidade, ação (7 tipos), quem, quando, detalhes" },
+              { name: "OnboardingAnalytics", desc: "Analytics: linkId, eventType (6), página, step, metadados" },
+              { name: "MessageTemplate", desc: "Templates de mensagem para comunicação com leads/merchants" },
             ]},
           ].map((cat, i) => (
             <div key={i}>
               <h4 className="font-bold text-[#002443] text-sm mb-2 flex items-center gap-2">
-                <div className={`w-3 h-3 rounded-full ${cat.color.replace('border-l-', 'bg-')}`} />
-                {cat.category}
+                <div className={`w-3 h-3 rounded-full ${cat.color.replace('border-l-', 'bg-')}`} />{cat.category}
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
                 {cat.entities.map((e, j) => (
@@ -614,114 +322,87 @@ export default function HowItWorks() {
         </div>
       </Section>
 
+      {/* ═══════════════════════════════════════════════════════ */}
       {/* 8. INTEGRAÇÕES */}
-      <Section id="integracoes" title="8. Integrações e Tecnologias" icon={Plug} badge="5 Provedores">
+      {/* ═══════════════════════════════════════════════════════ */}
+      <Section id="integracoes" title="8. Integrações e Tecnologias" icon={Plug} badge="5 Provedores" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <Card className="border-purple-200">
-            <CardHeader className="bg-purple-50/50 pb-3">
-              <div className="flex items-center gap-2">
-                <Shield className="w-5 h-5 text-purple-600" />
-                <CardTitle className="text-base text-purple-900">CAF (Combate à Fraude)</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-4">
-              <ul className="space-y-1.5 text-xs text-[#002443]/70">
-                {["Face Liveness (prova de vida ativa/passiva)", "Facematch (comparação 1:1 selfie vs documento)", "Face Authentication", "Document OCR (extração de dados)", "Documentoscopy (autenticidade)", "Onboarding Web (fluxo hospedado)", "API: /v1/liveness, /v1/facematch, /v1/documents"].map((s, i) => (
-                  <li key={i} className="flex items-start gap-1.5"><CircleDot className="w-3 h-3 text-purple-400 mt-0.5 shrink-0" />{s}</li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-          <Card className="border-blue-200">
-            <CardHeader className="bg-blue-50/50 pb-3">
-              <div className="flex items-center gap-2">
-                <Database className="w-5 h-5 text-blue-600" />
-                <CardTitle className="text-base text-blue-900">BigDataCorp</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-4">
-              <ul className="space-y-1.5 text-xs text-[#002443]/70">
-                {["Dados Básicos Empresa (CNPJ, status)", "KYC Empresa (processos, dívidas, OFAC/ONU)", "KYC Sócios (PEP, mídia negativa)", "Relacionamentos (UBO)", "Indicadores Atividade", "MCC/Categoria", "Endereços, Telefones, E-mails", "Prova de Vida e Biometria"].map((s, i) => (
-                  <li key={i} className="flex items-start gap-1.5"><CircleDot className="w-3 h-3 text-blue-400 mt-0.5 shrink-0" />{s}</li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
-          <Card className="border-green-200">
-            <CardHeader className="bg-green-50/50 pb-3">
-              <div className="flex items-center gap-2">
-                <Brain className="w-5 h-5 text-green-600" />
-                <CardTitle className="text-base text-green-900">Helena IA (SENTINEL)</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-4">
-              <ul className="space-y-1.5 text-xs text-[#002443]/70">
-                {["Análise automática em 3 fases", "Score 0-1000 por fase", "Recomendação: Aprovado/Condições/Manual/Recusado", "Findings com severidade", "Quality Assessment textual", "Detecção de padrões evasivos", "Sumário executivo e parecer", "Feedback loop com analistas"].map((s, i) => (
-                  <li key={i} className="flex items-start gap-1.5"><CircleDot className="w-3 h-3 text-green-400 mt-0.5 shrink-0" />{s}</li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
+          {[
+            { name: "CAF", color: "purple", items: ["Liveness (prova de vida)", "Facematch (1:1)", "Face Authentication", "Document OCR", "Documentoscopy", "Onboarding Web"] },
+            { name: "BigDataCorp", color: "blue", items: ["Dados Empresa", "KYC Empresa/Sócios", "PEP/Sanções/OFAC", "Indicadores Atividade", "MCC/Categoria", "Biometria"] },
+            { name: "Helena/SENTINEL", color: "green", items: ["3 fases automáticas", "Score 0-1000/fase", "Recomendação final", "Findings + Quality", "Feedback loop", "Confiança 0-100"] },
+          ].map((p, i) => (
+            <Card key={i} className={`border-${p.color}-200`}>
+              <CardHeader className={`bg-${p.color}-50/50 pb-3`}>
+                <CardTitle className="text-base">{p.name}</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <ul className="space-y-1.5 text-xs text-[#002443]/70">
+                  {p.items.map((s, j) => <li key={j} className="flex items-start gap-1.5"><CircleDot className="w-3 h-3 text-[#2bc196] mt-0.5 shrink-0" />{s}</li>)}
+                </ul>
+              </CardContent>
+            </Card>
+          ))}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card className="border-amber-200">
-            <CardHeader className="bg-amber-50/50 pb-3">
-              <div className="flex items-center gap-2">
-                <Brain className="w-5 h-5 text-amber-600" />
-                <CardTitle className="text-base text-amber-900">PRISCILA (Lead Qualifier IA)</CardTitle>
-              </div>
-            </CardHeader>
+            <CardHeader className="bg-amber-50/50 pb-3"><CardTitle className="text-base">PRISCILA + Lead Qualifier</CardTitle></CardHeader>
             <CardContent className="pt-4">
               <ul className="space-y-1.5 text-xs text-[#002443]/70">
-                {["Qualificação automática de leads", "Score 0-100 com relatório detalhado", "Classificação: EXCELENTE → INSUFICIENTE", "Decisão: AUTO_APROVAR, AUTO_COM_FLAG, REVISÃO, REJEITAR", "Análise de maturidade do negócio", "Risco PLD/FT do lead"].map((s, i) => (
-                  <li key={i} className="flex items-start gap-1.5"><CircleDot className="w-3 h-3 text-amber-400 mt-0.5 shrink-0" />{s}</li>
-                ))}
+                {["PRISCILA: score 0-100, risco (BAIXO/MEDIO/ALTO/CRITICO)", "Decisão: AUTO_APROVAR, COM_FLAG, REVISÃO, REJEITAR", "Lead Qualifier: EXCELENTE → INSUFICIENTE", "Análise de maturidade do negócio", "Sugestões para time comercial", "Análise de Risco Avançada (iaRiskScore, iaDecision)"].map((s, j) => <li key={j} className="flex items-start gap-1.5"><CircleDot className="w-3 h-3 text-amber-400 mt-0.5 shrink-0" />{s}</li>)}
               </ul>
             </CardContent>
           </Card>
           <Card className="border-slate-200">
-            <CardHeader className="bg-slate-50/50 pb-3">
-              <div className="flex items-center gap-2">
-                <MessageSquare className="w-5 h-5 text-slate-600" />
-                <CardTitle className="text-base text-slate-900">Slack (Notificações)</CardTitle>
-              </div>
-            </CardHeader>
+            <CardHeader className="bg-slate-50/50 pb-3"><CardTitle className="text-base">Slack + E-mail</CardTitle></CardHeader>
             <CardContent className="pt-4">
               <ul className="space-y-1.5 text-xs text-[#002443]/70">
-                {["Notificações automáticas de novos leads", "Alertas de propostas visualizadas/aceitas", "Alertas de SLA de leads", "Notificações de novos casos de compliance", "Integração via Slack Bot com scopes: chat:write, channels:read"].map((s, i) => (
-                  <li key={i} className="flex items-start gap-1.5"><CircleDot className="w-3 h-3 text-slate-400 mt-0.5 shrink-0" />{s}</li>
-                ))}
+                {["Slack Bot: notificações de novos leads, propostas aceitas/visualizadas, alertas SLA", "E-mail: follow-up automático, templates de mensagem configuráveis", "Integração via backend functions (notifyNewLead, sendFollowUpEmail, etc.)"].map((s, j) => <li key={j} className="flex items-start gap-1.5"><CircleDot className="w-3 h-3 text-slate-400 mt-0.5 shrink-0" />{s}</li>)}
               </ul>
             </CardContent>
           </Card>
         </div>
       </Section>
 
+      {/* ═══════════════════════════════════════════════════════ */}
       {/* 9. BACKEND FUNCTIONS */}
-      <Section id="backend" title="9. Backend Functions e Automações" icon={Server} badge="15+ Functions">
+      {/* ═══════════════════════════════════════════════════════ */}
+      <Section id="backend" title="9. Backend Functions e Automações" icon={Server} badge="20+ Functions" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {[
-            { name: "analyzeOnboarding", desc: "Análise SENTINEL: recebe caseId, executa 3 fases de análise, gera ComplianceScore + Findings + QualityAssessments" },
-            { name: "analyzePriscila", desc: "Análise PRISCILA de leads: gera score qualidade, nível de risco, caminho de decisão" },
-            { name: "analyzeLeadQualifier", desc: "Lead Qualifier IA: classifica maturidade do lead (EXCELENTE → INSUFICIENTE)" },
-            { name: "verifyAdminCode", desc: "Verificação do código de acesso admin para autenticação adicional" },
-            { name: "preGenerateContract", desc: "Pré-geração de contrato via IA a partir de dados do Lead/Proposta" },
-            { name: "generateQuestionnairePdf", desc: "Geração de PDF com todas as respostas do questionário" },
-            { name: "notifyNewLead", desc: "Notificação Slack quando novo lead é submetido" },
-            { name: "notifyProposalViewed", desc: "Notificação quando cliente visualiza proposta" },
-            { name: "sendFollowUpEmail", desc: "Envio de e-mail de follow-up para leads" },
-            { name: "checkLeadSLA", desc: "Verificação de SLA de leads (tempo de resposta)" },
-            { name: "checkIncompleteLeads", desc: "Verificação de leads com questionário incompleto" },
-            { name: "checkExpiringProposals", desc: "Verificação de propostas próximas da expiração" },
+            { name: "analyzeOnboarding", desc: "SENTINEL: 3 fases de análise → ComplianceScore + Findings + QualityAssessments" },
+            { name: "analyzePriscila", desc: "PRISCILA: score qualidade, risco, caminho de decisão para leads" },
+            { name: "analyzeLeadQualifier", desc: "Lead Qualifier: classifica maturidade EXCELENTE → INSUFICIENTE" },
+            { name: "analyzeLeadRiskAdvanced", desc: "Análise de risco avançada: iaRiskScore, iaDecision, sugestões" },
+            { name: "analyzeCnpjEnrichment", desc: "Enriquecimento de CNPJ: dados cadastrais + análise IA" },
+            { name: "verifyAdminCode", desc: "Verificação do código de acesso admin" },
+            { name: "preGenerateContract", desc: "Pré-geração de contrato via IA a partir de Lead + Proposta" },
+            { name: "generateQuestionnairePdf", desc: "PDF com todas as respostas do questionário" },
+            { name: "generateCompliancePdf", desc: "PDF completo do caso de compliance" },
+            { name: "processMeetingNotes", desc: "IA transforma notas de reunião em dados estruturados de lead" },
+            { name: "notifyNewLead", desc: "Notificação Slack para novo lead" },
+            { name: "notifyProposalViewed", desc: "Notificação quando proposta é visualizada" },
+            { name: "notifyProposalAccepted", desc: "Notificação quando proposta é aceita" },
+            { name: "sendFollowUpEmail", desc: "E-mail de follow-up para leads" },
+            { name: "checkLeadSLA", desc: "Verificação de SLA de leads (tempo resposta)" },
+            { name: "checkIncompleteLeads", desc: "Leads com questionário incompleto" },
+            { name: "checkExpiringProposals", desc: "Propostas próximas da expiração" },
             { name: "expireProposals", desc: "Expiração automática de propostas vencidas" },
-            { name: "simulateComplianceRule", desc: "Simulação de regra de compliance sem executar ações" },
-            { name: "suggestQuestionsAI", desc: "Sugestão de perguntas via IA para templates de questionário" },
-            { name: "bdc_queryCnpjData", desc: "Consulta BigDataCorp por CNPJ: dados cadastrais, KYC, sócios" },
-            { name: "bdc_analyzeKycRisk", desc: "Análise de risco KYC via BigDataCorp" },
-            { name: "bdc_startLiveness", desc: "Início de sessão liveness via BigDataCorp" },
-            { name: "bdc_facematch", desc: "Facematch via BigDataCorp" },
-            { name: "caf_startLiveness", desc: "Início de sessão liveness via CAF" },
-            { name: "caf_uploadDocument", desc: "Upload e análise de documento via CAF" },
+            { name: "simulateComplianceRule", desc: "Simulação de regra sem executar" },
+            { name: "suggestQuestionsAI", desc: "Sugestão de perguntas via IA" },
+            { name: "brasilApiCnpj", desc: "Consulta CNPJ via API Brasil (autocomplete)" },
+            { name: "sanctionsScreening", desc: "Triagem de sanções/listas restritivas" },
+            { name: "bdc_queryCnpjData", desc: "BigDataCorp: dados por CNPJ" },
+            { name: "bdc_analyzeKycRisk", desc: "BigDataCorp: análise KYC" },
+            { name: "caf_startLiveness", desc: "CAF: liveness session" },
+            { name: "caf_uploadDocument", desc: "CAF: análise de documento" },
+            { name: "loadComplianceProgress", desc: "Carregar progresso de compliance salvo" },
+            { name: "saveComplianceProgress", desc: "Salvar progresso de compliance" },
+            { name: "downloadCaseDocuments", desc: "Download de documentos de um caso" },
+            { name: "getCaseDocumentUrls", desc: "URLs assinadas para documentos" },
+            { name: "generateSubsellerLink", desc: "Gerar link para subseller" },
+            { name: "validateLeadFields", desc: "Validação assíncrona de campos do lead (e-mail, site, etc.)" },
+            { name: "complianceValidations", desc: "Validações de campos de compliance (CPF, CNPJ, CEP)" },
           ].map((fn, i) => (
             <div key={i} className="p-3 bg-slate-50 rounded-lg border border-slate-200">
               <Badge className="bg-[#002443] text-white font-mono text-[10px] border-0 mb-1">{fn.name}</Badge>
@@ -731,13 +412,57 @@ export default function HowItWorks() {
         </div>
       </Section>
 
+      {/* ═══════════════════════════════════════════════════════ */}
+      {/* 10. PERSONAS */}
+      {/* ═══════════════════════════════════════════════════════ */}
+      <Section id="personas" title="10. Personas e Jornadas" icon={Users} badge="4 Personas" expandedSections={expandedSections} toggleSection={toggleSection}>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {[
+            { icon: Building2, color: "bg-[#2bc196]", name: "Merchant (Cliente)", desc: "Empresa que deseja se credenciar",
+              pages: ["Questionário de Lead (4 variantes)", "Proposta Pública (personalizada, padrão, PIX)", "Compliance Onboarding (9 variantes)", "Contrato Público", "Landing Page do Introducer"],
+              ux: ["Mobile-first", "Auto-save", "Autocomplete CNPJ", "Feedback visual tempo real"] },
+            { icon: Users, color: "bg-[#3B82F6]", name: "Time Comercial", desc: "Agentes e gestores de vendas",
+              pages: ["Home: visão 360° + quick actions", "Links Questionários: 4 tipos + Introducer", "Questionários Recebidos: 6 sub-abas", "Pipeline Kanban: 7 colunas", "Propostas: 3 tipos (Personalizada, Padrão, PIX)", "Contratos: pré-gerado por IA", "Questionário Reunião + Robô IA"],
+              ux: ["Pipeline com drag-and-drop", "Qualificação IA automática", "3 tipos de proposta", "Versionamento de propostas"] },
+            { icon: Shield, color: "bg-[#002443]", name: "Time Compliance (Admin)", desc: "Analistas e auditores",
+              pages: ["Dashboard 20+ KPIs + gráficos", "Links Compliance: 9 tipos", "Casos de Compliance: análise detalhada", "Gestão Documentos + Revalidação", "Templates + Regras + Integrações", "Helena IA + Auditoria + Configurações"],
+              ux: ["IA SENTINEL 3 fases", "Regras automáticas", "Auditoria 100%", "Revalidação programável"] },
+            { icon: UserPlus, color: "bg-purple-600", name: "Introducer (Parceiro)", desc: "Parceiro de indicação de clientes",
+              pages: ["IntroducerDashboard: KPIs, leads, performance", "Landing Page personalizada (/parceiro/slug)", "Visualização de leads indicados e status"],
+              ux: ["Portal exclusivo", "Landing page co-branded", "Acompanhamento de leads", "Taxas padrão por segmento"] },
+          ].map((persona, i) => (
+            <Card key={i} className="border-slate-200">
+              <CardHeader className="pb-2">
+                <div className="flex items-center gap-2">
+                  <div className={`w-10 h-10 ${persona.color} rounded-xl flex items-center justify-center`}><persona.icon className="w-5 h-5 text-white" /></div>
+                  <div>
+                    <CardTitle className="text-sm">{persona.name}</CardTitle>
+                    <p className="text-[10px] text-[#002443]/50">{persona.desc}</p>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div>
+                  <p className="text-[10px] font-bold text-[#002443]/40 uppercase mb-1">Páginas</p>
+                  {persona.pages.map((p, j) => <p key={j} className="text-[10px] text-[#002443]/60 flex items-start gap-1"><ArrowRight className="w-2.5 h-2.5 text-[#2bc196] mt-0.5 shrink-0" />{p}</p>)}
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-[#002443]/40 uppercase mb-1">UX</p>
+                  {persona.ux.map((u, j) => <p key={j} className="text-[10px] text-[#002443]/60 flex items-start gap-1"><CheckCircle2 className="w-2.5 h-2.5 text-[#2bc196] mt-0.5 shrink-0" />{u}</p>)}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </Section>
+
       {/* Footer */}
       <div className="mt-8 p-6 bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl text-center">
         <p className="text-sm text-white/70">
-          Documentação Completa e Microscópica do Sistema de Compliance, Onboarding, Leads, Propostas e Contratos Pagsmile • Versão 3.0 • {new Date().toLocaleDateString('pt-BR')}
+          Documentação Completa e Microscópica — Pagsmile Compliance, Onboarding, Leads, Propostas, Contratos e Introducers • Versão 4.0 • {new Date().toLocaleDateString('pt-BR')}
         </p>
         <p className="text-xs text-white/40 mt-1">
-          8 Módulos • 30+ Páginas • 22+ Entidades • 9 Fluxos de Compliance • 3 Templates Especializados (305+ perguntas) • 5 Integrações • 15+ Backend Functions • IA SENTINEL 3 Fases
+          10+ Módulos • 40+ Páginas • 25+ Entidades • 9 Fluxos Compliance • 3 Templates • 3 IAs • 3 Tipos Proposta • 20+ Backend Functions • 5 Integrações • 4 Personas
         </p>
       </div>
     </div>
