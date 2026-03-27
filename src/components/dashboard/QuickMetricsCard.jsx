@@ -1,5 +1,6 @@
 import React from 'react';
 import { Zap, Clock, Target, FileText } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function QuickMetricsCard({ 
   avgTimeIA = '0s',
@@ -7,35 +8,12 @@ export default function QuickMetricsCard({
   avgScore = 0,
   pendingDocs = 0
 }) {
+  const { t } = useTranslation();
   const metrics = [
-    {
-      icon: Zap,
-      iconBg: 'bg-[#2bc196]/10',
-      iconColor: 'text-[#2bc196]',
-      label: 'Tempo Médio (IA)',
-      value: avgTimeIA
-    },
-    {
-      icon: Clock,
-      iconBg: 'bg-[#002443]/10',
-      iconColor: 'text-[#002443]',
-      label: 'Tempo Médio (Manual)',
-      value: avgTimeManual
-    },
-    {
-      icon: Target,
-      iconBg: 'bg-[#36706c]/10',
-      iconColor: 'text-[#36706c]',
-      label: 'Score Médio Carteira',
-      value: avgScore
-    },
-    {
-      icon: FileText,
-      iconBg: 'bg-[#5cf7cf]/10',
-      iconColor: 'text-[#36706c]',
-      label: 'Docs Pendentes',
-      value: pendingDocs
-    }
+    { icon: Zap, iconBg: 'bg-[#2bc196]/10', iconColor: 'text-[#2bc196]', label: t('quick_metrics.avg_time_ia'), value: avgTimeIA },
+    { icon: Clock, iconBg: 'bg-[#002443]/10', iconColor: 'text-[#002443]', label: t('quick_metrics.avg_time_manual'), value: avgTimeManual },
+    { icon: Target, iconBg: 'bg-[#36706c]/10', iconColor: 'text-[#36706c]', label: t('quick_metrics.avg_score'), value: avgScore },
+    { icon: FileText, iconBg: 'bg-[#5cf7cf]/10', iconColor: 'text-[#36706c]', label: t('quick_metrics.pending_docs'), value: pendingDocs }
   ];
 
   return (

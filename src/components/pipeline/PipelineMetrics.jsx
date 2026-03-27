@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, TrendingUp, Users, DollarSign, CheckCircle, XCircle, BarChart3 } from 'lucide-react';
+import { Users, DollarSign, CheckCircle, XCircle, BarChart3, TrendingUp } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 const formatMoeda = (val) => {
   if (!val) return 'R$ 0';
@@ -10,35 +11,27 @@ const formatMoeda = (val) => {
 };
 
 export default function PipelineMetrics({ leads, contracts = [], proposals = [] }) {
+  const { t } = useTranslation();
   const metrics = useMemo(() => {
     const total = leads.length;
     const byStatus = {};
     leads.forEach(l => { byStatus[l.status] = (byStatus[l.status] || 0) + 1; });
-
     const contratosGerados = byStatus['ativado'] || 0;
     const perdidos = (byStatus['perdido'] || 0) + (byStatus['proposta_recusada'] || 0);
-    const propostasAceitas = byStatus['proposta_aceita'] || 0;
-    const propostasEnviadas = byStatus['proposta_enviada'] || 0;
-    const emCompliance = (byStatus['kyc_iniciado'] || 0) + (byStatus['kyc_aprovado'] || 0) + (byStatus['kyc_revisao_manual'] || 0);
     const conversionRate = total > 0 ? ((contratosGerados / total) * 100).toFixed(1) : 0;
-
     const totalTPV = leads.reduce((s, l) => s + (l.tpvMensal || 0), 0);
-    const receitaMensal = totalTPV * 0.025;
-
-    // TPV apenas dos contratos gerados (negócios fechados)
     const tpvFechados = leads.filter(l => l.status === 'ativado').reduce((s, l) => s + (l.tpvMensal || 0), 0);
     const receitaFechados = tpvFechados * 0.025;
-
-    return { total, contratosGerados, perdidos, propostasAceitas, propostasEnviadas, emCompliance, conversionRate, totalTPV, receitaMensal, tpvFechados, receitaFechados };
+    return { total, contratosGerados, perdidos, conversionRate, totalTPV, receitaFechados };
   }, [leads]);
 
   const kpis = [
-    { label: 'Leads no Funil', value: metrics.total, icon: Users, iconColor: 'text-blue-500', valueColor: 'text-[var(--pagsmile-blue)]' },
-    { label: '% Conversão (Fechados)', value: `${metrics.conversionRate}%`, icon: TrendingUp, iconColor: 'text-green-500', valueColor: 'text-green-600' },
-    { label: 'TPV Total Estimado', value: formatMoeda(metrics.totalTPV), icon: DollarSign, iconColor: 'text-[var(--pagsmile-green)]', valueColor: 'text-[var(--pagsmile-blue)]' },
-    { label: 'Receita Fechados', value: formatMoeda(metrics.receitaFechados), icon: BarChart3, iconColor: 'text-purple-500', valueColor: 'text-purple-600' },
-    { label: 'Negócios Fechados', value: metrics.contratosGerados, icon: CheckCircle, iconColor: 'text-emerald-500', valueColor: 'text-emerald-600' },
-    { label: 'Perdidos', value: metrics.perdidos, icon: XCircle, iconColor: 'text-red-500', valueColor: 'text-red-600' },
+    { label: t('pipe_metrics.leads_in_funnel'), value: metrics.total, icon: Users, iconColor: 'text-blue-500', valueColor: 'text-[var(--pagsmile-blue)]' },
+    { label: t('pipe_metrics.conversion_pct'), value: `${metrics.conversionRate}%`, icon: TrendingUp, iconColor: 'text-green-500', valueColor: 'text-green-600' },
+    { label: t('pipe_metrics.total_tpv'), value: formatMoeda(metrics.totalTPV), icon: DollarSign, iconColor: 'text-[var(--pagsmile-green)]', valueColor: 'text-[var(--pagsmile-blue)]' },
+    { label: t('pipe_metrics.closed_revenue'), value: formatMoeda(metrics.receitaFechados), icon: BarChart3, iconColor: 'text-purple-500', valueColor: 'text-purple-600' },
+    { label: t('pipe_metrics.deals_closed'), value: metrics.contratosGerados, icon: CheckCircle, iconColor: 'text-emerald-500', valueColor: 'text-emerald-600' },
+    { label: t('pipe_metrics.lost'), value: metrics.perdidos, icon: XCircle, iconColor: 'text-red-500', valueColor: 'text-red-600' },
   ];
 
   return (

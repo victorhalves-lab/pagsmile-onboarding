@@ -146,8 +146,8 @@ export default function AdminDashboard() {
 
     // Formatar tempo de conclusão (dias ou horas)
     const avgCompletionTimeLabel = avgCompletionTimeHours > 24 
-      ? `${(avgCompletionTimeHours / 24).toFixed(1)} dias`
-      : `${avgCompletionTimeHours.toFixed(1)} h`;
+      ? `${(avgCompletionTimeHours / 24).toFixed(1)}d`
+      : `${avgCompletionTimeHours.toFixed(1)}h`;
 
     // Tempo médio de análise manual (em horas) - casos que passaram por revisão manual
     const manualCases = onboardingCases.filter(c => 
@@ -315,12 +315,12 @@ export default function AdminDashboard() {
 
   // Dados para gráfico de funil
   const funnelData = React.useMemo(() => [
-    { name: 'Submissões', value: stats.total },
-    { name: 'Análise IA', value: stats.totalHelenaAnalyses },
-    { name: 'Aprovadas IA', value: stats.approvedByHelena },
-    { name: 'Manual Review', value: stats.manualReviewByHelena },
-    { name: 'Aprovadas Final', value: stats.aprovado }
-  ], [stats]);
+    { name: t('admin_dash.funnel_submissions'), value: stats.total },
+    { name: t('admin_dash.funnel_ia_analysis'), value: stats.totalHelenaAnalyses },
+    { name: t('admin_dash.funnel_ia_approved'), value: stats.approvedByHelena },
+    { name: t('admin_dash.funnel_manual_review'), value: stats.manualReviewByHelena },
+    { name: t('admin_dash.funnel_final_approved'), value: stats.aprovado }
+  ], [stats, t]);
 
   // Dados para gráfico de tendência (últimos 6 meses simulados)
   const trendData = React.useMemo(() => {

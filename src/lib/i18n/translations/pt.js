@@ -59,6 +59,7 @@ export const pt = {
   'home.open_proposals_title': 'Propostas em Aberto',
   'home.pending_compliance': 'Compliance Pendentes',
   'home.of_total': 'de {count} total',
+  'home.date_format': 'dddd, DD [de] MMMM',
 
   // ═══ QUICK ACTIONS ═══
   'quick.new_proposal': 'Nova Proposta',
@@ -351,6 +352,11 @@ export const pt = {
   'admin_dash.no_cases': 'Nenhum caso encontrado',
   'admin_dash.adjust_filters': 'Ajuste os filtros ou aguarde novas submissões',
   'admin_dash.see': 'Ver',
+  'admin_dash.funnel_submissions': 'Submissões',
+  'admin_dash.funnel_ia_analysis': 'Análise IA',
+  'admin_dash.funnel_ia_approved': 'Aprovadas IA',
+  'admin_dash.funnel_manual_review': 'Manual Review',
+  'admin_dash.funnel_final_approved': 'Aprovadas Final',
 
   // ═══ LEAD QUESTIONNAIRE (public) ═══
   'lead_quest.loading': 'Carregando questionário...',
@@ -567,4 +573,66 @@ export const pt = {
   'meeting.subtitle': 'Preencha dados coletados em reunião comercial',
   'meeting.process_title': 'Processar Notas de Reunião',
   'meeting.process_subtitle': 'Use IA para processar anotações de reunião',
+
+  // ═══ KANBAN CARD ═══
+  'kanban.view': 'Ver',
+  'kanban.contact': 'Contato',
+  'kanban.proposal': 'Proposta',
+  'kanban.status': 'Status',
+  'kanban.follow_up': 'Follow-up',
+  'kanban.last_contact': 'Último contato:',
+  'kanban.prop_accepted': 'Prop. Aceita',
+  'kanban.prop_sent': 'Prop. Enviada',
+  'kanban.contract': 'Contrato',
+  'kanban.stale_days': '{days}d',
+
+  // ═══ PIPELINE METRICS ═══
+  'pipe_metrics.leads_in_funnel': 'Leads no Funil',
+  'pipe_metrics.conversion_pct': '% Conversão (Fechados)',
+  'pipe_metrics.total_tpv': 'TPV Total Estimado',
+  'pipe_metrics.closed_revenue': 'Receita Fechados',
+  'pipe_metrics.deals_closed': 'Negócios Fechados',
+  'pipe_metrics.lost': 'Perdidos',
+
+  // ═══ PIPELINE AGING ═══
+  'pipe_aging.title': 'Leads Parados ({count})',
+  'pipe_aging.subtitle': 'Sem interação há 5+ dias',
+  'pipe_aging.stale_days': '{days}d parado',
+  'pipe_aging.status.new_lead': 'Lead Novo',
+  'pipe_aging.status.analyzed': 'Analisado',
+  'pipe_aging.status.in_contact': 'Em Contato',
+  'pipe_aging.status.proposal_sent': 'Proposta Enviada',
+  'pipe_aging.status.proposal_accepted': 'Proposta Aceita',
+  'pipe_aging.status.in_compliance': 'Em Compliance',
+  'pipe_aging.status.compliance_ok': 'Compliance OK',
+  'pipe_aging.status.manual_review': 'Revisão Manual',
+
+  // ═══ PIPELINE CONVERSION CHART ═══
+  'pipe_chart.title': 'Funil de Conversão',
+  'pipe_chart.new_leads': 'Leads Novos',
+  'pipe_chart.in_contact': 'Em Contato',
+  'pipe_chart.prop_sent': 'Prop. Enviada',
+  'pipe_chart.prop_accepted': 'Prop. Aceita',
+  'pipe_chart.compliance': 'Compliance',
+  'pipe_chart.closed': 'Fechado',
+  'pipe_chart.leads': 'leads',
+
+  // ═══ QUICK METRICS CARD ═══
+  'quick_metrics.avg_time_ia': 'Tempo Médio (IA)',
+  'quick_metrics.avg_time_manual': 'Tempo Médio (Manual)',
+  'quick_metrics.avg_score': 'Score Médio Carteira',
+  'quick_metrics.pending_docs': 'Docs Pendentes',
+
+  // ═══ PROPOSAL METRICS ═══
+  'prop_metrics.total': 'Total',
+  'prop_metrics.acceptance_rate': 'Taxa Aceite',
+  'prop_metrics.acceptance_time': 'Tempo Aceite',
+  'prop_metrics.revenue_won': 'Receita Ganha',
+  'prop_metrics.rejected': 'Recusadas',
+  'prop_metrics.expiring': 'Expirando',
+  'prop_metrics.drafts': '{count} rascunhos',
+  'prop_metrics.accepted': '{count} aceitas',
+  'prop_metrics.avg_days': 'média em dias',
+  'prop_metrics.expired': '{count} expiradas',
+  'prop_metrics.next_3_days': 'próximos 3 dias',
 };

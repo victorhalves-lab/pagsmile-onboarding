@@ -549,4 +549,76 @@ export const zh = {
   'meeting.subtitle': '填写商务会议中收集的数据',
   'meeting.process_title': '处理会议记录',
   'meeting.process_subtitle': '使用AI处理会议记录',
+
+  // ═══ HOME ═══
+  'home.date_format': 'YYYY年M月D日 dddd',
+
+  // ═══ ADMIN DASHBOARD FUNNEL ═══
+  'admin_dash.funnel_submissions': '提交数',
+  'admin_dash.funnel_ia_analysis': 'AI分析',
+  'admin_dash.funnel_ia_approved': 'AI批准',
+  'admin_dash.funnel_manual_review': '人工审核',
+  'admin_dash.funnel_final_approved': '最终批准',
+
+  // ═══ KANBAN CARD ═══
+  'kanban.view': '查看',
+  'kanban.contact': '联系',
+  'kanban.proposal': '报价',
+  'kanban.status': '状态',
+  'kanban.follow_up': '跟进',
+  'kanban.last_contact': '最近联系:',
+  'kanban.prop_accepted': '报价已接受',
+  'kanban.prop_sent': '报价已发送',
+  'kanban.contract': '合同',
+  'kanban.stale_days': '{days}天',
+
+  // ═══ PIPELINE METRICS ═══
+  'pipe_metrics.leads_in_funnel': '漏斗中潜客',
+  'pipe_metrics.conversion_pct': '转化率（已成交）',
+  'pipe_metrics.total_tpv': '预估总TPV',
+  'pipe_metrics.closed_revenue': '已成交收入',
+  'pipe_metrics.deals_closed': '已成交',
+  'pipe_metrics.lost': '已流失',
+
+  // ═══ PIPELINE AGING ═══
+  'pipe_aging.title': '停滞潜客 ({count})',
+  'pipe_aging.subtitle': '超过5天无互动',
+  'pipe_aging.stale_days': '停滞{days}天',
+  'pipe_aging.status.new_lead': '新潜客',
+  'pipe_aging.status.analyzed': '已分析',
+  'pipe_aging.status.in_contact': '联系中',
+  'pipe_aging.status.proposal_sent': '报价已发送',
+  'pipe_aging.status.proposal_accepted': '报价已接受',
+  'pipe_aging.status.in_compliance': '合规中',
+  'pipe_aging.status.compliance_ok': '合规通过',
+  'pipe_aging.status.manual_review': '人工审核',
+
+  // ═══ PIPELINE CONVERSION CHART ═══
+  'pipe_chart.title': '转化漏斗',
+  'pipe_chart.new_leads': '新潜客',
+  'pipe_chart.in_contact': '联系中',
+  'pipe_chart.prop_sent': '报价已发送',
+  'pipe_chart.prop_accepted': '报价已接受',
+  'pipe_chart.compliance': '合规',
+  'pipe_chart.closed': '已成交',
+  'pipe_chart.leads': '潜客',
+
+  // ═══ QUICK METRICS CARD ═══
+  'quick_metrics.avg_time_ia': '平均时间（AI）',
+  'quick_metrics.avg_time_manual': '平均时间（人工）',
+  'quick_metrics.avg_score': '组合平均分',
+  'quick_metrics.pending_docs': '待处理文件',
+
+  // ═══ PROPOSAL METRICS ═══
+  'prop_metrics.total': '总计',
+  'prop_metrics.acceptance_rate': '接受率',
+  'prop_metrics.acceptance_time': '接受时间',
+  'prop_metrics.revenue_won': '已获收入',
+  'prop_metrics.rejected': '已拒绝',
+  'prop_metrics.expiring': '即将到期',
+  'prop_metrics.drafts': '{count} 草稿',
+  'prop_metrics.accepted': '{count} 已接受',
+  'prop_metrics.avg_days': '平均天数',
+  'prop_metrics.expired': '{count} 已过期',
+  'prop_metrics.next_3_days': '未来3天',
 };

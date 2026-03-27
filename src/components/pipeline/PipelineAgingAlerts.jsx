@@ -3,10 +3,24 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '../../utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Clock, AlertTriangle, ArrowRight, Phone, FileText, Eye } from 'lucide-react';
+import { Clock, AlertTriangle, Eye } from 'lucide-react';
 import moment from 'moment';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function PipelineAgingAlerts({ leads }) {
+  const { t } = useTranslation();
+
+  const statusLabelMap = {
+    questionario_preenchido: t('pipe_aging.status.new_lead'),
+    analisado_priscila: t('pipe_aging.status.analyzed'),
+    em_contato_comercial: t('pipe_aging.status.in_contact'),
+    proposta_enviada: t('pipe_aging.status.proposal_sent'),
+    proposta_aceita: t('pipe_aging.status.proposal_accepted'),
+    kyc_iniciado: t('pipe_aging.status.in_compliance'),
+    kyc_aprovado: t('pipe_aging.status.compliance_ok'),
+    kyc_revisao_manual: t('pipe_aging.status.manual_review'),
+  };
+
   const staleLeads = useMemo(() => {
     return leads
       .filter(l => {
@@ -16,8 +30,7 @@ export default function PipelineAgingAlerts({ leads }) {
       })
       .map(l => {
         const lastDate = l.lastInteractionDate || l.updated_date || l.created_date;
-        const days = moment().diff(moment(lastDate), 'days');
-        return { ...l, staleDays: days };
+        return { ...l, staleDays: moment().diff(moment(lastDate), 'days') };
       })
       .sort((a, b) => b.staleDays - a.staleDays)
       .slice(0, 8);
@@ -31,28 +44,14 @@ export default function PipelineAgingAlerts({ leads }) {
     return 'text-yellow-600 bg-yellow-50 border-yellow-200';
   };
 
-  const statusLabel = (status) => {
-    const map = {
-      questionario_preenchido: 'Lead Novo',
-      analisado_priscila: 'Analisado',
-      em_contato_comercial: 'Em Contato',
-      proposta_enviada: 'Proposta Enviada',
-      proposta_aceita: 'Proposta Aceita',
-      kyc_iniciado: 'Em Compliance',
-      kyc_aprovado: 'Compliance OK',
-      kyc_revisao_manual: 'Revisão Manual',
-    };
-    return map[status] || status;
-  };
-
   return (
     <div className="bg-white rounded-xl border border-amber-200 p-4">
       <div className="flex items-center gap-2 mb-3">
         <AlertTriangle className="w-4 h-4 text-amber-500" />
         <h3 className="text-sm font-bold text-[var(--pagsmile-blue)]">
-          Leads Parados ({staleLeads.length})
+          {t('pipe_aging.title', { count: staleLeads.length })}
         </h3>
-        <span className="text-[10px] text-[var(--pagsmile-blue)]/50">Sem interação há 5+ dias</span>
+        <span className="text-[10px] text-[var(--pagsmile-blue)]/50">{t('pipe_aging.subtitle')}</span>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         {staleLeads.map(lead => (
@@ -60,9 +59,9 @@ export default function PipelineAgingAlerts({ leads }) {
             <div className="flex-1 min-w-0">
               <p className="text-xs font-medium truncate">{lead.companyName || lead.fullName}</p>
               <div className="flex items-center gap-2 mt-0.5">
-                <Badge variant="outline" className="text-[9px] h-4 px-1">{statusLabel(lead.status)}</Badge>
+                <Badge variant="outline" className="text-[9px] h-4 px-1">{statusLabelMap[lead.status] || lead.status}</Badge>
                 <span className="text-[10px] flex items-center gap-0.5">
-                  <Clock className="w-2.5 h-2.5" />{lead.staleDays}d parado
+                  <Clock className="w-2.5 h-2.5" />{t('pipe_aging.stale_days', { days: lead.staleDays })}
                 </span>
               </div>
             </div>

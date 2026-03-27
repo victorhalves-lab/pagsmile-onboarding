@@ -8,13 +8,7 @@ import moment from 'moment';
 import LeadSLAIndicator from '../leads/LeadSLAIndicator';
 import StatusUpdateModal from './StatusUpdateModal';
 import FollowUpModal from './FollowUpModal';
-
-const RISK_CONFIG = {
-  BAIXO: { label: 'Baixo', color: 'bg-green-100 text-green-700' },
-  MEDIO: { label: 'Médio', color: 'bg-amber-100 text-amber-700' },
-  ALTO: { label: 'Alto', color: 'bg-orange-100 text-orange-700' },
-  CRITICO: { label: 'Crítico', color: 'bg-red-100 text-red-700' },
-};
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 const getScoreBg = (score) => {
   if (score >= 70) return 'bg-green-500';
@@ -23,9 +17,18 @@ const getScoreBg = (score) => {
 };
 
 export default function LeadKanbanCard({ lead, onAction, contract, proposal }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [showFollowUpModal, setShowFollowUpModal] = useState(false);
+
+  const RISK_CONFIG = {
+    BAIXO: { label: t('quest_leads.risk.low'), color: 'bg-green-100 text-green-700' },
+    MEDIO: { label: t('quest_leads.risk.medium'), color: 'bg-amber-100 text-amber-700' },
+    ALTO: { label: t('quest_leads.risk.high'), color: 'bg-orange-100 text-orange-700' },
+    CRITICO: { label: t('quest_leads.risk.critical'), color: 'bg-red-100 text-red-700' },
+  };
+
   const riskCfg = RISK_CONFIG[lead.priscilaRiskLevel];
   const daysSinceUpdate = lead.lastInteractionDate
     ? moment().diff(moment(lead.lastInteractionDate), 'days')
@@ -58,23 +61,22 @@ export default function LeadKanbanCard({ lead, onAction, contract, proposal }) {
         {isStale && (
           <Badge variant="outline" className="text-[9px] px-1.5 py-0 text-amber-600 border-amber-300 bg-amber-50 gap-0.5">
             <Clock className="w-2.5 h-2.5" />
-            {daysSinceUpdate}d
+            {t('kanban.stale_days', { days: daysSinceUpdate })}
           </Badge>
         )}
       </div>
 
-      {/* Proposal & Contract indicators */}
       <div className="flex items-center gap-1.5 flex-wrap">
         {proposal && (
           <Badge className="text-[9px] px-1.5 py-0 bg-blue-50 text-blue-700 border-blue-200 gap-0.5">
             <Send className="w-2.5 h-2.5" />
-            {proposal.status === 'aceita' ? 'Prop. Aceita' : proposal.status === 'enviada' || proposal.status === 'visualizada' ? 'Prop. Enviada' : proposal.codigo?.slice(-5) || 'Proposta'}
+            {proposal.status === 'aceita' ? t('kanban.prop_accepted') : proposal.status === 'enviada' || proposal.status === 'visualizada' ? t('kanban.prop_sent') : proposal.codigo?.slice(-5) || t('kanban.proposal')}
           </Badge>
         )}
         {contract && (
           <Badge className="text-[9px] px-1.5 py-0 bg-emerald-50 text-emerald-700 border-emerald-200 gap-0.5">
             <FileCheck2 className="w-2.5 h-2.5" />
-            Contrato
+            {t('kanban.contract')}
           </Badge>
         )}
       </div>
@@ -89,45 +91,35 @@ export default function LeadKanbanCard({ lead, onAction, contract, proposal }) {
 
       {lead.lastInteractionDate && (
         <p className="text-[9px] text-[var(--pagsmile-blue)]/40">
-          Último contato: {moment(lead.lastInteractionDate).fromNow()}
+          {t('kanban.last_contact')} {moment(lead.lastInteractionDate).fromNow()}
         </p>
       )}
 
       <div className="flex gap-1 pt-1 flex-wrap">
-        <Button
-          variant="ghost" size="sm" className="h-6 px-2 text-[10px]"
-          onClick={(e) => { e.stopPropagation(); navigate(createPageUrl('LeadDetails') + `?id=${lead.id}`); }}
-        >
-          <Eye className="w-3 h-3 mr-0.5" /> Ver
+        <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px]"
+          onClick={(e) => { e.stopPropagation(); navigate(createPageUrl('LeadDetails') + `?id=${lead.id}`); }}>
+          <Eye className="w-3 h-3 mr-0.5" /> {t('kanban.view')}
         </Button>
         {['questionario_preenchido', 'analisado_priscila'].includes(lead.status) && (
-          <Button
-            variant="default" size="sm"
+          <Button variant="default" size="sm"
             className="h-6 px-2 text-[10px] bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white"
-            onClick={(e) => { e.stopPropagation(); onAction('contact', lead); }}
-          >
-            <Phone className="w-3 h-3 mr-0.5" /> Contato
+            onClick={(e) => { e.stopPropagation(); onAction('contact', lead); }}>
+            <Phone className="w-3 h-3 mr-0.5" /> {t('kanban.contact')}
           </Button>
         )}
         {['em_contato_comercial', 'analisado_priscila'].includes(lead.status) && lead.priscilaRiskLevel !== 'CRITICO' && (
-          <Button
-            variant="outline" size="sm" className="h-6 px-2 text-[10px]"
-            onClick={(e) => { e.stopPropagation(); navigate(createPageUrl('CriarProposta') + `?lead=${lead.id}`); }}
-          >
-            <FileText className="w-3 h-3 mr-0.5" /> Proposta
+          <Button variant="outline" size="sm" className="h-6 px-2 text-[10px]"
+            onClick={(e) => { e.stopPropagation(); navigate(createPageUrl('CriarProposta') + `?lead=${lead.id}`); }}>
+            <FileText className="w-3 h-3 mr-0.5" /> {t('kanban.proposal')}
           </Button>
         )}
-        <Button
-          variant="ghost" size="sm" className="h-6 px-2 text-[10px]"
-          onClick={(e) => { e.stopPropagation(); setShowStatusModal(true); }}
-        >
-          <RefreshCw className="w-3 h-3 mr-0.5" /> Status
+        <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px]"
+          onClick={(e) => { e.stopPropagation(); setShowStatusModal(true); }}>
+          <RefreshCw className="w-3 h-3 mr-0.5" /> {t('kanban.status')}
         </Button>
-        <Button
-          variant="ghost" size="sm" className="h-6 px-2 text-[10px]"
-          onClick={(e) => { e.stopPropagation(); setShowFollowUpModal(true); }}
-        >
-          <CalendarClock className="w-3 h-3 mr-0.5" /> Follow-up
+        <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px]"
+          onClick={(e) => { e.stopPropagation(); setShowFollowUpModal(true); }}>
+          <CalendarClock className="w-3 h-3 mr-0.5" /> {t('kanban.follow_up')}
         </Button>
       </div>
 

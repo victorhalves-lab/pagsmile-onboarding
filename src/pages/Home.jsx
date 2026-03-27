@@ -103,7 +103,7 @@ export default function Home() {
             <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2.5 border border-white/10">
               <Zap className="w-4 h-4 text-[#5cf7cf]" />
               <span className="text-white/70 text-xs font-medium">
-                {moment().format('dddd, DD [de] MMMM')}
+                {moment().format(t('home.date_format'))}
               </span>
             </div>
           </div>

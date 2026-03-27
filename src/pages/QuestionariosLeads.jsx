@@ -41,7 +41,7 @@ const getScoreColor = (score) => {
   return 'text-red-600 bg-red-50 border-red-200';
 };
 
-const getActionButtons = (lead, navigate) => {
+const getActionButtons = (lead, navigate, t) => {
   const actions = [];
   if (['questionario_preenchido', 'analisado_priscila'].includes(lead.status)) {
     actions.push({ label: t('quest_leads.start_contact'), icon: Phone, variant: 'default', action: 'contact' });
@@ -486,7 +486,7 @@ export default function QuestionariosLeads() {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
-                        {getActionButtons(lead, navigate).map((btn, i) => {
+                        {getActionButtons(lead, navigate, t).map((btn, i) => {
                           const BIcon = btn.icon;
                           return (
                             <Button

@@ -549,4 +549,76 @@ export const en = {
   'meeting.subtitle': 'Fill in data collected during commercial meetings',
   'meeting.process_title': 'Process Meeting Notes',
   'meeting.process_subtitle': 'Use AI to process meeting notes',
+
+  // ═══ HOME ═══
+  'home.date_format': 'dddd, MMMM DD',
+
+  // ═══ ADMIN DASHBOARD FUNNEL ═══
+  'admin_dash.funnel_submissions': 'Submissions',
+  'admin_dash.funnel_ia_analysis': 'AI Analysis',
+  'admin_dash.funnel_ia_approved': 'AI Approved',
+  'admin_dash.funnel_manual_review': 'Manual Review',
+  'admin_dash.funnel_final_approved': 'Final Approved',
+
+  // ═══ KANBAN CARD ═══
+  'kanban.view': 'View',
+  'kanban.contact': 'Contact',
+  'kanban.proposal': 'Proposal',
+  'kanban.status': 'Status',
+  'kanban.follow_up': 'Follow-up',
+  'kanban.last_contact': 'Last contact:',
+  'kanban.prop_accepted': 'Prop. Accepted',
+  'kanban.prop_sent': 'Prop. Sent',
+  'kanban.contract': 'Contract',
+  'kanban.stale_days': '{days}d',
+
+  // ═══ PIPELINE METRICS ═══
+  'pipe_metrics.leads_in_funnel': 'Leads in Funnel',
+  'pipe_metrics.conversion_pct': '% Conversion (Closed)',
+  'pipe_metrics.total_tpv': 'Estimated Total TPV',
+  'pipe_metrics.closed_revenue': 'Closed Revenue',
+  'pipe_metrics.deals_closed': 'Deals Closed',
+  'pipe_metrics.lost': 'Lost',
+
+  // ═══ PIPELINE AGING ═══
+  'pipe_aging.title': 'Stale Leads ({count})',
+  'pipe_aging.subtitle': 'No interaction for 5+ days',
+  'pipe_aging.stale_days': '{days}d stale',
+  'pipe_aging.status.new_lead': 'New Lead',
+  'pipe_aging.status.analyzed': 'Analyzed',
+  'pipe_aging.status.in_contact': 'In Contact',
+  'pipe_aging.status.proposal_sent': 'Proposal Sent',
+  'pipe_aging.status.proposal_accepted': 'Proposal Accepted',
+  'pipe_aging.status.in_compliance': 'In Compliance',
+  'pipe_aging.status.compliance_ok': 'Compliance OK',
+  'pipe_aging.status.manual_review': 'Manual Review',
+
+  // ═══ PIPELINE CONVERSION CHART ═══
+  'pipe_chart.title': 'Conversion Funnel',
+  'pipe_chart.new_leads': 'New Leads',
+  'pipe_chart.in_contact': 'In Contact',
+  'pipe_chart.prop_sent': 'Prop. Sent',
+  'pipe_chart.prop_accepted': 'Prop. Accepted',
+  'pipe_chart.compliance': 'Compliance',
+  'pipe_chart.closed': 'Closed',
+  'pipe_chart.leads': 'leads',
+
+  // ═══ QUICK METRICS CARD ═══
+  'quick_metrics.avg_time_ia': 'Avg Time (AI)',
+  'quick_metrics.avg_time_manual': 'Avg Time (Manual)',
+  'quick_metrics.avg_score': 'Avg Portfolio Score',
+  'quick_metrics.pending_docs': 'Pending Docs',
+
+  // ═══ PROPOSAL METRICS ═══
+  'prop_metrics.total': 'Total',
+  'prop_metrics.acceptance_rate': 'Accept Rate',
+  'prop_metrics.acceptance_time': 'Accept Time',
+  'prop_metrics.revenue_won': 'Revenue Won',
+  'prop_metrics.rejected': 'Rejected',
+  'prop_metrics.expiring': 'Expiring',
+  'prop_metrics.drafts': '{count} drafts',
+  'prop_metrics.accepted': '{count} accepted',
+  'prop_metrics.avg_days': 'avg in days',
+  'prop_metrics.expired': '{count} expired',
+  'prop_metrics.next_3_days': 'next 3 days',
 };
