@@ -2,46 +2,49 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../../utils';
 import { FileText, Link as LinkIcon, Users, Shield, ClipboardList } from 'lucide-react';
-
-const actions = [
-  {
-    label: 'Nova Proposta',
-    description: 'Criar proposta comercial',
-    icon: FileText,
-    path: 'CriarProposta',
-    color: 'bg-[#2bc196]',
-  },
-  {
-    label: 'Link de Questionário',
-    description: 'Enviar para leads',
-    icon: ClipboardList,
-    path: 'GerarLinkOnboarding',
-    color: 'bg-[#36706c]',
-  },
-  {
-    label: 'Gerar Link',
-    description: 'Onboarding de merchant',
-    icon: LinkIcon,
-    path: 'GerarLinkOnboarding',
-    color: 'bg-[#002443]',
-  },
-  {
-    label: 'Ver Leads',
-    description: 'Leads recebidos',
-    icon: Users,
-    path: 'QuestionariosLeads',
-    color: 'bg-[#36706c]',
-  },
-  {
-    label: 'Compliance',
-    description: 'Dashboard completo',
-    icon: Shield,
-    path: 'AdminDashboard',
-    color: 'bg-[#002443]',
-  }
-];
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function QuickActions() {
+  const { t } = useTranslation();
+
+  const actions = [
+    {
+      label: t('quick.new_proposal'),
+      description: t('quick.new_proposal_desc'),
+      icon: FileText,
+      path: 'CriarProposta',
+      color: 'bg-[#2bc196]',
+    },
+    {
+      label: t('quick.questionnaire_link'),
+      description: t('quick.questionnaire_link_desc'),
+      icon: ClipboardList,
+      path: 'GerarLinkOnboarding',
+      color: 'bg-[#36706c]',
+    },
+    {
+      label: t('quick.generate_link'),
+      description: t('quick.generate_link_desc'),
+      icon: LinkIcon,
+      path: 'GerarLinkOnboarding',
+      color: 'bg-[#002443]',
+    },
+    {
+      label: t('quick.view_leads'),
+      description: t('quick.view_leads_desc'),
+      icon: Users,
+      path: 'QuestionariosLeads',
+      color: 'bg-[#36706c]',
+    },
+    {
+      label: t('quick.compliance'),
+      description: t('quick.compliance_desc'),
+      icon: Shield,
+      path: 'AdminDashboard',
+      color: 'bg-[#002443]',
+    }
+  ];
+
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
       {actions.map((action) => {

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Shield, ArrowRight, AlertTriangle } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 const STATUS_COLORS = {
   'Pendente': '#002443',
@@ -16,6 +17,7 @@ const STATUS_COLORS = {
 };
 
 export default function ComplianceSummary({ cases, helenaAnalyses }) {
+  const { t } = useTranslation();
   const metrics = useMemo(() => {
     const byStatus = {};
     cases.forEach(c => {
@@ -49,11 +51,11 @@ export default function ComplianceSummary({ cases, helenaAnalyses }) {
             <div className="p-1.5 rounded-lg bg-[#36706c]/10">
               <Shield className="w-3.5 h-3.5 text-[#36706c]" />
             </div>
-            Compliance
+            {t('compliance.title')}
           </CardTitle>
           <Link to={createPageUrl('AdminDashboard')}>
             <Button variant="ghost" size="sm" className="text-xs gap-1 text-[#2bc196] hover:text-[#002443] font-semibold">
-              Dashboard <ArrowRight className="w-3 h-3" />
+              {t('compliance.dashboard')} <ArrowRight className="w-3 h-3" />
             </Button>
           </Link>
         </div>
@@ -63,21 +65,21 @@ export default function ComplianceSummary({ cases, helenaAnalyses }) {
         <div className="grid grid-cols-4 gap-2">
           <div className="text-center p-2 rounded-xl bg-[#f4f4f4]">
             <p className="text-lg font-bold text-[#002443]">{metrics.total}</p>
-            <p className="text-[10px] text-[#282828]/40 font-medium">Total</p>
+            <p className="text-[10px] text-[#282828]/40 font-medium">{t('compliance.total')}</p>
           </div>
           <div className="text-center p-2 rounded-xl bg-[#2bc196]/5">
             <p className="text-lg font-bold text-[#2bc196]">{metrics.approved}</p>
-            <p className="text-[10px] text-[#282828]/40 font-medium">Aprovados</p>
+            <p className="text-[10px] text-[#282828]/40 font-medium">{t('compliance.approved')}</p>
           </div>
           <div className="text-center p-2 rounded-xl bg-[#f4f4f4]">
             <p className={`text-lg font-bold ${metrics.pendingManual > 0 ? 'text-amber-600' : 'text-[#002443]'}`}>
               {metrics.pendingManual}
             </p>
-            <p className="text-[10px] text-[#282828]/40 font-medium">Pendentes</p>
+            <p className="text-[10px] text-[#282828]/40 font-medium">{t('compliance.pending')}</p>
           </div>
           <div className="text-center p-2 rounded-xl bg-[#36706c]/5">
             <p className="text-lg font-bold text-[#36706c]">{metrics.autoApprovalRate}%</p>
-            <p className="text-[10px] text-[#282828]/40 font-medium">IA Auto</p>
+            <p className="text-[10px] text-[#282828]/40 font-medium">{t('compliance.ia_auto')}</p>
           </div>
         </div>
 
@@ -127,7 +129,7 @@ export default function ComplianceSummary({ cases, helenaAnalyses }) {
           <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-50 border border-amber-200/50">
             <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
             <p className="text-[11px] text-amber-700 font-medium">
-              {metrics.pendingManual} caso{metrics.pendingManual > 1 ? 's' : ''} aguardando análise manual
+              {t('compliance.pending_alert', { count: metrics.pendingManual })}
             </p>
           </div>
         )}

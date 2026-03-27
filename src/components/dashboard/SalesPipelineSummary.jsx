@@ -5,17 +5,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DollarSign, ArrowRight, AlertTriangle } from 'lucide-react';
 import moment from 'moment';
-
-const FUNNEL_STAGES = [
-  { key: 'leads', label: 'Leads', statuses: ['questionario_preenchido', 'analisado_priscila'], color: '#002443' },
-  { key: 'contato', label: 'Contato', statuses: ['em_contato_comercial'], color: '#36706c' },
-  { key: 'proposta', label: 'Proposta', statuses: ['proposta_enviada'], color: '#3B82F6' },
-  { key: 'aceita', label: 'Aceita', statuses: ['proposta_aceita'], color: '#8B5CF6' },
-  { key: 'compliance', label: 'Compliance', statuses: ['kyc_iniciado', 'kyc_aprovado', 'kyc_revisao_manual'], color: '#10B981' },
-  { key: 'fechado', label: 'Fechado', statuses: ['ativado'], color: '#059669' },
-];
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function SalesPipelineSummary({ leads }) {
+  const { t } = useTranslation();
+
+  const FUNNEL_STAGES = [
+    { key: 'leads', label: t('pipeline.leads'), statuses: ['questionario_preenchido', 'analisado_priscila'], color: '#002443' },
+    { key: 'contato', label: t('pipeline.contact'), statuses: ['em_contato_comercial'], color: '#36706c' },
+    { key: 'proposta', label: t('pipeline.proposal'), statuses: ['proposta_enviada'], color: '#3B82F6' },
+    { key: 'aceita', label: t('pipeline.accepted'), statuses: ['proposta_aceita'], color: '#8B5CF6' },
+    { key: 'compliance', label: t('pipeline.compliance'), statuses: ['kyc_iniciado', 'kyc_aprovado', 'kyc_revisao_manual'], color: '#10B981' },
+    { key: 'fechado', label: t('pipeline.closed'), statuses: ['ativado'], color: '#059669' },
+  ];
   const metrics = useMemo(() => {
     const stages = FUNNEL_STAGES.map(stage => ({
       ...stage,
@@ -47,11 +49,11 @@ export default function SalesPipelineSummary({ leads }) {
             <div className="p-1.5 rounded-lg bg-[#002443]/10">
               <DollarSign className="w-3.5 h-3.5 text-[#002443]" />
             </div>
-            Pipeline de Vendas
+            {t('pipeline.title')}
           </CardTitle>
           <Link to={createPageUrl('PipelineComercial')}>
             <Button variant="ghost" size="sm" className="text-xs gap-1 text-[#2bc196] hover:text-[#002443] font-semibold">
-              Ver Pipeline <ArrowRight className="w-3 h-3" />
+              {t('pipeline.view')} <ArrowRight className="w-3 h-3" />
             </Button>
           </Link>
         </div>
@@ -61,23 +63,23 @@ export default function SalesPipelineSummary({ leads }) {
         <div className="grid grid-cols-4 gap-2">
           <div className="text-center p-2 rounded-xl bg-[#f4f4f4]">
             <p className="text-lg font-bold text-[#002443]">{metrics.total}</p>
-            <p className="text-[10px] text-[#282828]/40 font-medium">Leads</p>
+            <p className="text-[10px] text-[#282828]/40 font-medium">{t('pipeline.leads')}</p>
           </div>
           <div className="text-center p-2 rounded-xl bg-[#2bc196]/5">
             <p className="text-lg font-bold text-[#2bc196]">
               R$ {(metrics.totalTPV / 1000000).toFixed(1)}M
             </p>
-            <p className="text-[10px] text-[#282828]/40 font-medium">TPV</p>
+            <p className="text-[10px] text-[#282828]/40 font-medium">{t('pipeline.tpv')}</p>
           </div>
           <div className="text-center p-2 rounded-xl bg-[#f4f4f4]">
             <p className="text-lg font-bold text-[#36706c]">{metrics.conversionRate}%</p>
-            <p className="text-[10px] text-[#282828]/40 font-medium">Conversão</p>
+            <p className="text-[10px] text-[#282828]/40 font-medium">{t('pipeline.conversion')}</p>
           </div>
           <div className="text-center p-2 rounded-xl bg-[#f4f4f4]">
             <p className={`text-lg font-bold ${metrics.staleLeads > 0 ? 'text-amber-600' : 'text-[#002443]'}`}>
               {metrics.staleLeads}
             </p>
-            <p className="text-[10px] text-[#282828]/40 font-medium">Parados</p>
+            <p className="text-[10px] text-[#282828]/40 font-medium">{t('pipeline.stale')}</p>
           </div>
         </div>
 
@@ -105,7 +107,7 @@ export default function SalesPipelineSummary({ leads }) {
           <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-50 border border-amber-200/50">
             <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />
             <p className="text-[11px] text-amber-700 font-medium">
-              {metrics.staleLeads} lead{metrics.staleLeads > 1 ? 's' : ''} sem interação há 7+ dias
+              {t('pipeline.stale_alert', { count: metrics.staleLeads })}
             </p>
           </div>
         )}

@@ -32,9 +32,11 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-// AdminLoginScreen removido - autenticação agora é via login por convite nativo
+import { useTranslation } from '@/lib/i18n/LanguageContext';
+import LanguageSelector from '@/components/LanguageSelector';
 
 export default function Layout({ children, currentPageName }) {
+  const { t } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [expandedSections, setExpandedSections] = React.useState([]);
   const [collapsed, setCollapsed] = React.useState(() => {
@@ -91,72 +93,72 @@ export default function Layout({ children, currentPageName }) {
   const menuStructure = [
     {
       id: 'leads',
-      label: 'Leads & Propostas',
+      label: t('menu.leads_proposals'),
       icon: Inbox,
       items: [
-        { label: 'Links de Questionários', path: 'LinksQuestionariosLeads', icon: LinkIcon },
-        { label: 'Questionários Recebidos', path: 'QuestionariosLeads', icon: ClipboardList, highlight: true },
-        { label: 'Pipeline Comercial', path: 'PipelineComercial', icon: Users },
-        { label: 'Gestão de Propostas', path: 'GestaoPropostas', icon: FileText },
-        { label: 'Criar Proposta', path: 'CriarProposta', icon: FileCheck },
-        { label: 'Propostas Padrão', path: 'GestaoPropostasPadrao', icon: FileText },
-        { label: 'Propostas PIX', path: 'GestaoPropostasPix', icon: FileText },
-        { label: 'Introducers', path: 'GestaoIntroducers', icon: UserPlus },
-        { label: 'Landing Pages', path: 'GestaoLandingPages', icon: LinkIcon },
-        { label: 'Questionário Reunião', path: 'QuestionarioReuniao', icon: ClipboardList },
-        { label: 'Questionário com Robô', path: 'ProcessMeetingNotes', icon: Brain },
+        { label: t('menu.questionnaire_links'), path: 'LinksQuestionariosLeads', icon: LinkIcon },
+        { label: t('menu.received_questionnaires'), path: 'QuestionariosLeads', icon: ClipboardList, highlight: true },
+        { label: t('menu.commercial_pipeline'), path: 'PipelineComercial', icon: Users },
+        { label: t('menu.proposal_management'), path: 'GestaoPropostas', icon: FileText },
+        { label: t('menu.create_proposal'), path: 'CriarProposta', icon: FileCheck },
+        { label: t('menu.standard_proposals'), path: 'GestaoPropostasPadrao', icon: FileText },
+        { label: t('menu.pix_proposals'), path: 'GestaoPropostasPix', icon: FileText },
+        { label: t('menu.introducers'), path: 'GestaoIntroducers', icon: UserPlus },
+        { label: t('menu.landing_pages'), path: 'GestaoLandingPages', icon: LinkIcon },
+        { label: t('menu.meeting_questionnaire'), path: 'QuestionarioReuniao', icon: ClipboardList },
+        { label: t('menu.robot_questionnaire'), path: 'ProcessMeetingNotes', icon: Brain },
       ]
     },
     {
       id: 'compliance',
-      label: 'Compliance',
+      label: t('menu.compliance'),
       icon: Shield,
       items: [
-        { label: 'Dashboard', path: 'AdminDashboard', icon: LayoutDashboard },
-        { label: 'Links de Compliance', path: 'LinksCompliance', icon: LinkIcon },
-        { label: 'Questionários Recebidos', path: 'QuestionariosRecebidos', icon: FileCheck },
-        { label: 'Análise de Casos', path: 'AnaliseDeCasos', icon: ClipboardList, hidden: true },
-        { label: 'Gestão de Documentos', path: 'GestaoDocumentos', icon: FileText },
-        { label: 'Revalidação', path: 'GestaoRevalidacao', icon: History },
-        { label: 'Links Subcontas', path: 'GerenciarSubsellerLinks', icon: Users },
+        { label: t('menu.dashboard'), path: 'AdminDashboard', icon: LayoutDashboard },
+        { label: t('menu.compliance_links'), path: 'LinksCompliance', icon: LinkIcon },
+        { label: t('menu.received_questionnaires'), path: 'QuestionariosRecebidos', icon: FileCheck },
+        { label: t('menu.case_analysis'), path: 'AnaliseDeCasos', icon: ClipboardList, hidden: true },
+        { label: t('menu.document_management'), path: 'GestaoDocumentos', icon: FileText },
+        { label: t('menu.revalidation'), path: 'GestaoRevalidacao', icon: History },
+        { label: t('menu.subaccount_links'), path: 'GerenciarSubsellerLinks', icon: Users },
       ]
     },
     {
       id: 'contratos',
-      label: 'Contratos',
+      label: t('menu.contracts'),
       icon: Stamp,
       items: [
-        { label: 'Gestão de Contratos', path: 'GestaoContratos', icon: FileText },
-        { label: 'Criar Contrato', path: 'CriarContrato', icon: FileCheck },
+        { label: t('menu.contract_management'), path: 'GestaoContratos', icon: FileText },
+        { label: t('menu.create_contract'), path: 'CriarContrato', icon: FileCheck },
       ]
     },
     {
       id: 'tools',
-      label: 'Ferramentas',
+      label: t('menu.tools'),
       icon: Wrench,
       items: [
-        { label: 'Gerar Link', path: 'GerarLinkOnboarding', icon: LinkIcon },
-        { label: 'Templates', path: 'TemplatesQuestionarios', icon: FileText },
-        { label: 'Templates de Mensagem', path: 'MessageTemplates', icon: FileText },
-        { label: 'Regras & Workflows', path: 'RegrasDeCompliance', icon: Settings },
+        { label: t('menu.generate_link'), path: 'GerarLinkOnboarding', icon: LinkIcon },
+        { label: t('menu.templates'), path: 'TemplatesQuestionarios', icon: FileText },
+        { label: t('menu.message_templates'), path: 'MessageTemplates', icon: FileText },
+        { label: t('menu.rules_workflows'), path: 'RegrasDeCompliance', icon: Settings },
       ]
     },
     {
       id: 'integrations',
-      label: 'Integrações',
+      label: t('menu.integrations'),
       icon: Plug,
       items: [
-        { label: 'CAF & BigDataCorp', path: 'IntegracoesExternas', icon: Plug },
-        { label: 'Helena IA', path: 'HelenaIA', icon: Brain },
+        { label: t('menu.caf_bigdatacorp'), path: 'IntegracoesExternas', icon: Plug },
+        { label: t('menu.helena_ai'), path: 'HelenaIA', icon: Brain },
       ]
     },
     {
       id: 'admin',
-      label: 'Administração',
+      label: t('menu.administration'),
       icon: Settings,
       items: [
-        { label: 'Configurações', path: 'Configuracoes', icon: Settings },
-        { label: 'Auditoria', path: 'Auditoria', icon: History },
+        { label: t('menu.settings'), path: 'Configuracoes', icon: Settings },
+        { label: t('menu.audit'), path: 'Auditoria', icon: History },
       ]
     }
   ];
@@ -218,11 +220,14 @@ export default function Layout({ children, currentPageName }) {
         <div className="fixed top-0 left-0 w-full h-2 bg-gradient-to-r from-[var(--pagsmile-blue)] via-[var(--pagsmile-green)] to-[var(--pagsmile-green-light)] z-[60]" />
         <div className="fixed left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-[var(--pagsmile-blue)] via-[var(--pagsmile-green)] to-[var(--pagsmile-green-light)] z-[60]" />
         <div className="fixed top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[var(--pagsmile-blue)] via-[var(--pagsmile-green)] to-[var(--pagsmile-green-light)] z-[60]" />
+        <div className="fixed top-4 right-4 z-[70]">
+          <LanguageSelector />
+        </div>
         <main className="pt-8 pb-8 px-4 md:px-8 max-w-7xl mx-auto min-h-screen">
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">{children}</div>
         </main>
         <footer className="py-4 text-center text-xs text-[var(--pagsmile-blue)]/40">
-          <p>&copy; {new Date().getFullYear()} Pagsmile.</p>
+          <p>{t('footer.copyright', { year: new Date().getFullYear() })}</p>
         </footer>
       </div>
     );
@@ -405,7 +410,7 @@ export default function Layout({ children, currentPageName }) {
               {/* Home */}
               <div className="mb-1">
                 <NavItem 
-                  item={{ label: 'Home', path: 'Home', icon: HomeIcon }} 
+                  item={{ label: t('menu.home'), path: 'Home', icon: HomeIcon }} 
                   isActive={currentPageName === 'Home'}
                   isCollapsed={collapsed}
                 />
@@ -414,13 +419,13 @@ export default function Layout({ children, currentPageName }) {
               <SectionDivider isCollapsed={collapsed} />
 
               {/* Primary: Leads, Compliance, Contratos */}
-              {!collapsed && <div className="px-3 mb-1"><span className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/20">Operações</span></div>}
+              {!collapsed && <div className="px-3 mb-1"><span className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/20">{t('sidebar.operations')}</span></div>}
               {renderSections(primarySections)}
 
               <SectionDivider isCollapsed={collapsed} />
 
               {/* Secondary: Tools, Integrations */}
-              {!collapsed && <div className="px-3 mb-1"><span className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/20">Sistema</span></div>}
+              {!collapsed && <div className="px-3 mb-1"><span className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/20">{t('sidebar.system')}</span></div>}
               {renderSections(secondarySections)}
 
               <SectionDivider isCollapsed={collapsed} />
@@ -431,7 +436,7 @@ export default function Layout({ children, currentPageName }) {
               {/* Parceiros - standalone */}
               <div className="mt-1">
                 <NavItem 
-                  item={{ label: 'Parceiros', path: 'ConfiguracaoParceiros', icon: Handshake }} 
+                  item={{ label: t('menu.partners'), path: 'ConfiguracaoParceiros', icon: Handshake }} 
                   isActive={currentPageName === 'ConfiguracaoParceiros'}
                   isCollapsed={collapsed}
                 />
@@ -442,10 +447,15 @@ export default function Layout({ children, currentPageName }) {
               {/* How It Works */}
               <div className="mt-2">
                 <NavItem 
-                  item={{ label: 'How It Works', path: 'HowItWorks', icon: BookOpen }} 
+                  item={{ label: t('menu.how_it_works'), path: 'HowItWorks', icon: BookOpen }} 
                   isActive={currentPageName === 'HowItWorks'}
                   isCollapsed={collapsed}
                 />
+              </div>
+
+              {/* Language Selector */}
+              <div className="mt-2">
+                <LanguageSelector variant={collapsed ? 'sidebar-collapsed' : 'sidebar'} />
               </div>
             </nav>
 
@@ -457,7 +467,7 @@ export default function Layout({ children, currentPageName }) {
               >
                 {collapsed 
                   ? <PanelLeft className="w-[18px] h-[18px]" />
-                  : <><PanelLeftClose className="w-[18px] h-[18px]" /><span className="text-xs ml-2">Recolher</span></>
+                  : <><PanelLeftClose className="w-[18px] h-[18px]" /><span className="text-xs ml-2">{t('sidebar.collapse')}</span></>
                 }
               </button>
             </div>
@@ -475,7 +485,7 @@ export default function Layout({ children, currentPageName }) {
                   </TooltipTrigger>
                   <TooltipContent side="right" className="bg-[#002443] text-white border-white/10">
                     <p className="text-xs font-semibold">{user?.full_name}</p>
-                    <p className="text-[10px] text-white/50">{isAdmin ? 'Administrador' : 'Usuário'}</p>
+                    <p className="text-[10px] text-white/50">{isAdmin ? t('sidebar.admin') : t('sidebar.user')}</p>
                   </TooltipContent>
                 </Tooltip>
               ) : (
@@ -486,7 +496,7 @@ export default function Layout({ children, currentPageName }) {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-semibold text-white truncate">{user?.full_name}</p>
-                      <p className="text-[10px] text-white/40 truncate">{isAdmin ? 'Administrador' : 'Usuário'}</p>
+                      <p className="text-[10px] text-white/40 truncate">{isAdmin ? t('sidebar.admin') : t('sidebar.user')}</p>
                     </div>
                   </div>
                 </>
@@ -498,7 +508,7 @@ export default function Layout({ children, currentPageName }) {
                 className={`w-full text-red-400/70 hover:text-red-300 hover:bg-red-500/10 font-medium text-xs ${collapsed ? 'justify-center px-0' : 'justify-start'}`}
               >
                 <LogOut className="w-3.5 h-3.5" />
-                {!collapsed && <span className="ml-1.5">Sair</span>}
+                {!collapsed && <span className="ml-1.5">{t('sidebar.logout')}</span>}
               </Button>
             </div>
           </aside>
@@ -531,7 +541,7 @@ export default function Layout({ children, currentPageName }) {
               <nav className="px-3 py-4">
                 <div className="mb-1">
                   <NavItem 
-                    item={{ label: 'Home', path: 'Home', icon: HomeIcon }} 
+                    item={{ label: t('menu.home'), path: 'Home', icon: HomeIcon }} 
                     isActive={currentPageName === 'Home'}
                     onClick={() => setMobileMenuOpen(false)}
                     isCollapsed={false}
@@ -539,7 +549,7 @@ export default function Layout({ children, currentPageName }) {
                 </div>
 
                 <SectionDivider isCollapsed={false} />
-                <div className="px-3 mb-1"><span className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/20">Operações</span></div>
+                <div className="px-3 mb-1"><span className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/20">{t('sidebar.operations')}</span></div>
                 <div className="space-y-0.5">
                   {primarySections.map(section => (
                     <NavSection key={section.id} section={section} isMobile isCollapsed={false} />
@@ -547,7 +557,7 @@ export default function Layout({ children, currentPageName }) {
                 </div>
 
                 <SectionDivider isCollapsed={false} />
-                <div className="px-3 mb-1"><span className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/20">Sistema</span></div>
+                <div className="px-3 mb-1"><span className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/20">{t('sidebar.system')}</span></div>
                 <div className="space-y-0.5">
                   {secondarySections.map(section => (
                     <NavSection key={section.id} section={section} isMobile isCollapsed={false} />
@@ -564,7 +574,7 @@ export default function Layout({ children, currentPageName }) {
                 {/* Parceiros - standalone mobile */}
                 <div className="mt-1">
                   <NavItem 
-                    item={{ label: 'Parceiros', path: 'ConfiguracaoParceiros', icon: Handshake }} 
+                    item={{ label: t('menu.partners'), path: 'ConfiguracaoParceiros', icon: Handshake }} 
                     isActive={currentPageName === 'ConfiguracaoParceiros'}
                     onClick={() => setMobileMenuOpen(false)}
                     isCollapsed={false}
@@ -575,11 +585,16 @@ export default function Layout({ children, currentPageName }) {
 
                 <div className="mt-2">
                   <NavItem 
-                    item={{ label: 'How It Works', path: 'HowItWorks', icon: BookOpen }} 
+                    item={{ label: t('menu.how_it_works'), path: 'HowItWorks', icon: BookOpen }} 
                     isActive={currentPageName === 'HowItWorks'}
                     onClick={() => setMobileMenuOpen(false)}
                     isCollapsed={false}
                   />
+                </div>
+
+                {/* Language Selector Mobile */}
+                <div className="mt-2 px-1">
+                  <LanguageSelector variant="sidebar" />
                 </div>
               </nav>
             </aside>

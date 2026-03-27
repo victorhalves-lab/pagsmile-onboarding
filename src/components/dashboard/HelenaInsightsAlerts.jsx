@@ -5,6 +5,7 @@ import {
   Brain, Clock, TrendingUp, AlertTriangle, 
   ArrowRight, Activity, Target
 } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function HelenaInsightsAlerts({ 
   pendingManualOver24h = 0,
@@ -13,13 +14,15 @@ export default function HelenaInsightsAlerts({
   manualTimeTrend = 0,
   staleLeads = 0
 }) {
+  const { t } = useTranslation();
+
   const alerts = [
     {
       icon: Clock,
       iconBg: 'bg-[#2bc196]/10',
       iconColor: 'text-[#2bc196]',
-      message: `${staleLeads} leads comerciais parados há mais de 7 dias sem interação`,
-      action: 'Ver Pipeline',
+      message: t('helena.stale_leads', { count: staleLeads }),
+      action: t('helena.view_pipeline'),
       actionLink: 'PipelineComercial',
       show: staleLeads > 0
     },
@@ -27,8 +30,8 @@ export default function HelenaInsightsAlerts({
       icon: Clock,
       iconBg: 'bg-[#002443]/10',
       iconColor: 'text-[#002443]',
-      message: `${pendingManualOver24h} submissões aguardando análise manual há mais de 24h`,
-      action: 'Ver fila',
+      message: t('helena.pending_manual', { count: pendingManualOver24h }),
+      action: t('helena.view_queue'),
       actionLink: 'QuestionariosRecebidos',
       show: pendingManualOver24h > 0
     },
@@ -36,8 +39,10 @@ export default function HelenaInsightsAlerts({
       icon: Target,
       iconBg: 'bg-[#2bc196]/10',
       iconColor: 'text-[#2bc196]',
-      message: `Taxa de aprovação automática ${approvalRateTrend >= 0 ? 'aumentou' : 'diminuiu'} ${Math.abs(approvalRateTrend)}% esta semana`,
-      action: 'Ver métricas',
+      message: approvalRateTrend >= 0 
+        ? t('helena.approval_rate_up', { value: Math.abs(approvalRateTrend) })
+        : t('helena.approval_rate_down', { value: Math.abs(approvalRateTrend) }),
+      action: t('helena.view_metrics'),
       actionLink: 'HelenaIA',
       show: approvalRateTrend !== 0
     },
@@ -45,8 +50,8 @@ export default function HelenaInsightsAlerts({
       icon: AlertTriangle,
       iconBg: 'bg-red-500/10',
       iconColor: 'text-red-500',
-      message: `${criticalScoresToday} merchants com score crítico detectados hoje`,
-      action: 'Analisar',
+      message: t('helena.critical_scores', { count: criticalScoresToday }),
+      action: t('helena.analyze'),
       actionLink: 'QuestionariosRecebidos',
       show: criticalScoresToday > 0
     },
@@ -54,8 +59,10 @@ export default function HelenaInsightsAlerts({
       icon: Activity,
       iconBg: 'bg-[#36706c]/10',
       iconColor: 'text-[#36706c]',
-      message: `Tempo médio de análise manual ${manualTimeTrend >= 0 ? 'reduziu' : 'aumentou'} ${Math.abs(manualTimeTrend)}%`,
-      action: 'Detalhes',
+      message: manualTimeTrend >= 0
+        ? t('helena.manual_time_down', { value: Math.abs(manualTimeTrend) })
+        : t('helena.manual_time_up', { value: Math.abs(manualTimeTrend) }),
+      action: t('helena.details'),
       actionLink: 'HelenaIA',
       show: manualTimeTrend !== 0
     }
@@ -74,8 +81,8 @@ export default function HelenaInsightsAlerts({
           <Brain className="w-5 h-5 text-[#5cf7cf]" />
         </div>
         <div>
-          <h3 className="font-bold text-white text-sm">Helena Insights & Alertas</h3>
-          <p className="text-[11px] text-white/50 font-medium">Alertas e recomendações em tempo real da IA</p>
+          <h3 className="font-bold text-white text-sm">{t('helena.title')}</h3>
+          <p className="text-[11px] text-white/50 font-medium">{t('helena.subtitle')}</p>
         </div>
       </div>
 

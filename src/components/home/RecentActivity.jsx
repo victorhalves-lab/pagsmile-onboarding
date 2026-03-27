@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Activity, Plus, Pencil, Trash2, Eye, CheckCircle, XCircle, Shield } from 'lucide-react';
 import moment from 'moment';
 import 'moment/locale/pt-br';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 moment.locale('pt-br');
 
@@ -17,6 +18,8 @@ const ACTION_CONFIG = {
 };
 
 export default function RecentActivity({ logs }) {
+  const { t } = useTranslation();
+
   if (!logs || logs.length === 0) {
     return (
       <Card className="rounded-2xl border-[#002443]/5 shadow-sm">
@@ -25,11 +28,11 @@ export default function RecentActivity({ logs }) {
             <div className="p-1.5 rounded-lg bg-[#002443]/10">
               <Activity className="w-3.5 h-3.5 text-[#002443]" />
             </div>
-            Atividades Recentes
+            {t('activity.title')}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-[#282828]/30 text-center py-6">Nenhuma atividade recente</p>
+          <p className="text-sm text-[#282828]/30 text-center py-6">{t('activity.none')}</p>
         </CardContent>
       </Card>
     );
@@ -42,7 +45,7 @@ export default function RecentActivity({ logs }) {
           <div className="p-1.5 rounded-lg bg-[#002443]/10">
             <Activity className="w-3.5 h-3.5 text-[#002443]" />
           </div>
-          Atividades Recentes
+          {t('activity.title')}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -61,7 +64,7 @@ export default function RecentActivity({ logs }) {
                   </p>
                   <div className="flex items-center gap-2 mt-1">
                     <span className="text-[10px] text-[#282828]/40 font-semibold">
-                      {log.changedBy?.split('@')[0] || 'Sistema'}
+                      {log.changedBy?.split('@')[0] || t('activity.system')}
                     </span>
                     <span className="text-[10px] text-[#282828]/20">•</span>
                     <span className="text-[10px] text-[#282828]/40">

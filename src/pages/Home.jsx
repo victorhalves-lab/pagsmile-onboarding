@@ -10,8 +10,10 @@ import ComplianceSummary from '@/components/home/ComplianceSummary';
 import HelenaInsightsAlerts from '@/components/dashboard/HelenaInsightsAlerts';
 import RecentActivity from '@/components/home/RecentActivity';
 import moment from 'moment';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function Home() {
+  const { t } = useTranslation();
   const { data: user } = useQuery({
     queryKey: ['home-user'],
     queryFn: () => base44.auth.me(),
@@ -71,9 +73,9 @@ export default function Home() {
 
   const greeting = (() => {
     const h = new Date().getHours();
-    if (h < 12) return 'Bom dia';
-    if (h < 18) return 'Boa tarde';
-    return 'Boa noite';
+    if (h < 12) return t('home.good_morning');
+    if (h < 18) return t('home.good_afternoon');
+    return t('home.good_evening');
   })();
 
   return (
@@ -90,12 +92,12 @@ export default function Home() {
             <div>
               <p className="text-[#5cf7cf] text-sm font-semibold tracking-wider uppercase mb-1">{greeting}</p>
               <h1 className="text-3xl md:text-4xl font-bold text-white leading-tight">
-                {user?.full_name?.split(' ')[0] || 'Usuário'}
+                {user?.full_name?.split(' ')[0] || t('home.user_fallback')}
               </h1>
               <p className="text-white/50 text-sm mt-2 max-w-md">
-                Aqui está o resumo geral da sua operação. Você tem{' '}
-                <span className="text-[#5cf7cf] font-semibold">{pendingCases} casos</span> pendentes e{' '}
-                <span className="text-[#5cf7cf] font-semibold">{openProposals} propostas</span> em aberto.
+                {t('home.summary')}{' '}
+                <span className="text-[#5cf7cf] font-semibold">{t('home.pending_cases', { count: pendingCases })}</span> {t('home.pending_and')}{' '}
+                <span className="text-[#5cf7cf] font-semibold">{t('home.open_proposals', { count: openProposals })}</span> {t('home.in_progress')}
               </p>
             </div>
             <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2.5 border border-white/10">
@@ -111,25 +113,25 @@ export default function Home() {
       {/* KPIs */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <KPICard
-          title="Leads Ativos"
+          title={t('home.active_leads')}
           value={activeLeads}
-          subtitle={`de ${leads.length} total`}
+          subtitle={t('home.of_total', { count: leads.length })}
           icon={Users}
           iconBg="bg-[#002443]/10"
           iconColor="text-[#002443]"
         />
         <KPICard
-          title="Propostas em Aberto"
+          title={t('home.open_proposals_title')}
           value={openProposals}
-          subtitle={`de ${proposals.length} total`}
+          subtitle={t('home.of_total', { count: proposals.length })}
           icon={FileText}
           iconBg="bg-[#2bc196]/10"
           iconColor="text-[#2bc196]"
         />
         <KPICard
-          title="Compliance Pendentes"
+          title={t('home.pending_compliance')}
           value={pendingCases}
-          subtitle={`de ${cases.length} total`}
+          subtitle={t('home.of_total', { count: cases.length })}
           icon={Shield}
           iconBg="bg-[#36706c]/10"
           iconColor="text-[#36706c]"

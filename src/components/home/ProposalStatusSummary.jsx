@@ -6,19 +6,21 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { FileText, ArrowRight, Clock } from 'lucide-react';
 import moment from 'moment';
-
-const STATUS_CONFIG = {
-  rascunho: { label: 'Rascunho', color: 'bg-[#002443]/10 text-[#002443]' },
-  enviada: { label: 'Enviada', color: 'bg-[#36706c]/10 text-[#36706c]' },
-  visualizada: { label: 'Visualizada', color: 'bg-[#2bc196]/10 text-[#2bc196]' },
-  aceita: { label: 'Aceita', color: 'bg-[#2bc196]/20 text-[#2bc196]' },
-  recusada: { label: 'Recusada', color: 'bg-red-100 text-red-600' },
-  contraproposta: { label: 'Contraproposta', color: 'bg-amber-100 text-amber-700' },
-  expirada: { label: 'Expirada', color: 'bg-[#f4f4f4] text-[#282828]/40' },
-  cancelada: { label: 'Cancelada', color: 'bg-[#f4f4f4] text-[#282828]/40' },
-};
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function ProposalStatusSummary({ proposals }) {
+  const { t } = useTranslation();
+
+  const STATUS_CONFIG = {
+    rascunho: { label: t('proposals.status.draft'), color: 'bg-[#002443]/10 text-[#002443]' },
+    enviada: { label: t('proposals.status.sent'), color: 'bg-[#36706c]/10 text-[#36706c]' },
+    visualizada: { label: t('proposals.status.viewed'), color: 'bg-[#2bc196]/10 text-[#2bc196]' },
+    aceita: { label: t('proposals.status.accepted'), color: 'bg-[#2bc196]/20 text-[#2bc196]' },
+    recusada: { label: t('proposals.status.rejected'), color: 'bg-red-100 text-red-600' },
+    contraproposta: { label: t('proposals.status.counter'), color: 'bg-amber-100 text-amber-700' },
+    expirada: { label: t('proposals.status.expired'), color: 'bg-[#f4f4f4] text-[#282828]/40' },
+    cancelada: { label: t('proposals.status.cancelled'), color: 'bg-[#f4f4f4] text-[#282828]/40' },
+  };
   const metrics = useMemo(() => {
     const byStatus = {};
     Object.keys(STATUS_CONFIG).forEach(s => { byStatus[s] = 0; });
@@ -47,11 +49,11 @@ export default function ProposalStatusSummary({ proposals }) {
             <div className="p-1.5 rounded-lg bg-[#2bc196]/10">
               <FileText className="w-3.5 h-3.5 text-[#2bc196]" />
             </div>
-            Propostas
+            {t('proposals.title')}
           </CardTitle>
           <Link to={createPageUrl('GestaoPropostas')}>
             <Button variant="ghost" size="sm" className="text-xs gap-1 text-[#2bc196] hover:text-[#002443] font-semibold">
-              Ver Todas <ArrowRight className="w-3 h-3" />
+              {t('proposals.view_all')} <ArrowRight className="w-3 h-3" />
             </Button>
           </Link>
         </div>
@@ -61,17 +63,17 @@ export default function ProposalStatusSummary({ proposals }) {
         <div className="grid grid-cols-3 gap-2">
           <div className="text-center p-2 rounded-xl bg-[#f4f4f4]">
             <p className="text-lg font-bold text-[#002443]">{metrics.total}</p>
-            <p className="text-[10px] text-[#282828]/40 font-medium">Total</p>
+            <p className="text-[10px] text-[#282828]/40 font-medium">{t('proposals.total')}</p>
           </div>
           <div className="text-center p-2 rounded-xl bg-[#2bc196]/5">
             <p className="text-lg font-bold text-[#2bc196]">{metrics.acceptanceRate}%</p>
-            <p className="text-[10px] text-[#282828]/40 font-medium">Aceitas</p>
+            <p className="text-[10px] text-[#282828]/40 font-medium">{t('proposals.accepted')}</p>
           </div>
           <div className="text-center p-2 rounded-xl bg-[#f4f4f4]">
             <p className={`text-lg font-bold ${metrics.expiringSoon > 0 ? 'text-amber-600' : 'text-[#002443]'}`}>
               {metrics.expiringSoon}
             </p>
-            <p className="text-[10px] text-[#282828]/40 font-medium">Vencendo</p>
+            <p className="text-[10px] text-[#282828]/40 font-medium">{t('proposals.expiring')}</p>
           </div>
         </div>
 
@@ -92,7 +94,7 @@ export default function ProposalStatusSummary({ proposals }) {
           <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-50 border border-amber-200/50">
             <Clock className="w-4 h-4 text-amber-500 shrink-0" />
             <p className="text-[11px] text-amber-700 font-medium">
-              {metrics.expiringSoon} proposta{metrics.expiringSoon > 1 ? 's' : ''} vencendo nos próximos 3 dias
+              {t('proposals.expiring_alert', { count: metrics.expiringSoon })}
             </p>
           </div>
         )}
