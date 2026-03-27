@@ -11,6 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Search, Plus, Eye, Pencil, Trash2, Loader2, X, FileText, Tag, Copy, Link2 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
+import SegmentQuickLinks from '@/components/proposals/SegmentQuickLinks';
 
 const STATUS_CONFIG = {
   rascunho: { label: 'Rascunho', color: 'bg-slate-100 text-slate-700' },
@@ -80,6 +81,9 @@ export default function GestaoPropostasPadrao() {
           </Button>
         </div>
       </div>
+
+      {/* Links Rápidos por Segmento */}
+      <SegmentQuickLinks proposals={proposals} />
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3 items-center">
