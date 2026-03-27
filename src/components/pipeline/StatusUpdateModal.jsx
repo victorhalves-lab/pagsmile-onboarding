@@ -14,15 +14,16 @@ import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const STATUS_OPTIONS = [
-  { value: 'questionario_preenchido', label: 'Questionário Preenchido' },
+  { value: 'questionario_preenchido', label: 'Lead Novo (Quest. Preenchido)' },
   { value: 'analisado_priscila', label: 'Analisado (Priscila)' },
   { value: 'em_contato_comercial', label: 'Em Contato Comercial' },
   { value: 'proposta_enviada', label: 'Proposta Enviada' },
   { value: 'proposta_aceita', label: 'Proposta Aceita' },
   { value: 'proposta_recusada', label: 'Proposta Recusada' },
-  { value: 'kyc_iniciado', label: 'KYC Iniciado' },
-  { value: 'kyc_aprovado', label: 'KYC Aprovado' },
-  { value: 'ativado', label: 'Ativado' },
+  { value: 'kyc_iniciado', label: 'Em Compliance / KYC' },
+  { value: 'kyc_aprovado', label: 'Compliance Aprovado' },
+  { value: 'kyc_revisao_manual', label: 'Compliance - Revisão Manual' },
+  { value: 'ativado', label: 'Contrato Gerado (Negócio Fechado)' },
   { value: 'perdido', label: 'Perdido' },
 ];
 
@@ -46,6 +47,7 @@ export default function StatusUpdateModal({ open, onClose, lead }) {
       });
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pipeline-leads'] });
       queryClient.invalidateQueries({ queryKey: ['leads-pipeline'] });
       queryClient.invalidateQueries({ queryKey: ['leads-questionarios'] });
       toast.success('Status atualizado!');

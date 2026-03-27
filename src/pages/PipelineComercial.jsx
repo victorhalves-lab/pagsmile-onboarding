@@ -27,8 +27,8 @@ const COLUNAS = [
   { id: 'em_contato_simplificado', name: 'Em Contato + Quest. Simplificado', color: '#F59E0B', statuses: ['em_contato_comercial'], questionnaireType: 'ANY' },
   { id: 'proposta_enviada', name: 'Proposta Enviada', color: '#3B82F6', statuses: ['proposta_enviada'] },
   { id: 'proposta_aceita', name: 'Proposta Aceita', color: '#8B5CF6', statuses: ['proposta_aceita'] },
-  { id: 'kyc_aprovado', name: 'KYC Aprovado', color: '#10B981', statuses: ['kyc_iniciado', 'kyc_aprovado', 'kyc_revisao_manual'] },
-  { id: 'ativado', name: 'Ativado', color: '#059669', statuses: ['ativado'] },
+  { id: 'compliance_kyc', name: 'Em Compliance / KYC', color: '#10B981', statuses: ['kyc_iniciado', 'kyc_aprovado', 'kyc_revisao_manual'] },
+  { id: 'contrato_gerado', name: '✅ Contrato Gerado', color: '#059669', statuses: ['ativado'] },
   { id: 'perdido', name: 'Perdido', color: '#EF4444', statuses: ['perdido', 'proposta_recusada'] },
 ];
 
@@ -48,10 +48,41 @@ export default function PipelineComercial() {
     queryFn: () => base44.entities.Lead.list('-created_date', 500)
   });
 
+  const { data: contracts = [] } = useQuery({
+    queryKey: ['pipeline-contracts'],
+    queryFn: () => base44.entities.Contract.list('-created_date', 500)
+  });
+
+  const { data: proposals = [] } = useQuery({
+    queryKey: ['pipeline-proposals'],
+    queryFn: () => base44.entities.Proposal.list('-created_date', 500)
+  });
+
   const { data: onboardingLinks = [] } = useQuery({
     queryKey: ['pipeline-onboarding-links'],
     queryFn: () => base44.entities.OnboardingLink.list('-created_date', 500)
   });
+
+  // Build enrichment maps: leadId -> has contract, leadId -> has proposal
+  const leadContractMap = useMemo(() => {
+    const map = {};
+    contracts.forEach(c => {
+      if (c.leadId) map[c.leadId] = c;
+    });
+    return map;
+  }, [contracts]);
+
+  const leadProposalMap = useMemo(() => {
+    const map = {};
+    proposals.forEach(p => {
+      if (p.leadId && p.isCurrentVersion !== false) {
+        if (!map[p.leadId] || new Date(p.created_date) > new Date(map[p.leadId].created_date)) {
+          map[p.leadId] = p;
+        }
+      }
+    });
+    return map;
+  }, [proposals]);
 
   // Map linkCode -> linkType for quick lookup
   const linkTypeMap = React.useMemo(() => {
@@ -114,11 +145,20 @@ export default function PipelineComercial() {
     return result;
   }, [leads, search, period]);
 
+  // Enrich leads with contract/proposal data for display
+  const enrichedLeads = useMemo(() => {
+    return filteredLeads.map(l => ({
+      ...l,
+      _contract: leadContractMap[l.id] || null,
+      _proposal: leadProposalMap[l.id] || null,
+    }));
+  }, [filteredLeads, leadContractMap, leadProposalMap]);
+
   // Group leads by column (considering questionnaire type)
   const columns = useMemo(() => {
     return COLUNAS.map(col => ({
       ...col,
-      leads: filteredLeads.filter(l => {
+      leads: enrichedLeads.filter(l => {
         if (!col.statuses.includes(l.status)) return false;
 
         // For "Leads (Quest. Completo)" — only leads from LEAD_QUESTIONNAIRE (or no link = direct)
@@ -130,7 +170,7 @@ export default function PipelineComercial() {
         return true;
       })
     }));
-  }, [filteredLeads, linkTypeMap]);
+  }, [enrichedLeads, linkTypeMap]);
 
   const onDragEnd = (result) => {
     if (!result.destination) return;
@@ -183,7 +223,7 @@ export default function PipelineComercial() {
       </div>
 
       {/* Metrics */}
-      <PipelineMetrics leads={filteredLeads} />
+      <PipelineMetrics leads={filteredLeads} contracts={contracts} proposals={proposals} />
 
       {/* Conversion chart + Aging alerts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -259,7 +299,7 @@ export default function PipelineComercial() {
                                 snapshot.isDragging ? 'shadow-lg ring-2 ring-[#2bc196]/30 -rotate-1' : 'hover:shadow-md hover:-translate-y-0.5'
                               }`}
                             >
-                              <LeadKanbanCard lead={lead} onAction={handleCardAction} />
+                              <LeadKanbanCard lead={lead} onAction={handleCardAction} contract={lead._contract} proposal={lead._proposal} />
                             </div>
                           )}
                         </Draggable>

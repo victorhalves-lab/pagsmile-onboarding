@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../../utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Eye, Phone, FileText, Clock, RefreshCw, CalendarClock } from 'lucide-react';
+import { Eye, Phone, FileText, Clock, RefreshCw, CalendarClock, FileCheck2, Send } from 'lucide-react';
 import moment from 'moment';
 import LeadSLAIndicator from '../leads/LeadSLAIndicator';
 import StatusUpdateModal from './StatusUpdateModal';
@@ -22,7 +22,7 @@ const getScoreBg = (score) => {
   return 'bg-red-500';
 };
 
-export default function LeadKanbanCard({ lead, onAction }) {
+export default function LeadKanbanCard({ lead, onAction, contract, proposal }) {
   const navigate = useNavigate();
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [showFollowUpModal, setShowFollowUpModal] = useState(false);
@@ -59,6 +59,22 @@ export default function LeadKanbanCard({ lead, onAction }) {
           <Badge variant="outline" className="text-[9px] px-1.5 py-0 text-amber-600 border-amber-300 bg-amber-50 gap-0.5">
             <Clock className="w-2.5 h-2.5" />
             {daysSinceUpdate}d
+          </Badge>
+        )}
+      </div>
+
+      {/* Proposal & Contract indicators */}
+      <div className="flex items-center gap-1.5 flex-wrap">
+        {proposal && (
+          <Badge className="text-[9px] px-1.5 py-0 bg-blue-50 text-blue-700 border-blue-200 gap-0.5">
+            <Send className="w-2.5 h-2.5" />
+            {proposal.status === 'aceita' ? 'Prop. Aceita' : proposal.status === 'enviada' || proposal.status === 'visualizada' ? 'Prop. Enviada' : proposal.codigo?.slice(-5) || 'Proposta'}
+          </Badge>
+        )}
+        {contract && (
+          <Badge className="text-[9px] px-1.5 py-0 bg-emerald-50 text-emerald-700 border-emerald-200 gap-0.5">
+            <FileCheck2 className="w-2.5 h-2.5" />
+            Contrato
           </Badge>
         )}
       </div>

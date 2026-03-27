@@ -33,14 +33,14 @@ export default function PipelineAgingAlerts({ leads }) {
 
   const statusLabel = (status) => {
     const map = {
-      questionario_preenchido: 'Novo',
+      questionario_preenchido: 'Lead Novo',
       analisado_priscila: 'Analisado',
       em_contato_comercial: 'Em Contato',
       proposta_enviada: 'Proposta Enviada',
       proposta_aceita: 'Proposta Aceita',
-      kyc_iniciado: 'KYC Iniciado',
-      kyc_aprovado: 'KYC Aprovado',
-      kyc_revisao_manual: 'KYC Revisão',
+      kyc_iniciado: 'Em Compliance',
+      kyc_aprovado: 'Compliance OK',
+      kyc_revisao_manual: 'Revisão Manual',
     };
     return map[status] || status;
   };

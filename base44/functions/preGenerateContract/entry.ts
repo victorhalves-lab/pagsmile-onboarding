@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
 
 Deno.serve(async (req) => {
   try {
@@ -245,12 +245,28 @@ Deno.serve(async (req) => {
       });
     }
 
-    // 9. Registrar no AuditLog
+    // 9. Atualizar Lead para "ativado" (negócio fechado) quando contrato é gerado
+    if (lead) {
+      await base44.asServiceRole.entities.Lead.update(lead.id, {
+        status: 'ativado',
+        lastInteractionDate: new Date().toISOString()
+      });
+
+      await base44.asServiceRole.entities.LeadActivity.create({
+        leadId: lead.id,
+        activityType: 'contrato_gerado',
+        description: `Contrato ${codigo} gerado automaticamente. Negócio considerado fechado.`,
+        performedBy: 'sistema_automacao',
+        activityDate: new Date().toISOString()
+      });
+    }
+
+    // 10. Registrar no AuditLog
     await base44.asServiceRole.entities.AuditLog.create({
       entityName: 'Contract',
       entityId: contract.id,
       actionType: 'CREATE',
-      actionDescription: `Contrato ${codigo} pré-gerado automaticamente após aprovação de compliance do CNPJ ${cnpj}`,
+      actionDescription: `Contrato ${codigo} pré-gerado automaticamente após aprovação de compliance do CNPJ ${cnpj}. Lead marcado como negócio fechado.`,
       changedBy: 'sistema_automacao',
       changeDate: new Date().toISOString(),
       details: {
@@ -258,7 +274,8 @@ Deno.serve(async (req) => {
         missingFields,
         proposalLocked,
         leadId: lead?.id,
-        proposalId: proposal?.id
+        proposalId: proposal?.id,
+        leadStatusUpdated: !!lead
       }
     });
 
