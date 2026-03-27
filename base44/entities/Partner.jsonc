@@ -1,0 +1,134 @@
+{
+  "name": "Partner",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nome do parceiro (Adquirente/Subadquirente)"
+    },
+    "isPrincipal": {
+      "type": "boolean",
+      "default": false,
+      "description": "Indica se este \u00e9 o parceiro principal para c\u00e1lculo de taxas base"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se o parceiro est\u00e1 ativo"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es sobre o parceiro"
+    },
+    "transactionFee": {
+      "type": "number",
+      "description": "Fee por transa\u00e7\u00e3o (R$)"
+    },
+    "antifraudCost": {
+      "type": "number",
+      "description": "Custo de Antifraude (R$)"
+    },
+    "threeDSCost": {
+      "type": "number",
+      "description": "Custo de 3DS (R$)"
+    },
+    "percentualAntecipacao": {
+      "type": "number",
+      "description": "Taxa de antecipa\u00e7\u00e3o global do parceiro (%)"
+    },
+    "mdr": {
+      "type": "object",
+      "description": "Taxas MDR de cr\u00e9dito por bandeira e faixa de parcelas",
+      "properties": {
+        "visa": {
+          "type": "object",
+          "properties": {
+            "avista": {
+              "type": "number"
+            },
+            "de2a6x": {
+              "type": "number"
+            },
+            "de7a12x": {
+              "type": "number"
+            },
+            "de13a21x": {
+              "type": "number"
+            }
+          }
+        },
+        "mastercard": {
+          "type": "object",
+          "properties": {
+            "avista": {
+              "type": "number"
+            },
+            "de2a6x": {
+              "type": "number"
+            },
+            "de7a12x": {
+              "type": "number"
+            },
+            "de13a21x": {
+              "type": "number"
+            }
+          }
+        },
+        "elo": {
+          "type": "object",
+          "properties": {
+            "avista": {
+              "type": "number"
+            },
+            "de2a6x": {
+              "type": "number"
+            },
+            "de7a12x": {
+              "type": "number"
+            },
+            "de13a21x": {
+              "type": "number"
+            }
+          }
+        },
+        "amex": {
+          "type": "object",
+          "properties": {
+            "avista": {
+              "type": "number"
+            },
+            "de2a6x": {
+              "type": "number"
+            },
+            "de7a12x": {
+              "type": "number"
+            },
+            "de13a21x": {
+              "type": "number"
+            }
+          }
+        },
+        "outras": {
+          "type": "object",
+          "properties": {
+            "avista": {
+              "type": "number"
+            },
+            "de2a6x": {
+              "type": "number"
+            },
+            "de7a12x": {
+              "type": "number"
+            },
+            "de13a21x": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

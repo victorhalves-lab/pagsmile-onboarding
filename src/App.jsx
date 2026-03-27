@@ -16,6 +16,7 @@ import QuestionarioReuniaoPix from './pages/QuestionarioReuniaoPix';
 import LeadQuestionnairePix from './pages/LeadQuestionnairePix';
 import SubsellerQuestionnaire from './pages/SubsellerQuestionnaire';
 import GerenciarSubsellerLinks from './pages/GerenciarSubsellerLinks';
+import ConfiguracaoParceiros from './pages/ConfiguracaoParceiros';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -76,6 +77,7 @@ const AuthenticatedApp = () => {
       <Route path="/LeadQuestionnairePix" element={<LayoutWrapper currentPageName="LeadQuestionnairePix"><LeadQuestionnairePix /></LayoutWrapper>} />
       <Route path="/SubsellerQuestionnaire" element={<LayoutWrapper currentPageName="SubsellerQuestionnaire"><SubsellerQuestionnaire /></LayoutWrapper>} />
       <Route path="/GerenciarSubsellerLinks" element={<LayoutWrapper currentPageName="GerenciarSubsellerLinks"><GerenciarSubsellerLinks /></LayoutWrapper>} />
+      <Route path="/ConfiguracaoParceiros" element={<LayoutWrapper currentPageName="ConfiguracaoParceiros"><ConfiguracaoParceiros /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

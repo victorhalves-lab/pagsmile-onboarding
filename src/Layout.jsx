@@ -27,7 +27,8 @@ import {
   PanelLeft,
   Home as HomeIcon,
   Wrench,
-  BookOpen
+  BookOpen,
+  Handshake
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -143,6 +144,7 @@ export default function Layout({ children, currentPageName }) {
       items: [
         { label: 'CAF & BigDataCorp', path: 'IntegracoesExternas', icon: Plug },
         { label: 'Helena IA', path: 'HelenaIA', icon: Brain },
+        { label: 'Parceiros', path: 'ConfiguracaoParceiros', icon: Handshake },
       ]
     },
     {
