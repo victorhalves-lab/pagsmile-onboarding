@@ -23,6 +23,7 @@ import LeadsPropostasSection from '../components/howitworks/LeadsPropostasSectio
 import ContratosSection from '../components/howitworks/ContratosSection';
 import SidebarPagesSection from '../components/howitworks/SidebarPagesSection';
 import PersonasDetailedSection from '../components/howitworks/PersonasDetailedSection';
+import FlowchartsSection from '../components/howitworks/FlowchartsSection';
 
 export default function HowItWorks() {
   const [expandedSections, setExpandedSections] = useState({});
@@ -45,7 +46,7 @@ export default function HowItWorks() {
           <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0">12+ Módulos</Badge>
           <Badge className="bg-blue-50 text-blue-700 border-0">50+ Páginas</Badge>
           <Badge className="bg-purple-50 text-purple-700 border-0">27+ Entidades</Badge>
-          <Badge className="bg-orange-50 text-orange-700 border-0">9 Fluxos de Compliance</Badge>
+          <Badge className="bg-orange-50 text-orange-700 border-0">9 Fluxos Diagramados</Badge>
           <Badge className="bg-pink-50 text-pink-700 border-0">3 IAs (SENTINEL, PRISCILA, Lead Qualifier)</Badge>
           <Badge className="bg-red-50 text-red-700 border-0">3 Templates Compliance</Badge>
           <Badge className="bg-cyan-50 text-cyan-700 border-0">305+ Perguntas</Badge>
@@ -153,9 +154,16 @@ export default function HowItWorks() {
       </Section>
 
       {/* ═══════════════════════════════════════════════════════ */}
-      {/* 6. FLUXOS COMPLETOS */}
+      {/* 6. DIAGRAMAS DE FLUXO — VISÃO MICROSCÓPICA */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="fluxos" title="6. Fluxos Completos da Aplicação" icon={Workflow} badge="9 Variantes + 3 Jornadas" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="diagramas-fluxo" title="6. Diagramas de Fluxo — Visão Microscópica de Todos os Processos" icon={GitBranch} badge="9 Fluxos Completos" expandedSections={expandedSections} toggleSection={toggleSection}>
+        <FlowchartsSection />
+      </Section>
+
+      {/* ═══════════════════════════════════════════════════════ */}
+      {/* 7. FLUXOS RESUMIDOS */}
+      {/* ═══════════════════════════════════════════════════════ */}
+      <Section id="fluxos" title="7. Fluxos Resumidos por Perspectiva" icon={Workflow} badge="4 Perspectivas" expandedSections={expandedSections} toggleSection={toggleSection}>
         <Tabs defaultValue="merchant_flow" className="w-full">
           <TabsList className="grid w-full grid-cols-4 mb-6">
             <TabsTrigger value="merchant_flow">Merchant</TabsTrigger>
@@ -163,97 +171,14 @@ export default function HowItWorks() {
             <TabsTrigger value="interno">Compliance</TabsTrigger>
             <TabsTrigger value="ia">IA SENTINEL</TabsTrigger>
           </TabsList>
-
-          <TabsContent value="merchant_flow">
-            <div className="bg-blue-50 rounded-2xl p-6 border border-blue-100">
-              <h3 className="font-bold text-[#002443] mb-1 flex items-center gap-2"><Globe className="w-5 h-5 text-blue-600" /> Jornada do Merchant — Onboarding Público</h3>
-              <p className="text-sm text-[#002443]/60 mb-6">9 variantes de compliance + questionário de lead</p>
-              <div className="space-y-1">
-                <FlowStep number="1" title="Recebimento do Link" icon={LinkIcon} description="Link exclusivo com código único, tipo de compliance e UTMs." details={["Formato: /ComplianceOnboardingStart?ref=CODE", "Link trackado em OnboardingLink com métricas", "9 tipos de compliance: PIX, Full, Lite, E-commerce, SaaS, Merchant, Gateway, Marketplace, Genérico"]} />
-                <FlowStep number="2" title="Questionário Dinâmico" icon={ClipboardList} description="Multi-step com perguntas carregadas do template, auto-save, validação e risk weights." details={["10 tipos de campo: TEXT, NUMBER, DATE, SELECT, MULTI_SELECT, FILE_UPLOAD, BOOLEAN, EMAIL, PHONE, CPF_CNPJ", "Lógica condicional por resposta anterior", "Progresso salvo automaticamente a cada step", "Analytics de page_complete registrado"]} />
-                <FlowStep number="3" title="Upload de Documentos" icon={FileUp} description="Documentos obrigatórios definidos no template (13-19 docs dependendo do tipo)." details={["Formatos: PDF, JPG, JPEG, PNG (10MB max)", "Upload com barra de progresso", "Merchant: 13 docs, Gateway: 19 docs, Marketplace: 16 docs"]} />
-                <FlowStep number="4" title="Verificação Biométrica" icon={ScanFace} description="Liveness + Facematch com 7 estágios." details={["Welcome → Instruções → Scanning → Selfie → Documento → Processing → Completed", "Integração CAF para liveness e facematch"]} />
-                <FlowStep number="5" title="Conclusão" icon={CheckCircle2} description="Confirmação de envio. Caso entra na fila de análise SENTINEL." />
-              </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="comercial">
-            <div className="bg-green-50 rounded-2xl p-6 border border-green-100">
-              <h3 className="font-bold text-[#002443] mb-1 flex items-center gap-2"><DollarSign className="w-5 h-5 text-green-600" /> Jornada Comercial — Lead até Contrato</h3>
-              <p className="text-sm text-[#002443]/60 mb-6">Fluxo completo desde a captação do lead até a assinatura do contrato</p>
-              <div className="space-y-1">
-                <FlowStep number="1" title="Captação do Lead" icon={Inbox} color="bg-green-600" description="Lead preenche questionário público (4 variantes: Completo v2.0, Completo v1, Simplificado, PIX)." details={["Autocomplete CNPJ na v2.0 preenche 14 campos", "Cria Lead + LeadActivity automaticamente", "Dispara análise PRISCILA e Lead Qualifier por IA"]} />
-                <FlowStep number="2" title="Qualificação IA" icon={Brain} color="bg-green-600" description="PRISCILA: score 0-100, risco, decisão. Lead Qualifier: maturidade (EXCELENTE → INSUFICIENTE)." details={["Score de qualidade, nível de risco, caminho de decisão", "Classificação: AUTO_APROVAR, AUTO_COM_FLAG, REVISÃO, REJEITAR", "Sugestões da IA para o time de vendas"]} />
-                <FlowStep number="3" title="Pipeline Kanban" icon={BarChart3} color="bg-green-600" description="Lead aparece no Pipeline Comercial (7 colunas). Time arrasta entre colunas." details={["Colunas: Leads, Em Contato, Proposta Enviada, Aceita, Compliance, Contrato, Perdido", "Métricas de TPV e receita por coluna", "Aging alerts para leads parados"]} />
-                <FlowStep number="4" title="Proposta Comercial" icon={FileText} color="bg-green-600" description="Time cria proposta com taxas por bandeira, antecipação, fees. 3 modalidades disponíveis." details={["Personalizada: taxas editáveis por bandeira/faixa + preview em tempo real", "Padrão por Segmento: taxas fixas auto-preenchidas (readOnly), dados empresa + segmento", "PIX: proposta específica para PIX com taxa % ou fixa", "Link público com token para o cliente visualizar/aceitar/recusar"]} />
-                <FlowStep number="5" title="Aceite e Compliance" icon={Shield} color="bg-green-600" description="Cliente aceita proposta → status muda → inicia fluxo de compliance." details={["Proposta muda para 'aceita', lead muda para 'proposta_aceita'", "Template de compliance selecionado automaticamente", "Sessões anteriores de compliance são limpas"]} />
-                <FlowStep number="6" title="Contrato" icon={Stamp} color="bg-green-600" description="Após compliance aprovado, contrato é pré-gerado por IA com dados do lead + proposta." details={["IA preenche todos os campos possíveis automaticamente", "Time revisa e complementa campos faltantes", "Link público para assinatura digital pelo cliente"]} />
-              </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="interno">
-            <div className="bg-[#002443]/5 rounded-2xl p-6 border border-[#002443]/10">
-              <h3 className="font-bold text-[#002443] mb-1 flex items-center gap-2"><Shield className="w-5 h-5 text-[#002443]" /> Jornada do Time de Compliance</h3>
-              <p className="text-sm text-[#002443]/60 mb-6">Desde a geração do link até a decisão final e revalidação</p>
-              <div className="space-y-1">
-                <FlowStep number="1" title="Geração de Links" icon={LinkIcon} color="bg-[#002443]" description="3 páginas de links (Leads, Compliance, Onboarding) com quick links por tipo e template." />
-                <FlowStep number="2" title="Dashboard 20+ KPIs" icon={BarChart3} color="bg-[#002443]" description="Dashboard Compliance com gráficos de funil, pizza Helena, tendência, distribuição de scores, risk cards." />
-                <FlowStep number="3" title="Análise IA SENTINEL" icon={Brain} color="bg-[#002443]" description="Análise automática em 3 fases (Questionário, Validações Externas, Consolidação)." />
-                <FlowStep number="4" title="Revisão Manual" icon={FileSearch} color="bg-[#002443]" description="AnaliseDeCasos com: dados merchant, respostas, docs, painel IA, validações, auditoria. Botões: Aprovar, Recusar, Solicitar Docs." />
-                <FlowStep number="5" title="Revalidação" icon={RefreshCw} color="bg-[#002443]" description="Ciclo de recertificação: periódica, baseada em risco, regulatória ou manual." />
-              </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="ia">
-            <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-2xl p-6 border border-purple-100">
-              <h3 className="font-bold text-[#002443] mb-2 flex items-center gap-2"><Sparkles className="w-5 h-5 text-purple-500" /> IA SENTINEL — 3 Fases</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                {[
-                  { phase: "1", title: "Questionário", color: "purple", items: ["Analisa respostas", "Qualidade textual", "Padrões evasivos", "Findings por seção", "Score 0-1000"] },
-                  { phase: "2", title: "Validações Externas", color: "blue", items: ["CAF: Liveness/Facematch", "BigDataCorp: KYC/PEP/Sanções", "Cruzamento declarado vs externo", "Divergências > 50%", "Score 0-1000"] },
-                  { phase: "3", title: "Consolidação", color: "green", items: ["Combina scores", "Bônus consistência", "Overrides red flags", "Decisão final", "Parecer + relatório"] }
-                ].map((phase, i) => (
-                  <div key={i} className="bg-white rounded-xl p-5 border border-slate-200">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className={`w-8 h-8 bg-${phase.color}-500 text-white rounded-full flex items-center justify-center font-bold text-sm`}>{phase.phase}</div>
-                      <h4 className="font-bold text-[#002443]">Fase {phase.phase}: {phase.title}</h4>
-                    </div>
-                    <ul className="space-y-1.5">
-                      {phase.items.map((item, j) => (
-                        <li key={j} className="text-xs text-[#002443]/70 flex items-start gap-1.5"><CircleDot className="w-3 h-3 text-[#2bc196] mt-0.5 shrink-0" />{item}</li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-              <div className="bg-white rounded-xl p-5 border border-slate-200">
-                <h4 className="font-bold text-[#002443] mb-3">Entidades Geradas pela IA</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {[
-                    { entity: "ComplianceScore", desc: "Score consolidado 3 fases, classificações, recomendação, sumário, red flags, confiança 0-100" },
-                    { entity: "ComplianceFinding", desc: "Cada problema: severidade (INFO/LOW/MEDIUM/HIGH/CRITICAL/BLOQUEANTE), evidência, dedução" },
-                    { entity: "QualityAssessment", desc: "Qualidade textual: especificidade, coerência, profundidade, linguagem (1-5 cada)" },
-                    { entity: "HelenaAnalysis", desc: "Execução IA: score 0-100, decisão, breakdown, fatores, red flags, feedback analista" },
-                  ].map((e, i) => (
-                    <div key={i} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg">
-                      <Badge className="bg-purple-100 text-purple-700 font-mono text-xs border-0 shrink-0">{e.entity}</Badge>
-                      <p className="text-xs text-[#002443]/70">{e.desc}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </TabsContent>
+...
         </Tabs>
       </Section>
 
       {/* ═══════════════════════════════════════════════════════ */}
       {/* 7. MODELO DE DADOS */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="entidades" title="7. Modelo de Dados Completo" icon={Database} badge="27+ Entidades" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="entidades" title="8. Modelo de Dados Completo" icon={Database} badge="27+ Entidades" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="space-y-4">
           {[
             { category: "Core do Onboarding", color: "border-l-[#2bc196]", entities: [
@@ -326,7 +251,7 @@ export default function HowItWorks() {
       {/* ═══════════════════════════════════════════════════════ */}
       {/* 8. INTEGRAÇÕES */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="integracoes" title="8. Integrações e Tecnologias" icon={Plug} badge="5 Provedores" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="integracoes" title="9. Integrações e Tecnologias" icon={Plug} badge="5 Provedores" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           {[
             { name: "CAF", color: "purple", items: ["Liveness (prova de vida)", "Facematch (1:1)", "Face Authentication", "Document OCR", "Documentoscopy", "Onboarding Web"] },
@@ -368,7 +293,7 @@ export default function HowItWorks() {
       {/* ═══════════════════════════════════════════════════════ */}
       {/* 9. BACKEND FUNCTIONS */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="backend" title="9. Backend Functions e Automações" icon={Server} badge="30+ Functions" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="backend" title="10. Backend Functions e Automações" icon={Server} badge="30+ Functions" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {[
             { name: "analyzeOnboarding", desc: "SENTINEL: 3 fases de análise → ComplianceScore + Findings + QualityAssessments" },
@@ -416,7 +341,7 @@ export default function HowItWorks() {
       {/* ═══════════════════════════════════════════════════════ */}
       {/* 10. PERSONAS */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="personas" title="10. Personas e Jornadas" icon={Users} badge="4 Personas" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="personas" title="11. Personas e Jornadas" icon={Users} badge="4 Personas" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {[
             { icon: Building2, color: "bg-[#2bc196]", name: "Merchant (Cliente)", desc: "Empresa que deseja se credenciar",
@@ -460,7 +385,7 @@ export default function HowItWorks() {
       {/* ═══════════════════════════════════════════════════════ */}
       {/* 11. JORNADAS DETALHADAS POR PERSONA */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="jornadas" title="11. Jornadas Detalhadas por Persona — Atividades, Benefícios e Valor" icon={Award} badge="5 Personas × Atividades Completas" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="jornadas" title="12. Jornadas Detalhadas por Persona — Atividades, Benefícios e Valor" icon={Award} badge="5 Personas × Atividades Completas" expandedSections={expandedSections} toggleSection={toggleSection}>
         <PersonasDetailedSection />
       </Section>
 
@@ -470,7 +395,7 @@ export default function HowItWorks() {
           Documentação Completa e Microscópica — Pagsmile Compliance, Onboarding, Leads, Propostas, Contratos, Introducers e Landing Pages • Versão 6.0 • {new Date().toLocaleDateString('pt-BR')}
         </p>
         <p className="text-xs text-white/40 mt-1">
-          11 Seções • 50+ Páginas • 27+ Entidades • 9 Fluxos Compliance • 3 Templates • 3 IAs • 3 Tipos Proposta + Links Rápidos • 30+ Backend Functions • 5 Integrações • 5 Personas Detalhadas
+          12 Seções • 50+ Páginas • 27+ Entidades • 9 Fluxos Diagramados • 3 Templates • 3 IAs • 3 Tipos Proposta + Links Rápidos • 30+ Backend Functions • 5 Integrações • 5 Personas Detalhadas
         </p>
       </div>
     </div>
