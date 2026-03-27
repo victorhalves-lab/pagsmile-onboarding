@@ -14,8 +14,9 @@ import CardTaxasCartao from '@/components/proposals/CardTaxasCartao';
 import CardAntecipacao from '@/components/proposals/CardAntecipacao';
 import CardOutrasTaxas from '@/components/proposals/CardOutrasTaxas';
 import PropostaPreview from '@/components/proposals/PropostaPreview';
+import { DEFAULT_SEGMENT_RATES } from '@/lib/rateCalculator';
 
-const SEGMENTS = ['Educação', 'Infoprodutos', 'E-commerce', 'SaaS', 'Gateway', 'Merchan', 'Marketplace'];
+const SEGMENTS = ['Educação', 'Infoprodutos', 'E-commerce', 'SaaS', 'Gateway', 'Marketplace'];
 const BUSINESS_SUB_CATEGORIES = [
   { value: 'MERCHAN', label: 'Merchant' },
   { value: 'GATEWAY', label: 'Gateway' },
@@ -98,7 +99,48 @@ export default function CriarPropostaPadrao() {
     }
   }, [existingProposal]);
 
-  const updateForm = (field, value) => setForm(prev => ({ ...prev, [field]: value }));
+  const updateForm = (field, value) => {
+    setForm(prev => ({ ...prev, [field]: value }));
+
+    // Auto-preencher taxas quando segmento é selecionado (apenas se não estiver editando)
+    if (field === 'segment' && value && !editId) {
+      const segDefault = DEFAULT_SEGMENT_RATES.find(s => s.segmentName === value);
+      if (segDefault) {
+        const bandeiras = ['visa', 'mastercard', 'elo', 'amex', 'outras'];
+        const cartao = {};
+        bandeiras.forEach(b => {
+          cartao[b] = {
+            avista: segDefault.mdrAvista,
+            de2a6x: segDefault.mdr2a6x,
+            de7a12x: segDefault.mdr7a12x,
+            de13a21x: segDefault.mdr13a21x,
+          };
+        });
+
+        setRates({
+          cartao,
+          pix: { tipo: 'percentual', valor: segDefault.pixTaxaPercentual },
+          boleto: 2.99,
+          feeTransacao: segDefault.feeTransacao,
+          antifraude: segDefault.antifraude,
+          alertaPreChargeback: 0.55,
+          taxa3ds: segDefault.taxa3ds,
+          setup: 5000,
+          minimoGarantido: { mes1: '', mes2: '', mes3: '' },
+        });
+
+        setForm(prev => ({
+          ...prev,
+          [field]: value,
+          taxaAntecipacao: segDefault.percentualAntecipacao,
+          percentualAntecipacao: 100,
+          usaAntecipacao: true,
+        }));
+
+        toast.success(`Taxas do segmento "${value}" preenchidas automaticamente`);
+      }
+    }
+  };
   const updateRates = (newRates) => setRates(newRates);
 
   const gerarCodigo = () => `STDP-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 99999)).padStart(5, '0')}`;
