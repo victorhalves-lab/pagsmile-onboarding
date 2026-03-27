@@ -16,6 +16,14 @@
       "default": true,
       "description": "Se o parceiro est\u00e1 ativo"
     },
+    "modelo": {
+      "type": "string",
+      "description": "Modelo de precifica\u00e7\u00e3o (ex: MDR fixo bandeira\u00d7MCC, Interchange + markup)"
+    },
+    "parcelasMax": {
+      "type": "string",
+      "description": "Parcelas m\u00e1ximas suportadas (ex: 12x, 21x, 24x)"
+    },
     "notes": {
       "type": "string",
       "description": "Observa\u00e7\u00f5es sobre o parceiro"
@@ -32,96 +40,50 @@
       "type": "number",
       "description": "Custo de 3DS (R$)"
     },
+    "antecipacaoInfo": {
+      "type": "string",
+      "description": "Informa\u00e7\u00f5es sobre antecipa\u00e7\u00e3o (texto livre)"
+    },
     "percentualAntecipacao": {
       "type": "number",
       "description": "Taxa de antecipa\u00e7\u00e3o global do parceiro (%)"
     },
-    "mdr": {
-      "type": "object",
-      "description": "Taxas MDR de cr\u00e9dito por bandeira e faixa de parcelas",
-      "properties": {
-        "visa": {
-          "type": "object",
-          "properties": {
-            "avista": {
-              "type": "number"
-            },
-            "de2a6x": {
-              "type": "number"
-            },
-            "de7a12x": {
-              "type": "number"
-            },
-            "de13a21x": {
-              "type": "number"
-            }
-          }
-        },
-        "mastercard": {
-          "type": "object",
-          "properties": {
-            "avista": {
-              "type": "number"
-            },
-            "de2a6x": {
-              "type": "number"
-            },
-            "de7a12x": {
-              "type": "number"
-            },
-            "de13a21x": {
-              "type": "number"
-            }
-          }
-        },
-        "elo": {
-          "type": "object",
-          "properties": {
-            "avista": {
-              "type": "number"
-            },
-            "de2a6x": {
-              "type": "number"
-            },
-            "de7a12x": {
-              "type": "number"
-            },
-            "de13a21x": {
-              "type": "number"
-            }
-          }
-        },
-        "amex": {
-          "type": "object",
-          "properties": {
-            "avista": {
-              "type": "number"
-            },
-            "de2a6x": {
-              "type": "number"
-            },
-            "de7a12x": {
-              "type": "number"
-            },
-            "de13a21x": {
-              "type": "number"
-            }
-          }
-        },
-        "outras": {
-          "type": "object",
-          "properties": {
-            "avista": {
-              "type": "number"
-            },
-            "de2a6x": {
-              "type": "number"
-            },
-            "de7a12x": {
-              "type": "number"
-            },
-            "de13a21x": {
-              "type": "number"
+    "mdrByMcc": {
+      "type": "array",
+      "description": "Taxas MDR por MCC, cada item cont\u00e9m MCC, descri\u00e7\u00e3o e taxas por bandeira",
+      "items": {
+        "type": "object",
+        "properties": {
+          "mccCode": {
+            "type": "string",
+            "description": "C\u00f3digo MCC (ex: 4816, 5814, Demais)"
+          },
+          "mccDescription": {
+            "type": "string",
+            "description": "Descri\u00e7\u00e3o do MCC (ex: Rede de Computadores)"
+          },
+          "rates": {
+            "type": "object",
+            "description": "Taxas por bandeira, cada bandeira tem debito, avista, de2a6x, de7a12x, de13a24x",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "debito": {
+                  "type": "number"
+                },
+                "avista": {
+                  "type": "number"
+                },
+                "de2a6x": {
+                  "type": "number"
+                },
+                "de7a12x": {
+                  "type": "number"
+                },
+                "de13a24x": {
+                  "type": "number"
+                }
+              }
             }
           }
         }

@@ -1,120 +1,103 @@
-import React from 'react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Copy } from 'lucide-react';
-import { toast } from 'sonner';
+import React, { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 
-const BANDEIRAS = ['visa', 'mastercard', 'elo', 'amex', 'outras'];
-const BANDEIRA_LABELS = { visa: 'Visa', mastercard: 'Mastercard', elo: 'Elo', amex: 'Amex', outras: 'Outras' };
-const FAIXAS = ['avista', 'de2a6x', 'de7a12x', 'de13a21x'];
-const FAIXA_LABELS = { avista: 'À Vista', de2a6x: '2x a 6x', de7a12x: '7x a 12x', de13a21x: '13x a 21x' };
+const BANDEIRA_LABELS = {
+  mastercard: 'Mastercard', visa: 'Visa', elo: 'Elo',
+  amex: 'Amex', hiper: 'Hiper', todas: 'Todas'
+};
 
-function RateInput({ value, onChange }) {
+const FAIXA_COLS = [
+  { key: 'debito', label: 'Débito' },
+  { key: 'avista', label: 'Crédito 1x' },
+  { key: 'de2a6x', label: '2x-6x' },
+  { key: 'de7a12x', label: '7x-12x' },
+  { key: 'de13a24x', label: '13x-24x' },
+];
+
+function formatRate(val) {
+  if (!val && val !== 0) return '-';
+  return `${(val * 100).toFixed(2)}%`;
+}
+
+function MCCBlock({ mccItem }) {
+  const bandeiras = Object.keys(mccItem.rates || {});
+  
   return (
-    <Input
-      type="number"
-      step="0.01"
-      min="0"
-      value={value || ''}
-      onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
-      placeholder="0.00"
-      className="border-[#002443]/10 h-8 text-xs text-center w-full"
-    />
+    <div className="overflow-x-auto">
+      <table className="w-full text-xs">
+        <thead>
+          <tr className="bg-[#f4f4f4]/50">
+            <th className="text-left py-1.5 px-2 text-[#002443]/40 font-semibold w-24">Bandeira</th>
+            {FAIXA_COLS.map(f => (
+              <th key={f.key} className="text-center py-1.5 px-2 text-[#002443]/40 font-semibold">{f.label}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {bandeiras.map(b => (
+            <tr key={b} className="border-t border-[#002443]/[0.03]">
+              <td className="py-1.5 px-2 font-semibold text-[#002443] text-xs">{BANDEIRA_LABELS[b] || b}</td>
+              {FAIXA_COLS.map(f => (
+                <td key={f.key} className="text-center py-1.5 px-2 text-[#002443] text-xs">
+                  {formatRate(mccItem.rates[b]?.[f.key])}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
-export default function PartnerMDRTable({ mdr = {}, onChange, readOnly = false }) {
-  const updateRate = (bandeira, faixa, value) => {
-    onChange({
-      ...mdr,
-      [bandeira]: {
-        ...(mdr[bandeira] || {}),
-        [faixa]: value
-      }
-    });
-  };
+export default function PartnerMDRTable({ mdrByMcc = [], compact = false }) {
+  const [expandedMcc, setExpandedMcc] = useState(null);
 
-  const copyFirstBrand = () => {
-    const source = mdr.mastercard || mdr.visa || {};
-    if (!source.avista && !source.de2a6x && !source.de7a12x && !source.de13a21x) {
-      toast.error('Preencha pelo menos uma bandeira primeiro');
-      return;
-    }
-    const newMdr = {};
-    BANDEIRAS.forEach(b => { newMdr[b] = { ...source }; });
-    onChange(newMdr);
-    toast.success('Taxas copiadas para todas as bandeiras');
-  };
+  if (!mdrByMcc.length) {
+    return <p className="text-xs text-[#002443]/30 py-4 text-center">Nenhuma taxa por MCC cadastrada</p>;
+  }
 
-  if (readOnly) {
+  if (compact) {
     return (
-      <div className="overflow-x-auto">
-        <table className="w-full text-xs">
-          <thead>
-            <tr className="border-b border-[#002443]/10">
-              <th className="text-left py-2 px-2 text-[#002443]/40 font-semibold w-24">Bandeira</th>
-              {FAIXAS.map(f => (
-                <th key={f} className="text-center py-2 px-2 text-[#002443]/40 font-semibold">{FAIXA_LABELS[f]}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {BANDEIRAS.map(b => (
-              <tr key={b} className="border-b border-[#002443]/[0.03]">
-                <td className="py-2 px-2 font-semibold text-[#002443]">{BANDEIRA_LABELS[b]}</td>
-                {FAIXAS.map(f => {
-                  const val = mdr[b]?.[f] || 0;
-                  return (
-                    <td key={f} className="text-center py-2 px-2 text-[#002443]">
-                      {val ? `${val.toFixed(2)}%` : '-'}
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="space-y-1">
+        {mdrByMcc.map((item, idx) => (
+          <div key={idx}>
+            <button
+              onClick={() => setExpandedMcc(expandedMcc === idx ? null : idx)}
+              className="flex items-center gap-2 w-full text-left py-1.5 px-2 rounded-lg hover:bg-[#f4f4f4] transition-colors"
+            >
+              {expandedMcc === idx 
+                ? <ChevronDown className="w-3 h-3 text-[#002443]/30" /> 
+                : <ChevronRight className="w-3 h-3 text-[#002443]/30" />
+              }
+              <Badge variant="outline" className="text-[10px] border-[#002443]/10 font-mono">{item.mccCode}</Badge>
+              <span className="text-xs text-[#002443]/70">{item.mccDescription}</span>
+            </button>
+            {expandedMcc === idx && (
+              <div className="ml-5 mt-1 mb-2">
+                <MCCBlock mccItem={item} />
+              </div>
+            )}
+          </div>
+        ))}
       </div>
     );
   }
 
   return (
-    <div className="space-y-2">
-      <div className="flex justify-between items-center">
-        <p className="text-[10px] text-[#002443]/40 font-bold uppercase tracking-wider">MDR Crédito (%)</p>
-        <Button variant="ghost" size="sm" onClick={copyFirstBrand} className="text-[10px] text-[#002443]/40 hover:text-[#2bc196] h-7">
-          <Copy className="w-3 h-3 mr-1" /> Copiar 1ª para todas
-        </Button>
-      </div>
-      <div className="rounded-xl border border-[#002443]/5 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs">
-            <thead>
-              <tr className="bg-[#f4f4f4]">
-                <th className="text-left py-2 px-3 text-[#002443]/40 font-semibold w-24">Bandeira</th>
-                {FAIXAS.map(f => (
-                  <th key={f} className="text-center py-2 px-2 text-[#002443]/40 font-semibold">{FAIXA_LABELS[f]}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {BANDEIRAS.map(b => (
-                <tr key={b} className="border-t border-[#002443]/[0.03]">
-                  <td className="py-2 px-3 font-semibold text-[#002443]">{BANDEIRA_LABELS[b]}</td>
-                  {FAIXAS.map(f => (
-                    <td key={f} className="py-1.5 px-2">
-                      <RateInput
-                        value={mdr[b]?.[f]}
-                        onChange={(val) => updateRate(b, f, val)}
-                      />
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+    <div className="space-y-4">
+      {mdrByMcc.map((item, idx) => (
+        <div key={idx} className="rounded-xl border border-[#002443]/5 overflow-hidden">
+          <div className="bg-[#f4f4f4] px-3 py-2 flex items-center gap-2">
+            <Badge className="bg-[#002443]/10 text-[#002443] border-0 text-[10px] font-mono">{item.mccCode}</Badge>
+            <span className="text-xs font-semibold text-[#002443]">{item.mccDescription}</span>
+          </div>
+          <div className="p-2">
+            <MCCBlock mccItem={item} />
+          </div>
         </div>
-      </div>
+      ))}
     </div>
   );
 }

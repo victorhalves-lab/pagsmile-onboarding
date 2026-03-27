@@ -6,6 +6,7 @@ import PartnerMDRTable from './PartnerMDRTable';
 
 export default function PartnerCard({ partner, onEdit, onDelete }) {
   const [expanded, setExpanded] = useState(false);
+  const mccCount = (partner.mdrByMcc || []).length;
 
   return (
     <div className="bg-white rounded-2xl border border-[#002443]/5 overflow-hidden">
@@ -22,12 +23,19 @@ export default function PartnerCard({ partner, onEdit, onDelete }) {
               {partner.isPrincipal && (
                 <Badge className="bg-amber-500/10 text-amber-600 border-0 text-[10px]">Principal</Badge>
               )}
+              {partner.modelo && (
+                <Badge variant="outline" className="border-[#002443]/10 text-[10px] text-[#002443]/50">{partner.modelo}</Badge>
+              )}
+              {partner.parcelasMax && (
+                <Badge variant="outline" className="border-[#002443]/10 text-[10px] text-[#002443]/50">Máx {partner.parcelasMax}</Badge>
+              )}
             </div>
-            <div className="flex items-center gap-4 mt-1 text-[11px] text-[#002443]/50">
-              <span>Antecipação: <strong className="text-[#002443]">{(partner.percentualAntecipacao || 0).toFixed(2)}%</strong></span>
-              <span>Fee: <strong className="text-[#002443]">R$ {(partner.transactionFee || 0).toFixed(2)}</strong></span>
-              <span>Antifraude: <strong className="text-[#002443]">R$ {(partner.antifraudCost || 0).toFixed(2)}</strong></span>
-              <span>3DS: <strong className="text-[#002443]">R$ {(partner.threeDSCost || 0).toFixed(2)}</strong></span>
+            <div className="flex items-center gap-4 mt-1 text-[11px] text-[#002443]/50 flex-wrap">
+              <span>MCCs: <strong className="text-[#002443]">{mccCount}</strong></span>
+              {partner.transactionFee > 0 && <span>Fee: <strong className="text-[#002443]">R$ {partner.transactionFee.toFixed(2)}</strong></span>}
+              {partner.antifraudCost > 0 && <span>Antifraude: <strong className="text-[#002443]">R$ {partner.antifraudCost.toFixed(2)}</strong></span>}
+              {partner.threeDSCost > 0 && <span>3DS: <strong className="text-[#002443]">R$ {partner.threeDSCost.toFixed(2)}</strong></span>}
+              {partner.antecipacaoInfo && <span>Antecipação: <strong className="text-[#002443]">{partner.antecipacaoInfo}</strong></span>}
             </div>
           </div>
         </div>
@@ -42,10 +50,10 @@ export default function PartnerCard({ partner, onEdit, onDelete }) {
         </div>
       </div>
 
-      {/* Expanded - MDR Table */}
+      {/* Expanded - MDR by MCC */}
       {expanded && (
         <div className="px-5 pb-5 border-t border-[#002443]/5 pt-4">
-          <PartnerMDRTable mdr={partner.mdr || {}} readOnly />
+          <PartnerMDRTable mdrByMcc={partner.mdrByMcc || []} />
         </div>
       )}
     </div>
