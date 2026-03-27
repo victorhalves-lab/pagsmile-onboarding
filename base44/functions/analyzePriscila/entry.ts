@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
 
 /**
  * PRISCILA - Análise de Risco Pré-Compliance para Leads
@@ -40,7 +40,74 @@ Deno.serve(async (req) => {
     if (!lead) {
       return Response.json({ error: "Lead não encontrado" }, { status: 404 });
     }
+
+    // ═══════════════════════════════════════════════════════
+    // CARREGAR PARCEIROS ATIVOS COM CUSTOS
+    // ═══════════════════════════════════════════════════════
+    const partners = await base44.asServiceRole.entities.Partner.filter({ isActive: true });
+    console.log(`[PRISCILA] ${partners.length} parceiros ativos carregados`);
+
+    const FAIXA_MAP = { avista: 'avista', de2a6x: 'de2a6x', de7a12x: 'de7a12x', de13a21x: 'de13a24x' };
+    const BANDEIRAS = ['mastercard', 'visa', 'elo', 'amex', 'outras'];
+    const FAIXAS = ['avista', 'de2a6x', 'de7a12x', 'de13a21x'];
+
+    // Para cada parceiro, encontrar o bloco MCC relevante e calcular custo + 30%
+    const clientMcc = lead.mcc || '';
     
+    const partnerCostSummaries = partners.map(partner => {
+      const mccBlock = partner.mdrByMcc?.find(m => m.mccCode === clientMcc)
+        || partner.mdrByMcc?.find(m => ['Demais', 'demais', 'DEMAIS', 'default'].includes(m.mccCode))
+        || partner.mdrByMcc?.[0];
+
+      if (!mccBlock) return null;
+
+      // Extrair taxas por bandeira e faixa
+      const taxas = {};
+      BANDEIRAS.forEach(bandeira => {
+        taxas[bandeira] = {};
+        FAIXAS.forEach(faixa => {
+          const faixaParceiro = FAIXA_MAP[faixa] || faixa;
+          // Tenta bandeira específica, depois "todas"
+          let rateDecimal = mccBlock.rates?.[bandeira]?.[faixaParceiro];
+          if (rateDecimal === undefined || rateDecimal === null) {
+            rateDecimal = mccBlock.rates?.['todas']?.[faixaParceiro];
+          }
+          const custoPct = (rateDecimal || 0) * 100;
+          const sugeridoPct = Math.round(custoPct * 1.30 * 100) / 100; // +30%
+          taxas[bandeira][faixa] = { custo: custoPct, sugerido: sugeridoPct };
+        });
+      });
+
+      return {
+        nome: partner.name,
+        mccUsado: `${mccBlock.mccCode} (${mccBlock.mccDescription || ''})`,
+        transactionFee: partner.transactionFee || 0,
+        antifraudCost: partner.antifraudCost || 0,
+        threeDSCost: partner.threeDSCost || 0,
+        percentualAntecipacao: partner.percentualAntecipacao || 0,
+        taxas,
+      };
+    }).filter(Boolean);
+
+    // Montar texto resumo de custos dos parceiros para o prompt
+    let partnerCostText = '';
+    if (partnerCostSummaries.length > 0) {
+      partnerCostText = partnerCostSummaries.map(p => {
+        let lines = `\n── PARCEIRO: ${p.nome} (MCC base: ${p.mccUsado}) ──`;
+        lines += `\n  Fees fixas: Transação R$${p.transactionFee.toFixed(2)} | Antifraude R$${p.antifraudCost.toFixed(2)} | 3DS R$${p.threeDSCost.toFixed(2)}`;
+        lines += `\n  Antecipação: ${p.percentualAntecipacao}% a.m.`;
+        lines += `\n  MDR (custo → sugerido = custo+30%):`;
+        BANDEIRAS.forEach(b => {
+          const faixaStr = FAIXAS.map(f => {
+            const d = p.taxas[b]?.[f];
+            return d ? `${f}: ${d.custo.toFixed(2)}%→${d.sugerido.toFixed(2)}%` : '';
+          }).filter(Boolean).join(' | ');
+          if (faixaStr) lines += `\n    ${b}: ${faixaStr}`;
+        });
+        return lines;
+      }).join('\n');
+    }
+
     // Construir prompt com todos os dados do lead
     const prompt = `Você é a PRISCILA (Plataforma de Risco Inteligente e Score Consolidado para Leads e Aprovações), a analista de risco pré-compliance mais experiente da Pagsmile.
 
@@ -102,25 +169,36 @@ CLASSIFICAÇÃO FINAL:
 - 0-39: CRITICO risco → REJEITAR (não deve avançar no funil)
 
 ═══════════════════════════════════════════════════════════
+CUSTOS DOS PARCEIROS (ADQUIRENTES/SUBADQUIRENTES)
+═══════════════════════════════════════════════════════════
+
+A Pagsmile trabalha com os seguintes parceiros. Os custos abaixo são o que a Pagsmile PAGA ao parceiro.
+As taxas que você sugerir para o CLIENTE devem OBRIGATORIAMENTE ser MAIORES que os custos do parceiro.
+
+REGRA DE OURO: Taxa sugerida = Custo do parceiro + 30% (mínimo). Pode ser mais se o risco justificar.
+
+${partnerCostText || 'NENHUM PARCEIRO ATIVO ENCONTRADO - use referências de mercado.'}
+
+═══════════════════════════════════════════════════════════
 SUGESTÃO DE PRECIFICAÇÃO COMERCIAL
 ═══════════════════════════════════════════════════════════
 
-Com base no perfil de risco, TPV, MCC, tipo de negócio e dados declarados, sugira taxas comerciais competitivas que equilibrem margem e atratividade. 
+Com base no perfil de risco, TPV, MCC, tipo de negócio, dados declarados, E NOS CUSTOS REAIS DOS PARCEIROS ACIMA, sugira taxas comerciais que garantam margem para a Pagsmile.
 
-Considere:
-- Segmentos de maior risco = taxas maiores
-- TPV alto = possibilidade de taxas menores (volume justifica)
-- Gateway vs Merchan vs Marketplace (gateways geralmente têm taxas menores por volume)
-- MCC de alto risco (jogos, cripto, adult) = taxas premium
+REGRAS OBRIGATÓRIAS DE PRECIFICAÇÃO:
+1. PARA CADA TAXA MDR: A taxa sugerida DEVE ser >= custo do parceiro mais barato para aquela bandeira/faixa + 30%.
+2. PARA FEES FIXAS: Antifraude, Fee Transação e 3DS devem ser >= custo do parceiro + margem razoável.
+3. ANTECIPAÇÃO: A taxa sugerida deve ser >= taxa do parceiro + spread.
+4. Segmentos de maior risco = taxas AINDA maiores que o mínimo de custo+30%.
+5. TPV alto = possibilidade de taxas mais próximas do custo+30% (volume justifica margem menor em %).
+6. Gateway vs Merchan vs Marketplace: gateways podem ter taxas mais próximas do custo (maior volume).
+7. MCC de alto risco (jogos, cripto, adult) = taxas de custo+50% ou mais.
 
 Sugira TODAS as taxas abaixo:
 
 **Cartão de Crédito (MDR % por bandeira e faixa):**
 - Visa, Mastercard, Elo, Amex, Outras
 - Para cada bandeira: à vista (1x), 2x a 6x, 7x a 12x, 13x a 21x
-
-**Débito (% por bandeira):**
-- Visa, Mastercard, Elo, Outras
 
 **Pix:**
 - Tipo: percentual ou fixo
@@ -134,26 +212,13 @@ Sugira TODAS as taxas abaixo:
 **RAV (prazo de recebimento):** D+1, D+2, D+15, D+30
 **Mínimo Garantido:** valor mensal sugerido para os 3 primeiros meses (R$)
 
-As taxas sugeridas devem ser REALISTAS para o mercado brasileiro de pagamentos.
-Referências típicas do mercado:
-- Crédito à vista: 1.8% a 4.5%
-- Crédito 2-6x: 2.5% a 6%
-- Crédito 7-12x: 3% a 8%
-- Crédito 13-21x: 4% a 10%
-- Débito: 1% a 2.5%
-- Pix: 0.5% a 1.5% ou R$ 0.50 a R$ 2.00 fixo
-- Boleto: R$ 2.00 a R$ 5.00
-- Antifraude: R$ 0.05 a R$ 0.50
-- Fee transação: R$ 0.10 a R$ 0.50
-- Antecipação: 1% a 3% a.m.
-- Mínimo garantido: R$ 500 a R$ 10.000/mês
-
 IMPORTANTE:
+- NUNCA sugira uma taxa ABAIXO do custo de qualquer parceiro. A Pagsmile teria prejuízo.
+- Justifique as taxas explicando qual parceiro seria o mais adequado e a margem resultante.
 - Seja objetivo e baseado em dados concretos.
 - Não invente informações. Se um dado não foi fornecido, registre como lacuna e penalize proporcionalmente.
 - Para cada ponto de risco, cite a evidência específica dos dados do lead.
-- O resumo executivo deve ter no máximo 3 frases.
-- As taxas sugeridas devem ser justificadas pelo perfil de risco e dados do lead.`;
+- O resumo executivo deve ter no máximo 3 frases.`;
 
     const responseSchema = {
       type: "object",
@@ -238,9 +303,10 @@ IMPORTANTE:
         recomendacao: { type: "string", description: "Recomendação para o time sobre como proceder" },
         taxasSugeridas: {
           type: "object",
-          description: "Taxas comerciais sugeridas pela PRISCILA",
+          description: "Taxas comerciais sugeridas pela PRISCILA baseadas nos custos reais dos parceiros + margem",
           properties: {
-            justificativa: { type: "string", description: "Justificativa geral para as taxas sugeridas" },
+            parceiroRecomendado: { type: "string", description: "Nome do parceiro mais adequado para este lead (baseado em MCC, custo e perfil)" },
+            justificativa: { type: "string", description: "Justificativa incluindo custos do parceiro base e margens aplicadas" },
             cartao: {
               type: "object",
               properties: {
@@ -249,15 +315,6 @@ IMPORTANTE:
                 elo: { type: "object", properties: { avista: { type: "number" }, de2a6x: { type: "number" }, de7a12x: { type: "number" }, de13a21x: { type: "number" } } },
                 amex: { type: "object", properties: { avista: { type: "number" }, de2a6x: { type: "number" }, de7a12x: { type: "number" }, de13a21x: { type: "number" } } },
                 outras: { type: "object", properties: { avista: { type: "number" }, de2a6x: { type: "number" }, de7a12x: { type: "number" }, de13a21x: { type: "number" } } }
-              }
-            },
-            debito: {
-              type: "object",
-              properties: {
-                visa: { type: "number" },
-                mastercard: { type: "number" },
-                elo: { type: "number" },
-                outras: { type: "number" }
               }
             },
             pix: { type: "object", properties: { tipo: { type: "string", enum: ["percentual", "fixo"] }, valor: { type: "number" } } },
