@@ -40,7 +40,7 @@ const STATUS_CONFIG = {
   kyc_iniciado: { label: 'KYC Iniciado', color: 'bg-teal-100 text-teal-700' },
   kyc_aprovado: { label: 'KYC Aprovado', color: 'bg-green-100 text-green-800' },
   kyc_revisao_manual: { label: 'KYC Revisão', color: 'bg-orange-100 text-orange-700' },
-  ativado: { label: 'Ativado', color: 'bg-emerald-100 text-emerald-800' },
+  ativado: { label: 'Negócio Fechado', color: 'bg-emerald-100 text-emerald-800' },
   perdido: { label: 'Perdido', color: 'bg-slate-100 text-slate-600' },
 };
 

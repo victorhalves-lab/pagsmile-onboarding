@@ -81,14 +81,14 @@ export default function LeadQuickActions({ lead }) {
 
   if (lead.status === 'kyc_aprovado') {
     actions.push({
-      label: 'Ativar Merchant',
+      label: 'Fechar Negócio',
       icon: CheckCircle2,
       variant: 'default',
       className: 'bg-emerald-600 hover:bg-emerald-700 text-white',
       onClick: () => updateMutation.mutate({
         status: 'ativado',
         activityType: 'status_alterado_manual',
-        description: 'Merchant ativado'
+        description: 'Negócio fechado / Contrato gerado'
       })
     });
   }
