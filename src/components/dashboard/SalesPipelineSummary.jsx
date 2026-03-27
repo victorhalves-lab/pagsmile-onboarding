@@ -9,10 +9,10 @@ import moment from 'moment';
 const FUNNEL_STAGES = [
   { key: 'leads', label: 'Leads', statuses: ['questionario_preenchido', 'analisado_priscila'], color: '#002443' },
   { key: 'contato', label: 'Contato', statuses: ['em_contato_comercial'], color: '#36706c' },
-  { key: 'proposta', label: 'Proposta', statuses: ['proposta_enviada'], color: '#2bc196' },
-  { key: 'aceita', label: 'Aceita', statuses: ['proposta_aceita'], color: '#2bc196' },
-  { key: 'kyc', label: 'KYC', statuses: ['kyc_iniciado', 'kyc_aprovado', 'kyc_revisao_manual'], color: '#5cf7cf' },
-  { key: 'ativado', label: 'Ativado', statuses: ['ativado'], color: '#2bc196' },
+  { key: 'proposta', label: 'Proposta', statuses: ['proposta_enviada'], color: '#3B82F6' },
+  { key: 'aceita', label: 'Aceita', statuses: ['proposta_aceita'], color: '#8B5CF6' },
+  { key: 'compliance', label: 'Compliance', statuses: ['kyc_iniciado', 'kyc_aprovado', 'kyc_revisao_manual'], color: '#10B981' },
+  { key: 'fechado', label: 'Fechado', statuses: ['ativado'], color: '#059669' },
 ];
 
 export default function SalesPipelineSummary({ leads }) {
@@ -31,8 +31,8 @@ export default function SalesPipelineSummary({ leads }) {
       return moment().diff(moment(lastDate), 'days') > 7;
     }).length;
 
-    const ativos = leads.filter(l => l.status === 'ativado').length;
-    const conversionRate = leads.length > 0 ? ((ativos / leads.length) * 100).toFixed(1) : 0;
+    const fechados = leads.filter(l => l.status === 'ativado').length;
+    const conversionRate = leads.length > 0 ? ((fechados / leads.length) * 100).toFixed(1) : 0;
 
     return { stages, totalTPV, staleLeads, conversionRate, total: leads.length };
   }, [leads]);
