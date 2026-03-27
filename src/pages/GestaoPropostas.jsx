@@ -21,13 +21,14 @@ import {
 } from '@/components/ui/tabs';
 import {
   Search, Plus, Eye, Pencil, Send, Link2, Copy, Trash2,
-  Loader2, X, AlertTriangle, FileText, List, Clock, CheckCircle, XCircle, History, FilePlus2, Building2, GitBranch
+  Loader2, X, AlertTriangle, FileText, List, Clock, CheckCircle, XCircle, History, FilePlus2, Building2, GitBranch, DollarSign
 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
 import ProposalMetrics from '../components/proposals/ProposalMetrics';
 import ProposalHistoryModal from '../components/proposals/ProposalHistoryModal';
 import ProposalsByCompanyTab from '../components/proposals/ProposalsByCompanyTab';
+import RentabilidadeDrawer from '../components/proposals/RentabilidadeDrawer';
 
 const STATUS_CONFIG = {
   rascunho: { label: 'Rascunho', color: 'bg-slate-100 text-slate-700', icon: '⚪' },
@@ -46,6 +47,7 @@ export default function GestaoPropostas() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [deleteId, setDeleteId] = useState(null);
   const [historyProposalId, setHistoryProposalId] = useState(null);
+  const [rentabilidadeProposal, setRentabilidadeProposal] = useState(null);
 
   const [activeTab, setActiveTab] = useState('lista');
 
@@ -294,6 +296,9 @@ export default function GestaoPropostas() {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-1">
+                            <Button variant="ghost" size="sm" onClick={() => setRentabilidadeProposal(p)} title="Simular Rentabilidade" className="text-[#2bc196] hover:text-[#2bc196] hover:bg-[#2bc196]/10">
+                              <DollarSign className="w-4 h-4" />
+                            </Button>
                             <Button variant="ghost" size="sm" onClick={() => navigate(createPageUrl('PropostaDetalhes') + `?id=${p.id}`)} title="Ver detalhes">
                               <Eye className="w-4 h-4" />
                             </Button>
@@ -347,6 +352,13 @@ export default function GestaoPropostas() {
         open={!!historyProposalId}
         onClose={() => setHistoryProposalId(null)}
         proposalId={historyProposalId}
+      />
+
+      {/* Rentabilidade Drawer */}
+      <RentabilidadeDrawer
+        open={!!rentabilidadeProposal}
+        onClose={() => setRentabilidadeProposal(null)}
+        proposal={rentabilidadeProposal}
       />
 
       {/* Delete dialog */}
