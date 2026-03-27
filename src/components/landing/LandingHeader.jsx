@@ -1,65 +1,103 @@
 import React from 'react';
-import { Shield } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Shield, Zap, CreditCard, TrendingUp } from 'lucide-react';
 
 const PAGSMILE_LOGO = "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png";
 
+const features = [
+  { icon: Shield, label: 'Antifraude Integrado' },
+  { icon: Zap, label: '3DS 2.0' },
+  { icon: CreditCard, label: 'Split de Pagamentos' },
+  { icon: TrendingUp, label: 'Antecipação Flexível' },
+];
+
 export default function LandingHeader({ companyName, companyLogoUrl }) {
   return (
-    <div className="relative overflow-hidden">
-      {/* Background gradient */}
-      <div className="bg-gradient-to-br from-[#002443] via-[#003366] to-[#002443] rounded-3xl p-8 md:p-12">
-        {/* Decorative elements */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#2bc196]/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#5cf7cf]/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+    <div className="relative overflow-hidden rounded-3xl">
+      {/* Main gradient background */}
+      <div className="bg-gradient-to-br from-[#001a33] via-[#002443] to-[#003a5c] py-16 md:py-24 px-8 md:px-16 relative">
+        
+        {/* Animated decorative orbs */}
+        <div className="absolute top-[-80px] right-[-80px] w-[400px] h-[400px] bg-[#2bc196]/15 rounded-full blur-[100px] animate-pulse" />
+        <div className="absolute bottom-[-60px] left-[-60px] w-[300px] h-[300px] bg-[#5cf7cf]/8 rounded-full blur-[80px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#2bc196]/5 rounded-full blur-[120px]" />
+        
+        {/* Grid pattern overlay */}
+        <div className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: 'linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)',
+            backgroundSize: '60px 60px'
+          }}
+        />
 
         <div className="relative z-10">
           {/* Logos */}
-          <div className="flex items-center justify-center gap-6 mb-8">
-            <img
-              src={PAGSMILE_LOGO}
-              alt="Pagsmile"
-              className="h-8 md:h-10 w-auto"
-            />
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="flex items-center justify-center gap-6 md:gap-8 mb-10"
+          >
+            <img src={PAGSMILE_LOGO} alt="Pagsmile" className="h-9 md:h-12 w-auto" />
             {companyLogoUrl && (
               <>
-                <div className="w-px h-10 bg-white/20" />
-                <img
-                  src={companyLogoUrl}
-                  alt={companyName}
-                  className="h-10 md:h-12 w-auto max-w-[180px] object-contain"
-                />
+                <div className="w-px h-12 bg-white/20 rounded-full" />
+                <img src={companyLogoUrl} alt={companyName} className="h-12 md:h-14 w-auto max-w-[200px] object-contain" />
               </>
             )}
-          </div>
+          </motion.div>
 
           {/* Title */}
-          <div className="text-center">
-            <h1 className="text-3xl md:text-4xl font-bold mb-3" style={{ color: '#ffffff' }}>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.15 }}
+            className="text-center mb-12"
+          >
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-5" style={{ color: '#ffffff' }}>
               {companyName ? (
-                <>Soluções de Pagamento<br /><span style={{ color: '#2bc196' }}>{companyName}</span></>
+                <>
+                  Soluções de Pagamento
+                  <br />
+                  <span className="bg-gradient-to-r from-[#2bc196] to-[#5cf7cf] bg-clip-text" style={{ WebkitTextFillColor: 'transparent', color: 'transparent' }}>
+                    {companyName}
+                  </span>
+                </>
               ) : (
-                <>Soluções de Pagamento <span style={{ color: '#2bc196' }}>Pagsmile</span></>
+                <>
+                  Soluções de Pagamento
+                  <br />
+                  <span className="bg-gradient-to-r from-[#2bc196] to-[#5cf7cf] bg-clip-text" style={{ WebkitTextFillColor: 'transparent', color: 'transparent' }}>
+                    Pagsmile
+                  </span>
+                </>
               )}
             </h1>
-            <p className="text-sm md:text-base max-w-xl mx-auto" style={{ color: 'rgba(255,255,255,0.6)' }}>
+            <p className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed" style={{ color: 'rgba(255,255,255,0.55)' }}>
               Taxas competitivas, tecnologia de ponta e suporte especializado para o seu negócio crescer.
             </p>
-          </div>
+          </motion.div>
 
-          {/* Trust badges */}
-          <div className="flex items-center justify-center gap-6 mt-8">
-            {[
-              'Antifraude Integrado',
-              '3DS 2.0',
-              'Split de Pagamentos',
-              'Antecipação Flexível',
-            ].map((badge) => (
-              <div key={badge} className="hidden md:flex items-center gap-2 text-xs">
-                <Shield className="w-3.5 h-3.5" style={{ color: '#2bc196' }} />
-                <span className="font-medium" style={{ color: '#ffffff' }}>{badge}</span>
-              </div>
+          {/* Feature badges */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.3 }}
+            className="flex flex-wrap items-center justify-center gap-3 md:gap-4"
+          >
+            {features.map((feat, i) => (
+              <motion.div
+                key={feat.label}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, delay: 0.4 + i * 0.1 }}
+                className="flex items-center gap-2.5 bg-white/[0.07] backdrop-blur-sm border border-white/[0.08] rounded-full px-5 py-2.5"
+              >
+                <feat.icon className="w-4 h-4 flex-shrink-0" style={{ color: '#2bc196' }} />
+                <span className="text-sm font-medium whitespace-nowrap" style={{ color: '#ffffff' }}>{feat.label}</span>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>
