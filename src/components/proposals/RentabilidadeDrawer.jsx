@@ -4,19 +4,21 @@ import { base44 } from '@/api/base44Client';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
 import {
-  TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, Minus,
-  Loader2, AlertTriangle, Building2, DollarSign, CheckCircle2
+  TrendingUp, ArrowUpRight, ArrowDownRight, Minus,
+  Loader2, AlertTriangle, Building2, DollarSign, CheckCircle2, Calculator, Calendar
 } from 'lucide-react';
 
-const PRAZOS = [
-  { value: 'D+1', label: 'D+1' },
-  { value: 'D+2', label: 'D+2' },
-  { value: 'D+7', label: 'D+7' },
-  { value: 'D+15', label: 'D+15' },
-  { value: 'D+30', label: 'D+30' },
-  { value: 'Fluxo', label: 'Fluxo' },
-];
+const BANDEIRAS = ['mastercard', 'visa', 'elo', 'amex', 'outras'];
+const FAIXAS = ['avista', 'de2a6x', 'de7a12x', 'de13a21x'];
+const FAIXA_LABELS = { avista: '1x', de2a6x: '2-6x', de7a12x: '7-12x', de13a21x: '13-21x' };
+const FAIXA_MAP_PARCEIRO = { avista: 'avista', de2a6x: 'de2a6x', de7a12x: 'de7a12x', de13a21x: 'de13a24x' };
+
+// Mix de transações por faixa (sem débito)
+const MIX_FAIXAS = { avista: 0.45, de2a6x: 0.35, de7a12x: 0.15, de13a21x: 0.05 };
+const MIX_BANDEIRAS = { mastercard: 0.35, visa: 0.35, elo: 0.15, amex: 0.10, outras: 0.05 };
 
 const parseTaxa = (val) => {
   if (!val && val !== 0) return 0;
@@ -28,134 +30,172 @@ const parseTaxa = (val) => {
 const fmtBRL = (val) => `R$ ${Number(val || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 const fmtPct = (val) => `${Number(val || 0).toFixed(2).replace('.', ',')}%`;
 
-function calculateProfitability(proposal, partner, prazoAntecipacao) {
-  if (!partner || !proposal?.rates) return null;
+/**
+ * Obtém a taxa do parceiro para uma bandeira e faixa.
+ * Trata o caso de parceiros que usam "todas" como bandeira única.
+ */
+function getPartnerRate(mccBlock, bandeira, faixaProposta) {
+  if (!mccBlock?.rates) return 0;
+  
+  const faixaParceiro = FAIXA_MAP_PARCEIRO[faixaProposta] || faixaProposta;
+  
+  // Primeiro tenta a bandeira específica
+  if (mccBlock.rates[bandeira]?.[faixaParceiro] !== undefined) {
+    return mccBlock.rates[bandeira][faixaParceiro];
+  }
+  
+  // Fallback para "todas" (modelo ASAAS)
+  if (mccBlock.rates['todas']?.[faixaParceiro] !== undefined) {
+    return mccBlock.rates['todas'][faixaParceiro];
+  }
+  
+  return 0;
+}
+
+/**
+ * Calcula rentabilidade para um dado TPV
+ */
+function calculateProfitability(proposal, partner, selectedMccCode, tpv) {
+  if (!partner || !proposal?.rates || !selectedMccCode) return null;
 
   const rates = proposal.rates;
-  const tpv = parseTaxa(proposal.estimatedRevenue) || parseTaxa(rates.minimoGarantido?.mes1) * 10 || 100000;
   const txMes = Math.round(tpv / 150) || 1000;
 
-  // MDR
-  const mixWeights = { avista: 0.60, de2a6x: 0.25, de7a12x: 0.10, de13a21x: 0.05 };
-  const bandeiras = ['visa', 'mastercard', 'elo', 'amex', 'outras'];
-  const bandeiraPeso = { mastercard: 0.35, visa: 0.35, elo: 0.15, amex: 0.10, outras: 0.05 };
+  // Encontrar o bloco MCC selecionado
+  const mccBlock = partner.mdrByMcc?.find(m => m.mccCode === selectedMccCode);
+  if (!mccBlock) return null;
 
-  let mdrMedioProposta = 0;
-  let mdrMedioParceiro = 0;
+  // Calcular MDR por bandeira e faixa
+  const detalheBandeiras = {};
+  let receitaMDRTotal = 0;
+  let custoMDRTotal = 0;
 
-  const clientMcc = proposal.clienteMcc || '';
-  const partnerMccBlock = partner.mdrByMcc?.find(m => m.mccCode === clientMcc)
-    || partner.mdrByMcc?.find(m => ['Demais', 'demais', 'DEMAIS'].includes(m.mccCode))
-    || partner.mdrByMcc?.[0];
-
-  // MDR detalhado por bandeira
-  const mdrDetalhado = {};
-
-  bandeiras.forEach(b => {
-    const peso = bandeiraPeso[b] || 0.05;
+  BANDEIRAS.forEach(bandeira => {
+    const pesoBandeira = MIX_BANDEIRAS[bandeira] || 0.05;
     let receitaBandeira = 0;
     let custoBandeira = 0;
+    const detalheFaixas = {};
 
-    Object.entries(mixWeights).forEach(([faixa, faixaPeso]) => {
-      const taxaProposta = parseTaxa(rates.cartao?.[b]?.[faixa]) / 100;
-      const taxaParceiro = partnerMccBlock?.rates?.[b]?.[faixa] || 0;
-      const rec = tpv * taxaProposta * peso * faixaPeso;
-      const cst = tpv * taxaParceiro * peso * faixaPeso;
-      mdrMedioProposta += taxaProposta * peso * faixaPeso;
-      mdrMedioParceiro += taxaParceiro * peso * faixaPeso;
-      receitaBandeira += rec;
-      custoBandeira += cst;
+    FAIXAS.forEach(faixa => {
+      const pesoFaixa = MIX_FAIXAS[faixa] || 0.10;
+      const tpvFaixa = tpv * pesoBandeira * pesoFaixa;
+
+      // Taxa da proposta (já em percentual, ex: 3.0 = 3%)
+      const taxaPropostaPct = parseTaxa(rates.cartao?.[bandeira]?.[faixa]);
+      const taxaPropostaDecimal = taxaPropostaPct / 100;
+
+      // Taxa do parceiro (em decimal, ex: 0.015 = 1.5%)
+      const taxaParceiroDecimal = getPartnerRate(mccBlock, bandeira, faixa);
+      const taxaParceiroPct = taxaParceiroDecimal * 100;
+
+      const receita = tpvFaixa * taxaPropostaDecimal;
+      const custo = tpvFaixa * taxaParceiroDecimal;
+      const margem = receita - custo;
+
+      receitaBandeira += receita;
+      custoBandeira += custo;
+
+      detalheFaixas[faixa] = {
+        taxaProposta: taxaPropostaPct,
+        taxaParceiro: taxaParceiroPct,
+        receita,
+        custo,
+        margem,
+      };
     });
 
-    mdrDetalhado[b] = {
+    detalheBandeiras[bandeira] = {
       receita: receitaBandeira,
       custo: custoBandeira,
       margem: receitaBandeira - custoBandeira,
+      faixas: detalheFaixas,
     };
+
+    receitaMDRTotal += receitaBandeira;
+    custoMDRTotal += custoBandeira;
   });
 
-  const receitaMDR = tpv * mdrMedioProposta;
-  const custoMDR = tpv * mdrMedioParceiro;
+  // Fees fixas (por transação)
+  const feesProposta = {
+    feeTransacao: parseTaxa(rates.feeTransacao),
+    antifraude: parseTaxa(rates.antifraude),
+    taxa3ds: parseTaxa(rates.taxa3ds),
+  };
+  const feesParceiro = {
+    feeTransacao: partner.transactionFee || 0,
+    antifraude: partner.antifraudCost || 0,
+    taxa3ds: partner.threeDSCost || 0,
+  };
 
-  // Fees fixas
-  const feeTransacaoProposta = parseTaxa(rates.feeTransacao);
-  const antifraudeProposta = parseTaxa(rates.antifraude);
-  const taxa3dsProposta = parseTaxa(rates.taxa3ds);
-  const feeTransacaoParceiro = partner.transactionFee || 0;
-  const antifraudeParceiro = partner.antifraudCost || 0;
-  const taxa3dsParceiro = partner.threeDSCost || 0;
+  const totalFeeProposta = feesProposta.feeTransacao + feesProposta.antifraude + feesProposta.taxa3ds;
+  const totalFeeParceiro = feesParceiro.feeTransacao + feesParceiro.antifraude + feesParceiro.taxa3ds;
+  const receitaFees = totalFeeProposta * txMes;
+  const custoFees = totalFeeParceiro * txMes;
 
-  const receitaFees = (feeTransacaoProposta + antifraudeProposta + taxa3dsProposta) * txMes;
-  const custoFees = (feeTransacaoParceiro + antifraudeParceiro + taxa3dsParceiro) * txMes;
-
-  // Antecipação - baseada no prazo escolhido
+  // Antecipação
   const taxaAntecipProposta = parseTaxa(rates.rav?.taxa) / 100;
   const taxaAntecipParceiro = (partner.percentualAntecipacao || 0) / 100;
-
-  // Fator de custo financeiro do prazo de antecipação
-  const prazoFator = {
-    'D+1': 1.0,
-    'D+2': 0.95,
-    'D+7': 0.80,
-    'D+15': 0.60,
-    'D+30': 0.30,
-    'Fluxo': 0.0,
-  };
-  const fatorPrazo = prazoFator[prazoAntecipacao] ?? 1.0;
-
-  // Percentual do TPV antecipado (estimativa: 70% do TPV é antecipado, exceto em Fluxo)
-  const pctAntecipado = prazoAntecipacao === 'Fluxo' ? 0 : 0.70;
+  const pctAntecipado = parseTaxa(rates.percentualAntecipacao) / 100 || 0.70;
   const tpvAntecipado = tpv * pctAntecipado;
+  const receitaAntecip = tpvAntecipado * taxaAntecipProposta;
+  const custoAntecip = tpvAntecipado * taxaAntecipParceiro;
 
-  const receitaAntecip = tpvAntecipado * taxaAntecipProposta * fatorPrazo;
-  const custoAntecip = tpvAntecipado * taxaAntecipParceiro * fatorPrazo;
-
-  const receitaTotal = receitaMDR + receitaFees + receitaAntecip;
-  const custoTotal = custoMDR + custoFees + custoAntecip;
+  // Totais
+  const receitaTotal = receitaMDRTotal + receitaFees + receitaAntecip;
+  const custoTotal = custoMDRTotal + custoFees + custoAntecip;
   const margem = receitaTotal - custoTotal;
   const margemPct = receitaTotal > 0 ? (margem / receitaTotal) * 100 : 0;
 
-  // Alertas de taxas abaixo do mínimo do parceiro
+  // Alertas de taxas abaixo do mínimo
   const alertas = [];
-  bandeiras.forEach(b => {
-    ['avista', 'de2a6x', 'de7a12x', 'de13a21x'].forEach(faixa => {
-      const taxaProposta = parseTaxa(rates.cartao?.[b]?.[faixa]);
-      const faixaParceiro = faixa === 'de13a21x' ? 'de13a24x' : faixa;
-      const taxaParceiro = (partnerMccBlock?.rates?.[b]?.[faixaParceiro] || 0) * 100;
+  BANDEIRAS.forEach(bandeira => {
+    FAIXAS.forEach(faixa => {
+      const taxaProposta = parseTaxa(rates.cartao?.[bandeira]?.[faixa]);
+      const taxaParceiro = getPartnerRate(mccBlock, bandeira, faixa) * 100;
       if (taxaProposta > 0 && taxaParceiro > 0 && taxaProposta < taxaParceiro) {
-        alertas.push(`${b.toUpperCase()} ${faixa}: ${taxaProposta.toFixed(2)}% < mín. ${taxaParceiro.toFixed(2)}%`);
+        alertas.push({
+          bandeira,
+          faixa,
+          taxaProposta,
+          taxaParceiro,
+          diff: taxaParceiro - taxaProposta,
+        });
       }
     });
   });
 
-  // Alertas de fees fixas
+  // Alertas de fees
   const isTuna = (partner.name || '').toLowerCase().includes('tuna');
   if (!isTuna) {
-    if (feeTransacaoProposta > 0 && feeTransacaoProposta < feeTransacaoParceiro) {
-      alertas.push(`Fee transação: R$ ${feeTransacaoProposta.toFixed(2)} < mín. R$ ${feeTransacaoParceiro.toFixed(2)}`);
+    if (feesProposta.feeTransacao > 0 && feesProposta.feeTransacao < feesParceiro.feeTransacao) {
+      alertas.push({ tipo: 'fee', campo: 'Fee Transação', proposta: feesProposta.feeTransacao, parceiro: feesParceiro.feeTransacao });
     }
-    if (antifraudeProposta > 0 && antifraudeProposta < antifraudeParceiro) {
-      alertas.push(`Antifraude: R$ ${antifraudeProposta.toFixed(2)} < mín. R$ ${antifraudeParceiro.toFixed(2)}`);
+    if (feesProposta.antifraude > 0 && feesProposta.antifraude < feesParceiro.antifraude) {
+      alertas.push({ tipo: 'fee', campo: 'Antifraude', proposta: feesProposta.antifraude, parceiro: feesParceiro.antifraude });
     }
-    if (taxa3dsProposta > 0 && taxa3dsProposta < taxa3dsParceiro) {
-      alertas.push(`3DS: R$ ${taxa3dsProposta.toFixed(2)} < mín. R$ ${taxa3dsParceiro.toFixed(2)}`);
+    if (feesProposta.taxa3ds > 0 && feesProposta.taxa3ds < feesParceiro.taxa3ds) {
+      alertas.push({ tipo: 'fee', campo: '3DS', proposta: feesProposta.taxa3ds, parceiro: feesParceiro.taxa3ds });
     }
   }
 
   return {
-    tpv, txMes, prazoAntecipacao,
-    receitaMDR, custoMDR, margemMDR: receitaMDR - custoMDR,
+    tpv, txMes,
+    mccCode: selectedMccCode,
+    mccDescription: mccBlock.mccDescription,
+    receitaMDR: receitaMDRTotal,
+    custoMDR: custoMDRTotal,
+    margemMDR: receitaMDRTotal - custoMDRTotal,
     receitaFees, custoFees, margemFees: receitaFees - custoFees,
     receitaAntecip, custoAntecip, margemAntecip: receitaAntecip - custoAntecip,
     receitaTotal, custoTotal, margem, margemPct,
-    mdrDetalhado,
+    detalheBandeiras,
+    feesProposta, feesParceiro,
     alertas,
-    feesProposta: { feeTransacao: feeTransacaoProposta, antifraude: antifraudeProposta, taxa3ds: taxa3dsProposta },
-    feesParceiro: { feeTransacao: feeTransacaoParceiro, antifraude: antifraudeParceiro, taxa3ds: taxa3dsParceiro },
   };
 }
 
-function ProfitabilityResult({ profitability, partnerName }) {
+
+function ResultCard({ profitability, label }) {
   if (!profitability) return null;
 
   const isPositive = profitability.margem > 0;
@@ -165,79 +205,74 @@ function ProfitabilityResult({ profitability, partnerName }) {
 
   return (
     <div className="space-y-4">
+      {/* Label */}
+      {label && (
+        <div className="text-center">
+          <Badge className="bg-[#002443] text-white">{label}</Badge>
+          <p className="text-xs text-slate-500 mt-1">TPV: {fmtBRL(profitability.tpv)} · {profitability.txMes.toLocaleString('pt-BR')} tx/mês</p>
+        </div>
+      )}
+
       {/* Big Margin Card */}
       <div className={`rounded-xl border-2 p-4 text-center ${marginBg}`}>
-        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Margem Líquida Mensal Estimada</p>
+        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Margem Líquida</p>
         <div className="flex items-center justify-center gap-2">
           <MarginIcon className={`w-6 h-6 ${marginColor}`} />
           <span className={`text-2xl font-bold ${marginColor}`}>{fmtBRL(profitability.margem)}</span>
         </div>
         <p className={`text-sm font-semibold ${marginColor} mt-1`}>{fmtPct(profitability.margemPct)} de margem</p>
-        <p className="text-[10px] text-slate-400 mt-2">
-          TPV: {fmtBRL(profitability.tpv)}/mês · {profitability.txMes.toLocaleString('pt-BR')} tx/mês · Prazo: {profitability.prazoAntecipacao}
-        </p>
       </div>
 
       {/* Summary Grid */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="bg-emerald-50 rounded-xl p-3 text-center border border-emerald-100">
-          <p className="text-[9px] font-bold text-emerald-600 uppercase tracking-wider">Receita</p>
-          <p className="text-sm font-bold text-emerald-700 mt-1">{fmtBRL(profitability.receitaTotal)}</p>
+      <div className="grid grid-cols-3 gap-2">
+        <div className="bg-emerald-50 rounded-lg p-2.5 text-center border border-emerald-100">
+          <p className="text-[9px] font-bold text-emerald-600 uppercase">Receita</p>
+          <p className="text-sm font-bold text-emerald-700">{fmtBRL(profitability.receitaTotal)}</p>
         </div>
-        <div className="bg-red-50 rounded-xl p-3 text-center border border-red-100">
-          <p className="text-[9px] font-bold text-red-500 uppercase tracking-wider">Custo</p>
-          <p className="text-sm font-bold text-red-600 mt-1">{fmtBRL(profitability.custoTotal)}</p>
+        <div className="bg-red-50 rounded-lg p-2.5 text-center border border-red-100">
+          <p className="text-[9px] font-bold text-red-500 uppercase">Custo</p>
+          <p className="text-sm font-bold text-red-600">{fmtBRL(profitability.custoTotal)}</p>
         </div>
-        <div className={`rounded-xl p-3 text-center border ${isPositive ? 'bg-emerald-50 border-emerald-100' : 'bg-red-50 border-red-100'}`}>
-          <p className={`text-[9px] font-bold uppercase tracking-wider ${isPositive ? 'text-emerald-600' : 'text-red-500'}`}>Margem</p>
-          <p className={`text-sm font-bold mt-1 ${marginColor}`}>{fmtBRL(profitability.margem)}</p>
+        <div className={`rounded-lg p-2.5 text-center border ${isPositive ? 'bg-emerald-50 border-emerald-100' : 'bg-red-50 border-red-100'}`}>
+          <p className={`text-[9px] font-bold uppercase ${isPositive ? 'text-emerald-600' : 'text-red-500'}`}>Lucro</p>
+          <p className={`text-sm font-bold ${marginColor}`}>{fmtBRL(profitability.margem)}</p>
         </div>
       </div>
 
       {/* Breakdown Table */}
-      <div className="rounded-xl border overflow-hidden">
-        <div className="grid grid-cols-4 text-[10px] font-bold uppercase tracking-wider py-2.5 px-4 bg-slate-50 text-slate-500">
+      <div className="rounded-lg border overflow-hidden">
+        <div className="grid grid-cols-4 text-[9px] font-bold uppercase tracking-wider py-2 px-3 bg-slate-50 text-slate-500">
           <div>Categoria</div><div className="text-right">Receita</div><div className="text-right">Custo</div><div className="text-right">Margem</div>
         </div>
         {[
           { label: 'MDR Cartão', receita: profitability.receitaMDR, custo: profitability.custoMDR, margem: profitability.margemMDR },
-          { label: 'Fees (Tx, AF, 3DS)', receita: profitability.receitaFees, custo: profitability.custoFees, margem: profitability.margemFees },
+          { label: 'Fees (Tx/AF/3DS)', receita: profitability.receitaFees, custo: profitability.custoFees, margem: profitability.margemFees },
           { label: 'Antecipação', receita: profitability.receitaAntecip, custo: profitability.custoAntecip, margem: profitability.margemAntecip },
         ].map(row => (
-          <div key={row.label} className="grid grid-cols-4 items-center px-4 py-2.5 border-t text-xs">
+          <div key={row.label} className="grid grid-cols-4 items-center px-3 py-2 border-t text-[11px]">
             <div className="font-medium text-slate-700">{row.label}</div>
             <div className="text-right text-emerald-600 font-mono">{fmtBRL(row.receita)}</div>
             <div className="text-right text-red-500 font-mono">{fmtBRL(row.custo)}</div>
             <div className={`text-right font-bold font-mono ${row.margem >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>{fmtBRL(row.margem)}</div>
           </div>
         ))}
-        <div className="grid grid-cols-4 items-center px-4 py-2.5 border-t bg-slate-50 text-xs font-bold">
-          <div className="text-slate-800">TOTAL</div>
-          <div className="text-right text-emerald-700 font-mono">{fmtBRL(profitability.receitaTotal)}</div>
-          <div className="text-right text-red-600 font-mono">{fmtBRL(profitability.custoTotal)}</div>
-          <div className={`text-right font-mono ${profitability.margem >= 0 ? 'text-emerald-700' : 'text-red-600'}`}>{fmtBRL(profitability.margem)}</div>
-        </div>
       </div>
 
-      {/* Fees Detail */}
-      <div className="rounded-xl border p-4">
-        <h4 className="text-xs font-bold text-slate-700 mb-3">Detalhe de Fees por Transação</h4>
-        <div className="space-y-2">
-          {[
-            { label: 'Fee Transação', proposta: profitability.feesProposta.feeTransacao, parceiro: profitability.feesParceiro.feeTransacao },
-            { label: 'Antifraude', proposta: profitability.feesProposta.antifraude, parceiro: profitability.feesParceiro.antifraude },
-            { label: '3DS', proposta: profitability.feesProposta.taxa3ds, parceiro: profitability.feesParceiro.taxa3ds },
-          ].map(fee => {
-            const margem = fee.proposta - fee.parceiro;
+      {/* MDR Detail by Brand */}
+      <div className="rounded-lg border p-3">
+        <h4 className="text-[10px] font-bold text-slate-600 uppercase mb-2">MDR por Bandeira</h4>
+        <div className="space-y-1.5">
+          {BANDEIRAS.map(b => {
+            const data = profitability.detalheBandeiras[b];
+            if (!data) return null;
             return (
-              <div key={fee.label} className="flex items-center justify-between text-xs">
-                <span className="text-slate-600">{fee.label}</span>
-                <div className="flex items-center gap-4">
-                  <span className="text-emerald-600 font-mono">R$ {fee.proposta.toFixed(2)}</span>
-                  <span className="text-slate-300">→</span>
-                  <span className="text-red-500 font-mono">R$ {fee.parceiro.toFixed(2)}</span>
-                  <span className={`font-bold font-mono ${margem >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
-                    {margem >= 0 ? '+' : ''}R$ {margem.toFixed(2)}
+              <div key={b} className="flex items-center justify-between text-[11px]">
+                <span className="text-slate-600 capitalize font-medium w-20">{b}</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-emerald-600 font-mono w-20 text-right">{fmtBRL(data.receita)}</span>
+                  <span className="text-red-500 font-mono w-20 text-right">{fmtBRL(data.custo)}</span>
+                  <span className={`font-bold font-mono w-20 text-right ${data.margem >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+                    {fmtBRL(data.margem)}
                   </span>
                 </div>
               </div>
@@ -246,44 +281,30 @@ function ProfitabilityResult({ profitability, partnerName }) {
         </div>
       </div>
 
-      {/* MDR by Brand */}
-      <div className="rounded-xl border p-4">
-        <h4 className="text-xs font-bold text-slate-700 mb-3">MDR por Bandeira (Estimado)</h4>
-        <div className="space-y-2">
-          {Object.entries(profitability.mdrDetalhado).map(([b, data]) => (
-            <div key={b} className="flex items-center justify-between text-xs">
-              <span className="text-slate-600 capitalize font-medium">{b}</span>
-              <div className="flex items-center gap-3">
-                <span className="text-emerald-600 font-mono text-[11px]">{fmtBRL(data.receita)}</span>
-                <span className="text-red-500 font-mono text-[11px]">{fmtBRL(data.custo)}</span>
-                <span className={`font-bold font-mono text-[11px] min-w-[80px] text-right ${data.margem >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
-                  {fmtBRL(data.margem)}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Alerts */}
       {profitability.alertas.length > 0 && (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+        <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
           <div className="flex items-center gap-2 mb-2">
             <AlertTriangle className="w-4 h-4 text-amber-600" />
-            <h4 className="text-xs font-bold text-amber-800">Alertas de Taxas ({profitability.alertas.length})</h4>
+            <h4 className="text-[10px] font-bold text-amber-800 uppercase">Alertas ({profitability.alertas.length})</h4>
           </div>
-          <div className="space-y-1">
+          <div className="space-y-1 max-h-32 overflow-y-auto">
             {profitability.alertas.map((alerta, i) => (
-              <p key={i} className="text-[11px] text-amber-700">• {alerta}</p>
+              <p key={i} className="text-[10px] text-amber-700">
+                {alerta.tipo === 'fee' 
+                  ? `• ${alerta.campo}: R$ ${alerta.proposta.toFixed(2)} < mín. R$ ${alerta.parceiro.toFixed(2)}`
+                  : `• ${alerta.bandeira.toUpperCase()} ${FAIXA_LABELS[alerta.faixa]}: ${alerta.taxaProposta.toFixed(2)}% < mín. ${alerta.taxaParceiro.toFixed(2)}%`
+                }
+              </p>
             ))}
           </div>
         </div>
       )}
 
       {profitability.alertas.length === 0 && (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 flex items-center gap-2">
+        <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-2.5 flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-          <p className="text-[11px] text-emerald-700 font-medium">Todas as taxas da proposta estão dentro dos limites do parceiro</p>
+          <p className="text-[10px] text-emerald-700 font-medium">Taxas dentro dos limites do parceiro</p>
         </div>
       )}
     </div>
@@ -291,9 +312,100 @@ function ProfitabilityResult({ profitability, partnerName }) {
 }
 
 
+function MinimoGarantidoTab({ proposal, partner, selectedMccCode }) {
+  const minimoGarantido = proposal?.rates?.minimoGarantido;
+  
+  const meses = [
+    { key: 'mes1', label: 'Mês 1', tpv: parseTaxa(minimoGarantido?.mes1) },
+    { key: 'mes2', label: 'Mês 2', tpv: parseTaxa(minimoGarantido?.mes2) },
+    { key: 'mes3', label: 'Mês 3', tpv: parseTaxa(minimoGarantido?.mes3) },
+  ];
+
+  const resultados = meses.map(m => ({
+    ...m,
+    profitability: m.tpv > 0 ? calculateProfitability(proposal, partner, selectedMccCode, m.tpv) : null,
+  }));
+
+  const totalMargem = resultados.reduce((acc, r) => acc + (r.profitability?.margem || 0), 0);
+  const totalReceita = resultados.reduce((acc, r) => acc + (r.profitability?.receitaTotal || 0), 0);
+  const totalCusto = resultados.reduce((acc, r) => acc + (r.profitability?.custoTotal || 0), 0);
+
+  if (!minimoGarantido || (parseTaxa(minimoGarantido.mes1) === 0 && parseTaxa(minimoGarantido.mes2) === 0 && parseTaxa(minimoGarantido.mes3) === 0)) {
+    return (
+      <div className="text-center py-12">
+        <Calendar className="w-10 h-10 mx-auto text-slate-200 mb-3" />
+        <p className="text-sm text-slate-400">Nenhum mínimo garantido definido na proposta</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Summary */}
+      <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-xl p-4 text-white">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-white/60 mb-1">Margem Acumulada (3 meses)</p>
+        <p className="text-2xl font-bold">{fmtBRL(totalMargem)}</p>
+        <div className="flex gap-4 mt-2 text-xs text-white/70">
+          <span>Receita: {fmtBRL(totalReceita)}</span>
+          <span>Custo: {fmtBRL(totalCusto)}</span>
+        </div>
+      </div>
+
+      {/* Month by month cards */}
+      <div className="space-y-3">
+        {resultados.map(({ key, label, tpv, profitability }) => {
+          if (!profitability) {
+            return (
+              <div key={key} className="rounded-lg border border-dashed p-4 text-center text-slate-400 text-sm">
+                {label}: Sem TPV definido
+              </div>
+            );
+          }
+
+          const isPositive = profitability.margem > 0;
+          const marginColor = isPositive ? 'text-emerald-600' : 'text-red-600';
+
+          return (
+            <div key={key} className="rounded-lg border p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <h4 className="font-bold text-slate-800">{label}</h4>
+                  <p className="text-xs text-slate-500">TPV: {fmtBRL(tpv)}</p>
+                </div>
+                <div className="text-right">
+                  <p className={`text-lg font-bold ${marginColor}`}>{fmtBRL(profitability.margem)}</p>
+                  <p className={`text-xs ${marginColor}`}>{fmtPct(profitability.margemPct)} margem</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-2 text-center">
+                <div className="bg-emerald-50 rounded p-2">
+                  <p className="text-[9px] text-emerald-600 font-bold uppercase">Receita</p>
+                  <p className="text-xs font-bold text-emerald-700">{fmtBRL(profitability.receitaTotal)}</p>
+                </div>
+                <div className="bg-red-50 rounded p-2">
+                  <p className="text-[9px] text-red-500 font-bold uppercase">Custo</p>
+                  <p className="text-xs font-bold text-red-600">{fmtBRL(profitability.custoTotal)}</p>
+                </div>
+                <div className={`rounded p-2 ${isPositive ? 'bg-emerald-50' : 'bg-red-50'}`}>
+                  <p className={`text-[9px] font-bold uppercase ${isPositive ? 'text-emerald-600' : 'text-red-500'}`}>Lucro</p>
+                  <p className={`text-xs font-bold ${marginColor}`}>{fmtBRL(profitability.margem)}</p>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+
 export default function RentabilidadeDrawer({ open, onClose, proposal }) {
   const [selectedPartnerId, setSelectedPartnerId] = useState('');
-  const [prazo, setPrazo] = useState('D+1');
+  const [selectedMccCode, setSelectedMccCode] = useState('');
+  const [tpvManual, setTpvManual] = useState('');
+  const [activeTab, setActiveTab] = useState('tpv');
 
   const { data: partners = [], isLoading: loadingPartners } = useQuery({
     queryKey: ['partners-for-rent'],
@@ -302,24 +414,49 @@ export default function RentabilidadeDrawer({ open, onClose, proposal }) {
   });
 
   const selectedPartner = partners.find(p => p.id === selectedPartnerId) || null;
+  const mccOptions = selectedPartner?.mdrByMcc || [];
 
-  const profitability = useMemo(() => {
-    if (!selectedPartner || !proposal) return null;
-    return calculateProfitability(proposal, selectedPartner, prazo);
-  }, [selectedPartner, proposal, prazo]);
-
-  // Reset on proposal change
-  React.useEffect(() => {
-    if (open) {
-      setSelectedPartnerId(proposal?.chosenPartnerId || '');
-      setPrazo(proposal?.rates?.rav?.prazo || 'D+1');
+  // Reset on open
+  useEffect(() => {
+    if (open && proposal) {
+      setSelectedPartnerId(proposal.chosenPartnerId || '');
+      setTpvManual('');
+      setActiveTab('tpv');
     }
   }, [open, proposal]);
 
+  // Auto-select MCC when partner changes
+  useEffect(() => {
+    if (selectedPartner && mccOptions.length > 0) {
+      const clientMcc = proposal?.clienteMcc;
+      const matchingMcc = mccOptions.find(m => m.mccCode === clientMcc);
+      const demaisMcc = mccOptions.find(m => ['Demais', 'demais', 'DEMAIS'].includes(m.mccCode));
+      setSelectedMccCode(matchingMcc?.mccCode || demaisMcc?.mccCode || mccOptions[0]?.mccCode || '');
+    } else {
+      setSelectedMccCode('');
+    }
+  }, [selectedPartner, mccOptions, proposal?.clienteMcc]);
+
+  // Calculate TPV
+  const tpvEstimado = useMemo(() => {
+    if (tpvManual) return parseTaxa(tpvManual);
+    const mg = proposal?.rates?.minimoGarantido;
+    if (mg?.mes3) return parseTaxa(mg.mes3);
+    if (mg?.mes2) return parseTaxa(mg.mes2);
+    if (mg?.mes1) return parseTaxa(mg.mes1);
+    return 100000;
+  }, [tpvManual, proposal]);
+
+  const profitability = useMemo(() => {
+    if (!selectedPartner || !selectedMccCode || !proposal) return null;
+    return calculateProfitability(proposal, selectedPartner, selectedMccCode, tpvEstimado);
+  }, [selectedPartner, selectedMccCode, proposal, tpvEstimado]);
+
   return (
     <Sheet open={open} onOpenChange={onClose}>
-      <SheetContent className="w-full sm:max-w-[560px] overflow-y-auto p-0">
-        <div className="sticky top-0 z-10 bg-white border-b px-6 py-4">
+      <SheetContent className="w-full sm:max-w-[580px] overflow-y-auto p-0">
+        {/* Header */}
+        <div className="sticky top-0 z-10 bg-white border-b px-5 py-4">
           <SheetHeader>
             <SheetTitle className="flex items-center gap-2 text-base">
               <DollarSign className="w-5 h-5 text-[#2bc196]" />
@@ -332,20 +469,14 @@ export default function RentabilidadeDrawer({ open, onClose, proposal }) {
             <div className="mt-3 flex items-center gap-2 flex-wrap">
               <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0 text-[10px]">{proposal.codigo}</Badge>
               <span className="text-sm font-semibold text-[#002443]">{proposal.clienteNome || 'Sem nome'}</span>
-              {proposal.businessSubCategory && (
-                <Badge className={`text-[9px] border-0 ${
-                  proposal.businessSubCategory === 'GATEWAY' ? 'bg-indigo-100 text-indigo-700' :
-                  proposal.businessSubCategory === 'MARKETPLACE' ? 'bg-amber-100 text-amber-700' :
-                  'bg-emerald-100 text-emerald-700'
-                }`}>
-                  {proposal.businessSubCategory === 'MERCHAN' ? 'Merchant' : proposal.businessSubCategory}
-                </Badge>
+              {proposal.clienteMcc && (
+                <Badge variant="outline" className="text-[9px]">MCC {proposal.clienteMcc}</Badge>
               )}
             </div>
           )}
 
           {/* Controls */}
-          <div className="mt-4 grid grid-cols-2 gap-3">
+          <div className="mt-4 space-y-3">
             {/* Partner Select */}
             <div>
               <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1 block">Parceiro</label>
@@ -366,36 +497,91 @@ export default function RentabilidadeDrawer({ open, onClose, proposal }) {
               </Select>
             </div>
 
-            {/* Prazo Select */}
-            <div>
-              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1 block">Prazo Antecipação</label>
-              <Select value={prazo} onValueChange={setPrazo}>
-                <SelectTrigger className="h-9 text-sm">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {PRAZOS.map(p => (
-                    <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            {/* MCC Select */}
+            {selectedPartner && mccOptions.length > 0 && (
+              <div>
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1 block">
+                  MCC do Parceiro (custo base)
+                </label>
+                <Select value={selectedMccCode} onValueChange={setSelectedMccCode}>
+                  <SelectTrigger className="h-9 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {mccOptions.map(m => (
+                      <SelectItem key={m.mccCode} value={m.mccCode}>
+                        <span className="font-mono text-xs">{m.mccCode}</span>
+                        <span className="text-slate-500 ml-2 text-xs">— {m.mccDescription}</span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Content */}
-        <div className="px-6 py-5">
+        <div className="px-5 py-4">
           {!selectedPartnerId ? (
             <div className="text-center py-16">
               <Building2 className="w-10 h-10 mx-auto text-slate-200 mb-3" />
-              <p className="text-sm text-slate-400">Selecione um parceiro para visualizar a rentabilidade</p>
+              <p className="text-sm text-slate-400">Selecione um parceiro para simular</p>
+            </div>
+          ) : !selectedMccCode ? (
+            <div className="text-center py-16">
+              <Calculator className="w-10 h-10 mx-auto text-slate-200 mb-3" />
+              <p className="text-sm text-slate-400">Parceiro sem MCCs configurados</p>
             </div>
           ) : loadingPartners ? (
             <div className="flex justify-center py-16">
               <Loader2 className="w-6 h-6 animate-spin text-[#2bc196]" />
             </div>
           ) : (
-            <ProfitabilityResult profitability={profitability} partnerName={selectedPartner?.name} />
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="w-full mb-4">
+                <TabsTrigger value="tpv" className="flex-1 gap-1.5 text-xs">
+                  <Calculator className="w-3.5 h-3.5" />
+                  TPV Estimado
+                </TabsTrigger>
+                <TabsTrigger value="minimo" className="flex-1 gap-1.5 text-xs">
+                  <Calendar className="w-3.5 h-3.5" />
+                  Mínimo Garantido
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="tpv" className="mt-0">
+                {/* TPV Input */}
+                <div className="mb-4">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1 block">
+                    TPV Mensal para Simulação
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">R$</span>
+                    <Input
+                      type="text"
+                      value={tpvManual}
+                      onChange={(e) => setTpvManual(e.target.value)}
+                      placeholder={fmtBRL(tpvEstimado).replace('R$ ', '')}
+                      className="pl-10 h-9 text-sm"
+                    />
+                  </div>
+                  <p className="text-[10px] text-slate-400 mt-1">
+                    Deixe vazio para usar o Mínimo Garantido Mês 3 ou valor padrão
+                  </p>
+                </div>
+
+                <ResultCard profitability={profitability} />
+              </TabsContent>
+
+              <TabsContent value="minimo" className="mt-0">
+                <MinimoGarantidoTab 
+                  proposal={proposal} 
+                  partner={selectedPartner} 
+                  selectedMccCode={selectedMccCode} 
+                />
+              </TabsContent>
+            </Tabs>
           )}
         </div>
       </SheetContent>
