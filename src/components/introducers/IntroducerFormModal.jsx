@@ -25,6 +25,7 @@ function nameToReferralCode(name) {
 const EMPTY_FORM = {
   name: '', referralCode: '', contactEmail: '', contactPhone: '',
   status: 'active', notes: '', commissionRate: '', type: 'individual',
+  cpf: '',
   cnpj: '', companyName: '', companyLogoUrl: '', contactEmailCompany: '',
   contactPhoneCompany: '', uniqueLandingPageSlug: '', landingPageActive: true,
   standardRates: [],
@@ -41,6 +42,7 @@ export default function IntroducerFormModal({ open, onClose, introducer, onSave,
         referralCode: introducer.referralCode || '',
         contactEmail: introducer.contactEmail || '',
         contactPhone: introducer.contactPhone || '',
+        cpf: introducer.cpf || '',
         status: introducer.status || 'active',
         notes: introducer.notes || '',
         commissionRate: introducer.commissionRate || '',
@@ -120,18 +122,28 @@ export default function IntroducerFormModal({ open, onClose, introducer, onSave,
               }} placeholder="Nome do parceiro" className="h-10 rounded-xl" />
             </div>
             <div className="space-y-1.5">
+              <Label className="text-xs font-bold text-[#002443]/50">{isCompany ? 'CNPJ' : 'CPF'}</Label>
+              {isCompany ? (
+                <Input value={form.cnpj} onChange={e => setForm(p => ({ ...p, cnpj: e.target.value }))} placeholder="00.000.000/0001-00" className="h-10 rounded-xl font-mono" />
+              ) : (
+                <Input value={form.cpf} onChange={e => setForm(p => ({ ...p, cpf: e.target.value }))} placeholder="000.000.000-00" className="h-10 rounded-xl font-mono" />
+              )}
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
               <Label className="text-xs font-bold text-[#002443]/50">Código UTM *</Label>
               <Input value={form.referralCode} onChange={e => {
                 setCodeManuallyEdited(true);
                 setForm(p => ({ ...p, referralCode: e.target.value.toLowerCase().replace(/\s/g, '') }));
               }} placeholder="ex: agenciax" className="h-10 rounded-xl font-mono" />
             </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <Label className="text-xs font-bold text-[#002443]/50">E-mail</Label>
               <Input type="email" value={form.contactEmail} onChange={e => setForm(p => ({ ...p, contactEmail: e.target.value }))} placeholder="email@parceiro.com" className="h-10 rounded-xl" />
             </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <Label className="text-xs font-bold text-[#002443]/50">Telefone</Label>
               <Input value={form.contactPhone} onChange={e => setForm(p => ({ ...p, contactPhone: e.target.value }))} placeholder="(11) 99999-9999" className="h-10 rounded-xl" />

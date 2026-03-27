@@ -15,6 +15,10 @@
       "default": "individual",
       "description": "Tipo de Introducer: individual ou empresa"
     },
+    "cpf": {
+      "type": "string",
+      "description": "CPF do Introducer (apenas para tipo individual)"
+    },
     "referralCode": {
       "type": "string",
       "description": "C\u00f3digo \u00fanico de refer\u00eancia para rastreamento UTM (ex: agenciax, joaosilva)"
