@@ -7,13 +7,14 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   ArrowLeft, Pencil, Link2, Copy, Check, ExternalLink,
-  Loader2, FileText, Eye, GitBranch, Clock
+  Loader2, FileText, Eye, GitBranch, Clock, DollarSign
 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
 import PropostaRevisaoHeader from '@/components/proposals/PropostaRevisaoHeader';
 import PropostaRevisaoResumo from '@/components/proposals/PropostaRevisaoResumo';
 import PropostaRevisaoLink from '@/components/proposals/PropostaRevisaoLink';
+import RentabilidadeDrawer from '@/components/proposals/RentabilidadeDrawer';
 
 const STATUS_CONFIG = {
   rascunho: { label: 'Rascunho', color: 'bg-slate-100 text-slate-700' },
@@ -33,6 +34,7 @@ export default function PropostaDetalhes() {
 
   const queryClient = useQueryClient();
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+  const [showRentabilidade, setShowRentabilidade] = useState(false);
 
   const handleMarkAsAccepted = async () => {
     if (!proposta) return;
@@ -146,6 +148,13 @@ export default function PropostaDetalhes() {
         isUpdatingStatus={isUpdatingStatus}
       />
 
+      {/* Botão Rentabilidade */}
+      <div className="flex justify-end">
+        <Button onClick={() => setShowRentabilidade(true)} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white gap-2 rounded-xl shadow-md">
+          <DollarSign className="w-4 h-4" /> Simular Rentabilidade
+        </Button>
+      </div>
+
       {/* Link Público - Seção principal de ação */}
       <PropostaRevisaoLink proposta={proposta} publicLink={publicLink} />
 
@@ -205,6 +214,13 @@ export default function PropostaDetalhes() {
           <ArrowLeft className="w-4 h-4" /> Voltar para Gestão de Propostas
         </Button>
       </div>
+
+      {/* Rentabilidade Drawer */}
+      <RentabilidadeDrawer
+        open={showRentabilidade}
+        onClose={() => setShowRentabilidade(false)}
+        proposal={proposta}
+      />
     </div>
   );
 }

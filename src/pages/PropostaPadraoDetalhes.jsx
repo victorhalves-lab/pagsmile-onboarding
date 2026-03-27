@@ -5,10 +5,11 @@ import { base44 } from '@/api/base44Client';
 import { createPageUrl } from '../utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Pencil, Loader2, FileText, Link2, Copy, Check, ExternalLink, Eye, Tag } from 'lucide-react';
+import { ArrowLeft, Pencil, Loader2, FileText, Link2, Copy, Check, ExternalLink, Eye, Tag, DollarSign } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
 import PropostaRevisaoResumo from '@/components/proposals/PropostaRevisaoResumo';
+import RentabilidadeDrawer from '@/components/proposals/RentabilidadeDrawer';
 
 const STATUS_CONFIG = {
   rascunho: { label: 'Rascunho', color: 'bg-slate-100 text-slate-700' },
@@ -21,6 +22,7 @@ export default function PropostaPadraoDetalhes() {
   const urlParams = new URLSearchParams(window.location.search);
   const proposalId = urlParams.get('id');
   const [copied, setCopied] = useState(false);
+  const [showRentabilidade, setShowRentabilidade] = useState(false);
 
   const { data: proposta, isLoading } = useQuery({
     queryKey: ['std-proposal-detalhes', proposalId],
@@ -143,6 +145,13 @@ export default function PropostaPadraoDetalhes() {
         </div>
       ) : null}
 
+      {/* Botão Rentabilidade */}
+      <div className="flex justify-end">
+        <Button onClick={() => setShowRentabilidade(true)} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white gap-2 rounded-xl shadow-md">
+          <DollarSign className="w-4 h-4" /> Simular Rentabilidade
+        </Button>
+      </div>
+
       {/* Resumo */}
       <PropostaRevisaoResumo proposta={propostaLike} />
 
@@ -151,6 +160,13 @@ export default function PropostaPadraoDetalhes() {
           <ArrowLeft className="w-4 h-4" /> Voltar para Propostas Padrão
         </Button>
       </div>
+
+      {/* Rentabilidade Drawer */}
+      <RentabilidadeDrawer
+        open={showRentabilidade}
+        onClose={() => setShowRentabilidade(false)}
+        proposal={propostaLike}
+      />
     </div>
   );
 }
