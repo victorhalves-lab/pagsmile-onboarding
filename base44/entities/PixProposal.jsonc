@@ -1,0 +1,160 @@
+{
+  "name": "PixProposal",
+  "type": "object",
+  "properties": {
+    "leadId": {
+      "type": "string",
+      "description": "ID do Lead"
+    },
+    "codigo": {
+      "type": "string",
+      "description": "C\u00f3digo \u00fanico da proposta PIX (PIX-YYYY-NNNNN)"
+    },
+    "proposalName": {
+      "type": "string",
+      "description": "Nome da proposta PIX"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "rascunho",
+        "enviada",
+        "visualizada",
+        "aceita",
+        "recusada",
+        "contraproposta",
+        "expirada",
+        "cancelada"
+      ],
+      "default": "rascunho",
+      "description": "Status da proposta"
+    },
+    "origem": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "priscila_automatica",
+        "priscila_assistida"
+      ],
+      "default": "manual",
+      "description": "Origem da proposta"
+    },
+    "rates": {
+      "type": "object",
+      "description": "Taxas oferecidas para PIX",
+      "properties": {
+        "pix": {
+          "type": "object",
+          "properties": {
+            "tipo": {
+              "type": "string",
+              "enum": [
+                "percentual",
+                "fixo"
+              ]
+            },
+            "valor": {
+              "type": "number"
+            }
+          }
+        },
+        "minimoGarantido": {
+          "type": "object",
+          "properties": {
+            "mes1": {
+              "type": "number"
+            },
+            "mes2": {
+              "type": "number"
+            },
+            "mes3": {
+              "type": "number"
+            }
+          }
+        }
+      }
+    },
+    "clienteNome": {
+      "type": "string",
+      "description": "Nome da empresa do cliente"
+    },
+    "clienteCnpj": {
+      "type": "string",
+      "description": "CNPJ do cliente"
+    },
+    "clienteContato": {
+      "type": "string",
+      "description": "Nome do contato principal"
+    },
+    "clienteMcc": {
+      "type": "string",
+      "description": "MCC do cliente"
+    },
+    "terms": {
+      "type": "string",
+      "description": "Termos e condi\u00e7\u00f5es"
+    },
+    "validUntil": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data de validade"
+    },
+    "sentDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data de envio"
+    },
+    "acceptedDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data de aceite"
+    },
+    "rejectedDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data de recusa"
+    },
+    "rejectedReason": {
+      "type": "string",
+      "description": "Motivo da recusa"
+    },
+    "counterProposalDetails": {
+      "type": "object",
+      "description": "Detalhes da contraproposta"
+    },
+    "tokenPublico": {
+      "type": "string",
+      "description": "Token p\u00fablico para acesso \u00e0 proposta"
+    },
+    "responsavelId": {
+      "type": "string",
+      "description": "ID do respons\u00e1vel pela proposta"
+    },
+    "responsavelNome": {
+      "type": "string",
+      "description": "Nome do respons\u00e1vel"
+    },
+    "version": {
+      "type": "number",
+      "default": 1,
+      "description": "N\u00famero da vers\u00e3o da proposta"
+    },
+    "previousVersionId": {
+      "type": "string",
+      "description": "ID da vers\u00e3o anterior"
+    },
+    "rootProposalId": {
+      "type": "string",
+      "description": "ID da primeira vers\u00e3o"
+    },
+    "isCurrentVersion": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se esta \u00e9 a vers\u00e3o mais recente"
+    }
+  },
+  "required": [
+    "leadId",
+    "status"
+  ]
+}

@@ -58,7 +58,7 @@ export default function Layout({ children, currentPageName }) {
   const isAdmin = user?.role === 'admin';
 
   const publicPages = [
-    'IntroducerLandingPage','ContratoPublico','PropostaPadraoPublica','ComplianceOnboardingStart','CompliancePixOnly','ComplianceFullKYC',
+    'IntroducerLandingPage','ContratoPublico','PropostaPadraoPublica','PropostaPixPublica','ComplianceOnboardingStart','CompliancePixOnly','ComplianceFullKYC',
     'ComplianceLite','ComplianceSaaS','DocumentUploadPix','DocumentUploadFull',
     'DocumentUploadLite','DocumentUploadSaaS','LivenessFacematchStep','LivenessSimulation',
     'OnboardingCompletion','LeadQuestionnaire','LeadQuestionnairePix','LeadSuccess','PropostaPublica',
@@ -99,6 +99,7 @@ export default function Layout({ children, currentPageName }) {
         { label: 'Gestão de Propostas', path: 'GestaoPropostas', icon: FileText },
         { label: 'Criar Proposta', path: 'CriarProposta', icon: FileCheck },
         { label: 'Propostas Padrão', path: 'GestaoPropostasPadrao', icon: FileText },
+        { label: 'Propostas PIX', path: 'GestaoPropostasPix', icon: FileText },
         { label: 'Introducers', path: 'GestaoIntroducers', icon: UserPlus },
         { label: 'Questionário Reunião', path: 'QuestionarioReuniao', icon: ClipboardList },
         { label: 'Questionário com Robô', path: 'ProcessMeetingNotes', icon: Brain },

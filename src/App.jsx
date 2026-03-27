@@ -22,6 +22,10 @@ import GestaoPropostasPadrao from './pages/GestaoPropostasPadrao';
 import CriarPropostaPadrao from './pages/CriarPropostaPadrao';
 import PropostaPadraoDetalhes from './pages/PropostaPadraoDetalhes';
 import PropostaPadraoPublica from './pages/PropostaPadraoPublica';
+import GestaoPropostasPix from './pages/GestaoPropostasPix';
+import CriarPropostaPix from './pages/CriarPropostaPix';
+import PropostaPixDetalhes from './pages/PropostaPixDetalhes';
+import PropostaPixPublica from './pages/PropostaPixPublica';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -88,6 +92,10 @@ const AuthenticatedApp = () => {
       <Route path="/CriarPropostaPadrao" element={<LayoutWrapper currentPageName="CriarPropostaPadrao"><CriarPropostaPadrao /></LayoutWrapper>} />
       <Route path="/PropostaPadraoDetalhes" element={<LayoutWrapper currentPageName="PropostaPadraoDetalhes"><PropostaPadraoDetalhes /></LayoutWrapper>} />
       <Route path="/PropostaPadraoPublica" element={<LayoutWrapper currentPageName="PropostaPadraoPublica"><PropostaPadraoPublica /></LayoutWrapper>} />
+      <Route path="/GestaoPropostasPix" element={<LayoutWrapper currentPageName="GestaoPropostasPix"><GestaoPropostasPix /></LayoutWrapper>} />
+      <Route path="/CriarPropostaPix" element={<LayoutWrapper currentPageName="CriarPropostaPix"><CriarPropostaPix /></LayoutWrapper>} />
+      <Route path="/PropostaPixDetalhes" element={<LayoutWrapper currentPageName="PropostaPixDetalhes"><PropostaPixDetalhes /></LayoutWrapper>} />
+      <Route path="/PropostaPixPublica" element={<LayoutWrapper currentPageName="PropostaPixPublica"><PropostaPixPublica /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
