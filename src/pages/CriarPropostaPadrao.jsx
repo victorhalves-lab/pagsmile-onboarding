@@ -51,8 +51,6 @@ export default function CriarPropostaPadrao() {
     dataValidade: new Date(new Date().setMonth(new Date().getMonth() + 3)),
   });
 
-  const segmentLocked = !!form.segment;
-
   const [rates, setRates] = useState({
     cartao: {},
     pix: { tipo: 'percentual', valor: '' },
@@ -108,8 +106,8 @@ export default function CriarPropostaPadrao() {
   const updateForm = (field, value) => {
     setForm(prev => ({ ...prev, [field]: value }));
 
-    // Auto-preencher taxas quando segmento é selecionado (apenas se não estiver editando)
-    if (field === 'segment' && value && !editId) {
+    // Auto-preencher taxas quando segmento é selecionado
+    if (field === 'segment' && value) {
       const segDefault = DEFAULT_SEGMENT_RATES.find(s => s.segmentName === value);
       if (segDefault) {
         const bandeiras = ['visa', 'mastercard', 'elo', 'amex', 'outras'];
@@ -319,32 +317,29 @@ export default function CriarPropostaPadrao() {
                  <button
                    key={s}
                    type="button"
-                   onClick={() => { if (!segmentLocked) updateForm('segment', s); }}
-                   disabled={segmentLocked && form.segment !== s}
+                   onClick={() => updateForm('segment', s)}
                    className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 border-2 ${
                      form.segment === s
                        ? 'bg-[#2bc196] border-[#2bc196] text-[#002443] shadow-lg shadow-[#2bc196]/25 scale-[1.02]'
-                       : segmentLocked
-                         ? 'bg-white/5 border-white/5 text-white/20 cursor-not-allowed'
-                         : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:border-[#2bc196]/40 hover:text-white cursor-pointer'
+                       : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:border-[#2bc196]/40 hover:text-white cursor-pointer'
                    }`}
                  >
                    {s}
                  </button>
                ))}
              </div>
-             {segmentLocked && (
-               <p className="text-[10px] text-amber-400/70 flex items-center gap-1.5 mt-3">
-                 <AlertTriangle className="w-3 h-3" />
-                 Taxas definidas automaticamente pelo segmento "{form.segment}" e não podem ser alteradas.
+             {form.segment && (
+               <p className="text-[10px] text-[#2bc196]/60 flex items-center gap-1.5 mt-3">
+                 <Info className="w-3 h-3" />
+                 Taxas preenchidas pelo segmento "{form.segment}". Selecione outro segmento para alterar.
                </p>
              )}
              </div>
           </div>
 
-          <CardTaxasCartao rates={rates} onUpdateRates={updateRates} selectedBrand={selectedBrand} setSelectedBrand={setSelectedBrand} partner={selectedPartner} clientMcc="" readOnly={segmentLocked} />
-          <CardAntecipacao form={form} onUpdate={updateForm} readOnly={segmentLocked} />
-          <CardOutrasTaxas rates={rates} onUpdateRates={updateRates} partner={selectedPartner} readOnly={segmentLocked} />
+          <CardTaxasCartao rates={rates} onUpdateRates={updateRates} selectedBrand={selectedBrand} setSelectedBrand={setSelectedBrand} partner={selectedPartner} clientMcc="" />
+          <CardAntecipacao form={form} onUpdate={updateForm} />
+          <CardOutrasTaxas rates={rates} onUpdateRates={updateRates} partner={selectedPartner} />
 
           {/* Parceiro - apenas para simulação de rentabilidade */}
           <PartnerSelector

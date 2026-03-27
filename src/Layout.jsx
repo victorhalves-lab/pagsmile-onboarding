@@ -101,6 +101,7 @@ export default function Layout({ children, currentPageName }) {
         { label: 'Propostas Padrão', path: 'GestaoPropostasPadrao', icon: FileText },
         { label: 'Propostas PIX', path: 'GestaoPropostasPix', icon: FileText },
         { label: 'Introducers', path: 'GestaoIntroducers', icon: UserPlus },
+        { label: 'Landing Pages', path: 'GestaoLandingPages', icon: LinkIcon },
         { label: 'Questionário Reunião', path: 'QuestionarioReuniao', icon: ClipboardList },
         { label: 'Questionário com Robô', path: 'ProcessMeetingNotes', icon: Brain },
       ]
