@@ -54,9 +54,9 @@ export default function LandingHeader({ companyName, companyLogoUrl }) {
               'Split de Pagamentos',
               'Antecipação Flexível',
             ].map((badge) => (
-              <div key={badge} className="hidden md:flex items-center gap-1.5 text-white/40 text-xs">
-                <Shield className="w-3 h-3 text-[#2bc196]/60" />
-                <span>{badge}</span>
+              <div key={badge} className="hidden md:flex items-center gap-2 text-white text-xs">
+                <Shield className="w-3.5 h-3.5 text-[#2bc196]" />
+                <span className="font-medium">{badge}</span>
               </div>
             ))}
           </div>
