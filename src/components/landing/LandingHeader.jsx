@@ -34,14 +34,14 @@ export default function LandingHeader({ companyName, companyLogoUrl }) {
 
           {/* Title */}
           <div className="text-center">
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
+            <h1 className="text-3xl md:text-4xl font-bold mb-3" style={{ color: '#ffffff' }}>
               {companyName ? (
-                <>Soluções de Pagamento<br /><span className="text-[#2bc196]">{companyName}</span></>
+                <>Soluções de Pagamento<br /><span style={{ color: '#2bc196' }}>{companyName}</span></>
               ) : (
-                <>Soluções de Pagamento <span className="text-[#2bc196]">Pagsmile</span></>
+                <>Soluções de Pagamento <span style={{ color: '#2bc196' }}>Pagsmile</span></>
               )}
             </h1>
-            <p className="text-white/60 text-sm md:text-base max-w-xl mx-auto">
+            <p className="text-sm md:text-base max-w-xl mx-auto" style={{ color: 'rgba(255,255,255,0.6)' }}>
               Taxas competitivas, tecnologia de ponta e suporte especializado para o seu negócio crescer.
             </p>
           </div>
@@ -54,9 +54,9 @@ export default function LandingHeader({ companyName, companyLogoUrl }) {
               'Split de Pagamentos',
               'Antecipação Flexível',
             ].map((badge) => (
-              <div key={badge} className="hidden md:flex items-center gap-2 text-white text-xs">
-                <Shield className="w-3.5 h-3.5 text-[#2bc196]" />
-                <span className="font-medium">{badge}</span>
+              <div key={badge} className="hidden md:flex items-center gap-2 text-xs">
+                <Shield className="w-3.5 h-3.5" style={{ color: '#2bc196' }} />
+                <span className="font-medium" style={{ color: '#ffffff' }}>{badge}</span>
               </div>
             ))}
           </div>
