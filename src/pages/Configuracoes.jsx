@@ -22,9 +22,8 @@ import {
 import { 
   Settings, FileText, AlertTriangle, Save, Shield,
   CheckCircle2, XCircle, Info, Plus, Trash2, Edit,
-  Loader2, Users, Key, Globe, Mail, Bell, Handshake
+  Loader2, Users, Key, Globe, Mail, Bell
 } from 'lucide-react';
-import PartnersTab from '@/components/partners/PartnersTab';
 import { toast } from 'sonner';
 
 export default function Configuracoes() {
@@ -96,7 +95,6 @@ export default function Configuracoes() {
             { v: 'risk', icon: AlertTriangle, label: 'Regras de Risco' },
             { v: 'integrations', icon: Globe, label: 'Integrações' },
             { v: 'notifications', icon: Bell, label: 'Notificações' },
-            { v: 'partners', icon: Handshake, label: 'Parceiros' },
           ].map(tab => (
             <TabsTrigger key={tab.v} value={tab.v} className="gap-1.5 data-[state=active]:bg-white data-[state=active]:text-[#002443] data-[state=active]:shadow-sm text-[#002443]/50">
               <tab.icon className="w-3.5 h-3.5" /> {tab.label}
@@ -277,11 +275,6 @@ export default function Configuracoes() {
               </div>
             ))}
           </div>
-        </TabsContent>
-
-        {/* Partners */}
-        <TabsContent value="partners">
-          <PartnersTab />
         </TabsContent>
 
         {/* Notifications */}
