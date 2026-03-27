@@ -1,0 +1,282 @@
+{
+  "name": "Lead",
+  "type": "object",
+  "properties": {
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "E-mail do lead"
+    },
+    "fullName": {
+      "type": "string",
+      "description": "Nome completo ou Raz\u00e3o Social"
+    },
+    "cpfCnpj": {
+      "type": "string",
+      "description": "CPF ou CNPJ do lead"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Telefone de contato"
+    },
+    "companyName": {
+      "type": "string",
+      "description": "Nome fantasia da empresa"
+    },
+    "website": {
+      "type": "string",
+      "description": "Site da empresa"
+    },
+    "mcc": {
+      "type": "string",
+      "description": "C\u00f3digo MCC selecionado"
+    },
+    "contactName": {
+      "type": "string",
+      "description": "Nome do contato"
+    },
+    "contactRole": {
+      "type": "string",
+      "description": "Cargo do contato"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "questionario_preenchido",
+        "analisado_priscila",
+        "em_contato_comercial",
+        "proposta_enviada",
+        "proposta_aceita",
+        "proposta_recusada",
+        "kyc_iniciado",
+        "kyc_aprovado",
+        "kyc_revisao_manual",
+        "ativado",
+        "perdido"
+      ],
+      "default": "questionario_preenchido",
+      "description": "Status atual do lead no funil"
+    },
+    "businessSubCategory": {
+      "type": "string",
+      "enum": [
+        "MERCHAN",
+        "GATEWAY",
+        "MARKETPLACE"
+      ],
+      "description": "Tipo de neg\u00f3cio"
+    },
+    "leadQuestionnaireTemplateId": {
+      "type": "string",
+      "description": "ID do QuestionnaireTemplate de Lead usado"
+    },
+    "recommendedComplianceTemplateId": {
+      "type": "string",
+      "description": "ID do QuestionnaireTemplate de Compliance recomendado"
+    },
+    "onboardingCaseId": {
+      "type": "string",
+      "description": "ID do OnboardingCase gerado"
+    },
+    "currentProposalId": {
+      "type": "string",
+      "description": "ID da proposta ativa"
+    },
+    "priscilaQualityScore": {
+      "type": "number",
+      "description": "Score de qualidade PRISCILA (0-100)"
+    },
+    "priscilaRiskLevel": {
+      "type": "string",
+      "enum": [
+        "BAIXO",
+        "MEDIO",
+        "ALTO",
+        "CRITICO",
+        "EM_ANALISE"
+      ],
+      "description": "N\u00edvel de risco avaliado pela PRISCILA"
+    },
+    "priscilaDecisionPath": {
+      "type": "string",
+      "enum": [
+        "AUTO_APROVAR",
+        "AUTO_COM_FLAG",
+        "REVISAO_MANUAL",
+        "REJEITAR"
+      ],
+      "description": "Caminho de decis\u00e3o sugerido pela PRISCILA"
+    },
+    "priscilaAnalysisReport": {
+      "type": "object",
+      "description": "Relat\u00f3rio detalhado da an\u00e1lise PRISCILA"
+    },
+    "questionnaireData": {
+      "type": "object",
+      "description": "Dados completos do question\u00e1rio preenchido"
+    },
+    "tpvMensal": {
+      "type": "number",
+      "description": "TPV mensal declarado"
+    },
+    "ticketMedio": {
+      "type": "number",
+      "description": "Ticket m\u00e9dio declarado"
+    },
+    "transacoesMes": {
+      "type": "number",
+      "description": "Transa\u00e7\u00f5es por m\u00eas"
+    },
+    "expectativaCrescimento": {
+      "type": "string",
+      "description": "Expectativa de crescimento"
+    },
+    "protocolo": {
+      "type": "string",
+      "description": "Protocolo \u00fanico do lead"
+    },
+    "origemLead": {
+      "type": "string",
+      "description": "UTM Source ou canal de origem"
+    },
+    "onboardingLinkCode": {
+      "type": "string",
+      "description": "C\u00f3digo do link de onboarding usado"
+    },
+    "lastInteractionDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data da \u00faltima intera\u00e7\u00e3o"
+    },
+    "leadQualifierScore": {
+      "type": "number",
+      "description": "Score do Lead Qualifier IA (0-100)"
+    },
+    "leadQualifierLevel": {
+      "type": "string",
+      "enum": [
+        "EXCELENTE",
+        "BOM",
+        "REGULAR",
+        "FRACO",
+        "INSUFICIENTE",
+        "PENDENTE"
+      ],
+      "default": "PENDENTE",
+      "description": "Classifica\u00e7\u00e3o de maturidade do lead pela IA"
+    },
+    "leadQualifierReport": {
+      "type": "object",
+      "description": "Relat\u00f3rio completo do Lead Qualifier IA"
+    },
+    "leadQualifierDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data da \u00faltima an\u00e1lise do Lead Qualifier"
+    },
+    "expectedRates": {
+      "type": "object",
+      "description": "Expectativa de taxas do lead",
+      "properties": {
+        "mdr1x": {
+          "type": "number"
+        },
+        "mdr2a6x": {
+          "type": "number"
+        },
+        "mdr7a12x": {
+          "type": "number"
+        },
+        "antecipacao": {
+          "type": "number"
+        },
+        "feeTransacao": {
+          "type": "number"
+        },
+        "antifraude": {
+          "type": "number"
+        },
+        "taxa3ds": {
+          "type": "number"
+        },
+        "pix": {
+          "type": "object",
+          "description": "Taxa PIX atual do cliente (tipo: percentual ou fixo, valor: n\u00famero)",
+          "properties": {
+            "tipo": {
+              "type": "string",
+              "enum": [
+                "percentual",
+                "fixo"
+              ],
+              "description": "Tipo de cobran\u00e7a PIX: percentual (%) ou fixo (R$)"
+            },
+            "valor": {
+              "type": "number",
+              "description": "Valor da taxa PIX (% se percentual, R$ se fixo)"
+            }
+          }
+        }
+      }
+    },
+    "introducerId": {
+      "type": "string",
+      "description": "ID do Introducer que indicou este lead"
+    },
+    "introducerReferralCode": {
+      "type": "string",
+      "description": "C\u00f3digo de refer\u00eancia do Introducer"
+    },
+    "introducerName": {
+      "type": "string",
+      "description": "Nome do Introducer para exibi\u00e7\u00e3o r\u00e1pida"
+    },
+    "iaRiskScore": {
+      "type": "number",
+      "description": "Score de risco avan\u00e7ado gerado pela IA (0-100)"
+    },
+    "iaDecision": {
+      "type": "string",
+      "enum": [
+        "AUTO_APROVAR",
+        "REVISAO_MANUAL",
+        "REJEITAR",
+        "PENDENTE"
+      ],
+      "default": "PENDENTE",
+      "description": "Decis\u00e3o de risco sugerida pela IA avan\u00e7ada"
+    },
+    "iaSuggestions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Sugest\u00f5es da IA para o time de vendas"
+    },
+    "iaAnalysisReport": {
+      "type": "string",
+      "description": "Relat\u00f3rio completo da an\u00e1lise de risco IA"
+    },
+    "iaAnalysisDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data da \u00faltima an\u00e1lise de risco IA"
+    },
+    "iaPriority": {
+      "type": "string",
+      "enum": [
+        "URGENTE",
+        "ALTA",
+        "MEDIA",
+        "BAIXA"
+      ],
+      "description": "Prioridade de atendimento sugerida pela IA"
+    }
+  },
+  "required": [
+    "email",
+    "fullName",
+    "status",
+    "businessSubCategory"
+  ]
+}

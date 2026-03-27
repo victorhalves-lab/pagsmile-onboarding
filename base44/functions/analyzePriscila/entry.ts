@@ -143,6 +143,16 @@ DADOS DO LEAD PARA ANÁLISE
 - Transações/Mês: ${lead.transacoesMes || 'NÃO INFORMADO'}
 - Expectativa Crescimento: ${lead.expectativaCrescimento || 'NÃO INFORMADO'}
 
+**Taxas Atuais/Esperadas pelo Cliente (expectedRates):**
+- MDR 1x: ${lead.expectedRates?.mdr1x != null ? lead.expectedRates.mdr1x + '%' : 'NÃO INFORMADO'}
+- MDR 2-6x: ${lead.expectedRates?.mdr2a6x != null ? lead.expectedRates.mdr2a6x + '%' : 'NÃO INFORMADO'}
+- MDR 7-12x: ${lead.expectedRates?.mdr7a12x != null ? lead.expectedRates.mdr7a12x + '%' : 'NÃO INFORMADO'}
+- Antecipação: ${lead.expectedRates?.antecipacao != null ? lead.expectedRates.antecipacao + '%' : 'NÃO INFORMADO'}
+- Fee Transação: ${lead.expectedRates?.feeTransacao != null ? 'R$ ' + lead.expectedRates.feeTransacao : 'NÃO INFORMADO'}
+- Antifraude: ${lead.expectedRates?.antifraude != null ? 'R$ ' + lead.expectedRates.antifraude : 'NÃO INFORMADO'}
+- 3DS: ${lead.expectedRates?.taxa3ds != null ? 'R$ ' + lead.expectedRates.taxa3ds : 'NÃO INFORMADO'}
+- PIX: ${lead.expectedRates?.pix != null ? (typeof lead.expectedRates.pix === 'object' ? (lead.expectedRates.pix.tipo === 'fixo' ? 'R$ ' + lead.expectedRates.pix.valor + ' (fixo)' : lead.expectedRates.pix.valor + '% (percentual)') : lead.expectedRates.pix + '% (percentual)') : 'NÃO INFORMADO'}
+
 **Respostas Completas do Questionário:**
 ${lead.questionnaireData ? JSON.stringify(lead.questionnaireData, null, 2) : 'NENHUM DADO DE QUESTIONÁRIO DISPONÍVEL'}
 
@@ -185,7 +195,7 @@ SUGESTÃO DE PRECIFICAÇÃO COMERCIAL
 
 Com base no perfil de risco, TPV, MCC, tipo de negócio, dados declarados, E NOS CUSTOS REAIS DOS PARCEIROS ACIMA, sugira taxas comerciais competitivas e lucrativas para a Pagsmile.
 
-REGRAS OBRIGATÓRIAS DE PRECIFICAÇÃO:
+REGRAS OBRIGATÓRIAS DE PRECIFICAÇÃO PARA CARTÃO (MDR, DÉBITO, FEES):
 1. O PISO (custo parceiro + 30%) é o valor MÍNIMO ABSOLUTO. Suas sugestões devem PARTIR dele e ir ACIMA.
 2. PARA CADA TAXA MDR: Use o piso como base e adicione margem conforme risco, segmento e mercado.
 3. PARA FEES FIXAS: Antifraude, Fee Transação e 3DS devem partir do custo do parceiro + margem razoável (nunca abaixo do custo).
@@ -195,15 +205,49 @@ REGRAS OBRIGATÓRIAS DE PRECIFICAÇÃO:
 7. Gateway vs Merchan vs Marketplace: gateways de alto volume podem ficar mais perto do piso; merchants menores devem ficar bem acima.
 8. MCC de alto risco (jogos, cripto, adult) = taxas devem ficar muito acima do piso.
 
+LÓGICA DE REDUÇÃO MDR BASEADA NO TPV (quando o lead informou expectedRates):
+- TPV até R$ 1 milhão/mês: reduzir 0.10% das taxas padrão/referência
+- TPV acima de R$ 1 milhão/mês: reduzir 0.05% das taxas padrão/referência
+- A taxa final NUNCA pode ficar abaixo do PISO (custo parceiro + 30%). Se a redução levaria abaixo do piso, usar o piso.
+
 Sugira TODAS as taxas abaixo:
 
 **Cartão de Crédito (MDR % por bandeira e faixa):**
 - Visa, Mastercard, Elo, Amex, Outras
 - Para cada bandeira: à vista (1x), 2x a 6x, 7x a 12x, 13x a 21x
 
-**Pix:**
-- Tipo: percentual ou fixo
-- Valor sugerido
+**Pix (LÓGICA ESPECIAL - SEM CUSTO DE PARCEIRO):**
+O PIX NÃO segue a regra de custo+30% dos parceiros. O PIX é precificado com base puramente competitiva.
+A estratégia é oferecer uma taxa LIGEIRAMENTE INFERIOR à taxa atual do cliente (expectedRates do lead).
+
+REGRAS OBRIGATÓRIAS PARA PIX:
+
+A. PISO DE SUSTENTABILIDADE (nunca propor abaixo disto):
+   - PIX Percentual: piso mínimo = 0.15%
+   - PIX Fixo: piso mínimo = R$ 0.05
+
+B. REDUÇÕES BASEADAS NO TPV MENSAL DO CLIENTE:
+   Se a taxa do cliente for FIXA (em centavos):
+   - Até R$ 500 mil/mês: reduzir R$ 0.005 (meio centavo) da taxa do cliente
+   - De R$ 500 mil a R$ 2 milhões/mês: reduzir R$ 0.01 (um centavo)
+   - De R$ 2 milhões a R$ 4 milhões/mês: reduzir R$ 0.02 (dois centavos)
+   - Acima de R$ 4 milhões/mês: reduzir R$ 0.03 (três centavos)
+
+   Se a taxa do cliente for PERCENTUAL (pegando mais leve):
+   - Até R$ 500 mil/mês: reduzir 0.003% da taxa do cliente
+   - De R$ 500 mil a R$ 2 milhões/mês: reduzir 0.005%
+   - De R$ 2 milhões a R$ 4 milhões/mês: reduzir 0.01%
+   - Acima de R$ 4 milhões/mês: reduzir 0.015%
+
+C. TAXA FINAL PIX = o MAIOR entre (taxa com redução calculada) e (piso de sustentabilidade).
+
+D. Se o lead NÃO informou taxa PIX atual (expectedRates), use referências de mercado:
+   - PIX padrão mercado: 0.99% ou R$ 0.50 fixo, e aplique as reduções acima sobre esses valores de referência.
+
+E. Na justificativa, explique: taxa atual do cliente, faixa de TPV, redução aplicada, e taxa final proposta. NÃO mencione custos de parceiro para PIX.
+
+- Tipo: percentual ou fixo (escolha o mesmo tipo que o cliente já usa; se não informado, use percentual)
+- Valor sugerido (aplicando as regras acima)
 
 **Boleto:** valor fixo por boleto (R$)
 **Antifraude:** valor por transação (R$)
