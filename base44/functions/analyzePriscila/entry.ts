@@ -73,8 +73,8 @@ Deno.serve(async (req) => {
             rateDecimal = mccBlock.rates?.['todas']?.[faixaParceiro];
           }
           const custoPct = (rateDecimal || 0) * 100;
-          const sugeridoPct = Math.round(custoPct * 1.30 * 100) / 100; // +30%
-          taxas[bandeira][faixa] = { custo: custoPct, sugerido: sugeridoPct };
+          const pisoPct = Math.round(custoPct * 1.30 * 100) / 100; // piso = custo+30%
+          taxas[bandeira][faixa] = { custo: custoPct, piso: pisoPct };
         });
       });
 
@@ -96,11 +96,11 @@ Deno.serve(async (req) => {
         let lines = `\n── PARCEIRO: ${p.nome} (MCC base: ${p.mccUsado}) ──`;
         lines += `\n  Fees fixas: Transação R$${p.transactionFee.toFixed(2)} | Antifraude R$${p.antifraudCost.toFixed(2)} | 3DS R$${p.threeDSCost.toFixed(2)}`;
         lines += `\n  Antecipação: ${p.percentualAntecipacao}% a.m.`;
-        lines += `\n  MDR (custo → sugerido = custo+30%):`;
+        lines += `\n  MDR (custo | piso mínimo = custo+30%):`;
         BANDEIRAS.forEach(b => {
           const faixaStr = FAIXAS.map(f => {
             const d = p.taxas[b]?.[f];
-            return d ? `${f}: ${d.custo.toFixed(2)}%→${d.sugerido.toFixed(2)}%` : '';
+            return d ? `${f}: custo ${d.custo.toFixed(2)}% | piso ${d.piso.toFixed(2)}%` : '';
           }).filter(Boolean).join(' | ');
           if (faixaStr) lines += `\n    ${b}: ${faixaStr}`;
         });
@@ -173,9 +173,9 @@ CUSTOS DOS PARCEIROS (ADQUIRENTES/SUBADQUIRENTES)
 ═══════════════════════════════════════════════════════════
 
 A Pagsmile trabalha com os seguintes parceiros. Os custos abaixo são o que a Pagsmile PAGA ao parceiro.
-As taxas que você sugerir para o CLIENTE devem OBRIGATORIAMENTE ser MAIORES que os custos do parceiro.
 
-REGRA DE OURO: Taxa sugerida = Custo do parceiro + 30% (mínimo). Pode ser mais se o risco justificar.
+REGRA DE OURO: O PISO MÍNIMO absoluto para qualquer taxa = Custo do parceiro + 30%.
+Você NUNCA pode sugerir uma taxa abaixo desse piso. Suas sugestões devem PARTIR desse piso e ir ACIMA dele conforme o perfil de risco, segmento e mercado justificarem.
 
 ${partnerCostText || 'NENHUM PARCEIRO ATIVO ENCONTRADO - use referências de mercado.'}
 
@@ -183,16 +183,17 @@ ${partnerCostText || 'NENHUM PARCEIRO ATIVO ENCONTRADO - use referências de mer
 SUGESTÃO DE PRECIFICAÇÃO COMERCIAL
 ═══════════════════════════════════════════════════════════
 
-Com base no perfil de risco, TPV, MCC, tipo de negócio, dados declarados, E NOS CUSTOS REAIS DOS PARCEIROS ACIMA, sugira taxas comerciais que garantam margem para a Pagsmile.
+Com base no perfil de risco, TPV, MCC, tipo de negócio, dados declarados, E NOS CUSTOS REAIS DOS PARCEIROS ACIMA, sugira taxas comerciais competitivas e lucrativas para a Pagsmile.
 
 REGRAS OBRIGATÓRIAS DE PRECIFICAÇÃO:
-1. PARA CADA TAXA MDR: A taxa sugerida DEVE ser >= custo do parceiro mais barato para aquela bandeira/faixa + 30%.
-2. PARA FEES FIXAS: Antifraude, Fee Transação e 3DS devem ser >= custo do parceiro + margem razoável.
-3. ANTECIPAÇÃO: A taxa sugerida deve ser >= taxa do parceiro + spread.
-4. Segmentos de maior risco = taxas AINDA maiores que o mínimo de custo+30%.
-5. TPV alto = possibilidade de taxas mais próximas do custo+30% (volume justifica margem menor em %).
-6. Gateway vs Merchan vs Marketplace: gateways podem ter taxas mais próximas do custo (maior volume).
-7. MCC de alto risco (jogos, cripto, adult) = taxas de custo+50% ou mais.
+1. O PISO (custo parceiro + 30%) é o valor MÍNIMO ABSOLUTO. Suas sugestões devem PARTIR dele e ir ACIMA.
+2. PARA CADA TAXA MDR: Use o piso como base e adicione margem conforme risco, segmento e mercado.
+3. PARA FEES FIXAS: Antifraude, Fee Transação e 3DS devem partir do custo do parceiro + margem razoável (nunca abaixo do custo).
+4. ANTECIPAÇÃO: A taxa sugerida deve partir da taxa do parceiro + spread.
+5. Segmentos de maior risco = taxas significativamente ACIMA do piso (ex: piso+20% a piso+50%).
+6. TPV muito alto = as taxas podem ficar mais próximas do piso (volume compensa margem menor em %).
+7. Gateway vs Merchan vs Marketplace: gateways de alto volume podem ficar mais perto do piso; merchants menores devem ficar bem acima.
+8. MCC de alto risco (jogos, cripto, adult) = taxas devem ficar muito acima do piso.
 
 Sugira TODAS as taxas abaixo:
 
@@ -213,8 +214,9 @@ Sugira TODAS as taxas abaixo:
 **Mínimo Garantido:** valor mensal sugerido para os 3 primeiros meses (R$)
 
 IMPORTANTE:
-- NUNCA sugira uma taxa ABAIXO do custo de qualquer parceiro. A Pagsmile teria prejuízo.
-- Justifique as taxas explicando qual parceiro seria o mais adequado e a margem resultante.
+- NUNCA sugira uma taxa ABAIXO do piso (custo parceiro + 30%). Taxas abaixo do piso são PROIBIDAS.
+- As taxas sugeridas devem ser competitivas para o mercado mas sempre acima do piso.
+- Justifique as taxas explicando qual parceiro seria a base, o piso calculado, e por que a taxa final ficou acima dele.
 - Seja objetivo e baseado em dados concretos.
 - Não invente informações. Se um dado não foi fornecido, registre como lacuna e penalize proporcionalmente.
 - Para cada ponto de risco, cite a evidência específica dos dados do lead.
@@ -306,7 +308,7 @@ IMPORTANTE:
           description: "Taxas comerciais sugeridas pela PRISCILA baseadas nos custos reais dos parceiros + margem",
           properties: {
             parceiroRecomendado: { type: "string", description: "Nome do parceiro mais adequado para este lead (baseado em MCC, custo e perfil)" },
-            justificativa: { type: "string", description: "Justificativa incluindo custos do parceiro base e margens aplicadas" },
+            justificativa: { type: "string", description: "Justificativa incluindo: parceiro base, piso calculado (custo+30%), e motivo das taxas finais ficarem acima do piso" },
             cartao: {
               type: "object",
               properties: {
