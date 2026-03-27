@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Save, Loader2, Star, Plus } from 'lucide-react';
 import MCCRateEditor from './MCCRateEditor';
+import BrNumberInput from './BrNumberInput';
 
 const EMPTY_FORM = {
   name: '', isPrincipal: false, modelo: '', parcelasMax: '',
@@ -125,7 +126,7 @@ export default function PartnerFormModal({ open, onOpenChange, partner, onSave, 
               ].map(f => (
                 <div key={f.key} className="space-y-1.5">
                   <Label className="text-xs text-[#002443]/50">{f.label}</Label>
-                  <Input type="number" step="0.01" value={form[f.key] || ''} onChange={(e) => update(f.key, parseFloat(e.target.value) || 0)} placeholder="0.00" className="border-[#002443]/10" />
+                  <BrNumberInput value={form[f.key]} onChange={(val) => update(f.key, val)} decimals={2} className="border-[#002443]/10" />
                 </div>
               ))}
             </div>

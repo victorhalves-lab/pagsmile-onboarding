@@ -32,9 +32,9 @@ export default function PartnerCard({ partner, onEdit, onDelete }) {
             </div>
             <div className="flex items-center gap-4 mt-1 text-[11px] text-[#002443]/50 flex-wrap">
               <span>MCCs: <strong className="text-[#002443]">{mccCount}</strong></span>
-              {partner.transactionFee > 0 && <span>Fee: <strong className="text-[#002443]">R$ {partner.transactionFee.toFixed(2)}</strong></span>}
-              {partner.antifraudCost > 0 && <span>Antifraude: <strong className="text-[#002443]">R$ {partner.antifraudCost.toFixed(2)}</strong></span>}
-              {partner.threeDSCost > 0 && <span>3DS: <strong className="text-[#002443]">R$ {partner.threeDSCost.toFixed(2)}</strong></span>}
+              {partner.transactionFee > 0 && <span>Fee: <strong className="text-[#002443]">R$ {partner.transactionFee.toFixed(2).replace('.', ',')}</strong></span>}
+              {partner.antifraudCost > 0 && <span>Antifraude: <strong className="text-[#002443]">R$ {partner.antifraudCost.toFixed(2).replace('.', ',')}</strong></span>}
+              {partner.threeDSCost > 0 && <span>3DS: <strong className="text-[#002443]">R$ {partner.threeDSCost.toFixed(2).replace('.', ',')}</strong></span>}
               {partner.antecipacaoInfo && <span>Antecipação: <strong className="text-[#002443]">{partner.antecipacaoInfo}</strong></span>}
             </div>
           </div>

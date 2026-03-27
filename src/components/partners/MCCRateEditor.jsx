@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Trash2, ChevronDown, ChevronRight } from 'lucide-react';
+import BrNumberInput from './BrNumberInput';
 
 const BANDEIRAS = ['visa', 'mastercard', 'elo', 'amex', 'hiper'];
 const BANDEIRA_LABELS = { visa: 'Visa', mastercard: 'Mastercard', elo: 'Elo', amex: 'Amex', hiper: 'Hiper' };
@@ -73,13 +74,10 @@ export default function MCCRateEditor({ mccItem, index, onChange, onRemove }) {
                     <td className="py-1.5 px-2 font-semibold text-[#002443] text-xs">{BANDEIRA_LABELS[b]}</td>
                     {FAIXA_COLS.map(f => (
                       <td key={f.key} className="py-1 px-1">
-                        <Input
-                          type="number"
-                          step="0.0001"
-                          min="0"
-                          value={mccItem.rates?.[b]?.[f.key] || ''}
-                          onChange={(e) => updateRate(b, f.key, parseFloat(e.target.value) || 0)}
-                          placeholder="0.0000"
+                        <BrNumberInput
+                          value={mccItem.rates?.[b]?.[f.key]}
+                          onChange={(val) => updateRate(b, f.key, val)}
+                          decimals={4}
                           className="border-[#002443]/10 h-7 text-[10px] text-center w-full"
                         />
                       </td>

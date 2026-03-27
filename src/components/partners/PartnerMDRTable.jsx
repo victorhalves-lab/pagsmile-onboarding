@@ -17,7 +17,7 @@ const FAIXA_COLS = [
 
 function formatRate(val) {
   if (!val && val !== 0) return '-';
-  return `${(val * 100).toFixed(2)}%`;
+  return `${(val * 100).toFixed(2).replace('.', ',')}%`;
 }
 
 function MCCBlock({ mccItem }) {
