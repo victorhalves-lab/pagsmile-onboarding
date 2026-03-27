@@ -18,6 +18,10 @@ import SubsellerQuestionnaire from './pages/SubsellerQuestionnaire';
 import GerenciarSubsellerLinks from './pages/GerenciarSubsellerLinks';
 import ConfiguracaoParceiros from './pages/ConfiguracaoParceiros';
 import IntroducerLandingPage from './pages/IntroducerLandingPage';
+import GestaoPropostasPadrao from './pages/GestaoPropostasPadrao';
+import CriarPropostaPadrao from './pages/CriarPropostaPadrao';
+import PropostaPadraoDetalhes from './pages/PropostaPadraoDetalhes';
+import PropostaPadraoPublica from './pages/PropostaPadraoPublica';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -80,6 +84,10 @@ const AuthenticatedApp = () => {
       <Route path="/GerenciarSubsellerLinks" element={<LayoutWrapper currentPageName="GerenciarSubsellerLinks"><GerenciarSubsellerLinks /></LayoutWrapper>} />
       <Route path="/ConfiguracaoParceiros" element={<LayoutWrapper currentPageName="ConfiguracaoParceiros"><ConfiguracaoParceiros /></LayoutWrapper>} />
       <Route path="/parceiro/:uniqueLandingPageSlug" element={<LayoutWrapper currentPageName="IntroducerLandingPage"><IntroducerLandingPage /></LayoutWrapper>} />
+      <Route path="/GestaoPropostasPadrao" element={<LayoutWrapper currentPageName="GestaoPropostasPadrao"><GestaoPropostasPadrao /></LayoutWrapper>} />
+      <Route path="/CriarPropostaPadrao" element={<LayoutWrapper currentPageName="CriarPropostaPadrao"><CriarPropostaPadrao /></LayoutWrapper>} />
+      <Route path="/PropostaPadraoDetalhes" element={<LayoutWrapper currentPageName="PropostaPadraoDetalhes"><PropostaPadraoDetalhes /></LayoutWrapper>} />
+      <Route path="/PropostaPadraoPublica" element={<LayoutWrapper currentPageName="PropostaPadraoPublica"><PropostaPadraoPublica /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

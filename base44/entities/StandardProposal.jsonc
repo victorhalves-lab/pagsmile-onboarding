@@ -1,0 +1,257 @@
+{
+  "name": "StandardProposal",
+  "type": "object",
+  "properties": {
+    "templateName": {
+      "type": "string",
+      "description": "Nome do modelo de proposta (ex: Proposta Padr\u00e3o E-commerce)"
+    },
+    "segment": {
+      "type": "string",
+      "enum": [
+        "Educa\u00e7\u00e3o",
+        "Infoprodutos",
+        "E-commerce",
+        "SaaS",
+        "Gateway",
+        "Merchan",
+        "Marketplace"
+      ],
+      "description": "Segmento de cliente ao qual esta proposta padr\u00e3o se aplica"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o do modelo de proposta"
+    },
+    "businessSubCategory": {
+      "type": "string",
+      "enum": [
+        "MERCHAN",
+        "GATEWAY",
+        "MARKETPLACE"
+      ],
+      "description": "Tipo de neg\u00f3cio"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "rascunho",
+        "ativa",
+        "inativa"
+      ],
+      "default": "rascunho",
+      "description": "Status da proposta padr\u00e3o"
+    },
+    "chosenPartnerId": {
+      "type": "string",
+      "description": "ID do Parceiro selecionado"
+    },
+    "chosenPartnerName": {
+      "type": "string",
+      "description": "Nome do Parceiro selecionado"
+    },
+    "rates": {
+      "type": "object",
+      "description": "Taxas oferecidas (mesma estrutura da entidade Proposal)",
+      "properties": {
+        "cartao": {
+          "type": "object",
+          "properties": {
+            "visa": {
+              "type": "object",
+              "properties": {
+                "avista": {
+                  "type": "number"
+                },
+                "de2a6x": {
+                  "type": "number"
+                },
+                "de7a12x": {
+                  "type": "number"
+                },
+                "de13a21x": {
+                  "type": "number"
+                }
+              }
+            },
+            "mastercard": {
+              "type": "object",
+              "properties": {
+                "avista": {
+                  "type": "number"
+                },
+                "de2a6x": {
+                  "type": "number"
+                },
+                "de7a12x": {
+                  "type": "number"
+                },
+                "de13a21x": {
+                  "type": "number"
+                }
+              }
+            },
+            "elo": {
+              "type": "object",
+              "properties": {
+                "avista": {
+                  "type": "number"
+                },
+                "de2a6x": {
+                  "type": "number"
+                },
+                "de7a12x": {
+                  "type": "number"
+                },
+                "de13a21x": {
+                  "type": "number"
+                }
+              }
+            },
+            "amex": {
+              "type": "object",
+              "properties": {
+                "avista": {
+                  "type": "number"
+                },
+                "de2a6x": {
+                  "type": "number"
+                },
+                "de7a12x": {
+                  "type": "number"
+                },
+                "de13a21x": {
+                  "type": "number"
+                }
+              }
+            },
+            "outras": {
+              "type": "object",
+              "properties": {
+                "avista": {
+                  "type": "number"
+                },
+                "de2a6x": {
+                  "type": "number"
+                },
+                "de7a12x": {
+                  "type": "number"
+                },
+                "de13a21x": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        },
+        "debito": {
+          "type": "object",
+          "properties": {
+            "visa": {
+              "type": "number"
+            },
+            "mastercard": {
+              "type": "number"
+            },
+            "elo": {
+              "type": "number"
+            },
+            "outras": {
+              "type": "number"
+            }
+          }
+        },
+        "pix": {
+          "type": "object",
+          "properties": {
+            "tipo": {
+              "type": "string",
+              "enum": [
+                "percentual",
+                "fixo"
+              ]
+            },
+            "valor": {
+              "type": "number"
+            }
+          }
+        },
+        "boleto": {
+          "type": "number"
+        },
+        "antifraude": {
+          "type": "number"
+        },
+        "feeTransacao": {
+          "type": "number"
+        },
+        "taxa3ds": {
+          "type": "number"
+        },
+        "setup": {
+          "type": "number"
+        },
+        "rav": {
+          "type": "object",
+          "properties": {
+            "taxa": {
+              "type": "number"
+            },
+            "prazo": {
+              "type": "string"
+            }
+          }
+        },
+        "minimoGarantido": {
+          "type": "object",
+          "properties": {
+            "mes1": {
+              "type": "number"
+            },
+            "mes2": {
+              "type": "number"
+            },
+            "mes3": {
+              "type": "number"
+            }
+          }
+        },
+        "alertaPreChargeback": {
+          "type": "number"
+        },
+        "percentualAntecipacao": {
+          "type": "number"
+        }
+      }
+    },
+    "tokenPublico": {
+      "type": "string",
+      "description": "Token p\u00fablico para acesso \u00e0 proposta padr\u00e3o"
+    },
+    "codigo": {
+      "type": "string",
+      "description": "C\u00f3digo \u00fanico da proposta padr\u00e3o (STDP-YYYY-NNNNN)"
+    },
+    "terms": {
+      "type": "string",
+      "description": "Termos e condi\u00e7\u00f5es padr\u00e3o"
+    },
+    "validUntil": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data de validade"
+    },
+    "responsavelId": {
+      "type": "string",
+      "description": "ID do respons\u00e1vel"
+    },
+    "responsavelNome": {
+      "type": "string",
+      "description": "Nome do respons\u00e1vel"
+    }
+  },
+  "required": [
+    "templateName",
+    "segment"
+  ]
+}
