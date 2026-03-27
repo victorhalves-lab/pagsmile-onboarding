@@ -387,25 +387,31 @@ export default function Layout({ children, currentPageName }) {
 
         {/* ═══════ Desktop Sidebar ═══════ */}
         {isAuthenticated && (
-          <aside className={`hidden lg:flex flex-col ${sidebarWidth} bg-[#002443] min-h-screen fixed left-0 top-0 z-20 transition-all duration-300 ease-in-out`}>
+          <aside className={`hidden lg:flex flex-col ${sidebarWidth} bg-[#002443] h-screen fixed left-0 top-0 z-20 transition-all duration-300 ease-in-out`}>
             
-            {/* Logo */}
-            <div className={`border-b border-white/8 flex items-center ${collapsed ? 'px-3 py-4 justify-center' : 'px-5 py-4'}`}>
+            {/* Logo + Language */}
+            <div className={`border-b border-white/8 flex items-center ${collapsed ? 'px-3 py-4 justify-center flex-col gap-3' : 'px-5 py-4 justify-between'}`}>
               {collapsed ? (
-                <div className="w-8 h-8 rounded-lg bg-[#2bc196] flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">P</span>
-                </div>
+                <>
+                  <div className="w-8 h-8 rounded-lg bg-[#2bc196] flex items-center justify-center">
+                    <span className="text-white font-bold text-sm">P</span>
+                  </div>
+                  <LanguageSelector variant="sidebar-collapsed" />
+                </>
               ) : (
-                <img 
-                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png" 
-                  alt="Pagsmile" 
-                  className="h-7 w-auto"
-                />
+                <>
+                  <img 
+                    src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png" 
+                    alt="Pagsmile" 
+                    className="h-7 w-auto"
+                  />
+                  <LanguageSelector variant="sidebar" />
+                </>
               )}
             </div>
 
             {/* Navigation */}
-            <nav className={`flex-1 ${collapsed ? 'px-2' : 'px-3'} py-3 overflow-y-auto sidebar-nav`}>
+            <nav className={`flex-1 min-h-0 ${collapsed ? 'px-2' : 'px-3'} py-3 overflow-y-auto sidebar-nav`}>
               
               {/* Home */}
               <div className="mb-1">
@@ -453,10 +459,6 @@ export default function Layout({ children, currentPageName }) {
                 />
               </div>
 
-              {/* Language Selector */}
-              <div className="mt-2">
-                <LanguageSelector variant={collapsed ? 'sidebar-collapsed' : 'sidebar'} />
-              </div>
             </nav>
 
             {/* Collapse Toggle */}
@@ -593,7 +595,7 @@ export default function Layout({ children, currentPageName }) {
                 </div>
 
                 {/* Language Selector Mobile */}
-                <div className="mt-2 px-1">
+                <div className="mt-3 px-1">
                   <LanguageSelector variant="sidebar" />
                 </div>
               </nav>
