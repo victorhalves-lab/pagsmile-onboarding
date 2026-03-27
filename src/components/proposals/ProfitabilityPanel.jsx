@@ -1,5 +1,8 @@
-import React, { useMemo } from 'react';
-import { TrendingUp, TrendingDown, DollarSign, ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react';
+import React, { useMemo, useState, useEffect } from 'react';
+import { TrendingUp, TrendingDown, DollarSign, ArrowUpRight, ArrowDownRight, Minus, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+const FAIXA_MAP_PARCEIRO = { avista: 'avista', de2a6x: 'de2a6x', de7a12x: 'de7a12x', de13a21x: 'de13a24x' };
 
 const parseTaxa = (val) => {
   if (!val && val !== 0) return 0;
@@ -11,45 +14,71 @@ const parseTaxa = (val) => {
 const fmtBRL = (val) => `R$ ${Number(val || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 const fmtPct = (val) => `${Number(val || 0).toFixed(2).replace('.', ',')}%`;
 
+function getPartnerRate(mccBlock, bandeira, faixaProposta) {
+  if (!mccBlock?.rates) return 0;
+  const faixaParceiro = FAIXA_MAP_PARCEIRO[faixaProposta] || faixaProposta;
+  if (mccBlock.rates[bandeira]?.[faixaParceiro] !== undefined) return mccBlock.rates[bandeira][faixaParceiro];
+  if (mccBlock.rates['todas']?.[faixaParceiro] !== undefined) return mccBlock.rates['todas'][faixaParceiro];
+  return 0;
+}
+
 export default function ProfitabilityPanel({ rates, form, partner, leadTpv, leadTransacoes }) {
+  const [selectedMccCode, setSelectedMccCode] = useState('');
+
+  const mccOptions = partner?.mdrByMcc || [];
+
+  // Auto-select MCC when partner changes
+  useEffect(() => {
+    if (partner && mccOptions.length > 0) {
+      const clientMcc = form?.clienteMcc;
+      const matching = mccOptions.find(m => m.mccCode === clientMcc);
+      const demais = mccOptions.find(m => ['Demais', 'demais', 'DEMAIS'].includes(m.mccCode));
+      setSelectedMccCode(matching?.mccCode || demais?.mccCode || mccOptions[0]?.mccCode || '');
+    } else {
+      setSelectedMccCode('');
+    }
+  }, [partner?.id, mccOptions.length, form?.clienteMcc]);
+
   const profitability = useMemo(() => {
-    if (!partner) return null;
+    if (!partner || !selectedMccCode) return null;
 
     const tpv = parseTaxa(leadTpv) || 100000;
     const txMes = parseTaxa(leadTransacoes) || 1000;
 
-    // --- MDR: média ponderada simplificada (supondo mix: 60% crédito à vista, 25% parcelado 2-6x, 10% 7-12x, 5% 13-21x) ---
-    const mixWeights = { avista: 0.60, de2a6x: 0.25, de7a12x: 0.10, de13a21x: 0.05 };
+    const mixWeights = { avista: 0.45, de2a6x: 0.35, de7a12x: 0.15, de13a21x: 0.05 };
     const bandeiras = ['visa', 'mastercard', 'elo', 'amex', 'outras'];
     const bandeiraPeso = { mastercard: 0.35, visa: 0.35, elo: 0.15, amex: 0.10, outras: 0.05 };
 
+    const mccBlock = partner.mdrByMcc?.find(m => m.mccCode === selectedMccCode);
+    if (!mccBlock) return null;
+
     let mdrMedioProposta = 0;
     let mdrMedioParceiro = 0;
-
-    // Encontrar o bloco de taxas do parceiro para o MCC do cliente
-    const clientMcc = form?.clienteMcc || '';
-    const partnerMccBlock = partner.mdrByMcc?.find(m => m.mccCode === clientMcc) 
-      || partner.mdrByMcc?.find(m => m.mccCode === 'Demais' || m.mccCode === 'demais' || m.mccCode === 'DEMAIS')
-      || partner.mdrByMcc?.[0];
+    let alertas = [];
 
     bandeiras.forEach(b => {
       const peso = bandeiraPeso[b] || 0.05;
       Object.entries(mixWeights).forEach(([faixa, faixaPeso]) => {
-        const taxaProposta = parseTaxa(rates?.cartao?.[b]?.[faixa]) / 100; // % -> decimal
-        const taxaParceiro = partnerMccBlock?.rates?.[b]?.[faixa] || 0; // Já em decimal no parceiro
+        const taxaProposta = parseTaxa(rates?.cartao?.[b]?.[faixa]) / 100;
+        const taxaParceiro = getPartnerRate(mccBlock, b, faixa);
         mdrMedioProposta += taxaProposta * peso * faixaPeso;
         mdrMedioParceiro += taxaParceiro * peso * faixaPeso;
+
+        // Alerta se proposta < custo parceiro
+        const taxaPropostaPct = parseTaxa(rates?.cartao?.[b]?.[faixa]);
+        const taxaParceiroPct = taxaParceiro * 100;
+        if (taxaPropostaPct > 0 && taxaParceiroPct > 0 && taxaPropostaPct < taxaParceiroPct) {
+          alertas.push({ bandeira: b, faixa, taxaProposta: taxaPropostaPct, taxaParceiro: taxaParceiroPct });
+        }
       });
     });
 
     const receitaMDR = tpv * mdrMedioProposta;
     const custoMDR = tpv * mdrMedioParceiro;
 
-    // --- Fees fixas ---
     const feeTransacaoProposta = parseTaxa(rates?.feeTransacao);
     const antifraudeProposta = parseTaxa(rates?.antifraude);
     const taxa3dsProposta = parseTaxa(rates?.taxa3ds);
-    
     const feeTransacaoParceiro = partner.transactionFee || 0;
     const antifraudeParceiro = partner.antifraudCost || 0;
     const taxa3dsParceiro = partner.threeDSCost || 0;
@@ -57,11 +86,12 @@ export default function ProfitabilityPanel({ rates, form, partner, leadTpv, lead
     const receitaFees = (feeTransacaoProposta + antifraudeProposta + taxa3dsProposta) * txMes;
     const custoFees = (feeTransacaoParceiro + antifraudeParceiro + taxa3dsParceiro) * txMes;
 
-    // --- Antecipação ---
-    const taxaAntecipProposta = parseTaxa(form?.percentualAntecipacao) / 100;
+    const taxaAntecipProposta = parseTaxa(form?.taxaAntecipacao) / 100;
     const taxaAntecipParceiro = (partner.percentualAntecipacao || 0) / 100;
-    const receitaAntecip = tpv * taxaAntecipProposta * (parseTaxa(form?.taxaAntecipacao) / 100);
-    const custoAntecip = tpv * taxaAntecipParceiro * (parseTaxa(form?.taxaAntecipacao) / 100);
+    const pctAntecipado = parseTaxa(form?.percentualAntecipacao) / 100 || 0.70;
+    const tpvAntecipado = tpv * pctAntecipado;
+    const receitaAntecip = tpvAntecipado * taxaAntecipProposta;
+    const custoAntecip = tpvAntecipado * taxaAntecipParceiro;
 
     const receitaTotal = receitaMDR + receitaFees + receitaAntecip;
     const custoTotal = custoMDR + custoFees + custoAntecip;
@@ -69,15 +99,16 @@ export default function ProfitabilityPanel({ rates, form, partner, leadTpv, lead
     const margemPct = receitaTotal > 0 ? (margem / receitaTotal) * 100 : 0;
 
     return {
-      tpv, txMes,
+      tpv, txMes, mccDescription: mccBlock.mccDescription,
       receitaMDR, custoMDR, margemMDR: receitaMDR - custoMDR,
       receitaFees, custoFees, margemFees: receitaFees - custoFees,
       receitaAntecip, custoAntecip, margemAntecip: receitaAntecip - custoAntecip,
       receitaTotal, custoTotal, margem, margemPct,
+      alertas,
     };
-  }, [rates, form, partner, leadTpv, leadTransacoes]);
+  }, [rates, form, partner, selectedMccCode, leadTpv, leadTransacoes]);
 
-  if (!profitability) {
+  if (!partner) {
     return (
       <div className="rounded-2xl bg-white/[0.03] border border-white/5 p-5">
         <div className="flex items-center gap-2 mb-3">
@@ -91,9 +122,10 @@ export default function ProfitabilityPanel({ rates, form, partner, leadTpv, lead
     );
   }
 
-  const isPositive = profitability.margem > 0;
-  const MarginIcon = isPositive ? ArrowUpRight : profitability.margem < 0 ? ArrowDownRight : Minus;
-  const marginColor = isPositive ? 'text-[#2bc196]' : profitability.margem < 0 ? 'text-red-400' : 'text-white/50';
+  const isPositive = profitability?.margem > 0;
+  const MarginIcon = isPositive ? ArrowUpRight : profitability?.margem < 0 ? ArrowDownRight : Minus;
+  const marginColor = isPositive ? 'text-[#2bc196]' : profitability?.margem < 0 ? 'text-red-400' : 'text-white/50';
+  const FAIXA_LABELS = { avista: '1x', de2a6x: '2-6x', de7a12x: '7-12x', de13a21x: '13-21x' };
 
   return (
     <div className="rounded-2xl bg-white/[0.03] border border-white/5 p-5 space-y-4">
@@ -104,54 +136,106 @@ export default function ProfitabilityPanel({ rates, form, partner, leadTpv, lead
         <h2 className="text-sm font-bold text-white">Simulação de Rentabilidade</h2>
       </div>
 
-      {/* Big Numbers */}
-      <div className="grid grid-cols-3 gap-2">
-        <div className="bg-[#2bc196]/5 border border-[#2bc196]/10 rounded-xl p-3 text-center">
-          <p className="text-[8px] text-[#2bc196]/70 font-bold uppercase tracking-wider">Receita Est.</p>
-          <p className="text-sm font-bold text-[#2bc196]">{fmtBRL(profitability.receitaTotal)}</p>
+      {/* MCC Selector */}
+      {mccOptions.length > 0 && (
+        <div>
+          <label className="text-[9px] font-bold text-white/40 uppercase tracking-wider mb-1 block">
+            MCC do Parceiro (custo base)
+          </label>
+          <Select value={selectedMccCode} onValueChange={setSelectedMccCode}>
+            <SelectTrigger className="h-8 text-xs bg-white/5 border-white/10 text-white">
+              <SelectValue placeholder="Selecione o MCC" />
+            </SelectTrigger>
+            <SelectContent>
+              {mccOptions.map(m => (
+                <SelectItem key={m.mccCode} value={m.mccCode}>
+                  <span className="font-mono text-xs">{m.mccCode}</span>
+                  <span className="text-slate-500 ml-1.5 text-xs">— {m.mccDescription}</span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-        <div className="bg-red-500/5 border border-red-500/10 rounded-xl p-3 text-center">
-          <p className="text-[8px] text-red-400/70 font-bold uppercase tracking-wider">Custo Est.</p>
-          <p className="text-sm font-bold text-red-400">{fmtBRL(profitability.custoTotal)}</p>
-        </div>
-        <div className={`${isPositive ? 'bg-[#2bc196]/10 border-[#2bc196]/20' : 'bg-red-500/10 border-red-500/20'} border rounded-xl p-3 text-center`}>
-          <p className={`text-[8px] font-bold uppercase tracking-wider ${marginColor}/70`}>Margem</p>
-          <div className="flex items-center justify-center gap-1">
-            <MarginIcon className={`w-3.5 h-3.5 ${marginColor}`} />
-            <p className={`text-sm font-bold ${marginColor}`}>{fmtBRL(profitability.margem)}</p>
-          </div>
-          <p className={`text-[10px] ${marginColor}`}>{fmtPct(profitability.margemPct)}</p>
-        </div>
-      </div>
+      )}
 
-      {/* Breakdown Table */}
-      <div className="rounded-xl bg-white/[0.02] border border-white/5 overflow-hidden">
-        <div className="grid grid-cols-4 text-[8px] text-white/40 font-bold uppercase tracking-wider py-2 px-3 bg-white/[0.02]">
-          <div>Categoria</div><div className="text-right">Receita</div><div className="text-right">Custo</div><div className="text-right">Margem</div>
-        </div>
-        {[
-          { label: 'MDR Cartão', receita: profitability.receitaMDR, custo: profitability.custoMDR, margem: profitability.margemMDR },
-          { label: 'Fees (Transação, AF, 3DS)', receita: profitability.receitaFees, custo: profitability.custoFees, margem: profitability.margemFees },
-          { label: 'Antecipação', receita: profitability.receitaAntecip, custo: profitability.custoAntecip, margem: profitability.margemAntecip },
-        ].map(row => (
-          <div key={row.label} className="grid grid-cols-4 items-center px-3 py-2 border-t border-white/[0.03]">
-            <div className="text-[10px] text-white/60 font-medium">{row.label}</div>
-            <div className="text-[10px] text-right text-[#2bc196] font-mono">{fmtBRL(row.receita)}</div>
-            <div className="text-[10px] text-right text-red-400 font-mono">{fmtBRL(row.custo)}</div>
-            <div className={`text-[10px] text-right font-bold font-mono ${row.margem >= 0 ? 'text-[#2bc196]' : 'text-red-400'}`}>{fmtBRL(row.margem)}</div>
+      {!profitability ? (
+        <p className="text-xs text-white/30 text-center py-4">Selecione um MCC para simular</p>
+      ) : (
+        <>
+          {/* Big Numbers */}
+          <div className="grid grid-cols-3 gap-2">
+            <div className="bg-[#2bc196]/5 border border-[#2bc196]/10 rounded-xl p-3 text-center">
+              <p className="text-[8px] text-[#2bc196]/70 font-bold uppercase tracking-wider">Receita Est.</p>
+              <p className="text-sm font-bold text-[#2bc196]">{fmtBRL(profitability.receitaTotal)}</p>
+            </div>
+            <div className="bg-red-500/5 border border-red-500/10 rounded-xl p-3 text-center">
+              <p className="text-[8px] text-red-400/70 font-bold uppercase tracking-wider">Custo Est.</p>
+              <p className="text-sm font-bold text-red-400">{fmtBRL(profitability.custoTotal)}</p>
+            </div>
+            <div className={`${isPositive ? 'bg-[#2bc196]/10 border-[#2bc196]/20' : 'bg-red-500/10 border-red-500/20'} border rounded-xl p-3 text-center`}>
+              <p className={`text-[8px] font-bold uppercase tracking-wider ${marginColor}/70`}>Margem</p>
+              <div className="flex items-center justify-center gap-1">
+                <MarginIcon className={`w-3.5 h-3.5 ${marginColor}`} />
+                <p className={`text-sm font-bold ${marginColor}`}>{fmtBRL(profitability.margem)}</p>
+              </div>
+              <p className={`text-[10px] ${marginColor}`}>{fmtPct(profitability.margemPct)}</p>
+            </div>
           </div>
-        ))}
-        <div className="grid grid-cols-4 items-center px-3 py-2 border-t border-white/10 bg-white/[0.02]">
-          <div className="text-[10px] text-white font-bold">TOTAL</div>
-          <div className="text-[10px] text-right text-[#2bc196] font-bold font-mono">{fmtBRL(profitability.receitaTotal)}</div>
-          <div className="text-[10px] text-right text-red-400 font-bold font-mono">{fmtBRL(profitability.custoTotal)}</div>
-          <div className={`text-[10px] text-right font-bold font-mono ${profitability.margem >= 0 ? 'text-[#2bc196]' : 'text-red-400'}`}>{fmtBRL(profitability.margem)}</div>
-        </div>
-      </div>
 
-      <p className="text-[9px] text-white/20 text-center">
-        Simulação baseada em TPV de {fmtBRL(profitability.tpv)}/mês e {profitability.txMes.toLocaleString('pt-BR')} transações/mês (mix estimado)
-      </p>
+          {/* Breakdown Table */}
+          <div className="rounded-xl bg-white/[0.02] border border-white/5 overflow-hidden">
+            <div className="grid grid-cols-4 text-[8px] text-white/40 font-bold uppercase tracking-wider py-2 px-3 bg-white/[0.02]">
+              <div>Categoria</div><div className="text-right">Receita</div><div className="text-right">Custo</div><div className="text-right">Margem</div>
+            </div>
+            {[
+              { label: 'MDR Cartão', receita: profitability.receitaMDR, custo: profitability.custoMDR, margem: profitability.margemMDR },
+              { label: 'Fees (Tx/AF/3DS)', receita: profitability.receitaFees, custo: profitability.custoFees, margem: profitability.margemFees },
+              { label: 'Antecipação', receita: profitability.receitaAntecip, custo: profitability.custoAntecip, margem: profitability.margemAntecip },
+            ].map(row => (
+              <div key={row.label} className="grid grid-cols-4 items-center px-3 py-2 border-t border-white/[0.03]">
+                <div className="text-[10px] text-white/60 font-medium">{row.label}</div>
+                <div className="text-[10px] text-right text-[#2bc196] font-mono">{fmtBRL(row.receita)}</div>
+                <div className="text-[10px] text-right text-red-400 font-mono">{fmtBRL(row.custo)}</div>
+                <div className={`text-[10px] text-right font-bold font-mono ${row.margem >= 0 ? 'text-[#2bc196]' : 'text-red-400'}`}>{fmtBRL(row.margem)}</div>
+              </div>
+            ))}
+            <div className="grid grid-cols-4 items-center px-3 py-2 border-t border-white/10 bg-white/[0.02]">
+              <div className="text-[10px] text-white font-bold">TOTAL</div>
+              <div className="text-[10px] text-right text-[#2bc196] font-bold font-mono">{fmtBRL(profitability.receitaTotal)}</div>
+              <div className="text-[10px] text-right text-red-400 font-bold font-mono">{fmtBRL(profitability.custoTotal)}</div>
+              <div className={`text-[10px] text-right font-bold font-mono ${profitability.margem >= 0 ? 'text-[#2bc196]' : 'text-red-400'}`}>{fmtBRL(profitability.margem)}</div>
+            </div>
+          </div>
+
+          {/* Alerts */}
+          {profitability.alertas.length > 0 && (
+            <div className="rounded-xl bg-amber-500/5 border border-amber-500/10 p-3">
+              <div className="flex items-center gap-2 mb-1.5">
+                <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+                <span className="text-[9px] font-bold text-amber-400 uppercase">Taxas abaixo do custo ({profitability.alertas.length})</span>
+              </div>
+              <div className="space-y-0.5 max-h-24 overflow-y-auto">
+                {profitability.alertas.map((a, i) => (
+                  <p key={i} className="text-[9px] text-amber-300/80">
+                    • {a.bandeira.toUpperCase()} {FAIXA_LABELS[a.faixa]}: {a.taxaProposta.toFixed(2)}% &lt; mín. {a.taxaParceiro.toFixed(2)}%
+                  </p>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {profitability.alertas.length === 0 && (
+            <div className="rounded-xl bg-[#2bc196]/5 border border-[#2bc196]/10 p-2.5 flex items-center gap-2">
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#2bc196]" />
+              <p className="text-[9px] text-[#2bc196] font-medium">Taxas dentro dos limites do parceiro</p>
+            </div>
+          )}
+
+          <p className="text-[9px] text-white/20 text-center">
+            MCC {selectedMccCode} — {profitability.mccDescription} · TPV {fmtBRL(profitability.tpv)}/mês · {profitability.txMes.toLocaleString('pt-BR')} tx/mês
+          </p>
+        </>
+      )}
     </div>
   );
 }
