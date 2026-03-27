@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Save, FileText, Loader2 } from 'lucide-react';
+import { ArrowLeft, Save, FileText, Loader2, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import PartnerSelector from '@/components/proposals/PartnerSelector';
 import CardTaxasCartao from '@/components/proposals/CardTaxasCartao';
@@ -17,11 +17,7 @@ import PropostaPreview from '@/components/proposals/PropostaPreview';
 import { DEFAULT_SEGMENT_RATES } from '@/lib/rateCalculator';
 
 const SEGMENTS = ['Educação', 'Infoprodutos', 'E-commerce', 'SaaS', 'Gateway', 'Marketplace'];
-const BUSINESS_SUB_CATEGORIES = [
-  { value: 'MERCHAN', label: 'Merchant' },
-  { value: 'GATEWAY', label: 'Gateway' },
-  { value: 'MARKETPLACE', label: 'Marketplace' },
-];
+
 
 const parseTaxa = (val) => {
   if (!val && val !== 0) return 0;
@@ -43,13 +39,19 @@ export default function CriarPropostaPadrao() {
     templateName: '',
     segment: '',
     description: '',
-    businessSubCategory: '',
+    clienteNome: '',
+    clienteCnpj: '',
+    clienteContato: '',
+    clienteTelefone: '',
+    clienteEmail: '',
     prazoRecebimento: 'D+1',
     usaAntecipacao: false,
     percentualAntecipacao: '',
     taxaAntecipacao: '',
     dataValidade: new Date(new Date().setMonth(new Date().getMonth() + 3)),
   });
+
+  const segmentLocked = !!form.segment;
 
   const [rates, setRates] = useState({
     cartao: {},
@@ -79,7 +81,11 @@ export default function CriarPropostaPadrao() {
         templateName: existingProposal.templateName || '',
         segment: existingProposal.segment || '',
         description: existingProposal.description || '',
-        businessSubCategory: existingProposal.businessSubCategory || '',
+        clienteNome: existingProposal.clienteNome || '',
+        clienteCnpj: existingProposal.clienteCnpj || '',
+        clienteContato: existingProposal.clienteContato || '',
+        clienteTelefone: existingProposal.clienteTelefone || '',
+        clienteEmail: existingProposal.clienteEmail || '',
         prazoRecebimento: existingProposal.rates?.rav?.prazo || 'D+1',
         usaAntecipacao: !!existingProposal.rates?.rav?.taxa,
         percentualAntecipacao: existingProposal.rates?.percentualAntecipacao || '',
@@ -168,7 +174,11 @@ export default function CriarPropostaPadrao() {
       templateName: form.templateName,
       segment: form.segment,
       description: form.description,
-      businessSubCategory: form.businessSubCategory,
+      clienteNome: form.clienteNome,
+      clienteCnpj: form.clienteCnpj,
+      clienteContato: form.clienteContato,
+      clienteTelefone: form.clienteTelefone,
+      clienteEmail: form.clienteEmail,
       status,
       codigo: existingProposal?.codigo || gerarCodigo(),
       chosenPartnerId: selectedPartnerId || '',
@@ -220,9 +230,9 @@ export default function CriarPropostaPadrao() {
 
   // Fake form/clienteNome for preview component reuse
   const previewForm = {
-    clienteNome: form.templateName || 'Proposta Padrão',
-    clienteCnpj: '', clienteMcc: '', clienteContato: '',
-    businessSubCategory: form.businessSubCategory,
+    clienteNome: form.clienteNome || form.templateName || 'Proposta Padrão',
+    clienteCnpj: form.clienteCnpj || '', clienteMcc: '', clienteContato: form.clienteContato || '',
+    businessSubCategory: '',
   };
 
   return (
@@ -252,51 +262,76 @@ export default function CriarPropostaPadrao() {
         {/* Left Column - Form */}
         <div className="flex-1 overflow-y-auto p-6 space-y-5 pb-32">
           {/* Dados da Proposta Padrão */}
+          {/* Dados da Empresa */}
           <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-5 space-y-4">
-            <h2 className="text-sm font-bold text-white/80 uppercase tracking-wider">Dados da Proposta Padrão</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label className="text-white/60 text-xs">Nome do Modelo *</Label>
-                <Input value={form.templateName} onChange={e => updateForm('templateName', e.target.value)} placeholder="Ex: Proposta Padrão E-commerce" className="bg-white/10 border-white/10 text-white placeholder:text-white/30" />
-              </div>
-              <div>
-                <Label className="text-white/60 text-xs">Segmento *</Label>
-                <Select value={form.segment} onValueChange={v => updateForm('segment', v)}>
-                  <SelectTrigger className="bg-white/10 border-white/10 text-white">
-                    <SelectValue placeholder="Selecione o segmento" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {SEGMENTS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label className="text-white/60 text-xs">Modelo de Negócio</Label>
-                <Select value={form.businessSubCategory} onValueChange={v => updateForm('businessSubCategory', v)}>
-                  <SelectTrigger className="bg-white/10 border-white/10 text-white">
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {BUSINESS_SUB_CATEGORIES.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label className="text-white/60 text-xs">Descrição</Label>
-                <Input value={form.description} onChange={e => updateForm('description', e.target.value)} placeholder="Descrição breve" className="bg-white/10 border-white/10 text-white placeholder:text-white/30" />
-              </div>
-            </div>
+           <h2 className="text-sm font-bold text-white/80 uppercase tracking-wider">Dados da Empresa</h2>
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+             <div>
+               <Label className="text-white/60 text-xs">Nome da Empresa *</Label>
+               <Input value={form.clienteNome} onChange={e => updateForm('clienteNome', e.target.value)} placeholder="Razão Social ou Nome Fantasia" className="bg-white/10 border-white/10 text-white placeholder:text-white/30" />
+             </div>
+             <div>
+               <Label className="text-white/60 text-xs">CNPJ</Label>
+               <Input value={form.clienteCnpj} onChange={e => updateForm('clienteCnpj', e.target.value)} placeholder="00.000.000/0000-00" className="bg-white/10 border-white/10 text-white placeholder:text-white/30" />
+             </div>
+             <div>
+               <Label className="text-white/60 text-xs">Nome do Contato</Label>
+               <Input value={form.clienteContato} onChange={e => updateForm('clienteContato', e.target.value)} placeholder="Nome do responsável" className="bg-white/10 border-white/10 text-white placeholder:text-white/30" />
+             </div>
+             <div>
+               <Label className="text-white/60 text-xs">Telefone do Contato</Label>
+               <Input value={form.clienteTelefone} onChange={e => updateForm('clienteTelefone', e.target.value)} placeholder="(00) 00000-0000" className="bg-white/10 border-white/10 text-white placeholder:text-white/30" />
+             </div>
+             <div>
+               <Label className="text-white/60 text-xs">E-mail do Contato</Label>
+               <Input value={form.clienteEmail} onChange={e => updateForm('clienteEmail', e.target.value)} placeholder="email@empresa.com" className="bg-white/10 border-white/10 text-white placeholder:text-white/30" />
+             </div>
+           </div>
           </div>
 
+          {/* Dados da Proposta */}
+          <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-5 space-y-4">
+           <h2 className="text-sm font-bold text-white/80 uppercase tracking-wider">Dados da Proposta</h2>
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+             <div>
+               <Label className="text-white/60 text-xs">Nome do Modelo *</Label>
+               <Input value={form.templateName} onChange={e => updateForm('templateName', e.target.value)} placeholder="Ex: Proposta Padrão E-commerce" className="bg-white/10 border-white/10 text-white placeholder:text-white/30" />
+             </div>
+             <div>
+               <Label className="text-white/60 text-xs">Segmento *</Label>
+               <Select value={form.segment} onValueChange={v => updateForm('segment', v)}>
+                 <SelectTrigger className="bg-white/10 border-white/10 text-white">
+                   <SelectValue placeholder="Selecione o segmento" />
+                 </SelectTrigger>
+                 <SelectContent>
+                   {SEGMENTS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                 </SelectContent>
+               </Select>
+             </div>
+             <div className="md:col-span-2">
+               <Label className="text-white/60 text-xs">Descrição</Label>
+               <Input value={form.description} onChange={e => updateForm('description', e.target.value)} placeholder="Descrição breve" className="bg-white/10 border-white/10 text-white placeholder:text-white/30" />
+             </div>
+           </div>
+           {segmentLocked && (
+             <p className="text-[10px] text-amber-400/70 flex items-center gap-1.5">
+               <AlertTriangle className="w-3 h-3" />
+               Taxas definidas automaticamente pelo segmento e não podem ser alteradas.
+             </p>
+           )}
+          </div>
+
+          <CardTaxasCartao rates={rates} onUpdateRates={updateRates} selectedBrand={selectedBrand} setSelectedBrand={setSelectedBrand} partner={selectedPartner} clientMcc="" readOnly={segmentLocked} />
+          <CardAntecipacao form={form} onUpdate={updateForm} readOnly={segmentLocked} />
+          <CardOutrasTaxas rates={rates} onUpdateRates={updateRates} partner={selectedPartner} readOnly={segmentLocked} />
+
+          {/* Parceiro - apenas para simulação de rentabilidade */}
           <PartnerSelector
             selectedPartnerId={selectedPartnerId}
             onSelectPartner={setSelectedPartnerId}
             leadMcc=""
-            leadBusinessType={form.businessSubCategory}
+            leadBusinessType=""
           />
-          <CardTaxasCartao rates={rates} onUpdateRates={updateRates} selectedBrand={selectedBrand} setSelectedBrand={setSelectedBrand} partner={selectedPartner} clientMcc="" />
-          <CardAntecipacao form={form} onUpdate={updateForm} />
-          <CardOutrasTaxas rates={rates} onUpdateRates={updateRates} partner={selectedPartner} />
         </div>
 
         {/* Right Column - Preview */}

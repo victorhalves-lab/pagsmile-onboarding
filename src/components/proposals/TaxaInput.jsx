@@ -23,7 +23,7 @@ function unformat(val) {
   return val.replace(/\./g, '').replace(',', '.');
 }
 
-export default function TaxaInput({ value, onChange, prefix, suffix, placeholder = '0,00', className = '', isCurrency = false }) {
+export default function TaxaInput({ value, onChange, prefix, suffix, placeholder = '0,00', className = '', isCurrency = false, disabled = false }) {
   const [displayValue, setDisplayValue] = useState('');
   const inputRef = useRef(null);
   const isTyping = useRef(false);
@@ -89,6 +89,7 @@ export default function TaxaInput({ value, onChange, prefix, suffix, placeholder
         onChange={handleChange}
         onBlur={handleBlur}
         placeholder={placeholder}
+        disabled={disabled}
         className={`${className} ${prefix ? 'pl-9' : ''} ${suffix ? 'pr-12' : ''}`}
       />
       {suffix && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/20 font-medium z-10 pointer-events-none">{suffix}</span>}

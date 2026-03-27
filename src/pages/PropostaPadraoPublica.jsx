@@ -93,6 +93,35 @@ export default function PropostaPadraoPublica() {
         <ExportButtons contentRef={propostaContentRef} />
       </div>
 
+      {/* Dados da Empresa */}
+      {(proposta.clienteNome || proposta.clienteCnpj) && (
+        <Card className="mb-6 border-[#2bc196]/20 bg-[#2bc196]/5">
+          <CardContent className="py-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Shield className="w-4 h-4 text-[#2bc196]" />
+              <h3 className="font-bold text-sm text-[#002443]">Dados da Empresa</h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+              {proposta.clienteNome && (
+                <div><p className="text-[#002443]/50 text-xs font-semibold">Empresa</p><p className="font-bold text-[#002443]">{proposta.clienteNome}</p></div>
+              )}
+              {proposta.clienteCnpj && (
+                <div><p className="text-[#002443]/50 text-xs font-semibold">CNPJ</p><p className="font-bold text-[#002443]">{proposta.clienteCnpj}</p></div>
+              )}
+              {proposta.clienteContato && (
+                <div><p className="text-[#002443]/50 text-xs font-semibold">Contato</p><p className="text-[#002443]">{proposta.clienteContato}</p></div>
+              )}
+              {proposta.clienteTelefone && (
+                <div><p className="text-[#002443]/50 text-xs font-semibold">Telefone</p><p className="text-[#002443]">{proposta.clienteTelefone}</p></div>
+              )}
+              {proposta.clienteEmail && (
+                <div><p className="text-[#002443]/50 text-xs font-semibold">E-mail</p><p className="text-[#002443]">{proposta.clienteEmail}</p></div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Info do Segmento */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <Card className="border-[#2bc196]/20 bg-[#2bc196]/5">
@@ -103,11 +132,6 @@ export default function PropostaPadraoPublica() {
             </div>
             <p className="font-bold text-lg text-[#002443]">{proposta.segment}</p>
             {proposta.description && <p className="text-sm text-[#002443]/60 mt-1">{proposta.description}</p>}
-            {proposta.businessSubCategory && (
-              <div className="mt-3 inline-flex items-center gap-1 bg-white/60 px-2 py-1 rounded text-xs text-[#002443]/80 border border-[#002443]/10">
-                <span className="font-semibold text-[#002443]">Modelo:</span> {proposta.businessSubCategory === 'MERCHAN' ? 'Merchant' : proposta.businessSubCategory === 'GATEWAY' ? 'Gateway' : 'Marketplace'}
-              </div>
-            )}
           </CardContent>
         </Card>
         <Card className="border-slate-200">

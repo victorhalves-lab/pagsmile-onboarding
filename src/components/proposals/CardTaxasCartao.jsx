@@ -32,7 +32,7 @@ function BrandLogo({ brand, isActive }) {
   );
 }
 
-export default function CardTaxasCartao({ rates, onUpdateRates, selectedBrand, setSelectedBrand, partner, clientMcc }) {
+export default function CardTaxasCartao({ rates, onUpdateRates, selectedBrand, setSelectedBrand, partner, clientMcc, readOnly = false }) {
   const [syncAll, setSyncAll] = useState(false);
   const taxas = rates.cartao || {};
 
@@ -91,10 +91,11 @@ export default function CardTaxasCartao({ rates, onUpdateRates, selectedBrand, s
               </div>
               <TaxaInput
                 value={taxas[selectedBrand]?.[f.id] || ''}
-                onChange={(val) => updateTaxa(selectedBrand, f.id, val)}
+                onChange={(val) => !readOnly && updateTaxa(selectedBrand, f.id, val)}
                 placeholder="0,00"
                 suffix="%"
-                className={`${inputCls} ${hasViolation ? 'border-red-400/50 ring-1 ring-red-400/30' : ''}`}
+                disabled={readOnly}
+                className={`${inputCls} ${hasViolation ? 'border-red-400/50 ring-1 ring-red-400/30' : ''} ${readOnly ? 'opacity-60 cursor-not-allowed' : ''}`}
               />
               {limits && (
                 <div className="text-center space-y-0.5">
@@ -115,16 +116,18 @@ export default function CardTaxasCartao({ rates, onUpdateRates, selectedBrand, s
       </div>
 
       {/* Actions */}
-      <div className="flex items-center justify-between pt-2 border-t border-white/5">
-        <div className="flex items-center gap-2">
-          <Checkbox id="sync-all" checked={syncAll} onCheckedChange={setSyncAll}
-            className="border-white/20 data-[state=checked]:bg-[#2bc196] data-[state=checked]:border-[#2bc196]" />
-          <Label htmlFor="sync-all" className="text-[10px] text-white/30 cursor-pointer select-none">Sincronizar bandeiras</Label>
+      {!readOnly && (
+        <div className="flex items-center justify-between pt-2 border-t border-white/5">
+          <div className="flex items-center gap-2">
+            <Checkbox id="sync-all" checked={syncAll} onCheckedChange={setSyncAll}
+              className="border-white/20 data-[state=checked]:bg-[#2bc196] data-[state=checked]:border-[#2bc196]" />
+            <Label htmlFor="sync-all" className="text-[10px] text-white/30 cursor-pointer select-none">Sincronizar bandeiras</Label>
+          </div>
+          <Button variant="ghost" size="sm" onClick={copyToAll} className="text-[10px] text-white/30 hover:text-[#2bc196] hover:bg-[#2bc196]/5 h-7 rounded-lg">
+            <Copy className="w-3 h-3 mr-1.5" /> Copiar para todas
+          </Button>
         </div>
-        <Button variant="ghost" size="sm" onClick={copyToAll} className="text-[10px] text-white/30 hover:text-[#2bc196] hover:bg-[#2bc196]/5 h-7 rounded-lg">
-          <Copy className="w-3 h-3 mr-1.5" /> Copiar para todas
-        </Button>
-      </div>
+      )}
     </div>
   );
 }

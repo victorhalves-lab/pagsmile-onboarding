@@ -14,7 +14,6 @@
         "E-commerce",
         "SaaS",
         "Gateway",
-        "Merchan",
         "Marketplace"
       ],
       "description": "Segmento de cliente ao qual esta proposta padr\u00e3o se aplica"
@@ -41,6 +40,26 @@
       ],
       "default": "rascunho",
       "description": "Status da proposta padr\u00e3o"
+    },
+    "clienteNome": {
+      "type": "string",
+      "description": "Nome da empresa do cliente"
+    },
+    "clienteCnpj": {
+      "type": "string",
+      "description": "CNPJ da empresa do cliente"
+    },
+    "clienteContato": {
+      "type": "string",
+      "description": "Nome do contato principal da empresa"
+    },
+    "clienteTelefone": {
+      "type": "string",
+      "description": "Telefone do contato da empresa"
+    },
+    "clienteEmail": {
+      "type": "string",
+      "description": "E-mail do contato da empresa"
     },
     "chosenPartnerId": {
       "type": "string",
