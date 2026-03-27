@@ -3,7 +3,7 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import NavigationTracker from '@/lib/NavigationTracker'
 import { pagesConfig } from './pages.config'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
@@ -36,10 +36,89 @@ const LayoutWrapper = ({ children, currentPageName }) => Layout ?
   <Layout currentPageName={currentPageName}>{children}</Layout>
   : <>{children}</>;
 
+// --- Public routes: these pages do NOT require authentication ---
+const PUBLIC_PATHS = new Set([
+  '/LeadQuestionnaire',
+  '/LeadQuestionnairePix',
+  '/LeadSuccess',
+  '/QuestionarioSimplificadoPublico',
+  '/PropostaPublica',
+  '/PropostaPadraoPublica',
+  '/PropostaPixPublica',
+  '/ContratoPublico',
+  '/ComplianceOnboardingStart',
+  '/ComplianceDinamico',
+  '/ComplianceResume',
+  '/CompliancePixOnly',
+  '/ComplianceFullKYC',
+  '/ComplianceLite',
+  '/ComplianceSaaS',
+  '/ComplianceGateway',
+  '/ComplianceMerchant',
+  '/ComplianceMarketplace',
+  '/ComplianceEcommerce',
+  '/DocumentUploadPix',
+  '/DocumentUploadFull',
+  '/DocumentUploadLite',
+  '/DocumentUploadSaaS',
+  '/DocumentUploadEcommerce',
+  '/LivenessFacematchStep',
+  '/LivenessSimulation',
+  '/OnboardingCompletion',
+  '/SubsellerQuestionnaire',
+]);
+
+function isPublicPath(pathname) {
+  if (PUBLIC_PATHS.has(pathname)) return true;
+  if (pathname.startsWith('/parceiro/')) return true;
+  return false;
+}
+
+// --- Public pages are rendered without auth checks ---
+const PublicRoutes = () => (
+  <Routes>
+    {/* Lead Questionnaires */}
+    {['LeadQuestionnaire', 'LeadQuestionnairePix', 'LeadSuccess', 'QuestionarioSimplificadoPublico'].map(name => {
+      const Page = Pages[name];
+      return Page ? <Route key={name} path={`/${name}`} element={<LayoutWrapper currentPageName={name}><Page /></LayoutWrapper>} /> : null;
+    })}
+
+    {/* Propostas Públicas */}
+    {['PropostaPublica', 'PropostaPadraoPublica', 'PropostaPixPublica'].map(name => {
+      const Page = Pages[name];
+      return Page ? <Route key={name} path={`/${name}`} element={<LayoutWrapper currentPageName={name}><Page /></LayoutWrapper>} /> : null;
+    })}
+    <Route path="/PropostaPadraoPublica" element={<LayoutWrapper currentPageName="PropostaPadraoPublica"><PropostaPadraoPublica /></LayoutWrapper>} />
+    <Route path="/PropostaPixPublica" element={<LayoutWrapper currentPageName="PropostaPixPublica"><PropostaPixPublica /></LayoutWrapper>} />
+
+    {/* Contrato Público */}
+    {Pages['ContratoPublico'] && <Route path="/ContratoPublico" element={<LayoutWrapper currentPageName="ContratoPublico"><Pages.ContratoPublico /></LayoutWrapper>} />}
+
+    {/* Landing Pages */}
+    <Route path="/parceiro/:uniqueLandingPageSlug" element={<LayoutWrapper currentPageName="IntroducerLandingPage"><IntroducerLandingPage /></LayoutWrapper>} />
+
+    {/* Compliance / Onboarding */}
+    {['ComplianceOnboardingStart', 'ComplianceDinamico', 'CompliancePixOnly', 'ComplianceFullKYC',
+      'ComplianceLite', 'ComplianceSaaS', 'ComplianceGateway', 'ComplianceMerchant',
+      'ComplianceMarketplace', 'ComplianceEcommerce',
+      'DocumentUploadPix', 'DocumentUploadFull', 'DocumentUploadLite', 'DocumentUploadSaaS', 'DocumentUploadEcommerce',
+      'LivenessFacematchStep', 'LivenessSimulation', 'OnboardingCompletion'
+    ].map(name => {
+      const Page = Pages[name];
+      return Page ? <Route key={name} path={`/${name}`} element={<LayoutWrapper currentPageName={name}><Page /></LayoutWrapper>} /> : null;
+    })}
+    <Route path="/ComplianceResume" element={<LayoutWrapper currentPageName="ComplianceResume"><ComplianceResume /></LayoutWrapper>} />
+
+    {/* Subseller */}
+    <Route path="/SubsellerQuestionnaire" element={<LayoutWrapper currentPageName="SubsellerQuestionnaire"><SubsellerQuestionnaire /></LayoutWrapper>} />
+    <Route path="/LeadQuestionnairePix" element={<LayoutWrapper currentPageName="LeadQuestionnairePix"><LeadQuestionnairePix /></LayoutWrapper>} />
+  </Routes>
+);
+
+// --- Admin pages require authentication ---
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
-  // Show loading spinner while checking app public settings or auth
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
       <div className="fixed inset-0 flex items-center justify-center">
@@ -48,70 +127,62 @@ const AuthenticatedApp = () => {
     );
   }
 
-  // Handle authentication errors
   if (authError) {
     if (authError.type === 'user_not_registered') {
       return <UserNotRegisteredError />;
     } else if (authError.type === 'auth_required') {
-      // Redirect to login automatically
       navigateToLogin();
       return null;
     }
   }
 
-  // Render the main app
   return (
     <Routes>
-      <Route path="/" element={
-        <LayoutWrapper currentPageName={mainPageKey}>
-          <MainPage />
-        </LayoutWrapper>
-      } />
-      {Object.entries(Pages).map(([path, Page]) => (
-        <Route
-          key={path}
-          path={`/${path}`}
-          element={
-            <LayoutWrapper currentPageName={path}>
-              <Page />
-            </LayoutWrapper>
-          }
-        />
-      ))}
+      <Route path="/" element={<LayoutWrapper currentPageName={mainPageKey}><MainPage /></LayoutWrapper>} />
+      {Object.entries(Pages).map(([path, Page]) => {
+        // Skip pages that are handled by PublicRoutes
+        if (PUBLIC_PATHS.has(`/${path}`)) return null;
+        return (
+          <Route key={path} path={`/${path}`} element={<LayoutWrapper currentPageName={path}><Page /></LayoutWrapper>} />
+        );
+      })}
       <Route path="/GestaoIntroducers" element={<LayoutWrapper currentPageName="GestaoIntroducers"><GestaoIntroducers /></LayoutWrapper>} />
       <Route path="/QuestionarioReuniao" element={<LayoutWrapper currentPageName="QuestionarioReuniao"><QuestionarioReuniao /></LayoutWrapper>} />
       <Route path="/ProcessMeetingNotes" element={<LayoutWrapper currentPageName="ProcessMeetingNotes"><ProcessMeetingNotes /></LayoutWrapper>} />
       <Route path="/IntroducerDashboard" element={<IntroducerDashboard />} />
-      <Route path="/ComplianceResume" element={<LayoutWrapper currentPageName="ComplianceResume"><ComplianceResume /></LayoutWrapper>} />
       <Route path="/QuestionarioReuniaoPix" element={<LayoutWrapper currentPageName="QuestionarioReuniaoPix"><QuestionarioReuniaoPix /></LayoutWrapper>} />
-      <Route path="/LeadQuestionnairePix" element={<LayoutWrapper currentPageName="LeadQuestionnairePix"><LeadQuestionnairePix /></LayoutWrapper>} />
-      <Route path="/SubsellerQuestionnaire" element={<LayoutWrapper currentPageName="SubsellerQuestionnaire"><SubsellerQuestionnaire /></LayoutWrapper>} />
       <Route path="/GerenciarSubsellerLinks" element={<LayoutWrapper currentPageName="GerenciarSubsellerLinks"><GerenciarSubsellerLinks /></LayoutWrapper>} />
       <Route path="/ConfiguracaoParceiros" element={<LayoutWrapper currentPageName="ConfiguracaoParceiros"><ConfiguracaoParceiros /></LayoutWrapper>} />
-      <Route path="/parceiro/:uniqueLandingPageSlug" element={<LayoutWrapper currentPageName="IntroducerLandingPage"><IntroducerLandingPage /></LayoutWrapper>} />
       <Route path="/GestaoPropostasPadrao" element={<LayoutWrapper currentPageName="GestaoPropostasPadrao"><GestaoPropostasPadrao /></LayoutWrapper>} />
       <Route path="/CriarPropostaPadrao" element={<LayoutWrapper currentPageName="CriarPropostaPadrao"><CriarPropostaPadrao /></LayoutWrapper>} />
       <Route path="/PropostaPadraoDetalhes" element={<LayoutWrapper currentPageName="PropostaPadraoDetalhes"><PropostaPadraoDetalhes /></LayoutWrapper>} />
-      <Route path="/PropostaPadraoPublica" element={<LayoutWrapper currentPageName="PropostaPadraoPublica"><PropostaPadraoPublica /></LayoutWrapper>} />
       <Route path="/GestaoPropostasPix" element={<LayoutWrapper currentPageName="GestaoPropostasPix"><GestaoPropostasPix /></LayoutWrapper>} />
       <Route path="/CriarPropostaPix" element={<LayoutWrapper currentPageName="CriarPropostaPix"><CriarPropostaPix /></LayoutWrapper>} />
       <Route path="/PropostaPixDetalhes" element={<LayoutWrapper currentPageName="PropostaPixDetalhes"><PropostaPixDetalhes /></LayoutWrapper>} />
-      <Route path="/PropostaPixPublica" element={<LayoutWrapper currentPageName="PropostaPixPublica"><PropostaPixPublica /></LayoutWrapper>} />
       <Route path="/GestaoLandingPages" element={<LayoutWrapper currentPageName="GestaoLandingPages"><GestaoLandingPages /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
 };
 
+// --- Main router: checks if current path is public or requires auth ---
+const AppRoutes = () => {
+  const location = useLocation();
+
+  if (isPublicPath(location.pathname)) {
+    return <PublicRoutes />;
+  }
+
+  return <AuthenticatedApp />;
+};
 
 function App() {
-
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
         <Router>
           <NavigationTracker />
-          <AuthenticatedApp />
+          <AppRoutes />
         </Router>
         <Toaster />
       </QueryClientProvider>

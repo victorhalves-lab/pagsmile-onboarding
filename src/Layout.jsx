@@ -32,7 +32,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import AdminLoginScreen from '@/components/admin/AdminLoginScreen';
+// AdminLoginScreen removido - autenticação agora é via login por convite nativo
 
 export default function Layout({ children, currentPageName }) {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
@@ -58,17 +58,18 @@ export default function Layout({ children, currentPageName }) {
   const isAdmin = user?.role === 'admin';
 
   const publicPages = [
-    'IntroducerLandingPage','ContratoPublico','PropostaPadraoPublica','PropostaPixPublica','ComplianceOnboardingStart','CompliancePixOnly','ComplianceFullKYC',
-    'ComplianceLite','ComplianceSaaS','DocumentUploadPix','DocumentUploadFull',
-    'DocumentUploadLite','DocumentUploadSaaS','LivenessFacematchStep','LivenessSimulation',
-    'OnboardingCompletion','LeadQuestionnaire','LeadQuestionnairePix','LeadSuccess','PropostaPublica',
+    'IntroducerLandingPage','ContratoPublico','PropostaPadraoPublica','PropostaPixPublica',
+    'ComplianceOnboardingStart','CompliancePixOnly','ComplianceFullKYC',
+    'ComplianceLite','ComplianceSaaS','ComplianceGateway','ComplianceMerchant',
+    'ComplianceMarketplace','ComplianceEcommerce',
+    'DocumentUploadPix','DocumentUploadFull','DocumentUploadLite','DocumentUploadSaaS','DocumentUploadEcommerce',
+    'LivenessFacematchStep','LivenessSimulation','OnboardingCompletion',
+    'LeadQuestionnaire','LeadQuestionnairePix','LeadSuccess','PropostaPublica',
     'QuestionarioSimplificadoPublico','ComplianceDinamico','ComplianceResume','SubsellerQuestionnaire'
   ];
   const isPublicPage = publicPages.includes(currentPageName);
 
-  const [adminVerified, setAdminVerified] = React.useState(() => {
-    try { return sessionStorage.getItem('admin_verified') === 'true'; } catch { return false; }
-  });
+  // Admin verification agora é feito pelo AuthContext (login por convite)
 
   const toggleSection = (sectionId) => {
     if (collapsed) {
@@ -234,9 +235,7 @@ export default function Layout({ children, currentPageName }) {
     return null;
   }
   if (isIntroducerPage) return <div>{children}</div>;
-  if (!isPublicPage && !adminVerified) {
-    return <AdminLoginScreen onSuccess={() => setAdminVerified(true)} />;
-  }
+  // Páginas admin são protegidas pelo AuthenticatedApp no App.jsx (login por convite)
 
   const sidebarWidth = collapsed ? 'w-[72px]' : 'w-64';
   const mainMargin = collapsed ? 'lg:ml-[72px]' : 'lg:ml-64';
