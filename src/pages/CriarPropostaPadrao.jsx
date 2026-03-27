@@ -123,7 +123,7 @@ export default function CriarPropostaPadrao() {
           boleto: 2.99,
           feeTransacao: segDefault.feeTransacao,
           antifraude: segDefault.antifraude,
-          alertaPreChargeback: 0.55,
+          alertaPreChargeback: 55,
           taxa3ds: segDefault.taxa3ds,
           setup: 5000,
           minimoGarantido: { mes1: '', mes2: '', mes3: '' },
