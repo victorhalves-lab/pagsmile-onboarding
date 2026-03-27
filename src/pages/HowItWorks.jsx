@@ -22,6 +22,7 @@ import QuestionnaireSection from '../components/howitworks/QuestionnaireSection'
 import LeadsPropostasSection from '../components/howitworks/LeadsPropostasSection';
 import ContratosSection from '../components/howitworks/ContratosSection';
 import SidebarPagesSection from '../components/howitworks/SidebarPagesSection';
+import PersonasDetailedSection from '../components/howitworks/PersonasDetailedSection';
 
 export default function HowItWorks() {
   const [expandedSections, setExpandedSections] = useState({});
@@ -456,13 +457,20 @@ export default function HowItWorks() {
         </div>
       </Section>
 
+      {/* ═══════════════════════════════════════════════════════ */}
+      {/* 11. JORNADAS DETALHADAS POR PERSONA */}
+      {/* ═══════════════════════════════════════════════════════ */}
+      <Section id="jornadas" title="11. Jornadas Detalhadas por Persona — Atividades, Benefícios e Valor" icon={Award} badge="5 Personas × Atividades Completas" expandedSections={expandedSections} toggleSection={toggleSection}>
+        <PersonasDetailedSection />
+      </Section>
+
       {/* Footer */}
       <div className="mt-8 p-6 bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl text-center">
         <p className="text-sm text-white/70">
-          Documentação Completa e Microscópica — Pagsmile Compliance, Onboarding, Leads, Propostas, Contratos e Introducers • Versão 4.0 • {new Date().toLocaleDateString('pt-BR')}
+          Documentação Completa e Microscópica — Pagsmile Compliance, Onboarding, Leads, Propostas, Contratos e Introducers • Versão 5.0 • {new Date().toLocaleDateString('pt-BR')}
         </p>
         <p className="text-xs text-white/40 mt-1">
-          10+ Módulos • 40+ Páginas • 25+ Entidades • 9 Fluxos Compliance • 3 Templates • 3 IAs • 3 Tipos Proposta • 20+ Backend Functions • 5 Integrações • 4 Personas
+          11 Seções • 40+ Páginas • 25+ Entidades • 9 Fluxos Compliance • 3 Templates • 3 IAs • 3 Tipos Proposta • 30+ Backend Functions • 5 Integrações • 5 Personas Detalhadas
         </p>
       </div>
     </div>
