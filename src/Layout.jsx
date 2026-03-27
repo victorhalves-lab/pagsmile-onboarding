@@ -144,7 +144,6 @@ export default function Layout({ children, currentPageName }) {
       items: [
         { label: 'CAF & BigDataCorp', path: 'IntegracoesExternas', icon: Plug },
         { label: 'Helena IA', path: 'HelenaIA', icon: Brain },
-        { label: 'Parceiros', path: 'ConfiguracaoParceiros', icon: Handshake },
       ]
     },
     {
@@ -427,6 +426,17 @@ export default function Layout({ children, currentPageName }) {
               {/* Admin */}
               {renderSections(adminSections)}
 
+              {/* Parceiros - standalone */}
+              <div className="mt-1">
+                <NavItem 
+                  item={{ label: 'Parceiros', path: 'ConfiguracaoParceiros', icon: Handshake }} 
+                  isActive={currentPageName === 'ConfiguracaoParceiros'}
+                  isCollapsed={collapsed}
+                />
+              </div>
+
+              <SectionDivider isCollapsed={collapsed} />
+
               {/* How It Works */}
               <div className="mt-2">
                 <NavItem 
@@ -548,6 +558,18 @@ export default function Layout({ children, currentPageName }) {
                     <NavSection key={section.id} section={section} isMobile isCollapsed={false} />
                   ))}
                 </div>
+
+                {/* Parceiros - standalone mobile */}
+                <div className="mt-1">
+                  <NavItem 
+                    item={{ label: 'Parceiros', path: 'ConfiguracaoParceiros', icon: Handshake }} 
+                    isActive={currentPageName === 'ConfiguracaoParceiros'}
+                    onClick={() => setMobileMenuOpen(false)}
+                    isCollapsed={false}
+                  />
+                </div>
+
+                <SectionDivider isCollapsed={false} />
 
                 <div className="mt-2">
                   <NavItem 
