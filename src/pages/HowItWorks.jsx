@@ -42,16 +42,16 @@ export default function HowItWorks() {
           </div>
         </div>
         <div className="flex flex-wrap gap-2 mt-4">
-          <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0">10+ Módulos</Badge>
-          <Badge className="bg-blue-50 text-blue-700 border-0">40+ Páginas</Badge>
-          <Badge className="bg-purple-50 text-purple-700 border-0">25+ Entidades</Badge>
+          <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0">12+ Módulos</Badge>
+          <Badge className="bg-blue-50 text-blue-700 border-0">50+ Páginas</Badge>
+          <Badge className="bg-purple-50 text-purple-700 border-0">27+ Entidades</Badge>
           <Badge className="bg-orange-50 text-orange-700 border-0">9 Fluxos de Compliance</Badge>
           <Badge className="bg-pink-50 text-pink-700 border-0">3 IAs (SENTINEL, PRISCILA, Lead Qualifier)</Badge>
           <Badge className="bg-red-50 text-red-700 border-0">3 Templates Compliance</Badge>
           <Badge className="bg-cyan-50 text-cyan-700 border-0">305+ Perguntas</Badge>
           <Badge className="bg-amber-50 text-amber-700 border-0">48 Documentos</Badge>
-          <Badge className="bg-emerald-50 text-emerald-700 border-0">20+ Backend Functions</Badge>
-          <Badge className="bg-violet-50 text-violet-700 border-0">3 Tipos de Proposta</Badge>
+          <Badge className="bg-emerald-50 text-emerald-700 border-0">30+ Backend Functions</Badge>
+          <Badge className="bg-violet-50 text-violet-700 border-0">3 Tipos de Proposta + Links Rápidos</Badge>
         </div>
       </div>
 
@@ -102,7 +102,7 @@ export default function HowItWorks() {
       {/* ═══════════════════════════════════════════════════════ */}
       {/* 2. MAPA COMPLETO DE TODAS AS PÁGINAS */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="paginas" title="2. Mapa Completo de Todas as Páginas — Detalhe Microscópico" icon={Layers} badge="40+ Páginas" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="paginas" title="2. Mapa Completo de Todas as Páginas — Detalhe Microscópico" icon={Layers} badge="50+ Páginas" expandedSections={expandedSections} toggleSection={toggleSection}>
         <SidebarPagesSection />
       </Section>
 
@@ -253,7 +253,7 @@ export default function HowItWorks() {
       {/* ═══════════════════════════════════════════════════════ */}
       {/* 7. MODELO DE DADOS */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="entidades" title="7. Modelo de Dados Completo" icon={Database} badge="25+ Entidades" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="entidades" title="7. Modelo de Dados Completo" icon={Database} badge="27+ Entidades" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="space-y-4">
           {[
             { category: "Core do Onboarding", color: "border-l-[#2bc196]", entities: [
@@ -286,11 +286,11 @@ export default function HowItWorks() {
               { name: "IntegrationLog", desc: "Log: provedor, serviço (20+ tipos), request/response, duração" },
             ]},
             { category: "Leads & Propostas", color: "border-l-blue-500", entities: [
-              { name: "Lead", desc: "30+ campos: dados empresa, status (11), scores PRISCILA/Qualifier, TPV, introducer, expectedRates" },
+              { name: "Lead", desc: "30+ campos: dados empresa, status (11), scores PRISCILA/Qualifier/Risco Avançado, TPV, introducer, expectedRates, iaSuggestions" },
               { name: "LeadActivity", desc: "Atividades: contato, status, proposta, follow-up, nota" },
-              { name: "Proposal", desc: "Proposta: leadId, taxas por bandeira, antecipação, status (8), versionamento, link público" },
-              { name: "StandardProposal", desc: "Proposta Padrão: templateName, segment, taxas fixas, dados empresa, link público" },
-              { name: "PixProposal", desc: "Proposta PIX: leadId, taxa PIX (%/fixo), TPV mínimo, link público" },
+              { name: "Proposal", desc: "Proposta personalizada: leadId, taxas por bandeira × 4 faixas, antecipação, status (8), versionamento, link público" },
+              { name: "StandardProposal", desc: "Proposta Padrão: templateName, segment (6), isDefaultForSegment, taxas fixas, tokenPublico, dados empresa opcionais" },
+              { name: "PixProposal", desc: "Proposta PIX: leadId, taxa PIX (%/fixo), TPV mínimo (3 meses), status (8), versionamento, link público" },
               { name: "Contract", desc: "Contrato: leadId, proposalId, dados cliente, módulos, SLAs, preços, cláusulas, assinatura" },
               { name: "Partner", desc: "Parceiro adquirente: nome, modelo, taxas MDR por MCC, fees, antecipação, isPrincipal" },
               { name: "PartnerCost", desc: "Custo detalhado do parceiro por MCC/bandeira" },
@@ -368,7 +368,7 @@ export default function HowItWorks() {
       {/* ═══════════════════════════════════════════════════════ */}
       {/* 9. BACKEND FUNCTIONS */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="backend" title="9. Backend Functions e Automações" icon={Server} badge="20+ Functions" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="backend" title="9. Backend Functions e Automações" icon={Server} badge="30+ Functions" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {[
             { name: "analyzeOnboarding", desc: "SENTINEL: 3 fases de análise → ComplianceScore + Findings + QualityAssessments" },
@@ -467,10 +467,10 @@ export default function HowItWorks() {
       {/* Footer */}
       <div className="mt-8 p-6 bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl text-center">
         <p className="text-sm text-white/70">
-          Documentação Completa e Microscópica — Pagsmile Compliance, Onboarding, Leads, Propostas, Contratos e Introducers • Versão 5.0 • {new Date().toLocaleDateString('pt-BR')}
+          Documentação Completa e Microscópica — Pagsmile Compliance, Onboarding, Leads, Propostas, Contratos, Introducers e Landing Pages • Versão 6.0 • {new Date().toLocaleDateString('pt-BR')}
         </p>
         <p className="text-xs text-white/40 mt-1">
-          11 Seções • 40+ Páginas • 25+ Entidades • 9 Fluxos Compliance • 3 Templates • 3 IAs • 3 Tipos Proposta • 30+ Backend Functions • 5 Integrações • 5 Personas Detalhadas
+          11 Seções • 50+ Páginas • 27+ Entidades • 9 Fluxos Compliance • 3 Templates • 3 IAs • 3 Tipos Proposta + Links Rápidos • 30+ Backend Functions • 5 Integrações • 5 Personas Detalhadas
         </p>
       </div>
     </div>

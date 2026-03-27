@@ -116,31 +116,49 @@ export default function SidebarPagesSection() {
         subAbas={[]}
       />
 
-      <PageDetail name="Propostas Padrão" description="Modelos de proposta com taxas fixas por segmento. Taxas não podem ser alteradas após seleção do segmento." access="Admin"
+      <PageDetail name="Propostas Padrão (GestaoPropostasPadrao)" description="Central de modelos de proposta com taxas fixas por segmento, links rápidos e gestão completa." access="Admin"
         funcionalidades={[
+          "SEÇÃO LINKS RÁPIDOS POR SEGMENTO (topo da página): 6 cards com botão 'Copiar Link' e 'Abrir Proposta' para cada segmento — E-commerce, Educação, Infoprodutos, SaaS, Gateway, Marketplace",
+          "Cada card identifica automaticamente a proposta padrão ativa (isDefaultForSegment=true) de cada segmento e gera o link público",
+          "Se não houver proposta ativa para um segmento, exibe 'Nenhuma proposta ativa'",
+          "6 propostas padrão pré-criadas no sistema, uma por segmento, com taxas oficiais Pagsmile e tokens públicos prontos para uso",
+          "Hero Header com total de propostas e botão 'Nova Proposta Padrão'",
+          "Filtros: busca por nome/código/segmento + filtro de status (Rascunho, Ativa, Inativa) + filtro de segmento",
+          "Tabela com 7 colunas: Código, Nome, Segmento, Modelo (Merchant/Gateway/Marketplace), Status, Criada, Ações",
+          "Ações por proposta: Ver Detalhes, Editar, Copiar Link Público (se ativa), Excluir com confirmação",
           "Lista de propostas padrão com status (Rascunho, Ativa, Inativa)",
-          "Criar Nova: formulário com Dados da Empresa (Nome, CNPJ, Contato, Telefone, E-mail) + Dados da Proposta (Nome, Segmento, Descrição)",
+          "Criar Nova (CriarPropostaPadrao): formulário com Dados da Empresa (Nome, CNPJ, Contato, Telefone, E-mail) + Dados da Proposta (Nome, Segmento, Descrição)",
           "Segmentos disponíveis: Educação, Infoprodutos, E-commerce, SaaS, Gateway, Marketplace",
           "Auto-preenchimento de taxas: ao selecionar segmento, todas as taxas são preenchidas automaticamente com valores padrão (MDR por bandeira, PIX, Boleto R$2,99, Setup R$5.000, Alerta Pré-Chargeback R$55)",
-          "Taxas ficam bloqueadas (readOnly) após seleção do segmento — o time não pode alterá-las",
           "Parceiro adquirente é selecionado apenas para simulação de rentabilidade — NÃO aparece na proposta pública",
           "Link público exclusivo para compartilhamento com cliente",
-          "Proposta Pública: exibe dados da empresa, segmento, taxas por bandeira, outros métodos, antecipação, tabela de parcelas e CTA para questionário personalizado"
+          "Proposta Pública (PropostaPadraoPublica): Hero premium com logo Pagsmile + badge segmento, taxas por bandeira (TaxasPorBandeiraPublic), PIX, Boleto, Fees, Antecipação, TPV Mínimo, Tabela de Parcelas por Bandeira (ParcelasTableDetalhada) com simulador, CTA para questionário personalizado, Export Buttons (PDF/Print)"
         ]}
-        subAbas={[]}
+        subAbas={[
+          "Links Rápidos por Segmento: seção de cards no topo com 'Copiar Link' instantâneo por segmento",
+          "Tabela de Propostas: listagem completa com filtros, busca e ações"
+        ]}
       />
 
-      <PageDetail name="Propostas PIX" description="Propostas específicas para pagamentos via PIX." access="Admin"
+      <PageDetail name="Propostas PIX (GestaoPropostasPix)" description="Gestão completa de propostas exclusivas para pagamentos via PIX, com versionamento, duplicação e KPIs." access="Admin"
         funcionalidades={[
-          "Lista de propostas PIX com status",
-          "Criar Nova: formulário com dados do cliente + taxa PIX (percentual ou fixa) + TPV Mínimo",
-          "Link público para compartilhamento",
-          "Proposta Pública PIX: exibe taxa PIX, TPV mínimo e CTA"
+          "Hero Header com total de propostas e botão 'Nova Proposta PIX'",
+          "4 KPIs: Total, Ativas (enviadas/visualizadas), Aceitas, Recusadas",
+          "Filtros: busca por número/empresa/CNPJ + filtro de status (7 status: Rascunho, Enviada, Visualizada, Contraproposta, Aceita, Recusada, Expirada)",
+          "Tabela com 8 colunas: Número (com badge de versão), Empresa, CNPJ, Taxa PIX (badge com valor), Status, Timeline (aceite/recusa/criação), Validade (com alerta ≤3 dias), Ações",
+          "Ações por proposta: Ver Detalhes (PropostaPixDetalhes), Editar (rascunho), Nova Versão (V2, V3...), Copiar Link, Duplicar, Excluir",
+          "Versionamento: nova versão preserva dados e marca versão anterior como não-atual (isCurrentVersion=false)",
+          "Duplicação: cria cópia independente como rascunho com novo código e token",
+          "Alerta visual de propostas próximas da expiração (≤3 dias)",
+          "Criar Nova (CriarPropostaPix): formulário dark com Dados do Cliente (Nome, CNPJ, MCC, Contato) + Taxa PIX (tipo: percentual % ou fixo R$, valor) + TPV Mínimo Garantido (3 meses) + Card de resumo em tempo real",
+          "Seleção rápida de lead existente: botões com os últimos 6 leads para preencher dados automaticamente",
+          "Validação obrigatória: nome, CNPJ (14 dígitos) e valor da taxa PIX",
+          "Proposta Pública PIX (PropostaPixPublica): página pública com taxa PIX, TPV mínimo e CTA para questionário"
         ]}
         subAbas={[]}
       />
 
-      <PageDetail name="Introducers" description="Gestão completa de parceiros de indicação (Introducers)." access="Admin"
+      <PageDetail name="Introducers (GestaoIntroducers)" description="Gestão completa de parceiros de indicação (Introducers)." access="Admin"
         funcionalidades={[
           "KPIs: Total Introducers, Leads Gerados, Taxa de Conversão, Receita Potencial",
           "Tabela com filtros: busca, status (ativo/inativo)",
@@ -153,11 +171,37 @@ export default function SidebarPagesSection() {
         subAbas={[]}
       />
 
+      <PageDetail name="Landing Pages de Parceiros (GestaoLandingPages)" description="Página dedicada à gestão visual de Landing Pages personalizadas para parceiros empresa." access="Admin"
+        funcionalidades={[
+          "4 KPIs: Total Landing Pages, Ativas, Inativas, Leads Gerados (soma de todas)",
+          "Busca por nome do parceiro ou slug da landing page",
+          "Tabela com 6 colunas: Parceiro (logo + nome + código UTM), URL da Landing Page (/parceiro/slug com botão copiar), Segmentos configurados, Status (Ativa/Inativa com toggle), Leads gerados, Ações",
+          "Filtro automático: exibe apenas Introducers do tipo 'company' (empresas com landing page configurável)",
+          "Toggle de ativação/desativação da landing page diretamente na tabela (landingPageActive)",
+          "Botão Copiar Link: copia URL pública /parceiro/{slug} para clipboard",
+          "Botão Visualizar: abre a landing page em nova aba para preview",
+          "Botão Editar: abre modal IntroducerFormModal para editar dados do parceiro, logo, slug, taxas por segmento",
+          "Botão Nova Landing Page: abre modal para criar novo Introducer empresa com landing page",
+          "Contagem de leads gerados por parceiro via cruzamento introducerId/referralCode"
+        ]}
+        subAbas={[]}
+      />
+
       <PageDetail name="Questionário Reunião" description="Formulário interno para o time comercial registrar informações coletadas em reuniões." access="Admin"
         funcionalidades={[
           "Formulário completo com: dados da empresa, tipo de negócio, volume transacional, desafios, taxas atuais do cliente",
           "Preencher antes/depois de reunião presencial ou remota",
           "Dados salvos na entidade InternalCommercialQuestionnaire"
+        ]}
+        subAbas={[]}
+      />
+
+      <PageDetail name="Questionário Reunião PIX (QuestionarioReuniaoPix)" description="Variante do questionário de reunião focada exclusivamente em clientes interessados em PIX." access="Admin"
+        funcionalidades={[
+          "Formulário simplificado focado em dados relevantes para PIX",
+          "Dados da empresa, volume PIX mensal, taxa PIX desejada, concorrentes atuais",
+          "Ideal para reuniões onde o foco é exclusivamente pagamentos via PIX",
+          "Dados salvos e acessíveis na aba 'Reunião PIX' da página Questionários Recebidos"
         ]}
         subAbas={[]}
       />
@@ -370,7 +414,7 @@ export default function SidebarPagesSection() {
         subAbas={[]}
       />
 
-      <PageDetail name="Parceiros (Adquirentes)" description="Gestão de parceiros adquirentes e suas taxas de custo." access="Admin"
+      <PageDetail name="Parceiros — Adquirentes (ConfiguracaoParceiros)" description="Página dedicada à gestão de parceiros adquirentes/subadquirentes e suas taxas de custo por MCC." access="Admin"
         funcionalidades={[
           "Lista de Partners com cards expandíveis",
           "Cada parceiro tem: Nome, Modelo de Precificação, Parcelas Máx, Fee Transação, Antifraude, 3DS, Antecipação, Notas",
@@ -378,7 +422,8 @@ export default function SidebarPagesSection() {
           "Tabela MDR por MCC: cada parceiro pode ter taxas diferenciadas por MCC (código de categoria do merchant)",
           "Cada MCC tem taxas por bandeira (Visa, Master, Elo, Amex, Outras) × 5 faixas (Débito, 1x, 2-6x, 7-12x, 13-24x)",
           "Limites de taxas são usados para validação na criação de propostas — alertas visuais quando taxa está abaixo do custo",
-          "Criar/Editar/Excluir parceiro com formulário completo"
+          "Criar/Editar/Excluir parceiro com formulário completo",
+          "Acessível diretamente pelo sidebar como item standalone 'Parceiros'"
         ]}
         subAbas={[]}
       />
@@ -434,10 +479,70 @@ export default function SidebarPagesSection() {
         funcionalidades={[
           "Acesso via /parceiro/:slug (ex: /parceiro/meu-parceiro)",
           "Header com logo do parceiro + logo Pagsmile",
-          "Tabela de taxas por segmento configurada pelo Introducer",
-          "Calculadora de taxas interativa",
-          "Disclaimer de compliance",
-          "Questionário integrado para captação de lead vinculado ao Introducer"
+          "Tabela de taxas por segmento configurada pelo Introducer (SegmentRatesTable)",
+          "Calculadora de taxas interativa (RateCalculator): simula custo de transação cartão e PIX com antecipação",
+          "Disclaimer de compliance (ComplianceDisclaimer)",
+          "Questionário integrado para captação de lead vinculado ao Introducer via referralCode"
+        ]}
+        subAbas={[
+          "Tabela de Taxas: exibição por segmento com MDR por faixa, PIX, fees",
+          "Calculadora: simulação interativa com valor, parcelas e prazo"
+        ]}
+      />
+
+      <PageDetail name="Proposta Padrão Pública (PropostaPadraoPublica)" description="Página pública de visualização da proposta padrão por segmento — sem dados de cliente, apenas taxas." access="Público"
+        funcionalidades={[
+          "Acesso via token único na URL (?token=xxx)",
+          "Hero Header premium com logo Pagsmile, badge do segmento e título 'Condições Comerciais'",
+          "Dados da empresa exibidos apenas se preenchidos (seção condicional)",
+          "Cards de Segmento e Informações com disclaimers de compliance",
+          "Taxas de Cartão de Crédito por bandeira (TaxasPorBandeiraPublic): Visa, Mastercard, Elo, Amex, Outras × 4 faixas",
+          "Cards de outros métodos: PIX (% ou fixo), Boleto, Fee Transação, Antifraude, 3DS, Alerta Pré-Chargeback, Setup",
+          "Cards de Prazo de Recebimento e Taxa de Antecipação",
+          "Tabela de Parcelas por Bandeira (ParcelasTableDetalhada) com simulador de valor líquido",
+          "TPV Mínimo Garantido (3 meses) exibido se configurado",
+          "CTA 'Quer uma proposta personalizada?': botão que direciona para questionário de lead",
+          "Export Buttons: exportação para impressão/PDF",
+          "Footer com código da proposta e disclaimer regulatório"
+        ]}
+        subAbas={[]}
+      />
+
+      <PageDetail name="Proposta PIX Pública (PropostaPixPublica)" description="Página pública de visualização da proposta PIX pelo cliente." access="Público"
+        funcionalidades={[
+          "Acesso via token único na URL (?token=xxx)",
+          "Exibe taxa PIX (percentual ou fixa), TPV Mínimo Garantido e dados do cliente",
+          "Botões: Aceitar, Contraproposta, Recusar",
+          "CTA para questionário personalizado"
+        ]}
+        subAbas={[]}
+      />
+
+      <PageDetail name="Questionário Lead PIX (LeadQuestionnairePix)" description="Questionário público simplificado focado em clientes interessados em PIX." access="Público"
+        funcionalidades={[
+          "Formulário multi-step focado em dados para PIX",
+          "Dados da empresa, volume PIX, expectativa de taxas",
+          "Cria Lead com businessSubCategory e foco em PIX automaticamente"
+        ]}
+        subAbas={[]}
+      />
+
+      <PageDetail name="Questionário de Subseller (SubsellerQuestionnaire)" description="Questionário público para onboarding de subcontas/subsellers vinculados a um seller principal." access="Público"
+        funcionalidades={[
+          "Formulário público para preenchimento por subsellers",
+          "Vinculação ao seller principal (parentMerchantId) via parâmetro na URL",
+          "Coleta dados específicos de subseller para compliance",
+          "Cria Merchant com isSubseller=true e OnboardingCase vinculado"
+        ]}
+        subAbas={[]}
+      />
+
+      <PageDetail name="ComplianceResume" description="Página pública que permite ao merchant retomar uma sessão de compliance de onde parou." access="Público"
+        funcionalidades={[
+          "Merchant insere o token da sessão anterior (ComplianceSession.sessionToken)",
+          "Sistema localiza a sessão ativa e redireciona para a fase/step correto",
+          "Suporta retomada tanto da fase de questionário quanto da fase de documentos",
+          "Exibe mensagem de erro se sessão não encontrada ou expirada"
         ]}
         subAbas={[]}
       />

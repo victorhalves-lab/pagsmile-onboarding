@@ -105,24 +105,85 @@ export default function LeadsPropostasSection() {
 
       {/* Propostas */}
       <div>
-        <h4 className="font-bold text-[#002443] mb-3 flex items-center gap-2"><FileText className="w-4 h-4 text-[#2bc196]" />Gestão de Propostas</h4>
+        <h4 className="font-bold text-[#002443] mb-3 flex items-center gap-2"><FileText className="w-4 h-4 text-[#2bc196]" />Gestão de Propostas — 3 Modalidades</h4>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <Card className="border-emerald-200">
+            <CardHeader className="pb-2 bg-emerald-50/50">
+              <CardTitle className="text-sm flex items-center gap-2">🎯 Proposta Personalizada</CardTitle>
+            </CardHeader>
+            <CardContent className="text-xs text-[#002443]/70 space-y-1.5 pt-3">
+              {[
+                'Vinculada a um Lead — dados pré-preenchidos',
+                'Taxas editáveis por bandeira × 4 faixas de parcelamento',
+                'Antecipação, PIX, boleto, fees, setup configuráveis',
+                'Preview em tempo real lado a lado',
+                'Seletor de Parceiro com validação de limites',
+                'Simulador de Rentabilidade (drawer)',
+                'Versionamento (V1, V2, V3...) com lineage',
+                'Link público com aceite/recusa/contraproposta',
+                'Notificação Slack ao visualizar/aceitar',
+              ].map((item, i) => (
+                <p key={i} className="flex items-start gap-1.5"><ArrowRight className="w-3 h-3 text-[#2bc196] mt-0.5 shrink-0" />{item}</p>
+              ))}
+            </CardContent>
+          </Card>
+
+          <Card className="border-blue-200">
+            <CardHeader className="pb-2 bg-blue-50/50">
+              <CardTitle className="text-sm flex items-center gap-2">📋 Proposta Padrão por Segmento</CardTitle>
+            </CardHeader>
+            <CardContent className="text-xs text-[#002443]/70 space-y-1.5 pt-3">
+              {[
+                'LINKS RÁPIDOS: 6 cards prontos (E-commerce, Educação, Infoprodutos, SaaS, Gateway, Marketplace)',
+                'Copiar link com um clique — sem criar proposta manualmente',
+                '6 propostas pré-criadas com taxas oficiais Pagsmile',
+                'Campo isDefaultForSegment marca a proposta padrão de cada segmento',
+                'Sem dados de cliente — apenas taxas e nome do segmento',
+                'Auto-preenchimento de taxas ao selecionar segmento',
+                'Página pública premium: taxas, parcelas, simulador, CTA',
+                'Export Buttons (PDF/Print)',
+              ].map((item, i) => (
+                <p key={i} className="flex items-start gap-1.5"><ArrowRight className="w-3 h-3 text-blue-500 mt-0.5 shrink-0" />{item}</p>
+              ))}
+            </CardContent>
+          </Card>
+
+          <Card className="border-cyan-200">
+            <CardHeader className="pb-2 bg-cyan-50/50">
+              <CardTitle className="text-sm flex items-center gap-2">💳 Proposta PIX</CardTitle>
+            </CardHeader>
+            <CardContent className="text-xs text-[#002443]/70 space-y-1.5 pt-3">
+              {[
+                'Taxa PIX: percentual (%) ou fixo (R$)',
+                'TPV Mínimo Garantido (3 meses)',
+                'Versionamento (V1, V2...) e duplicação',
+                '4 KPIs: Total, Ativas, Aceitas, Recusadas',
+                'Seleção rápida de lead (últimos 6)',
+                'Validação obrigatória: nome, CNPJ, taxa PIX',
+                'Link público com aceite/recusa',
+                'Alerta de propostas próximas da expiração',
+              ].map((item, i) => (
+                <p key={i} className="flex items-start gap-1.5"><ArrowRight className="w-3 h-3 text-cyan-500 mt-0.5 shrink-0" />{item}</p>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card className="border-slate-200">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Criação de Propostas</CardTitle>
+              <CardTitle className="text-sm">Acompanhamento & Ações (Comum a Todas)</CardTitle>
             </CardHeader>
             <CardContent className="text-xs text-[#002443]/70 space-y-1.5">
               {[
-                'Proposta vinculada a um Lead existente no pipeline',
-                'Dados do cliente pré-preenchidos a partir do Lead (CNPJ, nome, contato)',
-                'Taxas de cartão configuráveis por bandeira (Visa, Mastercard, Elo, Amex, Hiper)',
-                'Taxas por tipo: débito, crédito à vista, parcelado (2x a 18x)',
-                'Taxas extras: Pix, boleto, link de pagamento, recorrência',
-                'Antecipação: taxa de antecipação configurável, modalidades (automática, sob demanda)',
-                'Alíquota de MDR diferenciada por volume',
-                'Validade da proposta em dias (padrão 15 dias)',
-                'Geração de link público para visualização pelo cliente',
-                'Preview completa da proposta antes de enviar',
+                'Status: Rascunho, Enviada, Visualizada, Aceita, Recusada, Expirada, Contraproposta',
+                'Tracking de visualizações: notifica quando o cliente abre a proposta',
+                'Aceite digital: cliente aceita pelo link público com termos',
+                'Recusa com motivo: cliente pode registrar o motivo da recusa',
+                'Contraproposta: cliente pode sugerir alterações de taxas',
+                'Histórico completo de versões e interações por proposta',
+                'Expiração automática: propostas expiram após a validade',
+                'Integração com Contratos: proposta aceita → geração de contrato',
               ].map((item, i) => (
                 <p key={i} className="flex items-start gap-1.5"><ArrowRight className="w-3 h-3 text-[#2bc196] mt-0.5 shrink-0" />{item}</p>
               ))}
@@ -131,20 +192,16 @@ export default function LeadsPropostasSection() {
 
           <Card className="border-slate-200">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm">Acompanhamento & Ações</CardTitle>
+              <CardTitle className="text-sm">Métricas & Exportação</CardTitle>
             </CardHeader>
             <CardContent className="text-xs text-[#002443]/70 space-y-1.5">
               {[
-                'Status da proposta: Rascunho, Enviada, Visualizada, Aceita, Recusada, Expirada, Contraproposta',
-                'Tracking de visualizações: notifica quando o cliente abre a proposta',
-                'Aceite digital: cliente aceita pelo link público com termos',
-                'Recusa com motivo: cliente pode registrar o motivo da recusa',
-                'Contraproposta: cliente pode sugerir alterações de taxas',
-                'Histórico completo de versões e interações por proposta',
-                'Expiração automática: propostas expiram após a validade',
-                'Métricas: total enviadas, taxa de aceite, tempo médio até aceite, valor médio',
-                'Exportação de propostas em formato detalhado',
-                'Integração com Contratos: proposta aceita → geração de contrato',
+                'ProposalMetrics: 6 métricas (total, rascunho, enviadas, aceitas, recusadas, expiradas)',
+                'Propostas por Empresa: visão consolidada por CNPJ',
+                'Alerta visual de propostas ≤3 dias para expirar',
+                'Rentabilidade: receita MDR + antecipação + fees vs custo parceiro',
+                'Export Buttons: impressão e PDF para propostas públicas',
+                'CSV export para listas de leads',
               ].map((item, i) => (
                 <p key={i} className="flex items-start gap-1.5"><ArrowRight className="w-3 h-3 text-[#2bc196] mt-0.5 shrink-0" />{item}</p>
               ))}
@@ -158,12 +215,15 @@ export default function LeadsPropostasSection() {
         <h5 className="text-xs font-bold text-[#002443]/50 uppercase tracking-wider mb-2">Entidades do Módulo Leads & Propostas</h5>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
           {[
-            { name: 'Lead', desc: '26 campos: e-mail, nome, CNPJ, telefone, status (11 valores), tipo negócio, scores PRISCILA, scores Lead Qualifier, TPV, ticket médio, protocolo, origem' },
+            { name: 'Lead', desc: '30+ campos: e-mail, nome, CNPJ, telefone, status (11 valores), tipo negócio, scores PRISCILA/Lead Qualifier/Risco Avançado, TPV, ticket médio, protocolo, origem, introducer' },
             { name: 'LeadActivity', desc: 'Registro de atividades: contato iniciado, status alterado, proposta enviada, follow-up agendado, nota adicionada' },
-            { name: 'Proposal', desc: 'Proposta comercial: leadId, taxas por bandeira, antecipação, Pix, boleto, status, validade, link público, histórico de versões' },
+            { name: 'Proposal', desc: 'Proposta personalizada: leadId, taxas por bandeira × 4 faixas, antecipação, PIX, boleto, status (8), versionamento, link público' },
+            { name: 'StandardProposal', desc: 'Proposta padrão: templateName, segment (6 opções), isDefaultForSegment, taxas fixas auto-preenchidas, tokenPublico, dados empresa opcionais' },
+            { name: 'PixProposal', desc: 'Proposta PIX: leadId, taxa PIX (% ou R$ fixo), TPV mínimo (3 meses), status (8), versionamento V1/V2/V3, link público' },
             { name: 'OnboardingLink', desc: 'Link rastreável: código único, tipo (LEAD_QUESTIONNAIRE, LEAD_SIMPLIFICADO, KYC, PROPOSAL), UTMs, métricas, expiração' },
-            { name: 'QuestionarioSimplificado', desc: 'Dados do questionário simplificado pós-reunião: dados empresa, taxas atuais, distribuição por bandeira' },
-            { name: 'MessageTemplate', desc: 'Templates de mensagem para comunicação automatizada com leads: WhatsApp, e-mail, SMS' },
+            { name: 'QuestionarioSimplificado', desc: 'Questionário simplificado pós-reunião: dados empresa, taxas atuais, distribuição por bandeira' },
+            { name: 'InternalCommercialQuestionnaire', desc: 'Questionário interno de reunião: dados empresa, negócio, volume, desafios, taxas atuais' },
+            { name: 'MessageTemplate', desc: 'Templates de mensagem para comunicação automatizada: WhatsApp, e-mail, SMS' },
           ].map((e, i) => (
             <div key={i} className="p-2 bg-white rounded-lg border border-slate-200">
               <Badge className="bg-[#002443] text-white font-mono text-[10px] border-0 mb-1">{e.name}</Badge>

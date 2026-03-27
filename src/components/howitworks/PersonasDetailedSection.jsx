@@ -106,19 +106,20 @@ export default function PersonasDetailedSection() {
           "Ver se lead já tem proposta ou contrato vinculado no card do Kanban"
         ]} />
 
-        <ActivityBlock title="Propostas Comerciais" icon={FileText} color="bg-purple-50 text-purple-700" items={[
-          "Criar Proposta Personalizada: definir taxas por bandeira (Visa, Master, Elo, Amex, Outras) × 4 faixas de parcelamento, antecipação, PIX, boleto, fees, setup, TPV mínimo",
-          "Criar Proposta Padrão por Segmento: selecionar segmento (Educação, Infoprodutos, E-commerce, SaaS, Gateway, Marketplace) e taxas são auto-preenchidas e bloqueadas",
-          "Criar Proposta PIX: definir taxa PIX (% ou R$ fixo) e TPV mínimo",
+        <ActivityBlock title="Propostas Comerciais (3 Modalidades)" icon={FileText} color="bg-purple-50 text-purple-700" items={[
+          "Criar Proposta Personalizada: taxas por bandeira (Visa, Master, Elo, Amex, Outras) × 4 faixas, antecipação, PIX, boleto, fees, setup, TPV mínimo",
+          "Criar Proposta Padrão por Segmento: selecionar segmento e taxas são auto-preenchidas automaticamente",
+          "LINKS RÁPIDOS POR SEGMENTO: na página Gestão de Propostas Padrão, 6 cards prontos com 'Copiar Link' para E-commerce, Educação, Infoprodutos, SaaS, Gateway, Marketplace — sem precisar criar proposta",
+          "Criar Proposta PIX: taxa PIX (% ou R$ fixo) + TPV mínimo (3 meses) + seleção rápida de lead",
+          "Propostas PIX com versionamento (V1, V2, V3...) e duplicação independente",
+          "4 KPIs de Propostas PIX: Total, Ativas, Aceitas, Recusadas",
           "Selecionar Parceiro Adquirente para validação de limites — alertas visuais quando taxa está abaixo do custo",
-          "Simular Rentabilidade (Drawer): ver receita MDR, receita antecipação, receita fees vs custo parceiro, margem",
+          "Simular Rentabilidade (Drawer): ver receita MDR + antecipação + fees vs custo parceiro, margem",
           "Visualizar Preview em tempo real da proposta como o cliente verá",
           "Duplicar proposta existente como base para nova",
-          "Criar nova versão (V2, V3...) de proposta mantendo histórico completo de versionamento",
-          "Usar proposta existente como template de taxas para nova proposta",
-          "Copiar link público da proposta e enviar ao cliente",
+          "Criar nova versão (V2, V3...) mantendo histórico completo de versionamento",
+          "Copiar link público e enviar ao cliente",
           "Receber notificação Slack quando cliente visualiza ou aceita proposta",
-          "Acompanhar timeline da proposta: criação → envio → visualização → aceite/recusa",
           "Ver alertas de propostas próximas da expiração (≤3 dias)",
           "Ver Propostas por Empresa na aba dedicada para visão consolidada"
         ]} />
@@ -137,10 +138,11 @@ export default function PersonasDetailedSection() {
           "Revisar dados extraídos pela IA e salvar como lead"
         ]} />
 
-        <ActivityBlock title="Introducers" icon={UserPlus} color="bg-violet-50 text-violet-700" items={[
+        <ActivityBlock title="Introducers & Landing Pages" icon={UserPlus} color="bg-violet-50 text-violet-700" items={[
           "Cadastrar novos Introducers (individuais ou empresas) com código UTM único",
           "Configurar taxas padrão por segmento para a Landing Page do Introducer",
           "Configurar Landing Page co-branded com logo, slug personalizado (/parceiro/slug)",
+          "Página dedicada 'Landing Pages de Parceiros' (GestaoLandingPages): 4 KPIs, tabela com logo/URL/segmentos/status/leads, toggle ativar/desativar, copiar link, preview",
           "Acompanhar KPIs por Introducer: leads gerados, taxa de conversão, receita potencial",
           "Ver leads filtrados por Introducer na aba dedicada"
         ]} />
