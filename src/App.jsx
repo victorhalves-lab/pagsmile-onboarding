@@ -117,7 +117,7 @@ const PublicRoutes = () => (
 
 // --- Admin pages require authentication ---
 const AuthenticatedApp = () => {
-  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+  const { isLoadingAuth, isLoadingPublicSettings, authError, isAuthenticated, navigateToLogin } = useAuth();
 
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
@@ -134,6 +134,12 @@ const AuthenticatedApp = () => {
       navigateToLogin();
       return null;
     }
+  }
+
+  // If app is public but user is not logged in, redirect to login
+  if (!isAuthenticated) {
+    navigateToLogin();
+    return null;
   }
 
   return (
