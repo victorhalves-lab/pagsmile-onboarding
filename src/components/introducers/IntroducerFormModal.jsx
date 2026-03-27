@@ -5,22 +5,33 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2 } from 'lucide-react';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Loader2, User, Building2 } from 'lucide-react';
 import { toast } from 'sonner';
+import IntroducerCompanyFields from './IntroducerCompanyFields';
+import StandardRatesEditor from './StandardRatesEditor';
 
 function nameToReferralCode(name) {
   return name
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remove acentos
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9\s-]/g, '') // remove caracteres especiais
-    .replace(/\s+/g, '-') // espaços → hifens
-    .replace(/-+/g, '-') // hifens duplicados
-    .replace(/^-|-$/g, ''); // remove hifens no início/fim
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
 }
 
+const EMPTY_FORM = {
+  name: '', referralCode: '', contactEmail: '', contactPhone: '',
+  status: 'active', notes: '', commissionRate: '', type: 'individual',
+  cnpj: '', companyName: '', companyLogoUrl: '', contactEmailCompany: '',
+  contactPhoneCompany: '', uniqueLandingPageSlug: '', landingPageActive: true,
+  standardRates: [],
+};
+
 export default function IntroducerFormModal({ open, onClose, introducer, onSave, isSaving }) {
-  const [form, setForm] = useState({ name: '', referralCode: '', contactEmail: '', contactPhone: '', status: 'active', notes: '', commissionRate: '' });
+  const [form, setForm] = useState({ ...EMPTY_FORM });
   const [codeManuallyEdited, setCodeManuallyEdited] = useState(false);
 
   useEffect(() => {
@@ -33,10 +44,19 @@ export default function IntroducerFormModal({ open, onClose, introducer, onSave,
         status: introducer.status || 'active',
         notes: introducer.notes || '',
         commissionRate: introducer.commissionRate || '',
+        type: introducer.type || 'individual',
+        cnpj: introducer.cnpj || '',
+        companyName: introducer.companyName || '',
+        companyLogoUrl: introducer.companyLogoUrl || '',
+        contactEmailCompany: introducer.contactEmailCompany || '',
+        contactPhoneCompany: introducer.contactPhoneCompany || '',
+        uniqueLandingPageSlug: introducer.uniqueLandingPageSlug || '',
+        landingPageActive: introducer.landingPageActive !== false,
+        standardRates: introducer.standardRates || [],
       });
-      setCodeManuallyEdited(true); // ao editar, não sobrescrever o código existente
+      setCodeManuallyEdited(true);
     } else {
-      setForm({ name: '', referralCode: '', contactEmail: '', contactPhone: '', status: 'active', notes: '', commissionRate: '' });
+      setForm({ ...EMPTY_FORM });
       setCodeManuallyEdited(false);
     }
   }, [introducer, open]);
@@ -44,22 +64,49 @@ export default function IntroducerFormModal({ open, onClose, introducer, onSave,
   const handleSubmit = () => {
     if (!form.name.trim()) { toast.error('Nome é obrigatório'); return; }
     if (!form.referralCode.trim()) { toast.error('Código de referência é obrigatório'); return; }
-    // Sanitize referralCode: lowercase, no spaces, no special chars
     const sanitized = form.referralCode.toLowerCase().replace(/[^a-z0-9_-]/g, '');
     if (sanitized !== form.referralCode) {
       toast.error('Código de referência deve conter apenas letras minúsculas, números, - e _');
       return;
     }
+    if (form.type === 'company') {
+      if (!form.companyName?.trim()) { toast.error('Nome da empresa é obrigatório'); return; }
+      if (!form.uniqueLandingPageSlug?.trim()) { toast.error('Slug da Landing Page é obrigatório'); return; }
+    }
     onSave({ ...form, referralCode: sanitized });
   };
 
+  const isCompany = form.type === 'company';
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className={`${isCompany ? 'sm:max-w-3xl max-h-[90vh] overflow-y-auto' : 'sm:max-w-lg'}`}>
         <DialogHeader>
           <DialogTitle className="text-[#002443]">{introducer ? 'Editar Introducer' : 'Novo Introducer'}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
+          {/* Type selector */}
+          <div className="space-y-1.5">
+            <Label className="text-xs font-bold text-[#002443]/50">Tipo de Introducer</Label>
+            <RadioGroup
+              value={form.type}
+              onValueChange={v => setForm(p => ({ ...p, type: v }))}
+              className="flex gap-4"
+            >
+              <label className={`flex items-center gap-2 px-4 py-3 rounded-xl border-2 cursor-pointer transition-all ${form.type === 'individual' ? 'border-[#2bc196] bg-[#2bc196]/5' : 'border-[#002443]/10 hover:border-[#002443]/20'}`}>
+                <RadioGroupItem value="individual" />
+                <User className="w-4 h-4 text-[#002443]/60" />
+                <span className="text-sm font-medium">Individual</span>
+              </label>
+              <label className={`flex items-center gap-2 px-4 py-3 rounded-xl border-2 cursor-pointer transition-all ${form.type === 'company' ? 'border-[#2bc196] bg-[#2bc196]/5' : 'border-[#002443]/10 hover:border-[#002443]/20'}`}>
+                <RadioGroupItem value="company" />
+                <Building2 className="w-4 h-4 text-[#002443]/60" />
+                <span className="text-sm font-medium">Empresa</span>
+              </label>
+            </RadioGroup>
+          </div>
+
+          {/* Common fields */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <Label className="text-xs font-bold text-[#002443]/50">Nome *</Label>
@@ -97,19 +144,30 @@ export default function IntroducerFormModal({ open, onClose, introducer, onSave,
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs font-bold text-[#002443]/50">Status</Label>
-            <Select value={form.status} onValueChange={v => setForm(p => ({ ...p, status: v }))}>
-              <SelectTrigger className="h-10 rounded-xl"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="active">Ativo</SelectItem>
-                <SelectItem value="inactive">Inativo</SelectItem>
-              </SelectContent>
-            </Select>
+              <Select value={form.status} onValueChange={v => setForm(p => ({ ...p, status: v }))}>
+                <SelectTrigger className="h-10 rounded-xl"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Ativo</SelectItem>
+                  <SelectItem value="inactive">Inativo</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <div className="space-y-1.5">
             <Label className="text-xs font-bold text-[#002443]/50">Observações</Label>
             <Textarea value={form.notes} onChange={e => setForm(p => ({ ...p, notes: e.target.value }))} placeholder="Notas internas sobre o parceiro..." className="min-h-[80px] rounded-xl resize-none" />
           </div>
+
+          {/* Company-specific fields */}
+          {isCompany && (
+            <>
+              <IntroducerCompanyFields form={form} setForm={setForm} />
+              <StandardRatesEditor
+                rates={form.standardRates}
+                onChange={(rates) => setForm(p => ({ ...p, standardRates: rates }))}
+              />
+            </>
+          )}
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose} className="rounded-xl">Cancelar</Button>

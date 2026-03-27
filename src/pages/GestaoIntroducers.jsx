@@ -52,14 +52,18 @@ export default function GestaoIntroducers() {
   });
 
   const handleSave = async (formData) => {
+    const editId = editingIntroducer?.id;
     // Check unique referralCode
+    const existingCode = introducers.find(i => i.referralCode === formData.referralCode && i.id !== editId);
+    if (existingCode) { toast.error('Já existe um Introducer com este código de referência'); return; }
+    // Check unique slug for companies
+    if (formData.type === 'company' && formData.uniqueLandingPageSlug) {
+      const existingSlug = introducers.find(i => i.uniqueLandingPageSlug === formData.uniqueLandingPageSlug && i.id !== editId);
+      if (existingSlug) { toast.error('Já existe um Introducer com este slug de Landing Page'); return; }
+    }
     if (!editingIntroducer) {
-      const existing = introducers.find(i => i.referralCode === formData.referralCode);
-      if (existing) { toast.error('Já existe um Introducer com este código de referência'); return; }
       createMutation.mutate(formData);
     } else {
-      const existing = introducers.find(i => i.referralCode === formData.referralCode && i.id !== editingIntroducer.id);
-      if (existing) { toast.error('Já existe um Introducer com este código de referência'); return; }
       updateMutation.mutate({ id: editingIntroducer.id, data: formData });
     }
   };

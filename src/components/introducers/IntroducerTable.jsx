@@ -41,6 +41,7 @@ export default function IntroducerTable({ introducers, leads, proposals, onEdit 
           <TableHeader>
             <TableRow>
               <TableHead>Nome</TableHead>
+              <TableHead>Tipo</TableHead>
               <TableHead>Código UTM</TableHead>
               <TableHead>E-mail</TableHead>
               <TableHead>Status</TableHead>
@@ -55,7 +56,7 @@ export default function IntroducerTable({ introducers, leads, proposals, onEdit 
           <TableBody>
             {introducers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={10} className="text-center py-12">
+                <TableCell colSpan={11} className="text-center py-12">
                   <p className="text-[#002443]/50">Nenhum introducer encontrado</p>
                 </TableCell>
               </TableRow>
@@ -63,9 +64,17 @@ export default function IntroducerTable({ introducers, leads, proposals, onEdit 
               const m = getIntroducerMetrics(intro);
               return (
                 <TableRow key={intro.id} className="hover:bg-[#f4f4f4] transition-colors">
-                  <TableCell><p className="font-semibold text-sm text-[#002443]">{intro.name}</p></TableCell>
+                  <TableCell>
+                    <p className="font-semibold text-sm text-[#002443]">{intro.companyName || intro.name}</p>
+                    {intro.type === 'company' && <p className="text-[10px] text-[#002443]/40">{intro.name}</p>}
+                  </TableCell>
+                  <TableCell>
+                    <Badge className={intro.type === 'company' ? 'bg-blue-100 text-blue-700 text-[10px]' : 'bg-slate-100 text-slate-500 text-[10px]'}>
+                      {intro.type === 'company' ? 'Empresa' : 'Individual'}
+                    </Badge>
+                  </TableCell>
                   <TableCell><span className="font-mono text-xs bg-[#f4f4f4] px-2 py-1 rounded-lg">{intro.referralCode}</span></TableCell>
-                  <TableCell><span className="text-xs text-[#002443]/60">{intro.contactEmail || '-'}</span></TableCell>
+                  <TableCell><span className="text-xs text-[#002443]/60">{intro.contactEmail || intro.contactEmailCompany || '-'}</span></TableCell>
                   <TableCell>
                     <Badge className={intro.status === 'active' ? 'bg-green-100 text-green-700 text-xs' : 'bg-slate-100 text-slate-500 text-xs'}>
                       {intro.status === 'active' ? 'Ativo' : 'Inativo'}
@@ -86,6 +95,11 @@ export default function IntroducerTable({ introducers, leads, proposals, onEdit 
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
+                      {intro.type === 'company' && intro.uniqueLandingPageSlug && (
+                        <Link to={`/parceiro/${intro.uniqueLandingPageSlug}`} target="_blank">
+                          <Button variant="ghost" size="sm" className="h-7 text-[#2bc196]" title="Ver Landing Page"><LinkIcon className="w-3.5 h-3.5" /></Button>
+                        </Link>
+                      )}
                       <InviteIntroducerButton introducer={intro} />
                       <Button variant="ghost" size="sm" onClick={() => onEdit(intro)} className="h-7"><Pencil className="w-3.5 h-3.5" /></Button>
                       <Link to={createPageUrl('QuestionariosLeads') + `?introducer=${intro.referralCode}`}>

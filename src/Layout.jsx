@@ -58,7 +58,7 @@ export default function Layout({ children, currentPageName }) {
   const isAdmin = user?.role === 'admin';
 
   const publicPages = [
-    'ContratoPublico','ComplianceOnboardingStart','CompliancePixOnly','ComplianceFullKYC',
+    'IntroducerLandingPage','ContratoPublico','ComplianceOnboardingStart','CompliancePixOnly','ComplianceFullKYC',
     'ComplianceLite','ComplianceSaaS','DocumentUploadPix','DocumentUploadFull',
     'DocumentUploadLite','DocumentUploadSaaS','LivenessFacematchStep','LivenessSimulation',
     'OnboardingCompletion','LeadQuestionnaire','LeadQuestionnairePix','LeadSuccess','PropostaPublica',

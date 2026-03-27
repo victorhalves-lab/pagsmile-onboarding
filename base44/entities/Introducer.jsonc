@@ -1,0 +1,148 @@
+{
+  "name": "Introducer",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nome do Introducer (parceiro de indica\u00e7\u00e3o)"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "individual",
+        "company"
+      ],
+      "default": "individual",
+      "description": "Tipo de Introducer: individual ou empresa"
+    },
+    "referralCode": {
+      "type": "string",
+      "description": "C\u00f3digo \u00fanico de refer\u00eancia para rastreamento UTM (ex: agenciax, joaosilva)"
+    },
+    "contactEmail": {
+      "type": "string",
+      "format": "email",
+      "description": "E-mail de contato do Introducer"
+    },
+    "contactPhone": {
+      "type": "string",
+      "description": "Telefone de contato"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "default": "active",
+      "description": "Status do Introducer"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es internas sobre o parceiro"
+    },
+    "linkedUserId": {
+      "type": "string",
+      "description": "ID do User vinculado para acesso ao portal"
+    },
+    "commissionRate": {
+      "type": "number",
+      "description": "Taxa de comiss\u00e3o em % sobre receita gerada"
+    },
+    "cnpj": {
+      "type": "string",
+      "description": "CNPJ da empresa parceira (apenas para tipo company)"
+    },
+    "companyName": {
+      "type": "string",
+      "description": "Nome fantasia ou Raz\u00e3o Social da empresa parceira"
+    },
+    "companyLogoUrl": {
+      "type": "string",
+      "description": "URL do logo da empresa parceira (fundo branco ou transparente, PNG/SVG)"
+    },
+    "contactEmailCompany": {
+      "type": "string",
+      "format": "email",
+      "description": "E-mail de contato da empresa parceira"
+    },
+    "contactPhoneCompany": {
+      "type": "string",
+      "description": "Telefone de contato da empresa parceira"
+    },
+    "uniqueLandingPageSlug": {
+      "type": "string",
+      "description": "Slug \u00fanico para URL da Landing Page (ex: meu-parceiro \u2192 /parceiro/meu-parceiro)"
+    },
+    "landingPageActive": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se a landing page do parceiro est\u00e1 ativa"
+    },
+    "standardRates": {
+      "type": "array",
+      "description": "Taxas padr\u00e3o por segmento para exibi\u00e7\u00e3o na Landing Page",
+      "items": {
+        "type": "object",
+        "properties": {
+          "segmentName": {
+            "type": "string",
+            "description": "Nome do segmento (ex: Educa\u00e7\u00e3o, Infoprodutos, E-commerce)"
+          },
+          "mcc": {
+            "type": "string",
+            "description": "MCC principal do segmento"
+          },
+          "riskLevel": {
+            "type": "string",
+            "description": "N\u00edvel de risco do segmento"
+          },
+          "mdrAvista": {
+            "type": "number",
+            "description": "MDR Cr\u00e9dito \u00e0 Vista 1x em % (ex: 3.29)"
+          },
+          "mdr2a6x": {
+            "type": "number",
+            "description": "MDR Cr\u00e9dito 2-6x em %"
+          },
+          "mdr7a12x": {
+            "type": "number",
+            "description": "MDR Cr\u00e9dito 7-12x em %"
+          },
+          "mdr13a21x": {
+            "type": "number",
+            "description": "MDR Cr\u00e9dito 13-21x em %"
+          },
+          "percentualAntecipacao": {
+            "type": "number",
+            "description": "Taxa de antecipa\u00e7\u00e3o mensal em % (ex: 1.69)"
+          },
+          "feeTransacao": {
+            "type": "number",
+            "description": "Fee por transa\u00e7\u00e3o em R$ (ex: 0.35)"
+          },
+          "antifraude": {
+            "type": "number",
+            "description": "Custo de antifraude por transa\u00e7\u00e3o em R$ (ex: 0.35)"
+          },
+          "taxa3ds": {
+            "type": "number",
+            "description": "Custo de 3DS por transa\u00e7\u00e3o em R$ (ex: 0.45)"
+          },
+          "pixTaxaPercentual": {
+            "type": "number",
+            "description": "Taxa PIX percentual em % (ex: 0.35)"
+          },
+          "pixTaxaFixa": {
+            "type": "number",
+            "description": "Taxa PIX fixa em R$ (ex: 0.30)"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "name",
+    "referralCode"
+  ]
+}
