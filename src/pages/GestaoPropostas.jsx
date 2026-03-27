@@ -29,18 +29,20 @@ import ProposalMetrics from '../components/proposals/ProposalMetrics';
 import ProposalHistoryModal from '../components/proposals/ProposalHistoryModal';
 import ProposalsByCompanyTab from '../components/proposals/ProposalsByCompanyTab';
 import RentabilidadeDrawer from '../components/proposals/RentabilidadeDrawer';
-
-const STATUS_CONFIG = {
-  rascunho: { label: 'Rascunho', color: 'bg-slate-100 text-slate-700', icon: '⚪' },
-  enviada: { label: 'Enviada', color: 'bg-yellow-100 text-yellow-700', icon: '🟡' },
-  visualizada: { label: 'Visualizada', color: 'bg-orange-100 text-orange-700', icon: '🟠' },
-  contraproposta: { label: 'Contraproposta', color: 'bg-blue-100 text-blue-700', icon: '🔵' },
-  aceita: { label: 'Aceita', color: 'bg-green-100 text-green-700', icon: '🟢' },
-  recusada: { label: 'Recusada', color: 'bg-red-100 text-red-700', icon: '🔴' },
-  expirada: { label: 'Expirada', color: 'bg-slate-100 text-slate-500', icon: '⚫' },
-};
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function GestaoPropostas() {
+  const { t } = useTranslation();
+
+  const STATUS_CONFIG = {
+    rascunho: { label: t('proposals.status.draft'), color: 'bg-slate-100 text-slate-700', icon: '⚪' },
+    enviada: { label: t('proposals.status.sent'), color: 'bg-yellow-100 text-yellow-700', icon: '🟡' },
+    visualizada: { label: t('proposals.status.viewed'), color: 'bg-orange-100 text-orange-700', icon: '🟠' },
+    contraproposta: { label: t('proposals.status.counter'), color: 'bg-blue-100 text-blue-700', icon: '🔵' },
+    aceita: { label: t('proposals.status.accepted'), color: 'bg-green-100 text-green-700', icon: '🟢' },
+    recusada: { label: t('proposals.status.rejected'), color: 'bg-red-100 text-red-700', icon: '🔴' },
+    expirada: { label: t('proposals.status.expired'), color: 'bg-slate-100 text-slate-500', icon: '⚫' },
+  };
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
@@ -63,7 +65,7 @@ export default function GestaoPropostas() {
     mutationFn: (id) => base44.entities.Proposal.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['propostas'] });
-      toast.success('Proposta excluída');
+      toast.success(t('gestao_propostas.deleted'));
       setDeleteId(null);
     }
   });
@@ -85,7 +87,7 @@ export default function GestaoPropostas() {
   const copyLink = (proposta) => {
     const url = window.location.origin + createPageUrl('PropostaPublica') + `?token=${proposta.tokenPublico}`;
     navigator.clipboard.writeText(url);
-    toast.success('Link copiado!');
+    toast.success(t('common.link_copied'));
   };
 
   const duplicar = async (proposta) => {
@@ -110,7 +112,7 @@ export default function GestaoPropostas() {
     delete newProposta.created_by;
     const created = await base44.entities.Proposal.create(newProposta);
     queryClient.invalidateQueries({ queryKey: ['propostas'] });
-    toast.success('Proposta duplicada!');
+    toast.success(t('gestao_propostas.duplicated'));
     navigate(createPageUrl('CriarProposta') + `?edit=${created.id}`);
   };
 
@@ -135,7 +137,7 @@ export default function GestaoPropostas() {
     const created = await base44.entities.Proposal.create(newProposta);
     await base44.entities.Proposal.update(proposta.id, { isCurrentVersion: false });
     queryClient.invalidateQueries({ queryKey: ['propostas'] });
-    toast.success(`Nova versão V${newVersion} criada!`);
+    toast.success(t('gestao_propostas.version_created', { version: newVersion }));
     navigate(createPageUrl('CriarProposta') + `?edit=${created.id}`);
   };
 
@@ -159,12 +161,12 @@ export default function GestaoPropostas() {
               <FileText className="w-6 h-6 text-[#5cf7cf]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Gestão de Propostas</h1>
-              <p className="text-white/60 text-sm mt-1">{filtered.length} propostas encontradas</p>
+              <h1 className="text-2xl font-bold text-white">{t('gestao_propostas.title')}</h1>
+              <p className="text-white/60 text-sm mt-1">{t('gestao_propostas.found', { count: filtered.length })}</p>
             </div>
           </div>
           <Button onClick={() => navigate(createPageUrl('CriarProposta'))} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white gap-2 rounded-xl shadow-md">
-            <Plus className="w-4 h-4" /> Nova Proposta
+            <Plus className="w-4 h-4" /> {t('gestao_propostas.new')}
           </Button>
         </div>
       </div>
@@ -176,10 +178,10 @@ export default function GestaoPropostas() {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="bg-white border border-[#002443]/5">
           <TabsTrigger value="lista" className="gap-2 data-[state=active]:bg-[#2bc196]/10 data-[state=active]:text-[#002443]">
-            <List className="w-4 h-4" /> Lista de Propostas
+            <List className="w-4 h-4" /> {t('gestao_propostas.list_tab')}
           </TabsTrigger>
           <TabsTrigger value="empresa" className="gap-2 data-[state=active]:bg-[#2bc196]/10 data-[state=active]:text-[#002443]">
-            <Building2 className="w-4 h-4" /> Propostas por Empresa
+            <Building2 className="w-4 h-4" /> {t('gestao_propostas.by_company_tab')}
           </TabsTrigger>
         </TabsList>
 
@@ -188,12 +190,12 @@ export default function GestaoPropostas() {
           <div className="flex flex-wrap gap-3 items-center">
             <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/40" />
-              <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar por número, empresa ou CNPJ..." className="pl-10 h-10" />
+              <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('gestao_propostas.search_placeholder')} className="pl-10 h-10" />
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-[160px] h-10"><SelectValue placeholder="Status" /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
+                <SelectItem value="all">{t('gestao_propostas.all_statuses')}</SelectItem>
                 {Object.entries(STATUS_CONFIG).map(([k, v]) => (
                   <SelectItem key={k} value={k}>{v.icon} {v.label}</SelectItem>
                 ))}
@@ -212,14 +214,14 @@ export default function GestaoPropostas() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Número</TableHead>
-                    <TableHead>Empresa</TableHead>
-                    <TableHead>Modelo</TableHead>
-                    <TableHead>CNPJ</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Timeline</TableHead>
-                    <TableHead>Validade</TableHead>
-                    <TableHead className="text-right">Ações</TableHead>
+                    <TableHead>{t('gestao_propostas.number')}</TableHead>
+                    <TableHead>{t('gestao_propostas.company')}</TableHead>
+                    <TableHead>{t('gestao_propostas.model')}</TableHead>
+                    <TableHead>{t('gestao_propostas.cnpj')}</TableHead>
+                    <TableHead>{t('common.status')}</TableHead>
+                    <TableHead>{t('gestao_propostas.timeline')}</TableHead>
+                    <TableHead>{t('gestao_propostas.validity')}</TableHead>
+                    <TableHead className="text-right">{t('common.actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -227,9 +229,9 @@ export default function GestaoPropostas() {
                     <TableRow>
                       <TableCell colSpan={8} className="text-center py-12">
                         <FileText className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/30 mb-3" />
-                        <p className="text-[var(--pagsmile-blue)]/60">Nenhuma proposta encontrada</p>
+                        <p className="text-[var(--pagsmile-blue)]/60">{t('gestao_propostas.no_proposals')}</p>
                         <Button variant="link" onClick={() => navigate(createPageUrl('CriarProposta'))} className="mt-2 text-[var(--pagsmile-green)]">
-                          Nova Proposta
+                          {t('gestao_propostas.new')}
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -266,23 +268,23 @@ export default function GestaoPropostas() {
                             {p.sentDate && (
                               <div className="flex items-center gap-1 text-blue-600">
                                 <Send className="w-2.5 h-2.5" />
-                                Enviada {moment(p.sentDate).format('DD/MM')}
+                                {t('gestao_propostas.sent_on', { date: moment(p.sentDate).format('DD/MM') })}
                               </div>
                             )}
                             {p.acceptedDate && (
                               <div className="flex items-center gap-1 text-green-600">
                                 <CheckCircle className="w-2.5 h-2.5" />
-                                Aceita {moment(p.acceptedDate).format('DD/MM')}
+                                {t('gestao_propostas.accepted_on', { date: moment(p.acceptedDate).format('DD/MM') })}
                               </div>
                             )}
                             {p.rejectedDate && (
                               <div className="flex items-center gap-1 text-red-600">
                                 <XCircle className="w-2.5 h-2.5" />
-                                Recusada {moment(p.rejectedDate).format('DD/MM')}
+                                {t('gestao_propostas.rejected_on', { date: moment(p.rejectedDate).format('DD/MM') })}
                               </div>
                             )}
                             {!p.sentDate && !p.acceptedDate && !p.rejectedDate && (
-                              <span className="text-slate-400">Criada {moment(p.created_date).format('DD/MM')}</span>
+                              <span className="text-slate-400">{t('gestao_propostas.created_on', { date: moment(p.created_date).format('DD/MM') })}</span>
                             )}
                           </div>
                         </TableCell>
@@ -365,13 +367,13 @@ export default function GestaoPropostas() {
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Excluir Proposta</AlertDialogTitle>
-            <AlertDialogDescription>Essa ação é irreversível. A proposta será removida permanentemente.</AlertDialogDescription>
+            <AlertDialogTitle>{t('gestao_propostas.delete_title')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('gestao_propostas.delete_desc')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction onClick={() => deleteMutation.mutate(deleteId)} className="bg-red-500 hover:bg-red-600">
-              {deleteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Excluir'}
+              {deleteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : t('common.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

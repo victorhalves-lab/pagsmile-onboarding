@@ -6,8 +6,10 @@ import { createPageUrl } from '../utils';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import LeadQuestionnaireForm from '@/components/leads/LeadQuestionnaireForm';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function LeadQuestionnaire() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const urlParams = new URLSearchParams(window.location.search);
   const linkCode = urlParams.get('ref');
@@ -75,7 +77,7 @@ export default function LeadQuestionnaire() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-10 h-10 animate-spin text-[var(--pagsmile-green)] mx-auto mb-4" />
-          <p className="text-[var(--pagsmile-blue)]/70">Carregando questionário...</p>
+          <p className="text-[var(--pagsmile-blue)]/70">{t('lead_quest.loading')}</p>
         </div>
       </div>
     );
@@ -85,8 +87,8 @@ export default function LeadQuestionnaire() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center max-w-md">
-          <h2 className="text-xl font-bold text-[var(--pagsmile-blue)] mb-2">Questionário não disponível</h2>
-          <p className="text-[var(--pagsmile-blue)]/70">Nenhum questionário de leads está ativo no momento.</p>
+          <h2 className="text-xl font-bold text-[var(--pagsmile-blue)] mb-2">{t('lead_quest.not_available')}</h2>
+          <p className="text-[var(--pagsmile-blue)]/70">{t('lead_quest.no_active')}</p>
         </div>
       </div>
     );

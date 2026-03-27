@@ -47,8 +47,10 @@ import ScoreDistributionChart from '../components/dashboard/ScoreDistributionCha
 import ComplianceScoresOverview from '../components/dashboard/ComplianceScoresOverview';
 import SalesPipelineSummary from '../components/dashboard/SalesPipelineSummary';
 import ActionableInsightsCard from '../components/compliance/ActionableInsightsCard';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function AdminDashboard() {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('all');
   const [sortField, setSortField] = useState('created_date');
@@ -418,19 +420,19 @@ export default function AdminDashboard() {
               <Shield className="w-6 h-6 text-[#5cf7cf]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Dashboard de Compliance</h1>
-              <p className="text-white/60 text-sm mt-1">Visão executiva do processo de onboarding</p>
+              <h1 className="text-2xl font-bold text-white">{t('admin_dash.title')}</h1>
+              <p className="text-white/60 text-sm mt-1">{t('admin_dash.subtitle')}</p>
             </div>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => refetchCases()} className="border-white/20 text-white hover:bg-white/10 rounded-xl bg-transparent">
               <RefreshCw className="w-4 h-4 mr-2" />
-              Atualizar
+              {t('admin_dash.refresh')}
             </Button>
             <Link to={createPageUrl('GerarLinkOnboarding')}>
               <Button className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl shadow-md">
                 <LinkIcon className="w-4 h-4 mr-2" />
-                Gerar Link
+                {t('admin_dash.generate_link')}
               </Button>
             </Link>
           </div>
@@ -440,9 +442,9 @@ export default function AdminDashboard() {
       {/* KPIs Principais - Row 1 */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KPICard
-          title="Total Submissões"
+          title={t('admin_dash.total_submissions')}
           value={stats.total.toLocaleString('pt-BR')}
-          subtitle={`+${stats.pendente + stats.processando} pendentes`}
+          subtitle={t('admin_dash.pending_count', { count: stats.pendente + stats.processando })}
           icon={Users}
           iconBg="bg-slate-100"
           iconColor="text-[var(--pagsmile-blue)]/80"
@@ -451,25 +453,25 @@ export default function AdminDashboard() {
           trendLabel={undefined}
         />
         <KPICard
-          title="Aprovadas (Helena)"
+          title={t('admin_dash.approved_helena')}
           value={stats.approvedByHelena.toLocaleString('pt-BR')}
-          subtitle={`${helenaApprovalPercent}% automático`}
+          subtitle={t('admin_dash.automatic_pct', { pct: helenaApprovalPercent })}
           icon={CheckCircle2}
           iconBg="bg-green-100"
           iconColor="text-green-600"
         />
         <KPICard
-          title="Em Análise Manual"
+          title={t('admin_dash.manual_analysis')}
           value={stats.manual.toLocaleString('pt-BR')}
-          subtitle={`${manualPercent}% do total`}
+          subtitle={t('admin_dash.of_total', { pct: manualPercent })}
           icon={AlertTriangle}
           iconBg="bg-orange-100"
           iconColor="text-orange-600"
         />
         <KPICard
-          title="Reprovadas (Helena)"
+          title={t('admin_dash.rejected_helena')}
           value={stats.rejectedByHelena.toLocaleString('pt-BR')}
-          subtitle={`${rejectedPercent}% rejeitado`}
+          subtitle={t('admin_dash.rejected_pct', { pct: rejectedPercent })}
           icon={XCircle}
           iconBg="bg-red-100"
           iconColor="text-red-600"
@@ -479,35 +481,35 @@ export default function AdminDashboard() {
       {/* KPIs de Comparação - Row 2 */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <KPICardComparison
-          title="Tempo de Conclusão"
+          title={t('admin_dash.completion_time')}
           afterValue={stats.avgCompletionTimeLabel}
-          improvementLabel="Média desde a criação até decisão final"
+          improvementLabel={t('admin_dash.completion_desc')}
           target="24 h"
-          targetLabel="Meta"
+          targetLabel={t('admin_dash.target')}
           colorScheme="green"
         />
         <KPICardComparison
-          title="Taxa de Conversão"
+          title={t('admin_dash.conversion_rate')}
           afterValue={stats.conversionRate}
-          improvementLabel="Visitantes que completaram o fluxo"
+          improvementLabel={t('admin_dash.conversion_desc')}
           target="40%"
-          targetLabel="Meta"
+          targetLabel={t('admin_dash.target')}
           colorScheme="blue"
         />
         <KPICardComparison
-          title="Taxa de Rejeição"
+          title={t('admin_dash.rejection_rate')}
           afterValue={stats.rejectionRate}
-          improvementLabel="Casos finalizados como recusados"
+          improvementLabel={t('admin_dash.rejection_desc')}
           target="15%"
-          targetLabel="Max"
+          targetLabel={t('admin_dash.max')}
           colorScheme="red"
         />
         <KPICardComparison
-          title="Aprovação Auto IA"
+          title={t('admin_dash.auto_approval_ia')}
           afterValue={`${stats.helenaAutoApprovalRate}%`}
-          improvementLabel="Decisões automáticas da Helena"
+          improvementLabel={t('admin_dash.auto_approval_desc')}
           target="60%"
-          targetLabel="Meta"
+          targetLabel={t('admin_dash.target')}
           colorScheme="purple"
         />
       </div>
@@ -522,7 +524,7 @@ export default function AdminDashboard() {
 
       {/* Score Overview */}
       <div className="mb-6">
-        <h2 className="text-lg font-bold text-[#002443] mb-3">Análise de Scores (SENTINEL)</h2>
+        <h2 className="text-lg font-bold text-[#002443] mb-3">{t('admin_dash.score_analysis')}</h2>
         <ComplianceScoresOverview scores={stats.scoreStats} />
       </div>
 
@@ -562,7 +564,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <TrendLineChart
           data={trendData}
-          title="Tendência de Análises (IA vs Manual)"
+          title={t('admin_dash.trend_title')}
         />
         <TopRejectionReasonsChart data={stats.topRejectionReasons} />
       </div>
@@ -586,12 +588,12 @@ export default function AdminDashboard() {
         <div className="flex flex-col gap-4">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="flex-wrap h-auto">
-              <TabsTrigger value="all">Todos ({stats.total})</TabsTrigger>
-              <TabsTrigger value="Pendente">Pendentes ({stats.pendente})</TabsTrigger>
-              <TabsTrigger value="Em Processamento">Processando ({stats.processando})</TabsTrigger>
-              <TabsTrigger value="Manual">Manual ({stats.manual})</TabsTrigger>
-              <TabsTrigger value="Aprovado">Aprovados ({stats.aprovado})</TabsTrigger>
-              <TabsTrigger value="Recusado">Recusados ({stats.recusado})</TabsTrigger>
+              <TabsTrigger value="all">{t('admin_dash.all_tab')} ({stats.total})</TabsTrigger>
+              <TabsTrigger value="Pendente">{t('admin_dash.pending_tab')} ({stats.pendente})</TabsTrigger>
+              <TabsTrigger value="Em Processamento">{t('admin_dash.processing_tab')} ({stats.processando})</TabsTrigger>
+              <TabsTrigger value="Manual">{t('admin_dash.manual_tab')} ({stats.manual})</TabsTrigger>
+              <TabsTrigger value="Aprovado">{t('admin_dash.approved_tab')} ({stats.aprovado})</TabsTrigger>
+              <TabsTrigger value="Recusado">{t('admin_dash.rejected_tab')} ({stats.recusado})</TabsTrigger>
             </TabsList>
           </Tabs>
           
@@ -602,9 +604,9 @@ export default function AdminDashboard() {
                   <SelectValue placeholder="Tipo" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Todos os Tipos</SelectItem>
-                  <SelectItem value="PF">Pessoa Física</SelectItem>
-                  <SelectItem value="PJ">Pessoa Jurídica</SelectItem>
+                  <SelectItem value="all">{t('admin_dash.all_types')}</SelectItem>
+                  <SelectItem value="PF">{t('admin_dash.individual')}</SelectItem>
+                  <SelectItem value="PJ">{t('admin_dash.company')}</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={dateFilter} onValueChange={setDateFilter}>
@@ -612,10 +614,10 @@ export default function AdminDashboard() {
                   <SelectValue placeholder="Período" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Todo período</SelectItem>
-                  <SelectItem value="today">Hoje</SelectItem>
-                  <SelectItem value="week">Esta semana</SelectItem>
-                  <SelectItem value="month">Este mês</SelectItem>
+                  <SelectItem value="all">{t('admin_dash.all_periods')}</SelectItem>
+                  <SelectItem value="today">{t('admin_dash.today')}</SelectItem>
+                  <SelectItem value="week">{t('admin_dash.this_week')}</SelectItem>
+                  <SelectItem value="month">{t('admin_dash.this_month')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -623,7 +625,7 @@ export default function AdminDashboard() {
             <div className="relative w-full md:w-80">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/50" />
               <Input
-                placeholder="Buscar por nome, CPF/CNPJ ou e-mail..."
+                placeholder={t('admin_dash.search_placeholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-9"
@@ -642,8 +644,8 @@ export default function AdminDashboard() {
         ) : filteredCases.length === 0 ? (
           <div className="text-center py-12">
             <FileCheck className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/40 mb-4" />
-            <p className="text-[var(--pagsmile-blue)]/70 font-medium">Nenhum caso encontrado</p>
-            <p className="text-sm text-[var(--pagsmile-blue)]/50 mt-1">Ajuste os filtros ou aguarde novas submissões</p>
+            <p className="text-[var(--pagsmile-blue)]/70 font-medium">{t('admin_dash.no_cases')}</p>
+            <p className="text-sm text-[var(--pagsmile-blue)]/50 mt-1">{t('admin_dash.adjust_filters')}</p>
           </div>
         ) : (
           <Table>
@@ -657,11 +659,11 @@ export default function AdminDashboard() {
                       else { setSortField('merchant'); setSortOrder('asc'); }
                     }}
                   >
-                    Merchant <ArrowUpDown className="w-3 h-3" />
+                    {t('admin_dash.merchant')} <ArrowUpDown className="w-3 h-3" />
                   </button>
                 </TableHead>
-                <TableHead>Tipo</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead>{t('common.type')}</TableHead>
+                <TableHead>{t('common.status')}</TableHead>
                 <TableHead>
                   <button 
                     className="flex items-center gap-1 hover:text-[var(--pagsmile-blue)] font-semibold"
@@ -673,7 +675,7 @@ export default function AdminDashboard() {
                     Score <ArrowUpDown className="w-3 h-3" />
                   </button>
                 </TableHead>
-                <TableHead>Decisão IA</TableHead>
+                <TableHead>{t('admin_dash.ia_decision')}</TableHead>
                 <TableHead>
                   <button 
                     className="flex items-center gap-1 hover:text-[var(--pagsmile-blue)] font-semibold"
@@ -685,7 +687,7 @@ export default function AdminDashboard() {
                     Data <ArrowUpDown className="w-3 h-3" />
                   </button>
                 </TableHead>
-                <TableHead className="text-right">Ações</TableHead>
+                <TableHead className="text-right">{t('common.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -742,7 +744,7 @@ export default function AdminDashboard() {
                       <div className="flex items-center justify-end gap-1">
                         <Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`}>
                           <Button variant="ghost" size="sm">
-                            <Eye className="w-4 h-4 mr-1" /> Ver
+                            <Eye className="w-4 h-4 mr-1" /> {t('admin_dash.see')}
                           </Button>
                         </Link>
                         <DropdownMenu>
@@ -754,13 +756,13 @@ export default function AdminDashboard() {
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem asChild>
                               <Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`}>
-                                <Eye className="w-4 h-4 mr-2" /> Ver Detalhes
+                                <Eye className="w-4 h-4 mr-2" /> {t('common.see_details')}
                               </Link>
                             </DropdownMenuItem>
                             {merchant?.email && (
                               <DropdownMenuItem asChild>
                                 <a href={`mailto:${merchant.email}`}>
-                                  <Mail className="w-4 h-4 mr-2" /> Enviar E-mail
+                                  <Mail className="w-4 h-4 mr-2" /> {t('common.send_email')}
                                 </a>
                               </DropdownMenuItem>
                             )}
@@ -778,7 +780,7 @@ export default function AdminDashboard() {
         {filteredCases.length > 0 && (
           <div className="px-4 py-3 border-t border-slate-200 flex items-center justify-between">
             <p className="text-sm text-[var(--pagsmile-blue)]/70 font-medium">
-              Mostrando {Math.min(filteredCases.length, 20)} de {filteredCases.length} casos
+              {t('common.showing', { count: Math.min(filteredCases.length, 20), total: filteredCases.length })}
             </p>
           </div>
         )}

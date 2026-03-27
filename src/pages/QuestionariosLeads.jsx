@@ -33,24 +33,7 @@ import IntroducerLeadsTab from '../components/leads/IntroducerLeadsTab';
 import MeetingQuestionnaireTab from '../components/meeting-questionnaire/MeetingQuestionnaireTab';
 import AIQuestionnaireTab from '../components/meeting-questionnaire/AIQuestionnaireTab';
 import PixMeetingQuestionnaireTab from '../components/pix-questionnaire/PixMeetingQuestionnaireTab';
-
-const STATUS_CONFIG = {
-  questionario_preenchido: { label: 'Novo', color: 'bg-blue-100 text-blue-700', icon: '🔵' },
-  analisado_priscila: { label: 'Analisado', color: 'bg-purple-100 text-purple-700', icon: '🟣' },
-  em_contato_comercial: { label: 'Em Contato', color: 'bg-amber-100 text-amber-700', icon: '🟡' },
-  proposta_enviada: { label: 'Proposta Enviada', color: 'bg-indigo-100 text-indigo-700', icon: '🟣' },
-  proposta_aceita: { label: 'Proposta Aceita', color: 'bg-green-100 text-green-700', icon: '🟢' },
-  proposta_recusada: { label: 'Recusada', color: 'bg-red-100 text-red-700', icon: '🔴' },
-  perdido: { label: 'Perdido', color: 'bg-slate-100 text-slate-600', icon: '⚫' },
-};
-
-const RISK_CONFIG = {
-  BAIXO: { label: 'Baixo', color: 'bg-green-100 text-green-700', icon: Shield },
-  MEDIO: { label: 'Médio', color: 'bg-amber-100 text-amber-700', icon: AlertTriangle },
-  ALTO: { label: 'Alto', color: 'bg-orange-100 text-orange-700', icon: AlertTriangle },
-  CRITICO: { label: 'Crítico', color: 'bg-red-100 text-red-700', icon: AlertTriangle },
-  EM_ANALISE: { label: 'Em Análise', color: 'bg-slate-100 text-slate-600', icon: Shield },
-};
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 const getScoreColor = (score) => {
   if (score >= 70) return 'text-green-600 bg-green-50 border-green-200';
@@ -61,13 +44,13 @@ const getScoreColor = (score) => {
 const getActionButtons = (lead, navigate) => {
   const actions = [];
   if (['questionario_preenchido', 'analisado_priscila'].includes(lead.status)) {
-    actions.push({ label: 'Iniciar Contato', icon: Phone, variant: 'default', action: 'contact' });
+    actions.push({ label: t('quest_leads.start_contact'), icon: Phone, variant: 'default', action: 'contact' });
   }
   if (['questionario_preenchido', 'analisado_priscila', 'em_contato_comercial'].includes(lead.status) && lead.priscilaRiskLevel !== 'CRITICO') {
-    actions.push({ label: 'Gerar Proposta', icon: FileText, variant: 'outline', action: 'proposal' });
+    actions.push({ label: t('quest_leads.generate_proposal'), icon: FileText, variant: 'outline', action: 'proposal' });
   }
   if (lead.questionnaireData) {
-    actions.push({ label: 'Ver Respostas', icon: MessageSquareText, variant: 'outline', action: 'responses' });
+    actions.push({ label: t('quest_leads.view_responses'), icon: MessageSquareText, variant: 'outline', action: 'responses' });
   }
   return actions;
 };
@@ -75,8 +58,27 @@ const getActionButtons = (lead, navigate) => {
 const SUB_CAT = { MERCHAN: { label: 'Merchan', icon: ShoppingCart }, GATEWAY: { label: 'Gateway', icon: Network }, MARKETPLACE: { label: 'Marketplace', icon: Building2 } };
 
 export default function QuestionariosLeads() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+
+  const STATUS_CONFIG = {
+    questionario_preenchido: { label: t('quest_leads.status.new'), color: 'bg-blue-100 text-blue-700', icon: '🔵' },
+    analisado_priscila: { label: t('quest_leads.status.analyzed'), color: 'bg-purple-100 text-purple-700', icon: '🟣' },
+    em_contato_comercial: { label: t('quest_leads.status.in_contact'), color: 'bg-amber-100 text-amber-700', icon: '🟡' },
+    proposta_enviada: { label: t('quest_leads.status.proposal_sent'), color: 'bg-indigo-100 text-indigo-700', icon: '🟣' },
+    proposta_aceita: { label: t('quest_leads.status.proposal_accepted'), color: 'bg-green-100 text-green-700', icon: '🟢' },
+    proposta_recusada: { label: t('quest_leads.status.rejected'), color: 'bg-red-100 text-red-700', icon: '🔴' },
+    perdido: { label: t('quest_leads.status.lost'), color: 'bg-slate-100 text-slate-600', icon: '⚫' },
+  };
+
+  const RISK_CONFIG = {
+    BAIXO: { label: t('quest_leads.risk.low'), color: 'bg-green-100 text-green-700', icon: Shield },
+    MEDIO: { label: t('quest_leads.risk.medium'), color: 'bg-amber-100 text-amber-700', icon: AlertTriangle },
+    ALTO: { label: t('quest_leads.risk.high'), color: 'bg-orange-100 text-orange-700', icon: AlertTriangle },
+    CRITICO: { label: t('quest_leads.risk.critical'), color: 'bg-red-100 text-red-700', icon: AlertTriangle },
+    EM_ANALISE: { label: t('quest_leads.risk.analyzing'), color: 'bg-slate-100 text-slate-600', icon: Shield },
+  };
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [periodoFilter, setPeriodoFilter] = useState('all');
@@ -113,7 +115,7 @@ export default function QuestionariosLeads() {
     mutationFn: (id) => base44.entities.Lead.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['leads-questionarios'] });
-      toast.success('Questionário excluído');
+      toast.success(t('common.deleted_success'));
       setDeleteTarget(null);
     }
   });
@@ -187,7 +189,7 @@ export default function QuestionariosLeads() {
     a.download = `questionarios_${moment().format('YYYY-MM-DD')}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success('Exportado com sucesso!');
+    toast.success(t('common.exported_success'));
   };
 
   if (isLoading) {
@@ -225,7 +227,7 @@ export default function QuestionariosLeads() {
     });
     queryClient.invalidateQueries({ queryKey: ['questionarios-simplificados'] });
     queryClient.invalidateQueries({ queryKey: ['leads-questionarios'] });
-    toast.success('Lead criado e vinculado!');
+    toast.success(t('quest_leads.lead_created'));
   };
 
   const handleGerarProposta = (q) => {
@@ -233,7 +235,7 @@ export default function QuestionariosLeads() {
     if (leadId) {
       navigate(createPageUrl('CriarProposta') + `?lead=${leadId}`);
     } else {
-      toast.info('Vincule a um lead primeiro para gerar proposta');
+      toast.info(t('quest_leads.link_lead_first'));
     }
   };
 
@@ -247,17 +249,17 @@ export default function QuestionariosLeads() {
               <ClipboardList className="w-6 h-6 text-[#5cf7cf]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Questionários Recebidos</h1>
+              <h1 className="text-2xl font-bold text-white">{t('quest_leads.title')}</h1>
               <div className="flex gap-3 text-xs text-white/60 mt-1.5">
-                <span className="bg-white/10 px-2 py-0.5 rounded-md">{thisMonth} este mês</span>
-                <span className="bg-white/10 px-2 py-0.5 rounded-md">{aguardando} aguardando</span>
-                <span className="bg-[#2bc196]/20 text-[#5cf7cf] px-2 py-0.5 rounded-md font-medium">{highScoreLeads} alto score</span>
-                {criticalLeads > 0 && <span className="bg-red-500/20 text-red-300 px-2 py-0.5 rounded-md font-medium">{criticalLeads} risco alto/crítico</span>}
+                <span className="bg-white/10 px-2 py-0.5 rounded-md">{t('quest_leads.this_month', { count: thisMonth })}</span>
+                <span className="bg-white/10 px-2 py-0.5 rounded-md">{t('quest_leads.waiting', { count: aguardando })}</span>
+                <span className="bg-[#2bc196]/20 text-[#5cf7cf] px-2 py-0.5 rounded-md font-medium">{t('quest_leads.high_score', { count: highScoreLeads })}</span>
+                {criticalLeads > 0 && <span className="bg-red-500/20 text-red-300 px-2 py-0.5 rounded-md font-medium">{t('quest_leads.high_risk', { count: criticalLeads })}</span>}
               </div>
             </div>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={exportCSV} className="border-white/20 text-white hover:bg-white/10 rounded-lg"><Download className="w-4 h-4 mr-1" /> Exportar</Button>
+            <Button variant="outline" size="sm" onClick={exportCSV} className="border-white/20 text-white hover:bg-white/10 rounded-lg"><Download className="w-4 h-4 mr-1" /> {t('common.export')}</Button>
             <Button variant="outline" size="sm" onClick={() => { refetch(); refetchSimplificados(); }} className="border-white/20 text-white hover:bg-white/10 rounded-lg"><RefreshCw className="w-4 h-4" /></Button>
           </div>
         </div>
@@ -268,27 +270,27 @@ export default function QuestionariosLeads() {
         <TabsList>
           <TabsTrigger value="completo" className="gap-1">
             <ClipboardList className="w-3 h-3" />
-            Completo ({leads.length})
+            {t('quest_leads.tab_complete')} ({leads.length})
           </TabsTrigger>
           <TabsTrigger value="simplificado" className="gap-1">
             <Zap className="w-3 h-3" />
-            Simplificado ({questionariosSimplificados.length})
+            {t('quest_leads.tab_simplified')} ({questionariosSimplificados.length})
           </TabsTrigger>
           <TabsTrigger value="introducers" className="gap-1">
             <UserPlus className="w-3 h-3" />
-            De Introducers ({leads.filter(l => l.introducerReferralCode).length})
+            {t('quest_leads.tab_introducers')} ({leads.filter(l => l.introducerReferralCode).length})
           </TabsTrigger>
           <TabsTrigger value="reuniao" className="gap-1">
             <Briefcase className="w-3 h-3" />
-            Questionário Reunião
+            {t('quest_leads.tab_meeting')}
           </TabsTrigger>
           <TabsTrigger value="reuniao_pix" className="gap-1">
             <Zap className="w-3 h-3" />
-            Reunião PIX
+            {t('quest_leads.tab_meeting_pix')}
           </TabsTrigger>
           <TabsTrigger value="ai" className="gap-1">
             <Bot className="w-3 h-3" />
-            Questionário com Robô
+            {t('quest_leads.tab_ai')}
           </TabsTrigger>
         </TabsList>
 
@@ -298,7 +300,7 @@ export default function QuestionariosLeads() {
           ) : questionariosSimplificados.length === 0 ? (
             <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
               <Zap className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/30 mb-3" />
-              <p className="text-[var(--pagsmile-blue)]/60">Nenhum questionário simplificado recebido</p>
+              <p className="text-[var(--pagsmile-blue)]/60">{t('quest_leads.no_simplified')}</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -340,12 +342,12 @@ export default function QuestionariosLeads() {
       <div className="flex flex-wrap gap-3 items-center">
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/40" />
-          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar por CNPJ, razão social, contato, email..." className="pl-10 h-10" />
+          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('quest_leads.search_placeholder')} className="pl-10 h-10" />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[170px] h-10"><SelectValue placeholder="Status" /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos os status</SelectItem>
+            <SelectItem value="all">{t('quest_leads.all_statuses')}</SelectItem>
             {Object.entries(STATUS_CONFIG).map(([k, v]) => (
               <SelectItem key={k} value={k}>{v.icon} {v.label}</SelectItem>
             ))}
@@ -354,17 +356,17 @@ export default function QuestionariosLeads() {
         <Select value={periodoFilter} onValueChange={setPeriodoFilter}>
           <SelectTrigger className="w-[150px] h-10"><SelectValue placeholder="Período" /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
-            <SelectItem value="hoje">Hoje</SelectItem>
-            <SelectItem value="7dias">Últimos 7 dias</SelectItem>
-            <SelectItem value="30dias">Últimos 30 dias</SelectItem>
-            <SelectItem value="90dias">Últimos 90 dias</SelectItem>
+            <SelectItem value="all">{t('quest_leads.all_periods')}</SelectItem>
+            <SelectItem value="hoje">{t('quest_leads.today')}</SelectItem>
+            <SelectItem value="7dias">{t('quest_leads.last_7_days')}</SelectItem>
+            <SelectItem value="30dias">{t('quest_leads.last_30_days')}</SelectItem>
+            <SelectItem value="90dias">{t('quest_leads.last_90_days')}</SelectItem>
           </SelectContent>
         </Select>
         <Select value={riskFilter} onValueChange={setRiskFilter}>
           <SelectTrigger className="w-[150px] h-10"><SelectValue placeholder="Risco" /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos os riscos</SelectItem>
+            <SelectItem value="all">{t('quest_leads.all_risks')}</SelectItem>
             {Object.entries(RISK_CONFIG).map(([k, v]) => (
               <SelectItem key={k} value={k}>{v.label}</SelectItem>
             ))}
@@ -373,17 +375,17 @@ export default function QuestionariosLeads() {
         <Select value={sortBy} onValueChange={setSortBy}>
           <SelectTrigger className="w-[170px] h-10"><SelectValue placeholder="Ordenar" /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="date">Mais recentes</SelectItem>
-            <SelectItem value="score_desc">Maior score</SelectItem>
-            <SelectItem value="score_asc">Menor score</SelectItem>
-            <SelectItem value="tpv">Maior TPV</SelectItem>
+            <SelectItem value="date">{t('quest_leads.most_recent')}</SelectItem>
+            <SelectItem value="score_desc">{t('quest_leads.highest_score')}</SelectItem>
+            <SelectItem value="score_asc">{t('quest_leads.lowest_score')}</SelectItem>
+            <SelectItem value="tpv">{t('quest_leads.highest_tpv')}</SelectItem>
           </SelectContent>
         </Select>
         {introducerOptions.length > 0 && (
           <Select value={introducerFilter} onValueChange={setIntroducerFilter}>
             <SelectTrigger className="w-[180px] h-10"><SelectValue placeholder="Introducer" /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todos os Introducers</SelectItem>
+              <SelectItem value="all">{t('quest_leads.all_introducers')}</SelectItem>
               {introducerOptions.map(([code, name]) => (
                 <SelectItem key={code} value={code}>{name}</SelectItem>
               ))}
@@ -392,7 +394,7 @@ export default function QuestionariosLeads() {
         )}
         {hasFilters && (
           <Button variant="ghost" size="sm" onClick={() => { setSearch(''); setStatusFilter('all'); setPeriodoFilter('all'); setRiskFilter('all'); setIntroducerFilter('all'); }}>
-            <X className="w-4 h-4 mr-1" /> Limpar
+            <X className="w-4 h-4 mr-1" /> {t('common.clear')}
           </Button>
         )}
       </div>
@@ -403,17 +405,17 @@ export default function QuestionariosLeads() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Protocolo</TableHead>
-                <TableHead>Empresa</TableHead>
-                <TableHead>Tipo</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Score</TableHead>
-                <TableHead>Lead IA</TableHead>
-                <TableHead>Risco</TableHead>
-                <TableHead>TPV Mensal</TableHead>
-                <TableHead>Introducer</TableHead>
-                <TableHead>Data</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
+                <TableHead>{t('quest_leads.protocol')}</TableHead>
+                <TableHead>{t('quest_leads.company')}</TableHead>
+                <TableHead>{t('quest_leads.type')}</TableHead>
+                <TableHead>{t('common.status')}</TableHead>
+                <TableHead>{t('quest_leads.score')}</TableHead>
+                <TableHead>{t('quest_leads.lead_ia')}</TableHead>
+                <TableHead>{t('quest_leads.risk')}</TableHead>
+                <TableHead>{t('quest_leads.monthly_tpv')}</TableHead>
+                <TableHead>{t('quest_leads.introducer')}</TableHead>
+                <TableHead>{t('common.date')}</TableHead>
+                <TableHead className="text-right">{t('common.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -422,7 +424,7 @@ export default function QuestionariosLeads() {
                   <TableCell colSpan={11} className="text-center py-12">
                     <ClipboardList className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/30 mb-3" />
                     <p className="text-[var(--pagsmile-blue)]/60">
-                      {hasFilters ? 'Nenhum resultado com esses filtros' : 'Nenhum questionário recebido'}
+                      {hasFilters ? t('quest_leads.no_results_filter') : t('quest_leads.no_questionnaires')}
                     </p>
                   </TableCell>
                 </TableRow>
@@ -497,7 +499,7 @@ export default function QuestionariosLeads() {
                                   await base44.entities.Lead.update(lead.id, { status: 'em_contato_comercial', lastInteractionDate: new Date().toISOString() });
                                   await base44.entities.LeadActivity.create({ leadId: lead.id, activityType: 'contato_iniciado', description: 'Contato iniciado', performedBy: 'admin', activityDate: new Date().toISOString() });
                                   queryClient.invalidateQueries({ queryKey: ['leads-questionarios'] });
-                                  toast.success('Status atualizado para "Em Contato"');
+                                  toast.success(t('quest_leads.status_updated'));
                                 } else if (btn.action === 'proposal') {
                                   navigate(createPageUrl('CriarProposta') + `?lead=${lead.id}`);
                                 } else if (btn.action === 'responses') {
@@ -526,9 +528,9 @@ export default function QuestionariosLeads() {
         </div>
         {totalPages > 1 && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-[#002443]/5">
-            <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>Anterior</Button>
-            <span className="text-xs text-[var(--pagsmile-blue)]/60">Página {page} de {totalPages}</span>
-            <Button variant="outline" size="sm" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>Próxima</Button>
+            <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage(p => p - 1)}>{t('common.previous')}</Button>
+            <span className="text-xs text-[var(--pagsmile-blue)]/60">{t('common.page_of', { page, total: totalPages })}</span>
+            <Button variant="outline" size="sm" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>{t('common.next')}</Button>
           </div>
         )}
       </div>
@@ -537,16 +539,16 @@ export default function QuestionariosLeads() {
       <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Excluir Questionário</AlertDialogTitle>
+            <AlertDialogTitle>{t('quest_leads.delete_title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta ação é irreversível. Todos os dados serão perdidos.
+              {t('quest_leads.delete_desc')}
               {deleteTarget && <><br /><strong>{deleteTarget.cpfCnpj}</strong> - {deleteTarget.protocolo}</>}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction onClick={() => deleteMutation.mutate(deleteTarget.id)} className="bg-red-500 hover:bg-red-600">
-              {deleteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Excluir'}
+              {deleteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : t('common.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

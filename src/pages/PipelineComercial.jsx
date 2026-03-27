@@ -21,16 +21,7 @@ import LeadKanbanCard from '../components/pipeline/LeadKanbanCard';
 import PipelineMetrics from '../components/pipeline/PipelineMetrics';
 import PipelineAgingAlerts from '../components/pipeline/PipelineAgingAlerts';
 import PipelineConversionChart from '../components/pipeline/PipelineConversionChart';
-
-const COLUNAS = [
-  { id: 'leads_completo', name: 'Leads (Quest. Completo)', color: '#6B7280', statuses: ['questionario_preenchido', 'analisado_priscila'], questionnaireType: 'FULL' },
-  { id: 'em_contato_simplificado', name: 'Em Contato + Quest. Simplificado', color: '#F59E0B', statuses: ['em_contato_comercial'], questionnaireType: 'ANY' },
-  { id: 'proposta_enviada', name: 'Proposta Enviada', color: '#3B82F6', statuses: ['proposta_enviada'] },
-  { id: 'proposta_aceita', name: 'Proposta Aceita', color: '#8B5CF6', statuses: ['proposta_aceita'] },
-  { id: 'compliance_kyc', name: 'Em Compliance / KYC', color: '#10B981', statuses: ['kyc_iniciado', 'kyc_aprovado', 'kyc_revisao_manual'] },
-  { id: 'contrato_gerado', name: '✅ Contrato Gerado', color: '#059669', statuses: ['ativado'] },
-  { id: 'perdido', name: 'Perdido', color: '#EF4444', statuses: ['perdido', 'proposta_recusada'] },
-];
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 const formatMoeda = (val) => {
   if (!val) return 'R$ 0';
@@ -38,10 +29,21 @@ const formatMoeda = (val) => {
 };
 
 export default function PipelineComercial() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [period, setPeriod] = useState('month');
+
+  const COLUNAS = [
+    { id: 'leads_completo', name: t('pipeline_page.col_leads_complete'), color: '#6B7280', statuses: ['questionario_preenchido', 'analisado_priscila'], questionnaireType: 'FULL' },
+    { id: 'em_contato_simplificado', name: t('pipeline_page.col_in_contact'), color: '#F59E0B', statuses: ['em_contato_comercial'], questionnaireType: 'ANY' },
+    { id: 'proposta_enviada', name: t('pipeline_page.col_proposal_sent'), color: '#3B82F6', statuses: ['proposta_enviada'] },
+    { id: 'proposta_aceita', name: t('pipeline_page.col_proposal_accepted'), color: '#8B5CF6', statuses: ['proposta_aceita'] },
+    { id: 'compliance_kyc', name: t('pipeline_page.col_compliance'), color: '#10B981', statuses: ['kyc_iniciado', 'kyc_aprovado', 'kyc_revisao_manual'] },
+    { id: 'contrato_gerado', name: t('pipeline_page.col_contract'), color: '#059669', statuses: ['ativado'] },
+    { id: 'perdido', name: t('pipeline_page.col_lost'), color: '#EF4444', statuses: ['perdido', 'proposta_recusada'] },
+  ];
 
   const { data: leads = [], isLoading } = useQuery({
     queryKey: ['pipeline-leads'],
@@ -109,7 +111,7 @@ export default function PipelineComercial() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pipeline-leads'] });
-      toast.success('Lead movido!');
+      toast.success(t('pipeline_page.lead_moved'));
     }
   });
 
@@ -118,7 +120,7 @@ export default function PipelineComercial() {
       await base44.entities.Lead.update(lead.id, { status: 'em_contato_comercial', lastInteractionDate: new Date().toISOString() });
       await base44.entities.LeadActivity.create({ leadId: lead.id, activityType: 'contato_iniciado', description: 'Contato iniciado via pipeline', performedBy: 'admin', activityDate: new Date().toISOString() });
       queryClient.invalidateQueries({ queryKey: ['pipeline-leads'] });
-      toast.success('Contato iniciado!');
+      toast.success(t('pipeline_page.contact_started'));
     }
   };
 
@@ -200,23 +202,23 @@ export default function PipelineComercial() {
               <BarChart3 className="w-6 h-6 text-[#5cf7cf]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Pipeline Comercial</h1>
+              <h1 className="text-2xl font-bold text-white">{t('pipeline_page.title')}</h1>
               <div className="flex gap-3 text-xs text-white/60 mt-1.5">
-                <span className="bg-white/10 px-2 py-0.5 rounded-md">{filteredLeads.length} leads</span>
+                <span className="bg-white/10 px-2 py-0.5 rounded-md">{t('pipeline_page.leads_count', { count: filteredLeads.length })}</span>
                 <span className="bg-white/10 px-2 py-0.5 rounded-md flex items-center gap-1"><DollarSign className="w-3 h-3" /> TPV: {formatMoeda(totalTPV)}</span>
-                <span className="bg-[#2bc196]/20 text-[#5cf7cf] px-2 py-0.5 rounded-md flex items-center gap-1 font-medium"><TrendingUp className="w-3 h-3" /> Receita: {formatMoeda(totalTPV * 0.025)}</span>
+                <span className="bg-[#2bc196]/20 text-[#5cf7cf] px-2 py-0.5 rounded-md flex items-center gap-1 font-medium"><TrendingUp className="w-3 h-3" /> {t('pipeline_page.revenue')}: {formatMoeda(totalTPV * 0.025)}</span>
               </div>
             </div>
           </div>
           <Select value={period} onValueChange={setPeriod}>
             <SelectTrigger className="w-[160px] h-9 border-white/20 text-white bg-white/10 rounded-lg"><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="week">Esta Semana</SelectItem>
-              <SelectItem value="month">Este Mês</SelectItem>
-              <SelectItem value="3months">3 Meses</SelectItem>
-              <SelectItem value="6months">6 Meses</SelectItem>
-              <SelectItem value="12months">12 Meses</SelectItem>
-              <SelectItem value="all">Lifetime</SelectItem>
+              <SelectItem value="week">{t('pipeline_page.this_week')}</SelectItem>
+              <SelectItem value="month">{t('pipeline_page.this_month')}</SelectItem>
+              <SelectItem value="3months">{t('pipeline_page.three_months')}</SelectItem>
+              <SelectItem value="6months">{t('pipeline_page.six_months')}</SelectItem>
+              <SelectItem value="12months">{t('pipeline_page.twelve_months')}</SelectItem>
+              <SelectItem value="all">{t('pipeline_page.lifetime')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -234,7 +236,7 @@ export default function PipelineComercial() {
       {/* Search */}
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/40" />
-        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar por CNPJ, Nome ou Razão Social..." className="pl-10 h-9" />
+        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('pipeline_page.search_placeholder')} className="pl-10 h-9" />
         {search && (
           <Button variant="ghost" size="sm" onClick={() => setSearch('')} className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0">
             <X className="w-3 h-3" />
@@ -261,19 +263,19 @@ export default function PipelineComercial() {
                 </div>
                 <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-[10px] bg-[#f4f4f4] rounded-xl p-2 border border-[#002443]/5">
                     <div>
-                      <span className="text-[var(--pagsmile-blue)]/40">TPV/mês</span>
+                      <span className="text-[var(--pagsmile-blue)]/40">{t('pipeline_page.tpv_month')}</span>
                       <p className="font-bold text-[var(--pagsmile-blue)]">{formatMoeda(colTPVMensal)}</p>
                     </div>
                     <div>
-                      <span className="text-[var(--pagsmile-blue)]/40">TPV/ano</span>
+                      <span className="text-[var(--pagsmile-blue)]/40">{t('pipeline_page.tpv_year')}</span>
                       <p className="font-bold text-[var(--pagsmile-blue)]">{formatMoeda(colTPVAnual)}</p>
                     </div>
                     <div>
-                      <span className="text-[var(--pagsmile-blue)]/40">Receita/mês</span>
+                      <span className="text-[var(--pagsmile-blue)]/40">{t('pipeline_page.revenue_month')}</span>
                       <p className="font-bold text-[var(--pagsmile-green)]">{formatMoeda(colReceitaMensal)}</p>
                     </div>
                     <div>
-                      <span className="text-[var(--pagsmile-blue)]/40">Receita/ano</span>
+                      <span className="text-[var(--pagsmile-blue)]/40">{t('pipeline_page.revenue_year')}</span>
                       <p className="font-bold text-[var(--pagsmile-green)]">{formatMoeda(colReceitaAnual)}</p>
                     </div>
                   </div>
@@ -306,7 +308,7 @@ export default function PipelineComercial() {
                       ))}
                       {provided.placeholder}
                       {col.leads.length === 0 && (
-                        <p className="text-xs text-center text-[var(--pagsmile-blue)]/40 py-4">Nenhum lead</p>
+                        <p className="text-xs text-center text-[var(--pagsmile-blue)]/40 py-4">{t('pipeline_page.no_leads')}</p>
                       )}
                     </div>
                   )}
