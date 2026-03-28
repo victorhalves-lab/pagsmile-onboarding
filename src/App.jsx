@@ -28,6 +28,7 @@ import CriarPropostaPix from './pages/CriarPropostaPix';
 import PropostaPixDetalhes from './pages/PropostaPixDetalhes';
 import PropostaPixPublica from './pages/PropostaPixPublica';
 import GestaoLandingPages from './pages/GestaoLandingPages';
+import DadosInsights from './pages/DadosInsights';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -167,6 +168,7 @@ const AuthenticatedApp = () => {
       <Route path="/CriarPropostaPix" element={<LayoutWrapper currentPageName="CriarPropostaPix"><CriarPropostaPix /></LayoutWrapper>} />
       <Route path="/PropostaPixDetalhes" element={<LayoutWrapper currentPageName="PropostaPixDetalhes"><PropostaPixDetalhes /></LayoutWrapper>} />
       <Route path="/GestaoLandingPages" element={<LayoutWrapper currentPageName="GestaoLandingPages"><GestaoLandingPages /></LayoutWrapper>} />
+      <Route path="/DadosInsights" element={<LayoutWrapper currentPageName="DadosInsights"><DadosInsights /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

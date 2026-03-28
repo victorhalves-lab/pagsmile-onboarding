@@ -28,7 +28,8 @@ import {
   Home as HomeIcon,
   Wrench,
   BookOpen,
-  Handshake
+  Handshake,
+  BarChart3
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -107,6 +108,7 @@ export default function Layout({ children, currentPageName }) {
         { label: t('menu.landing_pages'), path: 'GestaoLandingPages', icon: LinkIcon },
         { label: t('menu.meeting_questionnaire'), path: 'QuestionarioReuniao', icon: ClipboardList },
         { label: t('menu.robot_questionnaire'), path: 'ProcessMeetingNotes', icon: Brain },
+        { label: 'Dados & Insights', path: 'DadosInsights', icon: BarChart3 },
       ]
     },
     {
