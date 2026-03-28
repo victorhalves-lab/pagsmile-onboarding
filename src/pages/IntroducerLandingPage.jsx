@@ -132,7 +132,7 @@ export default function IntroducerLandingPage() {
 
         {/* Footer */}
         <footer className="text-center py-6">
-          <img src={PAGSMILE_LOGO} alt="Pagsmile" className="h-5 mx-auto mb-3 invert opacity-25" />
+          <img src="https://media.base44.com/images/public/6983b65f017b96d5f695f9bb/85ecf04f8_Logo-modo-claro.png" alt="Pagsmile" className="h-6 mx-auto mb-3 opacity-30" />
           <p className="text-xs text-[#002443]/30">© {new Date().getFullYear()} Pagsmile. Taxas sujeitas à aprovação de Compliance.</p>
         </footer>
       </div>
