@@ -33,7 +33,7 @@ export default function PipelineComercial() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
-  const [period, setPeriod] = useState('month');
+  const [period, setPeriod] = useState('all');
 
   const COLUNAS = [
     { id: 'leads_completo', name: t('pipeline_page.col_leads_complete'), color: '#6B7280', statuses: ['questionario_preenchido', 'analisado_priscila'], questionnaireType: 'FULL' },
@@ -41,7 +41,7 @@ export default function PipelineComercial() {
     { id: 'proposta_enviada', name: t('pipeline_page.col_proposal_sent'), color: '#3B82F6', statuses: ['proposta_enviada'] },
     { id: 'proposta_aceita', name: t('pipeline_page.col_proposal_accepted'), color: '#8B5CF6', statuses: ['proposta_aceita'] },
     { id: 'compliance_kyc', name: t('pipeline_page.col_compliance'), color: '#10B981', statuses: ['kyc_iniciado', 'kyc_aprovado', 'kyc_revisao_manual'] },
-    { id: 'contrato_gerado', name: t('pipeline_page.col_contract'), color: '#059669', statuses: ['ativado'] },
+    { id: 'contrato_gerado', name: t('pipeline_page.col_contract'), color: '#059669', statuses: ['ativado'], specialRule: 'HAS_CONTRACT' },
     { id: 'perdido', name: t('pipeline_page.col_lost'), color: '#EF4444', statuses: ['perdido', 'proposta_recusada'] },
   ];
 
@@ -65,14 +65,71 @@ export default function PipelineComercial() {
     queryFn: () => base44.entities.OnboardingLink.list('-created_date', 500)
   });
 
+  const { data: merchants = [] } = useQuery({
+    queryKey: ['pipeline-merchants'],
+    queryFn: () => base44.entities.Merchant.list('-created_date', 500)
+  });
+
   // Build enrichment maps: leadId -> has contract, leadId -> has proposal
+  // Contracts may not have leadId — match by CNPJ, client name, or merchant as fallback
   const leadContractMap = useMemo(() => {
     const map = {};
+    const normalizeCnpj = (v) => (v || '').replace(/[.\-\/\s]/g, '');
+    const normalizeName = (v) => (v || '').toLowerCase().trim();
+
+    // Build merchant CNPJ lookup
+    const merchantCnpjMap = {};
+    merchants.forEach(m => {
+      const cnpj = normalizeCnpj(m.cpfCnpj);
+      if (cnpj) merchantCnpjMap[m.id] = cnpj;
+    });
+
+    // First pass: direct leadId linkage
     contracts.forEach(c => {
       if (c.leadId) map[c.leadId] = c;
     });
+
+    // Second pass: match by CNPJ, clientName, or merchant CNPJ
+    const unleadedContracts = contracts.filter(c => !c.leadId);
+    if (unleadedContracts.length > 0) {
+      const cnpjToContract = {};
+      const nameToContract = {};
+      unleadedContracts.forEach(c => {
+        // By CNPJ
+        const cnpj = normalizeCnpj(c.clientCnpj);
+        if (cnpj && cnpj.length >= 11) cnpjToContract[cnpj] = c;
+        // By merchant CNPJ
+        if (c.merchantId && merchantCnpjMap[c.merchantId]) {
+          cnpjToContract[merchantCnpjMap[c.merchantId]] = c;
+        }
+        // By client name (fallback)
+        const name = normalizeName(c.clientName);
+        if (name && name.length > 3) nameToContract[name] = c;
+      });
+
+      leads.forEach(l => {
+        if (map[l.id]) return;
+        // Match by CNPJ
+        const cnpj = normalizeCnpj(l.cpfCnpj);
+        if (cnpj && cnpjToContract[cnpj]) {
+          map[l.id] = cnpjToContract[cnpj];
+          return;
+        }
+        // Match by fullName (razão social)
+        const name = normalizeName(l.fullName);
+        if (name && nameToContract[name]) {
+          map[l.id] = nameToContract[name];
+          return;
+        }
+        // Match by companyName
+        const company = normalizeName(l.companyName);
+        if (company && nameToContract[company]) {
+          map[l.id] = nameToContract[company];
+        }
+      });
+    }
     return map;
-  }, [contracts]);
+  }, [contracts, leads, merchants]);
 
   const leadProposalMap = useMemo(() => {
     const map = {};
@@ -156,14 +213,33 @@ export default function PipelineComercial() {
     }));
   }, [filteredLeads, leadContractMap, leadProposalMap]);
 
-  // Group leads by column (considering questionnaire type)
+  // Set of lead IDs that have contracts (for special column logic)
+  const leadsWithContract = useMemo(() => new Set(Object.keys(leadContractMap)), [leadContractMap]);
+
+  // Group leads by column (considering questionnaire type and contract presence)
   const columns = useMemo(() => {
+    // Pre-compute which leads belong in "Contrato Gerado" (priority column)
+    const contractLeadIds = new Set();
+    enrichedLeads.forEach(l => {
+      if (leadsWithContract.has(l.id) || l.status === 'ativado') {
+        contractLeadIds.add(l.id);
+      }
+    });
+
     return COLUNAS.map(col => ({
       ...col,
       leads: enrichedLeads.filter(l => {
+        // "Contrato Gerado" special rule: lead has a contract OR status is 'ativado'
+        if (col.specialRule === 'HAS_CONTRACT') {
+          return contractLeadIds.has(l.id);
+        }
+
+        // All other columns: skip leads that belong in contract column
+        if (contractLeadIds.has(l.id)) return false;
+
         if (!col.statuses.includes(l.status)) return false;
 
-        // For "Leads (Quest. Completo)" — only leads from LEAD_QUESTIONNAIRE (or no link = direct)
+        // For "Leads (Quest. Completo)" — only from LEAD_QUESTIONNAIRE (or no link = direct)
         if (col.questionnaireType === 'FULL') {
           const lt = l.onboardingLinkCode ? linkTypeMap[l.onboardingLinkCode] : 'LEAD_QUESTIONNAIRE';
           return lt !== 'LEAD_SIMPLIFICADO';
@@ -172,7 +248,7 @@ export default function PipelineComercial() {
         return true;
       })
     }));
-  }, [enrichedLeads, linkTypeMap]);
+  }, [enrichedLeads, linkTypeMap, leadsWithContract]);
 
   const onDragEnd = (result) => {
     if (!result.destination) return;
@@ -229,7 +305,7 @@ export default function PipelineComercial() {
 
       {/* Conversion chart + Aging alerts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <PipelineConversionChart leads={filteredLeads} />
+        <PipelineConversionChart leads={filteredLeads} contracts={contracts} merchants={merchants} />
         <PipelineAgingAlerts leads={filteredLeads} />
       </div>
 

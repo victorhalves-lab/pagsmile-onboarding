@@ -4,7 +4,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 
 import { TrendingUp } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
-export default function PipelineConversionChart({ leads }) {
+export default function PipelineConversionChart({ leads, contracts = [], merchants = [] }) {
   const { t } = useTranslation();
 
   const STAGES = [
@@ -13,17 +13,46 @@ export default function PipelineConversionChart({ leads }) {
     { key: 'proposta', label: t('pipe_chart.prop_sent'), statuses: ['proposta_enviada'], color: '#3B82F6' },
     { key: 'aceita', label: t('pipe_chart.prop_accepted'), statuses: ['proposta_aceita'], color: '#8B5CF6' },
     { key: 'compliance', label: t('pipe_chart.compliance'), statuses: ['kyc_iniciado', 'kyc_aprovado', 'kyc_revisao_manual'], color: '#10B981' },
-    { key: 'fechado', label: t('pipe_chart.closed'), statuses: ['ativado'], color: '#059669' },
+    { key: 'fechado', label: t('pipe_chart.closed'), statuses: [], color: '#059669', specialRule: 'HAS_CONTRACT' },
   ];
 
   const data = useMemo(() => {
-    return STAGES.map(stage => ({
-      name: stage.label,
-      count: leads.filter(l => stage.statuses.includes(l.status)).length,
-      tpv: leads.filter(l => stage.statuses.includes(l.status)).reduce((s, l) => s + (l.tpvMensal || 0), 0),
-      color: stage.color,
-    }));
-  }, [leads, t]);
+    // Build contract match set (same logic as pipeline page)
+    const normalizeCnpj = (v) => (v || '').replace(/[.\-\/\s]/g, '');
+    const normalizeName = (v) => (v || '').toLowerCase().trim();
+    const merchantCnpjMap = {};
+    merchants.forEach(m => { const c = normalizeCnpj(m.cpfCnpj); if (c) merchantCnpjMap[m.id] = c; });
+
+    const contractCnpjs = new Set();
+    const contractNames = new Set();
+    contracts.forEach(c => {
+      const cnpj = normalizeCnpj(c.clientCnpj);
+      if (cnpj && cnpj.length >= 11) contractCnpjs.add(cnpj);
+      if (c.merchantId && merchantCnpjMap[c.merchantId]) contractCnpjs.add(merchantCnpjMap[c.merchantId]);
+      const name = normalizeName(c.clientName);
+      if (name && name.length > 3) contractNames.add(name);
+    });
+    const contractLeadIds = new Set(contracts.map(c => c.leadId).filter(Boolean));
+
+    const hasContract = (l) =>
+      l.status === 'ativado' ||
+      contractLeadIds.has(l.id) ||
+      contractCnpjs.has(normalizeCnpj(l.cpfCnpj)) ||
+      contractNames.has(normalizeName(l.fullName)) ||
+      contractNames.has(normalizeName(l.companyName));
+
+    return STAGES.map(stage => {
+      const matching = stage.specialRule === 'HAS_CONTRACT'
+        ? leads.filter(hasContract)
+        : leads.filter(l => stage.statuses.includes(l.status));
+      return {
+        name: stage.label,
+        count: matching.length,
+        tpv: matching.reduce((s, l) => s + (l.tpvMensal || 0), 0),
+        color: stage.color,
+      };
+    });
+  }, [leads, contracts, merchants, t]);
 
   const CustomTooltip = ({ active, payload }) => {
     if (!active || !payload?.length) return null;

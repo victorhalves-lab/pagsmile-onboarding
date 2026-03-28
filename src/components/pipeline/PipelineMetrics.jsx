@@ -16,14 +16,25 @@ export default function PipelineMetrics({ leads, contracts = [], proposals = [] 
     const total = leads.length;
     const byStatus = {};
     leads.forEach(l => { byStatus[l.status] = (byStatus[l.status] || 0) + 1; });
-    const contratosGerados = byStatus['ativado'] || 0;
+
+    // Count leads with contracts (by CNPJ match or direct leadId)
+    const normalizeCnpj = (v) => (v || '').replace(/[.\-\/\s]/g, '');
+    const contractCnpjs = new Set(contracts.map(c => normalizeCnpj(c.clientCnpj)).filter(c => c.length >= 11));
+    const contractLeadIds = new Set(contracts.map(c => c.leadId).filter(Boolean));
+
+    const leadsWithContract = leads.filter(l =>
+      l.status === 'ativado' ||
+      contractLeadIds.has(l.id) ||
+      contractCnpjs.has(normalizeCnpj(l.cpfCnpj))
+    );
+    const contratosGerados = leadsWithContract.length;
     const perdidos = (byStatus['perdido'] || 0) + (byStatus['proposta_recusada'] || 0);
     const conversionRate = total > 0 ? ((contratosGerados / total) * 100).toFixed(1) : 0;
     const totalTPV = leads.reduce((s, l) => s + (l.tpvMensal || 0), 0);
-    const tpvFechados = leads.filter(l => l.status === 'ativado').reduce((s, l) => s + (l.tpvMensal || 0), 0);
+    const tpvFechados = leadsWithContract.reduce((s, l) => s + (l.tpvMensal || 0), 0);
     const receitaFechados = tpvFechados * 0.025;
     return { total, contratosGerados, perdidos, conversionRate, totalTPV, receitaFechados };
-  }, [leads]);
+  }, [leads, contracts]);
 
   const kpis = [
     { label: t('pipe_metrics.leads_in_funnel'), value: metrics.total, icon: Users, iconColor: 'text-blue-500', valueColor: 'text-[var(--pagsmile-blue)]' },
