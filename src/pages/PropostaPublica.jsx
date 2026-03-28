@@ -20,8 +20,10 @@ import ExportButtons from '@/components/proposals/ExportButtons';
 import AceiteModal from '@/components/proposals/AceiteModal';
 import ContrapropostaModal from '@/components/proposals/ContrapropostaModal';
 import RecusaModal from '@/components/proposals/RecusaModal';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function PropostaPublica() {
+  const { t } = useTranslation();
   const urlParams = new URLSearchParams(window.location.search);
   const token = urlParams.get('token');
   const queryClient = useQueryClient();
@@ -163,7 +165,7 @@ export default function PropostaPublica() {
       return complianceUrl;
     },
     onSuccess: (complianceUrl) => {
-      toast.success('Proposta aceita com sucesso!');
+      toast.success(t('pp.proposal_accepted_success'));
       queryClient.invalidateQueries({ queryKey: ['proposta_publica', token] });
       setShowAceiteModal(false);
       
@@ -209,7 +211,7 @@ export default function PropostaPublica() {
       }
     },
     onSuccess: () => {
-      toast.success('Contraproposta enviada!');
+      toast.success(t('pp.counter_sent_success'));
       queryClient.invalidateQueries({ queryKey: ['proposta_publica', token] });
       setShowContrapropostaModal(false);
     }
@@ -250,7 +252,7 @@ export default function PropostaPublica() {
       }
     },
     onSuccess: () => {
-      toast.success('Proposta recusada');
+      toast.success(t('pp.proposal_rejected'));
       queryClient.invalidateQueries({ queryKey: ['proposta_publica', token] });
       setShowRecusaModal(false);
     }
@@ -272,8 +274,8 @@ export default function PropostaPublica() {
     return (
       <div className="max-w-lg mx-auto py-20 text-center">
         <AlertTriangle className="w-16 h-16 mx-auto text-amber-500 mb-4" />
-        <h1 className="text-2xl font-bold text-[#002443] mb-2">Proposta não encontrada</h1>
-        <p className="text-[#002443]/60">O link pode ter expirado ou ser inválido.</p>
+        <h1 className="text-2xl font-bold text-[#002443] mb-2">{t('pp.not_found_title')}</h1>
+        <p className="text-[#002443]/60">{t('pp.not_found_desc')}</p>
       </div>
     );
   }
@@ -284,11 +286,11 @@ export default function PropostaPublica() {
     return (
       <div className="max-w-lg mx-auto py-20 text-center">
         <Clock className="w-16 h-16 mx-auto text-slate-400 mb-4" />
-        <h1 className="text-2xl font-bold text-[#002443] mb-2">Proposta Expirada</h1>
+        <h1 className="text-2xl font-bold text-[#002443] mb-2">{t('pp.expired_title')}</h1>
         <p className="text-[#002443]/60">
-          Esta proposta expirou em {moment(proposta.validUntil).format('DD/MM/YYYY')}.
+          {t('pp.expired_desc', { date: moment(proposta.validUntil).format('DD/MM/YYYY') })}
         </p>
-        <p className="text-[#002443]/40 mt-2 text-sm">Entre em contato para uma nova proposta.</p>
+        <p className="text-[#002443]/40 mt-2 text-sm">{t('pp.expired_contact')}</p>
       </div>
     );
   }
@@ -333,11 +335,11 @@ export default function PropostaPublica() {
           <div className="flex items-center justify-center gap-3 mb-2">
             {proposta.status === 'aceita' ? <CheckCircle2 className="w-8 h-8 text-green-500" /> : <XCircle className="w-8 h-8 text-red-500" />}
             <h2 className={`text-xl font-bold ${proposta.status === 'aceita' ? 'text-green-800' : 'text-red-800'}`}>
-              Proposta {proposta.status === 'aceita' ? 'Aceita' : 'Recusada'}
+              {proposta.status === 'aceita' ? t('pp.accepted_title') : t('pp.rejected_title')}
             </h2>
           </div>
           <p className={`text-sm ${proposta.status === 'aceita' ? 'text-green-600' : 'text-red-600'}`}>
-            {proposta.status === 'aceita' ? 'Obrigado! Veja abaixo as condições comerciais acordadas.' : 'Esta proposta foi recusada. Veja abaixo as condições que foram apresentadas.'}
+            {proposta.status === 'aceita' ? t('pp.accepted_msg') : t('pp.rejected_msg')}
           </p>
           {proposta.status === 'aceita' && complianceUrl && (
             <Button
@@ -345,7 +347,7 @@ export default function PropostaPublica() {
               className="mt-4 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-8 h-12 rounded-2xl font-bold"
             >
               <Shield className="w-4 h-4 mr-2" />
-              Iniciar Questionário de Compliance
+              {t('pp.start_compliance')}
             </Button>
           )}
         </div>
@@ -365,16 +367,16 @@ export default function PropostaPublica() {
             className="h-12 mx-auto mb-6"
           />
           <Badge className="bg-[#2bc196]/20 text-[#5cf7cf] hover:bg-[#2bc196]/30 border-none mb-4 px-4 py-1.5 text-sm">
-            Proposta Exclusiva
+            {t('pp.exclusive_proposal')}
           </Badge>
           <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-3">
-            Condições Comerciais
+            {t('pp.commercial_conditions')}
           </h1>
           <p className="text-white/80 text-base md:text-lg max-w-lg mx-auto">
-            Preparadas especialmente para <span className="font-bold text-white">{proposta.clienteNome}</span>
+            {t('pp.prepared_for')} <span className="font-bold text-white">{proposta.clienteNome}</span>
           </p>
           <p className="text-white/40 text-xs mt-8">
-            Emitida em {proposta.created_date ? moment(proposta.created_date).format('DD/MM/YYYY') : '-'}
+            {t('pp.issued_on')} {proposta.created_date ? moment(proposta.created_date).format('DD/MM/YYYY') : '-'}
           </p>
         </div>
       </div>
@@ -382,8 +384,8 @@ export default function PropostaPublica() {
       {/* Title + Export */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[#002443]">PROPOSTA COMERCIAL</h1>
-          <p className="text-[#002443]/60 text-sm">Taxas de Pagamentos Online</p>
+          <h1 className="text-2xl font-bold text-[#002443]">{t('pp.commercial_proposal')}</h1>
+          <p className="text-[#002443]/60 text-sm">{t('pp.online_payment_rates')}</p>
         </div>
         <ExportButtons contentRef={propostaContentRef} />
       </div>
@@ -394,7 +396,7 @@ export default function PropostaPublica() {
           <CardContent className="py-4">
             <div className="flex items-center gap-2 mb-2">
               <Shield className="w-4 h-4 text-[#2bc196]" />
-              <h3 className="font-bold text-sm text-[#002443]">Dados do Cliente</h3>
+              <h3 className="font-bold text-sm text-[#002443]">{t('pp.client_data')}</h3>
             </div>
             <p className="font-bold text-lg text-[#002443]">{proposta.clienteNome}</p>
             <p className="text-sm text-[#002443]/60">CNPJ: {formatCNPJ(proposta.clienteCnpj)}</p>
@@ -413,14 +415,14 @@ export default function PropostaPublica() {
           <CardContent className="py-4">
              <div className="flex items-center gap-2 mb-2">
               <Clock className="w-4 h-4 text-slate-500" />
-              <h3 className="font-bold text-sm text-[#002443]">Validade da Proposta</h3>
+              <h3 className="font-bold text-sm text-[#002443]">{t('pp.proposal_validity')}</h3>
             </div>
             <p className="font-bold text-lg text-[#002443]">
               {proposta.validUntil ? moment(proposta.validUntil).format('DD/MM/YYYY') : '-'}
             </p>
             <p className="text-sm text-[#002443]/60 mt-2 flex items-center gap-1.5">
               <Info className="w-3.5 h-3.5" />
-              Esta proposta está sujeita à aprovação do time de compliance.
+              {t('pp.compliance_subject')}
             </p>
           </CardContent>
         </Card>
@@ -432,31 +434,31 @@ export default function PropostaPublica() {
           <CardContent className="py-4">
             <div className="flex items-center gap-2 mb-4">
               <Shield className="w-5 h-5 text-slate-500" />
-              <h2 className="font-bold text-base text-[#002443]">TPV Mínimo Garantido</h2>
+              <h2 className="font-bold text-base text-[#002443]">{t('pp.min_tpv')}</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="bg-white p-3 rounded-lg border border-slate-200 text-center">
-                <p className="text-xs text-[#002443]/50 uppercase font-semibold mb-1">Mês 1</p>
+                <p className="text-xs text-[#002443]/50 uppercase font-semibold mb-1">{t('pp.month1')}</p>
                 <p className="font-bold text-[#002443]">
                   R$ {(parseFloat(rates.minimoGarantido.mes1) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2})}
                 </p>
               </div>
               <div className="bg-white p-3 rounded-lg border border-slate-200 text-center">
-                <p className="text-xs text-[#002443]/50 uppercase font-semibold mb-1">Mês 2</p>
+                <p className="text-xs text-[#002443]/50 uppercase font-semibold mb-1">{t('pp.month2')}</p>
                 <p className="font-bold text-[#002443]">
                   R$ {(parseFloat(rates.minimoGarantido.mes2) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2})}
                 </p>
               </div>
               <div className="bg-white p-3 rounded-lg border border-[#2bc196]/40 text-center shadow-sm relative overflow-hidden">
                 <div className="absolute inset-0 bg-[#2bc196]/5 pointer-events-none" />
-                <p className="text-xs text-[#2bc196] uppercase font-semibold mb-1">Mês 3 em diante</p>
+                <p className="text-xs text-[#2bc196] uppercase font-semibold mb-1">{t('pp.month3_plus')}</p>
                 <p className="font-bold text-[#2bc196]">
                   R$ {(parseFloat(rates.minimoGarantido.mes3) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2})}
                 </p>
               </div>
             </div>
             <p className="text-xs text-[#002443]/50 mt-3 text-center">
-              * O valor de "Mês 3 em diante" é a meta mensal a ser mantida a partir do terceiro mês de operação.
+              {t('pp.min_tpv_note')}
             </p>
           </CardContent>
         </Card>
@@ -467,7 +469,7 @@ export default function PropostaPublica() {
         <CardContent className="py-4">
           <h2 className="font-bold text-base text-[#002443] mb-4 flex items-center gap-2">
             <CreditCard className="w-5 h-5 text-[#2bc196]" />
-            Taxas de Cartão de Crédito
+            {t('pp.credit_card_rates')}
           </h2>
           <TaxasPorBandeiraPublic taxas={rates} />
         </CardContent>
@@ -495,7 +497,7 @@ export default function PropostaPublica() {
         </Card>
         <Card>
           <CardContent className="py-4 text-center flex flex-col justify-center h-full">
-            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">FEE POR TRANSAÇÃO</p>
+            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">{t('pp.transaction_fee')}</p>
             <p className="text-lg font-bold text-[#002443]">
               R$ {(parseFloat(rates.feeTransacao) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
             </p>
@@ -519,7 +521,7 @@ export default function PropostaPublica() {
         </Card>
         <Card>
           <CardContent className="py-4 text-center flex flex-col justify-center h-full">
-            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">ALERTA PRÉ-CHARGEBACK</p>
+            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">{t('pp.pre_chargeback')}</p>
             <p className="text-lg font-bold text-[#002443]">
               R$ {(parseFloat(rates.alertaPreChargeback) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
             </p>
@@ -541,17 +543,17 @@ export default function PropostaPublica() {
       <div className="grid grid-cols-2 gap-4 mb-6">
         <Card>
           <CardContent className="py-4 text-center flex flex-col justify-center h-full">
-            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">PRAZO DE RECEBIMENTO</p>
+            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">{t('pp.receiving_term')}</p>
             <p className="text-lg font-bold text-[#002443]">{prazo}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="py-4 text-center flex flex-col justify-center h-full">
-            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">TAXA DE ANTECIPAÇÃO</p>
+            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">{t('pp.anticipation_rate')}</p>
             <p className="text-lg font-bold text-amber-600">{taxaRAV}% a.m.</p>
             {parseFloat(rates.percentualAntecipacao) > 0 && (
               <p className="text-xs text-[#002443]/60 mt-1.5">
-                Percentual antecipável: <span className="font-bold text-[#002443]">{parseFloat(rates.percentualAntecipacao)}%</span>
+                {t('pp.anticipation_pct')}: <span className="font-bold text-[#002443]">{parseFloat(rates.percentualAntecipacao)}%</span>
               </p>
             )}
           </CardContent>
@@ -562,7 +564,7 @@ export default function PropostaPublica() {
       <Card className="mb-8">
         <CardContent className="py-4">
           <h2 className="font-bold text-base text-[#002443] mb-4">
-            Tabela de Parcelas por Bandeira
+            {t('pp.installment_table')}
           </h2>
           <ParcelasTableDetalhada taxas={rates} taxaRAV={taxaRAV} prazo={prazo} showSimulator={true} />
         </CardContent>
@@ -576,7 +578,7 @@ export default function PropostaPublica() {
             className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-10 h-14 rounded-2xl text-lg font-bold w-full md:w-auto shadow-lg shadow-[#2bc196]/20 transition-transform hover:scale-105"
           >
             <Shield className="w-5 h-5 mr-2" />
-            Aceitar Proposta
+            {t('pp.accept_proposal')}
           </Button>
           
           <div className="flex w-full md:w-auto gap-3">
@@ -586,7 +588,7 @@ export default function PropostaPublica() {
               className="flex-1 md:flex-none border-[#002443]/20 text-[#002443] hover:bg-[#002443]/5 h-14 rounded-2xl font-semibold"
             >
               <MessageSquare className="w-4 h-4 mr-2" />
-              Negociar
+              {t('pp.negotiate')}
             </Button>
             <Button
               onClick={() => setShowRecusaModal(true)}
@@ -594,7 +596,7 @@ export default function PropostaPublica() {
               className="flex-1 md:flex-none border-red-200 text-red-600 hover:bg-red-50 h-14 rounded-2xl font-semibold"
             >
               <XCircle className="w-4 h-4 mr-2" />
-              Recusar
+              {t('pp.reject')}
             </Button>
           </div>
         </div>
@@ -604,15 +606,15 @@ export default function PropostaPublica() {
       {proposta.status === 'contraproposta' && (
         <div className="text-center py-8">
           <MessageSquare className="w-12 h-12 mx-auto text-blue-500 mb-3" />
-          <h2 className="text-xl font-bold text-[#002443] mb-1">Contraproposta Enviada</h2>
-          <p className="text-[#002443]/60">Aguardando análise do time comercial.</p>
+          <h2 className="text-xl font-bold text-[#002443] mb-1">{t('pp.counter_sent_title')}</h2>
+          <p className="text-[#002443]/60">{t('pp.counter_sent_desc')}</p>
         </div>
       )}
 
       {/* Footer */}
       <div className="text-center text-xs text-[#002443]/30 py-4 border-t border-slate-200">
         <p>&copy; {new Date().getFullYear()} Pagsmile. Proposta {proposta.codigo}</p>
-        <p>Emitida em {proposta.created_date ? moment(proposta.created_date).format('DD/MM/YYYY [às] HH:mm') : '-'}</p>
+        <p>{t('pp.issued_on')} {proposta.created_date ? moment(proposta.created_date).format('DD/MM/YYYY HH:mm') : '-'}</p>
       </div>
 
       {/* Modals */}

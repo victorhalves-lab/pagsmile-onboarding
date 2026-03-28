@@ -15,6 +15,7 @@ import PropostaRevisaoHeader from '@/components/proposals/PropostaRevisaoHeader'
 import PropostaRevisaoResumo from '@/components/proposals/PropostaRevisaoResumo';
 import PropostaRevisaoLink from '@/components/proposals/PropostaRevisaoLink';
 import RentabilidadeDrawer from '@/components/proposals/RentabilidadeDrawer';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 const STATUS_CONFIG = {
   rascunho: { label: 'Rascunho', color: 'bg-slate-100 text-slate-700' },
@@ -28,6 +29,7 @@ const STATUS_CONFIG = {
 };
 
 export default function PropostaDetalhes() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const urlParams = new URLSearchParams(window.location.search);
   const proposalId = urlParams.get('id');
@@ -57,7 +59,7 @@ export default function PropostaDetalhes() {
     }
     queryClient.invalidateQueries({ queryKey: ['proposta-detalhes', proposalId] });
     queryClient.invalidateQueries({ queryKey: ['propostas'] });
-    toast.success('Proposta marcada como aceita!');
+    toast.success(t('pd.accepted_success'));
     setIsUpdatingStatus(false);
   };
 
@@ -120,9 +122,9 @@ export default function PropostaDetalhes() {
     return (
       <div className="text-center py-20">
         <FileText className="w-12 h-12 mx-auto text-[#002443]/20 mb-4" />
-        <p className="text-[#002443]/60">Proposta não encontrada</p>
+        <p className="text-[#002443]/60">{t('pd.not_found')}</p>
         <Button variant="link" onClick={() => navigate(createPageUrl('GestaoPropostas'))} className="mt-2">
-          Voltar para Gestão de Propostas
+          {t('pd.back_proposals')}
         </Button>
       </div>
     );
@@ -151,7 +153,7 @@ export default function PropostaDetalhes() {
       {/* Botão Rentabilidade */}
       <div className="flex justify-end">
         <Button onClick={() => setShowRentabilidade(true)} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white gap-2 rounded-xl shadow-md">
-          <DollarSign className="w-4 h-4" /> Simular Rentabilidade
+          <DollarSign className="w-4 h-4" /> {t('pd.simulate_profitability')}
         </Button>
       </div>
 
@@ -168,7 +170,7 @@ export default function PropostaDetalhes() {
             <div className="w-8 h-8 rounded-xl bg-[#2bc196]/10 flex items-center justify-center">
               <GitBranch className="w-4 h-4 text-[#2bc196]" />
             </div>
-            <h2 className="text-base font-bold text-[#002443]">Histórico de Versões</h2>
+            <h2 className="text-base font-bold text-[#002443]">{t('pd.version_history')}</h2>
           </div>
           <div className="space-y-2">
             {versionHistory.map(v => {
@@ -188,7 +190,7 @@ export default function PropostaDetalhes() {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-[#002443]">
                       <span className="font-mono text-[#2bc196] mr-2">{v.codigo}</span>
-                      {isCurrent && <span className="text-[10px] bg-[#2bc196]/20 text-[#2bc196] px-1.5 py-0.5 rounded font-bold ml-1">ATUAL</span>}
+                      {isCurrent && <span className="text-[10px] bg-[#2bc196]/20 text-[#2bc196] px-1.5 py-0.5 rounded font-bold ml-1">{t('pd.current')}</span>}
                     </p>
                     <p className="text-xs text-[#002443]/50 flex items-center gap-1">
                       <Clock className="w-3 h-3" />
@@ -211,7 +213,7 @@ export default function PropostaDetalhes() {
       {/* Footer */}
       <div className="flex justify-center pb-8">
         <Button variant="outline" onClick={() => navigate(createPageUrl('GestaoPropostas'))} className="gap-2">
-          <ArrowLeft className="w-4 h-4" /> Voltar para Gestão de Propostas
+          <ArrowLeft className="w-4 h-4" /> {t('pd.back_proposals')}
         </Button>
       </div>
 

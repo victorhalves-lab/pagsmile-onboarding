@@ -19,8 +19,10 @@ import CaseReviewTab from '../components/case-analysis/CaseReviewTab';
 import CaseReviewDialogs from '../components/case-analysis/CaseReviewDialogs';
 import CaseSubsellersTab from '../components/case-analysis/CaseSubsellersTab';
 import CnpjEnrichmentSummaryCard from '../components/case-analysis/CnpjEnrichmentSummaryCard';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function AnaliseDeCasos() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const urlParams = new URLSearchParams(window.location.search);
@@ -109,14 +111,14 @@ export default function AnaliseDeCasos() {
       queryClient.invalidateQueries({ queryKey: ['onboardingCase'] });
       queryClient.invalidateQueries({ queryKey: ['merchant'] });
       queryClient.invalidateQueries({ queryKey: ['auditLogs'] });
-      toast.success(`Caso ${status === 'Aprovado' ? 'aprovado' : status === 'Recusado' ? 'recusado' : 'atualizado'} com sucesso!`);
+      toast.success(status === 'Aprovado' ? t('ac.case_approved') : status === 'Recusado' ? t('ac.case_rejected') : t('ac.case_updated'));
       setShowApproveDialog(false);
       setShowRejectDialog(false);
       setShowRequestInfoDialog(false);
       setReviewComments('');
     },
     onError: (error) => {
-      toast.error('Erro ao atualizar: ' + error.message);
+      toast.error(t('ac.update_error') + error.message);
     }
   });
 
@@ -132,9 +134,9 @@ export default function AnaliseDeCasos() {
   if (!onboardingCase) {
     return (
       <div className="text-center py-12">
-        <p className="text-[var(--pagsmile-blue)]/70 font-medium">Caso não encontrado</p>
+        <p className="text-[var(--pagsmile-blue)]/70 font-medium">{t('ac.not_found')}</p>
         <Button variant="outline" onClick={() => navigate(createPageUrl('AdminDashboard'))} className="mt-4">
-          Voltar ao Dashboard
+          {t('ac.back_dashboard')}
         </Button>
       </div>
     );
@@ -154,14 +156,14 @@ export default function AnaliseDeCasos() {
 
       <Tabs defaultValue="ia-analysis" className="space-y-6">
         <TabsList className="bg-white border border-slate-200 flex-wrap h-auto p-1">
-          <TabsTrigger value="ia-analysis" className="gap-1"><Brain className="w-4 h-4" /> Análise IA</TabsTrigger>
-          <TabsTrigger value="info" className="gap-1"><User className="w-4 h-4" /> Merchant</TabsTrigger>
-          <TabsTrigger value="responses" className="gap-1"><FileCheck className="w-4 h-4" /> Respostas ({responses.length})</TabsTrigger>
-          <TabsTrigger value="documents" className="gap-1"><FileText className="w-4 h-4" /> Documentos ({documents.length})</TabsTrigger>
-          <TabsTrigger value="validations" className="gap-1"><Shield className="w-4 h-4" /> Validações ({validations.length})</TabsTrigger>
-          <TabsTrigger value="history" className="gap-1"><History className="w-4 h-4" /> Histórico</TabsTrigger>
-          <TabsTrigger value="review" className="gap-1"><UserCheck className="w-4 h-4" /> Revisão</TabsTrigger>
-          <TabsTrigger value="subsellers" className="gap-1"><Users className="w-4 h-4" /> Subcontas</TabsTrigger>
+          <TabsTrigger value="ia-analysis" className="gap-1"><Brain className="w-4 h-4" /> {t('ac.tab_ia')}</TabsTrigger>
+          <TabsTrigger value="info" className="gap-1"><User className="w-4 h-4" /> {t('ac.tab_merchant')}</TabsTrigger>
+          <TabsTrigger value="responses" className="gap-1"><FileCheck className="w-4 h-4" /> {t('ac.tab_responses')} ({responses.length})</TabsTrigger>
+          <TabsTrigger value="documents" className="gap-1"><FileText className="w-4 h-4" /> {t('ac.tab_documents')} ({documents.length})</TabsTrigger>
+          <TabsTrigger value="validations" className="gap-1"><Shield className="w-4 h-4" /> {t('ac.tab_validations')} ({validations.length})</TabsTrigger>
+          <TabsTrigger value="history" className="gap-1"><History className="w-4 h-4" /> {t('ac.tab_history')}</TabsTrigger>
+          <TabsTrigger value="review" className="gap-1"><UserCheck className="w-4 h-4" /> {t('ac.tab_review')}</TabsTrigger>
+          <TabsTrigger value="subsellers" className="gap-1"><Users className="w-4 h-4" /> {t('ac.tab_subaccounts')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="ia-analysis">
@@ -183,7 +185,7 @@ export default function AnaliseDeCasos() {
 
         <TabsContent value="responses">
           <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <h3 className="text-lg font-bold text-[var(--pagsmile-blue)] mb-6">Respostas do Questionário</h3>
+            <h3 className="text-lg font-bold text-[var(--pagsmile-blue)] mb-6">{t('ac.questionnaire_responses')}</h3>
             <ComplianceResponsesPanel caseId={caseId} questionnaireTemplateId={onboardingCase?.questionnaireTemplateId} />
           </div>
         </TabsContent>

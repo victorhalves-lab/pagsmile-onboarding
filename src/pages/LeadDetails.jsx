@@ -29,6 +29,7 @@ import LeadSLAIndicator from '../components/leads/LeadSLAIndicator';
 import LeadQualifierPanel from '../components/leads/LeadQualifierPanel';
 import PriscilaPanel from '../components/leads/PriscilaPanel';
 import IARiskPanel from '../components/leads/IARiskPanel';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 const STATUS_CONFIG = {
   questionario_preenchido: { label: 'Questionário Preenchido', color: 'bg-blue-100 text-blue-700' },
@@ -45,6 +46,7 @@ const STATUS_CONFIG = {
 };
 
 export default function LeadDetails() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const urlParams = new URLSearchParams(window.location.search);
@@ -82,7 +84,7 @@ export default function LeadDetails() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['lead', leadId] });
       queryClient.invalidateQueries({ queryKey: ['leadActivities', leadId] });
-      toast.success('Status atualizado');
+      toast.success(t('ld.status_updated'));
     }
   });
 
@@ -99,7 +101,7 @@ export default function LeadDetails() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['leadActivities', leadId] });
       setNote('');
-      toast.success('Nota adicionada');
+      toast.success(t('ld.note_added'));
     }
   });
 
@@ -114,7 +116,7 @@ export default function LeadDetails() {
   if (!lead) {
     return (
       <div className="text-center py-12">
-        <h2 className="text-xl font-bold text-[var(--pagsmile-blue)]">Lead não encontrado</h2>
+        <h2 className="text-xl font-bold text-[var(--pagsmile-blue)]">{t('ld.not_found')}</h2>
       </div>
     );
   }
@@ -145,7 +147,7 @@ export default function LeadDetails() {
           </div>
         </div>
         <Select value={newStatus || lead.status} onValueChange={(v) => { setNewStatus(v); updateStatusMutation.mutate(v); }}>
-          <SelectTrigger className="w-[200px]"><SelectValue placeholder="Alterar Status" /></SelectTrigger>
+          <SelectTrigger className="w-[200px]"><SelectValue placeholder={t('ld.change_status')} /></SelectTrigger>
           <SelectContent>
             {Object.entries(STATUS_CONFIG).map(([k, v]) => (
               <SelectItem key={k} value={k}>{v.label}</SelectItem>
@@ -159,23 +161,23 @@ export default function LeadDetails() {
 
       <Tabs defaultValue="overview">
         <TabsList>
-          <TabsTrigger value="overview">Visão Geral</TabsTrigger>
-          <TabsTrigger value="iarisk">Risco IA Avançado</TabsTrigger>
-          <TabsTrigger value="leadqualifier">Lead Qualifier IA</TabsTrigger>
-          <TabsTrigger value="priscila">Análise PRISCILA</TabsTrigger>
-          <TabsTrigger value="questionnaire">Questionário</TabsTrigger>
-          <TabsTrigger value="proposals">Propostas</TabsTrigger>
-          <TabsTrigger value="history">Histórico ({activities.length})</TabsTrigger>
+          <TabsTrigger value="overview">{t('ld.tab_overview')}</TabsTrigger>
+          <TabsTrigger value="iarisk">{t('ld.tab_iarisk')}</TabsTrigger>
+          <TabsTrigger value="leadqualifier">{t('ld.tab_qualifier')}</TabsTrigger>
+          <TabsTrigger value="priscila">{t('ld.tab_priscila')}</TabsTrigger>
+          <TabsTrigger value="questionnaire">{t('ld.tab_questionnaire')}</TabsTrigger>
+          <TabsTrigger value="proposals">{t('ld.tab_proposals')}</TabsTrigger>
+          <TabsTrigger value="history">{t('ld.tab_history')} ({activities.length})</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6 mt-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Dados da Empresa */}
             <Card>
-              <CardHeader><CardTitle className="text-sm flex items-center gap-2"><Building2 className="w-4 h-4" /> Dados da Empresa</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-sm flex items-center gap-2"><Building2 className="w-4 h-4" /> {t('ld.company_data')}</CardTitle></CardHeader>
               <CardContent className="space-y-3 text-sm">
-                <div><span className="text-[var(--pagsmile-blue)]/60">Razão Social:</span><p className="font-medium">{lead.fullName || '-'}</p></div>
-                <div><span className="text-[var(--pagsmile-blue)]/60">Nome Fantasia:</span><p className="font-medium">{lead.companyName || '-'}</p></div>
+                <div><span className="text-[var(--pagsmile-blue)]/60">{t('ld.legal_name')}:</span><p className="font-medium">{lead.fullName || '-'}</p></div>
+                <div><span className="text-[var(--pagsmile-blue)]/60">{t('ld.trade_name')}:</span><p className="font-medium">{lead.companyName || '-'}</p></div>
                 <div><span className="text-[var(--pagsmile-blue)]/60">CNPJ:</span><p className="font-medium">{lead.cpfCnpj || '-'}</p></div>
                 <div><span className="text-[var(--pagsmile-blue)]/60">MCC:</span><p className="font-medium">{lead.mcc || '-'}</p></div>
                 {lead.website && (
@@ -189,10 +191,10 @@ export default function LeadDetails() {
 
             {/* Contato */}
             <Card>
-              <CardHeader><CardTitle className="text-sm flex items-center gap-2"><User className="w-4 h-4" /> Contato</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-sm flex items-center gap-2"><User className="w-4 h-4" /> {t('ld.contact')}</CardTitle></CardHeader>
               <CardContent className="space-y-3 text-sm">
-                <div><span className="text-[var(--pagsmile-blue)]/60">Nome:</span><p className="font-medium">{lead.contactName || '-'}</p></div>
-                <div><span className="text-[var(--pagsmile-blue)]/60">Cargo:</span><p className="font-medium">{lead.contactRole || '-'}</p></div>
+                <div><span className="text-[var(--pagsmile-blue)]/60">{t('ld.contact_name')}:</span><p className="font-medium">{lead.contactName || '-'}</p></div>
+                <div><span className="text-[var(--pagsmile-blue)]/60">{t('ld.contact_role')}:</span><p className="font-medium">{lead.contactRole || '-'}</p></div>
                 <div className="flex items-center gap-1"><Mail className="w-3 h-3" /><span>{lead.email || '-'}</span></div>
                 <div className="flex items-center gap-1"><Phone className="w-3 h-3" /><span>{lead.phone || '-'}</span></div>
               </CardContent>
@@ -200,31 +202,31 @@ export default function LeadDetails() {
 
             {/* Score e Financeiro */}
             <Card>
-              <CardHeader><CardTitle className="text-sm flex items-center gap-2"><TrendingUp className="w-4 h-4" /> Score & Financeiro</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-sm flex items-center gap-2"><TrendingUp className="w-4 h-4" /> {t('ld.score_financial')}</CardTitle></CardHeader>
               <CardContent className="space-y-3 text-sm">
                 <div className="flex items-center justify-between">
-                  <span className="text-[var(--pagsmile-blue)]/60">Score PRISCILA:</span>
+                  <span className="text-[var(--pagsmile-blue)]/60">{t('ld.score_priscila')}:</span>
                   <span className={`text-2xl font-bold ${
                     (lead.priscilaQualityScore || 0) >= 70 ? 'text-green-600' :
                     (lead.priscilaQualityScore || 0) >= 40 ? 'text-amber-600' : 'text-red-600'
                   }`}>{lead.priscilaQualityScore ?? '-'}</span>
                 </div>
-                <div><span className="text-[var(--pagsmile-blue)]/60">TPV Mensal:</span><p className="font-medium">R$ {lead.tpvMensal?.toLocaleString('pt-BR') || '-'}</p></div>
-                <div><span className="text-[var(--pagsmile-blue)]/60">Ticket Médio:</span><p className="font-medium">R$ {lead.ticketMedio?.toLocaleString('pt-BR') || '-'}</p></div>
-                <div><span className="text-[var(--pagsmile-blue)]/60">Expectativa:</span><p className="font-medium">{lead.expectativaCrescimento || '-'}</p></div>
+                <div><span className="text-[var(--pagsmile-blue)]/60">{t('ld.monthly_tpv')}:</span><p className="font-medium">R$ {lead.tpvMensal?.toLocaleString() || '-'}</p></div>
+                <div><span className="text-[var(--pagsmile-blue)]/60">{t('ld.avg_ticket')}:</span><p className="font-medium">R$ {lead.ticketMedio?.toLocaleString() || '-'}</p></div>
+                <div><span className="text-[var(--pagsmile-blue)]/60">{t('ld.growth_expectation')}:</span><p className="font-medium">{lead.expectativaCrescimento || '-'}</p></div>
               </CardContent>
             </Card>
           </div>
 
           {/* Adicionar Nota */}
           <Card>
-            <CardHeader><CardTitle className="text-sm">Adicionar Nota</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-sm">{t('ld.add_note')}</CardTitle></CardHeader>
             <CardContent>
               <div className="flex gap-2">
                 <Textarea 
                   value={note} 
                   onChange={(e) => setNote(e.target.value)} 
-                  placeholder="Escreva uma nota sobre este lead..."
+                  placeholder={t('ld.note_placeholder')}
                   rows={2}
                   className="flex-1"
                 />
@@ -254,7 +256,7 @@ export default function LeadDetails() {
 
         <TabsContent value="questionnaire" className="mt-4">
           <Card>
-            <CardHeader><CardTitle className="flex items-center gap-2"><FileText className="w-5 h-5" /> Dados do Questionário</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="flex items-center gap-2"><FileText className="w-5 h-5" /> {t('ld.questionnaire_data')}</CardTitle></CardHeader>
             <CardContent>
               {lead.questionnaireData && Object.keys(lead.questionnaireData).length > 0 ? (
                 <div className="space-y-6">
@@ -266,7 +268,7 @@ export default function LeadDetails() {
                     if (fileEntries.length === 0) return null;
                     return (
                       <div className="bg-slate-50 rounded-xl p-4 space-y-3">
-                        <h4 className="text-sm font-semibold flex items-center gap-2"><FileText className="w-4 h-4 text-[var(--pagsmile-green)]" /> Documentos Enviados</h4>
+                        <h4 className="text-sm font-semibold flex items-center gap-2"><FileText className="w-4 h-4 text-[var(--pagsmile-green)]" /> {t('ld.documents_sent')}</h4>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           {fileEntries.map(([key, value]) => (
                             <div key={key} className="flex items-center gap-3 bg-white rounded-lg border border-slate-200 p-3">
@@ -304,7 +306,7 @@ export default function LeadDetails() {
                   </div>
                 </div>
               ) : (
-                <p className="text-center py-8 text-[var(--pagsmile-blue)]/60">Dados do questionário não disponíveis</p>
+                <p className="text-center py-8 text-[var(--pagsmile-blue)]/60">{t('ld.questionnaire_unavailable')}</p>
               )}
             </CardContent>
           </Card>
@@ -316,10 +318,10 @@ export default function LeadDetails() {
 
         <TabsContent value="history" className="mt-4">
           <Card>
-            <CardHeader><CardTitle className="flex items-center gap-2"><Clock className="w-5 h-5" /> Histórico de Atividades</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="flex items-center gap-2"><Clock className="w-5 h-5" /> {t('ld.activity_history')}</CardTitle></CardHeader>
             <CardContent>
               {activities.length === 0 ? (
-                <p className="text-center py-8 text-[var(--pagsmile-blue)]/60">Nenhuma atividade registrada</p>
+                <p className="text-center py-8 text-[var(--pagsmile-blue)]/60">{t('ld.no_activities')}</p>
               ) : (
                 <div className="space-y-4">
                   {activities.map(act => (
@@ -331,7 +333,7 @@ export default function LeadDetails() {
                           <span className="text-xs text-[var(--pagsmile-blue)]/50">
                             {act.activityDate ? moment(act.activityDate).format('DD/MM/YY HH:mm') : act.created_date ? moment(act.created_date).format('DD/MM/YY HH:mm') : ''}
                           </span>
-                          <span className="text-xs text-[var(--pagsmile-blue)]/40">por {act.performedBy}</span>
+                          <span className="text-xs text-[var(--pagsmile-blue)]/40">{t('ld.by')} {act.performedBy}</span>
                         </div>
                       </div>
                     </div>
