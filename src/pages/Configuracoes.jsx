@@ -25,8 +25,10 @@ import {
   Loader2, Users, Key, Globe, Mail, Bell
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function Configuracoes() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   
   const [generalSettings, setGeneralSettings] = useState({
@@ -54,7 +56,7 @@ export default function Configuracoes() {
     mutationFn: async (data) => editingDocType ? base44.entities.DocumentType.update(editingDocType.id, data) : base44.entities.DocumentType.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['documentTypes'] });
-      toast.success(editingDocType ? 'Tipo de documento atualizado!' : 'Tipo de documento criado!');
+      toast.success(editingDocType ? t('cfg.doc_type_updated') : t('cfg.doc_type_created'));
       setShowDocTypeDialog(false); setEditingDocType(null); resetDocTypeForm();
     },
     onError: (error) => toast.error('Erro: ' + error.message)
@@ -62,7 +64,7 @@ export default function Configuracoes() {
 
   const deleteDocTypeMutation = useMutation({
     mutationFn: (id) => base44.entities.DocumentType.delete(id),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['documentTypes'] }); toast.success('Tipo de documento excluído!'); }
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['documentTypes'] }); toast.success(t('cfg.doc_type_deleted')); }
   });
 
   const resetDocTypeForm = () => setDocTypeForm({ name: '', description: '', allowedFormats: ['PDF', 'JPG', 'JPEG', 'PNG'], maxSizeMB: 10, merchantType: 'BOTH', isRequired: true, instructions: '' });
@@ -73,7 +75,7 @@ export default function Configuracoes() {
     setShowDocTypeDialog(true);
   };
 
-  const handleSaveSettings = (section) => toast.success(`Configurações de ${section} salvas!`);
+  const handleSaveSettings = (section) => toast.success(t('cfg.settings_saved', { section }));
 
   return (
     <div className="space-y-6">
@@ -82,19 +84,19 @@ export default function Configuracoes() {
           <Settings className="w-5 h-5 text-[#002443]" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-[#002443]">Configurações</h1>
-          <p className="text-sm text-[#002443]/60">Configure regras e parâmetros do sistema de compliance</p>
+          <h1 className="text-2xl font-bold text-[#002443]">{t('cfg.title')}</h1>
+          <p className="text-sm text-[#002443]/60">{t('cfg.subtitle')}</p>
         </div>
       </div>
 
       <Tabs defaultValue="general" className="space-y-6">
         <TabsList className="bg-[#f4f4f4] border border-[#002443]/5 flex-wrap h-auto p-1">
           {[
-            { v: 'general', icon: Settings, label: 'Geral' },
-            { v: 'documents', icon: FileText, label: 'Documentos' },
-            { v: 'risk', icon: AlertTriangle, label: 'Regras de Risco' },
-            { v: 'integrations', icon: Globe, label: 'Integrações' },
-            { v: 'notifications', icon: Bell, label: 'Notificações' },
+            { v: 'general', icon: Settings, label: t('cfg.tab_general') },
+            { v: 'documents', icon: FileText, label: t('cfg.tab_documents') },
+            { v: 'risk', icon: AlertTriangle, label: t('cfg.tab_risk') },
+            { v: 'integrations', icon: Globe, label: t('cfg.tab_integrations') },
+            { v: 'notifications', icon: Bell, label: t('cfg.tab_notifications') },
           ].map(tab => (
             <TabsTrigger key={tab.v} value={tab.v} className="gap-1.5 data-[state=active]:bg-white data-[state=active]:text-[#002443] data-[state=active]:shadow-sm text-[#002443]/50">
               <tab.icon className="w-3.5 h-3.5" /> {tab.label}
@@ -105,11 +107,11 @@ export default function Configuracoes() {
         {/* General */}
         <TabsContent value="general">
           <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 space-y-5">
-            <h2 className="text-base font-bold text-[#002443]">Configurações Gerais</h2>
+            <h2 className="text-base font-bold text-[#002443]">{t('cfg.general_title')}</h2>
             {[
-              { label: 'Notificações por E-mail', desc: 'Enviar e-mails automáticos sobre status do onboarding', key: 'emailNotifications' },
-              { label: 'Aprovação Automática', desc: `Aprovar automaticamente casos com score ≥ ${generalSettings.approvalThreshold}`, key: 'autoApproval' },
-              { label: 'Rejeição Automática', desc: `Rejeitar automaticamente casos com score < ${generalSettings.manualThreshold}`, key: 'autoRejection' },
+              { label: t('cfg.email_notifications'), desc: t('cfg.email_notifications_desc'), key: 'emailNotifications' },
+              { label: t('cfg.auto_approval'), desc: t('cfg.auto_approval_desc', { threshold: generalSettings.approvalThreshold }), key: 'autoApproval' },
+              { label: t('cfg.auto_rejection'), desc: t('cfg.auto_rejection_desc', { threshold: generalSettings.manualThreshold }), key: 'autoRejection' },
             ].map((item, i) => (
               <div key={i} className="flex items-center justify-between p-4 rounded-xl border border-[#002443]/5">
                 <div>
@@ -120,7 +122,7 @@ export default function Configuracoes() {
               </div>
             ))}
             <Button onClick={() => handleSaveSettings('geral')} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
-              <Save className="w-4 h-4 mr-2" /> Salvar
+              <Save className="w-4 h-4 mr-2" /> {t('cfg.save')}
             </Button>
           </div>
         </TabsContent>
@@ -129,14 +131,14 @@ export default function Configuracoes() {
         <TabsContent value="documents">
           <div className="space-y-6">
             <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 space-y-5">
-              <h2 className="text-base font-bold text-[#002443]">Configurações de Upload</h2>
+              <h2 className="text-base font-bold text-[#002443]">{t('cfg.upload_title')}</h2>
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-[#002443]/50">Tamanho Máximo (MB)</Label>
+                  <Label className="text-xs text-[#002443]/50">{t('cfg.max_size')}</Label>
                   <Input type="number" value={documentSettings.maxFileSizeMB} onChange={(e) => setDocumentSettings(prev => ({...prev, maxFileSizeMB: parseInt(e.target.value)}))} className="border-[#002443]/10" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-[#002443]/50">Formatos Aceitos</Label>
+                  <Label className="text-xs text-[#002443]/50">{t('cfg.accepted_formats')}</Label>
                   <div className="flex gap-2 flex-wrap">
                     {['PDF', 'JPG', 'JPEG', 'PNG'].map(format => (
                       <Badge key={format} className={`cursor-pointer border-0 ${documentSettings.allowedFormats.includes(format) ? 'bg-[#2bc196]/10 text-[#2bc196]' : 'bg-[#f4f4f4] text-[#002443]/40'}`}
@@ -146,17 +148,17 @@ export default function Configuracoes() {
                   </div>
                 </div>
               </div>
-              <Button onClick={() => handleSaveSettings('documentos')} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl"><Save className="w-4 h-4 mr-2" /> Salvar</Button>
+              <Button onClick={() => handleSaveSettings('documentos')} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl"><Save className="w-4 h-4 mr-2" /> {t('cfg.save')}</Button>
             </div>
 
             <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 space-y-5">
               <div className="flex justify-between items-center">
                 <div>
-                  <h2 className="text-base font-bold text-[#002443]">Tipos de Documento</h2>
-                  <p className="text-xs text-[#002443]/40">Gerencie os tipos aceitos no onboarding</p>
+                  <h2 className="text-base font-bold text-[#002443]">{t('cfg.doc_types_title')}</h2>
+                  <p className="text-xs text-[#002443]/40">{t('cfg.doc_types_desc')}</p>
                 </div>
                 <Button onClick={() => { resetDocTypeForm(); setEditingDocType(null); setShowDocTypeDialog(true); }} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
-                  <Plus className="w-4 h-4 mr-2" /> Novo Tipo
+                  <Plus className="w-4 h-4 mr-2" /> {t('cfg.new_type')}
                 </Button>
               </div>
 
@@ -165,14 +167,14 @@ export default function Configuracoes() {
               ) : documentTypes.length === 0 ? (
                 <div className="text-center py-12">
                   <div className="w-16 h-16 rounded-2xl bg-[#f4f4f4] flex items-center justify-center mx-auto mb-4"><FileText className="w-7 h-7 text-[#002443]/20" /></div>
-                  <p className="text-sm text-[#002443]/50">Nenhum tipo de documento cadastrado</p>
+                  <p className="text-sm text-[#002443]/50">{t('cfg.no_doc_types')}</p>
                 </div>
               ) : (
                 <div className="rounded-xl border border-[#002443]/5 overflow-hidden">
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-[#f4f4f4]">
-                        {['Nome', 'Tipo Merchant', 'Formatos', 'Obrigatório', ''].map((h, i) => (
+                        {[t('cfg.col_name'), t('cfg.col_merchant_type'), t('cfg.col_formats'), t('cfg.col_required'), ''].map((h, i) => (
                           <TableHead key={i} className={`text-[10px] font-bold text-[#002443]/40 uppercase ${i === 4 ? 'text-right' : ''}`}>{h}</TableHead>
                         ))}
                       </TableRow>
@@ -204,10 +206,10 @@ export default function Configuracoes() {
         {/* Risk */}
         <TabsContent value="risk">
           <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 space-y-5">
-            <h2 className="text-base font-bold text-[#002443]">Regras de Risco e Scoring</h2>
+            <h2 className="text-base font-bold text-[#002443]">{t('cfg.risk_title')}</h2>
             {[
-              { label: 'Threshold de Aprovação', desc: 'Score mínimo para aprovação automática', key: 'approvalThreshold', color: '#2bc196', max: 100 },
-              { label: 'Threshold de Revisão Manual', desc: 'Score mínimo para revisão manual', key: 'manualThreshold', color: '#36706c', max: 100 },
+              { label: t('cfg.approval_threshold'), desc: t('cfg.approval_threshold_desc'), key: 'approvalThreshold', color: '#2bc196', max: 100 },
+              { label: t('cfg.manual_threshold'), desc: t('cfg.manual_threshold_desc'), key: 'manualThreshold', color: '#36706c', max: 100 },
             ].map((item, i) => (
               <div key={i} className="p-4 rounded-xl border border-[#002443]/5">
                 <div className="flex items-center justify-between mb-3">
@@ -223,7 +225,7 @@ export default function Configuracoes() {
             ))}
 
             <div className="p-4 rounded-xl bg-[#f4f4f4] border border-[#002443]/5">
-              <Label className="text-xs font-bold text-[#002443]/40 uppercase tracking-wider mb-3 block">Faixas de Decisão</Label>
+              <Label className="text-xs font-bold text-[#002443]/40 uppercase tracking-wider mb-3 block">{t('cfg.decision_bands')}</Label>
               <div className="space-y-2">
                 {[
                   { icon: CheckCircle2, color: '#2bc196', bg: 'bg-[#2bc196]', label: `≥ ${generalSettings.approvalThreshold}: Aprovado` },
@@ -238,17 +240,17 @@ export default function Configuracoes() {
                 ))}
               </div>
             </div>
-            <Button onClick={() => handleSaveSettings('risco')} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl"><Save className="w-4 h-4 mr-2" /> Salvar</Button>
+            <Button onClick={() => handleSaveSettings('risco')} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl"><Save className="w-4 h-4 mr-2" /> {t('cfg.save')}</Button>
           </div>
         </TabsContent>
 
         {/* Integrations */}
         <TabsContent value="integrations">
           <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 space-y-5">
-            <h2 className="text-base font-bold text-[#002443]">Integrações Externas</h2>
+            <h2 className="text-base font-bold text-[#002443]">{t('cfg.integrations_title')}</h2>
             <div className="bg-[#36706c]/5 border border-[#36706c]/10 rounded-xl p-3 flex items-start gap-2">
               <Info className="w-4 h-4 text-[#36706c] mt-0.5 shrink-0" />
-              <p className="text-xs text-[#002443]/60">Configure as chaves de API para validação externa.</p>
+              <p className="text-xs text-[#002443]/60">{t('cfg.integrations_hint')}</p>
             </div>
             {[
               { icon: Shield, color: '#002443', label: 'Big Data Corp', desc: 'Validação de CNPJ/CPF e dados empresariais', fields: [{ type: 'password', placeholder: 'API Key' }] },
@@ -266,11 +268,11 @@ export default function Configuracoes() {
                       <p className="text-xs text-[#002443]/40">{provider.desc}</p>
                     </div>
                   </div>
-                  <Badge className="bg-[#002443]/5 text-[#002443]/40 text-[10px] border-0">Pendente</Badge>
+                  <Badge className="bg-[#002443]/5 text-[#002443]/40 text-[10px] border-0">{t('cfg.pending')}</Badge>
                 </div>
                 <div className="flex gap-2">
                   {provider.fields.map((f, j) => <Input key={j} type={f.type} placeholder={f.placeholder} className={`border-[#002443]/10 ${f.w || 'flex-1'}`} />)}
-                  <Button variant="outline" className="border-[#002443]/10 rounded-xl"><Key className="w-4 h-4 mr-2 text-[#002443]/40" /> Configurar</Button>
+                  <Button variant="outline" className="border-[#002443]/10 rounded-xl"><Key className="w-4 h-4 mr-2 text-[#002443]/40" /> {t('cfg.configure')}</Button>
                 </div>
               </div>
             ))}
@@ -280,12 +282,12 @@ export default function Configuracoes() {
         {/* Notifications */}
         <TabsContent value="notifications">
           <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 space-y-5">
-            <h2 className="text-base font-bold text-[#002443]">Configurações de Notificações</h2>
+            <h2 className="text-base font-bold text-[#002443]">{t('cfg.notifications_title')}</h2>
             {[
-              { label: 'Novo Caso Recebido', desc: 'Notificar quando um novo caso de onboarding for criado', checked: true },
-              { label: 'Caso Requer Revisão Manual', desc: 'Notificar quando um caso for encaminhado para revisão manual', checked: true },
-              { label: 'Caso Aprovado/Recusado', desc: 'Notificar merchant sobre a decisão final', checked: true },
-              { label: 'Erro em Validação Externa', desc: 'Notificar quando uma integração falhar', checked: false },
+              { label: t('cfg.notif_new_case'), desc: t('cfg.notif_new_case_desc'), checked: true },
+              { label: t('cfg.notif_manual_review'), desc: t('cfg.notif_manual_review_desc'), checked: true },
+              { label: t('cfg.notif_decision'), desc: t('cfg.notif_decision_desc'), checked: true },
+              { label: t('cfg.notif_error'), desc: t('cfg.notif_error_desc'), checked: false },
             ].map((item, i) => (
               <div key={i} className="flex items-center justify-between p-4 rounded-xl border border-[#002443]/5">
                 <div className="flex items-center gap-3">
@@ -298,7 +300,7 @@ export default function Configuracoes() {
                 <Switch defaultChecked={item.checked} className="data-[state=checked]:bg-[#2bc196]" />
               </div>
             ))}
-            <Button onClick={() => handleSaveSettings('notificações')} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl"><Save className="w-4 h-4 mr-2" /> Salvar</Button>
+            <Button onClick={() => handleSaveSettings('notificações')} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl"><Save className="w-4 h-4 mr-2" /> {t('cfg.save')}</Button>
           </div>
         </TabsContent>
       </Tabs>
@@ -307,8 +309,8 @@ export default function Configuracoes() {
       <Dialog open={showDocTypeDialog} onOpenChange={setShowDocTypeDialog}>
         <DialogContent className="max-w-lg rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-[#002443]">{editingDocType ? 'Editar' : 'Novo'} Tipo de Documento</DialogTitle>
-            <DialogDescription className="text-[#002443]/50">Configure os detalhes do tipo de documento.</DialogDescription>
+            <DialogTitle className="text-[#002443]">{editingDocType ? t('cfg.dialog_title_edit') : t('cfg.dialog_title_new')}</DialogTitle>
+            <DialogDescription className="text-[#002443]/50">{t('cfg.dialog_desc')}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-1.5"><Label className="text-xs text-[#002443]/50">Nome <span className="text-red-400">*</span></Label><Input value={docTypeForm.name} onChange={(e) => setDocTypeForm(prev => ({...prev, name: e.target.value}))} placeholder="Ex: RG Frente" className="border-[#002443]/10" /></div>
@@ -336,10 +338,10 @@ export default function Configuracoes() {
             <div className="flex items-center gap-2"><Switch checked={docTypeForm.isRequired} onCheckedChange={(checked) => setDocTypeForm(prev => ({...prev, isRequired: checked}))} className="data-[state=checked]:bg-[#2bc196]" /><Label className="text-sm text-[#002443]">Obrigatório</Label></div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowDocTypeDialog(false)} className="rounded-xl border-[#002443]/10">Cancelar</Button>
+            <Button variant="outline" onClick={() => setShowDocTypeDialog(false)} className="rounded-xl border-[#002443]/10">{t('cfg.cancel')}</Button>
             <Button onClick={() => saveDocTypeMutation.mutate(docTypeForm)} disabled={saveDocTypeMutation.isPending || !docTypeForm.name} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
               {saveDocTypeMutation.isPending && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
-              {editingDocType ? 'Atualizar' : 'Criar'}
+              {editingDocType ? t('cfg.update') : t('cfg.create')}
             </Button>
           </DialogFooter>
         </DialogContent>

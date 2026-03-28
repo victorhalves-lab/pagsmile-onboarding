@@ -19,8 +19,10 @@ import {
   CheckCircle2, XCircle, AlertTriangle, Edit, Plus, Trash2,
   User, Bot, Settings
 } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function Auditoria() {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [actionFilter, setActionFilter] = useState('all');
   const [actorTypeFilter, setActorTypeFilter] = useState('all');
@@ -38,13 +40,13 @@ export default function Auditoria() {
   });
 
   const actionConfig = {
-    'CREATE': { bg: 'bg-[#36706c]/10', text: 'text-[#36706c]', icon: Plus, label: 'Criação' },
-    'UPDATE': { bg: 'bg-[#002443]/5', text: 'text-[#002443]', icon: Edit, label: 'Atualização' },
-    'DELETE': { bg: 'bg-red-50', text: 'text-red-500', icon: Trash2, label: 'Exclusão' },
-    'VIEW': { bg: 'bg-[#f4f4f4]', text: 'text-[#002443]/60', icon: Eye, label: 'Visualização' },
-    'APPROVAL': { bg: 'bg-[#2bc196]/10', text: 'text-[#2bc196]', icon: CheckCircle2, label: 'Aprovação' },
-    'REJECTION': { bg: 'bg-red-50', text: 'text-red-500', icon: XCircle, label: 'Rejeição' },
-    'VALIDATION': { bg: 'bg-[#5cf7cf]/10', text: 'text-[#36706c]', icon: AlertTriangle, label: 'Validação' },
+    'CREATE': { bg: 'bg-[#36706c]/10', text: 'text-[#36706c]', icon: Plus, label: t('aud.action_create') },
+    'UPDATE': { bg: 'bg-[#002443]/5', text: 'text-[#002443]', icon: Edit, label: t('aud.action_update') },
+    'DELETE': { bg: 'bg-red-50', text: 'text-red-500', icon: Trash2, label: t('aud.action_delete') },
+    'VIEW': { bg: 'bg-[#f4f4f4]', text: 'text-[#002443]/60', icon: Eye, label: t('aud.action_view') },
+    'APPROVAL': { bg: 'bg-[#2bc196]/10', text: 'text-[#2bc196]', icon: CheckCircle2, label: t('aud.action_approval') },
+    'REJECTION': { bg: 'bg-red-50', text: 'text-red-500', icon: XCircle, label: t('aud.action_rejection') },
+    'VALIDATION': { bg: 'bg-[#5cf7cf]/10', text: 'text-[#36706c]', icon: AlertTriangle, label: t('aud.action_validation') },
   };
 
   const getActionBadge = (action) => {
@@ -103,10 +105,10 @@ export default function Auditoria() {
   };
 
   const stats = [
-    { label: 'Total de Registros', value: auditLogs.length, color: '#002443' },
-    { label: 'Aprovações', value: auditLogs.filter(l => l.actionType === 'APPROVAL').length, color: '#2bc196' },
-    { label: 'Rejeições', value: auditLogs.filter(l => l.actionType === 'REJECTION').length, color: '#002443' },
-    { label: 'Ações Helena IA', value: auditLogs.filter(l => l.changedBy === 'HELENA_AI').length, color: '#36706c' },
+    { label: t('aud.total_records'), value: auditLogs.length, color: '#002443' },
+    { label: t('aud.approvals'), value: auditLogs.filter(l => l.actionType === 'APPROVAL').length, color: '#2bc196' },
+    { label: t('aud.rejections'), value: auditLogs.filter(l => l.actionType === 'REJECTION').length, color: '#002443' },
+    { label: t('aud.helena_actions'), value: auditLogs.filter(l => l.changedBy === 'HELENA_AI').length, color: '#36706c' },
   ];
 
   return (
@@ -118,16 +120,16 @@ export default function Auditoria() {
             <History className="w-5 h-5 text-[#002443]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#002443]">Auditoria de Compliance</h1>
-            <p className="text-sm text-[#002443]/60">Registro completo de todas as ações do sistema</p>
+            <h1 className="text-2xl font-bold text-[#002443]">{t('aud.title')}</h1>
+            <p className="text-sm text-[#002443]/60">{t('aud.subtitle')}</p>
           </div>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleExport} className="border-[#002443]/10 hover:bg-[#f4f4f4] rounded-xl">
-            <Download className="w-4 h-4 mr-2 text-[#002443]/50" /> <span className="text-[#002443]/70">Exportar</span>
+            <Download className="w-4 h-4 mr-2 text-[#002443]/50" /> <span className="text-[#002443]/70">{t('aud.export')}</span>
           </Button>
           <Button variant="outline" onClick={() => refetch()} className="border-[#002443]/10 hover:bg-[#f4f4f4] rounded-xl">
-            <RefreshCw className="w-4 h-4 mr-2 text-[#002443]/50" /> <span className="text-[#002443]/70">Atualizar</span>
+            <RefreshCw className="w-4 h-4 mr-2 text-[#002443]/50" /> <span className="text-[#002443]/70">{t('aud.refresh')}</span>
           </Button>
         </div>
       </div>
@@ -148,17 +150,17 @@ export default function Auditoria() {
           <div className="flex gap-2 flex-wrap items-center">
             <Filter className="w-4 h-4 text-[#002443]/30" />
             {[
-              { value: actionFilter, onChange: setActionFilter, placeholder: 'Ação', width: 'w-40', options: [
-                { v: 'all', l: 'Todas as Ações' }, { v: 'CREATE', l: 'Criação' }, { v: 'UPDATE', l: 'Atualização' }, { v: 'DELETE', l: 'Exclusão' }, { v: 'APPROVAL', l: 'Aprovação' }, { v: 'REJECTION', l: 'Rejeição' }, { v: 'VALIDATION', l: 'Validação' }
+              { value: actionFilter, onChange: setActionFilter, placeholder: t('aud.col_action'), width: 'w-40', options: [
+                { v: 'all', l: t('aud.all_actions') }, { v: 'CREATE', l: t('aud.action_create') }, { v: 'UPDATE', l: t('aud.action_update') }, { v: 'DELETE', l: t('aud.action_delete') }, { v: 'APPROVAL', l: t('aud.action_approval') }, { v: 'REJECTION', l: t('aud.action_rejection') }, { v: 'VALIDATION', l: t('aud.action_validation') }
               ]},
-              { value: entityFilter || 'all', onChange: (v) => setEntityFilter(v === 'all' ? null : v), placeholder: 'Entidade', width: 'w-44', options: [
-                { v: 'all', l: 'Todas Entidades' }, { v: 'Proposal', l: 'Propostas' }, { v: 'ComplianceRule', l: 'Regras' }, { v: 'OnboardingCase', l: 'Onboarding' }, { v: 'Lead', l: 'Leads' }
+              { value: entityFilter || 'all', onChange: (v) => setEntityFilter(v === 'all' ? null : v), placeholder: t('aud.col_entity'), width: 'w-44', options: [
+                { v: 'all', l: t('aud.all_entities') }, { v: 'Proposal', l: t('aud.proposals') }, { v: 'ComplianceRule', l: t('aud.rules') }, { v: 'OnboardingCase', l: t('aud.onboarding') }, { v: 'Lead', l: t('aud.leads') }
               ]},
-              { value: actorTypeFilter, onChange: setActorTypeFilter, placeholder: 'Ator', width: 'w-36', options: [
-                { v: 'all', l: 'Todos' }, { v: 'user', l: 'Usuários' }, { v: 'helena_ai', l: 'Helena IA' }, { v: 'system', l: 'Sistema' }
+              { value: actorTypeFilter, onChange: setActorTypeFilter, placeholder: t('aud.col_actor'), width: 'w-36', options: [
+                { v: 'all', l: t('aud.all_actors') }, { v: 'user', l: t('aud.users') }, { v: 'helena_ai', l: 'Helena IA' }, { v: 'system', l: t('aud.system') }
               ]},
-              { value: dateFilter, onChange: setDateFilter, placeholder: 'Período', width: 'w-36', options: [
-                { v: 'all', l: 'Todo período' }, { v: 'today', l: 'Hoje' }, { v: 'week', l: 'Esta semana' }, { v: 'month', l: 'Este mês' }
+              { value: dateFilter, onChange: setDateFilter, placeholder: t('aud.all_period'), width: 'w-36', options: [
+                { v: 'all', l: t('aud.all_period') }, { v: 'today', l: t('aud.today') }, { v: 'week', l: t('aud.this_week') }, { v: 'month', l: t('aud.this_month') }
               ]},
             ].map((filter, idx) => (
               <Select key={idx} value={filter.value} onValueChange={filter.onChange}>
@@ -168,13 +170,13 @@ export default function Auditoria() {
             ))}
             {(actionFilter !== 'all' || actorTypeFilter !== 'all' || dateFilter !== 'all' || entityFilter) && (
               <button onClick={() => { setActionFilter('all'); setActorTypeFilter('all'); setDateFilter('all'); setEntityFilter(null); }} className="text-xs text-[#2bc196] hover:text-[#36706c] font-medium">
-                Limpar filtros
+                {t('aud.clear_filters')}
               </button>
             )}
           </div>
           <div className="relative w-full md:w-80">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/30" />
-            <Input placeholder="Buscar por descrição, ator ou ID..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-9 border-[#002443]/10" />
+            <Input placeholder={t('aud.search_placeholder')} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-9 border-[#002443]/10" />
           </div>
         </div>
       </div>
@@ -186,13 +188,13 @@ export default function Auditoria() {
         ) : paginatedLogs.length === 0 ? (
           <div className="text-center py-20">
             <div className="w-16 h-16 rounded-2xl bg-[#f4f4f4] flex items-center justify-center mx-auto mb-4"><History className="w-7 h-7 text-[#002443]/20" /></div>
-            <p className="text-sm text-[#002443]/50">Nenhum registro encontrado</p>
+            <p className="text-sm text-[#002443]/50">{t('aud.no_records')}</p>
           </div>
         ) : (
           <Table>
             <TableHeader>
               <TableRow className="bg-[#f4f4f4]">
-                {['Data/Hora', 'Ação', 'Descrição', 'Ator', 'Entidade', ''].map((h, i) => (
+                {[t('aud.col_datetime'), t('aud.col_action'), t('aud.col_description'), t('aud.col_actor'), t('aud.col_entity'), ''].map((h, i) => (
                   <TableHead key={i} className={`text-[10px] font-bold text-[#002443]/40 uppercase ${i === 5 ? 'text-right' : ''}`}>{h}</TableHead>
                 ))}
               </TableRow>
@@ -245,7 +247,7 @@ export default function Auditoria() {
       {/* Detail Modal */}
       <Dialog open={!!selectedLog} onOpenChange={() => setSelectedLog(null)}>
         <DialogContent className="max-w-lg rounded-2xl">
-          <DialogHeader><DialogTitle className="text-[#002443]">Detalhes do Registro</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-[#002443]">{t('aud.detail_title')}</DialogTitle></DialogHeader>
           {selectedLog && (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
