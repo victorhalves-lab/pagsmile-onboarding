@@ -1,5 +1,6 @@
 import React from 'react';
 import { Shield } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function RiskDistributionCards({ 
   lowRisk = 0, 
@@ -7,30 +8,31 @@ export default function RiskDistributionCards({
   highRisk = 0, 
   criticalRisk = 0 
 }) {
+  const { t } = useTranslation();
   const categories = [
     { 
-      label: 'Baixo (80-100)', 
+      label: t('chart.risk_low'), 
       value: lowRisk, 
       bgColor: 'bg-green-50', 
       barColor: 'bg-green-500',
       textColor: 'text-green-600'
     },
     { 
-      label: 'Médio (60-79)', 
+      label: t('chart.risk_medium'), 
       value: mediumRisk, 
       bgColor: 'bg-yellow-50', 
       barColor: 'bg-yellow-500',
       textColor: 'text-yellow-600'
     },
     { 
-      label: 'Alto (40-59)', 
+      label: t('chart.risk_high'), 
       value: highRisk, 
       bgColor: 'bg-orange-50', 
       barColor: 'bg-orange-500',
       textColor: 'text-orange-600'
     },
     { 
-      label: 'Crítico (0-39)', 
+      label: t('chart.risk_critical'), 
       value: criticalRisk, 
       bgColor: 'bg-red-50', 
       barColor: 'bg-red-500',
@@ -45,7 +47,7 @@ export default function RiskDistributionCards({
     <div className="bg-white rounded-xl border border-slate-200 p-5">
       <div className="flex items-center gap-2 mb-4">
         <Shield className="w-4 h-4 text-[var(--pagsmile-blue)]/70" />
-        <h3 className="font-bold text-[var(--pagsmile-blue)]">Distribuição de Risco da Carteira</h3>
+        <h3 className="font-bold text-[var(--pagsmile-blue)]">{t('chart.risk_distribution')}</h3>
       </div>
 
       <div className="grid grid-cols-4 gap-3">

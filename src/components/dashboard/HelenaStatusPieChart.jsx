@@ -1,29 +1,31 @@
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { Clock } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function HelenaStatusPieChart({ 
   approvedIA = 0, 
   manualReview = 0, 
   rejectedIA = 0 
 }) {
+  const { t } = useTranslation();
   const total = approvedIA + manualReview + rejectedIA;
   
   const data = [
     { 
-      name: 'Aprovado IA', 
+      name: t('chart.helena_approved'), 
       value: approvedIA, 
       color: '#22c55e',
       percentage: total > 0 ? Math.round((approvedIA / total) * 100) : 0
     },
     { 
-      name: 'Review Manual', 
+      name: t('chart.helena_manual'), 
       value: manualReview, 
       color: '#f97316',
       percentage: total > 0 ? Math.round((manualReview / total) * 100) : 0
     },
     { 
-      name: 'Reprovado IA', 
+      name: t('chart.helena_rejected'), 
       value: rejectedIA, 
       color: '#ef4444',
       percentage: total > 0 ? Math.round((rejectedIA / total) * 100) : 0
@@ -55,7 +57,7 @@ export default function HelenaStatusPieChart({
     <div className="bg-white rounded-xl border border-slate-200 p-5">
       <div className="flex items-center gap-2 mb-4">
         <Clock className="w-4 h-4 text-slate-500" />
-        <h3 className="font-semibold text-slate-800">Distribuição por Status (Helena)</h3>
+        <h3 className="font-semibold text-slate-800">{t('chart.helena_status')}</h3>
       </div>
 
       <ResponsiveContainer width="100%" height={280}>

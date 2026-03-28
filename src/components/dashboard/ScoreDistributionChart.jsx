@@ -1,15 +1,17 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { BarChart3 } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function ScoreDistributionChart({ data }) {
+  const { t } = useTranslation();
   // data expected: [{ range: '0-199', count: 5, fill: '#ef4444' }, ...]
   
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-5">
       <div className="flex items-center gap-2 mb-4">
         <BarChart3 className="w-4 h-4 text-slate-500" />
-        <h3 className="font-semibold text-slate-800">Distribuição de Scores (SGC)</h3>
+        <h3 className="font-semibold text-slate-800">{t('chart.score_distribution')}</h3>
       </div>
 
       <ResponsiveContainer width="100%" height={280}>

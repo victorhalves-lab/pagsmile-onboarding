@@ -6,6 +6,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Save, FileText, Loader2, Copy } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 import CardDadosCliente from '@/components/proposals/CardDadosCliente';
 import PartnerSelector from '@/components/proposals/PartnerSelector';
 import CardTaxasCartao from '@/components/proposals/CardTaxasCartao';
@@ -25,6 +26,7 @@ const parseTaxa = (val) => {
 };
 
 export default function CriarProposta() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const urlParams = new URLSearchParams(window.location.search);
   const leadId = urlParams.get('lead') || urlParams.get('lead_id') || urlParams.get('leadId');
@@ -60,7 +62,7 @@ export default function CriarProposta() {
   });
 
   const applyCopiedRates = (sourceProposal) => {
-    if (!sourceProposal?.rates) { toast.error('Proposta sem taxas para copiar.'); return; }
+    if (!sourceProposal?.rates) { toast.error(t('criar_prop.no_rates')); return; }
     const r = sourceProposal.rates;
     setForm(prev => ({
       ...prev,
@@ -80,7 +82,7 @@ export default function CriarProposta() {
       setup: r.setup ?? '',
       minimoGarantido: typeof r.minimoGarantido === 'object' ? r.minimoGarantido : { mes1: r.minimoGarantido ?? '', mes2: r.minimoGarantido ?? '', mes3: r.minimoGarantido ?? '' },
     });
-    toast.success('Taxas e condições comerciais copiadas!');
+    toast.success(t('criar_prop.rates_copied'));
   };
 
   useEffect(() => {
@@ -157,7 +159,7 @@ export default function CriarProposta() {
         if (tx.rav?.prazo) setForm(prev => ({ ...prev, prazoRecebimento: tx.rav.prazo }));
         if (tx.rav?.taxa) setForm(prev => ({ ...prev, taxaAntecipacao: tx.rav.taxa, usaAntecipacao: true }));
         if (tx.percentualAntecipacao) setForm(prev => ({ ...prev, percentualAntecipacao: tx.percentualAntecipacao }));
-        toast.success('Taxas sugeridas pela PRISCILA aplicadas!');
+        toast.success(t('criar_prop.priscila_applied'));
       }
     }
   }, [lead, editId, usePriscila]);
@@ -167,14 +169,14 @@ export default function CriarProposta() {
 
   const validate = () => {
     const newErrors = {};
-    if (!form.clienteNome) newErrors.clienteNome = 'Obrigatório';
-    if (!form.clienteCnpj || form.clienteCnpj.replace(/\D/g, '').length !== 14) newErrors.clienteCnpj = 'CNPJ inválido (14 dígitos)';
-    if (!form.clienteMcc) newErrors.clienteMcc = 'Obrigatório';
-    if (!form.clienteContato) newErrors.clienteContato = 'Obrigatório';
-    if (!form.businessSubCategory) newErrors.businessSubCategory = 'Selecione o modelo de negócio';
+    if (!form.clienteNome) newErrors.clienteNome = t('criar_prop.required');
+    if (!form.clienteCnpj || form.clienteCnpj.replace(/\D/g, '').length !== 14) newErrors.clienteCnpj = t('criar_prop.invalid_cnpj');
+    if (!form.clienteMcc) newErrors.clienteMcc = t('criar_prop.required');
+    if (!form.clienteContato) newErrors.clienteContato = t('criar_prop.required');
+    if (!form.businessSubCategory) newErrors.businessSubCategory = t('criar_prop.select_business');
     const hasAnyCardRate = Object.values(rates.cartao || {}).some(b => b && (b.avista || b.de2a6x || b.de7a12x));
-    if (!hasAnyCardRate) newErrors.cartao = 'Preencha ao menos uma taxa de cartão';
-    if (rates.pix?.valor && isNaN(parseTaxa(rates.pix.valor))) newErrors.pix = 'Valor inválido';
+    if (!hasAnyCardRate) newErrors.cartao = t('criar_prop.fill_card_rate');
+    if (rates.pix?.valor && isNaN(parseTaxa(rates.pix.valor))) newErrors.pix = t('criar_prop.invalid_value');
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -223,14 +225,14 @@ export default function CriarProposta() {
   const handleSalvarRascunho = async () => {
     setSaving(true);
     const data = await buildPropostaData('rascunho');
-    if (editId) { await base44.entities.Proposal.update(editId, data); toast.success('Rascunho atualizado!'); }
-    else { await base44.entities.Proposal.create(data); toast.success('Rascunho salvo!'); }
+    if (editId) { await base44.entities.Proposal.update(editId, data); toast.success(t('criar_prop.draft_updated')); }
+    else { await base44.entities.Proposal.create(data); toast.success(t('criar_prop.draft_saved')); }
     setSaving(false);
     navigate(createPageUrl('GestaoPropostas'));
   };
 
   const handleGerarProposta = async () => {
-    if (!validate()) { toast.error('Preencha todos os campos obrigatórios'); return; }
+    if (!validate()) { toast.error(t('criar_prop.fill_required')); return; }
     setSaving(true);
     const data = await buildPropostaData('enviada');
     let created;
@@ -246,7 +248,7 @@ export default function CriarProposta() {
       await base44.entities.Lead.update(leadId, { currentProposalId: created.id, status: 'proposta_enviada', lastInteractionDate: new Date().toISOString() });
       await base44.entities.LeadActivity.create({ leadId, activityType: 'proposta_criada', description: `Proposta ${data.codigo} criada`, performedBy: data.responsavelNome || 'admin', activityDate: new Date().toISOString() });
     }
-    toast.success('Proposta gerada com sucesso!');
+    toast.success(t('criar_prop.generated'));
     setSaving(false);
     navigate(createPageUrl('PropostaDetalhes') + `?id=${created.id}`);
   };
@@ -260,19 +262,19 @@ export default function CriarProposta() {
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
-            <h1 className="text-lg font-bold text-white">{editId ? 'Editar Proposta' : 'Nova Proposta'}</h1>
-            <p className="text-xs text-[#2bc196]/60">Defina as taxas e condições comerciais</p>
+            <h1 className="text-lg font-bold text-white">{editId ? t('criar_prop.edit_title') : t('criar_prop.new_title')}</h1>
+            <p className="text-xs text-[#2bc196]/60">{t('criar_prop.subtitle')}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="ghost" onClick={() => setIsCopyModalOpen(true)} className="text-white/60 hover:text-white hover:bg-white/5 rounded-xl text-sm">
-            <Copy className="w-4 h-4 mr-2" /> Copiar Taxas
+            <Copy className="w-4 h-4 mr-2" /> {t('criar_prop.copy_rates')}
           </Button>
           <Button variant="ghost" onClick={handleSalvarRascunho} disabled={saving} className="text-white/60 hover:text-white hover:bg-white/5 rounded-xl text-sm">
-            {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />} Rascunho
+            {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />} {t('criar_prop.draft')}
           </Button>
           <Button onClick={handleGerarProposta} disabled={saving} className="bg-[#2bc196] hover:bg-[#5cf7cf] text-[#002443] font-bold rounded-xl shadow-lg shadow-[#2bc196]/20 px-6">
-            {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <FileText className="w-4 h-4 mr-2" />} Gerar Proposta
+            {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <FileText className="w-4 h-4 mr-2" />} {t('criar_prop.generate')}
           </Button>
         </div>
       </div>

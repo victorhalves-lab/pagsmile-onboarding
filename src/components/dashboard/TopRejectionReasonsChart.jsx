@@ -1,7 +1,9 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function TopRejectionReasonsChart({ data }) {
+  const { t } = useTranslation();
   // data deve ter formato: [{ reason: 'Documento Inválido', count: 45 }, ...]
   const defaultData = [
     { reason: 'Documento Inválido', count: 0 },
@@ -15,7 +17,7 @@ export default function TopRejectionReasonsChart({ data }) {
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-5">
-      <h3 className="font-bold text-[var(--pagsmile-blue)] mb-4">Top 5 Causas de Reprovação (Helena)</h3>
+      <h3 className="font-bold text-[var(--pagsmile-blue)] mb-4">{t('chart.top_rejections')}</h3>
 
       <ResponsiveContainer width="100%" height={250}>
         <BarChart
@@ -33,7 +35,7 @@ export default function TopRejectionReasonsChart({ data }) {
             width={120}
           />
           <Tooltip 
-            formatter={(value) => [value.toLocaleString('pt-BR'), 'Ocorrências']}
+            formatter={(value) => [value.toLocaleString('pt-BR'), t('chart.occurrences')]}
             contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0' }}
           />
           <Bar dataKey="count" fill="#ef4444" radius={[0, 4, 4, 0]} />

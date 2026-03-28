@@ -1,32 +1,20 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { BarChart3 } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function ComplianceFunnelChart({ data }) {
-  // data deve ter formato: [{ name: 'Submissões', value: 1247 }, ...]
-  const colors = {
-    'Submissões': '#3b82f6',
-    'Análise IA': '#8b5cf6',
-    'Aprovadas IA': '#f97316',
-    'Manual Review': '#eab308',
-    'Aprovadas Final': '#22c55e'
-  };
+  const { t } = useTranslation();
+  // Colors mapped by index position since names are now translated
+  const colorList = ['#3b82f6', '#8b5cf6', '#f97316', '#eab308', '#22c55e'];
 
-  const defaultData = [
-    { name: 'Submissões', value: 0 },
-    { name: 'Análise IA', value: 0 },
-    { name: 'Aprovadas IA', value: 0 },
-    { name: 'Manual Review', value: 0 },
-    { name: 'Aprovadas Final', value: 0 }
-  ];
-
-  const chartData = data || defaultData;
+  const chartData = data || [];
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-5">
       <div className="flex items-center gap-2 mb-4">
         <BarChart3 className="w-4 h-4 text-[var(--pagsmile-blue)]/70" />
-        <h3 className="font-bold text-[var(--pagsmile-blue)]">Funil de Compliance</h3>
+        <h3 className="font-bold text-[var(--pagsmile-blue)]">{t('chart.compliance_funnel')}</h3>
       </div>
 
       <ResponsiveContainer width="100%" height={280}>
@@ -50,7 +38,7 @@ export default function ComplianceFunnelChart({ data }) {
           />
           <Bar dataKey="value" radius={[0, 4, 4, 0]}>
             {chartData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={colors[entry.name] || '#94a3b8'} />
+              <Cell key={`cell-${index}`} fill={colorList[index] || '#94a3b8'} />
             ))}
           </Bar>
         </BarChart>

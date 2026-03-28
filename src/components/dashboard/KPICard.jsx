@@ -1,5 +1,6 @@
 import React from 'react';
 import { TrendingUp, TrendingDown } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function KPICard({ 
   title, 
@@ -54,14 +55,17 @@ export function KPICardComparison({
   title,
   beforeValue,
   afterValue,
-  beforeLabel = 'Antes',
-  afterLabel = 'Depois',
+  beforeLabel,
+  afterLabel,
   improvement,
   improvementLabel,
   target,
   targetLabel,
   colorScheme = 'green'
 }) {
+  const { t } = useTranslation();
+  const resolvedBeforeLabel = beforeLabel || t('kpi.before');
+  const resolvedAfterLabel = afterLabel || t('kpi.after');
   const colors = {
     green: { after: 'text-[#2bc196]', badge: 'bg-[#2bc196]/10 text-[#2bc196]' },
     blue: { after: 'text-[#002443]', badge: 'bg-[#002443]/10 text-[#002443]' },
@@ -76,7 +80,7 @@ export function KPICardComparison({
         {beforeValue !== undefined && beforeValue !== null && (
           <>
             <div className="text-center">
-              <p className="text-xs text-[#282828]/40">{beforeLabel}</p>
+              <p className="text-xs text-[#282828]/40">{resolvedBeforeLabel}</p>
               <p className="text-xl font-bold text-[#282828]/30">{beforeValue}</p>
             </div>
             <span className="text-[#282828]/20">→</span>
@@ -84,7 +88,7 @@ export function KPICardComparison({
         )}
         <div className="text-center">
           {beforeValue !== undefined && beforeValue !== null && (
-            <p className="text-xs text-[#282828]/40">{afterLabel}</p>
+            <p className="text-xs text-[#282828]/40">{resolvedAfterLabel}</p>
           )}
           <p className={`text-2xl font-bold ${scheme.after}`}>{afterValue}</p>
         </div>

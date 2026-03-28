@@ -1,15 +1,19 @@
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function TrendLineChart({ 
   data, 
   title,
-  lines = [
-    { dataKey: 'ia', name: 'Análises IA', color: '#22c55e' },
-    { dataKey: 'manual', name: 'Análises Manual', color: '#f97316' }
-  ],
+  lines,
   height = 280
 }) {
+  const { t } = useTranslation();
+  const defaultLines = [
+    { dataKey: 'ia', name: t('chart.trend_ia'), color: '#22c55e' },
+    { dataKey: 'manual', name: t('chart.trend_manual'), color: '#f97316' }
+  ];
+  const resolvedLines = lines || defaultLines;
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-5">
       <h3 className="font-bold text-[var(--pagsmile-blue)] mb-4">{title}</h3>
@@ -26,7 +30,7 @@ export default function TrendLineChart({
             iconType="circle"
             wrapperStyle={{ paddingTop: '20px' }}
           />
-          {lines.map((line, index) => (
+          {resolvedLines.map((line, index) => (
             <Line 
               key={index}
               type="monotone" 

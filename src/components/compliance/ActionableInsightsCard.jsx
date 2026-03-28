@@ -5,6 +5,7 @@ import {
   AlertTriangle, Clock, FileText, RefreshCw, 
   ArrowRight, Zap, Shield
 } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function ActionableInsightsCard({ 
   manualReviewCount = 0,
@@ -13,52 +14,13 @@ export default function ActionableInsightsCard({
   pendingManualOver24h = 0,
   criticalScoresToday = 0
 }) {
+  const { t } = useTranslation();
   const insights = [
-    {
-      icon: AlertTriangle,
-      color: 'text-amber-500',
-      bg: 'bg-amber-500/10 border-amber-500/20',
-      message: `${manualReviewCount} casos aguardando Revisão Manual`,
-      link: 'QuestionariosRecebidos',
-      linkText: 'Ir para fila',
-      show: manualReviewCount > 0
-    },
-    {
-      icon: Clock,
-      color: 'text-red-500',
-      bg: 'bg-red-500/10 border-red-500/20',
-      message: `${pendingManualOver24h} submissões paradas há +24h`,
-      link: 'QuestionariosRecebidos',
-      linkText: 'Resolver agora',
-      show: pendingManualOver24h > 0
-    },
-    {
-      icon: FileText,
-      color: 'text-purple-500',
-      bg: 'bg-purple-500/10 border-purple-500/20',
-      message: `${pendingDocs} documentos pendentes de validação`,
-      link: 'GestaoDocumentos',
-      linkText: 'Validar docs',
-      show: pendingDocs > 0
-    },
-    {
-      icon: RefreshCw,
-      color: 'text-red-600',
-      bg: 'bg-red-600/10 border-red-600/20',
-      message: `${overdueRevalidations} revalidações atrasadas`,
-      link: 'GestaoRevalidacao',
-      linkText: 'Ver atrasadas',
-      show: overdueRevalidations > 0
-    },
-    {
-      icon: Shield,
-      color: 'text-red-500',
-      bg: 'bg-red-500/10 border-red-500/20',
-      message: `${criticalScoresToday} merchants com score crítico hoje`,
-      link: 'QuestionariosRecebidos',
-      linkText: 'Analisar',
-      show: criticalScoresToday > 0
-    }
+    { icon: AlertTriangle, color: 'text-amber-500', bg: 'bg-amber-500/10 border-amber-500/20', message: t('insights.manual_review', { count: manualReviewCount }), link: 'QuestionariosRecebidos', linkText: t('insights.manual_review_link'), show: manualReviewCount > 0 },
+    { icon: Clock, color: 'text-red-500', bg: 'bg-red-500/10 border-red-500/20', message: t('insights.stalled_24h', { count: pendingManualOver24h }), link: 'QuestionariosRecebidos', linkText: t('insights.stalled_24h_link'), show: pendingManualOver24h > 0 },
+    { icon: FileText, color: 'text-purple-500', bg: 'bg-purple-500/10 border-purple-500/20', message: t('insights.pending_docs', { count: pendingDocs }), link: 'GestaoDocumentos', linkText: t('insights.pending_docs_link'), show: pendingDocs > 0 },
+    { icon: RefreshCw, color: 'text-red-600', bg: 'bg-red-600/10 border-red-600/20', message: t('insights.overdue_reval', { count: overdueRevalidations }), link: 'GestaoRevalidacao', linkText: t('insights.overdue_reval_link'), show: overdueRevalidations > 0 },
+    { icon: Shield, color: 'text-red-500', bg: 'bg-red-500/10 border-red-500/20', message: t('insights.critical_score', { count: criticalScoresToday }), link: 'QuestionariosRecebidos', linkText: t('insights.critical_score_link'), show: criticalScoresToday > 0 },
   ];
 
   const visible = insights.filter(i => i.show);
@@ -71,8 +33,8 @@ export default function ActionableInsightsCard({
             <Zap className="w-5 h-5 text-[#2bc196]" />
           </div>
           <div>
-            <h3 className="font-bold text-[#002443] text-sm">Tudo em dia!</h3>
-            <p className="text-xs text-[#282828]/50">Nenhum item crítico requer atenção imediata.</p>
+            <h3 className="font-bold text-[#002443] text-sm">{t('insights.all_clear')}</h3>
+            <p className="text-xs text-[#282828]/50">{t('insights.all_clear_desc')}</p>
           </div>
         </div>
       </div>
@@ -86,8 +48,8 @@ export default function ActionableInsightsCard({
           <Zap className="w-5 h-5 text-[#5cf7cf]" />
         </div>
         <div>
-          <h3 className="font-bold text-white text-sm">Ações Necessárias</h3>
-          <p className="text-[11px] text-white/50">{visible.length} item(ns) requerem sua atenção</p>
+          <h3 className="font-bold text-white text-sm">{t('insights.actions_needed')}</h3>
+          <p className="text-[11px] text-white/50">{t('insights.items_count', { count: visible.length })}</p>
         </div>
       </div>
 
