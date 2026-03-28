@@ -12,8 +12,10 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import IntroducerFormModal from '@/components/introducers/IntroducerFormModal';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function GestaoLandingPages() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -42,7 +44,7 @@ export default function GestaoLandingPages() {
       queryClient.invalidateQueries({ queryKey: ['introducers-lp'] });
       setModalOpen(false);
       setEditingIntroducer(null);
-      toast.success(editingIntroducer ? 'Landing Page atualizada!' : 'Landing Page criada!');
+      toast.success(editingIntroducer ? t('glp.updated') : t('glp.created'));
     },
   });
 
@@ -52,7 +54,7 @@ export default function GestaoLandingPages() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['introducers-lp'] });
-      toast.success('Status atualizado!');
+      toast.success(t('glp.status_updated'));
     },
   });
 
@@ -80,7 +82,7 @@ export default function GestaoLandingPages() {
     const url = `${window.location.origin}/parceiro/${slug}`;
     navigator.clipboard.writeText(url);
     setCopiedId(slug);
-    toast.success('Link copiado!');
+    toast.success(t('glp.link_copied'));
     setTimeout(() => setCopiedId(null), 2000);
   };
 
@@ -95,20 +97,20 @@ export default function GestaoLandingPages() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#002443]">Landing Pages de Parceiros</h1>
-          <p className="text-sm text-[#002443]/50 mt-1">Crie e gerencie Landing Pages personalizadas para parceiros com taxas por segmento</p>
+          <h1 className="text-2xl font-bold text-[#002443]">{t('glp.title')}</h1>
+          <p className="text-sm text-[#002443]/50 mt-1">{t('glp.subtitle')}</p>
         </div>
         <Button onClick={handleNew} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
-          <Plus className="w-4 h-4 mr-2" /> Nova Landing Page
+          <Plus className="w-4 h-4 mr-2" /> {t('glp.new')}
         </Button>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard label="Landing Pages" value={companyIntroducers.length} icon={LayoutTemplate} />
-        <StatCard label="Ativas" value={companyIntroducers.filter(i => i.landingPageActive !== false).length} icon={Eye} color="green" />
-        <StatCard label="Inativas" value={companyIntroducers.filter(i => i.landingPageActive === false).length} icon={EyeOff} color="slate" />
-        <StatCard label="Leads Gerados" value={companyIntroducers.reduce((sum, i) => sum + getLeadCount(i), 0)} icon={Globe} color="blue" />
+        <StatCard label={t('glp.landing_pages')} value={companyIntroducers.length} icon={LayoutTemplate} />
+        <StatCard label={t('glp.active')} value={companyIntroducers.filter(i => i.landingPageActive !== false).length} icon={Eye} color="green" />
+        <StatCard label={t('glp.inactive')} value={companyIntroducers.filter(i => i.landingPageActive === false).length} icon={EyeOff} color="slate" />
+        <StatCard label={t('glp.leads_generated')} value={companyIntroducers.reduce((sum, i) => sum + getLeadCount(i), 0)} icon={Globe} color="blue" />
       </div>
 
       {/* Search */}
@@ -117,7 +119,7 @@ export default function GestaoLandingPages() {
         <Input
           value={search}
           onChange={e => setSearch(e.target.value)}
-          placeholder="Buscar por nome ou slug..."
+          placeholder={t('glp.search_placeholder')}
           className="pl-10 rounded-xl"
         />
       </div>
@@ -130,10 +132,10 @@ export default function GestaoLandingPages() {
       ) : filtered.length === 0 ? (
         <div className="bg-white rounded-2xl border border-[#002443]/5 p-12 text-center">
           <LayoutTemplate className="w-12 h-12 text-[#002443]/15 mx-auto mb-4" />
-          <h3 className="font-bold text-[#002443] mb-1">Nenhuma Landing Page encontrada</h3>
-          <p className="text-sm text-[#002443]/50 mb-4">Crie uma Landing Page para um parceiro empresa</p>
+          <h3 className="font-bold text-[#002443] mb-1">{t('glp.no_found')}</h3>
+          <p className="text-sm text-[#002443]/50 mb-4">{t('glp.no_found_desc')}</p>
           <Button onClick={handleNew} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
-            <Plus className="w-4 h-4 mr-2" /> Criar Landing Page
+            <Plus className="w-4 h-4 mr-2" /> {t('glp.create')}
           </Button>
         </div>
       ) : (
@@ -141,12 +143,12 @@ export default function GestaoLandingPages() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Parceiro</TableHead>
-                <TableHead>URL da Landing Page</TableHead>
-                <TableHead className="text-center">Segmentos</TableHead>
-                <TableHead className="text-center">Status</TableHead>
-                <TableHead className="text-center">Leads</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
+                <TableHead>{t('glp.partner')}</TableHead>
+                <TableHead>{t('glp.url')}</TableHead>
+                <TableHead className="text-center">{t('glp.segments')}</TableHead>
+                <TableHead className="text-center">{t('glp.status')}</TableHead>
+                <TableHead className="text-center">{t('glp.leads')}</TableHead>
+                <TableHead className="text-right">{t('glp.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -163,7 +165,7 @@ export default function GestaoLandingPages() {
                       )}
                       <div>
                         <p className="font-semibold text-sm text-[#002443]">{intro.companyName || intro.name}</p>
-                        <p className="text-[10px] text-[#002443]/40">Código: {intro.referralCode}</p>
+                        <p className="text-[10px] text-[#002443]/40">{t('glp.code')}: {intro.referralCode}</p>
                       </div>
                     </div>
                   </TableCell>
@@ -178,18 +180,18 @@ export default function GestaoLandingPages() {
                         </button>
                       </div>
                     ) : (
-                      <span className="text-xs text-[#002443]/30">Não configurado</span>
+                      <span className="text-xs text-[#002443]/30">{t('glp.not_configured')}</span>
                     )}
                   </TableCell>
                   <TableCell className="text-center">
                     <div className="flex items-center justify-center gap-1 flex-wrap">
                       {(intro.standardRates || []).length > 0 ? (
                         <Badge className="bg-[#2bc196]/10 text-[#2bc196] text-[10px] border-0">
-                          {intro.standardRates.length} segmentos
+                          {t('glp.n_segments', { count: intro.standardRates.length })}
                         </Badge>
                       ) : (
                         <Badge className="bg-amber-100 text-amber-700 text-[10px] border-0">
-                          Sem taxas
+                          {t('glp.no_rates')}
                         </Badge>
                       )}
                     </div>
@@ -200,7 +202,7 @@ export default function GestaoLandingPages() {
                       className="inline-flex items-center"
                     >
                       <Badge className={`text-xs cursor-pointer transition-all ${intro.landingPageActive !== false ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}>
-                        {intro.landingPageActive !== false ? 'Ativa' : 'Inativa'}
+                        {intro.landingPageActive !== false ? t('glp.active_status') : t('glp.inactive_status')}
                       </Badge>
                     </button>
                   </TableCell>

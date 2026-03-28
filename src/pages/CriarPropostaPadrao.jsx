@@ -15,6 +15,7 @@ import CardAntecipacao from '@/components/proposals/CardAntecipacao';
 import CardOutrasTaxas from '@/components/proposals/CardOutrasTaxas';
 import PropostaPreview from '@/components/proposals/PropostaPreview';
 import { DEFAULT_SEGMENT_RATES } from '@/lib/rateCalculator';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 const SEGMENTS = ['Educação', 'Infoprodutos', 'E-commerce', 'SaaS', 'Gateway', 'Marketplace'];
 
@@ -28,6 +29,7 @@ const parseTaxa = (val) => {
 };
 
 export default function CriarPropostaPadrao() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const urlParams = new URLSearchParams(window.location.search);
   const editId = urlParams.get('edit');
@@ -141,7 +143,7 @@ export default function CriarPropostaPadrao() {
           usaAntecipacao: true,
         }));
 
-        toast.success(`Taxas do segmento "${value}" preenchidas automaticamente`);
+        toast.success(t('cpp.segment_auto', { segment: value }));
       }
     }
   };
@@ -200,20 +202,20 @@ export default function CriarPropostaPadrao() {
 
   const handleSalvarRascunho = async () => {
     if (!form.templateName || !form.segment) {
-      toast.error('Preencha nome e segmento');
+      toast.error(t('cpp.fill_name_segment'));
       return;
     }
     setSaving(true);
     const data = await buildData('rascunho');
-    if (editId) { await base44.entities.StandardProposal.update(editId, data); toast.success('Rascunho atualizado!'); }
-    else { await base44.entities.StandardProposal.create(data); toast.success('Rascunho salvo!'); }
+    if (editId) { await base44.entities.StandardProposal.update(editId, data); toast.success(t('cpp.draft_updated')); }
+    else { await base44.entities.StandardProposal.create(data); toast.success(t('cpp.draft_saved')); }
     setSaving(false);
     navigate('/GestaoPropostasPadrao');
   };
 
   const handleAtivar = async () => {
     if (!form.templateName || !form.segment) {
-      toast.error('Preencha nome e segmento');
+      toast.error(t('cpp.fill_name_segment'));
       return;
     }
     setSaving(true);
@@ -221,7 +223,7 @@ export default function CriarPropostaPadrao() {
     let created;
     if (editId) { await base44.entities.StandardProposal.update(editId, data); created = { id: editId }; }
     else { created = await base44.entities.StandardProposal.create(data); }
-    toast.success('Proposta padrão ativada!');
+    toast.success(t('cpp.activated'));
     setSaving(false);
     navigate(`/PropostaPadraoDetalhes?id=${created.id}`);
   };
@@ -242,16 +244,16 @@ export default function CriarPropostaPadrao() {
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
-            <h1 className="text-lg font-bold text-white">{editId ? 'Editar Proposta Padrão' : 'Nova Proposta Padrão'}</h1>
-            <p className="text-xs text-[#2bc196]/60">Defina as taxas padrão por segmento</p>
+            <h1 className="text-lg font-bold text-white">{editId ? t('cpp.edit_title') : t('cpp.new_title')}</h1>
+            <p className="text-xs text-[#2bc196]/60">{t('cpp.subtitle')}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="ghost" onClick={handleSalvarRascunho} disabled={saving} className="text-white/60 hover:text-white hover:bg-white/5 rounded-xl text-sm">
-            {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />} Rascunho
+            {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />} {t('cpp.draft')}
           </Button>
           <Button onClick={handleAtivar} disabled={saving} className="bg-[#2bc196] hover:bg-[#5cf7cf] text-[#002443] font-bold rounded-xl shadow-lg shadow-[#2bc196]/20 px-6">
-            {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <FileText className="w-4 h-4 mr-2" />} Ativar Proposta
+            {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <FileText className="w-4 h-4 mr-2" />} {t('cpp.activate')}
           </Button>
         </div>
       </div>
@@ -262,26 +264,26 @@ export default function CriarPropostaPadrao() {
           {/* Dados da Proposta Padrão */}
           {/* Dados da Empresa */}
           <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-5 space-y-4">
-           <h2 className="text-sm font-bold text-white/80 uppercase tracking-wider">Dados da Empresa</h2>
+           <h2 className="text-sm font-bold text-white/80 uppercase tracking-wider">{t('cpp.company_data')}</h2>
            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
              <div>
-               <Label className="text-white/60 text-xs">Nome da Empresa *</Label>
-               <Input value={form.clienteNome} onChange={e => updateForm('clienteNome', e.target.value)} placeholder="Razão Social ou Nome Fantasia" className="bg-white/10 border-white/10 text-white placeholder:text-white/30" />
-             </div>
-             <div>
-               <Label className="text-white/60 text-xs">CNPJ</Label>
+               <Label className="text-white/60 text-xs">{t('cpp.company_name')}</Label>
+               <Input value={form.clienteNome} onChange={e => updateForm('clienteNome', e.target.value)} placeholder={t('cpp.company_placeholder')} className="bg-white/10 border-white/10 text-white placeholder:text-white/30" />
+               </div>
+               <div>
+               <Label className="text-white/60 text-xs">{t('cpp.cnpj')}</Label>
                <Input value={form.clienteCnpj} onChange={e => updateForm('clienteCnpj', e.target.value)} placeholder="00.000.000/0000-00" className="bg-white/10 border-white/10 text-white placeholder:text-white/30" />
-             </div>
-             <div>
-               <Label className="text-white/60 text-xs">Nome do Contato</Label>
-               <Input value={form.clienteContato} onChange={e => updateForm('clienteContato', e.target.value)} placeholder="Nome do responsável" className="bg-white/10 border-white/10 text-white placeholder:text-white/30" />
-             </div>
-             <div>
-               <Label className="text-white/60 text-xs">Telefone do Contato</Label>
+               </div>
+               <div>
+               <Label className="text-white/60 text-xs">{t('cpp.contact_name')}</Label>
+               <Input value={form.clienteContato} onChange={e => updateForm('clienteContato', e.target.value)} placeholder={t('cpp.contact_name_placeholder')} className="bg-white/10 border-white/10 text-white placeholder:text-white/30" />
+               </div>
+               <div>
+               <Label className="text-white/60 text-xs">{t('cpp.contact_phone')}</Label>
                <Input value={form.clienteTelefone} onChange={e => updateForm('clienteTelefone', e.target.value)} placeholder="(00) 00000-0000" className="bg-white/10 border-white/10 text-white placeholder:text-white/30" />
-             </div>
-             <div>
-               <Label className="text-white/60 text-xs">E-mail do Contato</Label>
+               </div>
+               <div>
+               <Label className="text-white/60 text-xs">{t('cpp.contact_email')}</Label>
                <Input value={form.clienteEmail} onChange={e => updateForm('clienteEmail', e.target.value)} placeholder="email@empresa.com" className="bg-white/10 border-white/10 text-white placeholder:text-white/30" />
              </div>
            </div>
@@ -289,26 +291,26 @@ export default function CriarPropostaPadrao() {
 
           {/* Dados da Proposta */}
           <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 p-5 space-y-4">
-           <h2 className="text-sm font-bold text-white/80 uppercase tracking-wider">Dados da Proposta</h2>
+           <h2 className="text-sm font-bold text-white/80 uppercase tracking-wider">{t('cpp.proposal_data')}</h2>
            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-             <div>
-               <Label className="text-white/60 text-xs">Nome do Modelo *</Label>
-               <Input value={form.templateName} onChange={e => updateForm('templateName', e.target.value)} placeholder="Ex: Proposta Padrão E-commerce" className="bg-white/10 border-white/10 text-white placeholder:text-white/30" />
-             </div>
-             <div className="md:col-span-2">
-               <Label className="text-white/60 text-xs">Descrição</Label>
-               <Input value={form.description} onChange={e => updateForm('description', e.target.value)} placeholder="Descrição breve" className="bg-white/10 border-white/10 text-white placeholder:text-white/30" />
+              <div>
+                <Label className="text-white/60 text-xs">{t('cpp.template_name')}</Label>
+                <Input value={form.templateName} onChange={e => updateForm('templateName', e.target.value)} placeholder={t('cpp.template_placeholder')} className="bg-white/10 border-white/10 text-white placeholder:text-white/30" />
+              </div>
+              <div className="md:col-span-2">
+                <Label className="text-white/60 text-xs">{t('cpp.description')}</Label>
+                <Input value={form.description} onChange={e => updateForm('description', e.target.value)} placeholder={t('cpp.description_placeholder')} className="bg-white/10 border-white/10 text-white placeholder:text-white/30" />
              </div>
              </div>
 
              {/* Segmento - Botões */}
              <div className="mt-2">
              <div className="flex items-center gap-2 mb-3">
-               <Label className="text-white/80 text-sm font-bold">Segmento *</Label>
+               <Label className="text-white/80 text-sm font-bold">{t('cpp.segment')}</Label>
                {!form.segment && (
                  <span className="flex items-center gap-1.5 bg-[#2bc196]/15 text-[#5cf7cf] text-xs font-semibold px-3 py-1 rounded-full animate-pulse">
                    <Info className="w-3.5 h-3.5" />
-                   Selecione o segmento para gerar as taxas padrão
+                   {t('cpp.select_segment')}
                  </span>
                )}
              </div>
@@ -331,7 +333,7 @@ export default function CriarPropostaPadrao() {
              {form.segment && (
                <p className="text-[10px] text-[#2bc196]/60 flex items-center gap-1.5 mt-3">
                  <Info className="w-3 h-3" />
-                 Taxas preenchidas pelo segmento "{form.segment}". Selecione outro segmento para alterar.
+                 {t('cpp.segment_filled', { segment: form.segment })}
                </p>
              )}
              </div>

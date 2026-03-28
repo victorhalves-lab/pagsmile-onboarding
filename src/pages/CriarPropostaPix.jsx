@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ArrowLeft, Save, FileText, Loader2, Building2, Banknote, Shield } from 'lucide-react';
 import { toast } from 'sonner';
 import CnpjInput from '@/components/proposals/CnpjInput';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 const parseTaxa = (val) => {
   if (!val && val !== 0) return 0;
@@ -20,6 +21,7 @@ const parseTaxa = (val) => {
 };
 
 export default function CriarPropostaPix() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const urlParams = new URLSearchParams(window.location.search);
   const leadId = urlParams.get('lead') || urlParams.get('lead_id') || urlParams.get('leadId');
@@ -95,9 +97,9 @@ export default function CriarPropostaPix() {
 
   const validate = () => {
     const newErrors = {};
-    if (!form.clienteNome) newErrors.clienteNome = 'Obrigatório';
-    if (!form.clienteCnpj || form.clienteCnpj.replace(/\D/g, '').length !== 14) newErrors.clienteCnpj = 'CNPJ inválido (14 dígitos)';
-    if (!pixValor && pixValor !== 0) newErrors.pixValor = 'Informe o valor da taxa PIX';
+    if (!form.clienteNome) newErrors.clienteNome = t('cpx.required');
+    if (!form.clienteCnpj || form.clienteCnpj.replace(/\D/g, '').length !== 14) newErrors.clienteCnpj = t('cpx.invalid_cnpj');
+    if (!pixValor && pixValor !== 0) newErrors.pixValor = t('cpx.pix_required');
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -136,14 +138,14 @@ export default function CriarPropostaPix() {
   const handleSalvarRascunho = async () => {
     setSaving(true);
     const data = await buildData('rascunho');
-    if (editId) { await base44.entities.PixProposal.update(editId, data); toast.success('Rascunho atualizado!'); }
-    else { await base44.entities.PixProposal.create(data); toast.success('Rascunho salvo!'); }
+    if (editId) { await base44.entities.PixProposal.update(editId, data); toast.success(t('cpx.draft_updated')); }
+    else { await base44.entities.PixProposal.create(data); toast.success(t('cpx.draft_saved')); }
     setSaving(false);
     navigate('/GestaoPropostasPix');
   };
 
   const handleGerarProposta = async () => {
-    if (!validate()) { toast.error('Preencha todos os campos obrigatórios'); return; }
+    if (!validate()) { toast.error(t('cpx.fill_required')); return; }
     setSaving(true);
     const data = await buildData('enviada');
     let created;
@@ -159,7 +161,7 @@ export default function CriarPropostaPix() {
       await base44.entities.Lead.update(data.leadId, { currentProposalId: created.id, status: 'proposta_enviada', lastInteractionDate: new Date().toISOString() });
       await base44.entities.LeadActivity.create({ leadId: data.leadId, activityType: 'proposta_criada', description: `Proposta PIX ${data.codigo} criada`, performedBy: data.responsavelNome || 'admin', activityDate: new Date().toISOString() });
     }
-    toast.success('Proposta PIX gerada com sucesso!');
+    toast.success(t('cpx.generated'));
     setSaving(false);
     navigate(`/PropostaPixDetalhes?id=${created.id}`);
   };
@@ -177,16 +179,16 @@ export default function CriarPropostaPix() {
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
-            <h1 className="text-lg font-bold text-white">{editId ? 'Editar Proposta PIX' : 'Nova Proposta PIX'}</h1>
-            <p className="text-xs text-[#2bc196]/60">Defina a taxa PIX e TPV mínimo</p>
+            <h1 className="text-lg font-bold text-white">{editId ? t('cpx.edit_title') : t('cpx.new_title')}</h1>
+            <p className="text-xs text-[#2bc196]/60">{t('cpx.subtitle')}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="ghost" onClick={handleSalvarRascunho} disabled={saving} className="text-white/60 hover:text-white hover:bg-white/5 rounded-xl text-sm">
-            {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />} Rascunho
+            {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />} {t('cpx.draft')}
           </Button>
           <Button onClick={handleGerarProposta} disabled={saving} className="bg-[#2bc196] hover:bg-[#5cf7cf] text-[#002443] font-bold rounded-xl shadow-lg shadow-[#2bc196]/20 px-6">
-            {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <FileText className="w-4 h-4 mr-2" />} Gerar Proposta
+            {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <FileText className="w-4 h-4 mr-2" />} {t('cpx.generate')}
           </Button>
         </div>
       </div>
@@ -196,7 +198,7 @@ export default function CriarPropostaPix() {
         <div className="rounded-2xl bg-white/[0.03] border border-white/5 p-5 space-y-4">
           <div className="flex items-center gap-2 mb-1">
             <div className="w-7 h-7 rounded-lg bg-[#2bc196]/10 flex items-center justify-center"><Building2 className="w-3.5 h-3.5 text-[#2bc196]" /></div>
-            <h2 className="text-sm font-bold text-white">Dados do Cliente</h2>
+            <h2 className="text-sm font-bold text-white">{t('cpx.client_data')}</h2>
           </div>
 
           {leads && leads.length > 0 && (
@@ -211,29 +213,29 @@ export default function CriarPropostaPix() {
           )}
 
           <div className="space-y-1">
-            <Label className={labelCls}>Nome da Empresa *</Label>
-            <Input value={form.clienteNome || ''} onChange={(e) => updateForm('clienteNome', e.target.value)} placeholder="Razão social ou nome fantasia"
+            <Label className={labelCls}>{t('cpx.company_name')}</Label>
+            <Input value={form.clienteNome || ''} onChange={(e) => updateForm('clienteNome', e.target.value)} placeholder={t('cpx.company_placeholder')}
               className={`${inputCls} ${errors?.clienteNome ? 'border-red-400/50' : ''}`} />
             {errors?.clienteNome && <p className={errorCls}>{errors.clienteNome}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
-              <Label className={labelCls}>CNPJ *</Label>
+              <Label className={labelCls}>{t('cpx.cnpj')}</Label>
               <CnpjInput value={form.clienteCnpj || ''} onChange={(val) => updateForm('clienteCnpj', val)} error={errors?.clienteCnpj}
                 className={`${inputCls} ${errors?.clienteCnpj ? 'border-red-400/50' : ''}`} />
               {errors?.clienteCnpj && <p className={errorCls}>{errors.clienteCnpj}</p>}
             </div>
             <div className="space-y-1">
-              <Label className={labelCls}>MCC</Label>
+              <Label className={labelCls}>{t('cpx.mcc')}</Label>
               <Input value={form.clienteMcc || ''} onChange={(e) => updateForm('clienteMcc', e.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="5812"
                 className={inputCls} />
             </div>
           </div>
 
           <div className="space-y-1">
-            <Label className={labelCls}>Contato</Label>
-            <Input value={form.clienteContato || ''} onChange={(e) => updateForm('clienteContato', e.target.value)} placeholder="Nome do contato principal"
+            <Label className={labelCls}>{t('cpx.contact')}</Label>
+            <Input value={form.clienteContato || ''} onChange={(e) => updateForm('clienteContato', e.target.value)} placeholder={t('cpx.contact_placeholder')}
               className={inputCls} />
           </div>
         </div>
@@ -242,24 +244,24 @@ export default function CriarPropostaPix() {
         <div className="rounded-2xl bg-white/[0.03] border border-white/5 p-5 space-y-4">
           <div className="flex items-center gap-2 mb-1">
             <div className="w-7 h-7 rounded-lg bg-[#2bc196]/10 flex items-center justify-center"><Banknote className="w-3.5 h-3.5 text-[#2bc196]" /></div>
-            <h2 className="text-sm font-bold text-white">Taxa PIX</h2>
+            <h2 className="text-sm font-bold text-white">{t('cpx.pix_rate')}</h2>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
-              <Label className={labelCls}>Tipo de Cobrança *</Label>
+              <Label className={labelCls}>{t('cpx.charge_type')}</Label>
               <Select value={pixTipo} onValueChange={setPixTipo}>
                 <SelectTrigger className={inputCls}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="percentual">Percentual (%)</SelectItem>
-                  <SelectItem value="fixo">Fixo (R$)</SelectItem>
+                  <SelectItem value="percentual">{t('cpx.percentage')}</SelectItem>
+                  <SelectItem value="fixo">{t('cpx.fixed')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1">
-              <Label className={labelCls}>Valor da Taxa *</Label>
+              <Label className={labelCls}>{t('cpx.rate_value')}</Label>
               <div className="relative">
                 <Input
                   value={pixValor}
@@ -280,45 +282,45 @@ export default function CriarPropostaPix() {
         <div className="rounded-2xl bg-white/[0.03] border border-white/5 p-5 space-y-4">
           <div className="flex items-center gap-2 mb-1">
             <div className="w-7 h-7 rounded-lg bg-[#2bc196]/10 flex items-center justify-center"><Shield className="w-3.5 h-3.5 text-[#2bc196]" /></div>
-            <h2 className="text-sm font-bold text-white">TPV Mínimo Garantido</h2>
+            <h2 className="text-sm font-bold text-white">{t('cpx.min_tpv')}</h2>
           </div>
 
           <div className="grid grid-cols-3 gap-4">
             <div className="space-y-1">
-              <Label className={labelCls}>Mês 1 (R$)</Label>
+              <Label className={labelCls}>{t('cpx.month1')}</Label>
               <Input value={minimoGarantido.mes1} onChange={(e) => setMinimoGarantido(prev => ({ ...prev, mes1: e.target.value }))}
                 placeholder="0.00" className={inputCls} />
             </div>
             <div className="space-y-1">
-              <Label className={labelCls}>Mês 2 (R$)</Label>
+              <Label className={labelCls}>{t('cpx.month2')}</Label>
               <Input value={minimoGarantido.mes2} onChange={(e) => setMinimoGarantido(prev => ({ ...prev, mes2: e.target.value }))}
                 placeholder="0.00" className={inputCls} />
             </div>
             <div className="space-y-1">
-              <Label className={labelCls}>Mês 3+ (R$)</Label>
+              <Label className={labelCls}>{t('cpx.month3')}</Label>
               <Input value={minimoGarantido.mes3} onChange={(e) => setMinimoGarantido(prev => ({ ...prev, mes3: e.target.value }))}
                 placeholder="0.00" className={inputCls} />
             </div>
           </div>
-          <p className="text-[10px] text-white/30">* "Mês 3+" representa o TPV mínimo a partir do terceiro mês de operação.</p>
+          <p className="text-[10px] text-white/30">{t('cpx.month3_note')}</p>
         </div>
 
         {/* Preview Card */}
         <div className="rounded-2xl bg-[#2bc196]/5 border border-[#2bc196]/20 p-5 space-y-3">
-          <h3 className="text-sm font-bold text-[#2bc196]">Resumo da Proposta</h3>
+          <h3 className="text-sm font-bold text-[#2bc196]">{t('cpx.summary')}</h3>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <p className="text-white/40 text-xs">Cliente</p>
+              <p className="text-white/40 text-xs">{t('cpx.client')}</p>
               <p className="text-white font-semibold">{form.clienteNome || '—'}</p>
             </div>
             <div>
-              <p className="text-white/40 text-xs">Taxa PIX</p>
+              <p className="text-white/40 text-xs">{t('cpx.pix_rate')}</p>
               <p className="text-white font-semibold">
                 {pixValor ? (pixTipo === 'percentual' ? `${pixValor}%` : `R$ ${pixValor}`) : '—'}
               </p>
             </div>
             <div>
-              <p className="text-white/40 text-xs">TPV Mín. Mês 3+</p>
+              <p className="text-white/40 text-xs">{t('cpx.min_tpv_m3')}</p>
               <p className="text-white font-semibold">
                 {minimoGarantido.mes3 ? `R$ ${parseTaxa(minimoGarantido.mes3).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '—'}
               </p>
