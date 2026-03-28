@@ -1573,4 +1573,29 @@ export const zh = {
   'gpx.accepted_on': '已接受 {date}',
   'gpx.rejected_on': '已拒绝 {date}',
   'gpx.created_on': '已创建 {date}',
+
+  // ═══ GESTÃO INTRODUCERS ═══
+  'gi.title': '推荐人管理',
+  'gi.subtitle': '管理您的推荐合作伙伴并跟踪业绩',
+  'gi.new': '新建推荐人',
+  'gi.search_placeholder': '按名称、UTM代码或邮箱搜索...',
+  'gi.all_statuses': '全部',
+  'gi.active': '活跃',
+  'gi.inactive': '不活跃',
+  'gi.clear': '清除',
+  'gi.created_success': '推荐人创建成功！',
+  'gi.updated_success': '推荐人已更新！',
+  'gi.duplicate_code': '已存在使用此推荐代码的推荐人',
+  'gi.duplicate_slug': '已存在使用此着陆页slug的推荐人',
+
+  // ═══ LINK GENERATOR (sub-component) ═══
+  'lg.trackable_link': '生成可追踪链接',
+  'lg.seller_name': '销售人员姓名（可选）',
+  'lg.seller_placeholder': '例如：张三',
+  'lg.generated_link': '已生成链接：',
+  'lg.generate_another': '生成另一个',
+  'lg.cancel': '取消',
+  'lg.generate': '生成链接',
+  'lg.success': '可追踪链接已生成！',
+  'lg.copied': '链接已复制！',
 };

@@ -300,6 +300,7 @@ export default function LinksQuestionariosLeads() {
 }
 
 function LinkGenerator({ type, label, basePage, baseParams, icon: Icon }) {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [agentName, setAgentName] = useState('');
   const [generatedLink, setGeneratedLink] = useState(null);
@@ -326,7 +327,7 @@ function LinkGenerator({ type, label, basePage, baseParams, icon: Icon }) {
       let url = `${window.location.origin}${createPageUrl(basePage)}?ref=${data.uniqueCode}`;
       if (baseParams) url += `&${baseParams}`;
       setGeneratedLink(url);
-      toast.success('Link rastreável gerado!');
+      toast.success(t('lg.success'));
     },
     onError: (error) => {
       toast.error('Erro ao gerar link');
@@ -341,7 +342,7 @@ function LinkGenerator({ type, label, basePage, baseParams, icon: Icon }) {
     if (!generatedLink) return;
     await navigator.clipboard.writeText(generatedLink);
     setCopied(true);
-    toast.success('Link copiado!');
+    toast.success(t('lg.copied'));
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -350,7 +351,7 @@ function LinkGenerator({ type, label, basePage, baseParams, icon: Icon }) {
       <Button variant="ghost" className="w-full justify-between" onClick={() => setIsOpen(true)}>
         <span className="flex items-center gap-2">
           <Plus className="w-4 h-4" />
-          {label}
+          {t('lg.trackable_link')}
         </span>
         <ArrowRight className="w-4 h-4 text-slate-400" />
       </Button>
@@ -360,9 +361,9 @@ function LinkGenerator({ type, label, basePage, baseParams, icon: Icon }) {
   return (
     <div className="w-full space-y-4 pt-4 border-t border-[#002443]/5 animate-in slide-in-from-top-2">
       <div className="space-y-2">
-        <Label className="text-xs">Nome do Vendedor (Opcional)</Label>
+        <Label className="text-xs">{t('lg.seller_name')}</Label>
         <Input 
-          placeholder="Ex: João Silva" 
+          placeholder={t('lg.seller_placeholder')} 
           value={agentName}
           onChange={(e) => setAgentName(e.target.value)}
           className="h-9 text-sm"
@@ -371,7 +372,7 @@ function LinkGenerator({ type, label, basePage, baseParams, icon: Icon }) {
       
       {generatedLink ? (
         <div className="space-y-2">
-          <Label className="text-xs text-green-600 font-bold">Link Gerado:</Label>
+          <Label className="text-xs text-green-600 font-bold">{t('lg.generated_link')}</Label>
           <div className="flex gap-2">
             <Input readOnly value={generatedLink} className="font-mono text-xs bg-[#5cf7cf]/10 border-[#2bc196]/30 rounded-lg" />
             <Button size="sm" onClick={handleCopy} className={copied ? 'bg-green-600' : ''}>
@@ -387,13 +388,13 @@ function LinkGenerator({ type, label, basePage, baseParams, icon: Icon }) {
               setAgentName('');
             }}
           >
-            Gerar outro
+            {t('lg.generate_another')}
           </Button>
         </div>
       ) : (
         <div className="flex gap-2">
           <Button variant="outline" size="sm" className="flex-1" onClick={() => setIsOpen(false)}>
-            Cancelar
+            {t('lg.cancel')}
           </Button>
           <Button 
             size="sm" 
@@ -402,7 +403,7 @@ function LinkGenerator({ type, label, basePage, baseParams, icon: Icon }) {
             disabled={createLinkMutation.isPending}
           >
             {createLinkMutation.isPending ? <Loader2 className="w-3 h-3 animate-spin mr-2" /> : null}
-            Gerar Link
+            {t('lg.generate')}
           </Button>
         </div>
       )}

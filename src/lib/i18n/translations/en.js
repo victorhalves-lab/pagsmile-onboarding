@@ -1802,4 +1802,29 @@ export const en = {
   'gpx.accepted_on': 'Accepted {date}',
   'gpx.rejected_on': 'Rejected {date}',
   'gpx.created_on': 'Created {date}',
+
+  // ═══ GESTÃO INTRODUCERS ═══
+  'gi.title': 'Introducer Management',
+  'gi.subtitle': 'Manage your referral partners and track performance',
+  'gi.new': 'New Introducer',
+  'gi.search_placeholder': 'Search by name, UTM code or email...',
+  'gi.all_statuses': 'All',
+  'gi.active': 'Active',
+  'gi.inactive': 'Inactive',
+  'gi.clear': 'Clear',
+  'gi.created_success': 'Introducer created successfully!',
+  'gi.updated_success': 'Introducer updated!',
+  'gi.duplicate_code': 'An Introducer with this referral code already exists',
+  'gi.duplicate_slug': 'An Introducer with this Landing Page slug already exists',
+
+  // ═══ LINK GENERATOR (sub-component) ═══
+  'lg.trackable_link': 'Generate Trackable Link',
+  'lg.seller_name': 'Seller Name (Optional)',
+  'lg.seller_placeholder': 'E.g.: John Smith',
+  'lg.generated_link': 'Generated Link:',
+  'lg.generate_another': 'Generate another',
+  'lg.cancel': 'Cancel',
+  'lg.generate': 'Generate Link',
+  'lg.success': 'Trackable link generated!',
+  'lg.copied': 'Link copied!',
 };

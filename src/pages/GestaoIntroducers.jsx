@@ -9,8 +9,10 @@ import { toast } from 'sonner';
 import IntroducerKPIs from '../components/introducers/IntroducerKPIs';
 import IntroducerTable from '../components/introducers/IntroducerTable';
 import IntroducerFormModal from '../components/introducers/IntroducerFormModal';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function GestaoIntroducers() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -36,7 +38,7 @@ export default function GestaoIntroducers() {
     mutationFn: (data) => base44.entities.Introducer.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['introducers'] });
-      toast.success('Introducer criado com sucesso!');
+      toast.success(t('gi.created_success'));
       setModalOpen(false);
     }
   });
@@ -45,7 +47,7 @@ export default function GestaoIntroducers() {
     mutationFn: ({ id, data }) => base44.entities.Introducer.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['introducers'] });
-      toast.success('Introducer atualizado!');
+      toast.success(t('gi.updated_success'));
       setModalOpen(false);
       setEditingIntroducer(null);
     }
@@ -55,11 +57,11 @@ export default function GestaoIntroducers() {
     const editId = editingIntroducer?.id;
     // Check unique referralCode
     const existingCode = introducers.find(i => i.referralCode === formData.referralCode && i.id !== editId);
-    if (existingCode) { toast.error('Já existe um Introducer com este código de referência'); return; }
+    if (existingCode) { toast.error(t('gi.duplicate_code')); return; }
     // Check unique slug for companies
     if (formData.type === 'company' && formData.uniqueLandingPageSlug) {
       const existingSlug = introducers.find(i => i.uniqueLandingPageSlug === formData.uniqueLandingPageSlug && i.id !== editId);
-      if (existingSlug) { toast.error('Já existe um Introducer com este slug de Landing Page'); return; }
+      if (existingSlug) { toast.error(t('gi.duplicate_slug')); return; }
     }
     if (!editingIntroducer) {
       createMutation.mutate(formData);
@@ -105,8 +107,8 @@ export default function GestaoIntroducers() {
               <Users className="w-6 h-6 text-[#5cf7cf]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Gestão de Introducers</h1>
-              <p className="text-white/60 text-sm mt-1">Gerencie seus parceiros de indicação e acompanhe a performance</p>
+              <h1 className="text-2xl font-bold text-white">{t('gi.title')}</h1>
+              <p className="text-white/60 text-sm mt-1">{t('gi.subtitle')}</p>
             </div>
           </div>
           <div className="flex gap-2">
@@ -114,7 +116,7 @@ export default function GestaoIntroducers() {
               <RefreshCw className="w-4 h-4" />
             </Button>
             <Button size="sm" onClick={handleNewIntroducer} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
-              <Plus className="w-4 h-4 mr-2" /> Novo Introducer
+              <Plus className="w-4 h-4 mr-2" /> {t('gi.new')}
             </Button>
           </div>
         </div>
@@ -127,19 +129,19 @@ export default function GestaoIntroducers() {
       <div className="flex flex-wrap gap-3 items-center">
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/40" />
-          <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar por nome, código UTM ou e-mail..." className="pl-10 h-10 rounded-xl" />
+          <Input value={search} onChange={e => setSearch(e.target.value)} placeholder={t('gi.search_placeholder')} className="pl-10 h-10 rounded-xl" />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[150px] h-10 rounded-xl"><SelectValue placeholder="Status" /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
-            <SelectItem value="active">Ativos</SelectItem>
-            <SelectItem value="inactive">Inativos</SelectItem>
+            <SelectItem value="all">{t('gi.all_statuses')}</SelectItem>
+            <SelectItem value="active">{t('gi.active')}</SelectItem>
+            <SelectItem value="inactive">{t('gi.inactive')}</SelectItem>
           </SelectContent>
         </Select>
         {hasFilters && (
           <Button variant="ghost" size="sm" onClick={() => { setSearch(''); setStatusFilter('all'); }}>
-            <X className="w-4 h-4 mr-1" /> Limpar
+            <X className="w-4 h-4 mr-1" /> {t('gi.clear')}
           </Button>
         )}
       </div>

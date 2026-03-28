@@ -1790,4 +1790,29 @@ export const pt = {
   'gpx.accepted_on': 'Aceita {date}',
   'gpx.rejected_on': 'Recusada {date}',
   'gpx.created_on': 'Criada {date}',
+
+  // ═══ GESTÃO INTRODUCERS ═══
+  'gi.title': 'Gestão de Introducers',
+  'gi.subtitle': 'Gerencie seus parceiros de indicação e acompanhe a performance',
+  'gi.new': 'Novo Introducer',
+  'gi.search_placeholder': 'Buscar por nome, código UTM ou e-mail...',
+  'gi.all_statuses': 'Todos',
+  'gi.active': 'Ativos',
+  'gi.inactive': 'Inativos',
+  'gi.clear': 'Limpar',
+  'gi.created_success': 'Introducer criado com sucesso!',
+  'gi.updated_success': 'Introducer atualizado!',
+  'gi.duplicate_code': 'Já existe um Introducer com este código de referência',
+  'gi.duplicate_slug': 'Já existe um Introducer com este slug de Landing Page',
+
+  // ═══ LINK GENERATOR (sub-component) ═══
+  'lg.trackable_link': 'Gerar Link Rastreável',
+  'lg.seller_name': 'Nome do Vendedor (Opcional)',
+  'lg.seller_placeholder': 'Ex: João Silva',
+  'lg.generated_link': 'Link Gerado:',
+  'lg.generate_another': 'Gerar outro',
+  'lg.cancel': 'Cancelar',
+  'lg.generate': 'Gerar Link',
+  'lg.success': 'Link rastreável gerado!',
+  'lg.copied': 'Link copiado!',
 };
