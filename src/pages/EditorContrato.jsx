@@ -19,17 +19,19 @@ import PrecosForm from '@/components/contrato/PrecosForm';
 import SLAsForm from '@/components/contrato/SLAsForm';
 import AssinaturaForm from '@/components/contrato/AssinaturaForm';
 import ConteudoContrato from '@/components/contrato/ConteudoContrato';
-
-const STATUS_CONFIG = {
-  pre_generated: { label: 'Pré-gerado', color: 'bg-amber-100 text-amber-800' },
-  under_review: { label: 'Em Revisão', color: 'bg-blue-100 text-blue-800' },
-  ready: { label: 'Pronto', color: 'bg-green-100 text-green-800' },
-  sent: { label: 'Enviado', color: 'bg-purple-100 text-purple-800' },
-  signed: { label: 'Assinado', color: 'bg-emerald-100 text-emerald-800' },
-  cancelled: { label: 'Cancelado', color: 'bg-red-100 text-red-800' },
-};
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function EditorContrato() {
+  const { t } = useTranslation();
+
+  const STATUS_CONFIG = {
+    pre_generated: { label: t('gc.pre_generated'), color: 'bg-amber-100 text-amber-800' },
+    under_review: { label: t('gc.under_review'), color: 'bg-blue-100 text-blue-800' },
+    ready: { label: t('gc.ready'), color: 'bg-green-100 text-green-800' },
+    sent: { label: t('gc.sent'), color: 'bg-purple-100 text-purple-800' },
+    signed: { label: t('gc.signed'), color: 'bg-emerald-100 text-emerald-800' },
+    cancelled: { label: t('gc.cancelled'), color: 'bg-red-100 text-red-800' },
+  };
   const urlParams = new URLSearchParams(window.location.search);
   const contractId = urlParams.get('id');
   const navigate = useNavigate();
@@ -68,7 +70,7 @@ export default function EditorContrato() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contract', contractId] });
       setHasChanges(false);
-      toast.success('Contrato salvo com sucesso!');
+      toast.success(t('ec.saved_success'));
     },
   });
 
@@ -105,11 +107,11 @@ export default function EditorContrato() {
   const statusCfg = STATUS_CONFIG[formData.status] || STATUS_CONFIG.pre_generated;
 
   const TABS = [
-    { id: 'cliente', label: 'Cliente', icon: Users },
-    { id: 'modulos', label: 'Módulos', icon: Layers },
-    { id: 'precos', label: 'Preços', icon: DollarSign },
-    { id: 'slas', label: 'SLAs', icon: Shield },
-    { id: 'assinatura', label: 'Assinatura', icon: PenTool },
+    { id: 'cliente', label: t('ec.tab_client'), icon: Users },
+    { id: 'modulos', label: t('ec.tab_modules'), icon: Layers },
+    { id: 'precos', label: t('ec.tab_prices'), icon: DollarSign },
+    { id: 'slas', label: t('ec.tab_slas'), icon: Shield },
+    { id: 'assinatura', label: t('ec.tab_signature'), icon: PenTool },
   ];
 
   return (
@@ -124,7 +126,7 @@ export default function EditorContrato() {
             </Button>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-lg font-bold text-[#002443]">Editor de Contrato</h1>
+                <h1 className="text-lg font-bold text-[#002443]">{t('ec.title')}</h1>
                 <Badge className={statusCfg.color}>{statusCfg.label}</Badge>
               </div>
               <p className="text-xs text-[#002443]/50">
@@ -134,14 +136,14 @@ export default function EditorContrato() {
           </div>
           <div className="flex items-center gap-2">
             {hasChanges && (
-              <Badge className="bg-amber-100 text-amber-700">Alterações não salvas</Badge>
+              <Badge className="bg-amber-100 text-amber-700">{t('ec.unsaved')}</Badge>
             )}
             <Button variant="outline" onClick={() => saveMutation.mutate(formData)} disabled={saveMutation.isPending} className="rounded-xl border-[#002443]/10 text-sm">
               {saveMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
-              Salvar
+              {t('ec.save')}
             </Button>
             <Button onClick={handleGenerateContract} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl px-5 font-bold">
-              <Eye className="w-4 h-4 mr-2" /> Gerar Contrato
+              <Eye className="w-4 h-4 mr-2" /> {t('ec.generate')}
             </Button>
           </div>
         </div>
@@ -150,18 +152,18 @@ export default function EditorContrato() {
         <div className="flex items-center gap-4 px-6 py-2 bg-white border-b border-[#002443]/5 shrink-0">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-green-600" />
-            <span className="text-xs font-medium text-green-700">{preFilledCount} campos preenchidos</span>
+            <span className="text-xs font-medium text-green-700">{t('ec.fields_filled', { count: preFilledCount })}</span>
           </div>
           {missingCount > 0 && (
             <div className="flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-amber-600" />
-              <span className="text-xs font-medium text-amber-700">{missingCount} pendentes</span>
+              <span className="text-xs font-medium text-amber-700">{t('ec.fields_pending', { count: missingCount })}</span>
             </div>
           )}
           {formData.proposalLocked && (
             <div className="flex items-center gap-2">
               <Shield className="w-4 h-4 text-blue-600" />
-              <span className="text-xs font-medium text-blue-700">Taxas travadas</span>
+              <span className="text-xs font-medium text-blue-700">{t('ec.rates_locked')}</span>
             </div>
           )}
         </div>
@@ -205,8 +207,8 @@ export default function EditorContrato() {
       {/* Right Column - Preview do Contrato */}
       <div className="w-[520px] bg-white border-l border-[#002443]/10 flex flex-col shrink-0 hidden lg:flex">
         <div className="px-6 py-3 border-b border-[#002443]/5 bg-[#002443]/[0.02]">
-          <h2 className="text-sm font-bold text-[#002443]">Preview do Contrato</h2>
-          <p className="text-[10px] text-[#002443]/40">Atualizado em tempo real conforme preenchimento</p>
+          <h2 className="text-sm font-bold text-[#002443]">{t('ec.preview_title')}</h2>
+          <p className="text-[10px] text-[#002443]/40">{t('ec.preview_desc')}</p>
         </div>
         <div className="flex-1 overflow-y-auto">
           <div className="transform scale-[0.65] origin-top-left w-[154%]">

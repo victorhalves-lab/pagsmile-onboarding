@@ -14,8 +14,10 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import LinkAnalyticsDashboard from '../components/analytics/LinkAnalyticsDashboard';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function GerarLinkOnboarding() {
+  const { t } = useTranslation();
   const [copiedKey, setCopiedKey] = useState(null);
   const [expandedLinkId, setExpandedLinkId] = useState(null);
   const [historyFilter, setHistoryFilter] = useState('all');
@@ -55,12 +57,12 @@ export default function GerarLinkOnboarding() {
         : {};
       return base44.entities.OnboardingLink.create({ ...data, ...introducerFields, uniqueCode, isActive: true, clickCount: 0, submissionCount: 0, completedCount: 0 });
     },
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['onboardingLinks'] }); toast.success('Link criado!'); setShowPersonalizado(false); }
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['onboardingLinks'] }); toast.success(t('gl.link_created')); setShowPersonalizado(false); }
   });
 
   const deleteLinkMutation = useMutation({
     mutationFn: (id) => base44.entities.OnboardingLink.delete(id),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['onboardingLinks'] }); toast.success('Link excluído'); }
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['onboardingLinks'] }); toast.success(t('gl.link_deleted')); }
   });
 
   const getPageByLinkType = (link) => {
@@ -107,7 +109,7 @@ export default function GerarLinkOnboarding() {
     await navigator.clipboard.writeText(text);
     setCopiedKey(key);
     setTimeout(() => setCopiedKey(null), 2000);
-    toast.success('Copiado!');
+    toast.success(t('gl.copied'));
   };
 
   const stats = React.useMemo(() => {
@@ -149,7 +151,7 @@ export default function GerarLinkOnboarding() {
             copiedKey === item.key ? 'bg-[#2bc196] text-white' : 'bg-[#f4f4f4] text-[#002443]/60 hover:bg-[#2bc196]/10 hover:text-[#2bc196]'
           }`}>
           {copiedKey === item.key ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-          {copiedKey === item.key ? 'Copiado!' : 'Copiar'}
+          {copiedKey === item.key ? t('gl.copied') : t('gl.copy')}
         </button>
         <button onClick={() => window.open(item.url, '_blank')}
           className="px-3 py-2 rounded-xl bg-[#f4f4f4] text-[#002443]/40 hover:bg-[#002443]/5 hover:text-[#002443] transition-all">
@@ -168,12 +170,12 @@ export default function GerarLinkOnboarding() {
             <LinkIcon className="w-5 h-5 text-[#2bc196]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#002443]">Gerar Link</h1>
-            <p className="text-sm text-[#002443]/60">Links rápidos e personalizados para onboarding</p>
+            <h1 className="text-2xl font-bold text-[#002443]">{t('gl.title')}</h1>
+            <p className="text-sm text-[#002443]/60">{t('gl.subtitle')}</p>
           </div>
         </div>
         <Button variant="outline" onClick={() => refetch()} className="border-[#002443]/10 hover:bg-[#f4f4f4] rounded-xl">
-          <RefreshCw className="w-4 h-4 mr-2 text-[#002443]/50" /> <span className="text-[#002443]/70">Atualizar</span>
+          <RefreshCw className="w-4 h-4 mr-2 text-[#002443]/50" /> <span className="text-[#002443]/70">{t('gl.refresh')}</span>
         </Button>
       </div>
 
@@ -196,10 +198,10 @@ export default function GerarLinkOnboarding() {
       {/* Section Tabs */}
       <div className="flex gap-2 bg-[#f4f4f4] rounded-2xl p-1.5 border border-[#002443]/5">
         {[
-          { id: 'leads', label: '📋 Links de Leads', icon: ClipboardList },
-          { id: 'compliance', label: '🔒 Links de Compliance', icon: Shield },
-          { id: 'personalizado', label: '✨ Link Personalizado', icon: Plus },
-          { id: 'historico', label: `📊 Histórico (${links.length})`, icon: BarChart3 },
+          { id: 'leads', label: t('gl.leads_links'), icon: ClipboardList },
+          { id: 'compliance', label: t('gl.compliance_links'), icon: Shield },
+          { id: 'personalizado', label: t('gl.custom_link'), icon: Plus },
+          { id: 'historico', label: t('gl.history', { count: links.length }), icon: BarChart3 },
         ].map(tab => (
           <button key={tab.id} onClick={() => setActiveSection(tab.id)}
             className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all ${
@@ -216,8 +218,8 @@ export default function GerarLinkOnboarding() {
           <div className="flex items-center gap-2 mb-2">
             <div className="w-8 h-8 rounded-xl bg-[#2bc196]/10 flex items-center justify-center"><ClipboardList className="w-4 h-4 text-[#2bc196]" /></div>
             <div>
-              <h2 className="text-base font-bold text-[#002443]">Links de Leads</h2>
-              <p className="text-xs text-[#002443]/40">Questionários para captação e qualificação de leads</p>
+              <h2 className="text-base font-bold text-[#002443]">{t('gl.leads_title')}</h2>
+              <p className="text-xs text-[#002443]/40">{t('gl.leads_desc')}</p>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -225,7 +227,7 @@ export default function GerarLinkOnboarding() {
           </div>
           <div className="bg-[#2bc196]/5 border border-[#2bc196]/10 rounded-2xl p-3 flex items-start gap-2">
             <Info className="w-4 h-4 text-[#2bc196] mt-0.5 shrink-0" />
-            <p className="text-[10px] text-[#002443]/50">Links diretos sem rastreamento. Para rastrear origem, crie um Link Personalizado na aba dedicada.</p>
+            <p className="text-[10px] text-[#002443]/50">{t('gl.no_tracking_hint')}</p>
           </div>
         </div>
       )}
@@ -238,8 +240,8 @@ export default function GerarLinkOnboarding() {
             <div className="flex items-center gap-2 mb-2">
               <div className="w-8 h-8 rounded-xl bg-[#2bc196]/10 flex items-center justify-center"><Briefcase className="w-4 h-4 text-[#2bc196]" /></div>
               <div>
-                <h2 className="text-base font-bold text-[#002443]">Por Tipo de Negócio</h2>
-                <p className="text-xs text-[#002443]/40">Links diretos por sub-categoria: Merchant, Gateway ou Marketplace</p>
+                <h2 className="text-base font-bold text-[#002443]">{t('gl.by_business')}</h2>
+                <p className="text-xs text-[#002443]/40">{t('gl.by_business_desc')}</p>
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -252,8 +254,8 @@ export default function GerarLinkOnboarding() {
             <div className="flex items-center gap-2 mb-2">
               <div className="w-8 h-8 rounded-xl bg-[#002443]/5 flex items-center justify-center"><Shield className="w-4 h-4 text-[#002443]" /></div>
               <div>
-                <h2 className="text-base font-bold text-[#002443]">Por Tipo de Compliance</h2>
-                <p className="text-xs text-[#002443]/40">Questionários KYC/KYB específicos por modelo</p>
+                <h2 className="text-base font-bold text-[#002443]">{t('gl.by_compliance')}</h2>
+                <p className="text-xs text-[#002443]/40">{t('gl.by_compliance_desc')}</p>
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -269,8 +271,8 @@ export default function GerarLinkOnboarding() {
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[#002443]/5 flex items-center justify-center"><Plus className="w-5 h-5 text-[#002443]" /></div>
             <div>
-              <h2 className="text-base font-bold text-[#002443]">Criar Link Personalizado</h2>
-              <p className="text-xs text-[#002443]/40">Com rastreamento UTM, agente e expiração</p>
+              <h2 className="text-base font-bold text-[#002443]">{t('gl.custom_title')}</h2>
+              <p className="text-xs text-[#002443]/40">{t('gl.custom_desc')}</p>
             </div>
           </div>
 
@@ -397,7 +399,7 @@ export default function GerarLinkOnboarding() {
           <Button onClick={() => createLinkMutation.mutate(pForm)} disabled={createLinkMutation.isPending}
             className="w-full bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl h-11 font-bold">
             {createLinkMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Plus className="w-4 h-4 mr-2" />}
-            Criar Link Personalizado
+            {t('gl.create_custom')}
           </Button>
         </div>
       )}
@@ -426,7 +428,7 @@ export default function GerarLinkOnboarding() {
           ) : links.length === 0 ? (
             <div className="text-center py-16 bg-white rounded-2xl border border-[#002443]/5">
               <div className="w-16 h-16 rounded-2xl bg-[#f4f4f4] flex items-center justify-center mx-auto mb-4"><LinkIcon className="w-7 h-7 text-[#002443]/20" /></div>
-              <p className="text-sm text-[#002443]/50">Nenhum link personalizado criado</p>
+              <p className="text-sm text-[#002443]/50">{t('gl.no_custom_links')}</p>
             </div>
           ) : (
             <div className="space-y-3">

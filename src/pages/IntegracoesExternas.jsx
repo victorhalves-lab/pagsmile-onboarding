@@ -19,8 +19,10 @@ import {
   Copy, FileText, Users, Building2, Fingerprint, ScanFace, FileSearch, Database, Shield,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function IntegracoesExternas() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('overview');
   const [testingProvider, setTestingProvider] = useState(null);
   const queryClient = useQueryClient();
@@ -77,13 +79,13 @@ export default function IntegracoesExternas() {
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
-    toast.success('Copiado!');
+    toast.success(t('ie.copied'));
   };
 
   const handleTestConnection = async (provider) => {
     setTestingProvider(provider);
     await new Promise(resolve => setTimeout(resolve, 2000));
-    toast.success(`Conexão com ${provider} testada com sucesso!`);
+    toast.success(t('ie.connection_tested', { provider }));
     setTestingProvider(null);
   };
 
@@ -103,13 +105,13 @@ export default function IntegracoesExternas() {
             <Plug className="w-5 h-5 text-[#002443]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#002443]">Integrações Externas</h1>
-            <p className="text-sm text-[#002443]/60">Configure e monitore CAF e BigDataCorp</p>
+            <h1 className="text-2xl font-bold text-[#002443]">{t('ie.title')}</h1>
+            <p className="text-sm text-[#002443]/60">{t('ie.subtitle')}</p>
           </div>
         </div>
         <Button variant="outline" onClick={() => queryClient.invalidateQueries()} className="border-[#002443]/10 hover:bg-[#f4f4f4] rounded-xl">
           <RefreshCw className="w-4 h-4 mr-2 text-[#002443]/50" />
-          <span className="text-[#002443]/70">Atualizar</span>
+          <span className="text-[#002443]/70">{t('ie.refresh')}</span>
         </Button>
       </div>
 
@@ -117,7 +119,7 @@ export default function IntegracoesExternas() {
         <TabsList className="bg-[#f4f4f4] border border-[#002443]/5">
           {['overview', 'caf', 'bigdatacorp', 'webhooks', 'logs'].map(tab => (
             <TabsTrigger key={tab} value={tab} className="data-[state=active]:bg-white data-[state=active]:text-[#002443] data-[state=active]:shadow-sm">
-              {tab === 'overview' ? 'Visão Geral' : tab === 'caf' ? 'CAF' : tab === 'bigdatacorp' ? 'BigDataCorp' : tab === 'webhooks' ? 'Webhooks' : 'Logs'}
+              {tab === 'overview' ? t('ie.tab_overview') : tab === 'caf' ? t('ie.tab_caf') : tab === 'bigdatacorp' ? t('ie.tab_bigdatacorp') : tab === 'webhooks' ? t('ie.tab_webhooks') : t('ie.tab_logs')}
             </TabsTrigger>
           ))}
         </TabsList>
@@ -138,16 +140,16 @@ export default function IntegracoesExternas() {
                   </div>
                 </div>
                 <Badge className={cafConfig?.is_active ? 'bg-[#2bc196]/10 text-[#2bc196] border-0' : 'bg-[#f4f4f4] text-[#002443]/40 border-0'}>
-                  {cafConfig?.is_active ? '● Ativo' : '○ Inativo'}
+                  {cafConfig?.is_active ? t('ie.active') : t('ie.inactive')}
                 </Badge>
               </div>
               <div className="grid grid-cols-2 gap-4 text-sm mb-4">
-                <div><p className="text-[#002443]/40 text-xs">Ambiente</p><p className="font-medium text-[#002443]">{cafConfig?.environment || 'Não configurado'}</p></div>
-                <div><p className="text-[#002443]/40 text-xs">Último Teste</p><p className="font-medium text-[#002443]">{cafConfig?.last_test_at ? new Date(cafConfig.last_test_at).toLocaleDateString('pt-BR') : '-'}</p></div>
+                <div><p className="text-[#002443]/40 text-xs">{t('ie.environment')}</p><p className="font-medium text-[#002443]">{cafConfig?.environment || t('ie.not_configured')}</p></div>
+                <div><p className="text-[#002443]/40 text-xs">{t('ie.last_test')}</p><p className="font-medium text-[#002443]">{cafConfig?.last_test_at ? new Date(cafConfig.last_test_at).toLocaleDateString('pt-BR') : '-'}</p></div>
               </div>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" className="flex-1 rounded-xl border-[#002443]/10" onClick={() => setActiveTab('caf')}>
-                  <Settings className="w-4 h-4 mr-2 text-[#002443]/40" /> Configurar
+                  <Settings className="w-4 h-4 mr-2 text-[#002443]/40" /> {t('ie.configure')}
                 </Button>
                 <Button variant="outline" size="sm" className="rounded-xl border-[#002443]/10" onClick={() => handleTestConnection('CAF')} disabled={testingProvider === 'CAF'}>
                   {testingProvider === 'CAF' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 text-[#2bc196]" />}
@@ -168,16 +170,16 @@ export default function IntegracoesExternas() {
                   </div>
                 </div>
                 <Badge className={bdcConfig?.is_active ? 'bg-[#2bc196]/10 text-[#2bc196] border-0' : 'bg-[#f4f4f4] text-[#002443]/40 border-0'}>
-                  {bdcConfig?.is_active ? '● Ativo' : '○ Inativo'}
+                  {bdcConfig?.is_active ? t('ie.active') : t('ie.inactive')}
                 </Badge>
               </div>
               <div className="grid grid-cols-2 gap-4 text-sm mb-4">
-                <div><p className="text-[#002443]/40 text-xs">Ambiente</p><p className="font-medium text-[#002443]">{bdcConfig?.environment || 'Não configurado'}</p></div>
-                <div><p className="text-[#002443]/40 text-xs">Último Teste</p><p className="font-medium text-[#002443]">{bdcConfig?.last_test_at ? new Date(bdcConfig.last_test_at).toLocaleDateString('pt-BR') : '-'}</p></div>
+                <div><p className="text-[#002443]/40 text-xs">{t('ie.environment')}</p><p className="font-medium text-[#002443]">{bdcConfig?.environment || t('ie.not_configured')}</p></div>
+                <div><p className="text-[#002443]/40 text-xs">{t('ie.last_test')}</p><p className="font-medium text-[#002443]">{bdcConfig?.last_test_at ? new Date(bdcConfig.last_test_at).toLocaleDateString('pt-BR') : '-'}</p></div>
               </div>
               <div className="flex gap-2">
                 <Button variant="outline" size="sm" className="flex-1 rounded-xl border-[#002443]/10" onClick={() => setActiveTab('bigdatacorp')}>
-                  <Settings className="w-4 h-4 mr-2 text-[#002443]/40" /> Configurar
+                  <Settings className="w-4 h-4 mr-2 text-[#002443]/40" /> {t('ie.configure')}
                 </Button>
                 <Button variant="outline" size="sm" className="rounded-xl border-[#002443]/10" onClick={() => handleTestConnection('BigDataCorp')} disabled={testingProvider === 'BigDataCorp'}>
                   {testingProvider === 'BigDataCorp' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4 text-[#2bc196]" />}
@@ -189,10 +191,10 @@ export default function IntegracoesExternas() {
           {/* Quick Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { label: 'Sucesso (24h)', value: logStats.success, color: '#2bc196' },
-              { label: 'Falhas (24h)', value: logStats.failed, color: '#002443' },
-              { label: 'Chamadas CAF', value: logStats.caf, color: '#36706c' },
-              { label: 'Chamadas BDC', value: logStats.bdc, color: '#002443' },
+              { label: t('ie.success_24h'), value: logStats.success, color: '#2bc196' },
+              { label: t('ie.failures_24h'), value: logStats.failed, color: '#002443' },
+              { label: t('ie.caf_calls'), value: logStats.caf, color: '#36706c' },
+              { label: t('ie.bdc_calls'), value: logStats.bdc, color: '#002443' },
             ].map((s, i) => (
               <div key={i} className="bg-white rounded-2xl border border-[#002443]/5 p-4">
                 <p className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</p>
@@ -279,7 +281,7 @@ export default function IntegracoesExternas() {
 
           {/* Services */}
           <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 space-y-4">
-            <h3 className="text-base font-bold text-[#002443]">Serviços Disponíveis</h3>
+            <h3 className="text-base font-bold text-[#002443]">{t('ie.available_services')}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {cafServices.map(service => {
                 const Icon = service.icon;
@@ -402,7 +404,7 @@ export default function IntegracoesExternas() {
 
           {/* BDC Services */}
           <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 space-y-4">
-            <h3 className="text-base font-bold text-[#002443]">Datasets Disponíveis</h3>
+            <h3 className="text-base font-bold text-[#002443]">{t('ie.available_datasets')}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {bdcServices.map(service => {
                 const Icon = service.icon;
@@ -482,9 +484,9 @@ export default function IntegracoesExternas() {
         <TabsContent value="logs" className="mt-6">
           <div className="bg-white rounded-2xl border border-[#002443]/5 overflow-hidden">
             <div className="p-5 border-b border-[#002443]/5 flex items-center justify-between">
-              <h3 className="text-base font-bold text-[#002443]">Logs de Integração</h3>
+              <h3 className="text-base font-bold text-[#002443]">{t('ie.integration_logs')}</h3>
               <Button variant="outline" size="sm" className="rounded-xl border-[#002443]/10">
-                <RefreshCw className="w-4 h-4 mr-2 text-[#002443]/40" /> Atualizar
+                <RefreshCw className="w-4 h-4 mr-2 text-[#002443]/40" /> {t('ie.refresh')}
               </Button>
             </div>
             {logsLoading ? (
@@ -492,7 +494,7 @@ export default function IntegracoesExternas() {
             ) : integrationLogs.length === 0 ? (
               <div className="text-center py-16">
                 <div className="w-16 h-16 rounded-2xl bg-[#f4f4f4] flex items-center justify-center mx-auto mb-4"><Activity className="w-7 h-7 text-[#002443]/20" /></div>
-                <p className="text-sm text-[#002443]/50">Nenhum log de integração encontrado</p>
+                <p className="text-sm text-[#002443]/50">{t('ie.no_logs')}</p>
               </div>
             ) : (
               <Table>

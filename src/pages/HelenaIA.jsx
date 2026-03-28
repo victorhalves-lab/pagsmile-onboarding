@@ -21,8 +21,10 @@ import {
 import TrendLineChart from '../components/dashboard/TrendLineChart';
 import TopRejectionReasonsChart from '../components/dashboard/TopRejectionReasonsChart';
 import RiskDistributionCards from '../components/dashboard/RiskDistributionCards';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function HelenaIA() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [thresholds, setThresholds] = useState({ auto_approve: 80, auto_reject: 40 });
   const [factorWeights, setFactorWeights] = useState({ cadastral: 15, financial: 15, pld: 25, documents: 15, external: 15, cnpj_enrichment: 15 });
@@ -76,9 +78,9 @@ export default function HelenaIA() {
   }), [helenaAnalyses]);
 
   const decisionPieData = [
-    { name: 'Aprovados', value: stats.approved, color: '#2bc196' },
-    { name: 'Revisão Manual', value: stats.manualReview, color: '#36706c' },
-    { name: 'Recusados', value: stats.rejected, color: '#002443' },
+    { name: t('hi.approved'), value: stats.approved, color: '#2bc196' },
+    { name: t('hi.manual_review'), value: stats.manualReview, color: '#36706c' },
+    { name: t('hi.rejected'), value: stats.rejected, color: '#002443' },
   ].filter(d => d.value > 0);
 
   const scoreDistribution = React.useMemo(() => {
@@ -88,7 +90,7 @@ export default function HelenaIA() {
   }, [helenaAnalyses]);
 
   const getDecisionBadge = (decision) => {
-    const config = { APPROVED: { bg: 'bg-[#2bc196]/10', text: 'text-[#2bc196]', icon: CheckCircle2, label: 'Aprovado' }, REJECTED: { bg: 'bg-red-50', text: 'text-red-500', icon: XCircle, label: 'Recusado' }, MANUAL_REVIEW: { bg: 'bg-[#36706c]/10', text: 'text-[#36706c]', icon: AlertTriangle, label: 'Revisão Manual' } };
+    const config = { APPROVED: { bg: 'bg-[#2bc196]/10', text: 'text-[#2bc196]', icon: CheckCircle2, label: t('hi.decision_approved') }, REJECTED: { bg: 'bg-red-50', text: 'text-red-500', icon: XCircle, label: t('hi.decision_rejected') }, MANUAL_REVIEW: { bg: 'bg-[#36706c]/10', text: 'text-[#36706c]', icon: AlertTriangle, label: t('hi.decision_manual') } };
     const c = config[decision] || config.MANUAL_REVIEW; const Icon = c.icon;
     return <Badge className={`${c.bg} ${c.text} gap-1 border-0`}><Icon className="w-3 h-3" />{c.label}</Badge>;
   };
@@ -101,12 +103,12 @@ export default function HelenaIA() {
             <Brain className="w-5 h-5 text-[#2bc196]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#002443]">Helena IA</h1>
-            <p className="text-sm text-[#002443]/60">Inteligência Artificial para Análise de Compliance</p>
+            <h1 className="text-2xl font-bold text-[#002443]">{t('hi.title')}</h1>
+            <p className="text-sm text-[#002443]/60">{t('hi.subtitle')}</p>
           </div>
         </div>
         <Button variant="outline" onClick={() => queryClient.invalidateQueries()} className="border-[#002443]/10 hover:bg-[#f4f4f4] rounded-xl">
-          <RefreshCw className="w-4 h-4 mr-2 text-[#002443]/50" /><span className="text-[#002443]/70">Atualizar</span>
+          <RefreshCw className="w-4 h-4 mr-2 text-[#002443]/50" /><span className="text-[#002443]/70">{t('hi.refresh')}</span>
         </Button>
       </div>
 
@@ -114,7 +116,7 @@ export default function HelenaIA() {
         <TabsList className="bg-[#f4f4f4] border border-[#002443]/5">
           {['dashboard', 'config', 'history', 'training', 'logs'].map(tab => (
             <TabsTrigger key={tab} value={tab} className="data-[state=active]:bg-white data-[state=active]:text-[#002443] data-[state=active]:shadow-sm">
-              {tab === 'dashboard' ? 'Dashboard' : tab === 'config' ? 'Configuração' : tab === 'history' ? 'Histórico' : tab === 'training' ? 'Treinamento' : 'Logs da IA'}
+              {tab === 'dashboard' ? t('hi.tab_dashboard') : tab === 'config' ? t('hi.tab_config') : tab === 'history' ? t('hi.tab_history') : tab === 'training' ? t('hi.tab_training') : t('hi.tab_logs')}
             </TabsTrigger>
           ))}
         </TabsList>
@@ -123,10 +125,10 @@ export default function HelenaIA() {
           {/* KPI Row 1 */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { label: 'Volume Processado', value: stats.total, icon: Activity, color: '#002443' },
-              { label: 'Taxa de Aprovação', value: `${stats.approvalRate}%`, icon: CheckCircle2, color: '#2bc196' },
-              { label: 'Taxa de Rejeição', value: `${stats.rejectionRate}%`, icon: XCircle, color: '#002443' },
-              { label: 'Encaminhamento Manual', value: `${stats.manualRate}%`, icon: AlertTriangle, color: '#36706c' },
+              { label: t('hi.processed_volume'), value: stats.total, icon: Activity, color: '#002443' },
+              { label: t('hi.approval_rate'), value: `${stats.approvalRate}%`, icon: CheckCircle2, color: '#2bc196' },
+              { label: t('hi.rejection_rate'), value: `${stats.rejectionRate}%`, icon: XCircle, color: '#002443' },
+              { label: t('hi.manual_rate'), value: `${stats.manualRate}%`, icon: AlertTriangle, color: '#36706c' },
             ].map((kpi, i) => (
               <div key={i} className="bg-white rounded-2xl border border-[#002443]/5 p-4">
                 <div className="flex items-center gap-2 mb-1"><kpi.icon className="w-4 h-4" style={{ color: kpi.color }} /><p className="text-2xl font-bold" style={{ color: kpi.color }}>{kpi.value}</p></div>
@@ -138,10 +140,10 @@ export default function HelenaIA() {
           {/* KPI Row 2 */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { label: 'Taxa de Acerto', value: `${stats.accuracyRate}%`, icon: Target, color: '#2bc196' },
-              { label: 'Score Médio', value: stats.avgScore, icon: BarChart3, color: '#36706c' },
-              { label: 'Tempo Médio', value: `${(stats.avgProcessingTime / 1000).toFixed(1)}s`, icon: Zap, color: '#002443' },
-              { label: 'Pendentes', value: stats.pending, icon: Clock, color: '#002443' },
+              { label: t('hi.accuracy_rate'), value: `${stats.accuracyRate}%`, icon: Target, color: '#2bc196' },
+              { label: t('hi.avg_score'), value: stats.avgScore, icon: BarChart3, color: '#36706c' },
+              { label: t('hi.avg_time'), value: `${(stats.avgProcessingTime / 1000).toFixed(1)}s`, icon: Zap, color: '#002443' },
+              { label: t('hi.pending'), value: stats.pending, icon: Clock, color: '#002443' },
             ].map((kpi, i) => (
               <div key={i} className="bg-white rounded-2xl border border-[#002443]/5 p-4">
                 <div className="flex items-center gap-2 mb-1"><kpi.icon className="w-4 h-4" style={{ color: kpi.color }} /><p className="text-2xl font-bold" style={{ color: kpi.color }}>{kpi.value}</p></div>
@@ -153,7 +155,7 @@ export default function HelenaIA() {
           {/* Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="bg-white rounded-2xl border border-[#002443]/5 p-6">
-              <h3 className="text-sm font-bold text-[#002443] mb-4">Distribuição por Status</h3>
+              <h3 className="text-sm font-bold text-[#002443] mb-4">{t('hi.status_distribution')}</h3>
               <ResponsiveContainer width="100%" height={260}>
                 <PieChart><Pie data={decisionPieData} cx="50%" cy="50%" innerRadius={55} outerRadius={85} paddingAngle={3} dataKey="value" label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}>
                   {decisionPieData.map((entry, index) => <Cell key={index} fill={entry.color} stroke="white" strokeWidth={2} />)}
@@ -164,7 +166,7 @@ export default function HelenaIA() {
               </div>
             </div>
             <div className="bg-white rounded-2xl border border-[#002443]/5 p-6">
-              <h3 className="text-sm font-bold text-[#002443] mb-4">Distribuição de Scores</h3>
+              <h3 className="text-sm font-bold text-[#002443] mb-4">{t('hi.score_distribution')}</h3>
               <ResponsiveContainer width="100%" height={260}>
                 <BarChart data={scoreDistribution}><CartesianGrid strokeDasharray="3 3" stroke="rgba(0,36,67,0.05)" /><XAxis dataKey="range" tick={{ fontSize: 11, fill: '#002443' }} /><YAxis tick={{ fontSize: 11, fill: '#002443' }} /><Tooltip /><Bar dataKey="count" fill="#2bc196" radius={[6, 6, 0, 0]} /></BarChart>
               </ResponsiveContainer>
@@ -180,7 +182,7 @@ export default function HelenaIA() {
 
           {/* Thresholds bar */}
           <div className="bg-white rounded-2xl border border-[#002443]/5 p-6">
-            <h3 className="text-sm font-bold text-[#002443] mb-3">Limiares de Decisão</h3>
+            <h3 className="text-sm font-bold text-[#002443] mb-3">{t('hi.decision_thresholds')}</h3>
             <div className="h-3 bg-[#f4f4f4] rounded-full relative overflow-hidden">
               <div className="absolute left-0 top-0 h-full bg-red-300 transition-all" style={{ width: `${thresholds.auto_reject}%` }} />
               <div className="absolute top-0 h-full bg-[#36706c] transition-all" style={{ left: `${thresholds.auto_reject}%`, width: `${thresholds.auto_approve - thresholds.auto_reject}%` }} />
@@ -277,10 +279,10 @@ export default function HelenaIA() {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { label: 'Concordâncias', value: stats.agreedCount, icon: ThumbsUp, color: '#2bc196' },
-              { label: 'Discordâncias', value: stats.disagreedCount, icon: ThumbsDown, color: '#002443' },
-              { label: 'Com Comentários', value: stats.withCommentsCount, icon: MessageSquare, color: '#36706c' },
-              { label: 'Taxa de Acerto', value: `${stats.accuracyRate}%`, icon: Target, color: '#2bc196' },
+              { label: t('hi.agreements'), value: stats.agreedCount, icon: ThumbsUp, color: '#2bc196' },
+              { label: t('hi.disagreements'), value: stats.disagreedCount, icon: ThumbsDown, color: '#002443' },
+              { label: t('hi.with_comments'), value: stats.withCommentsCount, icon: MessageSquare, color: '#36706c' },
+              { label: t('hi.accuracy_rate'), value: `${stats.accuracyRate}%`, icon: Target, color: '#2bc196' },
             ].map((s, i) => (
               <div key={i} className="bg-white rounded-2xl border border-[#002443]/5 p-4 text-center">
                 <s.icon className="w-6 h-6 mx-auto mb-2" style={{ color: s.color }} />
@@ -308,7 +310,7 @@ OUTPUT: Score (0-100), Decisão, Justificativa, Fatores, Red Flags`} />
         {/* Logs */}
         <TabsContent value="logs" className="mt-6">
           <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 space-y-4">
-            <h3 className="text-base font-bold text-[#002443]">Logs de Execução</h3>
+            <h3 className="text-base font-bold text-[#002443]">{t('hi.logs_title')}</h3>
             {isLoading ? <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-[#2bc196]" /></div> : (
               <div className="space-y-3">
                 {helenaAnalyses.slice(0, 10).map(a => (

@@ -24,8 +24,10 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import RuleSimulatorModal from '../components/compliance/RuleSimulatorModal';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function RegrasDeCompliance() {
+  const { t } = useTranslation();
   const [showEditor, setShowEditor] = useState(false);
   const [editingRule, setEditingRule] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
@@ -80,12 +82,12 @@ export default function RegrasDeCompliance() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['complianceRules'] });
-      toast.success(editingRule ? 'Regra atualizada!' : 'Regra criada!');
+      toast.success(editingRule ? t('rc.rule_updated') : t('rc.rule_created'));
       setShowEditor(false);
       resetForm();
     },
     onError: (error) => {
-      toast.error('Erro ao salvar: ' + error.message);
+      toast.error(t('rc.save_error') + error.message);
     }
   });
 
@@ -102,7 +104,7 @@ export default function RegrasDeCompliance() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['complianceRules'] });
-      toast.success('Regra excluída');
+      toast.success(t('rc.rule_deleted'));
       setDeleteId(null);
     }
   });
@@ -125,17 +127,17 @@ export default function RegrasDeCompliance() {
   };
 
   const handleSave = () => {
-    if (!formData.name) { toast.error('Nome é obrigatório'); return; }
+    if (!formData.name) { toast.error(t('rc.name_required')); return; }
     saveMutation.mutate(formData);
   };
 
   const typeConfig = {
-    'auto_approve': { bg: 'bg-[#2bc196]/10', text: 'text-[#2bc196]', icon: CheckCircle2, label: 'Auto-aprovar' },
-    'auto_reject': { bg: 'bg-red-50', text: 'text-red-500', icon: XCircle, label: 'Auto-rejeitar' },
-    'manual_review': { bg: 'bg-[#36706c]/10', text: 'text-[#36706c]', icon: AlertTriangle, label: 'Revisão Manual' },
-    'request_documents': { bg: 'bg-[#002443]/5', text: 'text-[#002443]', icon: FileText, label: 'Solicitar Docs' },
-    'notification': { bg: 'bg-[#5cf7cf]/10', text: 'text-[#36706c]', icon: Mail, label: 'Notificação' },
-    'add_flag': { bg: 'bg-[#002443]/5', text: 'text-[#002443]', icon: Flag, label: 'Adicionar Flag' },
+    'auto_approve': { bg: 'bg-[#2bc196]/10', text: 'text-[#2bc196]', icon: CheckCircle2, label: t('rc.type_auto_approve') },
+    'auto_reject': { bg: 'bg-red-50', text: 'text-red-500', icon: XCircle, label: t('rc.type_auto_reject') },
+    'manual_review': { bg: 'bg-[#36706c]/10', text: 'text-[#36706c]', icon: AlertTriangle, label: t('rc.type_manual_review') },
+    'request_documents': { bg: 'bg-[#002443]/5', text: 'text-[#002443]', icon: FileText, label: t('rc.type_request_docs') },
+    'notification': { bg: 'bg-[#5cf7cf]/10', text: 'text-[#36706c]', icon: Mail, label: t('rc.type_notification') },
+    'add_flag': { bg: 'bg-[#002443]/5', text: 'text-[#002443]', icon: Flag, label: t('rc.type_add_flag') },
   };
 
   const getTypeBadge = (type) => {
@@ -171,10 +173,10 @@ export default function RegrasDeCompliance() {
   ];
 
   const ruleStats = [
-    { label: 'Total', value: rules.length, color: '#002443' },
-    { label: 'Ativas', value: rules.filter(r => r.isActive).length, color: '#2bc196' },
-    { label: 'Inativas', value: rules.filter(r => !r.isActive).length, color: '#002443' },
-    { label: 'Execuções', value: rules.reduce((sum, r) => sum + (r.executionCount || 0), 0), color: '#36706c' },
+    { label: t('rc.total'), value: rules.length, color: '#002443' },
+    { label: t('rc.active'), value: rules.filter(r => r.isActive).length, color: '#2bc196' },
+    { label: t('rc.inactive_count'), value: rules.filter(r => !r.isActive).length, color: '#002443' },
+    { label: t('rc.executions'), value: rules.reduce((sum, r) => sum + (r.executionCount || 0), 0), color: '#36706c' },
   ];
 
   return (
@@ -186,18 +188,18 @@ export default function RegrasDeCompliance() {
             <Settings className="w-5 h-5 text-[#002443]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#002443]">Regras de Compliance</h1>
-            <p className="text-sm text-[#002443]/60">Configure automações e fluxos de trabalho</p>
+            <h1 className="text-2xl font-bold text-[#002443]">{t('rc.title')}</h1>
+            <p className="text-sm text-[#002443]/60">{t('rc.subtitle')}</p>
           </div>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => refetch()} className="border-[#002443]/10 hover:bg-[#f4f4f4] rounded-xl">
             <RefreshCw className="w-4 h-4 mr-2 text-[#002443]/50" />
-            <span className="text-[#002443]/70">Atualizar</span>
+            <span className="text-[#002443]/70">{t('rc.refresh')}</span>
           </Button>
           <Button onClick={() => { resetForm(); setShowEditor(true); }} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
             <Plus className="w-4 h-4 mr-2" />
-            Nova Regra
+            {t('rc.new_rule')}
           </Button>
         </div>
       </div>
@@ -222,10 +224,10 @@ export default function RegrasDeCompliance() {
           <div className="w-16 h-16 rounded-2xl bg-[#f4f4f4] flex items-center justify-center mx-auto mb-4">
             <Settings className="w-7 h-7 text-[#002443]/20" />
           </div>
-          <h3 className="text-base font-semibold text-[#002443] mb-1">Nenhuma regra configurada</h3>
-          <p className="text-sm text-[#002443]/50 mb-6">Crie sua primeira regra de automação.</p>
+          <h3 className="text-base font-semibold text-[#002443] mb-1">{t('rc.no_rules')}</h3>
+          <p className="text-sm text-[#002443]/50 mb-6">{t('rc.no_rules_desc')}</p>
           <Button onClick={() => { resetForm(); setShowEditor(true); }} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
-            <Plus className="w-4 h-4 mr-2" /> Criar Regra
+            <Plus className="w-4 h-4 mr-2" /> {t('rc.create_rule')}
           </Button>
         </div>
       ) : (
@@ -241,11 +243,11 @@ export default function RegrasDeCompliance() {
                       Prioridade: {rule.priority}
                     </Badge>
                   </div>
-                  <p className="text-sm text-[#002443]/50 mb-3">{rule.description || 'Sem descrição'}</p>
+                  <p className="text-sm text-[#002443]/50 mb-3">{rule.description || t('rc.no_description')}</p>
                   
                   {rule.conditions && rule.conditions.length > 0 && (
                     <div className="flex flex-wrap gap-1.5 mb-3">
-                      <span className="text-xs text-[#002443]/30">Condições:</span>
+                      <span className="text-xs text-[#002443]/30">{t('rc.conditions')}</span>
                       {rule.conditions.map((cond, idx) => (
                         <Badge key={idx} variant="outline" className="text-[10px] font-mono border-[#002443]/10 text-[#002443]/50">
                           {cond.field} {cond.operator} {String(cond.value)}
@@ -257,7 +259,7 @@ export default function RegrasDeCompliance() {
                   <div className="flex gap-4 text-xs text-[#002443]/40">
                     <span className="flex items-center gap-1">
                       <Zap className="w-3 h-3 text-[#2bc196]" />
-                      {rule.executionCount || 0} execuções
+                      {t('rc.executions_count', { count: rule.executionCount || 0 })}
                     </span>
                     {rule.lastExecutedAt && (
                       <span>Última: {new Date(rule.lastExecutedAt).toLocaleDateString('pt-BR')}</span>
@@ -267,7 +269,7 @@ export default function RegrasDeCompliance() {
 
                 <div className="flex items-center gap-3 shrink-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-[#002443]/40">Ativa</span>
+                    <span className="text-xs text-[#002443]/40">{t('rc.active_label')}</span>
                     <Switch
                       checked={rule.isActive}
                       onCheckedChange={(checked) => toggleMutation.mutate({ id: rule.id, isActive: checked })}
@@ -299,8 +301,8 @@ export default function RegrasDeCompliance() {
       <Dialog open={showEditor} onOpenChange={(open) => { if (!open) resetForm(); setShowEditor(open); }}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-[#002443]">{editingRule ? 'Editar Regra' : 'Nova Regra'}</DialogTitle>
-            <DialogDescription className="text-[#002443]/50">Configure as condições e ações da regra.</DialogDescription>
+            <DialogTitle className="text-[#002443]">{editingRule ? t('rc.dialog_title_edit') : t('rc.dialog_title_new')}</DialogTitle>
+            <DialogDescription className="text-[#002443]/50">{t('rc.dialog_desc')}</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-5 py-4">
@@ -408,10 +410,10 @@ export default function RegrasDeCompliance() {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowEditor(false)} className="rounded-xl border-[#002443]/10">Cancelar</Button>
+            <Button variant="outline" onClick={() => setShowEditor(false)} className="rounded-xl border-[#002443]/10">{t('rc.cancel')}</Button>
             <Button onClick={handleSave} disabled={saveMutation.isPending} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
               {saveMutation.isPending && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
-              {editingRule ? 'Atualizar' : 'Criar'} Regra
+              {editingRule ? t('rc.update') : t('rc.create')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -422,12 +424,12 @@ export default function RegrasDeCompliance() {
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent className="rounded-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-[#002443]">Excluir regra?</AlertDialogTitle>
-            <AlertDialogDescription className="text-[#002443]/60">Esta ação não pode ser desfeita.</AlertDialogDescription>
+            <AlertDialogTitle className="text-[#002443]">{t('rc.delete_title')}</AlertDialogTitle>
+            <AlertDialogDescription className="text-[#002443]/60">{t('rc.delete_desc')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-xl">Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={() => deleteMutation.mutate(deleteId)} className="bg-red-500 hover:bg-red-600 rounded-xl">Excluir</AlertDialogAction>
+            <AlertDialogCancel className="rounded-xl">{t('rc.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deleteMutation.mutate(deleteId)} className="bg-red-500 hover:bg-red-600 rounded-xl">{t('rc.delete')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

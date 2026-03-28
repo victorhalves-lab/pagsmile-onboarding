@@ -13,17 +13,19 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
-const STATUS_CONFIG = {
-  pre_generated: { label: 'Pré-gerado', color: 'bg-amber-100 text-amber-800', icon: Clock },
-  under_review: { label: 'Em Revisão', color: 'bg-blue-100 text-blue-800', icon: Edit },
-  ready: { label: 'Pronto', color: 'bg-green-100 text-green-800', icon: CheckCircle2 },
-  sent: { label: 'Enviado', color: 'bg-purple-100 text-purple-800', icon: Send },
-  signed: { label: 'Assinado', color: 'bg-emerald-100 text-emerald-800', icon: FileCheck },
-  cancelled: { label: 'Cancelado', color: 'bg-red-100 text-red-800', icon: XCircle },
-};
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function GestaoContratos() {
+  const { t } = useTranslation();
+
+  const STATUS_CONFIG = {
+    pre_generated: { label: t('gc.pre_generated'), color: 'bg-amber-100 text-amber-800', icon: Clock },
+    under_review: { label: t('gc.under_review'), color: 'bg-blue-100 text-blue-800', icon: Edit },
+    ready: { label: t('gc.ready'), color: 'bg-green-100 text-green-800', icon: CheckCircle2 },
+    sent: { label: t('gc.sent'), color: 'bg-purple-100 text-purple-800', icon: Send },
+    signed: { label: t('gc.signed'), color: 'bg-emerald-100 text-emerald-800', icon: FileCheck },
+    cancelled: { label: t('gc.cancelled'), color: 'bg-red-100 text-red-800', icon: XCircle },
+  };
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
@@ -55,20 +57,20 @@ export default function GestaoContratos() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[#002443]">Gestão de Contratos</h1>
-          <p className="text-sm text-[#002443]/60 mt-1">Gerencie contratos pré-gerados e finalizados</p>
+          <h1 className="text-2xl font-bold text-[#002443]">{t('gc.title')}</h1>
+          <p className="text-sm text-[#002443]/60 mt-1">{t('gc.subtitle')}</p>
         </div>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
         {[
-          { label: 'Total', value: stats.total, color: 'text-[#002443]' },
-          { label: 'Pré-gerados', value: stats.preGenerated, color: 'text-amber-600' },
-          { label: 'Em Revisão', value: stats.underReview, color: 'text-blue-600' },
-          { label: 'Prontos', value: stats.ready, color: 'text-green-600' },
-          { label: 'Enviados', value: stats.sent, color: 'text-purple-600' },
-          { label: 'Assinados', value: stats.signed, color: 'text-emerald-600' },
+          { label: t('gc.total'), value: stats.total, color: 'text-[#002443]' },
+          { label: t('gc.pre_generated'), value: stats.preGenerated, color: 'text-amber-600' },
+          { label: t('gc.under_review'), value: stats.underReview, color: 'text-blue-600' },
+          { label: t('gc.ready'), value: stats.ready, color: 'text-green-600' },
+          { label: t('gc.sent'), value: stats.sent, color: 'text-purple-600' },
+          { label: t('gc.signed'), value: stats.signed, color: 'text-emerald-600' },
         ].map((s, i) => (
           <Card key={i} className="bg-white border border-[#002443]/5">
             <CardContent className="p-4 text-center">
@@ -84,7 +86,7 @@ export default function GestaoContratos() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/40" />
           <Input 
-            placeholder="Buscar por nome, CNPJ ou código..." 
+            placeholder={t('gc.search_placeholder')} 
             value={search} 
             onChange={e => setSearch(e.target.value)}
             className="pl-10"
@@ -92,16 +94,16 @@ export default function GestaoContratos() {
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-48">
-            <SelectValue placeholder="Filtrar por status" />
+            <SelectValue placeholder={t('gc.filter_status')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos os status</SelectItem>
-            <SelectItem value="pre_generated">Pré-gerados</SelectItem>
-            <SelectItem value="under_review">Em Revisão</SelectItem>
-            <SelectItem value="ready">Prontos</SelectItem>
-            <SelectItem value="sent">Enviados</SelectItem>
-            <SelectItem value="signed">Assinados</SelectItem>
-            <SelectItem value="cancelled">Cancelados</SelectItem>
+            <SelectItem value="all">{t('gc.all_statuses')}</SelectItem>
+            <SelectItem value="pre_generated">{t('gc.pre_generated')}</SelectItem>
+            <SelectItem value="under_review">{t('gc.under_review')}</SelectItem>
+            <SelectItem value="ready">{t('gc.ready')}</SelectItem>
+            <SelectItem value="sent">{t('gc.sent')}</SelectItem>
+            <SelectItem value="signed">{t('gc.signed')}</SelectItem>
+            <SelectItem value="cancelled">{t('gc.cancelled')}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -115,8 +117,8 @@ export default function GestaoContratos() {
         <Card className="bg-white border border-[#002443]/5">
           <CardContent className="py-16 text-center">
             <FileText className="w-12 h-12 text-[#002443]/20 mx-auto mb-3" />
-            <p className="text-[#002443]/60 font-medium">Nenhum contrato encontrado</p>
-            <p className="text-sm text-[#002443]/40 mt-1">Contratos são pré-gerados automaticamente quando o compliance é aprovado.</p>
+            <p className="text-[#002443]/60 font-medium">{t('gc.no_contracts')}</p>
+            <p className="text-sm text-[#002443]/40 mt-1">{t('gc.no_contracts_hint')}</p>
           </CardContent>
         </Card>
       ) : (
@@ -137,7 +139,7 @@ export default function GestaoContratos() {
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-[#002443] truncate">{contract.clientName || 'Sem nome'}</h3>
+                        <h3 className="font-semibold text-[#002443] truncate">{contract.clientName || t('gc.no_name')}</h3>
                         <Badge className={`${statusCfg.color} text-xs`}>
                           <StatusIcon className="w-3 h-3 mr-1" />
                           {statusCfg.label}
@@ -154,12 +156,12 @@ export default function GestaoContratos() {
                       {missingCount > 0 && (
                         <div className="flex items-center gap-1 text-amber-600">
                           <AlertTriangle className="w-3.5 h-3.5" />
-                          <span className="text-xs font-medium">{missingCount} pendentes</span>
+                          <span className="text-xs font-medium">{t('gc.pending_fields', { count: missingCount })}</span>
                         </div>
                       )}
                       <div className="flex items-center gap-1 text-green-600">
                         <CheckCircle2 className="w-3.5 h-3.5" />
-                        <span className="text-xs font-medium">{preFilledCount} preenchidos</span>
+                        <span className="text-xs font-medium">{t('gc.filled_fields', { count: preFilledCount })}</span>
                       </div>
                     </div>
 

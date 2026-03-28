@@ -28,6 +28,7 @@ import {
   ShoppingCart, Network, Building2, ArrowUpDown
 } from 'lucide-react';
 import moment from 'moment';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 const STATUS_CONFIG = {
   questionario_preenchido: { label: 'Questionário Preenchido', color: 'bg-blue-100 text-blue-700' },
@@ -58,6 +59,7 @@ const SUB_CAT_CONFIG = {
 };
 
 export default function LeadManagement() {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [riskFilter, setRiskFilter] = useState('all');
@@ -123,12 +125,12 @@ export default function LeadManagement() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Gestão de Leads</h1>
-          <p className="text-[var(--pagsmile-blue)]/70">Gerencie leads comerciais e acompanhe o funil de vendas</p>
+          <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">{t('lm.title')}</h1>
+          <p className="text-[var(--pagsmile-blue)]/70">{t('lm.subtitle')}</p>
         </div>
         <Button variant="outline" onClick={() => refetch()}>
           <RefreshCw className="w-4 h-4 mr-2" />
-          Atualizar
+          {t('lm.refresh')}
         </Button>
       </div>
 
@@ -136,23 +138,23 @@ export default function LeadManagement() {
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Card><CardContent className="pt-4">
           <p className="text-2xl font-bold text-[var(--pagsmile-blue)]">{stats.total}</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/70">Total de Leads</p>
+          <p className="text-xs text-[var(--pagsmile-blue)]/70">{t('lm.total')}</p>
         </CardContent></Card>
         <Card><CardContent className="pt-4">
           <p className="text-2xl font-bold text-blue-600">{stats.novos}</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/70">Novos</p>
+          <p className="text-xs text-[var(--pagsmile-blue)]/70">{t('lm.new_leads')}</p>
         </CardContent></Card>
         <Card><CardContent className="pt-4">
           <p className="text-2xl font-bold text-amber-600">{stats.emNegociacao}</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/70">Em Negociação</p>
+          <p className="text-xs text-[var(--pagsmile-blue)]/70">{t('lm.negotiating')}</p>
         </CardContent></Card>
         <Card><CardContent className="pt-4">
           <p className="text-2xl font-bold text-green-600">{stats.convertidos}</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/70">Convertidos</p>
+          <p className="text-xs text-[var(--pagsmile-blue)]/70">{t('lm.converted')}</p>
         </CardContent></Card>
         <Card><CardContent className="pt-4">
           <p className="text-2xl font-bold text-slate-500">{stats.perdidos}</p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/70">Perdidos</p>
+          <p className="text-xs text-[var(--pagsmile-blue)]/70">{t('lm.lost')}</p>
         </CardContent></Card>
       </div>
 
@@ -161,7 +163,7 @@ export default function LeadManagement() {
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/40" />
           <Input
-            placeholder="Buscar por nome, email, CNPJ, protocolo..."
+            placeholder={t('lm.search_placeholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-10 h-10"
@@ -170,7 +172,7 @@ export default function LeadManagement() {
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[180px] h-10"><SelectValue placeholder="Status" /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos os Status</SelectItem>
+            <SelectItem value="all">{t('lm.all_statuses')}</SelectItem>
             {Object.entries(STATUS_CONFIG).map(([k, v]) => (
               <SelectItem key={k} value={k}>{v.label}</SelectItem>
             ))}
@@ -179,7 +181,7 @@ export default function LeadManagement() {
         <Select value={riskFilter} onValueChange={setRiskFilter}>
           <SelectTrigger className="w-[150px] h-10"><SelectValue placeholder="Risco" /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos os Riscos</SelectItem>
+            <SelectItem value="all">{t('lm.all_risks')}</SelectItem>
             {Object.entries(RISK_CONFIG).map(([k, v]) => (
               <SelectItem key={k} value={k}>{v.label}</SelectItem>
             ))}
@@ -188,7 +190,7 @@ export default function LeadManagement() {
         <Select value={subCatFilter} onValueChange={setSubCatFilter}>
           <SelectTrigger className="w-[160px] h-10"><SelectValue placeholder="Tipo" /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos os Tipos</SelectItem>
+            <SelectItem value="all">{t('lm.all_types')}</SelectItem>
             <SelectItem value="MERCHAN">Merchan</SelectItem>
             <SelectItem value="GATEWAY">Gateway</SelectItem>
             <SelectItem value="MARKETPLACE">Marketplace</SelectItem>
@@ -203,20 +205,20 @@ export default function LeadManagement() {
             <TableHeader>
               <TableRow>
                 <TableHead className="cursor-pointer" onClick={() => handleSort('fullName')}>
-                  <div className="flex items-center gap-1">Empresa <ArrowUpDown className="w-3 h-3" /></div>
+                  <div className="flex items-center gap-1">{t('lm.col_company')} <ArrowUpDown className="w-3 h-3" /></div>
                 </TableHead>
-                <TableHead>Tipo</TableHead>
+                <TableHead>{t('lm.col_type')}</TableHead>
                 <TableHead className="cursor-pointer" onClick={() => handleSort('status')}>
                   <div className="flex items-center gap-1">Status <ArrowUpDown className="w-3 h-3" /></div>
                 </TableHead>
                 <TableHead className="cursor-pointer" onClick={() => handleSort('priscilaQualityScore')}>
                   <div className="flex items-center gap-1">Score <ArrowUpDown className="w-3 h-3" /></div>
                 </TableHead>
-                <TableHead>Risco</TableHead>
+                <TableHead>{t('lm.col_risk')}</TableHead>
                 <TableHead className="cursor-pointer" onClick={() => handleSort('created_date')}>
                   <div className="flex items-center gap-1">Data <ArrowUpDown className="w-3 h-3" /></div>
                 </TableHead>
-                <TableHead className="text-right">Ações</TableHead>
+                <TableHead className="text-right">{t('lm.col_actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -224,7 +226,7 @@ export default function LeadManagement() {
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-12">
                     <Users className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/30 mb-3" />
-                    <p className="text-[var(--pagsmile-blue)]/60">Nenhum lead encontrado</p>
+                    <p className="text-[var(--pagsmile-blue)]/60">{t('lm.no_leads')}</p>
                   </TableCell>
                 </TableRow>
               ) : (

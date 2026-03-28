@@ -33,8 +33,10 @@ import QuestionnairePreview from '@/components/editor/QuestionnairePreview';
 import QuestionLibraryModal from '@/components/editor/QuestionLibraryModal';
 import AISuggestionsModal from '@/components/editor/AISuggestionsModal';
 import TemplateVersionHistory from '@/components/editor/TemplateVersionHistory';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function EditorQuestionario() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const urlParams = new URLSearchParams(window.location.search);
@@ -131,13 +133,13 @@ export default function EditorQuestionario() {
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ['questionnaireTemplates'] });
       queryClient.invalidateQueries({ queryKey: ['template', templateId] });
-      toast.success(isEditing ? 'Questionário atualizado!' : 'Questionário criado!');
+      toast.success(isEditing ? t('eq.questionnaire_updated') : t('eq.questionnaire_created'));
       if (!isEditing && result?.id) {
         navigate(createPageUrl('EditorQuestionario') + `?id=${result.id}`);
       }
     },
     onError: (error) => {
-      toast.error('Erro ao salvar: ' + error.message);
+      toast.error(t('eq.save_error') + error.message);
     }
   });
 
@@ -164,7 +166,7 @@ export default function EditorQuestionario() {
     },
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ['questionnaireTemplates'] });
-      toast.success('Nova versão criada!');
+      toast.success(t('eq.new_version_created'));
       navigate(createPageUrl('EditorQuestionario') + `?id=${result.id}`);
     }
   });
@@ -183,14 +185,14 @@ export default function EditorQuestionario() {
       await base44.entities.Question.create({ ...qData, questionnaireTemplateId: newTemplate.id });
     }
     if (template) await base44.entities.QuestionnaireTemplate.update(templateId, { isArchived: true });
-    toast.success('Versão restaurada!');
+    toast.success(t('eq.version_restored'));
     navigate(createPageUrl('EditorQuestionario') + `?id=${newTemplate.id}`);
     setVersionHistoryOpen(false);
   };
 
   const handleSave = () => {
     if (!formData.name.trim()) {
-      toast.error('Nome do questionário é obrigatório');
+      toast.error(t('eq.name_required'));
       return;
     }
     saveMutation.mutate(formData);
@@ -228,7 +230,7 @@ export default function EditorQuestionario() {
           </Button>
           <div>
             <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">
-              {isEditing ? 'Editar Questionário' : 'Novo Questionário'}
+              {isEditing ? t('eq.title_edit') : t('eq.title_new')}
             </h1>
             {isEditing && template && (
               <p className="text-[var(--pagsmile-blue)]/70">{template.name}</p>
@@ -239,7 +241,7 @@ export default function EditorQuestionario() {
           {isEditing && (
             <>
               <Button variant="outline" onClick={() => setVersionHistoryOpen(true)}>
-                Versões
+                {t('eq.versions')}
               </Button>
               <Button
                 variant="outline"
@@ -247,7 +249,7 @@ export default function EditorQuestionario() {
                 disabled={saveNewVersionMutation.isPending}
               >
                 {saveNewVersionMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                Nova Versão
+                {t('eq.new_version')}
               </Button>
             </>
           )}
@@ -257,7 +259,7 @@ export default function EditorQuestionario() {
             className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90"
           >
             {saveMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
-            Salvar
+            {t('eq.save')}
           </Button>
         </div>
       </div>
@@ -267,22 +269,22 @@ export default function EditorQuestionario() {
         <TabsList className="bg-slate-100 p-1">
           <TabsTrigger value="config" className="gap-2">
             <Settings className="w-4 h-4" />
-            Configurações
+            {t('eq.tab_config')}
           </TabsTrigger>
           <TabsTrigger value="questions" className="gap-2" disabled={!isEditing}>
             <ListChecks className="w-4 h-4" />
-            Perguntas
+            {t('eq.tab_questions')}
             {questions.length > 0 && (
               <Badge variant="secondary" className="ml-1">{questions.length}</Badge>
             )}
           </TabsTrigger>
           <TabsTrigger value="documents" className="gap-2" disabled={!isEditing}>
             <FileText className="w-4 h-4" />
-            Documentos
+            {t('eq.tab_documents')}
           </TabsTrigger>
           <TabsTrigger value="risk" className="gap-2" disabled={!isEditing}>
             <AlertTriangle className="w-4 h-4" />
-            Limiares de Risco
+            {t('eq.tab_risk')}
           </TabsTrigger>
         </TabsList>
 

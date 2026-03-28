@@ -16,8 +16,10 @@ import {
   Users, Building2, Briefcase, Shield, Copy, ExternalLink, Download
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function TemplatesQuestionarios() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [deleteId, setDeleteId] = useState(null);
   const [activeTab, setActiveTab] = useState('all');
@@ -31,7 +33,7 @@ export default function TemplatesQuestionarios() {
     mutationFn: (id) => base44.entities.QuestionnaireTemplate.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['questionnaireTemplates'] });
-      toast.success('Questionário excluído');
+      toast.success(t('tq.deleted'));
       setDeleteId(null);
     }
   });
@@ -90,13 +92,13 @@ export default function TemplatesQuestionarios() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#002443]">Questionários</h1>
-          <p className="text-sm text-[#002443]/60">Gerencie templates de questionário de leads e compliance</p>
+          <h1 className="text-2xl font-bold text-[#002443]">{t('tq.title')}</h1>
+          <p className="text-sm text-[#002443]/60">{t('tq.subtitle')}</p>
         </div>
         <Link to={createPageUrl('EditorQuestionario')}>
           <Button className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
             <Plus className="w-4 h-4 mr-2" />
-            Novo Questionário
+            {t('tq.new')}
           </Button>
         </Link>
       </div>
@@ -134,12 +136,12 @@ export default function TemplatesQuestionarios() {
           <div className="w-16 h-16 rounded-2xl bg-[#f4f4f4] flex items-center justify-center mx-auto mb-4">
             <FileText className="w-7 h-7 text-[#002443]/20" />
           </div>
-          <h3 className="text-base font-semibold text-[#002443] mb-1">Nenhum questionário criado</h3>
-          <p className="text-sm text-[#002443]/50 mb-6">Crie seu primeiro template de questionário para começar.</p>
+          <h3 className="text-base font-semibold text-[#002443] mb-1">{t('tq.no_templates')}</h3>
+          <p className="text-sm text-[#002443]/50 mb-6">{t('tq.no_templates_desc')}</p>
           <Link to={createPageUrl('EditorQuestionario')}>
             <Button className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
               <Plus className="w-4 h-4 mr-2" />
-              Criar Questionário
+              {t('tq.create')}
             </Button>
           </Link>
         </div>
@@ -168,7 +170,7 @@ export default function TemplatesQuestionarios() {
                       {template.name}
                     </h3>
                     <p className="text-sm text-[#002443]/50 mt-0.5 line-clamp-1">
-                      {template.description || 'Sem descrição'}
+                      {template.description || t('tq.no_description')}
                     </p>
                     <div className="flex items-center gap-2 mt-3 flex-wrap">
                       <Badge className={
@@ -186,7 +188,7 @@ export default function TemplatesQuestionarios() {
                         </Badge>
                       )}
                       <Badge variant="outline" className="border-[#002443]/10 text-[#002443]/60">
-                        {template.merchantType === 'PF' ? 'Pessoa Física' : 'Pessoa Jurídica'}
+                        {template.merchantType === 'PF' ? t('tq.pf') : t('tq.pj')}
                       </Badge>
                       {template.model && (
                         <Badge className="bg-[#5cf7cf]/10 text-[#36706c] border-0">
@@ -197,7 +199,7 @@ export default function TemplatesQuestionarios() {
                         ? 'bg-[#2bc196]/10 text-[#2bc196] border-0' 
                         : 'bg-[#f4f4f4] text-[#002443]/40 border-0'
                       }>
-                        {template.isActive ? '● Ativo' : '○ Inativo'}
+                        {template.isActive ? t('tq.active') : t('tq.inactive')}
                       </Badge>
                     </div>
                   </div>
@@ -205,7 +207,7 @@ export default function TemplatesQuestionarios() {
 
                 <div className="flex items-center gap-3 shrink-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-[#002443]/40">Ativo</span>
+                    <span className="text-xs text-[#002443]/40">{t('tq.active_label')}</span>
                     <Switch
                       checked={template.isActive}
                       onCheckedChange={(checked) => 
@@ -228,7 +230,7 @@ export default function TemplatesQuestionarios() {
                         : createPageUrl('ComplianceOnboardingStart');
                       const url = `${baseUrl}${path}?templateId=${template.id}`;
                       navigator.clipboard.writeText(url);
-                      toast.success('Link público copiado!');
+                      toast.success(t('tq.link_copied'));
                     }}
                     title="Copiar Link Público"
                   >
@@ -286,18 +288,16 @@ export default function TemplatesQuestionarios() {
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent className="rounded-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-[#002443]">Excluir questionário?</AlertDialogTitle>
-            <AlertDialogDescription className="text-[#002443]/60">
-              Esta ação não pode ser desfeita. O questionário será permanentemente removido.
-            </AlertDialogDescription>
+            <AlertDialogTitle className="text-[#002443]">{t('tq.delete_title')}</AlertDialogTitle>
+            <AlertDialogDescription className="text-[#002443]/60">{t('tq.delete_desc')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-xl">Cancelar</AlertDialogCancel>
+            <AlertDialogCancel className="rounded-xl">{t('tq.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deleteMutation.mutate(deleteId)}
               className="bg-red-500 hover:bg-red-600 rounded-xl"
             >
-              Excluir
+              {t('tq.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

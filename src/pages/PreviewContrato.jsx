@@ -11,8 +11,10 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 import ConteudoContrato from '@/components/contrato/ConteudoContrato';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function PreviewContrato() {
+  const { t } = useTranslation();
   const urlParams = new URLSearchParams(window.location.search);
   const contractId = urlParams.get('id');
   const navigate = useNavigate();
@@ -38,7 +40,7 @@ export default function PreviewContrato() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contract', contractId] });
-      toast.success('Contrato marcado como enviado!');
+      toast.success(t('pc.sent_success'));
     },
   });
 
@@ -46,7 +48,7 @@ export default function PreviewContrato() {
     if (!contract?.publicLinkCode) return;
     const link = window.location.origin + createPageUrl(`ContratoPublico?code=${contract.publicLinkCode}`);
     navigator.clipboard.writeText(link);
-    toast.success('Link público copiado!');
+    toast.success(t('pc.link_copied'));
   };
 
   const handleDownloadPDF = async () => {
@@ -86,10 +88,10 @@ export default function PreviewContrato() {
       }
 
       pdf.save(`${contract.codigo || 'contrato'}.pdf`);
-      toast.success('PDF gerado com sucesso!');
+      toast.success(t('pc.pdf_success'));
     } catch (err) {
       console.error(err);
-      toast.error('Erro ao gerar PDF');
+      toast.error(t('pc.pdf_error'));
     } finally {
       setGenerating(false);
     }
@@ -104,7 +106,7 @@ export default function PreviewContrato() {
   }
 
   if (!contract) {
-    return <div className="text-center py-20 text-[#002443]/50">Contrato não encontrado.</div>;
+    return <div className="text-center py-20 text-[#002443]/50">{t('pc.not_found')}</div>;
   }
 
   return (
@@ -116,7 +118,7 @@ export default function PreviewContrato() {
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div>
-            <h1 className="text-xl font-bold text-[#002443]">Preview do Contrato</h1>
+            <h1 className="text-xl font-bold text-[#002443]">{t('pc.title')}</h1>
             <p className="text-sm text-[#002443]/50 mt-0.5">
               {contract.codigo} • {contract.clientName}
             </p>
@@ -124,14 +126,14 @@ export default function PreviewContrato() {
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <Button variant="outline" onClick={() => navigate(createPageUrl(`EditorContrato?id=${contractId}`))}>
-            <Edit className="w-4 h-4 mr-2" /> Editar
+            <Edit className="w-4 h-4 mr-2" /> {t('pc.edit')}
           </Button>
           <Button variant="outline" onClick={handleDownloadPDF} disabled={generating}>
             {generating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />}
-            Baixar PDF
+            {t('pc.download_pdf')}
           </Button>
           <Button variant="outline" onClick={copyPublicLink}>
-            <Copy className="w-4 h-4 mr-2" /> Copiar Link
+            <Copy className="w-4 h-4 mr-2" /> {t('pc.copy_link')}
           </Button>
           <Button 
             onClick={() => sendMutation.mutate()}
@@ -139,7 +141,7 @@ export default function PreviewContrato() {
             className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
           >
             {sendMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Send className="w-4 h-4 mr-2" />}
-            Marcar como Enviado
+            {t('pc.mark_sent')}
           </Button>
         </div>
       </div>
@@ -153,7 +155,7 @@ export default function PreviewContrato() {
               Link público: {window.location.origin}{createPageUrl(`ContratoPublico?code=${contract.publicLinkCode}`)}
             </span>
             <Button size="sm" variant="ghost" onClick={copyPublicLink}>
-              <Copy className="w-3.5 h-3.5 mr-1" /> Copiar
+              <Copy className="w-3.5 h-3.5 mr-1" /> {t('pc.copy')}
             </Button>
           </CardContent>
         </Card>

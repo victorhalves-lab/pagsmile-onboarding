@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Plus, Edit, Trash2, Loader2, Mail, MessageSquare, FileText } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 const TYPE_CONFIG = {
   EMAIL: { label: 'E-mail', icon: Mail, bg: 'bg-[#002443]/5', text: 'text-[#002443]' },
@@ -35,6 +36,7 @@ const CATEGORY_CONFIG = {
 const PLACEHOLDERS = ['{{leadName}}', '{{linkUrl}}', '{{agentName}}', '{{companyName}}', '{{protocolo}}'];
 
 export default function MessageTemplates() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [showEditor, setShowEditor] = useState(false);
   const [editing, setEditing] = useState(null);
@@ -52,7 +54,7 @@ export default function MessageTemplates() {
       : base44.entities.MessageTemplate.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['messageTemplates'] });
-      toast.success(editing ? 'Template atualizado!' : 'Template criado!');
+      toast.success(editing ? t('mt.template_updated') : t('mt.template_created'));
       setShowEditor(false);
       resetForm();
     }
@@ -62,7 +64,7 @@ export default function MessageTemplates() {
     mutationFn: (id) => base44.entities.MessageTemplate.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['messageTemplates'] });
-      toast.success('Template excluído');
+      toast.success(t('mt.template_deleted'));
       setDeleteId(null);
     }
   });
@@ -95,11 +97,11 @@ export default function MessageTemplates() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#002443]">Templates de Mensagem</h1>
-          <p className="text-sm text-[#002443]/60">{templates.length} templates cadastrados</p>
+          <h1 className="text-2xl font-bold text-[#002443]">{t('mt.title')}</h1>
+          <p className="text-sm text-[#002443]/60">{t('mt.count', { count: templates.length })}</p>
         </div>
         <Button onClick={() => { resetForm(); setShowEditor(true); }} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
-          <Plus className="w-4 h-4 mr-2" /> Novo Template
+          <Plus className="w-4 h-4 mr-2" /> {t('mt.new')}
         </Button>
       </div>
 
@@ -119,10 +121,10 @@ export default function MessageTemplates() {
           <div className="w-16 h-16 rounded-2xl bg-[#f4f4f4] flex items-center justify-center mx-auto mb-4">
             <FileText className="w-7 h-7 text-[#002443]/20" />
           </div>
-          <h3 className="text-base font-semibold text-[#002443] mb-1">Nenhum template criado</h3>
-          <p className="text-sm text-[#002443]/50 mb-6">Crie seu primeiro template de mensagem.</p>
+          <h3 className="text-base font-semibold text-[#002443] mb-1">{t('mt.no_templates')}</h3>
+          <p className="text-sm text-[#002443]/50 mb-6">{t('mt.no_templates_desc')}</p>
           <Button onClick={() => { resetForm(); setShowEditor(true); }} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
-            <Plus className="w-4 h-4 mr-2" /> Criar Template
+            <Plus className="w-4 h-4 mr-2" /> {t('mt.create')}
           </Button>
         </div>
       ) : (
@@ -148,10 +150,10 @@ export default function MessageTemplates() {
                           {catCfg.label}
                         </Badge>
                         {t.isActive === false && (
-                          <Badge className="bg-[#f4f4f4] text-[#002443]/40 text-xs border-0">Inativo</Badge>
+                          <Badge className="bg-[#f4f4f4] text-[#002443]/40 text-xs border-0">{t('mt.inactive')}</Badge>
                         )}
                       </div>
-                      {t.subject && <p className="text-xs text-[#002443]/40 mb-1">Assunto: {t.subject}</p>}
+                      {t.subject && <p className="text-xs text-[#002443]/40 mb-1">{t('mt.subject')}: {t.subject}</p>}
                       <p className="text-sm text-[#002443]/60 line-clamp-2">{t.body}</p>
                     </div>
                   </div>
@@ -174,7 +176,7 @@ export default function MessageTemplates() {
       <Dialog open={showEditor} onOpenChange={(o) => { if (!o) resetForm(); setShowEditor(o); }}>
         <DialogContent className="max-w-lg rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-[#002443]">{editing ? 'Editar' : 'Novo'} Template</DialogTitle>
+            <DialogTitle className="text-[#002443]">{editing ? t('mt.dialog_title_edit') : t('mt.dialog_title_new')}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
@@ -226,10 +228,10 @@ export default function MessageTemplates() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowEditor(false)} className="rounded-xl border-[#002443]/10">Cancelar</Button>
+            <Button variant="outline" onClick={() => setShowEditor(false)} className="rounded-xl border-[#002443]/10">{t('mt.cancel')}</Button>
             <Button onClick={() => saveMutation.mutate(form)} disabled={!form.name || !form.body || saveMutation.isPending} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
               {saveMutation.isPending && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
-              {editing ? 'Atualizar' : 'Criar'}
+              {editing ? t('mt.update') : t('mt.create')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -238,12 +240,12 @@ export default function MessageTemplates() {
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent className="rounded-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-[#002443]">Excluir template?</AlertDialogTitle>
-            <AlertDialogDescription className="text-[#002443]/60">Esta ação é irreversível.</AlertDialogDescription>
+            <AlertDialogTitle className="text-[#002443]">{t('mt.delete_title')}</AlertDialogTitle>
+            <AlertDialogDescription className="text-[#002443]/60">{t('mt.delete_desc')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-xl">Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={() => deleteMutation.mutate(deleteId)} className="bg-red-500 hover:bg-red-600 rounded-xl">Excluir</AlertDialogAction>
+            <AlertDialogCancel className="rounded-xl">{t('mt.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={() => deleteMutation.mutate(deleteId)} className="bg-red-500 hover:bg-red-600 rounded-xl">{t('mt.delete')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
