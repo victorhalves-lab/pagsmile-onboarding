@@ -18,23 +18,45 @@ import InsightsIntroducerSection from '@/components/insights/InsightsIntroducerS
 import InsightsDataHealthSection from '@/components/insights/InsightsDataHealthSection.jsx';
 import InsightsCommercialPerfSection from '@/components/insights/InsightsCommercialPerfSection.jsx';
 
-const TABS = [
-  { id: 'ai-insights', label: 'IA Insights', icon: Sparkles },
-  { id: 'tpv', label: 'TPV & Volume', icon: DollarSign },
-  { id: 'benchmark', label: 'Benchmark Taxas', icon: Swords },
-  { id: 'mix', label: 'Mix Pagamento', icon: Layers },
-  { id: 'expected-rates', label: 'Taxas Esperadas', icon: ArrowUpDown },
-  { id: 'proposal-rates', label: 'Taxas Propostas', icon: CreditCard },
-  { id: 'profitability', label: 'Rentabilidade', icon: Wallet },
-  { id: 'commercial', label: 'Performance Comercial', icon: Timer },
-  { id: 'funnel', label: 'Funil & Conversão', icon: TrendingUp },
-  { id: 'profiles', label: 'Perfil Leads', icon: Users },
-  { id: 'operational', label: 'Perfil Operacional', icon: Building2 },
-  { id: 'risk', label: 'Risco Portfolio', icon: ShieldAlert },
-  { id: 'introducers', label: 'Introducers', icon: UserPlus },
-  { id: 'compliance', label: 'Compliance', icon: Target },
-  { id: 'data-health', label: 'Data Health', icon: Database },
+const TAB_GROUPS = [
+  {
+    label: 'Inteligência',
+    tabs: [
+      { id: 'ai-insights', label: 'IA Insights', icon: Sparkles },
+    ],
+  },
+  {
+    label: 'Volume & Taxas',
+    tabs: [
+      { id: 'tpv', label: 'TPV & Volume', icon: DollarSign },
+      { id: 'benchmark', label: 'Benchmark', icon: Swords },
+      { id: 'mix', label: 'Mix Pagamento', icon: Layers },
+      { id: 'expected-rates', label: 'Taxas Esperadas', icon: ArrowUpDown },
+      { id: 'proposal-rates', label: 'Taxas Propostas', icon: CreditCard },
+      { id: 'profitability', label: 'Rentabilidade', icon: Wallet },
+    ],
+  },
+  {
+    label: 'Comercial',
+    tabs: [
+      { id: 'commercial', label: 'Performance', icon: Timer },
+      { id: 'funnel', label: 'Funil', icon: TrendingUp },
+      { id: 'introducers', label: 'Introducers', icon: UserPlus },
+    ],
+  },
+  {
+    label: 'Perfil & Risco',
+    tabs: [
+      { id: 'profiles', label: 'Perfil Leads', icon: Users },
+      { id: 'operational', label: 'Operacional', icon: Building2 },
+      { id: 'risk', label: 'Risco', icon: ShieldAlert },
+      { id: 'compliance', label: 'Compliance', icon: Target },
+      { id: 'data-health', label: 'Data Health', icon: Database },
+    ],
+  },
 ];
+
+const ALL_TABS = TAB_GROUPS.flatMap(g => g.tabs);
 
 export default function DadosInsights() {
   const [activeTab, setActiveTab] = useState('ai-insights');
@@ -80,61 +102,77 @@ export default function DadosInsights() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-5">
         <div className="relative">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2bc196] to-[#002443] flex items-center justify-center animate-pulse">
-            <BarChart3 className="w-7 h-7 text-white" />
+          <div className="absolute inset-0 rounded-3xl bg-[#2bc196]/20 blur-xl animate-pulse" />
+          <div className="relative w-16 h-16 rounded-3xl bg-gradient-to-br from-[#002443] to-[#003366] flex items-center justify-center shadow-2xl shadow-[#002443]/20">
+            <BarChart3 className="w-7 h-7 text-[#2bc196]" />
           </div>
-          <Loader2 className="w-5 h-5 animate-spin text-[#2bc196] absolute -bottom-1 -right-1" />
+          <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-lg bg-white shadow-lg flex items-center justify-center">
+            <Loader2 className="w-3.5 h-3.5 animate-spin text-[#2bc196]" />
+          </div>
         </div>
-        <p className="text-sm text-[#002443]/40 font-medium">Carregando dados...</p>
+        <div className="text-center">
+          <p className="text-sm font-semibold text-[#002443]/60">Carregando dados...</p>
+          <p className="text-[10px] text-[#002443]/25 mt-1">Preparando visualizações</p>
+        </div>
       </div>
     );
   }
 
   const counters = [
     { label: 'Leads', value: leads.length, color: '#2bc196' },
-    { label: 'Propostas', value: proposals.length, color: '#5cf7cf' },
+    { label: 'Propostas', value: proposals.length + pixProposals.length, color: '#5cf7cf' },
     { label: 'Compliance', value: cases.length, color: '#36706c' },
     { label: 'Merchants', value: merchants.length, color: '#94a3b8' },
     { label: 'Parceiros', value: partners.length, color: '#f59e0b' },
   ];
 
   return (
-    <div className="space-y-6 max-w-[1440px] mx-auto">
+    <div className="space-y-5 max-w-[1440px] mx-auto">
       {/* ═══ PREMIUM HEADER ═══ */}
-      <div className="relative overflow-hidden rounded-3xl bg-[#002443] p-6 md:p-8">
-        {/* Decorative elements */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#2bc196]/8 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/4 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-[#5cf7cf]/5 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/4 pointer-events-none" />
-        <div className="absolute top-4 right-8 w-32 h-32 border border-white/5 rounded-full pointer-events-none" />
-        <div className="absolute top-12 right-16 w-20 h-20 border border-white/5 rounded-full pointer-events-none" />
-
-        <div className="relative z-10">
+      <div className="relative overflow-hidden rounded-[28px] bg-[#002443]">
+        {/* Multi-layer mesh gradient */}
+        <div className="absolute inset-0">
+          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#2bc196]/8 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/4" />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#5cf7cf]/5 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/4" />
+          <div className="absolute top-1/2 left-1/2 w-[200px] h-[200px] bg-[#2bc196]/3 rounded-full blur-[60px] -translate-x-1/2 -translate-y-1/2" />
+        </div>
+        {/* Grid pattern */}
+        <div className="absolute inset-0 opacity-[0.015]" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+        {/* Geometric accents */}
+        <div className="absolute top-6 right-10 w-[140px] h-[140px] border border-white/[0.04] rounded-full" />
+        <div className="absolute top-10 right-14 w-[90px] h-[90px] border border-white/[0.04] rounded-full" />
+        <div className="absolute bottom-4 right-1/3 w-8 h-8 border border-white/[0.06] rounded-lg rotate-45" />
+        
+        <div className="relative z-10 p-7 md:p-9">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#2bc196] to-[#5cf7cf] flex items-center justify-center shadow-lg shadow-[#2bc196]/20">
-                <BarChart3 className="w-7 h-7 text-white" />
+            <div className="flex items-center gap-5">
+              <div className="relative">
+                <div className="absolute inset-0 rounded-2xl bg-[#2bc196]/30 blur-lg" />
+                <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-[#2bc196] to-[#36706c] flex items-center justify-center shadow-xl">
+                  <BarChart3 className="w-7 h-7 text-white" />
+                </div>
               </div>
               <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Dados & Insights</h1>
-                  <div className="flex items-center gap-1 bg-[#2bc196]/20 rounded-full px-2.5 py-0.5">
-                    <Activity className="w-3 h-3 text-[#5cf7cf]" />
-                    <span className="text-[10px] font-bold text-[#5cf7cf]">LIVE</span>
+                <div className="flex items-center gap-3">
+                  <h1 className="text-[26px] md:text-[32px] font-extrabold text-white tracking-[-0.02em] leading-none">Dados & Insights</h1>
+                  <div className="flex items-center gap-1.5 bg-white/[0.08] backdrop-blur-md rounded-full px-3 py-1 border border-white/[0.06]">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#2bc196] shadow-[0_0_8px_rgba(43,193,150,0.6)] animate-pulse" />
+                    <span className="text-[9px] font-bold text-white/60 uppercase tracking-widest">Live</span>
                   </div>
                 </div>
-                <p className="text-white/30 text-sm mt-1 font-medium">Business Intelligence • Visão Estratégica</p>
+                <p className="text-white/25 text-[13px] mt-2 font-medium tracking-wide">Business Intelligence • Visão Estratégica</p>
               </div>
             </div>
             
             {/* Counter pills */}
             <div className="flex flex-wrap gap-2">
               {counters.map((c, i) => (
-                <div key={i} className="flex items-center gap-2 bg-white/[0.07] backdrop-blur-sm rounded-xl px-4 py-2.5 border border-white/[0.06] hover:bg-white/[0.12] transition-colors duration-200">
-                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: c.color }} />
-                  <span className="text-[11px] text-white/40 font-medium">{c.label}</span>
-                  <span className="text-sm font-extrabold text-white">{c.value}</span>
+                <div key={i} className="flex items-center gap-2.5 bg-white/[0.05] backdrop-blur-md rounded-2xl px-4 py-3 border border-white/[0.04] hover:bg-white/[0.1] hover:border-white/[0.08] transition-all duration-400 cursor-default group">
+                  <div className="w-2 h-2 rounded-full transition-shadow duration-400 group-hover:shadow-[0_0_8px]" style={{ backgroundColor: c.color, '--tw-shadow-color': c.color }} />
+                  <span className="text-[10px] text-white/30 font-medium tracking-wide">{c.label}</span>
+                  <span className="text-[14px] font-extrabold text-white tabular-nums">{c.value}</span>
                 </div>
               ))}
             </div>
@@ -142,27 +180,33 @@ export default function DadosInsights() {
         </div>
       </div>
 
-      {/* ═══ CUSTOM TABS ═══ */}
-      <div className="bg-white rounded-2xl border border-slate-100 p-1.5 shadow-sm">
-        <div className="flex flex-wrap gap-1">
-          {TABS.map(tab => {
-            const isActive = activeTab === tab.id;
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-[11px] font-bold transition-all duration-300 whitespace-nowrap
-                  ${isActive
-                    ? 'bg-[#2bc196] text-white shadow-md shadow-[#2bc196]/25 scale-[1.02]'
-                    : 'text-[#002443]/40 hover:text-[#002443]/70 hover:bg-slate-50'
-                  }`}
-              >
-                <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : ''}`} />
-                {tab.label}
-              </button>
-            );
-          })}
+      {/* ═══ GROUPED TABS — PREMIUM NAV ═══ */}
+      <div className="bg-white/70 backdrop-blur-xl rounded-2xl border border-white/60 p-2 shadow-[0_1px_3px_rgba(0,36,67,0.04)]">
+        <div className="flex flex-wrap items-center gap-1">
+          {TAB_GROUPS.map((group, gi) => (
+            <React.Fragment key={gi}>
+              {gi > 0 && <div className="hidden md:block w-px h-6 bg-[#002443]/[0.06] mx-1" />}
+              {group.tabs.map(tab => {
+                const isActive = activeTab === tab.id;
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`relative flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-[11px] font-bold transition-all duration-400 whitespace-nowrap
+                      ${isActive
+                        ? 'bg-[#002443] text-white shadow-lg shadow-[#002443]/15'
+                        : 'text-[#002443]/35 hover:text-[#002443]/70 hover:bg-[#002443]/[0.03]'
+                      }`}
+                  >
+                    {isActive && <div className="absolute inset-x-2 -bottom-[2px] h-[2px] bg-[#2bc196] rounded-full" />}
+                    <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-[#2bc196]' : ''}`} />
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </React.Fragment>
+          ))}
         </div>
       </div>
 
