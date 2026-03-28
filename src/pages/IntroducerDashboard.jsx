@@ -8,8 +8,10 @@ import IntroducerPortalKPIs from '../components/introducer-portal/IntroducerPort
 import IntroducerPortalLeadsTable from '../components/introducer-portal/IntroducerPortalLeadsTable';
 import IntroducerPortalCharts from '../components/introducer-portal/IntroducerPortalCharts';
 import IntroducerShareLink from '../components/introducer-portal/IntroducerShareLink';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function IntroducerDashboard() {
+  const { t } = useTranslation();
   const { data: user, isLoading: loadingUser } = useQuery({
     queryKey: ['current-user'],
     queryFn: () => base44.auth.me(),
@@ -55,12 +57,12 @@ export default function IntroducerDashboard() {
       <div className="min-h-screen flex items-center justify-center bg-[#f4f4f4]">
         <div className="bg-white rounded-2xl p-8 text-center max-w-md shadow-lg border border-[#002443]/5">
           <ShieldAlert className="w-16 h-16 mx-auto text-red-400 mb-4" />
-          <h1 className="text-xl font-bold text-[#002443] mb-2">Acesso Restrito</h1>
+          <h1 className="text-xl font-bold text-[#002443] mb-2">{t('idash.restricted_title')}</h1>
           <p className="text-sm text-[#002443]/60 mb-6">
-            Esta página é exclusiva para parceiros Introducers. Se você é um parceiro, entre em contato com o administrador para liberar seu acesso.
+            {t('idash.restricted_desc')}
           </p>
           <Button onClick={() => base44.auth.logout()} className="bg-[#002443] hover:bg-[#002443]/90 text-white rounded-xl">
-            Voltar ao Login
+            {t('idash.back_login')}
           </Button>
         </div>
       </div>
@@ -74,7 +76,7 @@ export default function IntroducerDashboard() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-8 h-8 animate-spin text-[#2bc196] mx-auto mb-3" />
-          <p className="text-sm text-[#002443]/50">Carregando seu dashboard...</p>
+          <p className="text-sm text-[#002443]/50">{t('idash.loading')}</p>
         </div>
       </div>
     );
@@ -88,7 +90,7 @@ export default function IntroducerDashboard() {
         <IntroducerShareLink introducer={introducer} />
         <IntroducerPortalCharts leads={leads} />
         <div>
-          <h2 className="text-lg font-bold text-[#002443] mb-3">Meus Leads Indicados</h2>
+          <h2 className="text-lg font-bold text-[#002443] mb-3">{t('idash.my_leads')}</h2>
           <IntroducerPortalLeadsTable leads={leads} />
         </div>
       </div>

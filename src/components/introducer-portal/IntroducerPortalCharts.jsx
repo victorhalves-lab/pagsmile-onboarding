@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import moment from 'moment';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 const STATUS_COLORS = {
   questionario_preenchido: '#3b82f6',
@@ -29,6 +30,21 @@ const STATUS_LABELS = {
 };
 
 export default function IntroducerPortalCharts({ leads }) {
+  const { t } = useTranslation();
+
+  const STATUS_LABELS_I18N = {
+    questionario_preenchido: t('idash.chart_questionario'),
+    analisado_priscila: t('idash.chart_analise'),
+    em_contato_comercial: t('idash.chart_contato'),
+    proposta_enviada: t('idash.chart_prop_enviada'),
+    proposta_aceita: t('idash.chart_aceita'),
+    proposta_recusada: t('idash.chart_recusada'),
+    kyc_iniciado: t('idash.chart_kyc'),
+    kyc_aprovado: t('idash.chart_kyc_ok'),
+    ativado: t('idash.chart_ativado'),
+    perdido: t('idash.chart_perdido'),
+  };
+
   const statusData = useMemo(() => {
     const counts = {};
     leads.forEach(l => {
@@ -36,7 +52,7 @@ export default function IntroducerPortalCharts({ leads }) {
       counts[s] = (counts[s] || 0) + 1;
     });
     return Object.entries(counts).map(([status, count]) => ({
-      name: STATUS_LABELS[status] || status,
+      name: STATUS_LABELS_I18N[status] || STATUS_LABELS[status] || status,
       value: count,
       color: STATUS_COLORS[status] || '#94a3b8',
     }));
@@ -55,7 +71,7 @@ export default function IntroducerPortalCharts({ leads }) {
   if (leads.length === 0) {
     return (
       <div className="text-center py-12 bg-white rounded-2xl border border-[#002443]/5">
-        <p className="text-sm text-[#002443]/40">Sem dados suficientes para gráficos</p>
+        <p className="text-sm text-[#002443]/40">{t('idash.no_chart_data')}</p>
       </div>
     );
   }
@@ -64,7 +80,7 @@ export default function IntroducerPortalCharts({ leads }) {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {/* Pie Chart - Status */}
       <div className="bg-white rounded-2xl border border-[#002443]/5 p-4">
-        <h3 className="text-sm font-bold text-[#002443] mb-4">Distribuição por Status</h3>
+        <h3 className="text-sm font-bold text-[#002443] mb-4">{t('idash.status_distribution')}</h3>
         <ResponsiveContainer width="100%" height={220}>
           <PieChart>
             <Pie data={statusData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} dataKey="value" paddingAngle={2}>
@@ -80,7 +96,7 @@ export default function IntroducerPortalCharts({ leads }) {
 
       {/* Bar Chart - Monthly */}
       <div className="bg-white rounded-2xl border border-[#002443]/5 p-4">
-        <h3 className="text-sm font-bold text-[#002443] mb-4">Leads por Mês</h3>
+        <h3 className="text-sm font-bold text-[#002443] mb-4">{t('idash.leads_per_month')}</h3>
         <ResponsiveContainer width="100%" height={220}>
           <BarChart data={monthlyData}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />

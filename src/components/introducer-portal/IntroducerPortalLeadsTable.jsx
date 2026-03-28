@@ -6,8 +6,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Search, Star, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import moment from 'moment';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
-const STATUS_LABELS = {
+const STATUS_LABELS_BASE = {
   questionario_preenchido: { label: 'Questionário Preenchido', color: 'bg-blue-100 text-blue-700' },
   analisado_priscila: { label: 'Em Análise', color: 'bg-purple-100 text-purple-700' },
   em_contato_comercial: { label: 'Contato Comercial', color: 'bg-amber-100 text-amber-700' },
@@ -22,8 +23,23 @@ const STATUS_LABELS = {
 };
 
 export default function IntroducerPortalLeadsTable({ leads }) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+
+  const STATUS_LABELS = {
+    questionario_preenchido: { label: t('idash.status_questionario'), color: 'bg-blue-100 text-blue-700' },
+    analisado_priscila: { label: t('idash.status_analisado'), color: 'bg-purple-100 text-purple-700' },
+    em_contato_comercial: { label: t('idash.status_contato'), color: 'bg-amber-100 text-amber-700' },
+    proposta_enviada: { label: t('idash.status_proposta_enviada'), color: 'bg-indigo-100 text-indigo-700' },
+    proposta_aceita: { label: t('idash.status_proposta_aceita'), color: 'bg-green-100 text-green-700' },
+    proposta_recusada: { label: t('idash.status_proposta_recusada'), color: 'bg-red-100 text-red-700' },
+    kyc_iniciado: { label: t('idash.status_kyc_iniciado'), color: 'bg-cyan-100 text-cyan-700' },
+    kyc_aprovado: { label: t('idash.status_kyc_aprovado'), color: 'bg-emerald-100 text-emerald-700' },
+    kyc_revisao_manual: { label: t('idash.status_kyc_revisao'), color: 'bg-orange-100 text-orange-700' },
+    ativado: { label: t('idash.status_ativado'), color: 'bg-green-100 text-green-700' },
+    perdido: { label: t('idash.status_perdido'), color: 'bg-slate-100 text-slate-500' },
+  };
 
   const filtered = useMemo(() => {
     let result = leads;
@@ -51,22 +67,22 @@ export default function IntroducerPortalLeadsTable({ leads }) {
           <Input
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Buscar por nome, empresa ou e-mail..."
+            placeholder={t('idash.search_placeholder')}
             className="pl-10 h-10 rounded-xl"
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[180px] h-10 rounded-xl"><SelectValue placeholder="Status" /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos os Status</SelectItem>
-            {Object.entries(STATUS_LABELS).map(([k, v]) => (
+            <SelectItem value="all">{t('idash.all_statuses')}</SelectItem>
+            {Object.entries(STATUS_LABELS_BASE).map(([k, v]) => (
               <SelectItem key={k} value={k}>{v.label}</SelectItem>
             ))}
           </SelectContent>
         </Select>
         {hasFilters && (
           <Button variant="ghost" size="sm" onClick={() => { setSearch(''); setStatusFilter('all'); }}>
-            <X className="w-4 h-4 mr-1" /> Limpar
+            <X className="w-4 h-4 mr-1" /> {t('idash.clear')}
           </Button>
         )}
       </div>
@@ -76,20 +92,20 @@ export default function IntroducerPortalLeadsTable({ leads }) {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Lead</TableHead>
-                <TableHead>Empresa</TableHead>
-                <TableHead>Tipo</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-center">Score IA</TableHead>
-                <TableHead className="text-right">TPV Mensal</TableHead>
-                <TableHead>Data</TableHead>
+                <TableHead>{t('idash.col_lead')}</TableHead>
+                <TableHead>{t('idash.col_company')}</TableHead>
+                <TableHead>{t('idash.col_type')}</TableHead>
+                <TableHead>{t('idash.col_status')}</TableHead>
+                <TableHead className="text-center">{t('idash.col_score')}</TableHead>
+                <TableHead className="text-right">{t('idash.col_tpv')}</TableHead>
+                <TableHead>{t('idash.col_date')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filtered.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-12">
-                    <p className="text-[#002443]/50">Nenhum lead encontrado</p>
+                    <p className="text-[#002443]/50">{t('idash.no_leads')}</p>
                   </TableCell>
                 </TableRow>
               ) : filtered.map(lead => {
@@ -122,7 +138,7 @@ export default function IntroducerPortalLeadsTable({ leads }) {
                     </TableCell>
                     <TableCell className="text-right">
                       <span className="font-mono text-sm">
-                        {lead.tpvMensal ? `R$ ${lead.tpvMensal.toLocaleString('pt-BR')}` : '-'}
+                        {lead.tpvMensal ? `R$ ${lead.tpvMensal.toLocaleString()}` : '-'}
                       </span>
                     </TableCell>
                     <TableCell>
@@ -137,7 +153,7 @@ export default function IntroducerPortalLeadsTable({ leads }) {
           </Table>
         </div>
       </div>
-      <p className="text-[10px] text-[#002443]/30 text-right">{filtered.length} de {leads.length} leads</p>
+      <p className="text-[10px] text-[#002443]/30 text-right">{t('idash.leads_count', { filtered: filtered.length, total: leads.length })}</p>
     </div>
   );
 }

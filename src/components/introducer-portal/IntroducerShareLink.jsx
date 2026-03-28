@@ -3,22 +3,24 @@ import { Copy, Check, Link as LinkIcon, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { createPageUrl } from '../../utils';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function IntroducerShareLink({ introducer }) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(null);
 
   const base = window.location.origin;
   const links = [
     {
       key: 'completo',
-      label: 'Questionário Completo',
-      desc: 'Para leads que ainda não passaram por reunião',
+      label: t('idash.complete_quest'),
+      desc: t('idash.complete_quest_desc'),
       url: `${base}${createPageUrl('LeadQuestionnaire')}?utm_source=${introducer.referralCode}&utm_medium=referral`,
     },
     {
       key: 'simplificado',
-      label: 'Questionário Simplificado',
-      desc: 'Para leads pós-reunião com taxas',
+      label: t('idash.simplified_quest'),
+      desc: t('idash.simplified_quest_desc'),
       url: `${base}${createPageUrl('QuestionarioSimplificadoPublico')}?utm_source=${introducer.referralCode}&utm_medium=referral`,
     },
   ];
@@ -26,7 +28,7 @@ export default function IntroducerShareLink({ introducer }) {
   const handleCopy = async (url, key) => {
     await navigator.clipboard.writeText(url);
     setCopied(key);
-    toast.success('Link copiado!');
+    toast.success(t('idash.link_copied'));
     setTimeout(() => setCopied(null), 2000);
   };
 
@@ -34,10 +36,10 @@ export default function IntroducerShareLink({ introducer }) {
     <div className="bg-white rounded-2xl border border-[#002443]/5 p-5">
       <div className="flex items-center gap-2 mb-4">
         <LinkIcon className="w-5 h-5 text-[#2bc196]" />
-        <h3 className="text-sm font-bold text-[#002443]">Seus Links de Indicação</h3>
+        <h3 className="text-sm font-bold text-[#002443]">{t('idash.your_referral_links')}</h3>
       </div>
       <p className="text-xs text-[#002443]/50 mb-4">
-        Compartilhe esses links com seus contatos. Todos os leads serão rastreados automaticamente.
+        {t('idash.share_links_desc')}
       </p>
       <div className="space-y-3">
         {links.map(link => (

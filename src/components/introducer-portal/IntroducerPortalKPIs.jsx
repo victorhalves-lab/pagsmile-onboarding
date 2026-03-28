@@ -1,7 +1,9 @@
 import React from 'react';
 import { Users, FileCheck, DollarSign, TrendingUp, Clock, Star } from 'lucide-react';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function IntroducerPortalKPIs({ leads, proposals }) {
+  const { t } = useTranslation();
   const totalLeads = leads.length;
   const leadsAtivos = leads.filter(l => !['perdido', 'ativado'].includes(l.status)).length;
   const leadsConvertidos = leads.filter(l => l.status === 'ativado').length;
@@ -23,12 +25,12 @@ export default function IntroducerPortalKPIs({ leads, proposals }) {
     : null;
 
   const kpis = [
-    { label: 'Leads Indicados', value: totalLeads, icon: Users, color: '#002443' },
-    { label: 'Em Andamento', value: leadsAtivos, icon: Clock, color: '#36706c' },
-    { label: 'Convertidos', value: leadsConvertidos, icon: FileCheck, color: '#2bc196' },
-    { label: 'Propostas Aceitas', value: propostasAceitas, icon: FileCheck, color: '#36706c' },
-    { label: 'Volume (R$)', value: volumeFechado > 0 ? `R$ ${volumeFechado.toLocaleString('pt-BR')}` : '-', icon: DollarSign, color: '#2bc196' },
-    { label: 'Conversão', value: `${conversionRate}%`, icon: TrendingUp, color: '#002443' },
+    { label: t('idash.leads_referred'), value: totalLeads, icon: Users, color: '#002443' },
+    { label: t('idash.in_progress'), value: leadsAtivos, icon: Clock, color: '#36706c' },
+    { label: t('idash.converted'), value: leadsConvertidos, icon: FileCheck, color: '#2bc196' },
+    { label: t('idash.proposals_accepted'), value: propostasAceitas, icon: FileCheck, color: '#36706c' },
+    { label: t('idash.volume'), value: volumeFechado > 0 ? `R$ ${volumeFechado.toLocaleString()}` : '-', icon: DollarSign, color: '#2bc196' },
+    { label: t('idash.conversion'), value: `${conversionRate}%`, icon: TrendingUp, color: '#002443' },
   ];
 
   return (

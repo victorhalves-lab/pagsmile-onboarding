@@ -24,8 +24,10 @@ import ContratosSection from '../components/howitworks/ContratosSection';
 import SidebarPagesSection from '../components/howitworks/SidebarPagesSection';
 import PersonasDetailedSection from '../components/howitworks/PersonasDetailedSection';
 import FlowchartsSection from '../components/howitworks/FlowchartsSection';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function HowItWorks() {
+  const { t, language } = useTranslation();
   const [expandedSections, setExpandedSections] = useState({});
   const toggleSection = (section) => setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
 
@@ -38,10 +40,15 @@ export default function HowItWorks() {
             <BookOpen className="w-7 h-7 text-[#2bc196]" />
           </div>
           <div>
-            <h1 className="text-3xl font-extrabold text-[#002443]">How It Works</h1>
-            <p className="text-[#002443]/60 text-sm">Raio-X completo, microscópico e extremamente detalhado de todo o sistema Pagsmile — todas as páginas, todas as funcionalidades, todos os fluxos</p>
+            <h1 className="text-3xl font-extrabold text-[#002443]">{t('hiw.title')}</h1>
+            <p className="text-[#002443]/60 text-sm">{t('hiw.subtitle')}</p>
           </div>
         </div>
+        {language !== 'pt' && (
+          <div className="mt-3 bg-amber-50 border border-amber-200 rounded-xl p-3">
+            <p className="text-xs text-amber-800">{t('hiw.doc_lang_notice')}</p>
+          </div>
+        )}
         <div className="flex flex-wrap gap-2 mt-4">
           <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0">12+ Módulos</Badge>
           <Badge className="bg-blue-50 text-blue-700 border-0">50+ Páginas</Badge>
@@ -377,10 +384,10 @@ export default function HowItWorks() {
       {/* Footer */}
       <div className="mt-8 p-6 bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl text-center">
         <p className="text-sm text-white/70">
-          Documentação Completa e Microscópica — Pagsmile Compliance, Onboarding, Leads, Propostas, Contratos, Introducers e Landing Pages • Versão 6.0 • {new Date().toLocaleDateString('pt-BR')}
+          {t('hiw.footer_version')} • {new Date().toLocaleDateString()}
         </p>
         <p className="text-xs text-white/40 mt-1">
-          11 Seções • 50+ Páginas • 27+ Entidades • 10 Fluxogramas Microscópicos • 3 Templates • 3 IAs • 3 Tipos Proposta + Links Rápidos • 30+ Backend Functions • 5 Integrações • 5 Personas Detalhadas
+          {t('hiw.footer_stats')}
         </p>
       </div>
     </div>
