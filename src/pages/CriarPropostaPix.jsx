@@ -6,8 +6,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Save, FileText, Loader2, Building2, Banknote, Shield } from 'lucide-react';
+import { ArrowLeft, Save, FileText, Loader2, Building2, Banknote, Shield, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import CnpjInput from '@/components/proposals/CnpjInput';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
@@ -247,18 +246,21 @@ export default function CriarPropostaPix() {
             <h2 className="text-sm font-bold text-white">{t('cpx.pix_rate')}</h2>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-3">
             <div className="space-y-1">
               <Label className={labelCls}>{t('cpx.charge_type')}</Label>
-              <Select value={pixTipo} onValueChange={setPixTipo}>
-                <SelectTrigger className={inputCls}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="percentual">{t('cpx.percentage')}</SelectItem>
-                  <SelectItem value="fixo">{t('cpx.fixed')}</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="flex gap-2">
+                {[{ v: 'percentual', l: t('cpx.percentage') }, { v: 'fixo', l: t('cpx.fixed') }].map(opt => (
+                  <button key={opt.v} onClick={() => setPixTipo(opt.v)}
+                    className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                      pixTipo === opt.v
+                        ? 'bg-[#2bc196] text-[#002443] shadow-lg shadow-[#2bc196]/20'
+                        : 'bg-white/5 text-white/30 hover:text-white/50 border border-white/5'
+                    }`}>
+                    {pixTipo === opt.v && <Check className="w-3 h-3" />} {opt.l}
+                  </button>
+                ))}
+              </div>
             </div>
             <div className="space-y-1">
               <Label className={labelCls}>{t('cpx.rate_value')}</Label>

@@ -3,8 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { User, Building2, Hash, Phone, Network } from 'lucide-react';
+import { Building2, Network, Check } from 'lucide-react';
 import CnpjInput from './CnpjInput';
 
 export default function CardDadosCliente({ form, errors, onUpdate }) {
@@ -82,16 +81,22 @@ export default function CardDadosCliente({ form, errors, onUpdate }) {
           <Label className={labelCls}>
             <span className="flex items-center gap-1"><Network className="w-3 h-3" /> Modelo de Negócio *</span>
           </Label>
-          <Select value={form.businessSubCategory || ''} onValueChange={(val) => onUpdate('businessSubCategory', val)}>
-            <SelectTrigger className={`${inputCls} ${errors?.businessSubCategory ? 'border-red-400/50' : ''}`}>
-              <SelectValue placeholder="Selecione..." />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="MERCHAN">Merchant (Venda Direta)</SelectItem>
-              <SelectItem value="GATEWAY">Gateway</SelectItem>
-              <SelectItem value="MARKETPLACE">Marketplace</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex gap-2">
+            {[
+              { v: 'MERCHAN', l: 'Merchant' },
+              { v: 'GATEWAY', l: 'Gateway' },
+              { v: 'MARKETPLACE', l: 'Marketplace' },
+            ].map(opt => (
+              <button key={opt.v} onClick={() => onUpdate('businessSubCategory', opt.v)}
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                  form.businessSubCategory === opt.v
+                    ? 'bg-[#2bc196] text-[#002443] shadow-lg shadow-[#2bc196]/20'
+                    : 'bg-white/5 text-white/30 hover:text-white/50 border border-white/5'
+                }`}>
+                {form.businessSubCategory === opt.v && <Check className="w-3 h-3" />} {opt.l}
+              </button>
+            ))}
+          </div>
           {errors?.businessSubCategory && <p className={errorCls}>{errors.businessSubCategory}</p>}
         </div>
       </div>
