@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Loader2, BarChart3, TrendingUp, DollarSign, Users, CreditCard, ArrowUpDown, Target, Sparkles, Wallet, Activity, Swords, Layers, ShieldAlert, Building2, UserPlus, Database, Timer } from 'lucide-react';
+import { Loader2, BarChart3, TrendingUp, DollarSign, Users, CreditCard, ArrowUpDown, Target, Sparkles, Wallet, Activity, Swords, Layers, ShieldAlert, Building2, UserPlus, Database, Timer, Handshake } from 'lucide-react';
 import InsightsTPVSection from '@/components/insights/InsightsTPVSection';
 import InsightsRatesSection from '@/components/insights/InsightsRatesSection';
 import InsightsProposalRatesSection from '@/components/insights/InsightsProposalRatesSection';
@@ -17,6 +17,7 @@ import InsightsOperationalSection from '@/components/insights/InsightsOperationa
 import InsightsIntroducerSection from '@/components/insights/InsightsIntroducerSection.jsx';
 import InsightsDataHealthSection from '@/components/insights/InsightsDataHealthSection.jsx';
 import InsightsCommercialPerfSection from '@/components/insights/InsightsCommercialPerfSection.jsx';
+import InsightsPartnerSection from '@/components/insights/InsightsPartnerSection.jsx';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 function buildTabGroups(t) {
@@ -54,9 +55,15 @@ function buildTabGroups(t) {
         { id: 'risk', label: t('di.tab_risk'), icon: ShieldAlert },
         { id: 'compliance', label: t('di.tab_compliance'), icon: Target },
         { id: 'data-health', label: t('di.tab_data_health'), icon: Database },
-      ],
-    },
-  ];
+        ],
+        },
+        {
+        label: t('di.grp_partners'),
+        tabs: [
+        { id: 'partners', label: t('di.tab_partners'), icon: Handshake },
+        ],
+        },
+        ];
 }
 
 export default function DadosInsights() {
@@ -230,6 +237,7 @@ export default function DadosInsights() {
         {activeTab === 'introducers' && <InsightsIntroducerSection leads={leads} proposals={proposals} />}
         {activeTab === 'compliance' && <InsightsComplianceSection cases={cases} complianceScores={complianceScores} merchants={merchants} documents={documents} questionnaireResponses={questionnaireResponses} />}
         {activeTab === 'data-health' && <InsightsDataHealthSection leads={leads} />}
+        {activeTab === 'partners' && <InsightsPartnerSection partners={partners} proposals={proposals} pixProposals={pixProposals} leads={leads} />}
       </div>
     </div>
   );
