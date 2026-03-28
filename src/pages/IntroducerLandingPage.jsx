@@ -118,7 +118,7 @@ export default function IntroducerLandingPage() {
             <p className="text-base max-w-md mx-auto mb-8" style={{ color: 'rgba(255,255,255,0.5)' }}>
               Preencha nosso questionário rápido e receba taxas personalizadas para o seu negócio.
             </p>
-            <Link to={`/LeadQuestionnaire?ref=${introducer.referralCode}`}>
+            <Link to={`/LeadQuestionnaire?ref=${introducer.referralCode}&templateId=69c3b5af17040531b06c5c16`}>
               <Button
                 size="lg"
                 className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl text-base px-10 py-6 shadow-lg shadow-[#2bc196]/20 hover:scale-[1.02] transition-all"
