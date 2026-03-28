@@ -19,6 +19,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Section, FlowStep, FeatureCard, PageDetail } from '../components/howitworks/HowItWorksShared';
 import QuestionnaireSection from '../components/howitworks/QuestionnaireSection';
+import LeadQuestionnaireSection from '../components/howitworks/LeadQuestionnaireSection';
 import LeadsPropostasSection from '../components/howitworks/LeadsPropostasSection';
 import ContratosSection from '../components/howitworks/ContratosSection';
 import SidebarPagesSection from '../components/howitworks/SidebarPagesSection';
@@ -54,14 +55,14 @@ export default function HowItWorks() {
           </div>
         )}
         <div className="flex flex-wrap gap-2 mt-4">
-          <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0">15 Seções</Badge>
+          <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0">16 Seções</Badge>
           <Badge className="bg-blue-50 text-blue-700 border-0">50+ Páginas</Badge>
           <Badge className="bg-purple-50 text-purple-700 border-0">27+ Entidades</Badge>
           <Badge className="bg-orange-50 text-orange-700 border-0">10 Fluxogramas Microscópicos</Badge>
           <Badge className="bg-pink-50 text-pink-700 border-0">5 Jornadas End-to-End</Badge>
           <Badge className="bg-red-50 text-red-700 border-0">3 IAs (SENTINEL, PRISCILA, Lead Qualifier)</Badge>
           <Badge className="bg-cyan-50 text-cyan-700 border-0">17 Abas de Analytics</Badge>
-          <Badge className="bg-amber-50 text-amber-700 border-0">3 Templates Compliance · 305+ Perguntas</Badge>
+          <Badge className="bg-amber-50 text-amber-700 border-0">4 Templates Lead + 3 Templates Compliance</Badge>
           <Badge className="bg-emerald-50 text-emerald-700 border-0">30+ Backend Functions</Badge>
           <Badge className="bg-violet-50 text-violet-700 border-0">3 Tipos de Proposta + Versionamento</Badge>
         </div>
@@ -137,6 +138,43 @@ export default function HowItWorks() {
       {/* ═══════════════════════════════════════════════════════ */}
       <Section id="contratos" title="5. Módulo: Contratos" icon={Stamp} badge="Geração Automática" expandedSections={expandedSections} toggleSection={toggleSection}>
         <ContratosSection />
+      </Section>
+
+      {/* ═══════════════════════════════════════════════════════ */}
+      {/* 5.5. QUESTIONÁRIOS DE LEADS — RAIO-X MICROSCÓPICO */}
+      {/* ═══════════════════════════════════════════════════════ */}
+      <Section id="questionarios-leads" title="5.5. Questionários de Leads — Raio-X Microscópico" icon={Inbox} badge="4 Templates" expandedSections={expandedSections} toggleSection={toggleSection}>
+        <div className="space-y-4">
+          <div className="bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl p-5 text-white">
+            <h3 className="text-lg font-bold mb-2">4 Tipos de Questionário de Leads</h3>
+            <p className="text-white/80 text-sm leading-relaxed mb-3">
+              Cada questionário atende a um cenário diferente de captação: desde o wizard completo com autocomplete (Lead Completo v2.0), passando pelo focado em PIX, até o simplificado pós-reunião e o questionário de reunião com Robô IA.
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="bg-white/10 rounded-xl p-3 text-center">
+                <p className="text-2xl font-extrabold text-[#5cf7cf]">45</p>
+                <p className="text-[10px] text-white/60">Campos Lead Completo v2</p>
+                <p className="text-[10px] text-white/40">10 etapas • Autocomplete</p>
+              </div>
+              <div className="bg-white/10 rounded-xl p-3 text-center">
+                <p className="text-2xl font-extrabold text-emerald-300">15</p>
+                <p className="text-[10px] text-white/60">Campos Lead PIX</p>
+                <p className="text-[10px] text-white/40">Página única</p>
+              </div>
+              <div className="bg-white/10 rounded-xl p-3 text-center">
+                <p className="text-2xl font-extrabold text-amber-300">18</p>
+                <p className="text-[10px] text-white/60">Campos Simplificado</p>
+                <p className="text-[10px] text-white/40">6 seções • Taxas</p>
+              </div>
+              <div className="bg-white/10 rounded-xl p-3 text-center">
+                <p className="text-2xl font-extrabold text-purple-300">25</p>
+                <p className="text-[10px] text-white/60">Campos Reunião</p>
+                <p className="text-[10px] text-white/40">Manual + Robô IA</p>
+              </div>
+            </div>
+          </div>
+          <LeadQuestionnaireSection />
+        </div>
       </Section>
 
       {/* ═══════════════════════════════════════════════════════ */}
