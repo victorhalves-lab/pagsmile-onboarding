@@ -1,5 +1,5 @@
 import React from 'react';
-import { Copy, Check, ExternalLink, ShoppingCart, GraduationCap, Lightbulb, Monitor, Globe, Store } from 'lucide-react';
+import { Copy, Check, ExternalLink, ShoppingCart, GraduationCap, Lightbulb, Monitor, Globe, Store, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
@@ -10,6 +10,7 @@ const SEGMENT_ICONS = {
   'SaaS': Monitor,
   'Gateway': Globe,
   'Marketplace': Store,
+  'Dropshipping': Package,
 };
 
 const SEGMENT_COLORS = {
@@ -19,9 +20,10 @@ const SEGMENT_COLORS = {
   'SaaS': 'from-violet-500 to-purple-600',
   'Gateway': 'from-rose-500 to-pink-600',
   'Marketplace': 'from-cyan-500 to-blue-600',
+  'Dropshipping': 'from-orange-500 to-red-600',
 };
 
-const ALL_SEGMENTS = ['E-commerce', 'Educação', 'Infoprodutos', 'SaaS', 'Gateway', 'Marketplace'];
+const ALL_SEGMENTS = ['E-commerce', 'Educação', 'Infoprodutos', 'SaaS', 'Gateway', 'Marketplace', 'Dropshipping'];
 
 export default function SegmentQuickLinks({ proposals }) {
   const [copiedSegment, setCopiedSegment] = React.useState(null);
