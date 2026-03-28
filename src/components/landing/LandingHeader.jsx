@@ -29,11 +29,11 @@ export default function LandingHeader({ companyName, companyLogoUrl }) {
             transition={{ duration: 0.5 }}
             className="flex items-center justify-center gap-6 mb-10"
           >
-            <img src={PAGSMILE_LOGO} alt="Pagsmile" className="h-8 md:h-10 w-auto" />
+            <img src={PAGSMILE_LOGO} alt="Pagsmile" className="h-6 sm:h-8 md:h-10 w-auto max-w-[40%] object-contain shrink-0" />
             {companyLogoUrl && (
               <>
-                <div className="w-px h-10 bg-white/20" />
-                <img src={companyLogoUrl} alt={companyName} className="h-10 md:h-12 w-auto max-w-[180px] object-contain" />
+                <div className="w-px h-8 sm:h-10 bg-white/20 shrink-0" />
+                <img src={companyLogoUrl} alt={companyName} className="h-8 sm:h-10 md:h-12 w-auto max-w-[40%] object-contain shrink-0" />
               </>
             )}
           </motion.div>
