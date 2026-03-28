@@ -1,6 +1,5 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import { TrendingUp, TrendingDown, DollarSign, ArrowUpRight, ArrowDownRight, Minus, AlertTriangle, CheckCircle2 } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import React, { useMemo } from 'react';
+import { TrendingUp, ArrowUpRight, ArrowDownRight, Minus, AlertTriangle, CheckCircle2 } from 'lucide-react';
 
 const FAIXA_MAP_PARCEIRO = { avista: 'avista', de2a6x: 'de2a6x', de7a12x: 'de7a12x', de13a21x: 'de13a24x' };
 
@@ -22,22 +21,7 @@ function getPartnerRate(mccBlock, bandeira, faixaProposta) {
   return 0;
 }
 
-export default function ProfitabilityPanel({ rates, form, partner, leadTpv, leadTransacoes }) {
-  const [selectedMccCode, setSelectedMccCode] = useState('');
-
-  const mccOptions = partner?.mdrByMcc || [];
-
-  // Auto-select MCC when partner changes
-  useEffect(() => {
-    if (partner && mccOptions.length > 0) {
-      const clientMcc = form?.clienteMcc;
-      const matching = mccOptions.find(m => m.mccCode === clientMcc);
-      const demais = mccOptions.find(m => ['Demais', 'demais', 'DEMAIS'].includes(m.mccCode));
-      setSelectedMccCode(matching?.mccCode || demais?.mccCode || mccOptions[0]?.mccCode || '');
-    } else {
-      setSelectedMccCode('');
-    }
-  }, [partner?.id, mccOptions.length, form?.clienteMcc]);
+export default function ProfitabilityPanel({ rates, form, partner, leadTpv, leadTransacoes, selectedMccCode }) {
 
   const profitability = useMemo(() => {
     if (!partner || !selectedMccCode) return null;
@@ -135,28 +119,6 @@ export default function ProfitabilityPanel({ rates, form, partner, leadTpv, lead
         </div>
         <h2 className="text-sm font-bold text-white">Simulação de Rentabilidade</h2>
       </div>
-
-      {/* MCC Selector */}
-      {mccOptions.length > 0 && (
-        <div>
-          <label className="text-[9px] font-bold text-white/40 uppercase tracking-wider mb-1 block">
-            MCC do Parceiro (custo base)
-          </label>
-          <Select value={selectedMccCode} onValueChange={setSelectedMccCode}>
-            <SelectTrigger className="h-8 text-xs bg-white/5 border-white/10 text-white">
-              <SelectValue placeholder="Selecione o MCC" />
-            </SelectTrigger>
-            <SelectContent>
-              {mccOptions.map(m => (
-                <SelectItem key={m.mccCode} value={m.mccCode}>
-                  <span className="font-mono text-xs">{m.mccCode}</span>
-                  <span className="text-slate-500 ml-1.5 text-xs">— {m.mccDescription}</span>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      )}
 
       {!profitability ? (
         <p className="text-xs text-white/30 text-center py-4">Selecione um MCC para simular</p>

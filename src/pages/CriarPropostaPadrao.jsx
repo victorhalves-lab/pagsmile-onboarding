@@ -36,6 +36,7 @@ export default function CriarPropostaPadrao() {
   const [saving, setSaving] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState('mastercard');
   const [selectedPartnerId, setSelectedPartnerId] = useState(null);
+  const [selectedMccCode, setSelectedMccCode] = useState('');
 
   const [form, setForm] = useState({
     templateName: '',
@@ -347,6 +348,8 @@ export default function CriarPropostaPadrao() {
           <PartnerSelector
             selectedPartnerId={selectedPartnerId}
             onSelectPartner={setSelectedPartnerId}
+            selectedMccCode={selectedMccCode}
+            onSelectMcc={setSelectedMccCode}
             leadMcc=""
             leadBusinessType=""
           />

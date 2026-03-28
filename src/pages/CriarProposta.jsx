@@ -37,6 +37,7 @@ export default function CriarProposta() {
   const [errors, setErrors] = useState({});
   const [selectedBrand, setSelectedBrand] = useState('mastercard');
   const [selectedPartnerId, setSelectedPartnerId] = useState(null);
+  const [selectedMccCode, setSelectedMccCode] = useState('');
 
   const [form, setForm] = useState({
     clienteNome: '', clienteCnpj: '', clienteMcc: '', clienteContato: '',
@@ -286,6 +287,8 @@ export default function CriarProposta() {
           <PartnerSelector
             selectedPartnerId={selectedPartnerId}
             onSelectPartner={setSelectedPartnerId}
+            selectedMccCode={selectedMccCode}
+            onSelectMcc={setSelectedMccCode}
             leadMcc={form.clienteMcc}
             leadBusinessType={form.businessSubCategory}
             leadTpv={lead?.tpvMensal}
@@ -304,6 +307,7 @@ export default function CriarProposta() {
               partner={selectedPartner}
               leadTpv={lead?.tpvMensal}
               leadTransacoes={lead?.transacoesMes}
+              selectedMccCode={selectedMccCode}
             />
             <PropostaPreview form={form} rates={rates} selectedBrand={selectedBrand} onBandeiraChange={setSelectedBrand} />
           </div>

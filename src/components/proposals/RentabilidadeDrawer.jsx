@@ -2,13 +2,12 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import {
   TrendingUp, ArrowUpRight, ArrowDownRight, Minus,
-  Loader2, AlertTriangle, Building2, DollarSign, CheckCircle2, Calculator, Calendar
+  Loader2, AlertTriangle, Building2, DollarSign, CheckCircle2, Calculator, Calendar, Check, Star
 } from 'lucide-react';
 
 const BANDEIRAS = ['mastercard', 'visa', 'elo', 'amex', 'outras'];
@@ -477,45 +476,46 @@ export default function RentabilidadeDrawer({ open, onClose, proposal }) {
 
           {/* Controls */}
           <div className="mt-4 space-y-3">
-            {/* Partner Select */}
+            {/* Partner Buttons */}
             <div>
-              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1 block">Parceiro</label>
-              <Select value={selectedPartnerId} onValueChange={setSelectedPartnerId}>
-                <SelectTrigger className="h-9 text-sm">
-                  <SelectValue placeholder={loadingPartners ? 'Carregando...' : 'Selecione um parceiro'} />
-                </SelectTrigger>
-                <SelectContent>
-                  {partners.map(p => (
-                    <SelectItem key={p.id} value={p.id}>
-                      <div className="flex items-center gap-2">
-                        <Building2 className="w-3 h-3 text-slate-400" />
-                        {p.name}
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Parceiro</label>
+              <div className="flex flex-wrap gap-1.5">
+                {loadingPartners ? (
+                  <div className="flex items-center gap-2 text-xs text-slate-400"><Loader2 className="w-3 h-3 animate-spin" /> Carregando...</div>
+                ) : partners.map(p => (
+                  <button key={p.id} onClick={() => setSelectedPartnerId(p.id)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+                      selectedPartnerId === p.id
+                        ? 'bg-[#2bc196] border-[#2bc196] text-white shadow-md'
+                        : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-[#2bc196]/50'
+                    }`}>
+                    {selectedPartnerId === p.id && <Check className="w-3 h-3" />}
+                    {p.isPrincipal && selectedPartnerId !== p.id && <Star className="w-2.5 h-2.5 text-amber-500 fill-amber-500" />}
+                    {p.name}
+                  </button>
+                ))}
+              </div>
             </div>
 
-            {/* MCC Select */}
+            {/* MCC Buttons */}
             {selectedPartner && mccOptions.length > 0 && (
               <div>
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1 block">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">
                   MCC do Parceiro (custo base)
                 </label>
-                <Select value={selectedMccCode} onValueChange={setSelectedMccCode}>
-                  <SelectTrigger className="h-9 text-sm">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {mccOptions.map(m => (
-                      <SelectItem key={m.mccCode} value={m.mccCode}>
-                        <span className="font-mono text-xs">{m.mccCode}</span>
-                        <span className="text-slate-500 ml-2 text-xs">— {m.mccDescription}</span>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="flex flex-wrap gap-1.5">
+                  {mccOptions.map(m => (
+                    <button key={m.mccCode} onClick={() => setSelectedMccCode(m.mccCode)}
+                      className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all border ${
+                        selectedMccCode === m.mccCode
+                          ? 'bg-[#2bc196] border-[#2bc196] text-white shadow-md'
+                          : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-[#2bc196]/50'
+                      }`}>
+                      {selectedMccCode === m.mccCode && <Check className="w-2.5 h-2.5 inline mr-1" />}
+                      {m.mccCode} {m.mccDescription ? `— ${m.mccDescription}` : ''}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
           </div>
