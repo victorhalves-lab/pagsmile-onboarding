@@ -78,8 +78,10 @@ export default function SalesPipelineSummary({ leads, proposals = [] }) {
       return moment().diff(moment(lastDate), 'days') > 7;
     }).length;
 
-    // Conversion = accepted proposals / total current proposals (or leads if no proposals)
-    const conversionBase = currentProposals.length > 0 ? currentProposals.length : leads.length;
+    // Conversion = accepted / proposals that reached the client (sent, viewed, accepted, rejected, counter, expired)
+    const clientFacingStatuses = ['enviada', 'visualizada', 'aceita', 'recusada', 'contraproposta', 'expirada'];
+    const clientFacingProposals = currentProposals.filter(p => clientFacingStatuses.includes(p.status));
+    const conversionBase = clientFacingProposals.length;
     const conversionRate = conversionBase > 0 ? ((acceptedProposals.length / conversionBase) * 100).toFixed(1) : 0;
 
     return {
