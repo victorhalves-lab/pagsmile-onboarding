@@ -14,19 +14,21 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
-
-const STATUS_CONFIG = {
-  rascunho: { label: 'Rascunho', color: 'bg-slate-100 text-slate-700', icon: '⚪' },
-  enviada: { label: 'Enviada', color: 'bg-yellow-100 text-yellow-700', icon: '🟡' },
-  visualizada: { label: 'Visualizada', color: 'bg-orange-100 text-orange-700', icon: '🟠' },
-  contraproposta: { label: 'Contraproposta', color: 'bg-blue-100 text-blue-700', icon: '🔵' },
-  aceita: { label: 'Aceita', color: 'bg-green-100 text-green-700', icon: '🟢' },
-  recusada: { label: 'Recusada', color: 'bg-red-100 text-red-700', icon: '🔴' },
-  expirada: { label: 'Expirada', color: 'bg-slate-100 text-slate-500', icon: '⚫' },
-};
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function GestaoPropostasPix() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const STATUS_CONFIG = {
+    rascunho: { label: t('proposals.status.draft'), color: 'bg-slate-100 text-slate-700', icon: '⚪' },
+    enviada: { label: t('proposals.status.sent'), color: 'bg-yellow-100 text-yellow-700', icon: '🟡' },
+    visualizada: { label: t('proposals.status.viewed'), color: 'bg-orange-100 text-orange-700', icon: '🟠' },
+    contraproposta: { label: t('proposals.status.counter'), color: 'bg-blue-100 text-blue-700', icon: '🔵' },
+    aceita: { label: t('proposals.status.accepted'), color: 'bg-green-100 text-green-700', icon: '🟢' },
+    recusada: { label: t('proposals.status.rejected'), color: 'bg-red-100 text-red-700', icon: '🔴' },
+    expirada: { label: t('proposals.status.expired'), color: 'bg-slate-100 text-slate-500', icon: '⚫' },
+  };
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -41,7 +43,7 @@ export default function GestaoPropostasPix() {
 
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.PixProposal.delete(id),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['pix-propostas'] }); toast.success('Proposta PIX excluída'); setDeleteId(null); }
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['pix-propostas'] }); toast.success(t('gpx.deleted')); setDeleteId(null); }
   });
 
   const filtered = useMemo(() => {
@@ -57,7 +59,7 @@ export default function GestaoPropostasPix() {
   const copyLink = (proposta) => {
     const url = `${window.location.origin}/PropostaPixPublica?token=${proposta.tokenPublico}`;
     navigator.clipboard.writeText(url);
-    toast.success('Link copiado!');
+    toast.success(t('gpx.link_copied'));
   };
 
   const duplicar = async (proposta) => {
@@ -69,7 +71,7 @@ export default function GestaoPropostasPix() {
     delete newProposta.id; delete newProposta.created_date; delete newProposta.updated_date; delete newProposta.created_by;
     const created = await base44.entities.PixProposal.create(newProposta);
     queryClient.invalidateQueries({ queryKey: ['pix-propostas'] });
-    toast.success('Proposta duplicada!');
+    toast.success(t('gpx.duplicated'));
     navigate(`/CriarPropostaPix?edit=${created.id}`);
   };
 
@@ -85,7 +87,7 @@ export default function GestaoPropostasPix() {
     const created = await base44.entities.PixProposal.create(newProposta);
     await base44.entities.PixProposal.update(proposta.id, { isCurrentVersion: false });
     queryClient.invalidateQueries({ queryKey: ['pix-propostas'] });
-    toast.success(`Nova versão V${newVersion} criada!`);
+    toast.success(t('gpx.version_created', { version: newVersion }));
     navigate(`/CriarPropostaPix?edit=${created.id}`);
   };
 
@@ -107,12 +109,12 @@ export default function GestaoPropostasPix() {
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-xl bg-white/10"><Banknote className="w-6 h-6 text-cyan-300" /></div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Propostas PIX</h1>
-              <p className="text-white/60 text-sm mt-1">{filtered.length} propostas encontradas</p>
+              <h1 className="text-2xl font-bold text-white">{t('gpx.title')}</h1>
+              <p className="text-white/60 text-sm mt-1">{t('gpx.found', { count: filtered.length })}</p>
             </div>
           </div>
           <Button onClick={() => navigate('/CriarPropostaPix')} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white gap-2 rounded-xl shadow-md">
-            <Plus className="w-4 h-4" /> Nova Proposta PIX
+            <Plus className="w-4 h-4" /> {t('gpx.new')}
           </Button>
         </div>
       </div>
@@ -120,10 +122,10 @@ export default function GestaoPropostasPix() {
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Total', value: total, color: 'text-[#002443]' },
-          { label: 'Ativas', value: enviadas, color: 'text-yellow-600' },
-          { label: 'Aceitas', value: aceitas, color: 'text-green-600' },
-          { label: 'Recusadas', value: recusadas, color: 'text-red-600' },
+          { label: t('gpx.total'), value: total, color: 'text-[#002443]' },
+          { label: t('gpx.active'), value: enviadas, color: 'text-yellow-600' },
+          { label: t('gpx.accepted'), value: aceitas, color: 'text-green-600' },
+          { label: t('gpx.rejected'), value: recusadas, color: 'text-red-600' },
         ].map(kpi => (
           <div key={kpi.label} className="bg-white rounded-xl border border-[#002443]/5 p-4 text-center">
             <p className="text-xs text-[#002443]/50 uppercase font-semibold">{kpi.label}</p>
@@ -136,12 +138,12 @@ export default function GestaoPropostasPix() {
       <div className="flex flex-wrap gap-3 items-center">
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/40" />
-          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar por número, empresa ou CNPJ..." className="pl-10 h-10" />
+          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('gpx.search_placeholder')} className="pl-10 h-10" />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[160px] h-10"><SelectValue placeholder="Status" /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="all">{t('gpx.all_statuses')}</SelectItem>
             {Object.entries(STATUS_CONFIG).map(([k, v]) => (<SelectItem key={k} value={k}>{v.icon} {v.label}</SelectItem>))}
           </SelectContent>
         </Select>
@@ -154,14 +156,14 @@ export default function GestaoPropostasPix() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Número</TableHead>
-                <TableHead>Empresa</TableHead>
+                <TableHead>{t('gpx.number')}</TableHead>
+                <TableHead>{t('gpx.company')}</TableHead>
                 <TableHead>CNPJ</TableHead>
-                <TableHead>Taxa PIX</TableHead>
+                <TableHead>{t('gpx.pix_rate')}</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Timeline</TableHead>
-                <TableHead>Validade</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
+                <TableHead>{t('gpx.timeline')}</TableHead>
+                <TableHead>{t('gpx.validity')}</TableHead>
+                <TableHead className="text-right">{t('common.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -169,8 +171,8 @@ export default function GestaoPropostasPix() {
                 <TableRow>
                   <TableCell colSpan={8} className="text-center py-12">
                     <Banknote className="w-12 h-12 mx-auto text-[#002443]/30 mb-3" />
-                    <p className="text-[#002443]/60">Nenhuma proposta PIX encontrada</p>
-                    <Button variant="link" onClick={() => navigate('/CriarPropostaPix')} className="mt-2 text-[#2bc196]">Nova Proposta PIX</Button>
+                    <p className="text-[#002443]/60">{t('gpx.no_proposals')}</p>
+                    <Button variant="link" onClick={() => navigate('/CriarPropostaPix')} className="mt-2 text-[#2bc196]">{t('gpx.new')}</Button>
                   </TableCell>
                 </TableRow>
               ) : filtered.map(p => {
@@ -196,9 +198,9 @@ export default function GestaoPropostasPix() {
                     <TableCell><Badge className={sCfg.color}>{sCfg.label}</Badge></TableCell>
                     <TableCell>
                       <div className="flex flex-col gap-0.5 text-[10px]">
-                        {p.acceptedDate && <div className="flex items-center gap-1 text-green-600"><CheckCircle className="w-2.5 h-2.5" />Aceita {moment(p.acceptedDate).format('DD/MM')}</div>}
-                        {p.rejectedDate && <div className="flex items-center gap-1 text-red-600"><XCircle className="w-2.5 h-2.5" />Recusada {moment(p.rejectedDate).format('DD/MM')}</div>}
-                        {!p.acceptedDate && !p.rejectedDate && <span className="text-slate-400">Criada {moment(p.created_date).format('DD/MM')}</span>}
+                        {p.acceptedDate && <div className="flex items-center gap-1 text-green-600"><CheckCircle className="w-2.5 h-2.5" />{t('gpx.accepted_on', { date: moment(p.acceptedDate).format('DD/MM') })}</div>}
+                        {p.rejectedDate && <div className="flex items-center gap-1 text-red-600"><XCircle className="w-2.5 h-2.5" />{t('gpx.rejected_on', { date: moment(p.rejectedDate).format('DD/MM') })}</div>}
+                        {!p.acceptedDate && !p.rejectedDate && <span className="text-slate-400">{t('gpx.created_on', { date: moment(p.created_date).format('DD/MM') })}</span>}
                       </div>
                     </TableCell>
                     <TableCell>
@@ -229,13 +231,13 @@ export default function GestaoPropostasPix() {
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Excluir Proposta PIX</AlertDialogTitle>
-            <AlertDialogDescription>Essa ação é irreversível.</AlertDialogDescription>
+            <AlertDialogTitle>{t('gpx.delete_title')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('gpx.delete_desc')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction onClick={() => deleteMutation.mutate(deleteId)} className="bg-red-500 hover:bg-red-600">
-              {deleteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Excluir'}
+              {deleteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : t('common.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

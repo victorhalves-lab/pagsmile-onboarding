@@ -12,17 +12,19 @@ import { Search, Plus, Eye, Pencil, Trash2, Loader2, X, FileText, Tag, Copy, Lin
 import { toast } from 'sonner';
 import moment from 'moment';
 import SegmentQuickLinks from '@/components/proposals/SegmentQuickLinks';
-
-const STATUS_CONFIG = {
-  rascunho: { label: 'Rascunho', color: 'bg-slate-100 text-slate-700' },
-  ativa: { label: 'Ativa', color: 'bg-green-100 text-green-700' },
-  inativa: { label: 'Inativa', color: 'bg-red-100 text-red-700' },
-};
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 const SEGMENTS = ['Educação', 'Infoprodutos', 'E-commerce', 'SaaS', 'Gateway', 'Merchan', 'Marketplace'];
 
 export default function GestaoPropostasPadrao() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const STATUS_CONFIG = {
+    rascunho: { label: t('proposals.status.draft'), color: 'bg-slate-100 text-slate-700' },
+    ativa: { label: t('proposals.status.accepted'), color: 'bg-green-100 text-green-700' },
+    inativa: { label: t('proposals.status.rejected'), color: 'bg-red-100 text-red-700' },
+  };
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -38,7 +40,7 @@ export default function GestaoPropostasPadrao() {
     mutationFn: (id) => base44.entities.StandardProposal.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['std-proposals'] });
-      toast.success('Proposta padrão excluída');
+      toast.success(t('gsp.deleted'));
       setDeleteId(null);
     },
   });
@@ -57,7 +59,7 @@ export default function GestaoPropostasPadrao() {
   const copyLink = (p) => {
     const url = `${window.location.origin}/PropostaPadraoPublica?token=${p.tokenPublico}`;
     navigator.clipboard.writeText(url);
-    toast.success('Link copiado!');
+    toast.success(t('gsp.link_copied'));
   };
 
   if (isLoading) {
@@ -72,12 +74,12 @@ export default function GestaoPropostasPadrao() {
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-xl bg-white/10"><Tag className="w-6 h-6 text-[#5cf7cf]" /></div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Propostas Padrão</h1>
-              <p className="text-white/60 text-sm mt-1">{filtered.length} modelos encontrados</p>
+              <h1 className="text-2xl font-bold text-white">{t('gsp.title')}</h1>
+              <p className="text-white/60 text-sm mt-1">{t('gsp.found', { count: filtered.length })}</p>
             </div>
           </div>
           <Button onClick={() => navigate('/CriarPropostaPadrao')} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white gap-2 rounded-xl shadow-md">
-            <Plus className="w-4 h-4" /> Nova Proposta Padrão
+            <Plus className="w-4 h-4" /> {t('gsp.new')}
           </Button>
         </div>
       </div>
@@ -89,19 +91,19 @@ export default function GestaoPropostasPadrao() {
       <div className="flex flex-wrap gap-3 items-center">
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/40" />
-          <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar por nome, código ou segmento..." className="pl-10 h-10" />
+          <Input value={search} onChange={e => setSearch(e.target.value)} placeholder={t('gsp.search_placeholder')} className="pl-10 h-10" />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[140px] h-10"><SelectValue placeholder="Status" /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="all">{t('gsp.all_statuses')}</SelectItem>
             {Object.entries(STATUS_CONFIG).map(([k, v]) => <SelectItem key={k} value={k}>{v.label}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={segmentFilter} onValueChange={setSegmentFilter}>
-          <SelectTrigger className="w-[160px] h-10"><SelectValue placeholder="Segmento" /></SelectTrigger>
+          <SelectTrigger className="w-[160px] h-10"><SelectValue placeholder={t('gsp.segment')} /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
+            <SelectItem value="all">{t('gsp.all_segments')}</SelectItem>
             {SEGMENTS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
           </SelectContent>
         </Select>
@@ -116,13 +118,13 @@ export default function GestaoPropostasPadrao() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Código</TableHead>
-                <TableHead>Nome</TableHead>
-                <TableHead>Segmento</TableHead>
-                <TableHead>Modelo</TableHead>
+                <TableHead>{t('gsp.code')}</TableHead>
+                <TableHead>{t('gsp.name')}</TableHead>
+                <TableHead>{t('gsp.segment')}</TableHead>
+                <TableHead>{t('gsp.model')}</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Criada</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
+                <TableHead>{t('gsp.created')}</TableHead>
+                <TableHead className="text-right">{t('common.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -130,8 +132,8 @@ export default function GestaoPropostasPadrao() {
                 <TableRow>
                   <TableCell colSpan={7} className="text-center py-12">
                     <FileText className="w-12 h-12 mx-auto text-[#002443]/30 mb-3" />
-                    <p className="text-[#002443]/60">Nenhuma proposta padrão encontrada</p>
-                    <Button variant="link" onClick={() => navigate('/CriarPropostaPadrao')} className="mt-2 text-[#2bc196]">Criar Primeira</Button>
+                    <p className="text-[#002443]/60">{t('gsp.no_proposals')}</p>
+                    <Button variant="link" onClick={() => navigate('/CriarPropostaPadrao')} className="mt-2 text-[#2bc196]">{t('gsp.create_first')}</Button>
                   </TableCell>
                 </TableRow>
               ) : filtered.map(p => {
@@ -172,13 +174,13 @@ export default function GestaoPropostasPadrao() {
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Excluir Proposta Padrão</AlertDialogTitle>
-            <AlertDialogDescription>Essa ação é irreversível.</AlertDialogDescription>
+            <AlertDialogTitle>{t('gsp.delete_title')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('gsp.delete_desc')}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
             <AlertDialogAction onClick={() => deleteMutation.mutate(deleteId)} className="bg-red-500 hover:bg-red-600">
-              {deleteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Excluir'}
+              {deleteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : t('common.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
