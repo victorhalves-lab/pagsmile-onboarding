@@ -94,6 +94,11 @@ export default function AdminDashboard() {
     queryFn: () => base44.entities.Lead.list('-created_date', 500)
   });
 
+  const { data: dashProposals = [] } = useQuery({
+    queryKey: ['dashboard-proposals'],
+    queryFn: () => base44.entities.Proposal.list('-created_date', 500)
+  });
+
   const { data: revalidationSchedules = [] } = useQuery({
     queryKey: ['revalidationSchedules-dash'],
     queryFn: () => base44.entities.RevalidationSchedule.list()
@@ -572,7 +577,7 @@ export default function AdminDashboard() {
       {/* Distribuição de Scores + Pipeline de Vendas */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <ScoreDistributionChart data={stats.scoreDistribution} />
-        <SalesPipelineSummary leads={leads} />
+        <SalesPipelineSummary leads={leads} proposals={dashProposals} />
       </div>
 
       {/* Distribuição de Risco */}
