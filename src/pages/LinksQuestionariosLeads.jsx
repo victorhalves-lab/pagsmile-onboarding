@@ -11,8 +11,10 @@ import { toast } from 'sonner';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import IntroducerLinkGeneratorModal from '../components/introducers/IntroducerLinkGeneratorModal';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function LinksQuestionariosLeads() {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(null);
   const [introducerModalOpen, setIntroducerModalOpen] = useState(false);
   const queryClient = useQueryClient();
@@ -28,7 +30,7 @@ export default function LinksQuestionariosLeads() {
   const handleCopy = async (text, id) => {
     await navigator.clipboard.writeText(text);
     setCopied(id);
-    toast.success('Link copiado para a área de transferência!');
+    toast.success(t('lql.link_copied'));
     setTimeout(() => setCopied(null), 2000);
   };
 
@@ -41,8 +43,8 @@ export default function LinksQuestionariosLeads() {
             <LinkIcon className="w-6 h-6 text-[#5cf7cf]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">Links de Questionários</h1>
-            <p className="text-white/60 text-sm mt-1">Acesse e gere links para coleta de dados de leads</p>
+            <h1 className="text-2xl font-bold text-white">{t('lql.title')}</h1>
+            <p className="text-white/60 text-sm mt-1">{t('lql.subtitle')}</p>
           </div>
         </div>
       </div>
@@ -59,21 +61,21 @@ export default function LinksQuestionariosLeads() {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <CardTitle className="text-base font-bold text-[#002443]">Lead Completo v2.0</CardTitle>
-                    <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0 text-[10px]">Autocomplete</Badge>
+                    <CardTitle className="text-base font-bold text-[#002443]">{t('lql.lead_v2')}</CardTitle>
+                    <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0 text-[10px]">{t('lql.autocomplete')}</Badge>
                   </div>
-                  <CardDescription className="text-[#282828]/50 text-xs mt-0.5">CNPJ preenche 14 campos automaticamente</CardDescription>
+                  <CardDescription className="text-[#282828]/50 text-xs mt-0.5">{t('lql.v2_desc')}</CardDescription>
                 </div>
               </div>
               <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.LEAD_V2, '_blank')} className="border-[#002443]/10 text-[#002443] hover:bg-[#002443]/5 rounded-lg">
                 <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
-                Visualizar
+                {t('lql.view')}
               </Button>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40">Link Padrão</Label>
+              <Label className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40">{t('lql.default_link')}</Label>
               <div className="flex gap-2">
                 <Input readOnly value={genericLinks.LEAD_V2} className="font-mono text-xs bg-[#f4f4f4] border-[#002443]/5 rounded-lg" />
                 <Button 
@@ -86,11 +88,11 @@ export default function LinksQuestionariosLeads() {
             </div>
             
             <div className="bg-[#2bc196]/5 p-4 rounded-xl text-sm text-[#002443]/80 border border-[#2bc196]/10">
-              <p className="font-semibold text-[#002443] text-xs mb-2">✨ Novo — Versão com Autocomplete:</p>
+              <p className="font-semibold text-[#002443] text-xs mb-2">{t('lql.v2_info_title')}</p>
               <ul className="list-disc pl-4 space-y-1 text-xs text-[#282828]/60">
-                <li>CNPJ preenche automaticamente Razão Social, Nome Fantasia e mais</li>
-                <li>76 perguntas com validação avançada e enriquecimento de dados</li>
-                <li>Ao aceitar proposta, direciona para Compliance v2.0 correto</li>
+                <li>{t('lql.v2_info_1')}</li>
+                <li>{t('lql.v2_info_2')}</li>
+                <li>{t('lql.v2_info_3')}</li>
               </ul>
             </div>
           </CardContent>
@@ -115,19 +117,19 @@ export default function LinksQuestionariosLeads() {
                   <Briefcase className="w-5 h-5 text-[#2bc196]" />
                 </div>
                 <div>
-                  <CardTitle className="text-base font-bold text-[#002443]">Questionário Completo</CardTitle>
-                  <CardDescription className="text-[#282828]/50 text-xs mt-0.5">Para qualificação comercial detalhada</CardDescription>
+                  <CardTitle className="text-base font-bold text-[#002443]">{t('lql.complete')}</CardTitle>
+                  <CardDescription className="text-[#282828]/50 text-xs mt-0.5">{t('lql.complete_desc')}</CardDescription>
                 </div>
               </div>
               <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.LEAD, '_blank')} className="border-[#002443]/10 text-[#002443] hover:bg-[#002443]/5 rounded-lg">
                 <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
-                Visualizar
+                {t('lql.view')}
               </Button>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40">Link Padrão</Label>
+              <Label className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40">{t('lql.default_link')}</Label>
               <div className="flex gap-2">
                 <Input readOnly value={genericLinks.LEAD} className="font-mono text-xs bg-[#f4f4f4] border-[#002443]/5 rounded-lg" />
                 <Button 
@@ -140,11 +142,11 @@ export default function LinksQuestionariosLeads() {
             </div>
             
             <div className="bg-[#f4f4f4] p-4 rounded-xl text-sm text-[#002443]/80 border border-[#002443]/5">
-              <p className="font-semibold text-[#002443] text-xs mb-2">Use este questionário quando:</p>
+              <p className="font-semibold text-[#002443] text-xs mb-2">{t('lql.complete_when')}</p>
               <ul className="list-disc pl-4 space-y-1 text-xs text-[#282828]/60">
-                <li>O cliente está iniciando o contato comercial</li>
-                <li>Você precisa de dados completos para análise de MCC e Compliance</li>
-                <li>É necessário validar documentos e sócios</li>
+                <li>{t('lql.complete_1')}</li>
+                <li>{t('lql.complete_2')}</li>
+                <li>{t('lql.complete_3')}</li>
               </ul>
             </div>
           </CardContent>
@@ -168,19 +170,19 @@ export default function LinksQuestionariosLeads() {
                   <Zap className="w-5 h-5 text-[#36706c]" />
                 </div>
                 <div>
-                  <CardTitle className="text-base font-bold text-[#002443]">Questionário Simplificado</CardTitle>
-                  <CardDescription className="text-[#282828]/50 text-xs mt-0.5">Para coleta rápida de taxas e proposta</CardDescription>
+                  <CardTitle className="text-base font-bold text-[#002443]">{t('lql.simplified')}</CardTitle>
+                  <CardDescription className="text-[#282828]/50 text-xs mt-0.5">{t('lql.simplified_desc')}</CardDescription>
                 </div>
               </div>
               <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.LEAD_SIMPLIFICADO, '_blank')} className="border-[#002443]/10 text-[#002443] hover:bg-[#002443]/5 rounded-lg">
                 <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
-                Visualizar
+                {t('lql.view')}
               </Button>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40">Link Padrão</Label>
+              <Label className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40">{t('lql.default_link')}</Label>
               <div className="flex gap-2">
                 <Input readOnly value={genericLinks.LEAD_SIMPLIFICADO} className="font-mono text-xs bg-[#f4f4f4] border-[#002443]/5 rounded-lg" />
                 <Button 
@@ -193,11 +195,11 @@ export default function LinksQuestionariosLeads() {
             </div>
 
             <div className="bg-[#f4f4f4] p-4 rounded-xl text-sm text-[#002443]/80 border border-[#002443]/5">
-              <p className="font-semibold text-[#002443] text-xs mb-2">Use este questionário quando:</p>
+              <p className="font-semibold text-[#002443] text-xs mb-2">{t('lql.simplified_when')}</p>
               <ul className="list-disc pl-4 space-y-1 text-xs text-[#282828]/60">
-                <li>Você já teve uma reunião e quer enviar uma proposta</li>
-                <li>Precisa apenas coletar as taxas atuais do cliente</li>
-                <li>O cliente quer agilidade no processo comercial</li>
+                <li>{t('lql.simplified_1')}</li>
+                <li>{t('lql.simplified_2')}</li>
+                <li>{t('lql.simplified_3')}</li>
               </ul>
             </div>
           </CardContent>
@@ -220,19 +222,19 @@ export default function LinksQuestionariosLeads() {
                   <Zap className="w-5 h-5 text-[#002443]" />
                 </div>
                 <div>
-                  <CardTitle className="text-base font-bold text-[#002443]">Questionário PIX</CardTitle>
-                  <CardDescription className="text-[#282828]/50 text-xs mt-0.5">Para clientes com interesse exclusivo em PIX</CardDescription>
+                  <CardTitle className="text-base font-bold text-[#002443]">{t('lql.pix')}</CardTitle>
+                  <CardDescription className="text-[#282828]/50 text-xs mt-0.5">{t('lql.pix_desc')}</CardDescription>
                 </div>
               </div>
               <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.LEAD_PIX, '_blank')} className="border-[#002443]/10 text-[#002443] hover:bg-[#002443]/5 rounded-lg">
                 <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
-                Visualizar
+                {t('lql.view')}
               </Button>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40">Link Padrão</Label>
+              <Label className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40">{t('lql.default_link')}</Label>
               <div className="flex gap-2">
                 <Input readOnly value={genericLinks.LEAD_PIX} className="font-mono text-xs bg-[#f4f4f4] border-[#002443]/5 rounded-lg" />
                 <Button 
@@ -245,11 +247,11 @@ export default function LinksQuestionariosLeads() {
             </div>
             
             <div className="bg-[#f4f4f4] p-4 rounded-xl text-sm text-[#002443]/80 border border-[#002443]/5">
-              <p className="font-semibold text-[#002443] text-xs mb-2">Use este questionário quando:</p>
+              <p className="font-semibold text-[#002443] text-xs mb-2">{t('lql.pix_when')}</p>
               <ul className="list-disc pl-4 space-y-1 text-xs text-[#282828]/60">
-                <li>O cliente tem interesse exclusivo em pagamentos via PIX</li>
-                <li>Precisa coletar dados de volume e ticket médio PIX</li>
-                <li>Quer comparar propostas de concorrentes</li>
+                <li>{t('lql.pix_1')}</li>
+                <li>{t('lql.pix_2')}</li>
+                <li>{t('lql.pix_3')}</li>
               </ul>
             </div>
           </CardContent>
@@ -274,8 +276,8 @@ export default function LinksQuestionariosLeads() {
                 <UserPlus className="w-5 h-5 text-purple-600" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-[#002443]">Gerar Link por Introducer</h3>
-                <p className="text-[#282828]/50 text-xs mt-0.5">Crie links rastreáveis vinculados a parceiros de indicação</p>
+                <h3 className="text-base font-bold text-[#002443]">{t('lql.introducer_title')}</h3>
+                <p className="text-[#282828]/50 text-xs mt-0.5">{t('lql.introducer_desc')}</p>
               </div>
             </div>
             <Button
@@ -283,7 +285,7 @@ export default function LinksQuestionariosLeads() {
               className="bg-purple-600 hover:bg-purple-700 text-white rounded-lg"
             >
               <UserPlus className="w-4 h-4 mr-2" />
-              Gerar Link de Introducer
+              {t('lql.introducer_btn')}
             </Button>
           </div>
         </CardContent>

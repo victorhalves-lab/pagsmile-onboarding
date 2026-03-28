@@ -12,8 +12,10 @@ import { toast } from 'sonner';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import LinkAnalyticsDashboard from '../components/analytics/LinkAnalyticsDashboard';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function LinksCompliance() {
+  const { t } = useTranslation();
   const [copiedKey, setCopiedKey] = useState(null);
   const [expandedLinkId, setExpandedLinkId] = useState(null);
   const [activeTab, setActiveTab] = useState('links');
@@ -30,35 +32,35 @@ export default function LinksCompliance() {
 
   const deleteLinkMutation = useMutation({
     mutationFn: (id) => base44.entities.OnboardingLink.delete(id),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['complianceLinks'] }); toast.success('Link excluído'); }
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['complianceLinks'] }); toast.success(t('lc.link_deleted')); }
   });
 
   const handleCopy = async (text, key) => {
     await navigator.clipboard.writeText(text);
     setCopiedKey(key);
     setTimeout(() => setCopiedKey(null), 2000);
-    toast.success('Copiado!');
+    toast.success(t('lc.copied'));
   };
 
   const quickLinksByBusiness = [
-    { key: 'MERCHANT', label: 'Merchant', desc: 'Estabelecimento comercial padrão', icon: CreditCard, color: '#2bc196', url: `${base}${createPageUrl('ComplianceDinamico')}?model=merchant` },
-    { key: 'GATEWAY', label: 'Gateway', desc: 'Integrador / facilitador de pagamentos', icon: Globe, color: '#002443', url: `${base}${createPageUrl('ComplianceDinamico')}?model=gateway` },
-    { key: 'MARKETPLACE', label: 'Marketplace', desc: 'Plataforma com sellers / sub-merchants', icon: ShoppingCart, color: '#36706c', url: `${base}${createPageUrl('ComplianceDinamico')}?model=marketplace` },
+    { key: 'MERCHANT', label: 'Merchant', desc: t('lc.merchant_desc'), icon: CreditCard, color: '#2bc196', url: `${base}${createPageUrl('ComplianceDinamico')}?model=merchant` },
+    { key: 'GATEWAY', label: 'Gateway', desc: t('lc.gateway_desc'), icon: Globe, color: '#002443', url: `${base}${createPageUrl('ComplianceDinamico')}?model=gateway` },
+    { key: 'MARKETPLACE', label: 'Marketplace', desc: t('lc.marketplace_desc'), icon: ShoppingCart, color: '#36706c', url: `${base}${createPageUrl('ComplianceDinamico')}?model=marketplace` },
   ];
 
   const quickLinksV2 = [
-    { key: 'MERCHANT_V2', label: 'Merchant v2.0', desc: 'Autocomplete — CNPJ preenche 14 campos', icon: CreditCard, color: '#2bc196', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceMerchantAutocomplete` },
-    { key: 'GATEWAY_V2', label: 'Gateway v2.0', desc: 'Autocomplete — 80 perguntas + 19 docs', icon: Globe, color: '#002443', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceGatewayAutocomplete` },
-    { key: 'MARKETPLACE_V2', label: 'Marketplace v2.0', desc: 'Autocomplete — 85 perguntas + 16 docs', icon: ShoppingCart, color: '#36706c', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceMarketplaceAutocomplete` },
+    { key: 'MERCHANT_V2', label: 'Merchant v2.0', desc: t('lc.merchant_v2_desc'), icon: CreditCard, color: '#2bc196', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceMerchantAutocomplete` },
+    { key: 'GATEWAY_V2', label: 'Gateway v2.0', desc: t('lc.gateway_v2_desc'), icon: Globe, color: '#002443', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceGatewayAutocomplete` },
+    { key: 'MARKETPLACE_V2', label: 'Marketplace v2.0', desc: t('lc.marketplace_v2_desc'), icon: ShoppingCart, color: '#36706c', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceMarketplaceAutocomplete` },
   ];
 
   const quickLinksByType = [
-    { key: 'GENERIC', label: 'Genérico', desc: 'Merchant escolhe o perfil', icon: Globe, color: '#002443', url: `${base}${createPageUrl('ComplianceOnboardingStart')}` },
-    { key: 'PIX', label: 'Pix', desc: 'Compliance simplificado Pix', icon: CreditCard, color: '#2bc196', url: `${base}${createPageUrl('CompliancePixOnly')}` },
-    { key: 'FULL', label: 'Full KYC', desc: 'Compliance completo', icon: Shield, color: '#002443', url: `${base}${createPageUrl('ComplianceFullKYC')}` },
-    { key: 'LITE', label: 'Lite', desc: 'PMEs simplificado', icon: Zap, color: '#36706c', url: `${base}${createPageUrl('ComplianceLite')}` },
-    { key: 'ECOMMERCE', label: 'E-commerce', desc: 'Lojas virtuais', icon: ShoppingCart, color: '#002443', url: `${base}${createPageUrl('ComplianceEcommerce')}` },
-    { key: 'SAAS', label: 'SaaS', desc: 'Recorrência / fast track', icon: Cloud, color: '#36706c', url: `${base}${createPageUrl('ComplianceSaaS')}` },
+    { key: 'GENERIC', label: 'Genérico', desc: t('lc.generic_desc'), icon: Globe, color: '#002443', url: `${base}${createPageUrl('ComplianceOnboardingStart')}` },
+    { key: 'PIX', label: 'Pix', desc: t('lc.pix_desc'), icon: CreditCard, color: '#2bc196', url: `${base}${createPageUrl('CompliancePixOnly')}` },
+    { key: 'FULL', label: 'Full KYC', desc: t('lc.full_desc'), icon: Shield, color: '#002443', url: `${base}${createPageUrl('ComplianceFullKYC')}` },
+    { key: 'LITE', label: 'Lite', desc: t('lc.lite_desc'), icon: Zap, color: '#36706c', url: `${base}${createPageUrl('ComplianceLite')}` },
+    { key: 'ECOMMERCE', label: 'E-commerce', desc: t('lc.ecommerce_desc'), icon: ShoppingCart, color: '#002443', url: `${base}${createPageUrl('ComplianceEcommerce')}` },
+    { key: 'SAAS', label: 'SaaS', desc: t('lc.saas_desc'), icon: Cloud, color: '#36706c', url: `${base}${createPageUrl('ComplianceSaaS')}` },
   ];
 
   const stats = React.useMemo(() => {
@@ -107,7 +109,7 @@ export default function LinksCompliance() {
             copiedKey === item.key ? 'bg-[#2bc196] text-white' : 'bg-[#f4f4f4] text-[#002443]/60 hover:bg-[#2bc196]/10 hover:text-[#2bc196]'
           }`}>
           {copiedKey === item.key ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-          {copiedKey === item.key ? 'Copiado!' : 'Copiar'}
+          {copiedKey === item.key ? t('lc.copied') : t('lc.copy')}
         </button>
         <button onClick={() => window.open(item.url, '_blank')}
           className="px-3 py-2 rounded-xl bg-[#f4f4f4] text-[#002443]/40 hover:bg-[#002443]/5 hover:text-[#002443] transition-all">
@@ -126,23 +128,23 @@ export default function LinksCompliance() {
             <Shield className="w-5 h-5 text-[#002443]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-[#002443]">Links de Compliance</h1>
-            <p className="text-sm text-[#002443]/60">Links KYC/KYB para onboarding de merchants</p>
+            <h1 className="text-2xl font-bold text-[#002443]">{t('lc.title')}</h1>
+            <p className="text-sm text-[#002443]/60">{t('lc.subtitle')}</p>
           </div>
         </div>
         <Button variant="outline" onClick={() => refetch()} className="border-[#002443]/10 hover:bg-[#f4f4f4] rounded-xl">
-          <RefreshCw className="w-4 h-4 mr-2 text-[#002443]/50" /> <span className="text-[#002443]/70">Atualizar</span>
+          <RefreshCw className="w-4 h-4 mr-2 text-[#002443]/50" /> <span className="text-[#002443]/70">{t('lc.refresh')}</span>
         </Button>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         {[
-          { label: 'Links', value: stats.total, icon: LinkIcon, color: '#002443' },
-          { label: 'Cliques', value: stats.clicks, icon: MousePointer, color: '#36706c' },
-          { label: 'Submissões', value: stats.submissions, icon: FileCheck, color: '#2bc196' },
-          { label: 'Completados', value: stats.completed, icon: Check, color: '#2bc196' },
-          { label: 'Conversão', value: `${stats.conv}%`, icon: TrendingUp, color: '#36706c' },
+          { label: t('lc.links'), value: stats.total, icon: LinkIcon, color: '#002443' },
+          { label: t('lc.clicks'), value: stats.clicks, icon: MousePointer, color: '#36706c' },
+          { label: t('lc.submissions'), value: stats.submissions, icon: FileCheck, color: '#2bc196' },
+          { label: t('lc.completed'), value: stats.completed, icon: Check, color: '#2bc196' },
+          { label: t('lc.conversion'), value: `${stats.conv}%`, icon: TrendingUp, color: '#36706c' },
         ].map((s, i) => (
           <div key={i} className="bg-white rounded-2xl border border-[#002443]/5 p-4">
             <div className="flex items-center gap-2 mb-1"><s.icon className="w-4 h-4" style={{ color: s.color }} /><p className="text-xl font-bold" style={{ color: s.color }}>{s.value}</p></div>
@@ -154,8 +156,8 @@ export default function LinksCompliance() {
       {/* Tabs */}
       <div className="flex gap-2 bg-[#f4f4f4] rounded-2xl p-1.5 border border-[#002443]/5">
         {[
-          { id: 'links', label: '🔗 Links Rápidos' },
-          { id: 'historico', label: `📊 Histórico (${links.length})` },
+          { id: 'links', label: t('lc.quick_links') },
+          { id: 'historico', label: t('lc.history', { count: links.length }) },
         ].map(tab => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id)}
             className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all ${
@@ -172,10 +174,10 @@ export default function LinksCompliance() {
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-[#2bc196]/10 flex items-center justify-center"><Briefcase className="w-4 h-4 text-[#2bc196]" /></div>
               <div>
-                <h2 className="text-base font-bold text-[#002443]">v2.0 — Autocomplete por CNPJ</h2>
-                <p className="text-xs text-[#002443]/40">Novos questionários com preenchimento automático e validação avançada</p>
+                <h2 className="text-base font-bold text-[#002443]">{t('lc.v2_title')}</h2>
+                <p className="text-xs text-[#002443]/40">{t('lc.v2_desc')}</p>
               </div>
-              <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0 text-[10px] ml-2">NOVO</Badge>
+              <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0 text-[10px] ml-2">{t('lc.new')}</Badge>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {quickLinksV2.map(item => <QuickLinkCard key={item.key} item={item} />)}
@@ -187,8 +189,8 @@ export default function LinksCompliance() {
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-[#002443]/5 flex items-center justify-center"><Briefcase className="w-4 h-4 text-[#002443]/60" /></div>
               <div>
-                <h2 className="text-base font-bold text-[#002443]">Por Tipo de Negócio (v1)</h2>
-                <p className="text-xs text-[#002443]/40">Links diretos por sub-categoria: Merchant, Gateway ou Marketplace</p>
+                <h2 className="text-base font-bold text-[#002443]">{t('lc.by_business')}</h2>
+                <p className="text-xs text-[#002443]/40">{t('lc.by_business_desc')}</p>
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -201,8 +203,8 @@ export default function LinksCompliance() {
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-xl bg-[#002443]/5 flex items-center justify-center"><Shield className="w-4 h-4 text-[#002443]" /></div>
               <div>
-                <h2 className="text-base font-bold text-[#002443]">Por Tipo de Compliance</h2>
-                <p className="text-xs text-[#002443]/40">Questionários KYC/KYB específicos por modelo</p>
+                <h2 className="text-base font-bold text-[#002443]">{t('lc.by_compliance')}</h2>
+                <p className="text-xs text-[#002443]/40">{t('lc.by_compliance_desc')}</p>
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -220,8 +222,8 @@ export default function LinksCompliance() {
           ) : links.length === 0 ? (
             <div className="text-center py-16 bg-white rounded-2xl border border-[#002443]/5">
               <div className="w-16 h-16 rounded-2xl bg-[#f4f4f4] flex items-center justify-center mx-auto mb-4"><LinkIcon className="w-7 h-7 text-[#002443]/20" /></div>
-              <p className="text-sm text-[#002443]/50">Nenhum link de compliance personalizado criado</p>
-              <p className="text-xs text-[#002443]/30 mt-1">Crie links personalizados em Ferramentas &gt; Gerar Link</p>
+              <p className="text-sm text-[#002443]/50">{t('lc.no_links')}</p>
+              <p className="text-xs text-[#002443]/30 mt-1">{t('lc.no_links_hint')}</p>
             </div>
           ) : (
             links.map(link => {

@@ -11,8 +11,10 @@ import {
 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function GerenciarSubsellerLinks() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMerchant, setSelectedMerchant] = useState(null);
@@ -52,7 +54,7 @@ export default function GerenciarSubsellerLinks() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['subsellerLinks'] });
-      toast.success('Link gerado com sucesso!');
+      toast.success(t('sl.link_generated'));
       copyLink(data.link.uniqueCode);
     },
     onError: (error) => {
@@ -67,7 +69,7 @@ export default function GerenciarSubsellerLinks() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['subsellerLinks'] });
-      toast.success('Status do link atualizado!');
+      toast.success(t('sl.status_updated'));
     }
   });
 
@@ -75,7 +77,7 @@ export default function GerenciarSubsellerLinks() {
     const url = `${window.location.origin}/SubsellerQuestionnaire?ref=${code}`;
     navigator.clipboard.writeText(url);
     setCopiedCode(code);
-    toast.success('Link copiado!');
+    toast.success(t('sl.link_copied'));
     setTimeout(() => setCopiedCode(null), 3000);
   };
 
@@ -90,10 +92,8 @@ export default function GerenciarSubsellerLinks() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Links de Compliance - Subcontas</h1>
-        <p className="text-sm text-[var(--pagsmile-blue)]/60 mt-1">
-          Gere links para subsellers preencherem o questionário de compliance simplificado.
-        </p>
+        <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">{t('sl.title')}</h1>
+        <p className="text-sm text-[var(--pagsmile-blue)]/60 mt-1">{t('sl.subtitle')}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -101,13 +101,13 @@ export default function GerenciarSubsellerLinks() {
         <div className="lg:col-span-1">
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-semibold">Selecione o Seller (Aprovado)</CardTitle>
+              <CardTitle className="text-sm font-semibold">{t('sl.select_seller')}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <Input 
-                  placeholder="Buscar por nome ou CNPJ..." 
+                  placeholder={t('sl.search_placeholder')} 
                   className="pl-10"
                   value={searchTerm}
                   onChange={e => setSearchTerm(e.target.value)}
@@ -119,7 +119,7 @@ export default function GerenciarSubsellerLinks() {
                   <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
                 </div>
               ) : filteredMerchants.length === 0 ? (
-                <p className="text-sm text-slate-400 text-center py-6">Nenhum merchant aprovado encontrado.</p>
+                <p className="text-sm text-slate-400 text-center py-6">{t('sl.no_merchant')}</p>
               ) : (
                 <div className="space-y-2 max-h-[500px] overflow-y-auto">
                   {filteredMerchants.map(m => (
@@ -150,7 +150,7 @@ export default function GerenciarSubsellerLinks() {
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-16 text-center">
                 <Building2 className="w-12 h-12 text-slate-300 mb-4" />
-                <p className="text-slate-400 font-medium">Selecione um Seller aprovado para gerenciar seus links de subcontas.</p>
+                <p className="text-slate-400 font-medium">{t('sl.select_prompt')}</p>
               </CardContent>
             </Card>
           ) : (
@@ -165,7 +165,7 @@ export default function GerenciarSubsellerLinks() {
                       </h3>
                       <p className="text-sm text-[var(--pagsmile-blue)]/50">{selectedMerchant.cpfCnpj}</p>
                       <div className="flex gap-3 mt-3">
-                        <Badge className="bg-emerald-100 text-emerald-700">Aprovado</Badge>
+                        <Badge className="bg-emerald-100 text-emerald-700">{t('sl.approved')}</Badge>
                         <Badge variant="outline" className="gap-1">
                           <Users className="w-3 h-3" /> {subsellers.length} subseller{subsellers.length !== 1 ? 's' : ''}
                         </Badge>
@@ -181,7 +181,7 @@ export default function GerenciarSubsellerLinks() {
                       ) : (
                         <Plus className="w-4 h-4 mr-2" />
                       )}
-                      Gerar Link
+                      {t('sl.generate_link')}
                     </Button>
                   </div>
                 </CardContent>
@@ -191,7 +191,7 @@ export default function GerenciarSubsellerLinks() {
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                    <LinkIcon className="w-4 h-4" /> Links Gerados
+                    <LinkIcon className="w-4 h-4" /> {t('sl.generated_links')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -200,9 +200,7 @@ export default function GerenciarSubsellerLinks() {
                       <Loader2 className="w-5 h-5 animate-spin text-slate-400" />
                     </div>
                   ) : subsellerLinks.length === 0 ? (
-                    <p className="text-sm text-slate-400 text-center py-6">
-                      Nenhum link gerado ainda. Clique em "Gerar Link" para criar o primeiro.
-                    </p>
+                    <p className="text-sm text-slate-400 text-center py-6">{t('sl.no_links')}</p>
                   ) : (
                     <div className="space-y-3">
                       {subsellerLinks.map(link => {
@@ -217,32 +215,32 @@ export default function GerenciarSubsellerLinks() {
                                     {link.uniqueCode}
                                   </code>
                                   {isExpired ? (
-                                    <Badge className="bg-red-100 text-red-700 text-[10px]">Expirado</Badge>
+                                    <Badge className="bg-red-100 text-red-700 text-[10px]">{t('sl.expired')}</Badge>
                                   ) : link.isActive ? (
-                                    <Badge className="bg-emerald-100 text-emerald-700 text-[10px]">Ativo</Badge>
+                                    <Badge className="bg-emerald-100 text-emerald-700 text-[10px]">{t('sl.active')}</Badge>
                                   ) : (
-                                    <Badge className="bg-red-100 text-red-700 text-[10px]">Inativo</Badge>
+                                    <Badge className="bg-red-100 text-red-700 text-[10px]">{t('sl.inactive')}</Badge>
                                   )}
                                 </div>
                                 <p className="text-xs text-slate-400 mt-1 truncate">{url}</p>
                                 {link.expiresAt && (
                                   <p className="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1">
                                     <Calendar className="w-3 h-3" />
-                                    Expira: {new Date(link.expiresAt).toLocaleDateString('pt-BR')}
+                                    {t('sl.expires')} {new Date(link.expiresAt).toLocaleDateString('pt-BR')}
                                   </p>
                                 )}
                                 <p className="text-[10px] text-slate-400 mt-0.5">
-                                  Criado: {link.created_date ? new Date(link.created_date).toLocaleDateString('pt-BR') : '—'}
+                                  {t('sl.created')} {link.created_date ? new Date(link.created_date).toLocaleDateString('pt-BR') : '—'}
                                 </p>
                               </div>
                               <div className="flex items-center gap-3">
                                 <div className="text-center px-2">
                                   <p className="text-lg font-bold text-[var(--pagsmile-blue)]">{link.submissionCount || 0}</p>
-                                  <p className="text-[10px] text-slate-400">Submissões</p>
+                                  <p className="text-[10px] text-slate-400">{t('sl.submissions')}</p>
                                 </div>
                                 <div className="text-center px-2">
                                   <p className="text-lg font-bold text-[var(--pagsmile-blue)]">{link.completedCount || 0}</p>
-                                  <p className="text-[10px] text-slate-400">Concluídos</p>
+                                  <p className="text-[10px] text-slate-400">{t('sl.completed')}</p>
                                 </div>
                                 <div className="flex flex-col items-center gap-1">
                                   <Switch
@@ -250,7 +248,7 @@ export default function GerenciarSubsellerLinks() {
                                     onCheckedChange={() => toggleLinkMutation.mutate({ linkId: link.id, isActive: link.isActive })}
                                     disabled={toggleLinkMutation.isPending}
                                   />
-                                  <span className="text-[9px] text-slate-400">{link.isActive ? 'Ativo' : 'Inativo'}</span>
+                                  <span className="text-[9px] text-slate-400">{link.isActive ? t('sl.active') : t('sl.inactive')}</span>
                                 </div>
                                 <Button 
                                   variant="outline" 
@@ -278,7 +276,7 @@ export default function GerenciarSubsellerLinks() {
                 <Card>
                   <CardHeader className="pb-3">
                     <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                      <Users className="w-4 h-4" /> Subsellers ({subsellers.length})
+                      <Users className="w-4 h-4" /> {t('sl.subsellers')} ({subsellers.length})
                     </CardTitle>
                   </CardHeader>
                   <CardContent>

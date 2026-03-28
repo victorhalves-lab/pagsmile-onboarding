@@ -36,8 +36,10 @@ import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
 import DocumentViewerModal from '@/components/compliance/DocumentViewerModal';
 import RejectReasonsDialog from '@/components/compliance/RejectReasonsDialog';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function GestaoDocumentos() {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedDoc, setSelectedDoc] = useState(null);
@@ -130,13 +132,13 @@ export default function GestaoDocumentos() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['allDocuments'] });
-      toast.success('Documento atualizado!');
+      toast.success(t('gd.doc_updated'));
       setSelectedDoc(null);
       setShowRejectDialog(false);
       setRejectReason('');
     },
     onError: (error) => {
-      toast.error('Erro ao atualizar: ' + error.message);
+      toast.error(t('gd.error_update') + error.message);
     }
   });
 
@@ -205,13 +207,13 @@ export default function GestaoDocumentos() {
               <FileText className="w-6 h-6 text-[#5cf7cf]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Gestão de Documentos</h1>
-              <p className="text-white/60 text-sm mt-1">Documentos organizados por merchant</p>
+              <h1 className="text-2xl font-bold text-white">{t('gd.title')}</h1>
+              <p className="text-white/60 text-sm mt-1">{t('gd.subtitle')}</p>
             </div>
           </div>
           <Button variant="outline" onClick={() => refetch()} className="border-white/20 text-white hover:bg-white/10 rounded-xl bg-transparent">
             <RefreshCw className="w-4 h-4 mr-2" />
-            Atualizar
+            {t('gd.refresh')}
           </Button>
         </div>
       </div>
@@ -219,11 +221,11 @@ export default function GestaoDocumentos() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         {[
-          { key: 'all', label: 'Merchants', value: globalStats.merchants, color: 'text-[#002443]', border: 'border-[#2bc196]', ring: 'ring-[#2bc196]/20' },
-          { key: 'all2', label: 'Total Docs', value: globalStats.total, color: 'text-blue-600', border: 'border-blue-500', ring: 'ring-blue-500/20' },
-          { key: 'Pendente', label: 'Pendentes', value: globalStats.pendente, color: 'text-yellow-600', border: 'border-yellow-500', ring: 'ring-yellow-500/20' },
-          { key: 'Validado', label: 'Validados', value: globalStats.validado, color: 'text-green-600', border: 'border-green-500', ring: 'ring-green-500/20' },
-          { key: 'Rejeitado', label: 'Rejeitados', value: globalStats.rejeitado, color: 'text-red-600', border: 'border-red-500', ring: 'ring-red-500/20' },
+          { key: 'all', label: t('gd.merchants'), value: globalStats.merchants, color: 'text-[#002443]', border: 'border-[#2bc196]', ring: 'ring-[#2bc196]/20' },
+          { key: 'all2', label: t('gd.total_docs'), value: globalStats.total, color: 'text-blue-600', border: 'border-blue-500', ring: 'ring-blue-500/20' },
+          { key: 'Pendente', label: t('gd.pending'), value: globalStats.pendente, color: 'text-yellow-600', border: 'border-yellow-500', ring: 'ring-yellow-500/20' },
+          { key: 'Validado', label: t('gd.validated'), value: globalStats.validado, color: 'text-green-600', border: 'border-green-500', ring: 'ring-green-500/20' },
+          { key: 'Rejeitado', label: t('gd.rejected'), value: globalStats.rejeitado, color: 'text-red-600', border: 'border-red-500', ring: 'ring-red-500/20' },
         ].map(s => (
           <button
             key={s.key}
@@ -246,13 +248,13 @@ export default function GestaoDocumentos() {
             
             <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-48">
-                <SelectValue placeholder="Filtrar por status" />
+                <SelectValue placeholder={t('gd.filter_status')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos os Status</SelectItem>
-                <SelectItem value="Pendente">Com Pendentes</SelectItem>
-                <SelectItem value="Validado">Com Validados</SelectItem>
-                <SelectItem value="Rejeitado">Com Rejeitados</SelectItem>
+                <SelectItem value="all">{t('gd.all_statuses')}</SelectItem>
+                <SelectItem value="Pendente">{t('gd.with_pending')}</SelectItem>
+                <SelectItem value="Validado">{t('gd.with_validated')}</SelectItem>
+                <SelectItem value="Rejeitado">{t('gd.with_rejected')}</SelectItem>
               </SelectContent>
             </Select>
 
@@ -262,7 +264,7 @@ export default function GestaoDocumentos() {
                 size="sm"
                 onClick={() => setStatusFilter('all')}
               >
-                Limpar filtro
+                {t('gd.clear_filter')}
               </Button>
             )}
           </div>
@@ -270,7 +272,7 @@ export default function GestaoDocumentos() {
           <div className="relative w-full md:w-80">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/50" />
             <Input
-              placeholder="Buscar por nome ou CPF/CNPJ..."
+              placeholder={t('gd.search_placeholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-9"
@@ -288,7 +290,7 @@ export default function GestaoDocumentos() {
         ) : filteredMerchants.length === 0 ? (
           <div className="text-center py-12 bg-white rounded-xl border">
             <FileCheck className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/40 mb-4" />
-            <p className="text-[var(--pagsmile-blue)]/70">Nenhum merchant encontrado</p>
+            <p className="text-[var(--pagsmile-blue)]/70">{t('gd.no_merchant')}</p>
           </div>
         ) : (
           <Accordion type="multiple" className="space-y-3">
@@ -310,7 +312,7 @@ export default function GestaoDocumentos() {
                       </div>
                       <div className="text-left">
                         <p className="font-semibold text-[#002443]">
-                          {item.merchant?.fullName || 'Merchant Desconhecido'}
+                          {item.merchant?.fullName || t('gd.unknown_merchant')}
                         </p>
                         <p className="text-sm text-[#282828]/50">
                           {item.merchant?.cpfCnpj || '-'} 
@@ -334,18 +336,18 @@ export default function GestaoDocumentos() {
                       <div className="flex items-center gap-2 text-sm">
                         {item.stats.pendente > 0 && (
                           <Badge className="bg-yellow-100 text-yellow-800 border-0">
-                            {item.stats.pendente} pendente{item.stats.pendente > 1 ? 's' : ''}
+                            {t('gd.pending_count', { count: item.stats.pendente })}
                           </Badge>
                         )}
                         {item.stats.rejeitado > 0 && (
                           <Badge className="bg-red-100 text-red-800 border-0">
-                            {item.stats.rejeitado} rejeitado{item.stats.rejeitado > 1 ? 's' : ''}
+                            {t('gd.rejected_count', { count: item.stats.rejeitado })}
                           </Badge>
                         )}
                         {item.stats.pendente === 0 && item.stats.rejeitado === 0 && (
                           <Badge className="bg-green-100 text-green-800 border-0">
                             <CheckCircle2 className="w-3 h-3 mr-1" />
-                            Completo
+                            {t('gd.complete')}
                           </Badge>
                         )}
                       </div>
@@ -370,7 +372,7 @@ export default function GestaoDocumentos() {
                               {getFileIcon(doc.fileType)}
                             </div>
                             <div>
-                              <p className="font-medium text-[#002443] text-sm">{doc.documentName || 'Documento'}</p>
+                              <p className="font-medium text-[#002443] text-sm">{doc.documentName || t('gd.document')}</p>
                               <p className="text-xs text-[#282828]/40">
                                 {doc.fileName} • {doc.uploadDate ? new Date(doc.uploadDate).toLocaleDateString('pt-BR') : 
                                  doc.created_date ? new Date(doc.created_date).toLocaleDateString('pt-BR') : '-'}

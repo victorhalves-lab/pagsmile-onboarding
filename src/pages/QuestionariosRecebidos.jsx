@@ -9,8 +9,10 @@ import ComplianceStatsCards from '@/components/compliance/ComplianceStatsCards';
 import ComplianceCaseFilters from '@/components/compliance/ComplianceCaseFilters';
 import ComplianceCasesTable from '@/components/compliance/ComplianceCasesTable';
 import DraftsTab from '@/components/compliance/DraftsTab';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function QuestionariosRecebidos() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('received');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -210,18 +212,18 @@ export default function QuestionariosRecebidos() {
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-xl bg-white/10"><Shield className="w-6 h-6 text-[#5cf7cf]" /></div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Questionários Recebidos</h1>
-              <p className="text-white/60 text-sm mt-1">Submissões de compliance e rascunhos dos merchants</p>
+              <h1 className="text-2xl font-bold text-white">{t('qr.title')}</h1>
+              <p className="text-white/60 text-sm mt-1">{t('qr.subtitle')}</p>
             </div>
           </div>
           <div className="flex gap-2">
             {activeTab === 'received' && (
               <>
                 <Button variant="outline" onClick={handleExport} className="border-white/20 text-white hover:bg-white/10 rounded-xl bg-transparent">
-                  <Download className="w-4 h-4 mr-2" /> Exportar
+                  <Download className="w-4 h-4 mr-2" /> {t('qr.export')}
                 </Button>
                 <Button variant="outline" onClick={() => refetchCases()} className="border-white/20 text-white hover:bg-white/10 rounded-xl bg-transparent">
-                  <RefreshCw className="w-4 h-4 mr-2" /> Atualizar
+                  <RefreshCw className="w-4 h-4 mr-2" /> {t('qr.refresh')}
                 </Button>
               </>
             )}
@@ -232,11 +234,11 @@ export default function QuestionariosRecebidos() {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="bg-white border border-[#002443]/10 p-1 rounded-xl">
           <TabsTrigger value="received" className="rounded-lg data-[state=active]:bg-[#002443] data-[state=active]:text-white gap-2 px-4">
-            <FileCheck className="w-4 h-4" /> Recebidos
+            <FileCheck className="w-4 h-4" /> {t('qr.received')}
             <Badge className="bg-[#2bc196]/20 text-[#002443] text-xs ml-1 border-0">{stats.total}</Badge>
           </TabsTrigger>
           <TabsTrigger value="drafts" className="rounded-lg data-[state=active]:bg-[#002443] data-[state=active]:text-white gap-2 px-4">
-            <FileEdit className="w-4 h-4" /> Rascunhos
+            <FileEdit className="w-4 h-4" /> {t('qr.drafts')}
           </TabsTrigger>
         </TabsList>
 
@@ -245,9 +247,9 @@ export default function QuestionariosRecebidos() {
 
           {selectedRows.length > 0 && (
             <div className="bg-[#002443] rounded-xl p-3 flex items-center justify-between shadow-lg">
-              <span className="text-sm text-white font-medium">{selectedRows.length} selecionado(s)</span>
+              <span className="text-sm text-white font-medium">{t('qr.selected', { count: selectedRows.length })}</span>
               <Button size="sm" className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-lg text-xs" onClick={() => setSelectedRows([])}>
-                Limpar seleção
+                {t('qr.clear_selection')}
               </Button>
             </div>
           )}
