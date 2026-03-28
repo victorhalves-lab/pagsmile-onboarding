@@ -19,43 +19,45 @@ import InsightsDataHealthSection from '@/components/insights/InsightsDataHealthS
 import InsightsCommercialPerfSection from '@/components/insights/InsightsCommercialPerfSection.jsx';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
-const TAB_GROUPS_CONFIG = [
-  {
-    label: 'Inteligência',
-    tabs: [
-      { id: 'ai-insights', label: 'IA Insights', icon: Sparkles },
-    ],
-  },
-  {
-    label: 'Volume & Taxas',
-    tabs: [
-      { id: 'tpv', label: 'TPV & Volume', icon: DollarSign },
-      { id: 'benchmark', label: 'Benchmark', icon: Swords },
-      { id: 'mix', label: 'Mix Pagamento', icon: Layers },
-      { id: 'expected-rates', label: 'Taxas Esperadas', icon: ArrowUpDown },
-      { id: 'proposal-rates', label: 'Taxas Propostas', icon: CreditCard },
-      { id: 'profitability', label: 'Rentabilidade', icon: Wallet },
-    ],
-  },
-  {
-    label: 'Comercial',
-    tabs: [
-      { id: 'commercial', label: 'Performance', icon: Timer },
-      { id: 'funnel', label: 'Funil', icon: TrendingUp },
-      { id: 'introducers', label: 'Introducers', icon: UserPlus },
-    ],
-  },
-  {
-    label: 'Perfil & Risco',
-    tabs: [
-      { id: 'profiles', label: 'Perfil Leads', icon: Users },
-      { id: 'operational', label: 'Operacional', icon: Building2 },
-      { id: 'risk', label: 'Risco', icon: ShieldAlert },
-      { id: 'compliance', label: 'Compliance', icon: Target },
-      { id: 'data-health', label: 'Data Health', icon: Database },
-    ],
-  },
-];
+function buildTabGroups(t) {
+  return [
+    {
+      label: t('di.grp_intelligence'),
+      tabs: [
+        { id: 'ai-insights', label: t('di.tab_ai'), icon: Sparkles },
+      ],
+    },
+    {
+      label: t('di.grp_volume_rates'),
+      tabs: [
+        { id: 'tpv', label: t('di.tab_tpv'), icon: DollarSign },
+        { id: 'benchmark', label: t('di.tab_benchmark'), icon: Swords },
+        { id: 'mix', label: t('di.tab_mix'), icon: Layers },
+        { id: 'expected-rates', label: t('di.tab_expected'), icon: ArrowUpDown },
+        { id: 'proposal-rates', label: t('di.tab_proposal'), icon: CreditCard },
+        { id: 'profitability', label: t('di.tab_profitability'), icon: Wallet },
+      ],
+    },
+    {
+      label: t('di.grp_commercial'),
+      tabs: [
+        { id: 'commercial', label: t('di.tab_performance'), icon: Timer },
+        { id: 'funnel', label: t('di.tab_funnel'), icon: TrendingUp },
+        { id: 'introducers', label: t('di.tab_introducers'), icon: UserPlus },
+      ],
+    },
+    {
+      label: t('di.grp_profile_risk'),
+      tabs: [
+        { id: 'profiles', label: t('di.tab_profiles'), icon: Users },
+        { id: 'operational', label: t('di.tab_operational'), icon: Building2 },
+        { id: 'risk', label: t('di.tab_risk'), icon: ShieldAlert },
+        { id: 'compliance', label: t('di.tab_compliance'), icon: Target },
+        { id: 'data-health', label: t('di.tab_data_health'), icon: Database },
+      ],
+    },
+  ];
+}
 
 export default function DadosInsights() {
   const { t } = useTranslation();
