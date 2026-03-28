@@ -2,8 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CreditCard } from 'lucide-react';
+import { CreditCard, Check } from 'lucide-react';
 
 export default function MeetingFormCurrentRates({ form, updateField }) {
   return (
@@ -52,17 +51,25 @@ export default function MeetingFormCurrentRates({ form, updateField }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label className="text-xs text-[#002443]/60">Tipo de Antecipação</Label>
-              <Select value={form.anticipationType} onValueChange={v => updateField('anticipationType', v)}>
-                <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="D+1">D+1</SelectItem>
-                  <SelectItem value="D+2">D+2</SelectItem>
-                  <SelectItem value="D+3">D+3</SelectItem>
-                  <SelectItem value="D+15">D+15</SelectItem>
-                  <SelectItem value="D+30">D+30</SelectItem>
-                  <SelectItem value="nao_utiliza">Não utiliza</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="flex flex-wrap gap-1.5 mt-1">
+                {[
+                  { v: 'D+1', l: 'D+1' },
+                  { v: 'D+2', l: 'D+2' },
+                  { v: 'D+3', l: 'D+3' },
+                  { v: 'D+15', l: 'D+15' },
+                  { v: 'D+30', l: 'D+30' },
+                  { v: 'nao_utiliza', l: 'Não utiliza' },
+                ].map(opt => (
+                  <button key={opt.v} type="button" onClick={() => updateField('anticipationType', opt.v)}
+                    className={`px-3 py-2 rounded-lg text-xs font-bold transition-all border ${
+                      form.anticipationType === opt.v
+                        ? 'bg-[#2bc196] border-[#2bc196] text-white shadow-md'
+                        : 'bg-white border-slate-200 text-slate-500 hover:border-[#2bc196]/50'
+                    }`}>
+                    {form.anticipationType === opt.v && <Check className="w-2.5 h-2.5 inline mr-1" />}{opt.l}
+                  </button>
+                ))}
+              </div>
             </div>
             <div>
               <Label className="text-xs text-[#002443]/60">Taxa de Antecipação (%)</Label>

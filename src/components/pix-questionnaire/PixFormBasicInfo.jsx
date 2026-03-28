@@ -2,8 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Building2 } from 'lucide-react';
+import { Building2, Check } from 'lucide-react';
 
 export default function PixFormBasicInfo({ form, updateField }) {
   return (
@@ -38,14 +37,22 @@ export default function PixFormBasicInfo({ form, updateField }) {
           </div>
           <div>
             <Label>Tipo de Atuação *</Label>
-            <Select value={form.businessType} onValueChange={v => updateField('businessType', v)}>
-              <SelectTrigger><SelectValue placeholder="Selecione o tipo" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Gateway">Gateway</SelectItem>
-                <SelectItem value="Seller">Seller</SelectItem>
-                <SelectItem value="Marketplace">Marketplace</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex gap-2 mt-1">
+              {[
+                { v: 'Gateway', l: 'Gateway' },
+                { v: 'Seller', l: 'Seller' },
+                { v: 'Marketplace', l: 'Marketplace' },
+              ].map(opt => (
+                <button key={opt.v} type="button" onClick={() => updateField('businessType', opt.v)}
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold transition-all border ${
+                    form.businessType === opt.v
+                      ? 'bg-[#2bc196] border-[#2bc196] text-white shadow-md'
+                      : 'bg-white border-slate-200 text-slate-500 hover:border-[#2bc196]/50'
+                  }`}>
+                  {form.businessType === opt.v && <Check className="w-3 h-3" />} {opt.l}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </CardContent>
