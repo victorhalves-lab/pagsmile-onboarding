@@ -77,8 +77,8 @@ export default function IntroducerLandingPage() {
             transition={{ duration: 0.5, delay: 0.15 }}
           >
             <Tabs value={activeSegment} onValueChange={setActiveSegment}>
-              <div className="mb-4">
-                <TabsList className="bg-white border border-[#002443]/[0.06] p-1.5 h-auto flex-wrap gap-1 rounded-xl">
+              <div className="sticky top-2 z-40 mb-4">
+                <TabsList className="bg-white/95 backdrop-blur-md border border-[#002443]/[0.06] p-1.5 h-auto flex-wrap gap-1 rounded-xl shadow-lg shadow-black/5">
                   {segments.map((seg) => (
                     <TabsTrigger
                       key={seg.segmentName}
