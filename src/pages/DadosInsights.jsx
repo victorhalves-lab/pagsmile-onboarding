@@ -31,7 +31,22 @@ export default function DadosInsights() {
     queryFn: () => base44.entities.ComplianceScore.list('-created_date', 500),
   });
 
-  const isLoading = loadingLeads || loadingProposals || loadingCases || loadingScores;
+  const { data: merchants = [], isLoading: loadingMerchants } = useQuery({
+    queryKey: ['insights-merchants'],
+    queryFn: () => base44.entities.Merchant.list('-created_date', 500),
+  });
+
+  const { data: documents = [], isLoading: loadingDocs } = useQuery({
+    queryKey: ['insights-documents'],
+    queryFn: () => base44.entities.DocumentUpload.list('-created_date', 500),
+  });
+
+  const { data: questionnaireResponses = [], isLoading: loadingResponses } = useQuery({
+    queryKey: ['insights-qr'],
+    queryFn: () => base44.entities.QuestionnaireResponse.list('-created_date', 500),
+  });
+
+  const isLoading = loadingLeads || loadingProposals || loadingCases || loadingScores || loadingMerchants || loadingDocs || loadingResponses;
 
   if (isLoading) {
     return (
@@ -112,7 +127,7 @@ export default function DadosInsights() {
           <InsightsLeadProfileSection leads={leads} />
         </TabsContent>
         <TabsContent value="compliance">
-          <InsightsComplianceSection cases={cases} complianceScores={complianceScores} />
+          <InsightsComplianceSection cases={cases} complianceScores={complianceScores} merchants={merchants} documents={documents} questionnaireResponses={questionnaireResponses} />
         </TabsContent>
       </Tabs>
     </div>

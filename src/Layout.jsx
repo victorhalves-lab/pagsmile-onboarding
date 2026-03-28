@@ -108,7 +108,6 @@ export default function Layout({ children, currentPageName }) {
         { label: t('menu.landing_pages'), path: 'GestaoLandingPages', icon: LinkIcon },
         { label: t('menu.meeting_questionnaire'), path: 'QuestionarioReuniao', icon: ClipboardList },
         { label: t('menu.robot_questionnaire'), path: 'ProcessMeetingNotes', icon: Brain },
-        { label: 'Dados & Insights', path: 'DadosInsights', icon: BarChart3 },
       ]
     },
     {
@@ -450,6 +449,15 @@ export default function Layout({ children, currentPageName }) {
                 />
               </div>
 
+              {/* Dados & Insights - standalone */}
+              <div className="mt-1">
+                <NavItem 
+                  item={{ label: 'Dados & Insights', path: 'DadosInsights', icon: BarChart3 }} 
+                  isActive={currentPageName === 'DadosInsights'}
+                  isCollapsed={collapsed}
+                />
+              </div>
+
               <SectionDivider isCollapsed={collapsed} />
 
               {/* How It Works */}
@@ -580,6 +588,16 @@ export default function Layout({ children, currentPageName }) {
                   <NavItem 
                     item={{ label: t('menu.partners'), path: 'ConfiguracaoParceiros', icon: Handshake }} 
                     isActive={currentPageName === 'ConfiguracaoParceiros'}
+                    onClick={() => setMobileMenuOpen(false)}
+                    isCollapsed={false}
+                  />
+                </div>
+
+                {/* Dados & Insights - standalone mobile */}
+                <div className="mt-1">
+                  <NavItem 
+                    item={{ label: 'Dados & Insights', path: 'DadosInsights', icon: BarChart3 }} 
+                    isActive={currentPageName === 'DadosInsights'}
                     onClick={() => setMobileMenuOpen(false)}
                     isCollapsed={false}
                   />
