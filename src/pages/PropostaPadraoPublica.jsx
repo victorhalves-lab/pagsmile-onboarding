@@ -10,10 +10,12 @@ import moment from 'moment';
 import TaxasPorBandeiraPublic from '@/components/proposals/TaxasPorBandeiraPublic';
 import ParcelasTableDetalhada from '@/components/proposals/ParcelasTableDetalhada';
 import ExportButtons from '@/components/proposals/ExportButtons';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 const QUESTIONNAIRE_URL = '/LeadQuestionnaire?template=69c3b5af17040531b06c5c16';
 
 export default function PropostaPadraoPublica() {
+  const { t } = useTranslation();
   const urlParams = new URLSearchParams(window.location.search);
   const token = urlParams.get('token');
   const propostaContentRef = useRef(null);
@@ -42,8 +44,8 @@ export default function PropostaPadraoPublica() {
     return (
       <div className="max-w-lg mx-auto py-20 text-center">
         <AlertTriangle className="w-16 h-16 mx-auto text-amber-500 mb-4" />
-        <h1 className="text-2xl font-bold text-[#002443] mb-2">Proposta não encontrada</h1>
-        <p className="text-[#002443]/60">O link pode ter expirado ou ser inválido.</p>
+        <h1 className="text-2xl font-bold text-[#002443] mb-2">{t('spp.not_found')}</h1>
+        <p className="text-[#002443]/60">{t('spp.not_found_desc')}</p>
       </div>
     );
   }
@@ -52,8 +54,8 @@ export default function PropostaPadraoPublica() {
     return (
       <div className="max-w-lg mx-auto py-20 text-center">
         <Clock className="w-16 h-16 mx-auto text-slate-400 mb-4" />
-        <h1 className="text-2xl font-bold text-[#002443] mb-2">Proposta Indisponível</h1>
-        <p className="text-[#002443]/60">Esta proposta padrão não está disponível no momento.</p>
+        <h1 className="text-2xl font-bold text-[#002443] mb-2">{t('spp.unavailable')}</h1>
+        <p className="text-[#002443]/60">{t('spp.unavailable_desc')}</p>
       </div>
     );
   }
@@ -74,9 +76,9 @@ export default function PropostaPadraoPublica() {
           <Badge className="bg-[#2bc196]/20 text-[#5cf7cf] hover:bg-[#2bc196]/30 border-none mb-4 px-4 py-1.5 text-sm">
             Proposta — {proposta.segment}
           </Badge>
-          <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-3">Condições Comerciais</h1>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-3">{t('spp.commercial_conditions')}</h1>
           <p className="text-white/80 text-base md:text-lg max-w-lg mx-auto">
-            Taxas padrão para o segmento <span className="font-bold text-white">{proposta.segment}</span>
+            {t('spp.standard_rates_for')} <span className="font-bold text-white">{proposta.segment}</span>
           </p>
           <p className="text-white/40 text-xs mt-8">
             {proposta.templateName} — {proposta.codigo}
@@ -87,8 +89,8 @@ export default function PropostaPadraoPublica() {
       {/* Title + Export */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[#002443]">PROPOSTA COMERCIAL</h1>
-          <p className="text-[#002443]/60 text-sm">Taxas de Pagamentos Online — {proposta.segment}</p>
+          <h1 className="text-2xl font-bold text-[#002443]">{t('spp.commercial_proposal')}</h1>
+          <p className="text-[#002443]/60 text-sm">{t('spp.online_rates')} — {proposta.segment}</p>
         </div>
         <ExportButtons contentRef={propostaContentRef} />
       </div>
@@ -99,20 +101,20 @@ export default function PropostaPadraoPublica() {
           <CardContent className="py-4">
             <div className="flex items-center gap-2 mb-3">
               <Shield className="w-4 h-4 text-[#2bc196]" />
-              <h3 className="font-bold text-sm text-[#002443]">Dados da Empresa</h3>
+              <h3 className="font-bold text-sm text-[#002443]">{t('spp.company_data')}</h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
               {proposta.clienteNome && (
-                <div><p className="text-[#002443]/50 text-xs font-semibold">Empresa</p><p className="font-bold text-[#002443]">{proposta.clienteNome}</p></div>
+                <div><p className="text-[#002443]/50 text-xs font-semibold">{t('spp.company')}</p><p className="font-bold text-[#002443]">{proposta.clienteNome}</p></div>
               )}
               {proposta.clienteCnpj && (
                 <div><p className="text-[#002443]/50 text-xs font-semibold">CNPJ</p><p className="font-bold text-[#002443]">{proposta.clienteCnpj}</p></div>
               )}
               {proposta.clienteContato && (
-                <div><p className="text-[#002443]/50 text-xs font-semibold">Contato</p><p className="text-[#002443]">{proposta.clienteContato}</p></div>
+                <div><p className="text-[#002443]/50 text-xs font-semibold">{t('spp.contact')}</p><p className="text-[#002443]">{proposta.clienteContato}</p></div>
               )}
               {proposta.clienteTelefone && (
-                <div><p className="text-[#002443]/50 text-xs font-semibold">Telefone</p><p className="text-[#002443]">{proposta.clienteTelefone}</p></div>
+                <div><p className="text-[#002443]/50 text-xs font-semibold">{t('spp.phone')}</p><p className="text-[#002443]">{proposta.clienteTelefone}</p></div>
               )}
               {proposta.clienteEmail && (
                 <div><p className="text-[#002443]/50 text-xs font-semibold">E-mail</p><p className="text-[#002443]">{proposta.clienteEmail}</p></div>
@@ -128,7 +130,7 @@ export default function PropostaPadraoPublica() {
           <CardContent className="py-4">
             <div className="flex items-center gap-2 mb-2">
               <Shield className="w-4 h-4 text-[#2bc196]" />
-              <h3 className="font-bold text-sm text-[#002443]">Segmento</h3>
+              <h3 className="font-bold text-sm text-[#002443]">{t('spp.segment')}</h3>
             </div>
             <p className="font-bold text-lg text-[#002443]">{proposta.segment}</p>
             {proposta.description && <p className="text-sm text-[#002443]/60 mt-1">{proposta.description}</p>}
@@ -138,15 +140,15 @@ export default function PropostaPadraoPublica() {
           <CardContent className="py-4">
             <div className="flex items-center gap-2 mb-2">
               <Clock className="w-4 h-4 text-slate-500" />
-              <h3 className="font-bold text-sm text-[#002443]">Informações</h3>
+              <h3 className="font-bold text-sm text-[#002443]">{t('spp.information')}</h3>
             </div>
             <p className="text-sm text-[#002443]/60 mt-2 flex items-center gap-1.5">
               <Info className="w-3.5 h-3.5" />
-              Estas são condições padrão e sujeitas à aprovação do time de compliance.
+              {t('spp.standard_conditions')}
             </p>
             <p className="text-sm text-[#002443]/60 mt-2 flex items-center gap-1.5">
               <Info className="w-3.5 h-3.5" />
-              Taxas finais podem variar conforme análise do seu negócio.
+              {t('spp.rates_may_vary')}
             </p>
           </CardContent>
         </Card>
@@ -158,20 +160,20 @@ export default function PropostaPadraoPublica() {
           <CardContent className="py-4">
             <div className="flex items-center gap-2 mb-4">
               <Shield className="w-5 h-5 text-slate-500" />
-              <h2 className="font-bold text-base text-[#002443]">TPV Mínimo Garantido</h2>
+              <h2 className="font-bold text-base text-[#002443]">{t('pp.min_tpv')}</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="bg-white p-3 rounded-lg border border-slate-200 text-center">
-                <p className="text-xs text-[#002443]/50 uppercase font-semibold mb-1">Mês 1</p>
+                <p className="text-xs text-[#002443]/50 uppercase font-semibold mb-1">{t('pp.month1')}</p>
                 <p className="font-bold text-[#002443]">R$ {(parseFloat(rates.minimoGarantido.mes1) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
               </div>
               <div className="bg-white p-3 rounded-lg border border-slate-200 text-center">
-                <p className="text-xs text-[#002443]/50 uppercase font-semibold mb-1">Mês 2</p>
+                <p className="text-xs text-[#002443]/50 uppercase font-semibold mb-1">{t('pp.month2')}</p>
                 <p className="font-bold text-[#002443]">R$ {(parseFloat(rates.minimoGarantido.mes2) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
               </div>
               <div className="bg-white p-3 rounded-lg border border-[#2bc196]/40 text-center shadow-sm relative overflow-hidden">
                 <div className="absolute inset-0 bg-[#2bc196]/5 pointer-events-none" />
-                <p className="text-xs text-[#2bc196] uppercase font-semibold mb-1">Mês 3 em diante</p>
+                <p className="text-xs text-[#2bc196] uppercase font-semibold mb-1">{t('pp.month3_plus')}</p>
                 <p className="font-bold text-[#2bc196]">R$ {(parseFloat(rates.minimoGarantido.mes3) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
               </div>
             </div>
@@ -184,7 +186,7 @@ export default function PropostaPadraoPublica() {
         <CardContent className="py-4">
           <h2 className="font-bold text-base text-[#002443] mb-4 flex items-center gap-2">
             <CreditCard className="w-5 h-5 text-[#2bc196]" />
-            Taxas de Cartão de Crédito
+            {t('pp.credit_card_rates')}
           </h2>
           <TaxasPorBandeiraPublic taxas={rates} />
         </CardContent>
@@ -210,7 +212,7 @@ export default function PropostaPadraoPublica() {
         </Card>
         <Card>
           <CardContent className="py-4 text-center flex flex-col justify-center h-full">
-            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">FEE POR TRANSAÇÃO</p>
+            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">{t('pp.transaction_fee')}</p>
             <p className="text-lg font-bold text-[#002443]">R$ {(parseFloat(rates.feeTransacao) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
           </CardContent>
         </Card>
@@ -228,7 +230,7 @@ export default function PropostaPadraoPublica() {
         </Card>
         <Card>
           <CardContent className="py-4 text-center flex flex-col justify-center h-full">
-            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">ALERTA PRÉ-CHARGEBACK</p>
+            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">{t('pp.pre_chargeback')}</p>
             <p className="text-lg font-bold text-[#002443]">R$ {(parseFloat(rates.alertaPreChargeback) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
           </CardContent>
         </Card>
@@ -246,17 +248,17 @@ export default function PropostaPadraoPublica() {
       <div className="grid grid-cols-2 gap-4 mb-6">
         <Card>
           <CardContent className="py-4 text-center flex flex-col justify-center h-full">
-            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">PRAZO DE RECEBIMENTO</p>
+            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">{t('pp.receiving_term')}</p>
             <p className="text-lg font-bold text-[#002443]">{prazo}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="py-4 text-center flex flex-col justify-center h-full">
-            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">TAXA DE ANTECIPAÇÃO</p>
+            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">{t('pp.anticipation_rate')}</p>
             <p className="text-lg font-bold text-amber-600">{taxaRAV}% a.m.</p>
             {parseFloat(rates.percentualAntecipacao) > 0 && (
               <p className="text-xs text-[#002443]/60 mt-1.5">
-                Percentual antecipável: <span className="font-bold text-[#002443]">{parseFloat(rates.percentualAntecipacao)}%</span>
+                {t('pp.anticipation_pct')}: <span className="font-bold text-[#002443]">{parseFloat(rates.percentualAntecipacao)}%</span>
               </p>
             )}
           </CardContent>
@@ -266,7 +268,7 @@ export default function PropostaPadraoPublica() {
       {/* Tabela de Parcelas */}
       <Card className="mb-8">
         <CardContent className="py-4">
-          <h2 className="font-bold text-base text-[#002443] mb-4">Tabela de Parcelas por Bandeira</h2>
+          <h2 className="font-bold text-base text-[#002443] mb-4">{t('pp.installment_table')}</h2>
           <ParcelasTableDetalhada taxas={rates} taxaRAV={taxaRAV} prazo={prazo} showSimulator={true} />
         </CardContent>
       </Card>
@@ -278,15 +280,15 @@ export default function PropostaPadraoPublica() {
         <div className="relative z-10">
           <FileText className="w-12 h-12 mx-auto text-[#2bc196] mb-4" />
           <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-3">
-            Quer uma proposta personalizada?
+            {t('spp.want_custom')}
           </h2>
           <p className="text-white/70 text-base md:text-lg max-w-xl mx-auto mb-6">
-            Responda nosso questionário e receba condições comerciais sob medida para o seu negócio.
+            {t('spp.fill_questionnaire')}
           </p>
           <a href={QUESTIONNAIRE_URL} target="_blank" rel="noopener noreferrer">
             <Button className="bg-[#2bc196] hover:bg-[#5cf7cf] text-[#002443] font-bold px-10 h-14 rounded-2xl text-lg shadow-lg shadow-[#2bc196]/20 transition-transform hover:scale-105">
               <ExternalLink className="w-5 h-5 mr-2" />
-              Responder Questionário
+              {t('spp.answer_questionnaire')}
             </Button>
           </a>
         </div>
@@ -295,7 +297,7 @@ export default function PropostaPadraoPublica() {
       {/* Footer */}
       <div className="text-center text-xs text-[#002443]/30 py-4 border-t border-slate-200">
         <p>&copy; {new Date().getFullYear()} Pagsmile. {proposta.codigo}</p>
-        <p>Taxas padrão sujeitas à análise de compliance e adequação do negócio.</p>
+        <p>{t('spp.footer_note')}</p>
       </div>
     </div>
   );

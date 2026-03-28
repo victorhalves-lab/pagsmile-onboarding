@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import moment from 'moment';
 import PropostaRevisaoResumo from '@/components/proposals/PropostaRevisaoResumo';
 import RentabilidadeDrawer from '@/components/proposals/RentabilidadeDrawer';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 const STATUS_CONFIG = {
   rascunho: { label: 'Rascunho', color: 'bg-slate-100 text-slate-700' },
@@ -18,6 +19,7 @@ const STATUS_CONFIG = {
 };
 
 export default function PropostaPadraoDetalhes() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const urlParams = new URLSearchParams(window.location.search);
   const proposalId = urlParams.get('id');
@@ -39,8 +41,8 @@ export default function PropostaPadraoDetalhes() {
     return (
       <div className="text-center py-20">
         <FileText className="w-12 h-12 mx-auto text-[#002443]/20 mb-4" />
-        <p className="text-[#002443]/60">Proposta padrão não encontrada</p>
-        <Button variant="link" onClick={() => navigate('/GestaoPropostasPadrao')} className="mt-2">Voltar</Button>
+        <p className="text-[#002443]/60">{t('spd.not_found')}</p>
+        <Button variant="link" onClick={() => navigate('/GestaoPropostasPadrao')} className="mt-2">{t('spd.back')}</Button>
       </div>
     );
   }
@@ -54,7 +56,7 @@ export default function PropostaPadraoDetalhes() {
     if (!publicLink) return;
     navigator.clipboard.writeText(publicLink);
     setCopied(true);
-    toast.success('Link copiado!');
+    toast.success(t('spd.link_copied'));
     setTimeout(() => setCopied(false), 3000);
   };
 
@@ -83,20 +85,20 @@ export default function PropostaPadraoDetalhes() {
                 <Tag className="w-3 h-3 mr-1" />{proposta.segment}
               </Badge>
             </div>
-            <p className="text-white/50 text-sm mt-1">{proposta.codigo} — Proposta Padrão</p>
+            <p className="text-white/50 text-sm mt-1">{proposta.codigo} — {t('spd.standard_proposal')}</p>
           </div>
           <Button onClick={() => navigate(`/CriarPropostaPadrao?edit=${proposta.id}`)} className="bg-white/10 hover:bg-white/20 text-white gap-2 rounded-xl">
-            <Pencil className="w-4 h-4" /> Editar
+            <Pencil className="w-4 h-4" /> {t('spd.edit')}
           </Button>
         </div>
         <div className="flex flex-wrap gap-6 text-xs mt-4 pt-4 border-t border-white/10">
           <div className="flex items-center gap-2">
-            <span className="text-white/50">Criada:</span>
+            <span className="text-white/50">{t('spd.created')}:</span>
             <span className="font-semibold text-white">{moment(proposta.created_date).format('DD/MM/YYYY HH:mm')}</span>
           </div>
           {proposta.description && (
             <div className="flex items-center gap-2">
-              <span className="text-white/50">Descrição:</span>
+              <span className="text-white/50">{t('spd.description')}:</span>
               <span className="font-semibold text-white">{proposta.description}</span>
             </div>
           )}
@@ -111,8 +113,8 @@ export default function PropostaPadraoDetalhes() {
               <Link2 className="w-5 h-5 text-amber-600" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-[#002443]">Link não disponível</h2>
-              <p className="text-sm text-[#002443]/60">Ative a proposta para gerar o link público.</p>
+              <h2 className="text-base font-bold text-[#002443]">{t('spd.link_unavailable')}</h2>
+              <p className="text-sm text-[#002443]/60">{t('spd.activate_for_link')}</p>
             </div>
           </div>
         </div>
@@ -123,23 +125,23 @@ export default function PropostaPadraoDetalhes() {
               <Link2 className="w-5 h-5 text-[#2bc196]" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-[#002443]">Link Público da Proposta Padrão</h2>
-              <p className="text-sm text-[#002443]/60">Envie este link para clientes do segmento {proposta.segment}.</p>
+              <h2 className="text-base font-bold text-[#002443]">{t('spd.public_link')}</h2>
+              <p className="text-sm text-[#002443]/60">{t('spd.send_link_to')} {proposta.segment}.</p>
             </div>
           </div>
           <div className="flex items-center gap-2 bg-[#f4f4f4] rounded-xl p-3 mb-4">
             <code className="flex-1 text-sm text-[#002443]/70 truncate select-all font-mono">{publicLink}</code>
             <Button onClick={handleCopy} size="sm" className={`gap-2 rounded-lg shrink-0 ${copied ? 'bg-green-500 hover:bg-green-600 text-white' : 'bg-[#2bc196] hover:bg-[#2bc196]/90 text-white'}`}>
               {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-              {copied ? 'Copiado!' : 'Copiar Link'}
+              {copied ? t('spd.copied') : t('spd.copy_link')}
             </Button>
           </div>
           <div className="flex items-center gap-3">
             <a href={publicLink} target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" size="sm" className="gap-2"><ExternalLink className="w-4 h-4" /> Abrir Página</Button>
+              <Button variant="outline" size="sm" className="gap-2"><ExternalLink className="w-4 h-4" /> {t('spd.open_page')}</Button>
             </a>
             <a href={publicLink} target="_blank" rel="noopener noreferrer">
-              <Button variant="ghost" size="sm" className="gap-2 text-[#002443]/60"><Eye className="w-4 h-4" /> Pré-visualizar</Button>
+              <Button variant="ghost" size="sm" className="gap-2 text-[#002443]/60"><Eye className="w-4 h-4" /> {t('spd.preview')}</Button>
             </a>
           </div>
         </div>
@@ -148,7 +150,7 @@ export default function PropostaPadraoDetalhes() {
       {/* Botão Rentabilidade */}
       <div className="flex justify-end">
         <Button onClick={() => setShowRentabilidade(true)} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white gap-2 rounded-xl shadow-md">
-          <DollarSign className="w-4 h-4" /> Simular Rentabilidade
+          <DollarSign className="w-4 h-4" /> {t('pd.simulate_profitability')}
         </Button>
       </div>
 
@@ -157,7 +159,7 @@ export default function PropostaPadraoDetalhes() {
 
       <div className="flex justify-center pb-8">
         <Button variant="outline" onClick={() => navigate('/GestaoPropostasPadrao')} className="gap-2">
-          <ArrowLeft className="w-4 h-4" /> Voltar para Propostas Padrão
+          <ArrowLeft className="w-4 h-4" /> {t('spd.back_standard')}
         </Button>
       </div>
 

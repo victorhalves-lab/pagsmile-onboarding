@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 const STATUS_CONFIG = {
   rascunho: { label: 'Rascunho', color: 'bg-slate-100 text-slate-700' },
@@ -54,6 +55,7 @@ function InfoRow({ label, value, prefix, suffix }) {
 }
 
 export default function PropostaPixDetalhes() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const urlParams = new URLSearchParams(window.location.search);
   const proposalId = urlParams.get('id');
@@ -100,7 +102,7 @@ export default function PropostaPixDetalhes() {
       await base44.entities.Lead.update(proposta.leadId, { status: 'proposta_aceita', lastInteractionDate: now });
     }
     queryClient.invalidateQueries({ queryKey: ['pix-proposta-detalhes', proposalId] });
-    toast.success('Proposta PIX marcada como aceita!');
+    toast.success(t('pxd.accepted_success'));
     setIsUpdatingStatus(false);
   };
 
@@ -125,8 +127,8 @@ export default function PropostaPixDetalhes() {
     return (
       <div className="text-center py-20">
         <FileText className="w-12 h-12 mx-auto text-[#002443]/20 mb-4" />
-        <p className="text-[#002443]/60">Proposta PIX não encontrada</p>
-        <Button variant="link" onClick={() => navigate('/GestaoPropostasPix')} className="mt-2">Voltar</Button>
+        <p className="text-[#002443]/60">{t('pxd.not_found')}</p>
+        <Button variant="link" onClick={() => navigate('/GestaoPropostasPix')} className="mt-2">{t('spd.back')}</Button>
       </div>
     );
   }
@@ -141,7 +143,7 @@ export default function PropostaPixDetalhes() {
     if (!publicLink) return;
     navigator.clipboard.writeText(publicLink);
     setCopied(true);
-    toast.success('Link copiado!');
+    toast.success(t('spd.link_copied'));
     setTimeout(() => setCopied(false), 3000);
   };
 
@@ -162,28 +164,28 @@ export default function PropostaPixDetalhes() {
                 <span className="text-[10px] bg-[#2bc196]/20 text-[#5cf7cf] px-2 py-0.5 rounded-md font-bold">v{proposta.version}</span>
               )}
             </div>
-            <p className="text-white/50 text-sm mt-1">{proposta.clienteNome || 'Sem cliente'} — Revisão interna</p>
+            <p className="text-white/50 text-sm mt-1">{proposta.clienteNome || t('pxd.no_client')} — {t('pxd.internal_review')}</p>
           </div>
           <div className="flex items-center gap-2">
             {['enviada', 'visualizada'].includes(proposta.status) && (
               <Button onClick={handleMarkAsAccepted} disabled={isUpdatingStatus} className="bg-green-500 hover:bg-green-600 text-white gap-2 rounded-xl">
-                <CheckCircle className="w-4 h-4" /> {isUpdatingStatus ? 'Atualizando...' : 'Marcar como Aceita'}
+                <CheckCircle className="w-4 h-4" /> {isUpdatingStatus ? t('pxd.updating') : t('pxd.mark_accepted')}
               </Button>
             )}
             {canEdit && (
               <Button onClick={isRascunho ? () => navigate(`/CriarPropostaPix?edit=${proposta.id}`) : criarNovaVersao}
                 className="bg-white/10 hover:bg-white/20 text-white gap-2 rounded-xl">
                 {isRascunho ? <Pencil className="w-4 h-4" /> : <GitBranch className="w-4 h-4" />}
-                {isRascunho ? 'Editar' : 'Nova Versão'}
+                {isRascunho ? t('spd.edit') : t('pxd.new_version')}
               </Button>
             )}
           </div>
         </div>
         <div className="flex flex-wrap gap-6 text-xs mt-4 pt-4 border-t border-white/10">
-          <div className="flex items-center gap-2"><Calendar className="w-3.5 h-3.5 text-white/40" /><span className="text-white/50">Criada:</span><span className="font-semibold text-white">{moment(proposta.created_date).format('DD/MM/YYYY HH:mm')}</span></div>
-          {proposta.acceptedDate && <div className="flex items-center gap-2"><CheckCircle className="w-3.5 h-3.5 text-green-400" /><span className="text-white/50">Aceita:</span><span className="font-semibold text-white">{moment(proposta.acceptedDate).format('DD/MM/YYYY HH:mm')}</span></div>}
-          {proposta.rejectedDate && <div className="flex items-center gap-2"><XCircle className="w-3.5 h-3.5 text-red-400" /><span className="text-white/50">Recusada:</span><span className="font-semibold text-white">{moment(proposta.rejectedDate).format('DD/MM/YYYY HH:mm')}</span></div>}
-          {proposta.validUntil && <div className="flex items-center gap-2"><Clock className="w-3.5 h-3.5 text-amber-400" /><span className="text-white/50">Validade:</span><span className="font-semibold text-white">{moment(proposta.validUntil).format('DD/MM/YYYY')}</span></div>}
+          <div className="flex items-center gap-2"><Calendar className="w-3.5 h-3.5 text-white/40" /><span className="text-white/50">{t('pxd.created')}:</span><span className="font-semibold text-white">{moment(proposta.created_date).format('DD/MM/YYYY HH:mm')}</span></div>
+          {proposta.acceptedDate && <div className="flex items-center gap-2"><CheckCircle className="w-3.5 h-3.5 text-green-400" /><span className="text-white/50">{t('pxd.accepted')}:</span><span className="font-semibold text-white">{moment(proposta.acceptedDate).format('DD/MM/YYYY HH:mm')}</span></div>}
+          {proposta.rejectedDate && <div className="flex items-center gap-2"><XCircle className="w-3.5 h-3.5 text-red-400" /><span className="text-white/50">{t('pxd.rejected')}:</span><span className="font-semibold text-white">{moment(proposta.rejectedDate).format('DD/MM/YYYY HH:mm')}</span></div>}
+          {proposta.validUntil && <div className="flex items-center gap-2"><Clock className="w-3.5 h-3.5 text-amber-400" /><span className="text-white/50">{t('pxd.validity')}:</span><span className="font-semibold text-white">{moment(proposta.validUntil).format('DD/MM/YYYY')}</span></div>}
         </div>
       </div>
 
@@ -193,8 +195,8 @@ export default function PropostaPixDetalhes() {
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center"><Link2 className="w-5 h-5 text-amber-600" /></div>
             <div>
-              <h2 className="text-base font-bold text-[#002443]">Link não disponível</h2>
-              <p className="text-sm text-[#002443]/60">Gere a proposta para obter o link de envio ao cliente.</p>
+              <h2 className="text-base font-bold text-[#002443]">{t('pxd.link_unavailable')}</h2>
+              <p className="text-sm text-[#002443]/60">{t('pxd.generate_for_link')}</p>
             </div>
           </div>
         </div>
@@ -203,44 +205,44 @@ export default function PropostaPixDetalhes() {
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-xl bg-[#2bc196]/10 flex items-center justify-center"><Link2 className="w-5 h-5 text-[#2bc196]" /></div>
             <div>
-              <h2 className="text-base font-bold text-[#002443]">Link para o Cliente</h2>
-              <p className="text-sm text-[#002443]/60">Copie e envie este link ao cliente.</p>
+              <h2 className="text-base font-bold text-[#002443]">{t('pxd.client_link')}</h2>
+              <p className="text-sm text-[#002443]/60">{t('pxd.copy_send')}</p>
             </div>
           </div>
           <div className="flex items-center gap-2 bg-[#f4f4f4] rounded-xl p-3 mb-4">
             <code className="flex-1 text-sm text-[#002443]/70 truncate select-all font-mono">{publicLink}</code>
             <Button onClick={handleCopy} size="sm" className={`gap-2 rounded-lg shrink-0 ${copied ? 'bg-green-500 hover:bg-green-600 text-white' : 'bg-[#2bc196] hover:bg-[#2bc196]/90 text-white'}`}>
               {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-              {copied ? 'Copiado!' : 'Copiar Link'}
+              {copied ? t('spd.copied') : t('spd.copy_link')}
             </Button>
           </div>
           <a href={publicLink} target="_blank" rel="noopener noreferrer">
-            <Button variant="outline" size="sm" className="gap-2"><ExternalLink className="w-4 h-4" /> Abrir Página</Button>
+            <Button variant="outline" size="sm" className="gap-2"><ExternalLink className="w-4 h-4" /> {t('spd.open_page')}</Button>
           </a>
         </div>
       )}
 
       {/* Resumo */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Section icon={Building2} title="Dados do Cliente">
-          <InfoRow label="Nome da Empresa" value={proposta.clienteNome} />
+        <Section icon={Building2} title={t('pxd.client_data')}>
+          <InfoRow label={t('pxd.company_name')} value={proposta.clienteNome} />
           <InfoRow label="CNPJ" value={proposta.clienteCnpj} />
-          <InfoRow label="Contato" value={proposta.clienteContato} />
+          <InfoRow label={t('spp.contact')} value={proposta.clienteContato} />
           <InfoRow label="MCC" value={proposta.clienteMcc} />
-          <InfoRow label="Responsável" value={proposta.responsavelNome} />
+          <InfoRow label={t('pxd.responsible')} value={proposta.responsavelNome} />
         </Section>
 
-        <Section icon={Banknote} title="Taxa PIX">
-          <InfoRow label="Tipo" value={rates.pix?.tipo === 'percentual' ? 'Percentual (%)' : 'Fixo (R$)'} />
-          <InfoRow label="Valor" value={rates.pix?.valor} prefix={rates.pix?.tipo === 'fixo' ? 'R$' : undefined} suffix={rates.pix?.tipo === 'percentual' ? '%' : undefined} />
+        <Section icon={Banknote} title={t('pxd.pix_rate')}>
+          <InfoRow label={t('pxd.type')} value={rates.pix?.tipo === 'percentual' ? t('pxd.type_pct') : t('pxd.type_fixed')} />
+          <InfoRow label={t('pxd.value')} value={rates.pix?.valor} prefix={rates.pix?.tipo === 'fixo' ? 'R$' : undefined} suffix={rates.pix?.tipo === 'percentual' ? '%' : undefined} />
           {rates.minimoGarantido && (
             <>
               <div className="pt-2 mt-2 border-t border-[#002443]/5">
-                <p className="text-[10px] font-bold text-[#002443]/40 uppercase tracking-wider mb-2">TPV Mínimo Mensal Garantido</p>
+                <p className="text-[10px] font-bold text-[#002443]/40 uppercase tracking-wider mb-2">{t('pxd.min_tpv_monthly')}</p>
               </div>
-              <InfoRow label="Mês 1" value={rates.minimoGarantido.mes1} prefix="R$" />
-              <InfoRow label="Mês 2" value={rates.minimoGarantido.mes2} prefix="R$" />
-              <InfoRow label="Mês 3+" value={rates.minimoGarantido.mes3} prefix="R$" />
+              <InfoRow label={t('pp.month1')} value={rates.minimoGarantido.mes1} prefix="R$" />
+              <InfoRow label={t('pp.month2')} value={rates.minimoGarantido.mes2} prefix="R$" />
+              <InfoRow label={t('pp.month3_plus')} value={rates.minimoGarantido.mes3} prefix="R$" />
             </>
           )}
         </Section>
@@ -248,14 +250,14 @@ export default function PropostaPixDetalhes() {
 
       {/* Motivo de recusa */}
       {proposta.rejectedReason && (
-        <Section icon={XCircle} title="Motivo da Recusa">
+        <Section icon={XCircle} title={t('pxd.rejection_reason')}>
           <p className="text-sm text-red-600 whitespace-pre-wrap">{proposta.rejectedReason}</p>
         </Section>
       )}
 
       {/* Versões */}
       {versionHistory.length > 1 && (
-        <Section icon={GitBranch} title="Histórico de Versões">
+        <Section icon={GitBranch} title={t('pd.version_history')}>
           <div className="space-y-2">
             {versionHistory.map(v => {
               const isCurrent = v.id === proposalId;
@@ -266,7 +268,7 @@ export default function PropostaPixDetalhes() {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-[#002443]">
                       <span className="font-mono text-[#2bc196] mr-2">{v.codigo}</span>
-                      {isCurrent && <span className="text-[10px] bg-[#2bc196]/20 text-[#2bc196] px-1.5 py-0.5 rounded font-bold ml-1">ATUAL</span>}
+                      {isCurrent && <span className="text-[10px] bg-[#2bc196]/20 text-[#2bc196] px-1.5 py-0.5 rounded font-bold ml-1">{t('pd.current')}</span>}
                     </p>
                     <p className="text-xs text-[#002443]/50 flex items-center gap-1"><Clock className="w-3 h-3" />{moment(v.created_date).format('DD/MM/YYYY HH:mm')}</p>
                   </div>
