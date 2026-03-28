@@ -91,8 +91,8 @@ export default function SegmentQuickLinks({ proposals }) {
                   <Icon className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-[#002443]">Proposta Padrão</p>
-                  <p className="text-xs text-[#002443]/60 truncate">{segment}</p>
+                  <p className="text-base font-extrabold text-[#2bc196]">{segment}</p>
+                  <p className="text-[11px] text-[#002443]/50 truncate">Proposta Padrão</p>
                 </div>
               </div>
 
