@@ -24,6 +24,10 @@ import ContratosSection from '../components/howitworks/ContratosSection';
 import SidebarPagesSection from '../components/howitworks/SidebarPagesSection';
 import PersonasDetailedSection from '../components/howitworks/PersonasDetailedSection';
 import FlowchartsSection from '../components/howitworks/FlowchartsSection';
+import EndToEndFlowsSection from '../components/howitworks/EndToEndFlowsSection';
+import DadosInsightsSection from '../components/howitworks/DadosInsightsSection';
+import SentinelDeepDiveSection from '../components/howitworks/SentinelDeepDiveSection';
+import NotificacoesAutomacoesSection from '../components/howitworks/NotificacoesAutomacoesSection';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function HowItWorks() {
@@ -50,16 +54,16 @@ export default function HowItWorks() {
           </div>
         )}
         <div className="flex flex-wrap gap-2 mt-4">
-          <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0">12+ Módulos</Badge>
+          <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0">15 Seções</Badge>
           <Badge className="bg-blue-50 text-blue-700 border-0">50+ Páginas</Badge>
           <Badge className="bg-purple-50 text-purple-700 border-0">27+ Entidades</Badge>
           <Badge className="bg-orange-50 text-orange-700 border-0">10 Fluxogramas Microscópicos</Badge>
-          <Badge className="bg-pink-50 text-pink-700 border-0">3 IAs (SENTINEL, PRISCILA, Lead Qualifier)</Badge>
-          <Badge className="bg-red-50 text-red-700 border-0">3 Templates Compliance</Badge>
-          <Badge className="bg-cyan-50 text-cyan-700 border-0">305+ Perguntas</Badge>
-          <Badge className="bg-amber-50 text-amber-700 border-0">48 Documentos</Badge>
+          <Badge className="bg-pink-50 text-pink-700 border-0">5 Jornadas End-to-End</Badge>
+          <Badge className="bg-red-50 text-red-700 border-0">3 IAs (SENTINEL, PRISCILA, Lead Qualifier)</Badge>
+          <Badge className="bg-cyan-50 text-cyan-700 border-0">17 Abas de Analytics</Badge>
+          <Badge className="bg-amber-50 text-amber-700 border-0">3 Templates Compliance · 305+ Perguntas</Badge>
           <Badge className="bg-emerald-50 text-emerald-700 border-0">30+ Backend Functions</Badge>
-          <Badge className="bg-violet-50 text-violet-700 border-0">3 Tipos de Proposta + Links Rápidos</Badge>
+          <Badge className="bg-violet-50 text-violet-700 border-0">3 Tipos de Proposta + Versionamento</Badge>
         </div>
       </div>
 
@@ -108,30 +112,37 @@ export default function HowItWorks() {
       </Section>
 
       {/* ═══════════════════════════════════════════════════════ */}
-      {/* 2. MAPA COMPLETO DE TODAS AS PÁGINAS */}
+      {/* 2. JORNADAS END-TO-END POR TIPO DE ENTRADA */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="paginas" title="2. Mapa Completo de Todas as Páginas — Detalhe Microscópico" icon={Layers} badge="50+ Páginas" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="jornadas-e2e" title="2. Jornadas End-to-End — 5 Caminhos do Primeiro Contato ao Contrato" icon={GitBranch} badge="5 Jornadas Completas" expandedSections={expandedSections} toggleSection={toggleSection}>
+        <EndToEndFlowsSection />
+      </Section>
+
+      {/* ═══════════════════════════════════════════════════════ */}
+      {/* 3. MAPA COMPLETO DE TODAS AS PÁGINAS */}
+      {/* ═══════════════════════════════════════════════════════ */}
+      <Section id="paginas" title="3. Mapa Completo de Todas as Páginas — Detalhe Microscópico" icon={Layers} badge="50+ Páginas" expandedSections={expandedSections} toggleSection={toggleSection}>
         <SidebarPagesSection />
       </Section>
 
       {/* ═══════════════════════════════════════════════════════ */}
-      {/* 3. MÓDULO LEADS & PROPOSTAS */}
+      {/* 4. MÓDULO LEADS & PROPOSTAS */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="leads" title="3. Módulo: Leads & Propostas — Fluxos" icon={Inbox} badge="Jornada Completa" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="leads" title="4. Módulo: Leads & Propostas — Fluxos" icon={Inbox} badge="Jornada Completa" expandedSections={expandedSections} toggleSection={toggleSection}>
         <LeadsPropostasSection />
       </Section>
 
       {/* ═══════════════════════════════════════════════════════ */}
-      {/* 4. MÓDULO CONTRATOS */}
+      {/* 5. MÓDULO CONTRATOS */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="contratos" title="4. Módulo: Contratos" icon={Stamp} badge="Geração Automática" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="contratos" title="5. Módulo: Contratos" icon={Stamp} badge="Geração Automática" expandedSections={expandedSections} toggleSection={toggleSection}>
         <ContratosSection />
       </Section>
 
       {/* ═══════════════════════════════════════════════════════ */}
-      {/* 5. QUESTIONÁRIOS DE COMPLIANCE */}
+      {/* 6. QUESTIONÁRIOS DE COMPLIANCE */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="questionarios" title="5. Questionários de Compliance — Raio-X Microscópico" icon={ClipboardList} badge="3 Templates" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="questionarios" title="6. Questionários de Compliance — Raio-X Microscópico" icon={ClipboardList} badge="3 Templates" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="space-y-4">
           <div className="bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl p-5 text-white">
             <h3 className="text-lg font-bold mb-2">3 Templates Especializados</h3>
@@ -161,16 +172,37 @@ export default function HowItWorks() {
       </Section>
 
       {/* ═══════════════════════════════════════════════════════ */}
-      {/* 6. DIAGRAMAS DE FLUXO — VISÃO MICROSCÓPICA */}
+      {/* 7. IA SENTINEL — FUNCIONAMENTO MICROSCÓPICO */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="fluxogramas" title="6. Diagramas de Fluxo — Todos os Processos (Visão Microscópica)" icon={Workflow} badge="10 Fluxos Completos" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="sentinel" title="7. IA SENTINEL — Funcionamento Microscópico das 3 Fases" icon={Brain} badge="Score 0-1000 em 3 Fases" expandedSections={expandedSections} toggleSection={toggleSection}>
+        <SentinelDeepDiveSection />
+      </Section>
+
+      {/* ═══════════════════════════════════════════════════════ */}
+      {/* 8. DADOS & INSIGHTS */}
+      {/* ═══════════════════════════════════════════════════════ */}
+      <Section id="insights" title="8. Dados & Insights — Central de Inteligência (17 Abas)" icon={BarChart3} badge="17 Abas Analíticas" expandedSections={expandedSections} toggleSection={toggleSection}>
+        <DadosInsightsSection />
+      </Section>
+
+      {/* ═══════════════════════════════════════════════════════ */}
+      {/* 9. NOTIFICAÇÕES & AUTOMAÇÕES */}
+      {/* ═══════════════════════════════════════════════════════ */}
+      <Section id="automacoes" title="9. Notificações, Automações e Versionamento" icon={Activity} badge="Slack · E-mail · Scheduled" expandedSections={expandedSections} toggleSection={toggleSection}>
+        <NotificacoesAutomacoesSection />
+      </Section>
+
+      {/* ═══════════════════════════════════════════════════════ */}
+      {/* 10. DIAGRAMAS DE FLUXO — VISÃO MICROSCÓPICA */}
+      {/* ═══════════════════════════════════════════════════════ */}
+      <Section id="fluxogramas" title="10. Diagramas de Fluxo — Todos os Processos (Visão Microscópica)" icon={Workflow} badge="10 Fluxos Completos" expandedSections={expandedSections} toggleSection={toggleSection}>
         <FlowchartsSection />
       </Section>
 
       {/* ═══════════════════════════════════════════════════════ */}
-      {/* 7. MODELO DE DADOS */}
+      {/* 11. MODELO DE DADOS */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="entidades" title="7. Modelo de Dados Completo" icon={Database} badge="27+ Entidades" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="entidades" title="11. Modelo de Dados Completo" icon={Database} badge="27+ Entidades" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="space-y-4">
           {[
             { category: "Core do Onboarding", color: "border-l-[#2bc196]", entities: [
@@ -241,9 +273,9 @@ export default function HowItWorks() {
       </Section>
 
       {/* ═══════════════════════════════════════════════════════ */}
-      {/* 8. INTEGRAÇÕES */}
+      {/* 12. INTEGRAÇÕES */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="integracoes" title="8. Integrações e Tecnologias" icon={Plug} badge="5 Provedores" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="integracoes" title="12. Integrações e Tecnologias" icon={Plug} badge="5 Provedores" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           {[
             { name: "CAF", color: "purple", items: ["Liveness (prova de vida)", "Facematch (1:1)", "Face Authentication", "Document OCR", "Documentoscopy", "Onboarding Web"] },
@@ -283,9 +315,9 @@ export default function HowItWorks() {
       </Section>
 
       {/* ═══════════════════════════════════════════════════════ */}
-      {/* 9. BACKEND FUNCTIONS */}
+      {/* 13. BACKEND FUNCTIONS */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="backend" title="9. Backend Functions e Automações" icon={Server} badge="30+ Functions" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="backend" title="13. Backend Functions" icon={Server} badge="30+ Functions" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {[
             { name: "analyzeOnboarding", desc: "SENTINEL: 3 fases de análise → ComplianceScore + Findings + QualityAssessments" },
@@ -331,9 +363,9 @@ export default function HowItWorks() {
       </Section>
 
       {/* ═══════════════════════════════════════════════════════ */}
-      {/* 10. PERSONAS */}
+      {/* 14. PERSONAS */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="personas" title="10. Personas e Jornadas" icon={Users} badge="4 Personas" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="personas" title="14. Personas e Jornadas" icon={Users} badge="4 Personas" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {[
             { icon: Building2, color: "bg-[#2bc196]", name: "Merchant (Cliente)", desc: "Empresa que deseja se credenciar",
@@ -375,9 +407,9 @@ export default function HowItWorks() {
       </Section>
 
       {/* ═══════════════════════════════════════════════════════ */}
-      {/* 11. JORNADAS DETALHADAS POR PERSONA */}
+      {/* 15. JORNADAS DETALHADAS POR PERSONA */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="jornadas" title="11. Jornadas Detalhadas por Persona — Atividades, Benefícios e Valor" icon={Award} badge="5 Personas × Atividades Completas" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="jornadas" title="15. Jornadas Detalhadas por Persona — Atividades, Benefícios e Valor" icon={Award} badge="5 Personas × Atividades Completas" expandedSections={expandedSections} toggleSection={toggleSection}>
         <PersonasDetailedSection />
       </Section>
 

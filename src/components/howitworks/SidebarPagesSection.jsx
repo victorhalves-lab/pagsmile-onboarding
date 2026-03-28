@@ -208,11 +208,34 @@ export default function SidebarPagesSection() {
 
       <PageDetail name="Questionário com Robô (ProcessMeetingNotes)" description="IA que transforma notas de reunião em dados estruturados de lead." access="Admin"
         funcionalidades={[
-          "Cole ou digite as notas da reunião em texto livre",
-          "A IA (InvokeLLM) extrai: nome empresa, CNPJ, contato, TPV, taxas atuais, tipo de negócio, etc.",
-          "Resultado é exibido em formulário editável para revisão antes de salvar como Lead"
+          "Área de texto livre para colar anotações, transcrições, e-mails ou mensagens de reunião",
+          "Aceita texto desestruturado, informal, com abreviações — a IA entende o contexto",
+          "Backend function processMeetingNotes() usa InvokeLLM com response_json_schema para extrair dados",
+          "Dados extraídos: nome empresa, CNPJ, contato, e-mail, telefone, tipo de negócio, TPV, ticket médio, taxas atuais (MDR, PIX, boleto), antecipação, provedor antifraude, desafios, timeline, notas",
+          "Resultado é pré-preenchido no formulário do QuestionarioReuniao com status 'ai_preenchido'",
+          "Comercial revisa, corrige e complementa antes de salvar",
+          "Ao salvar: cria InternalCommercialQuestionnaire (origemIA=true) + Lead vinculado",
+          "Aparece na aba 'Questionário com Robô' da página Questionários Recebidos com badge 🤖"
         ]}
         subAbas={[]}
+      />
+
+      <PageDetail name="Detalhes do Lead (LeadDetails)" description="Página de detalhe completo de um lead individual com 7 abas internas, scores de IA e histórico." access="Admin"
+        funcionalidades={[
+          "Header com: nome/razão social do lead, badge de status (11 possíveis), badge tipo de negócio (Merchant/Gateway/Marketplace), protocolo, indicador SLA",
+          "Seletor de status: permite alterar status do lead manualmente (cria LeadActivity + AuditLog)",
+          "Quick Actions Bar (LeadQuickActions): botões rápidos para ações mais comuns (contato, proposta, compliance)",
+          "7 abas internas organizadas por contexto de análise"
+        ]}
+        subAbas={[
+          "Visão Geral: 3 cards — Dados da Empresa (nome, razão social, CNPJ, MCC, website), Contato (nome, cargo, e-mail, telefone), Score & Financeiro (score PRISCILA com coloração, TPV mensal, ticket médio, expectativa crescimento) + campo de adicionar notas/comentários com histórico",
+          "Análise de Risco IA (IARiskPanel): iaRiskScore (0-100), iaDecision (AUTO_APROVAR/REVISAO_MANUAL/REJEITAR), iaPriority (URGENTE/ALTA/MEDIA/BAIXA), iaSuggestions[] para o time comercial, iaAnalysisReport completo, botão para disparar nova análise",
+          "Lead Qualifier (LeadQualifierPanel): leadQualifierScore (0-100), leadQualifierLevel (EXCELENTE→INSUFICIENTE), leadQualifierReport com análise detalhada de maturidade do negócio, data da última análise, botão para re-analisar",
+          "PRISCILA (PriscilaPanel): priscilaQualityScore (0-100), priscilaRiskLevel (BAIXO/MEDIO/ALTO/CRITICO), priscilaDecisionPath (AUTO_APROVAR/COM_FLAG/REVISAO/REJEITAR), priscilaAnalysisReport completo com análise de cada dimensão, botão para re-analisar",
+          "Questionário: exibição de todas as respostas do questionnaireData do lead — organizado por campo, com seção separada para documentos enviados (com botões Visualizar e Baixar)",
+          "Propostas (LeadProposals): lista de todas as propostas vinculadas ao lead (Proposal + PixProposal) com status, código, data, link para detalhes",
+          "Histórico: timeline cronológica de todas as LeadActivity do lead — cada registro mostra: descrição, tipo de atividade (badge), data/hora, quem realizou"
+        ]}
       />
 
       {/* ═══════ COMPLIANCE ═══════ */}
@@ -258,12 +281,41 @@ export default function SidebarPagesSection() {
         subAbas={[]}
       />
 
-      <PageDetail name="Questionários Recebidos (Compliance)" description="Lista de todos os casos de compliance submetidos." access="Admin"
+      <PageDetail name="Questionários Recebidos (Compliance)" description="Lista de todos os casos de compliance submetidos com filtros avançados e navegação para análise." access="Admin"
         funcionalidades={[
-          "Tabela de OnboardingCases com filtros de status, período, tipo merchant",
+          "Tabela de OnboardingCases com filtros de status, período, tipo merchant (PF/PJ)",
+          "6 tabs de status: Todos, Pendentes, Processando, Manual, Aprovados, Recusados",
+          "Busca por nome, CPF/CNPJ, e-mail do merchant",
+          "Cada linha mostra: merchant, score, status, prioridade, analista atribuído, data",
           "Navegação para AnaliseDeCasos para análise detalhada de cada caso"
         ]}
-        subAbas={[]}
+        subAbas={[
+          "Todos: lista completa de casos sem filtro",
+          "Pendentes: aguardando processamento pela IA",
+          "Processando: IA SENTINEL analisando",
+          "Manual: encaminhados para revisão humana",
+          "Aprovados: casos aprovados (auto ou manual)",
+          "Recusados: casos reprovados"
+        ]}
+      />
+
+      <PageDetail name="Análise de Caso (AnaliseDeCasos)" description="Página de análise detalhada de um caso de compliance com 7 abas, painel IA SENTINEL e ações de aprovação/rejeição." access="Admin"
+        funcionalidades={[
+          "Header (CaseHeader): nome merchant, CNPJ, status com badge colorido, prioridade, analista atribuído, SLA",
+          "Summary Cards (CaseSummaryCards): 4 cards com score SENTINEL, status IA, tempo de processamento, documentos",
+          "Botões de ação (CaseReviewDialogs): Aprovar (muda status + AuditLog + Merchant), Recusar com motivo, Solicitar Docs Adicionais",
+          "7 abas internas para análise microscópica de cada dimensão do caso",
+          "Feedback na decisão IA: analista pode marcar 'concordo' ou 'discordo' para treinar modelo"
+        ]}
+        subAbas={[
+          "Resumo (CaseReviewTab): visão geral do caso com CnpjEnrichmentSummaryCard (dados do CNPJ enriquecido), score SENTINEL 3 fases, recomendação final, sumário executivo, pontos positivos e negativos",
+          "Merchant (CaseMerchantTab): dados completos do Merchant — tipo PF/PJ, CNPJ, nome, e-mail, telefone, status onboarding, score risco, serviços solicitados (Pix/Cartão)",
+          "Respostas (ComplianceResponsesPanel): todas as respostas do questionário organizadas por seção, com ResponseCard para cada resposta — mostra pergunta, resposta, tipo, seção",
+          "Documentos (CaseDocumentsTab): lista de DocumentUploads vinculados ao caso — para cada documento: nome, tipo, status validação (Pendente/Validado/Rejeitado), botão visualizar (DocumentViewerModal), botão aprovar/rejeitar com notas",
+          "Painel IA (IAAnalysisPanel): ComplianceScore completo — score_questionario, score_validacao_externa, bonus_consistencia, score_geral_composto, classificação, recomendação. Sumário executivo, pontos positivos[], pontos de atenção[], red_flags[]. ComplianceFindings detalhados com severidade. QualityAssessment com scores 1-5. Nível de confiança da IA",
+          "Validações Externas (CaseValidationsTab): ExternalValidationResult[] — cada resultado CAF/BigDataCorp com: provedor, tipo validação, score, status, dados completos (resultData JSON expansível), timestamp",
+          "Histórico (CaseHistoryTab): timeline AuditLog filtrada por entidade/ID do caso — todas ações realizadas, por quem, quando, com detalhes"
+        ]}
       />
 
       <PageDetail name="Gestão de Documentos" description="Validação e gestão de documentos enviados por merchants durante onboarding." access="Admin"
@@ -405,13 +457,43 @@ export default function SidebarPagesSection() {
         subAbas={[]}
       />
 
-      <PageDetail name="Auditoria" description="Logs completos de todas as ações realizadas no sistema." access="Admin"
+      <PageDetail name="Auditoria" description="Logs completos de todas as ações realizadas no sistema com rastreabilidade 100%." access="Admin"
         funcionalidades={[
           "Tabela de AuditLog com: entidade, ID, tipo ação (CREATE/UPDATE/DELETE/VIEW/APPROVAL/REJECTION/VALIDATION), quem, quando, detalhes",
-          "Filtros por entidade, tipo de ação, período",
-          "Rastreabilidade 100% de todas as operações"
+          "Filtros por entidade (Lead, Proposal, Contract, OnboardingCase, etc.), tipo de ação, período",
+          "Rastreabilidade 100% de todas as operações — quem fez o quê e quando",
+          "Detalhes JSON expansíveis para ver exatamente o que mudou",
+          "Paginação para histórico longo",
+          "Base para evidência regulatória em caso de auditoria externa (BACEN, PLD/FT)"
         ]}
         subAbas={[]}
+      />
+
+      <PageDetail name="Dados & Insights (DadosInsights)" description="Central premium de inteligência de negócio com 17 abas analíticas em 5 grupos. Cruza dados de todas as entidades para gerar métricas, gráficos e insights acionáveis." access="Admin"
+        funcionalidades={[
+          "Header premium com 5 contadores (Leads, Propostas, Compliance, Merchants, Parceiros) em tempo real",
+          "Navegação por 5 grupos de abas: Inteligência (1), Volume & Taxas (6), Comercial (3), Perfil & Risco (5), Parceiros (1)",
+          "Consulta 9 entidades simultaneamente: Lead, Proposal, PixProposal, OnboardingCase, ComplianceScore, Merchant, DocumentUpload, QuestionnaireResponse, Partner",
+          "17 abas analíticas com métricas, gráficos (Recharts) e insights por dimensão"
+        ]}
+        subAbas={[
+          "🧠 Insights IA (InsightsAISection): IA analisa todos os dados e gera narrativas automáticas sobre tendências, anomalias e oportunidades de ação",
+          "💰 TPV & Volume (InsightsTPVSection): TPV total/médio/mediano, histograma por faixa, distribuição por tipo de negócio, evolução temporal",
+          "⚔️ Benchmark (InsightsBenchmarkSection): taxas esperadas pelos leads vs taxas oferecidas nas propostas, gap de preço, posição competitiva",
+          "📊 Mix (InsightsMixSection): distribuição de métodos de pagamento preferidos (PIX, Crédito, Débito, Boleto) por segmento",
+          "📈 Taxas Esperadas (InsightsRatesSection): MDR/PIX/boleto/antecipação que leads declaram pagar atualmente — pressão de preço do mercado",
+          "💳 Taxas Propostas (InsightsProposalRatesSection): taxas efetivamente oferecidas nas propostas — heatmap bandeira × faixa, evolução temporal",
+          "💰 Rentabilidade (InsightsProfitabilitySection): receita MDR estimada vs custo parceiro, margem bruta, ranking por proposta, propostas com margem negativa",
+          "⏱️ Performance Comercial (InsightsCommercialPerfSection): tempo médio lead→proposta, proposta→aceite, taxa conversão, produtividade por vendedor",
+          "📈 Funil (InsightsFunnelSection): funil de conversão completo com taxas entre cada estágio, volume por coluna, drop-off analysis",
+          "👥 Introducers (InsightsIntroducerSection): leads por parceiro, conversão por Introducer, TPV gerado, receita estimada, ROI por canal",
+          "👤 Perfil de Leads (InsightsLeadProfileSection): segmentação por tipo negócio, MCC, região, score, perfil do lead ideal",
+          "🏢 Operacional (InsightsOperationalSection): volume mensal de leads e casos, tempo processamento, capacidade operacional",
+          "🛡️ Risco (InsightsRiskPortfolioSection): distribuição de risco BAIXO/MÉDIO/ALTO/CRÍTICO, score médio carteira, concentração, histograma SENTINEL",
+          "✅ Compliance (InsightsComplianceSection): taxa aprovação auto, revisão manual, docs por caso, respostas por caso, funil compliance",
+          "📊 Saúde dos Dados (InsightsDataHealthSection): % completude por campo (e-mail, CNPJ, TPV, etc.), impacto na qualificação",
+          "🤝 Parceiros (InsightsPartnerSection): propostas por parceiro adquirente, custo médio, margem, parceiro mais competitivo por MCC"
+        ]}
       />
 
       <PageDetail name="Parceiros — Adquirentes (ConfiguracaoParceiros)" description="Página dedicada à gestão de parceiros adquirentes/subadquirentes e suas taxas de custo por MCC." access="Admin"
