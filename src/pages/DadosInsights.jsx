@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Loader2, BarChart3, TrendingUp, DollarSign, Users, CreditCard, ArrowUpDown, Target, Sparkles, Wallet, Activity } from 'lucide-react';
+import { Loader2, BarChart3, TrendingUp, DollarSign, Users, CreditCard, ArrowUpDown, Target, Sparkles, Wallet, Activity, Swords, Layers, ShieldAlert, Building2, UserPlus, Database, Timer } from 'lucide-react';
 import InsightsTPVSection from '@/components/insights/InsightsTPVSection';
 import InsightsRatesSection from '@/components/insights/InsightsRatesSection';
 import InsightsProposalRatesSection from '@/components/insights/InsightsProposalRatesSection';
@@ -10,16 +10,30 @@ import InsightsLeadProfileSection from '@/components/insights/InsightsLeadProfil
 import InsightsComplianceSection from '@/components/insights/InsightsComplianceSection';
 import InsightsAISection from '@/components/insights/InsightsAISection';
 import InsightsProfitabilitySection from '@/components/insights/InsightsProfitabilitySection.jsx';
+import InsightsBenchmarkSection from '@/components/insights/InsightsBenchmarkSection.jsx';
+import InsightsMixSection from '@/components/insights/InsightsMixSection.jsx';
+import InsightsRiskPortfolioSection from '@/components/insights/InsightsRiskPortfolioSection.jsx';
+import InsightsOperationalSection from '@/components/insights/InsightsOperationalSection.jsx';
+import InsightsIntroducerSection from '@/components/insights/InsightsIntroducerSection.jsx';
+import InsightsDataHealthSection from '@/components/insights/InsightsDataHealthSection.jsx';
+import InsightsCommercialPerfSection from '@/components/insights/InsightsCommercialPerfSection.jsx';
 
 const TABS = [
   { id: 'ai-insights', label: 'IA Insights', icon: Sparkles },
   { id: 'tpv', label: 'TPV & Volume', icon: DollarSign },
+  { id: 'benchmark', label: 'Benchmark Taxas', icon: Swords },
+  { id: 'mix', label: 'Mix Pagamento', icon: Layers },
   { id: 'expected-rates', label: 'Taxas Esperadas', icon: ArrowUpDown },
   { id: 'proposal-rates', label: 'Taxas Propostas', icon: CreditCard },
   { id: 'profitability', label: 'Rentabilidade', icon: Wallet },
+  { id: 'commercial', label: 'Performance Comercial', icon: Timer },
   { id: 'funnel', label: 'Funil & Conversão', icon: TrendingUp },
   { id: 'profiles', label: 'Perfil Leads', icon: Users },
+  { id: 'operational', label: 'Perfil Operacional', icon: Building2 },
+  { id: 'risk', label: 'Risco Portfolio', icon: ShieldAlert },
+  { id: 'introducers', label: 'Introducers', icon: UserPlus },
   { id: 'compliance', label: 'Compliance', icon: Target },
+  { id: 'data-health', label: 'Data Health', icon: Database },
 ];
 
 export default function DadosInsights() {
@@ -156,12 +170,19 @@ export default function DadosInsights() {
       <div className="min-h-[400px]">
         {activeTab === 'ai-insights' && <InsightsAISection leads={leads} proposals={proposals} cases={cases} complianceScores={complianceScores} merchants={merchants} />}
         {activeTab === 'tpv' && <InsightsTPVSection leads={leads} />}
+        {activeTab === 'benchmark' && <InsightsBenchmarkSection leads={leads} proposals={proposals} />}
+        {activeTab === 'mix' && <InsightsMixSection leads={leads} />}
         {activeTab === 'expected-rates' && <InsightsRatesSection leads={leads} />}
         {activeTab === 'proposal-rates' && <InsightsProposalRatesSection proposals={proposals} />}
         {activeTab === 'profitability' && <InsightsProfitabilitySection proposals={proposals} partners={partners} pixProposals={pixProposals} />}
+        {activeTab === 'commercial' && <InsightsCommercialPerfSection leads={leads} proposals={proposals} pixProposals={pixProposals} />}
         {activeTab === 'funnel' && <InsightsFunnelSection leads={leads} proposals={proposals} cases={cases} />}
         {activeTab === 'profiles' && <InsightsLeadProfileSection leads={leads} />}
+        {activeTab === 'operational' && <InsightsOperationalSection leads={leads} cases={cases} />}
+        {activeTab === 'risk' && <InsightsRiskPortfolioSection leads={leads} complianceScores={complianceScores} cases={cases} />}
+        {activeTab === 'introducers' && <InsightsIntroducerSection leads={leads} proposals={proposals} />}
         {activeTab === 'compliance' && <InsightsComplianceSection cases={cases} complianceScores={complianceScores} merchants={merchants} documents={documents} questionnaireResponses={questionnaireResponses} />}
+        {activeTab === 'data-health' && <InsightsDataHealthSection leads={leads} />}
       </div>
     </div>
   );
