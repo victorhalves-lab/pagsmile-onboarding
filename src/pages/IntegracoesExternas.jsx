@@ -208,7 +208,7 @@ export default function IntegracoesExternas() {
         <TabsContent value="caf" className="space-y-6 mt-6">
           <div className="bg-[#2bc196]/5 border border-[#2bc196]/15 rounded-2xl p-4 flex items-start gap-3">
             <AlertTriangle className="w-4 h-4 text-[#2bc196] mt-0.5 shrink-0" />
-            <p className="text-xs text-[#002443]/60">As integrações com a CAF devem ser feitas exclusivamente via backend. Nunca exponha as chaves de autenticação no frontend.</p>
+            <p className="text-xs text-[#002443]/60">{t('ie.caf_warning')}</p>
           </div>
 
           {/* Mapping Table */}
@@ -254,7 +254,7 @@ export default function IntegracoesExternas() {
 
           {/* Config */}
           <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 space-y-5">
-            <h3 className="text-base font-bold text-[#002443]">Configuração CAF</h3>
+            <h3 className="text-base font-bold text-[#002443]">{t('ie.caf_config')}</h3>
             <p className="text-xs text-[#002443]/40">API Base: <code className="bg-[#f4f4f4] px-2 py-0.5 rounded-lg text-[#36706c]">https://api.combateafraude.com/v1</code></p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
@@ -274,7 +274,7 @@ export default function IntegracoesExternas() {
               <Label className="text-xs text-[#002443]/50">Ambiente</Label>
               <Select defaultValue="sandbox">
                 <SelectTrigger className="w-48 border-[#002443]/10"><SelectValue /></SelectTrigger>
-                <SelectContent><SelectItem value="sandbox">Sandbox</SelectItem><SelectItem value="production">Produção</SelectItem></SelectContent>
+                <SelectContent><SelectItem value="sandbox">{t('ie.sandbox_label')}</SelectItem><SelectItem value="production">{t('ie.production_label')}</SelectItem></SelectContent>
               </Select>
             </div>
           </div>
@@ -306,8 +306,8 @@ export default function IntegracoesExternas() {
           {/* Docs */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {[
-              { href: 'https://docs.caf.io/caf-api', icon: FileText, title: 'CAF API Reference', desc: 'Documentação completa da API' },
-              { href: 'https://docs.caf.io/caf-sdk', icon: Plug, title: 'CAF SDKs', desc: 'Web, iOS e Android' },
+              { href: 'https://docs.caf.io/caf-api', icon: FileText, title: t('ie.caf_doc_ref'), desc: t('ie.caf_doc_desc') },
+              { href: 'https://docs.caf.io/caf-sdk', icon: Plug, title: t('ie.caf_sdk_ref'), desc: t('ie.caf_sdk_desc') },
             ].map((doc, i) => (
               <a key={i} href={doc.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-4 rounded-2xl border border-[#002443]/5 hover:shadow-sm transition-shadow bg-white">
                 <doc.icon className="w-5 h-5 text-[#002443]/40" />
@@ -326,8 +326,8 @@ export default function IntegracoesExternas() {
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-[#002443]/5 flex items-center justify-center"><Database className="w-4 h-4 text-[#002443]" /></div>
                 <div>
-                  <h3 className="text-sm font-bold text-[#002443]">Mapeamento: Dados & Validações</h3>
-                  <p className="text-xs text-[#002443]/40">Conexão de cada campo ao dataset da BigDataCorp</p>
+                  <h3 className="text-sm font-bold text-[#002443]">{t('ie.data_mapping')}</h3>
+                  <p className="text-xs text-[#002443]/40">{t('ie.data_mapping_desc')}</p>
                 </div>
               </div>
             </div>
@@ -368,7 +368,7 @@ export default function IntegracoesExternas() {
                       <TableCell className="text-xs text-[#002443]/50">{row.step}</TableCell>
                       <TableCell className="font-mono text-xs text-[#36706c]">{row.endpoint}</TableCell>
                       <TableCell className="text-xs text-[#002443]/60">{row.result}</TableCell>
-                      <TableCell><Badge className="bg-[#2bc196]/10 text-[#2bc196] text-[10px] border-0">Mapeado</Badge></TableCell>
+                      <TableCell><Badge className="bg-[#2bc196]/10 text-[#2bc196] text-[10px] border-0">{t('ie.mapped_label')}</Badge></TableCell>
                     </TableRow>
                   );
                 })}
@@ -378,7 +378,7 @@ export default function IntegracoesExternas() {
 
           {/* BDC Config */}
           <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 space-y-5">
-            <h3 className="text-base font-bold text-[#002443]">Configuração BigDataCorp</h3>
+            <h3 className="text-base font-bold text-[#002443]">{t('ie.bdc_config')}</h3>
             <p className="text-xs text-[#002443]/40">API Base: <code className="bg-[#f4f4f4] px-2 py-0.5 rounded-lg text-[#36706c]">https://app.bigdatacorp.com.br</code></p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
@@ -397,7 +397,7 @@ export default function IntegracoesExternas() {
               <Label className="text-xs text-[#002443]/50">Ambiente</Label>
               <Select defaultValue="sandbox">
                 <SelectTrigger className="w-48 border-[#002443]/10"><SelectValue /></SelectTrigger>
-                <SelectContent><SelectItem value="sandbox">Sandbox</SelectItem><SelectItem value="production">Produção</SelectItem></SelectContent>
+                <SelectContent><SelectItem value="sandbox">{t('ie.sandbox_label')}</SelectItem><SelectItem value="production">{t('ie.production_label')}</SelectItem></SelectContent>
               </Select>
             </div>
           </div>
@@ -431,11 +431,11 @@ export default function IntegracoesExternas() {
         <TabsContent value="webhooks" className="space-y-6 mt-6">
           <div className="bg-[#36706c]/5 border border-[#36706c]/10 rounded-2xl p-4 flex items-start gap-3">
             <Plug className="w-4 h-4 text-[#36706c] mt-0.5 shrink-0" />
-            <p className="text-xs text-[#002443]/60">Utilizamos webhooks para receber atualizações assíncronas (análise de documentos concluída, score de fraude atualizado) sem travar a experiência do usuário.</p>
+            <p className="text-xs text-[#002443]/60">{t('ie.webhooks_info')}</p>
           </div>
 
           <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 space-y-5">
-            <h3 className="text-base font-bold text-[#002443]">URLs de Webhook</h3>
+            <h3 className="text-base font-bold text-[#002443]">{t('ie.webhook_urls_title')}</h3>
             {[
               { label: 'Webhook CAF', url: 'https://api.seudominio.com/webhooks/caf' },
               { label: 'Webhook BigDataCorp', url: 'https://api.seudominio.com/webhooks/bigdatacorp' },
@@ -455,13 +455,13 @@ export default function IntegracoesExternas() {
               <Label className="text-xs text-[#002443]/50">Webhook Secret</Label>
               <div className="flex gap-2">
                 <Input type="password" placeholder="••••••••••••••••" className="font-mono border-[#002443]/10" />
-                <Button variant="outline" className="rounded-xl border-[#002443]/10 text-[#002443]/70 text-sm">Gerar Novo</Button>
+                <Button variant="outline" className="rounded-xl border-[#002443]/10 text-[#002443]/70 text-sm">{t('ie.generate_new_secret')}</Button>
               </div>
             </div>
           </div>
 
           <div className="bg-white rounded-2xl border border-[#002443]/5 p-6">
-            <h3 className="text-base font-bold text-[#002443] mb-4">Eventos Suportados</h3>
+            <h3 className="text-base font-bold text-[#002443] mb-4">{t('ie.supported_events_title')}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[
                 { title: 'CAF', events: ['transaction.completed', 'transaction.approved', 'transaction.reproved', 'onboarding.completed', 'face_auth.attempt'] },
@@ -500,7 +500,7 @@ export default function IntegracoesExternas() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-[#f4f4f4]">
-                    {['Data/Hora', 'Provedor', 'Serviço', 'Status', 'Resultado', 'Duração', ''].map((h, i) => (
+                    {[t('ie.col_datetime'), t('ie.col_provider'), t('ie.col_service'), t('ie.col_status'), t('ie.col_result'), t('ie.col_duration'), ''].map((h, i) => (
                       <TableHead key={i} className="text-[10px] font-bold text-[#002443]/40 uppercase">{h}</TableHead>
                     ))}
                   </TableRow>
@@ -508,7 +508,7 @@ export default function IntegracoesExternas() {
                 <TableBody>
                   {integrationLogs.map(log => (
                     <TableRow key={log.id}>
-                      <TableCell className="text-xs text-[#002443]/60">{log.created_date ? new Date(log.created_date).toLocaleString('pt-BR') : '-'}</TableCell>
+                      <TableCell className="text-xs text-[#002443]/60">{log.created_date ? new Date(log.created_date).toLocaleString() : '-'}</TableCell>
                       <TableCell><Badge variant="outline" className="text-[10px] border-[#002443]/10">{log.provider}</Badge></TableCell>
                       <TableCell className="text-xs font-mono text-[#36706c]">{log.service_type}</TableCell>
                       <TableCell>{getStatusBadge(log.status)}</TableCell>

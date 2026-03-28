@@ -91,9 +91,9 @@ export default function Auditoria() {
 
   const handleExport = () => {
     const csvContent = [
-      ['Data', 'Ação', 'Descrição', 'Ator', 'Entidade', 'ID'].join(','),
+      [t('aud.csv_date'), t('aud.csv_action'), t('aud.csv_description'), t('aud.csv_actor'), t('aud.csv_entity'), t('aud.csv_id')].join(','),
       ...filteredLogs.map(log => [
-        log.changeDate ? new Date(log.changeDate).toLocaleString('pt-BR') : '',
+        log.changeDate ? new Date(log.changeDate).toLocaleString() : '',
         log.actionType, `"${log.actionDescription || ''}"`, log.changedBy, log.entityName, log.entityId
       ].join(','))
     ].join('\n');
@@ -203,8 +203,8 @@ export default function Auditoria() {
               {paginatedLogs.map((log) => (
                 <TableRow key={log.id} className="hover:bg-[#f4f4f4]/50">
                   <TableCell className="text-sm">
-                    <p className="font-medium text-[#002443]">{log.changeDate ? new Date(log.changeDate).toLocaleDateString('pt-BR') : '-'}</p>
-                    <p className="text-[10px] text-[#002443]/30">{log.changeDate ? new Date(log.changeDate).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : ''}</p>
+                    <p className="font-medium text-[#002443]">{log.changeDate ? new Date(log.changeDate).toLocaleDateString() : '-'}</p>
+                    <p className="text-[10px] text-[#002443]/30">{log.changeDate ? new Date(log.changeDate).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }) : ''}</p>
                   </TableCell>
                   <TableCell>{getActionBadge(log.actionType)}</TableCell>
                   <TableCell className="max-w-xs truncate text-xs text-[#002443]/60">{log.actionDescription || '-'}</TableCell>
@@ -251,18 +251,18 @@ export default function Auditoria() {
           {selectedLog && (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div><p className="text-xs text-[#002443]/40">Data/Hora</p><p className="font-medium text-sm text-[#002443]">{selectedLog.changeDate ? new Date(selectedLog.changeDate).toLocaleString('pt-BR') : '-'}</p></div>
-                <div><p className="text-xs text-[#002443]/40 mb-1">Ação</p>{getActionBadge(selectedLog.actionType)}</div>
-                <div><p className="text-xs text-[#002443]/40">Ator</p><p className="font-medium text-sm text-[#002443]">{selectedLog.changedBy}</p></div>
-                <div><p className="text-xs text-[#002443]/40">Entidade</p><p className="font-medium text-sm text-[#002443]">{selectedLog.entityName}</p></div>
+                <div><p className="text-xs text-[#002443]/40">{t('aud.detail_datetime')}</p><p className="font-medium text-sm text-[#002443]">{selectedLog.changeDate ? new Date(selectedLog.changeDate).toLocaleString() : '-'}</p></div>
+                <div><p className="text-xs text-[#002443]/40 mb-1">{t('aud.detail_action')}</p>{getActionBadge(selectedLog.actionType)}</div>
+                <div><p className="text-xs text-[#002443]/40">{t('aud.detail_actor')}</p><p className="font-medium text-sm text-[#002443]">{selectedLog.changedBy}</p></div>
+                <div><p className="text-xs text-[#002443]/40">{t('aud.detail_entity')}</p><p className="font-medium text-sm text-[#002443]">{selectedLog.entityName}</p></div>
               </div>
-              <div><p className="text-xs text-[#002443]/40">Descrição</p><p className="text-sm text-[#002443]">{selectedLog.actionDescription}</p></div>
-              <div><p className="text-xs text-[#002443]/40">ID da Entidade</p><p className="font-mono text-xs bg-[#f4f4f4] p-2 rounded-xl text-[#36706c]">{selectedLog.entityId}</p></div>
+              <div><p className="text-xs text-[#002443]/40">{t('aud.detail_description')}</p><p className="text-sm text-[#002443]">{selectedLog.actionDescription}</p></div>
+              <div><p className="text-xs text-[#002443]/40">{t('aud.detail_entity_id')}</p><p className="font-mono text-xs bg-[#f4f4f4] p-2 rounded-xl text-[#36706c]">{selectedLog.entityId}</p></div>
               {selectedLog.details && (
-                <div><p className="text-xs text-[#002443]/40 mb-1">Detalhes Adicionais</p><pre className="bg-[#f4f4f4] p-3 rounded-xl text-xs overflow-auto max-h-40 text-[#002443]/70">{JSON.stringify(selectedLog.details, null, 2)}</pre></div>
+                <div><p className="text-xs text-[#002443]/40 mb-1">{t('aud.detail_additional')}</p><pre className="bg-[#f4f4f4] p-3 rounded-xl text-xs overflow-auto max-h-40 text-[#002443]/70">{JSON.stringify(selectedLog.details, null, 2)}</pre></div>
               )}
               {selectedLog.ipAddress && (
-                <div><p className="text-xs text-[#002443]/40">IP</p><p className="font-mono text-xs text-[#002443]/60">{selectedLog.ipAddress}</p></div>
+                <div><p className="text-xs text-[#002443]/40">{t('aud.detail_ip')}</p><p className="font-mono text-xs text-[#002443]/60">{selectedLog.ipAddress}</p></div>
               )}
             </div>
           )}

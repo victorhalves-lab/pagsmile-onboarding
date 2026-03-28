@@ -10,8 +10,10 @@ import { Plus, Loader2, Handshake } from 'lucide-react';
 import { toast } from 'sonner';
 import PartnerFormModal from '@/components/partners/PartnerFormModal';
 import PartnerCard from '@/components/partners/PartnerCard';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function ConfiguracaoParceiros() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [modalOpen, setModalOpen] = useState(false);
   const [editingPartner, setEditingPartner] = useState(null);
@@ -37,18 +39,18 @@ export default function ConfiguracaoParceiros() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['partners'] });
-      toast.success(editingPartner?.id ? 'Parceiro atualizado!' : 'Parceiro criado!');
+      toast.success(editingPartner?.id ? t('cp.partner_updated') : t('cp.partner_created'));
       setModalOpen(false);
       setEditingPartner(null);
     },
-    onError: (err) => toast.error('Erro: ' + err.message)
+    onError: (err) => toast.error(t('cp.error') + err.message)
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.Partner.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['partners'] });
-      toast.success('Parceiro excluído!');
+      toast.success(t('cp.partner_deleted'));
       setDeleteConfirm(null);
     }
   });
@@ -68,13 +70,13 @@ export default function ConfiguracaoParceiros() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-[#002443]">Configuração de Parceiros</h1>
+          <h1 className="text-xl font-bold text-[#002443]">{t('cp.title')}</h1>
           <p className="text-sm text-[#002443]/50 mt-0.5">
-            Gerencie os parceiros adquirentes e suas taxas de custo
+            {t('cp.subtitle')}
           </p>
         </div>
         <Button onClick={handleNew} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
-          <Plus className="w-4 h-4 mr-2" /> Novo Parceiro
+          <Plus className="w-4 h-4 mr-2" /> {t('cp.new_partner')}
         </Button>
       </div>
 
@@ -88,10 +90,10 @@ export default function ConfiguracaoParceiros() {
           <div className="w-16 h-16 rounded-2xl bg-[#f4f4f4] flex items-center justify-center mx-auto mb-4">
             <Handshake className="w-7 h-7 text-[#002443]/20" />
           </div>
-          <p className="text-sm font-semibold text-[#002443]/60">Nenhum parceiro cadastrado</p>
-          <p className="text-xs text-[#002443]/30 mt-1">Cadastre um parceiro adquirente para começar a configurar taxas</p>
+          <p className="text-sm font-semibold text-[#002443]/60">{t('cp.no_partners')}</p>
+          <p className="text-xs text-[#002443]/30 mt-1">{t('cp.no_partners_hint')}</p>
           <Button onClick={handleNew} className="mt-4 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl">
-            <Plus className="w-4 h-4 mr-2" /> Cadastrar Primeiro Parceiro
+            <Plus className="w-4 h-4 mr-2" /> {t('cp.first_partner')}
           </Button>
         </div>
       ) : (
@@ -123,18 +125,18 @@ export default function ConfiguracaoParceiros() {
       <AlertDialog open={!!deleteConfirm} onOpenChange={() => setDeleteConfirm(null)}>
         <AlertDialogContent className="rounded-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle>Excluir Parceiro</AlertDialogTitle>
+            <AlertDialogTitle>{t('cp.delete_title')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja excluir "{deleteConfirm?.name}"? Esta ação não pode ser desfeita.
+              {t('cp.delete_desc', { name: deleteConfirm?.name })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-xl">Cancelar</AlertDialogCancel>
+            <AlertDialogCancel className="rounded-xl">{t('cp.cancel')}</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deleteMutation.mutate(deleteConfirm.id)}
               className="bg-red-500 hover:bg-red-600 text-white rounded-xl"
             >
-              Excluir
+              {t('cp.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

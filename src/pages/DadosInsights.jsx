@@ -17,8 +17,9 @@ import InsightsOperationalSection from '@/components/insights/InsightsOperationa
 import InsightsIntroducerSection from '@/components/insights/InsightsIntroducerSection.jsx';
 import InsightsDataHealthSection from '@/components/insights/InsightsDataHealthSection.jsx';
 import InsightsCommercialPerfSection from '@/components/insights/InsightsCommercialPerfSection.jsx';
+import { useTranslation } from '@/lib/i18n/LanguageContext';
 
-const TAB_GROUPS = [
+const TAB_GROUPS_CONFIG = [
   {
     label: 'Inteligência',
     tabs: [
@@ -56,10 +57,10 @@ const TAB_GROUPS = [
   },
 ];
 
-const ALL_TABS = TAB_GROUPS.flatMap(g => g.tabs);
-
 export default function DadosInsights() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('ai-insights');
+  const TAB_GROUPS = buildTabGroups(t);
 
   const { data: leads = [], isLoading: loadingLeads } = useQuery({
     queryKey: ['insights-leads'],
@@ -113,19 +114,19 @@ export default function DadosInsights() {
           </div>
         </div>
         <div className="text-center">
-          <p className="text-sm font-semibold text-[#002443]/60">Carregando dados...</p>
-          <p className="text-[10px] text-[#002443]/25 mt-1">Preparando visualizações</p>
+          <p className="text-sm font-semibold text-[#002443]/60">{t('di.loading')}</p>
+          <p className="text-[10px] text-[#002443]/25 mt-1">{t('di.loading_hint')}</p>
         </div>
       </div>
     );
   }
 
   const counters = [
-    { label: 'Leads', value: leads.length, color: '#2bc196' },
-    { label: 'Propostas', value: proposals.length + pixProposals.length, color: '#5cf7cf' },
-    { label: 'Compliance', value: cases.length, color: '#36706c' },
-    { label: 'Merchants', value: merchants.length, color: '#94a3b8' },
-    { label: 'Parceiros', value: partners.length, color: '#f59e0b' },
+    { label: t('di.leads'), value: leads.length, color: '#2bc196' },
+    { label: t('di.proposals'), value: proposals.length + pixProposals.length, color: '#5cf7cf' },
+    { label: t('di.compliance'), value: cases.length, color: '#36706c' },
+    { label: t('di.merchants'), value: merchants.length, color: '#94a3b8' },
+    { label: t('di.partners'), value: partners.length, color: '#f59e0b' },
   ];
 
   return (
@@ -156,13 +157,13 @@ export default function DadosInsights() {
               </div>
               <div>
                 <div className="flex items-center gap-3">
-                  <h1 className="text-[26px] md:text-[32px] font-extrabold text-white tracking-[-0.02em] leading-none">Dados & Insights</h1>
+                  <h1 className="text-[26px] md:text-[32px] font-extrabold text-white tracking-[-0.02em] leading-none">{t('di.title')}</h1>
                   <div className="flex items-center gap-1.5 bg-white/[0.08] backdrop-blur-md rounded-full px-3 py-1 border border-white/[0.06]">
                     <div className="w-1.5 h-1.5 rounded-full bg-[#2bc196] shadow-[0_0_8px_rgba(43,193,150,0.6)] animate-pulse" />
-                    <span className="text-[9px] font-bold text-white/60 uppercase tracking-widest">Live</span>
+                    <span className="text-[9px] font-bold text-white/60 uppercase tracking-widest">{t('di.live')}</span>
                   </div>
                 </div>
-                <p className="text-white/25 text-[13px] mt-2 font-medium tracking-wide">Business Intelligence • Visão Estratégica</p>
+                <p className="text-white/25 text-[13px] mt-2 font-medium tracking-wide">{t('di.subtitle')}</p>
               </div>
             </div>
             
