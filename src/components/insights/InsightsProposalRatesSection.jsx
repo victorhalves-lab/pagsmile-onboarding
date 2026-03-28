@@ -1,8 +1,10 @@
 import React from 'react';
 import MinMaxMedianTable from './MinMaxMedianTable';
 import { calcStats, formatPercent } from './insightsUtils';
-import { Card } from '@/components/ui/card';
+import ChartCard from './ChartCard';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
+
+const chartTooltipStyle = { borderRadius: 12, border: 'none', boxShadow: '0 8px 30px rgba(0,0,0,0.08)', padding: '8px 14px', fontSize: 12 };
 
 export default function InsightsProposalRatesSection({ proposals }) {
   // Only current versions
@@ -87,8 +89,11 @@ export default function InsightsProposalRatesSection({ proposals }) {
   }));
 
   return (
-    <div className="space-y-5 mt-4">
-      <p className="text-xs text-[#002443]/50">{current.length} propostas (versão atual) analisadas</p>
+    <div className="space-y-6 mt-2">
+      <div className="inline-flex items-center gap-2 bg-white rounded-full px-4 py-1.5 border border-slate-100">
+        <div className="w-2 h-2 rounded-full bg-[#2bc196]" />
+        <span className="text-[11px] font-bold text-[#002443]/50">{current.length} propostas (versão atual) analisadas</span>
+      </div>
 
       {visaRows.length > 0 && (
         <MinMaxMedianTable title="MDR Crédito Visa — Propostas Enviadas" rows={visaRows} formatter={formatPercent} />
@@ -104,20 +109,19 @@ export default function InsightsProposalRatesSection({ proposals }) {
       )}
 
       {compData.some(d => d.visa > 0 || d.mastercard > 0) && (
-        <Card className="p-4">
-          <h3 className="text-sm font-bold text-[#002443] mb-3">Mediana MDR Crédito: Visa vs Mastercard</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={compData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-              <YAxis tick={{ fontSize: 11 }} unit="%" />
-              <Tooltip formatter={(v) => `${v}%`} />
-              <Legend />
-              <Bar dataKey="visa" fill="#1a1f71" name="Visa" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="mastercard" fill="#eb001b" name="Mastercard" radius={[4, 4, 0, 0]} />
+        <ChartCard title="Mediana MDR Crédito: Visa vs Mastercard">
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart data={compData} barCategoryGap="25%">
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+              <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#002443' }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} unit="%" axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => `${v}%`} />
+              <Legend wrapperStyle={{ fontSize: 11 }} />
+              <Bar dataKey="visa" fill="#1a1f71" name="Visa" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="mastercard" fill="#eb001b" name="Mastercard" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        </Card>
+        </ChartCard>
       )}
     </div>
   );

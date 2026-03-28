@@ -1,8 +1,10 @@
 import React from 'react';
-import { Card } from '@/components/ui/card';
 import StatCard from './StatCard';
+import ChartCard from './ChartCard';
 import { TrendingUp, Clock, CheckCircle2, XCircle } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+
+const chartTooltipStyle = { borderRadius: 12, border: 'none', boxShadow: '0 8px 30px rgba(0,0,0,0.08)', padding: '8px 14px', fontSize: 12 };
 import moment from 'moment';
 
 export default function InsightsFunnelSection({ leads, proposals, cases }) {
@@ -68,7 +70,7 @@ export default function InsightsFunnelSection({ leads, proposals, cases }) {
   });
 
   return (
-    <div className="space-y-5 mt-4">
+    <div className="space-y-6 mt-2">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <StatCard label="Taxa de Aceite" value={`${acceptRate}%`} subtitle={`${accepted} de ${currentProposals.length}`} icon={CheckCircle2} />
         <StatCard label="Tempo Médio Aceite" value={`${avgAcceptDays} dias`} subtitle={`${acceptTimes.length} propostas aceitas`} icon={Clock} />
@@ -76,50 +78,70 @@ export default function InsightsFunnelSection({ leads, proposals, cases }) {
         <StatCard label="Recusadas" value={rejected} subtitle={`${currentProposals.length > 0 ? (rejected / currentProposals.length * 100).toFixed(1) : 0}% do total`} icon={XCircle} color="text-red-500" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <Card className="p-4">
-          <h3 className="text-sm font-bold text-[#002443] mb-3">Funil de Status dos Leads</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={funnelData} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis type="number" tick={{ fontSize: 11 }} />
-              <YAxis dataKey="name" type="category" tick={{ fontSize: 10 }} width={120} />
-              <Tooltip />
-              <Bar dataKey="count" fill="#2bc196" radius={[0, 4, 4, 0]} name="Leads" />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <ChartCard title="Funil de Status dos Leads">
+          <ResponsiveContainer width="100%" height={320}>
+            <BarChart data={funnelData} layout="vertical" barCategoryGap="20%">
+              <defs>
+                <linearGradient id="funnelGrad" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#2bc196" stopOpacity={0.5} />
+                  <stop offset="100%" stopColor="#2bc196" />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" horizontal={false} />
+              <XAxis type="number" tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
+              <YAxis dataKey="name" type="category" tick={{ fontSize: 10, fill: '#002443' }} width={130} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={chartTooltipStyle} />
+              <Bar dataKey="count" fill="url(#funnelGrad)" radius={[0, 8, 8, 0]} name="Leads" />
             </BarChart>
           </ResponsiveContainer>
-        </Card>
+        </ChartCard>
 
-        <Card className="p-4">
-          <h3 className="text-sm font-bold text-[#002443] mb-3">Origem dos Leads</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={sourceData} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis type="number" tick={{ fontSize: 11 }} />
-              <YAxis dataKey="name" type="category" tick={{ fontSize: 10 }} width={120} />
-              <Tooltip />
-              <Bar dataKey="count" fill="#002443" radius={[0, 4, 4, 0]} name="Leads" />
+        <ChartCard title="Origem dos Leads">
+          <ResponsiveContainer width="100%" height={320}>
+            <BarChart data={sourceData} layout="vertical" barCategoryGap="20%">
+              <defs>
+                <linearGradient id="sourceGrad" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#002443" stopOpacity={0.4} />
+                  <stop offset="100%" stopColor="#002443" />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" horizontal={false} />
+              <XAxis type="number" tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
+              <YAxis dataKey="name" type="category" tick={{ fontSize: 10, fill: '#002443' }} width={130} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={chartTooltipStyle} />
+              <Bar dataKey="count" fill="url(#sourceGrad)" radius={[0, 8, 8, 0]} name="Leads" />
             </BarChart>
           </ResponsiveContainer>
-        </Card>
+        </ChartCard>
       </div>
 
       {Object.keys(introducerMap).length > 0 && (
-        <Card className="p-4">
-          <h3 className="text-sm font-bold text-[#002443] mb-3">Performance por Introducer</h3>
-          <div className="space-y-2">
-            {Object.entries(introducerMap).sort((a, b) => b[1].total - a[1].total).map(([name, data], i) => (
-              <div key={i} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                <span className="text-sm font-medium">{name}</span>
-                <div className="flex items-center gap-4 text-xs">
-                  <span><span className="text-[#002443]/50">Leads: </span><span className="font-bold">{data.total}</span></span>
-                  <span><span className="text-[#002443]/50">Convertidos: </span><span className="font-bold text-[#2bc196]">{data.converted}</span></span>
-                  <span><span className="text-[#002443]/50">Conv: </span><span className="font-bold">{(data.converted / data.total * 100).toFixed(0)}%</span></span>
+        <div className="rounded-2xl bg-white border border-slate-100 p-5">
+          <h3 className="text-sm font-bold text-[#002443] mb-4">Performance por Introducer</h3>
+          <div className="space-y-2.5">
+            {Object.entries(introducerMap).sort((a, b) => b[1].total - a[1].total).map(([name, data], i) => {
+              const convRate = (data.converted / data.total * 100).toFixed(0);
+              return (
+                <div key={i} className="group flex items-center justify-between p-3.5 bg-slate-50/50 rounded-xl border border-transparent hover:border-[#2bc196]/10 hover:bg-[#2bc196]/[0.02] transition-all duration-200">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-[#002443]/5 flex items-center justify-center">
+                      <span className="text-[10px] font-extrabold text-[#002443]/40">{i + 1}</span>
+                    </div>
+                    <span className="text-xs font-semibold text-[#002443]">{name}</span>
+                  </div>
+                  <div className="flex items-center gap-4 text-[11px]">
+                    <span className="text-[#002443]/40">Leads: <span className="font-bold text-[#002443]">{data.total}</span></span>
+                    <span className="text-[#002443]/40">Conv: <span className="font-bold text-[#2bc196]">{data.converted}</span></span>
+                    <div className="flex items-center gap-1.5 bg-[#2bc196]/10 rounded-full px-2.5 py-0.5">
+                      <span className="text-[10px] font-extrabold text-[#2bc196]">{convRate}%</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
-        </Card>
+        </div>
       )}
     </div>
   );

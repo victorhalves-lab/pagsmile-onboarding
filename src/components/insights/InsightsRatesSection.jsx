@@ -1,8 +1,10 @@
 import React from 'react';
 import MinMaxMedianTable from './MinMaxMedianTable';
 import { calcStats, formatPercent, formatCurrency } from './insightsUtils';
-import { Card } from '@/components/ui/card';
+import ChartCard from './ChartCard';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
+
+const chartTooltipStyle = { borderRadius: 12, border: 'none', boxShadow: '0 8px 30px rgba(0,0,0,0.08)', padding: '8px 14px', fontSize: 12 };
 
 export default function InsightsRatesSection({ leads }) {
   // Extract expected rates from leads
@@ -59,12 +61,12 @@ export default function InsightsRatesSection({ leads }) {
   }));
 
   return (
-    <div className="space-y-5 mt-4">
+    <div className="space-y-6 mt-2">
       {!hasData ? (
-        <Card className="p-8 text-center">
+        <div className="rounded-3xl bg-white border border-slate-100 p-12 text-center">
           <p className="text-sm text-[#002443]/50">Nenhum lead possui dados de taxas esperadas preenchidos ainda.</p>
           <p className="text-xs text-[#002443]/30 mt-1">Os dados aparecerão conforme os questionários forem respondidos.</p>
-        </Card>
+        </div>
       ) : (
         <>
           <MinMaxMedianTable
@@ -80,21 +82,20 @@ export default function InsightsRatesSection({ leads }) {
           />
 
           {comparisonData.length > 0 && (
-            <Card className="p-4">
-              <h3 className="text-sm font-bold text-[#002443] mb-3">Distribuição das Taxas MDR Esperadas</h3>
-              <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={comparisonData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis dataKey="name" tick={{ fontSize: 10 }} />
-                  <YAxis tick={{ fontSize: 11 }} unit="%" />
-                  <Tooltip formatter={(v) => `${v}%`} />
-                  <Legend />
-                  <Bar dataKey="min" fill="#94a3b8" name="Mínimo" radius={[2, 2, 0, 0]} />
-                  <Bar dataKey="mediana" fill="#2bc196" name="Mediana" radius={[2, 2, 0, 0]} />
-                  <Bar dataKey="max" fill="#002443" name="Máximo" radius={[2, 2, 0, 0]} />
+            <ChartCard title="Distribuição das Taxas MDR Esperadas">
+              <ResponsiveContainer width="100%" height={280}>
+                <BarChart data={comparisonData} barCategoryGap="25%">
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#002443' }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} unit="%" axisLine={false} tickLine={false} />
+                  <Tooltip contentStyle={chartTooltipStyle} formatter={(v) => `${v}%`} />
+                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                  <Bar dataKey="min" fill="#94a3b8" name="Mínimo" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="mediana" fill="#2bc196" name="Mediana" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="max" fill="#002443" name="Máximo" radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
-            </Card>
+            </ChartCard>
           )}
         </>
       )}
