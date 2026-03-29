@@ -334,7 +334,11 @@ Deno.serve(async (req) => {
     }
 
     if (result.error) {
-      return Response.json({ error: result.error }, { status: result.code || 500 });
+      // Mensagem amigável para CNPJ não encontrado em nenhuma API
+      const friendlyError = (result.code === 400 || result.code === 404) 
+        ? 'CNPJ não encontrado. Verifique se o número está correto.'
+        : result.error;
+      return Response.json({ error: friendlyError }, { status: result.code || 500 });
     }
 
     const d = result.data;

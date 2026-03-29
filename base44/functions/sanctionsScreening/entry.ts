@@ -172,9 +172,16 @@ async function handlePep(cpf) {
   };
 }
 
-// Servidores - Busca por nome para verificação PEP complementar
-async function handleServidores(nome) {
-  const data = await fetchPortal('/api-de-dados/servidores', { nome: nome, pagina: 1 });
+// Servidores - Busca por CPF para verificação PEP complementar
+// NOTA: A API de servidores do Portal da Transparência exige CPF ou código de órgão.
+// Busca por nome sozinho retorna erro 400.
+async function handleServidores(nome, cpf) {
+  // Se não tiver CPF, não conseguimos buscar na API de servidores
+  if (!cpf || cpf.replace(/\D/g, '').length < 11) {
+    return { nome, found: false, skipped: true, reason: 'CPF necessário para busca de servidores' };
+  }
+  const cleanCpf = cpf.replace(/\D/g, '');
+  const data = await fetchPortal('/api-de-dados/servidores', { cpf: cleanCpf, pagina: 1 });
   
   if (data.skipped || data.error) return { nome, found: false, ...data };
   
@@ -228,11 +235,11 @@ async function handleScreenCnpj(cnpj) {
 }
 
 // Screening completo por nome (PEP + Servidores + verificação país sancionado)
-async function handleScreenNome(nome, pais) {
+async function handleScreenNome(nome, pais, cpf) {
   const [pepCheck, servidoresCheck] = await Promise.all([
     // PEP check requires CPF, so we skip if not available
-    Promise.resolve({ skipped: true, reason: 'Requer CPF para busca PEP' }),
-    handleServidores(nome)
+    cpf ? handlePep(cpf) : Promise.resolve({ skipped: true, reason: 'Requer CPF para busca PEP' }),
+    handleServidores(nome, cpf)
   ]);
   
   const flags = [];
@@ -315,8 +322,8 @@ async function handleFullScreening(cnpj, qsa) {
         }
       }
       
-      // Check servidores by name
-      const servidores = await handleServidores(nome);
+      // Check servidores by CPF
+      const servidores = await handleServidores(nome, cpf);
       socioResult.servidores = servidores;
       if (servidores.flag && !socioResult.pep?.isPep) {
         results.consolidado.hasFlags = true;
@@ -374,7 +381,7 @@ Deno.serve(async (req) => {
         return Response.json(await handleScreenCnpj(body.cnpj));
       
       case 'screenNome':
-        return Response.json(await handleScreenNome(body.nome, body.pais));
+        return Response.json(await handleScreenNome(body.nome, body.pais, body.cpf));
       
       case 'fullScreening':
         return Response.json(await handleFullScreening(body.cnpj, body.qsa || []));
