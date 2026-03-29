@@ -92,6 +92,14 @@ const MODEL_CONFIG = {
     badgeColor: 'bg-amber-100 text-amber-700',
     cafRedirectUrl: 'https://cadastro.io/c584e022b7936e44b8bc5acdd3a7945e',
   },
+  ComplianceEducacaoV4: {
+    storageKey: 'compliance_data_educacao_v4',
+    documentUploadPage: 'DocumentUploadFull',
+    flowType: 'full_kyc',
+    badgeLabel: 'EDUCAÇÃO v4',
+    badgeColor: 'bg-sky-100 text-sky-700',
+    cafRedirectUrl: 'https://cadastro.io/c584e022b7936e44b8bc5acdd3a7945e',
+  },
 };
 
 export default function ComplianceDinamico() {

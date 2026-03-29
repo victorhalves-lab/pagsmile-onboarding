@@ -60,6 +60,7 @@ export default function LinksCompliance() {
     { key: 'PLATAFORMA_VERTICAL_V4', label: 'Plataforma Vertical v4', desc: '52 perguntas em 9 blocos. Verticais de nicho (food, saúde, eventos). Pré-preenchimento Lead v5.', icon: Briefcase, color: '#7c3aed', url: `${base}${createPageUrl('ComplianceDinamico')}?model=CompliancePlataformaVerticalV4` },
     { key: 'ECOMMERCE_V4', label: 'E-commerce v4', desc: '44 perguntas em 8 blocos. Foco em produtos, logística e entrega. Pré-preenchimento Lead v5.', icon: ShoppingCart, color: '#e11d48', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceEcommerceV4` },
     { key: 'INFOPRODUTOS_V4', label: 'Infoprodutos v4', desc: '56 perguntas em 11 blocos. Foco em produto digital, afiliados e práticas de vendas. Pré-preenchimento Lead v5.', icon: BookOpen, color: '#d97706', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceInfoprodutosV4` },
+    { key: 'EDUCACAO_V4', label: 'Educação v4', desc: '37 perguntas em 8 blocos. Foco em reconhecimento MEC, modalidade de ensino e perfil de alunos. Pré-preenchimento Lead v5.', icon: BookOpen, color: '#0284c7', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceEducacaoV4` },
   ];
 
   const quickLinksByType = [
