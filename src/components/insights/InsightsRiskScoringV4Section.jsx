@@ -138,8 +138,8 @@ export default function InsightsRiskScoringV4Section({ complianceScores, cases }
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
         <Shield className="w-12 h-12 text-[#002443]/20 mb-4" />
-        <p className="text-sm font-semibold text-[#002443]/50">Nenhum score v4 encontrado</p>
-        <p className="text-xs text-[#002443]/30 mt-1">Casos processados com o motor v4 aparecerão aqui</p>
+        <p className="text-sm font-semibold text-[#002443]/50">Nenhum score encontrado</p>
+        <p className="text-xs text-[#002443]/30 mt-1">Casos processados com o motor de risco aparecerão aqui</p>
       </div>
     );
   }
@@ -148,7 +148,7 @@ export default function InsightsRiskScoringV4Section({ complianceScores, cases }
     <div className="space-y-6">
       {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        <StatCard label="Total Scores v4" value={stats.total} icon={Shield} color="#002443" />
+        <StatCard label="Total Scores" value={stats.total} icon={Shield} color="#002443" />
         <StatCard label="Score Médio" value={stats.avgScore} suffix="/1000" icon={Gauge} color={stats.avgScore < 300 ? '#22c55e' : stats.avgScore < 600 ? '#eab308' : '#ef4444'} />
         <StatCard label="Rolling Reserve Médio" value={`${stats.avgRR}%`} icon={Lock} color="#f97316" />
         <StatCard label="Decisão Automática" value={stats.autoCount} suffix={`/${stats.total}`} icon={TrendingUp} color="#2bc196" />

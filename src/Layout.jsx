@@ -122,7 +122,7 @@ export default function Layout({ children, currentPageName }) {
         { label: t('menu.document_management'), path: 'GestaoDocumentos', icon: FileText },
         { label: t('menu.revalidation'), path: 'GestaoRevalidacao', icon: History },
         { label: t('menu.subaccount_links'), path: 'GerenciarSubsellerLinks', icon: Users },
-        { label: 'Risk Scoring v4', path: 'RiskScoringV4', icon: Shield },
+        { label: 'Risk Scoring', path: 'RiskScoringV4', icon: Shield },
       ]
     },
     {
