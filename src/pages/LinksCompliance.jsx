@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   Link as LinkIcon, Copy, Check, ExternalLink, RefreshCw,
-  Shield, Zap, ShoppingCart, Cloud, CreditCard, Globe, Briefcase, BookOpen,
+  Shield, Zap, ShoppingCart, Cloud, CreditCard, Globe, Briefcase, BookOpen, Store,
   TrendingUp, MousePointer, FileCheck, Loader2, Trash2,
   BarChart3, ChevronDown, ChevronUp, Plus
 } from 'lucide-react';
@@ -62,6 +62,7 @@ export default function LinksCompliance() {
     { key: 'INFOPRODUTOS_V4', label: 'Infoprodutos v4', desc: '56 perguntas em 11 blocos. Foco em produto digital, afiliados e práticas de vendas. Pré-preenchimento Lead v5.', icon: BookOpen, color: '#d97706', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceInfoprodutosV4` },
     { key: 'EDUCACAO_V4', label: 'Educação v4', desc: '37 perguntas em 8 blocos. Foco em reconhecimento MEC, modalidade de ensino e perfil de alunos. Pré-preenchimento Lead v5.', icon: BookOpen, color: '#0284c7', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceEducacaoV4` },
     { key: 'SAAS_V4', label: 'SaaS v4', desc: '40 perguntas em 9 blocos. Foco em modelo de negócio, recorrência, segurança de dados e triagem fintech. Pré-preenchimento Lead v5.', icon: Cloud, color: '#0891b2', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceSaaSV4` },
+    { key: 'MERCHANT_LINK_V4', label: 'Merchant Link Pagamento v4', desc: '41 perguntas em 9 blocos. Foco em micro-merchants (MEI/SLU), canais social, entrega presencial e triagem de reclassificação. Pré-preenchimento Lead v5.', icon: Store, color: '#16a34a', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceMerchantLinkV4` },
   ];
 
   const quickLinksByType = [

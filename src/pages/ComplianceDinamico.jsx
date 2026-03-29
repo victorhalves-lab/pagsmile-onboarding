@@ -108,6 +108,14 @@ const MODEL_CONFIG = {
     badgeColor: 'bg-cyan-100 text-cyan-700',
     cafRedirectUrl: 'https://cadastro.io/c584e022b7936e44b8bc5acdd3a7945e',
   },
+  ComplianceMerchantLinkV4: {
+    storageKey: 'compliance_data_merchant_link_v4',
+    documentUploadPage: 'DocumentUploadFull',
+    flowType: 'full_kyc',
+    badgeLabel: 'MERCHANT LINK v4',
+    badgeColor: 'bg-green-100 text-green-700',
+    cafRedirectUrl: 'https://cadastro.io/c584e022b7936e44b8bc5acdd3a7945e',
+  },
 };
 
 export default function ComplianceDinamico() {
