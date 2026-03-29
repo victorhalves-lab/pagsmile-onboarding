@@ -327,7 +327,38 @@ Deno.serve(async (req) => {
     const cases = await base44.asServiceRole.entities.OnboardingCase.list('-created_date', 1000);
     const existingScores = await base44.asServiceRole.entities.ComplianceScore.list('-created_date', 1000);
     const scoresByCase = {};
-    existingScores.forEach(s => { scoresByCase[s.onboarding_case_id] = s; });
+    const duplicatesToDelete = [];
+    
+    // Deduplicate: keep only the most recent score per case, delete extras
+    existingScores.forEach(s => {
+      const caseId = s.onboarding_case_id;
+      if (!caseId) return;
+      if (scoresByCase[caseId]) {
+        // Prefer the one with score_final set (v4 engine), otherwise most recent
+        const existing = scoresByCase[caseId];
+        const existingHasV4 = existing.score_final != null && existing.score_variaveis != null;
+        const newHasV4 = s.score_final != null && s.score_variaveis != null;
+        if (newHasV4 && !existingHasV4) {
+          duplicatesToDelete.push(existing.id);
+          scoresByCase[caseId] = s;
+        } else {
+          duplicatesToDelete.push(s.id);
+        }
+      } else {
+        scoresByCase[caseId] = s;
+      }
+    });
+    
+    // Delete duplicates
+    let duplicatesDeleted = 0;
+    if (!dryRun) {
+      for (const dupId of duplicatesToDelete) {
+        try {
+          await base44.asServiceRole.entities.ComplianceScore.delete(dupId);
+          duplicatesDeleted++;
+        } catch (e) { /* ignore delete errors */ }
+      }
+    }
     const responses = await base44.asServiceRole.entities.QuestionnaireResponse.list('-created_date', 5000);
     const responsesByCase = {};
     responses.forEach(r => {
@@ -351,27 +382,12 @@ Deno.serve(async (req) => {
           : result.subfaixa.auto ? (result.condicoes.length > 0 ? 'Aprovado com Condições' : 'Aprovado') 
           : 'Revisão Manual';
 
-        // Preserve SENTINEL qualitative fields that don't conflict with v4 deterministic engine
-        const existingQualitative = existingScore ? {
-          analise_completa_ia: existingScore.analise_completa_ia,
-          sumario_executivo: existingScore.sumario_executivo,
-          pontos_positivos: existingScore.pontos_positivos,
-          pontos_atencao: existingScore.pontos_atencao,
-          red_flags: existingScore.red_flags,
-          parecer_final: existingScore.parecer_final,
-          perguntas_sugeridas: existingScore.perguntas_sugeridas,
-          documentos_adicionais_sugeridos: existingScore.documentos_adicionais_sugeridos,
-          recomendacoes_revisao_manual: existingScore.recomendacoes_revisao_manual,
-          nivel_confianca_ia: existingScore.nivel_confianca_ia,
-          versao_agente: existingScore.versao_agente,
-        } : {};
-
         const scoreData = {
           onboarding_case_id: caseId,
           framework_version: 'v4.0',
           segmento,
           is_pix: result.isPix,
-          // ── DETERMINISTIC FIELDS (v4 engine is AUTHORITATIVE) ──
+          // ── ALL DETERMINISTIC FIELDS (v4 engine is the SINGLE SOURCE OF TRUTH) ──
           score_base_segmento: result.c1,
           score_variaveis: result.c2,
           score_enriquecimento: result.c3,
@@ -387,10 +403,24 @@ Deno.serve(async (req) => {
           variaveis_negativas: result.varsNegativas,
           condicoes_automaticas: result.condicoes,
           recomendacao_final: recomendacao,
-          // ── PRESERVE SENTINEL qualitative analysis ──
-          ...existingQualitative,
+          // ── CLEAR legacy SENTINEL fields that could conflict with v4 decision ──
+          // These prevent the old SENTINEL qualitative data from overriding v4 decisions
+          classificacao_questionario: null,
+          classificacao_geral: null,
+          classificacao_validacao_externa: null,
+          score_questionario: null,
+          score_geral_composto: null,
+          bonus_consistencia: null,
         };
 
+        // Map v4 recomendacao to OnboardingCase status
+        const caseStatusMap = {
+          'Aprovado': 'Aprovado',
+          'Aprovado com Condições': 'Aprovado',
+          'Revisão Manual': 'Manual',
+          'Recusado': 'Recusado',
+        };
+        
         const caseUpdate = {
           riskScoreV4: result.scoreFinal,
           subfaixa: result.subfaixa.id,
@@ -399,6 +429,9 @@ Deno.serve(async (req) => {
           monitoramentoNivel: result.subfaixa.mon,
           bloqueiosAtivos: result.bloqueios,
           condicoesAutomaticas: result.condicoes,
+          // Sync OnboardingCase status with v4 decision
+          status: caseStatusMap[recomendacao] || 'Manual',
+          iaDecision: recomendacao,
         };
 
         if (!dryRun) {
@@ -433,7 +466,7 @@ Deno.serve(async (req) => {
 
     return Response.json({
       success: true, dryRun,
-      summary: { totalCases: cases.length, processed, scoresUpdated: updated, scoresCreated: created, errors },
+      summary: { totalCases: cases.length, processed, scoresUpdated: updated, scoresCreated: created, errors, duplicatesDeleted, duplicatesFound: duplicatesToDelete.length },
       results,
     });
   } catch (error) {
