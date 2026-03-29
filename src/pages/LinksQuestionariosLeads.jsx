@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Copy, ExternalLink, Link as LinkIcon, Plus, Check, Briefcase, Zap, Loader2, ArrowRight, UserPlus, Sparkles } from 'lucide-react';
+import { Copy, ExternalLink, Link as LinkIcon, Plus, Check, Briefcase, Zap, Loader2, ArrowRight, UserPlus, Sparkles, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -23,6 +23,7 @@ export default function LinksQuestionariosLeads() {
   const genericLinks = {
     LEAD: `${window.location.origin}${createPageUrl('LeadQuestionnaire')}`,
     LEAD_V2: `${window.location.origin}${createPageUrl('LeadQuestionnaire')}?templateId=69c3b5af17040531b06c5c16`,
+    LEAD_V3: `${window.location.origin}${createPageUrl('LeadQuestionnaire')}?templateId=69c8b3a45e38d14f0a741f63`,
     LEAD_SIMPLIFICADO: `${window.location.origin}${createPageUrl('QuestionarioSimplificadoPublico')}`,
     LEAD_PIX: `${window.location.origin}${createPageUrl('LeadQuestionnairePix')}`,
   };
@@ -103,6 +104,64 @@ export default function LinksQuestionariosLeads() {
               basePage="LeadQuestionnaire"
               baseParams="templateId=69c3b5af17040531b06c5c16"
               icon={Sparkles}
+            />
+          </CardFooter>
+        </Card>
+
+        {/* Card Lead v3.0 — Nova Taxonomia */}
+        <Card className="rounded-2xl border border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow overflow-hidden ring-1 ring-amber-400/20">
+          <div className="h-1.5 bg-gradient-to-r from-amber-400 via-[#2bc196] to-amber-400" />
+          <CardHeader className="pt-5">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-amber-400/10">
+                  <Star className="w-5 h-5 text-amber-500" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <CardTitle className="text-base font-bold text-[#002443]">Lead Completo v3.0</CardTitle>
+                    <Badge className="bg-amber-400/10 text-amber-600 border-0 text-[10px]">NOVO</Badge>
+                    <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0 text-[10px]">{t('lql.autocomplete')}</Badge>
+                  </div>
+                  <CardDescription className="text-[#282828]/50 text-xs mt-0.5">Nova taxonomia de modelos de negócio — 11 opções detalhadas</CardDescription>
+                </div>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.LEAD_V3, '_blank')} className="border-[#002443]/10 text-[#002443] hover:bg-[#002443]/5 rounded-lg">
+                <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
+                {t('lql.view')}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40">{t('lql.default_link')}</Label>
+              <div className="flex gap-2">
+                <Input readOnly value={genericLinks.LEAD_V3} className="font-mono text-xs bg-[#f4f4f4] border-[#002443]/5 rounded-lg" />
+                <Button 
+                  onClick={() => handleCopy(genericLinks.LEAD_V3, 'lead-v3')}
+                  className={`rounded-lg ${copied === 'lead-v3' ? 'bg-[#2bc196]' : 'bg-[#002443] hover:bg-[#002443]/90'}`}
+                >
+                  {copied === 'lead-v3' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                </Button>
+              </div>
+            </div>
+            
+            <div className="bg-amber-50 p-4 rounded-xl text-sm text-[#002443]/80 border border-amber-200/30">
+              <p className="font-semibold text-[#002443] text-xs mb-2">Novidades da v3.0:</p>
+              <ul className="list-disc pl-4 space-y-1 text-xs text-[#282828]/60">
+                <li>11 modelos de negócio com descrições detalhadas (Gateway, Marketplace, Plataforma Vertical, E-commerce, SaaS, etc.)</li>
+                <li>Autocomplete de CNPJ, validação de site e cálculo automático de transações</li>
+                <li>Mesmas 59 perguntas da v2, com taxonomia refinada na 1ª pergunta</li>
+              </ul>
+            </div>
+          </CardContent>
+          <CardFooter>
+            <LinkGenerator 
+              type="LEAD_QUESTIONNAIRE" 
+              label="Gerar Link Rastreável" 
+              basePage="LeadQuestionnaire"
+              baseParams="templateId=69c8b3a45e38d14f0a741f63"
+              icon={Star}
             />
           </CardFooter>
         </Card>
