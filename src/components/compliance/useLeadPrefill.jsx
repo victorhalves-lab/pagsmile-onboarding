@@ -87,17 +87,58 @@ function buildPrefillMap(lead, leadQuestions) {
     add('tpv mensal estimado', lead.tpvMensal, 'Lead.tpvMensal');
     add('tpv mensal estimado (r$)', lead.tpvMensal, 'Lead.tpvMensal');
     add('volume transacional mensal estimado (r$)', lead.tpvMensal, 'Lead.tpvMensal');
+    add('volume transacional mensal esperado (r$)', lead.tpvMensal, 'Lead.tpvMensal');
   }
   if (lead.ticketMedio) {
     add('ticket medio', lead.ticketMedio, 'Lead.ticketMedio');
     add('ticket medio (r$)', lead.ticketMedio, 'Lead.ticketMedio');
     add('ticket medio estimado (r$)', lead.ticketMedio, 'Lead.ticketMedio');
+    add('ticket medio esperado (r$)', lead.ticketMedio, 'Lead.ticketMedio');
   }
   if (lead.transacoesMes) {
     add('quantidade de transacoes por mes', lead.transacoesMes, 'Lead.transacoesMes');
     add('transacoes por mes estimadas', lead.transacoesMes, 'Lead.transacoesMes');
+    add('quantidade de transacoes mensais esperada', lead.transacoesMes, 'Lead.transacoesMes');
   }
   add('expectativa de crescimento', lead.expectativaCrescimento, 'Lead.expectativaCrescimento');
+
+  // =====================================================
+  // 2b. CAMPOS DO LEAD v5 (questionário Pagsmile)
+  //     Campos do questionnaireData com chaves diretas
+  // =====================================================
+  if (qd.descricaoNegocio) {
+    add('breve descricao do negocio', qd.descricaoNegocio, 'Lead v5 descricaoNegocio');
+    add('descricao da atividade principal', qd.descricaoNegocio, 'Lead v5 descricaoNegocio');
+  }
+  if (qd.presencaDigital) {
+    add('url do website/app', qd.presencaDigital, 'Lead v5 presencaDigital');
+    add('site da empresa', qd.presencaDigital, 'Lead v5 presencaDigital');
+  }
+  // E-mail e telefone do Lead v5
+  if (qd.email) {
+    add('e-mail comercial', qd.email, 'Lead v5 email');
+    add('e-mail de contato', qd.email, 'Lead v5 email');
+  }
+  if (qd.phone) {
+    add('telefone comercial', qd.phone, 'Lead v5 phone');
+    add('telefone de contato', qd.phone, 'Lead v5 phone');
+  }
+  // Endereço do Lead v5
+  if (qd.enderecoCep) {
+    add('cep', qd.enderecoCep, 'Lead v5 endereco');
+  }
+  if (qd.enderecoLogradouro) add('logradouro', qd.enderecoLogradouro, 'Lead v5 endereco');
+  if (qd.enderecoNumero) add('numero', qd.enderecoNumero, 'Lead v5 endereco');
+  if (qd.enderecoComplemento) add('complemento', qd.enderecoComplemento, 'Lead v5 endereco');
+  if (qd.enderecoBairro) add('bairro', qd.enderecoBairro, 'Lead v5 endereco');
+  if (qd.enderecoMunicipio) {
+    add('cidade', qd.enderecoMunicipio, 'Lead v5 endereco');
+    add('municipio', qd.enderecoMunicipio, 'Lead v5 endereco');
+  }
+  if (qd.enderecoUf) {
+    add('uf', qd.enderecoUf, 'Lead v5 endereco');
+    add('estado', qd.enderecoUf, 'Lead v5 endereco');
+  }
 
   // =====================================================
   // 2. DADOS ENRIQUECIDOS DO CNPJ (BrasilAPI)
@@ -316,6 +357,7 @@ export function useLeadPrefill(complianceQuestions) {
       localStorage.removeItem('compliance_data_merchant_v2');
       localStorage.removeItem('compliance_data_gateway_v2');
       localStorage.removeItem('compliance_data_marketplace_v2');
+      localStorage.removeItem('compliance_data_gateway_v4');
       localStorage.removeItem('compliance_data_pix');
       // Salvar o novo leadId como referência
       localStorage.setItem('lead_id_for_compliance', leadIdFromUrl);

@@ -54,6 +54,10 @@ export default function LinksCompliance() {
     { key: 'MARKETPLACE_V2', label: 'Marketplace v2.0', desc: t('lc.marketplace_v2_desc'), icon: ShoppingCart, color: '#36706c', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceMarketplaceAutocomplete` },
   ];
 
+  const quickLinksV4 = [
+    { key: 'GATEWAY_V4', label: 'Gateway v4', desc: '67 perguntas em 12 blocos. Pré-preenchimento automático do Lead v5. Cobertura regulatória ~98%.', icon: Globe, color: '#4f46e5', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceGatewayV4` },
+  ];
+
   const quickLinksByType = [
     { key: 'GENERIC', label: 'Genérico', desc: t('lc.generic_desc'), icon: Globe, color: '#002443', url: `${base}${createPageUrl('ComplianceOnboardingStart')}` },
     { key: 'PIX', label: 'Pix', desc: t('lc.pix_desc'), icon: CreditCard, color: '#2bc196', url: `${base}${createPageUrl('CompliancePixOnly')}` },
@@ -169,6 +173,21 @@ export default function LinksCompliance() {
       {/* Links Rápidos */}
       {activeTab === 'links' && (
         <div className="space-y-6">
+          {/* v4.0 Por Segmento — Com pré-preenchimento Lead v5 */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-indigo-100 flex items-center justify-center"><Shield className="w-4 h-4 text-indigo-600" /></div>
+              <div>
+                <h2 className="text-base font-bold text-[#002443]">Por Segmento v4 — Pré-preenchimento Lead</h2>
+                <p className="text-xs text-[#002443]/40">Questionários específicos por segmento com dados pré-preenchidos do questionário de lead</p>
+              </div>
+              <Badge className="bg-indigo-100 text-indigo-700 border-0 text-[10px] ml-2">NOVO</Badge>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {quickLinksV4.map(item => <QuickLinkCard key={item.key} item={item} />)}
+            </div>
+          </div>
+
           {/* v2.0 Autocomplete */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
