@@ -60,6 +60,14 @@ const MODEL_CONFIG = {
     badgeColor: 'bg-indigo-100 text-indigo-700',
     cafRedirectUrl: 'https://cadastro.io/9b998e4d45055dac959680cf3dcfc1c9',
   },
+  ComplianceMarketplaceV4: {
+    storageKey: 'compliance_data_marketplace_v4',
+    documentUploadPage: 'DocumentUploadFull',
+    flowType: 'full_kyc',
+    badgeLabel: 'MARKETPLACE v4',
+    badgeColor: 'bg-amber-100 text-amber-700',
+    cafRedirectUrl: 'https://cadastro.io/119c66a9c7f1e2618b20b3a41f656d3b',
+  },
 };
 
 export default function ComplianceDinamico() {
