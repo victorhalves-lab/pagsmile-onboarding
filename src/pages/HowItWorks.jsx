@@ -31,6 +31,8 @@ import SentinelDeepDiveSection from '../components/howitworks/SentinelDeepDiveSe
 import NotificacoesAutomacoesSection from '../components/howitworks/NotificacoesAutomacoesSection';
 import PagsmileLeadV5Section from '../components/howitworks/PagsmileLeadV5Section';
 import ComplianceV4Section from '../components/howitworks/ComplianceV4Section';
+import LeadPixV4Section from '../components/howitworks/LeadPixV4Section';
+import RiskScoringV4Section from '../components/howitworks/RiskScoringV4Section';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function HowItWorks() {
@@ -57,17 +59,18 @@ export default function HowItWorks() {
           </div>
         )}
         <div className="flex flex-wrap gap-2 mt-4">
-          <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0">18 Seções</Badge>
-          <Badge className="bg-blue-50 text-blue-700 border-0">50+ Páginas</Badge>
+          <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0">20 Seções</Badge>
+          <Badge className="bg-blue-50 text-blue-700 border-0">55+ Páginas</Badge>
           <Badge className="bg-purple-50 text-purple-700 border-0">27+ Entidades</Badge>
           <Badge className="bg-orange-50 text-orange-700 border-0">10 Fluxogramas Microscópicos</Badge>
           <Badge className="bg-pink-50 text-pink-700 border-0">5 Jornadas End-to-End</Badge>
-          <Badge className="bg-red-50 text-red-700 border-0">3 IAs (SENTINEL, PRISCILA, Lead Qualifier)</Badge>
+          <Badge className="bg-red-50 text-red-700 border-0">3 IAs (SENTINEL, PRISCILA, Lead Qualifier) + Motor v4</Badge>
           <Badge className="bg-cyan-50 text-cyan-700 border-0">20 Abas de Analytics</Badge>
-          <Badge className="bg-amber-50 text-amber-700 border-0">5 Templates Lead + 10 Templates Compliance v4</Badge>
-          <Badge className="bg-emerald-50 text-emerald-700 border-0">30+ Backend Functions</Badge>
+          <Badge className="bg-amber-50 text-amber-700 border-0">6 Templates Lead + 10 Templates Compliance v4</Badge>
+          <Badge className="bg-emerald-50 text-emerald-700 border-0">35+ Backend Functions</Badge>
           <Badge className="bg-violet-50 text-violet-700 border-0">3 Tipos de Proposta + Versionamento</Badge>
-          <Badge className="bg-rose-50 text-rose-700 border-0">10 Segmentos + 16 Flags Silenciosas</Badge>
+          <Badge className="bg-rose-50 text-rose-700 border-0">13 Segmentos + 27 Flags Silenciosas</Badge>
+          <Badge className="bg-slate-100 text-slate-700 border-0">Risk Scoring v4: 60 Variáveis + 8 Subfaixas + 10 Bloqueios</Badge>
         </div>
       </div>
 
@@ -151,9 +154,16 @@ export default function HowItWorks() {
       </Section>
 
       {/* ═══════════════════════════════════════════════════════ */}
-      {/* 5.6. QUESTIONÁRIOS DE LEADS ANTERIORES */}
+      {/* 5.6. QUESTIONÁRIO LEAD PIX v4.0 */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="questionarios-leads" title="5.6. Questionários de Leads — Outros 4 Templates" icon={Inbox} badge="v2.0 + PIX + Simplificado + Reunião" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="lead-pix-v4" title="5.6. Questionário Lead PIX v4.0 — Qualificação PIX Avançada" icon={Zap} badge="25 perguntas + 11 flags + Score 0-100" expandedSections={expandedSections} toggleSection={toggleSection}>
+        <LeadPixV4Section />
+      </Section>
+
+      {/* ═══════════════════════════════════════════════════════ */}
+      {/* 5.7. QUESTIONÁRIOS DE LEADS ANTERIORES */}
+      {/* ═══════════════════════════════════════════════════════ */}
+      <Section id="questionarios-leads" title="5.7. Questionários de Leads — Outros 4 Templates" icon={Inbox} badge="v2.0 + PIX + Simplificado + Reunião" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="space-y-4">
           <div className="bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl p-5 text-white">
             <h3 className="text-lg font-bold mb-2">4 Questionários de Leads Adicionais</h3>
@@ -195,9 +205,16 @@ export default function HowItWorks() {
       </Section>
 
       {/* ═══════════════════════════════════════════════════════ */}
-      {/* 6.5. COMPLIANCE LEGADO — 3 TEMPLATES v1/v2 */}
+      {/* 6.5. RISK SCORING v4.0 */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="questionarios" title="6.5. Compliance Legado — 3 Templates v1/v2 (Merchant, Gateway, Marketplace)" icon={ClipboardList} badge="305+ Perguntas" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="risk-scoring-v4" title="6.5. Risk Scoring v4.0 — Motor Determinístico (3 Camadas + Bloqueios + Subfaixas)" icon={Scale} badge="60 Variáveis · 10 Bloqueios · 8 Subfaixas" expandedSections={expandedSections} toggleSection={toggleSection}>
+        <RiskScoringV4Section />
+      </Section>
+
+      {/* ═══════════════════════════════════════════════════════ */}
+      {/* 6.6. COMPLIANCE LEGADO — 3 TEMPLATES v1/v2 */}
+      {/* ═══════════════════════════════════════════════════════ */}
+      <Section id="questionarios" title="6.6. Compliance Legado — 3 Templates v1/v2 (Merchant, Gateway, Marketplace)" icon={ClipboardList} badge="305+ Perguntas" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="space-y-4">
           <div className="bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl p-5 text-white">
             <h3 className="text-lg font-bold mb-2">3 Templates Hardcoded (v1/v2)</h3>
@@ -229,7 +246,7 @@ export default function HowItWorks() {
       {/* ═══════════════════════════════════════════════════════ */}
       {/* 7. IA SENTINEL — FUNCIONAMENTO MICROSCÓPICO */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="sentinel" title="7. IA SENTINEL — Funcionamento Microscópico das 3 Fases" icon={Brain} badge="Score 0-1000 em 3 Fases" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="sentinel" title="7. IA SENTINEL — Funcionamento Microscópico das 3 Fases + Motor v4" icon={Brain} badge="Score 0-1000 em 3 Fases + Motor Determinístico" expandedSections={expandedSections} toggleSection={toggleSection}>
         <SentinelDeepDiveSection />
       </Section>
 
@@ -375,7 +392,8 @@ export default function HowItWorks() {
       <Section id="backend" title="13. Backend Functions" icon={Server} badge="30+ Functions" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {[
-            { name: "analyzeOnboarding", desc: "SENTINEL: 3 fases de análise → ComplianceScore + Findings + QualityAssessments" },
+            { name: "calculateRiskScoreV4", desc: "Motor v4: 3 camadas + 60 variáveis + bloqueios → score 0-1000, subfaixa, RR, monitoramento" },
+            { name: "analyzeOnboarding", desc: "SENTINEL: 3 fases de análise → ComplianceScore + Findings + QualityAssessments (usa v4 como base)" },
             { name: "analyzePriscila", desc: "PRISCILA: score qualidade, risco, caminho de decisão para leads" },
             { name: "analyzeLeadQualifier", desc: "Lead Qualifier: classifica maturidade EXCELENTE → INSUFICIENTE" },
             { name: "analyzeLeadRiskAdvanced", desc: "Análise de risco avançada: iaRiskScore, iaDecision, sugestões" },
@@ -408,6 +426,8 @@ export default function HowItWorks() {
             { name: "generateSubsellerLink", desc: "Gerar link para subseller" },
             { name: "validateLeadFields", desc: "Validação assíncrona de campos do lead (e-mail, site, etc.)" },
             { name: "complianceValidations", desc: "Validações de campos de compliance (CPF, CNPJ, CEP)" },
+            { name: "enrichLeadData", desc: "Enriquecimento de dados do lead via BrasilAPI + validações" },
+            { name: "onLeadCreatedEnrich", desc: "Automação: enriquece lead automaticamente ao criar" },
           ].map((fn, i) => (
             <div key={i} className="p-3 bg-slate-50 rounded-lg border border-slate-200">
               <Badge className="bg-[#002443] text-white font-mono text-[10px] border-0 mb-1">{fn.name}</Badge>
@@ -471,10 +491,10 @@ export default function HowItWorks() {
       {/* Footer */}
       <div className="mt-8 p-6 bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl text-center">
         <p className="text-sm text-white/70">
-          Documentação Completa e Microscópica — Pagsmile v7.0 • {new Date().toLocaleDateString()}
+          Documentação Completa e Microscópica — Pagsmile v8.0 • {new Date().toLocaleDateString()}
         </p>
         <p className="text-xs text-white/40 mt-1">
-          18 Seções • 50+ Páginas • 27+ Entidades • 10 Fluxogramas • 5 Jornadas E2E • 3 IAs • 20 Abas Analytics • 5 Templates Lead (incl. Pagsmile v5 com 10 segmentos) • 10 Templates Compliance v4 + 3 Legados • 30+ Backend Functions • 16 Flags Silenciosas • Scoring 0-100
+          20 Seções • 55+ Páginas • 27+ Entidades • 10 Fluxogramas • 5 Jornadas E2E • 3 IAs + Motor v4 • 20 Abas Analytics • 6 Templates Lead (incl. Pagsmile v5 + PIX v4) • 10 Templates Compliance v4 + 3 Legados • 35+ Backend Functions • 27 Flags Silenciosas (16 Lead + 11 PIX) • Risk Scoring v4: 60 Variáveis + 8 Subfaixas + 10 Bloqueios
         </p>
       </div>
     </div>

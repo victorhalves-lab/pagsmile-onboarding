@@ -620,9 +620,41 @@ export default function SidebarPagesSection() {
         subAbas={[]}
       />
 
-      <PageDetail name="Questionário Lead PIX (LeadQuestionnairePix)" description="Questionário público simplificado focado em clientes interessados em PIX." access="Público"
+      <PageDetail name="Lead PIX v4 (LeadPixV4)" description="Questionário público avançado exclusivamente PIX com bifurcação Merchant/Intermediário, 25 perguntas, 11 flags silenciosas e scoring 0-100." access="Público"
         funcionalidades={[
-          "Formulário multi-step focado em dados para PIX",
+          "Bifurcação binária: Merchant Direto (recebe PIX próprio) vs Intermediário (split/repasse)",
+          "7 etapas: Tipo Negócio → Dados Empresa → Modelo PIX → Volume → Situação Atual → Serviços PIX → Fechamento",
+          "Autocomplete CNPJ via BrasilAPI (14+ campos preenchidos automaticamente)",
+          "11 flags silenciosas: ACCOUNT_TERMINATED, TPV_EXCEEDS_REVENUE, YOUNG_COMPANY, SPECIAL_SITUATION, PERSONAL_EMAIL, REGULATED_SECTOR, MEI_AS_INTERMEDIARY, HIGH_PIX_VOLUME_MEI, etc.",
+          "Cruzamento porte Receita Federal × TPV para detecção de inconsistências (MEI limite: R$6.750/mês)",
+          "Seleção de 9 serviços PIX: QR estático/dinâmico, PIX Cobrança, PIX Garantido, Split PIX, Conta Digital",
+          "Score 0-100 com bônus (TPV alto, capital social, e-mail corporativo, intermediário) e penalidades (conta encerrada, volume MEI)",
+          "Vinculação automática com Introducer via URL params",
+          "Dados fluem para Risk Scoring v4.0 (segmento pix_merchant ou pix_intermediario)",
+          "Gera protocolo PIX4-YYYY-NNNNN ao submeter"
+        ]}
+        subAbas={[]}
+      />
+
+      <PageDetail name="Questionário Pagsmile v5 (QuestionarioLeadsPagsmile)" description="Questionário público de leads com 10 segmentos granulares, 46 perguntas + 18 condicionais, 16 flags silenciosas e scoring automático 0-100." access="Público"
+        funcionalidades={[
+          "10 segmentos: Gateway, Marketplace, Plataforma Vertical, E-commerce, Dropshipping, Infoprodutos, SaaS, Educação, Link Pagamento, MPE",
+          "10 etapas: Segmento → Dados Empresa → Modelo Negócio (condicional) → Volumetria → Distribuição → Taxas Atuais → Compliance/Risco → Endereço → Porte → Fechamento",
+          "Autocomplete CNPJ via BrasilAPI (14+ campos), autocomplete CEP via ViaCEP",
+          "18 perguntas condicionais que só aparecem baseadas no segmento selecionado (ex: Gateway → licença BCB, split; Infoprodutos → afiliados, garantia)",
+          "SliderDistribution: split visual PIX/Crédito/Débito/Boleto com soma=100%",
+          "16 flags silenciosas calculadas automaticamente (PERSONAL_EMAIL, NO_WEBSITE, HIGH_CHARGEBACK, TERMINATED_BEFORE, etc.)",
+          "Score calculado em tempo real (0-100): base 40 + bônus (e-mail corporativo, cargo decisor, TPV alto, urgência) - penalidades (chargeback, encerramento, etc.)",
+          "Labels: ≥80 Muito Quente, ≥60 Quente, ≥40 Morno, <40 Frio",
+          "Dados alimentam Inteligência de Mercado e Risco Operacional nos Dados & Insights",
+          "Mapeamento segmento → template de compliance v4 correto via useLeadPrefill"
+        ]}
+        subAbas={[]}
+      />
+
+      <PageDetail name="Questionário Lead PIX antigo (LeadQuestionnairePix)" description="Questionário público simplificado focado em clientes interessados em PIX (versão anterior ao v4)." access="Público"
+        funcionalidades={[
+          "Formulário multi-step focado em dados para PIX (versão simplificada)",
           "Dados da empresa, volume PIX, expectativa de taxas",
           "Cria Lead com businessSubCategory e foco em PIX automaticamente"
         ]}
