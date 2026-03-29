@@ -76,6 +76,14 @@ const MODEL_CONFIG = {
     badgeColor: 'bg-violet-100 text-violet-700',
     cafRedirectUrl: 'https://cadastro.io/c584e022b7936e44b8bc5acdd3a7945e',
   },
+  ComplianceEcommerceV4: {
+    storageKey: 'compliance_data_ecommerce_v4',
+    documentUploadPage: 'DocumentUploadFull',
+    flowType: 'full_kyc',
+    badgeLabel: 'E-COMMERCE v4',
+    badgeColor: 'bg-rose-100 text-rose-700',
+    cafRedirectUrl: 'https://cadastro.io/c584e022b7936e44b8bc5acdd3a7945e',
+  },
 };
 
 export default function ComplianceDinamico() {
