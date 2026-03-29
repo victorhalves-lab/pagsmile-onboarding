@@ -3,9 +3,23 @@ import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { Loader2, ArrowRight } from 'lucide-react';
+import { Loader2, ArrowRight, Info } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
+
+const SEGMENT_DESCRIPTIONS = {
+  'Educação': 'Instituições de ensino, cursos online, plataformas EAD e edtechs.',
+  'SaaS': 'Empresas de software como serviço com cobrança recorrente (assinaturas).',
+  'Plataformas Verticais': 'Plataformas especializadas em um nicho específico, como saúde, imobiliário, jurídico, agro, fitness, etc. Atendem um setor vertical com soluções completas.',
+  'E-commerce': 'Lojas virtuais que vendem produtos físicos ou digitais diretamente ao consumidor.',
+  'Marketplace': 'Plataformas que conectam vendedores e compradores, intermediando transações entre múltiplos sellers.',
+  'MPE': 'Micro e Pequenas Empresas — negócios locais como lojas, salões, oficinas e prestadores de serviço.',
+  'Link de Pagamento': 'Empresas que vendem via links enviados por WhatsApp, e-mail ou redes sociais, sem checkout próprio.',
+  'Infoprodutos': 'Produtores e afiliados de cursos, mentorias, e-books e conteúdo digital.',
+  'Dropshipping': 'Lojas que vendem sem estoque próprio, com entrega feita diretamente pelo fornecedor.',
+  'Gateway': 'Empresas que processam pagamentos para outros merchants (sub-adquirência ou facilitação).',
+};
 import LandingHeader from '@/components/landing/LandingHeader';
 import ComplianceDisclaimer from '@/components/landing/ComplianceDisclaimer';
 import SegmentRatesTable from '@/components/landing/SegmentRatesTable';
@@ -78,21 +92,41 @@ export default function IntroducerLandingPage() {
           >
             <Tabs value={activeSegment} onValueChange={setActiveSegment}>
               <div className="sticky top-2 z-40 mb-4">
-                <TabsList className="bg-white/95 backdrop-blur-md border border-[#002443]/[0.06] p-1.5 h-auto flex-wrap gap-1 rounded-xl shadow-lg shadow-black/5">
-                  {segments.map((seg) => (
-                    <TabsTrigger
-                      key={seg.segmentName}
-                      value={seg.segmentName}
-                      className="text-sm font-bold data-[state=active]:bg-[#2bc196] data-[state=active]:text-white px-5 py-2.5 rounded-lg"
-                    >
-                      {seg.segmentName}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
+                <TooltipProvider delayDuration={200}>
+                  <TabsList className="bg-white/95 backdrop-blur-md border border-[#002443]/[0.06] p-1.5 h-auto flex-wrap gap-1 rounded-xl shadow-lg shadow-black/5">
+                    {segments.map((seg) => {
+                      const desc = SEGMENT_DESCRIPTIONS[seg.segmentName];
+                      return (
+                        <Tooltip key={seg.segmentName}>
+                          <TooltipTrigger asChild>
+                            <TabsTrigger
+                              value={seg.segmentName}
+                              className="text-sm font-bold data-[state=active]:bg-[#2bc196] data-[state=active]:text-white px-5 py-2.5 rounded-lg gap-1.5"
+                            >
+                              {seg.segmentName}
+                              {desc && <Info className="w-3 h-3 opacity-40" />}
+                            </TabsTrigger>
+                          </TooltipTrigger>
+                          {desc && (
+                            <TooltipContent side="bottom" className="max-w-[280px] text-xs leading-relaxed bg-[#002443] text-white border-[#002443] shadow-xl">
+                              <p>{desc}</p>
+                            </TooltipContent>
+                          )}
+                        </Tooltip>
+                      );
+                    })}
+                  </TabsList>
+                </TooltipProvider>
               </div>
 
               {segments.map((seg) => (
                 <TabsContent key={seg.segmentName} value={seg.segmentName}>
+                  {SEGMENT_DESCRIPTIONS[seg.segmentName] && (
+                    <div className="bg-[#002443]/[0.04] border border-[#002443]/[0.06] rounded-xl px-4 py-3 mb-4 flex items-start gap-2.5">
+                      <Info className="w-4 h-4 text-[#2bc196] mt-0.5 flex-shrink-0" />
+                      <p className="text-sm text-[#002443]/70">{SEGMENT_DESCRIPTIONS[seg.segmentName]}</p>
+                    </div>
+                  )}
                   <SegmentRatesTable segmentRates={seg} />
                 </TabsContent>
               ))}
