@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Copy, ExternalLink, Link as LinkIcon, Plus, Check, Briefcase, Zap, Loader2, ArrowRight, UserPlus, Sparkles, Star } from 'lucide-react';
+import { Copy, ExternalLink, Link as LinkIcon, Plus, Check, Briefcase, Zap, Loader2, ArrowRight, UserPlus, Sparkles, Star, Crown } from 'lucide-react';
 import { toast } from 'sonner';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -26,6 +26,7 @@ export default function LinksQuestionariosLeads() {
     LEAD_V3: `${window.location.origin}${createPageUrl('LeadQuestionnaire')}?templateId=69c8b3a45e38d14f0a741f63`,
     LEAD_SIMPLIFICADO: `${window.location.origin}${createPageUrl('QuestionarioSimplificadoPublico')}`,
     LEAD_PIX: `${window.location.origin}${createPageUrl('LeadQuestionnairePix')}`,
+    LEAD_PAGSMILE: `${window.location.origin}/QuestionarioLeadsPagsmile`,
   };
 
   const handleCopy = async (text, id) => {
@@ -51,6 +52,68 @@ export default function LinksQuestionariosLeads() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Card Questionário Leads Pagsmile v5.0 */}
+        <Card className="rounded-2xl border border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow overflow-hidden ring-2 ring-[#2bc196]/30 lg:col-span-2">
+          <div className="h-2 bg-gradient-to-r from-[#002443] via-[#2bc196] to-[#5cf7cf]" />
+          <CardHeader className="pt-5">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-gradient-to-br from-[#002443] to-[#2bc196] shadow-md">
+                  <Crown className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <CardTitle className="text-base font-bold text-[#002443]">Questionário de Leads Pagsmile</CardTitle>
+                    <Badge className="bg-[#002443] text-white border-0 text-[10px]">v5.0</Badge>
+                    <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0 text-[10px]">{t('lql.autocomplete')}</Badge>
+                    <Badge className="bg-amber-400/10 text-amber-600 border-0 text-[10px]">10 SEGMENTOS</Badge>
+                  </div>
+                  <CardDescription className="text-[#282828]/50 text-xs mt-0.5">
+                    45 perguntas + 18 condicionais dinâmicas por segmento + 16 flags silenciosas + Lead Score 0-100. UI 100% botões.
+                  </CardDescription>
+                </div>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.LEAD_PAGSMILE, '_blank')} className="border-[#002443]/10 text-[#002443] hover:bg-[#002443]/5 rounded-lg">
+                <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
+                {t('lql.view')}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40">{t('lql.default_link')}</Label>
+              <div className="flex gap-2">
+                <Input readOnly value={genericLinks.LEAD_PAGSMILE} className="font-mono text-xs bg-[#f4f4f4] border-[#002443]/5 rounded-lg" />
+                <Button 
+                  onClick={() => handleCopy(genericLinks.LEAD_PAGSMILE, 'lead-pagsmile')}
+                  className={`rounded-lg ${copied === 'lead-pagsmile' ? 'bg-[#2bc196]' : 'bg-[#002443] hover:bg-[#002443]/90'}`}
+                >
+                  {copied === 'lead-pagsmile' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                </Button>
+              </div>
+            </div>
+            
+            <div className="bg-gradient-to-r from-[#002443]/5 to-[#2bc196]/5 p-4 rounded-xl text-sm text-[#002443]/80 border border-[#002443]/5">
+              <p className="font-semibold text-[#002443] text-xs mb-2">Novidades v5.0:</p>
+              <ul className="list-disc pl-4 space-y-1 text-xs text-[#282828]/60">
+                <li>10 segmentos com descrições detalhadas (Gateway, Marketplace, Plat. Vertical, E-commerce, Dropshipping, Infoprodutos, SaaS, Educação, Link Pagamento, MPE)</li>
+                <li>Condicionais dinâmicas por segmento: licença BCB, take rate, churn, afiliados, vertical</li>
+                <li>Autocomplete CNPJ (3 APIs cascata), validação de site, e-mail e telefone</li>
+                <li>Sliders interativos para distribuição de meios de pagamento (soma = 100%)</li>
+                <li>16 flags silenciosas de risco + Lead Score automático 0-100</li>
+              </ul>
+            </div>
+          </CardContent>
+          <CardFooter>
+            <LinkGenerator 
+              type="LEAD_QUESTIONNAIRE" 
+              label="Gerar Link Rastreável" 
+              basePage="QuestionarioLeadsPagsmile"
+              icon={Crown}
+            />
+          </CardFooter>
+        </Card>
+
         {/* Card Lead v2.0 Autocomplete */}
         <Card className="rounded-2xl border border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow overflow-hidden ring-1 ring-[#2bc196]/20">
           <div className="h-1.5 bg-gradient-to-r from-[#2bc196] via-[#5cf7cf] to-[#2bc196]" />
