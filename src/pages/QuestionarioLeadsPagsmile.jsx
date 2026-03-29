@@ -231,8 +231,8 @@ export default function QuestionarioLeadsPagsmile() {
           alt="Pagsmile" 
           className="h-8 mx-auto mb-4 invert"
         />
-        <h1 className="text-2xl font-bold text-[#002443]">Questionário de Leads Pagsmile</h1>
-        <p className="text-sm text-[#002443]/50 mt-1">v5.0 — {STEPS.length} etapas</p>
+        <h1 className="text-2xl font-bold text-[#002443]">Questionário de Lead PagSmile</h1>
+        <p className="text-sm text-[#002443]/50 mt-1">{STEPS.length} etapas</p>
       </div>
 
       {/* Progress Bar */}
