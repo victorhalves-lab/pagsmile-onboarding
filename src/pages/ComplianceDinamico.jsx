@@ -149,6 +149,14 @@ const MODEL_CONFIG = {
     badgeColor: 'bg-indigo-100 text-indigo-700',
     cafRedirectUrl: 'https://cadastro.io/9b998e4d45055dac959680cf3dcfc1c9',
   },
+  subseller_v2: {
+    storageKey: 'compliance_data_subseller_v2',
+    documentUploadPage: 'DocumentUploadFull',
+    flowType: 'subseller',
+    badgeLabel: 'SUBSELLER',
+    badgeColor: 'bg-indigo-100 text-indigo-700',
+    cafRedirectUrl: 'https://cadastro.io/c584e022b7936e44b8bc5acdd3a7945e',
+  },
 };
 
 export default function ComplianceDinamico() {

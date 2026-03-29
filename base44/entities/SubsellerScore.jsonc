@@ -1,0 +1,145 @@
+{
+  "name": "SubsellerScore",
+  "type": "object",
+  "properties": {
+    "onboarding_case_id": {
+      "type": "string",
+      "description": "ID do OnboardingCase do subseller"
+    },
+    "parent_merchant_id": {
+      "type": "string",
+      "description": "ID do seller (merchant principal)"
+    },
+    "segmento": {
+      "type": "string",
+      "enum": [
+        "gateway",
+        "marketplace",
+        "plataforma_vertical",
+        "dropshipping",
+        "infoprodutos",
+        "ecommerce",
+        "link_pagamento",
+        "foodtech",
+        "saas",
+        "educacao"
+      ],
+      "description": "Segmento identificado do subseller"
+    },
+    "score_base_segmento": {
+      "type": "number",
+      "description": "Score base do segmento"
+    },
+    "score_variaveis": {
+      "type": "number",
+      "description": "Soma das vari\u00e1veis aplicadas"
+    },
+    "score_final": {
+      "type": "number",
+      "description": "Score final 0-1000"
+    },
+    "subfaixa": {
+      "type": "string",
+      "enum": [
+        "1A",
+        "1B",
+        "2A",
+        "2B",
+        "3A",
+        "3B",
+        "4",
+        "5"
+      ],
+      "description": "Subfaixa de decis\u00e3o"
+    },
+    "subfaixa_nome": {
+      "type": "string",
+      "description": "Nome da subfaixa"
+    },
+    "rolling_reserve_percent": {
+      "type": "number",
+      "default": 0,
+      "description": "Rolling Reserve aplicado"
+    },
+    "decisao_automatica": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se a decis\u00e3o foi autom\u00e1tica"
+    },
+    "recomendacao_final": {
+      "type": "string",
+      "enum": [
+        "Aprovado",
+        "Aprovado com Condi\u00e7\u00f5es",
+        "Revis\u00e3o Manual",
+        "Recusado"
+      ],
+      "description": "Recomenda\u00e7\u00e3o final"
+    },
+    "bloqueios_ativos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Bloqueios ativos"
+    },
+    "variaveis_aplicadas": {
+      "type": "object",
+      "description": "Detalhe de cada vari\u00e1vel aplicada"
+    },
+    "variaveis_positivas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "variaveis_negativas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "condicoes_automaticas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "monitoramento_nivel": {
+      "type": "string",
+      "enum": [
+        "PADRAO",
+        "REFOR\u00c7ADO_LEVE",
+        "REFOR\u00c7ADO",
+        "INTENSO",
+        "INTENSO_PLUS",
+        "MAXIMO"
+      ]
+    },
+    "pontos_positivos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "pontos_atencao": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "red_flags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "parecer_final": {
+      "type": "string",
+      "description": "Parecer conclusivo"
+    }
+  },
+  "required": [
+    "onboarding_case_id"
+  ]
+}

@@ -31,8 +31,12 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Merchant must be approved to generate subseller links' }, { status: 400 });
     }
 
-    // Buscar template de subseller
-    const templates = await base44.asServiceRole.entities.QuestionnaireTemplate.filter({ model: 'subseller', isActive: true });
+    // Buscar template de subseller v2
+    let templates = await base44.asServiceRole.entities.QuestionnaireTemplate.filter({ model: 'subseller_v2', isActive: true });
+    if (!templates.length) {
+      // Fallback to legacy
+      templates = await base44.asServiceRole.entities.QuestionnaireTemplate.filter({ model: 'subseller', isActive: true });
+    }
     const template = templates[0];
 
     if (!template) {

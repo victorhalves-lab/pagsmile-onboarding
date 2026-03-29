@@ -4,11 +4,12 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Download, RefreshCw, Shield, FileCheck, FileEdit } from 'lucide-react';
+import { Download, RefreshCw, Shield, FileCheck, FileEdit, Users } from 'lucide-react';
 import ComplianceStatsCards from '@/components/compliance/ComplianceStatsCards';
 import ComplianceCaseFilters from '@/components/compliance/ComplianceCaseFilters';
 import ComplianceCasesTable from '@/components/compliance/ComplianceCasesTable';
 import DraftsTab from '@/components/compliance/DraftsTab';
+import SubsellerCasesTab from '@/components/compliance/SubsellerCasesTab';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function QuestionariosRecebidos() {
@@ -240,6 +241,9 @@ export default function QuestionariosRecebidos() {
           <TabsTrigger value="drafts" className="rounded-lg data-[state=active]:bg-[#002443] data-[state=active]:text-white gap-2 px-4">
             <FileEdit className="w-4 h-4" /> {t('qr.drafts')}
           </TabsTrigger>
+          <TabsTrigger value="subsellers" className="rounded-lg data-[state=active]:bg-[#002443] data-[state=active]:text-white gap-2 px-4">
+            <Users className="w-4 h-4" /> Subsellers
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="received" className="space-y-6 mt-4">
@@ -280,6 +284,10 @@ export default function QuestionariosRecebidos() {
 
         <TabsContent value="drafts" className="mt-4">
           <DraftsTab />
+        </TabsContent>
+
+        <TabsContent value="subsellers" className="mt-4">
+          <SubsellerCasesTab />
         </TabsContent>
       </Tabs>
     </div>
