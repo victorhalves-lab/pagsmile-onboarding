@@ -39,6 +39,12 @@ const MODEL_CONFIG = {
     badgeLabel: 'MARKETPLACE',
     badgeColor: 'bg-amber-100 text-amber-700',
   },
+  subseller_v2: {
+    formDataStorageKey: 'compliance_data_subseller_v2',
+    documentsStorageKey: 'documents_subseller_v2',
+    badgeLabel: 'SUBSELLER',
+    badgeColor: 'bg-indigo-100 text-indigo-700',
+  },
 };
 
 export default function DocumentUploadFull() {
