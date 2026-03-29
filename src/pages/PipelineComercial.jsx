@@ -41,8 +41,7 @@ export default function PipelineComercial() {
     { id: 'proposta_enviada', name: t('pipeline_page.col_proposal_sent'), color: '#3B82F6', statuses: ['proposta_enviada'] },
     { id: 'proposta_aceita', name: t('pipeline_page.col_proposal_accepted'), color: '#8B5CF6', statuses: ['proposta_aceita'] },
     { id: 'compliance_kyc', name: t('pipeline_page.col_compliance'), color: '#10B981', statuses: ['kyc_iniciado', 'kyc_aprovado', 'kyc_revisao_manual'] },
-    { id: 'contrato_gerado', name: t('pipeline_page.col_contract'), color: '#059669', statuses: ['ativado'], specialRule: 'HAS_CONTRACT' },
-    { id: 'negocio_fechado', name: 'Negócio Fechado', color: '#047857', statuses: [], specialRule: 'DEAL_CLOSED' },
+    { id: 'negocio_fechado', name: '✅ Negócio Fechado', color: '#047857', statuses: ['ativado'], specialRule: 'DEAL_CLOSED' },
     { id: 'perdido', name: t('pipeline_page.col_lost'), color: '#EF4444', statuses: ['perdido', 'proposta_recusada'] },
   ];
 
@@ -77,28 +76,55 @@ export default function PipelineComercial() {
   });
 
   // Build enrichment maps: leadId -> has contract, leadId -> has proposal
-  // Multi-strategy matching: leadId, CNPJ, merchantId via OnboardingCase, clientName
+  // Multi-strategy matching with aggressive name/CNPJ matching
   const leadContractMap = useMemo(() => {
     const map = {};
     const normalizeCnpj = (v) => (v || '').replace(/[.\-\/\s]/g, '');
     const isValidCnpj = (v) => /^\d{11,14}$/.test(v);
-    const normalizeName = (v) => (v || '').toLowerCase().trim();
+    const normalizeName = (v) => (v || '').toLowerCase().trim().replace(/\s+/g, ' ');
 
-    // Build merchant CNPJ lookup
-    const merchantCnpjMap = {};
+    // Build merchant lookup maps
+    const merchantById = {};
+    const merchantCnpjMap = {}; // merchantId -> valid CNPJ
     merchants.forEach(m => {
+      merchantById[m.id] = m;
       const cnpj = normalizeCnpj(m.cpfCnpj);
       if (cnpj && isValidCnpj(cnpj)) merchantCnpjMap[m.id] = cnpj;
     });
 
-    // Build OnboardingCase -> merchantId map, and Lead -> OnboardingCase map
+    // Build OnboardingCase maps
     const caseMerchantMap = {}; // caseId -> merchantId
     onboardingCases.forEach(c => { if (c.merchantId) caseMerchantMap[c.id] = c.merchantId; });
 
-    // Build merchantId -> contract map (most reliable for contracts created from compliance flow)
+    // Build merchantId -> contract map
     const merchantToContract = {};
     contracts.forEach(c => {
       if (c.merchantId) merchantToContract[c.merchantId] = c;
+    });
+
+    // Build name-based indexes for contracts (clientName + merchant names)
+    const contractByName = {}; // normalized name -> contract
+    const contractByCnpj = {}; // normalized CNPJ -> contract
+    contracts.forEach(c => {
+      // Index by clientName
+      const cName = normalizeName(c.clientName);
+      if (cName && cName.length > 3) contractByName[cName] = c;
+      
+      // Index by merchant name/companyName
+      if (c.merchantId && merchantById[c.merchantId]) {
+        const m = merchantById[c.merchantId];
+        const mName = normalizeName(m.fullName);
+        const mCompany = normalizeName(m.companyName);
+        if (mName && mName.length > 3) contractByName[mName] = c;
+        if (mCompany && mCompany.length > 3) contractByName[mCompany] = c;
+      }
+      
+      // Index by valid CNPJ (from contract or merchant)
+      const cCnpj = normalizeCnpj(c.clientCnpj);
+      if (cCnpj && isValidCnpj(cCnpj)) contractByCnpj[cCnpj] = c;
+      if (c.merchantId && merchantCnpjMap[c.merchantId]) {
+        contractByCnpj[merchantCnpjMap[c.merchantId]] = c;
+      }
     });
 
     // Strategy 1: direct leadId linkage
@@ -118,31 +144,35 @@ export default function PipelineComercial() {
       }
     });
 
-    // Strategy 3: Match by CNPJ (only valid CNPJs)
-    const unleadedContracts = contracts.filter(c => !c.leadId);
-    const cnpjToContract = {};
-    const nameToContract = {};
-    unleadedContracts.forEach(c => {
-      const cnpj = normalizeCnpj(c.clientCnpj);
-      if (cnpj && isValidCnpj(cnpj)) cnpjToContract[cnpj] = c;
-      if (c.merchantId && merchantCnpjMap[c.merchantId]) {
-        cnpjToContract[merchantCnpjMap[c.merchantId]] = c;
-      }
-      const name = normalizeName(c.clientName);
-      if (name && name.length > 3) nameToContract[name] = c;
-    });
-
+    // Strategy 3: Match by valid CNPJ
     leads.forEach(l => {
       if (map[l.id]) return;
       const cnpj = normalizeCnpj(l.cpfCnpj);
-      if (cnpj && isValidCnpj(cnpj) && cnpjToContract[cnpj]) {
-        map[l.id] = cnpjToContract[cnpj];
+      if (cnpj && isValidCnpj(cnpj) && contractByCnpj[cnpj]) {
+        map[l.id] = contractByCnpj[cnpj];
         return;
       }
-      const name = normalizeName(l.fullName);
-      if (name && nameToContract[name]) { map[l.id] = nameToContract[name]; return; }
-      const company = normalizeName(l.companyName);
-      if (company && nameToContract[company]) { map[l.id] = nameToContract[company]; }
+    });
+
+    // Strategy 4: Match by name (fullName, companyName) - fuzzy contains
+    leads.forEach(l => {
+      if (map[l.id]) return;
+      const leadFullName = normalizeName(l.fullName);
+      const leadCompany = normalizeName(l.companyName);
+      
+      // Exact name match
+      if (leadFullName && contractByName[leadFullName]) { map[l.id] = contractByName[leadFullName]; return; }
+      if (leadCompany && contractByName[leadCompany]) { map[l.id] = contractByName[leadCompany]; return; }
+      
+      // Partial name match (lead name contains contract name or vice versa)
+      for (const [cName, contract] of Object.entries(contractByName)) {
+        if (leadFullName && (leadFullName.includes(cName) || cName.includes(leadFullName))) {
+          map[l.id] = contract; return;
+        }
+        if (leadCompany && (leadCompany.includes(cName) || cName.includes(leadCompany))) {
+          map[l.id] = contract; return;
+        }
+      }
     });
 
     return map;
@@ -230,10 +260,10 @@ export default function PipelineComercial() {
     }));
   }, [filteredLeads, leadContractMap, leadProposalMap]);
 
-  // Set of lead IDs that have contracts (for special column logic)
+  // Set of lead IDs that have contracts (ANY status including pre_generated)
   const leadsWithContract = useMemo(() => new Set(Object.keys(leadContractMap)), [leadContractMap]);
 
-  // Set of lead IDs that have accepted proposals
+  // Set of lead IDs that have accepted proposals (any version)
   const leadsWithAcceptedProposal = useMemo(() => {
     const set = new Set();
     proposals.forEach(p => {
@@ -242,39 +272,32 @@ export default function PipelineComercial() {
     return set;
   }, [proposals]);
 
-  // "Negócio Fechado" = lead com proposta aceita + contrato, OU status ativado
-  // "Contrato Gerado" = lead com contrato mas sem proposta aceita ainda (em processo)
+  // "Negócio Fechado" = lead com CONTRATO (qualquer status, inclui pre_generated)
+  //                    OU proposta aceita OU status ativado/proposta_aceita
   const dealClosedIds = useMemo(() => {
     const set = new Set();
     enrichedLeads.forEach(l => {
+      // Status ativado = always closed
       if (l.status === 'ativado') { set.add(l.id); return; }
-      if (leadsWithContract.has(l.id) && leadsWithAcceptedProposal.has(l.id)) { set.add(l.id); return; }
-      // If proposal is accepted and status is proposta_aceita, that IS a closed deal
-      if (l.status === 'proposta_aceita' && leadsWithAcceptedProposal.has(l.id)) { set.add(l.id); return; }
+      // Has ANY contract (pre_generated, under_review, ready, sent, signed) = closed
+      if (leadsWithContract.has(l.id)) { set.add(l.id); return; }
+      // Has accepted proposal = closed
+      if (leadsWithAcceptedProposal.has(l.id)) { set.add(l.id); return; }
+      // Status proposta_aceita = closed
+      if (l.status === 'proposta_aceita') { set.add(l.id); return; }
     });
     return set;
   }, [enrichedLeads, leadsWithContract, leadsWithAcceptedProposal]);
-
-  const contractOnlyIds = useMemo(() => {
-    const set = new Set();
-    enrichedLeads.forEach(l => {
-      if (dealClosedIds.has(l.id)) return;
-      if (leadsWithContract.has(l.id)) set.add(l.id);
-    });
-    return set;
-  }, [enrichedLeads, leadsWithContract, dealClosedIds]);
 
   // Group leads by column
   const columns = useMemo(() => {
     return COLUNAS.map(col => ({
       ...col,
       leads: enrichedLeads.filter(l => {
-        // "Negócio Fechado": proposta aceita (com ou sem contrato)
+        // "Negócio Fechado": has contract, accepted proposal, or ativado
         if (col.specialRule === 'DEAL_CLOSED') return dealClosedIds.has(l.id);
-        // "Contrato Gerado": has contract but not yet a closed deal
-        if (col.specialRule === 'HAS_CONTRACT') return contractOnlyIds.has(l.id);
-        // All other columns: skip leads in closed/contract columns
-        if (dealClosedIds.has(l.id) || contractOnlyIds.has(l.id)) return false;
+        // All other columns: skip leads already in closed column
+        if (dealClosedIds.has(l.id)) return false;
         if (!col.statuses.includes(l.status)) return false;
         if (col.questionnaireType === 'FULL') {
           const lt = l.onboardingLinkCode ? linkTypeMap[l.onboardingLinkCode] : 'LEAD_QUESTIONNAIRE';
@@ -283,7 +306,7 @@ export default function PipelineComercial() {
         return true;
       })
     }));
-  }, [enrichedLeads, linkTypeMap, dealClosedIds, contractOnlyIds]);
+  }, [enrichedLeads, linkTypeMap, dealClosedIds]);
 
   const onDragEnd = (result) => {
     if (!result.destination) return;
