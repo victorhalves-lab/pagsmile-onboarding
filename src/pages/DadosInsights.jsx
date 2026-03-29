@@ -18,6 +18,9 @@ import InsightsIntroducerSection from '@/components/insights/InsightsIntroducerS
 import InsightsDataHealthSection from '@/components/insights/InsightsDataHealthSection.jsx';
 import InsightsCommercialPerfSection from '@/components/insights/InsightsCommercialPerfSection.jsx';
 import InsightsPartnerSection from '@/components/insights/InsightsPartnerSection.jsx';
+import InsightsMarketIntelSection from '@/components/insights/InsightsMarketIntelSection.jsx';
+import InsightsRiskOperationalSection from '@/components/insights/InsightsRiskOperationalSection.jsx';
+import InsightsComplianceJourneySection from '@/components/insights/InsightsComplianceJourneySection.jsx';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 function buildTabGroups(t) {
@@ -26,6 +29,7 @@ function buildTabGroups(t) {
       label: t('di.grp_intelligence'),
       tabs: [
         { id: 'ai-insights', label: t('di.tab_ai'), icon: Sparkles },
+        { id: 'market-intel', label: 'Inteligência de Mercado', icon: Target },
       ],
     },
     {
@@ -53,7 +57,9 @@ function buildTabGroups(t) {
         { id: 'profiles', label: t('di.tab_profiles'), icon: Users },
         { id: 'operational', label: t('di.tab_operational'), icon: Building2 },
         { id: 'risk', label: t('di.tab_risk'), icon: ShieldAlert },
+        { id: 'risk-ops', label: 'Risco Operacional', icon: ShieldAlert },
         { id: 'compliance', label: t('di.tab_compliance'), icon: Target },
+        { id: 'compliance-journey', label: 'Jornada Compliance', icon: Activity },
         { id: 'data-health', label: t('di.tab_data_health'), icon: Database },
         ],
         },
@@ -107,8 +113,12 @@ export default function DadosInsights() {
     queryKey: ['insights-pix-proposals'],
     queryFn: () => base44.entities.PixProposal.list('-created_date', 500),
   });
+  const { data: complianceSessions = [], isLoading: loadingSessions } = useQuery({
+    queryKey: ['insights-compliance-sessions'],
+    queryFn: () => base44.entities.ComplianceSession.list('-created_date', 500),
+  });
 
-  const isLoading = loadingLeads || loadingProposals || loadingCases || loadingScores || loadingMerchants || loadingDocs || loadingResponses || loadingPartners || loadingPix;
+  const isLoading = loadingLeads || loadingProposals || loadingCases || loadingScores || loadingMerchants || loadingDocs || loadingResponses || loadingPartners || loadingPix || loadingSessions;
 
   if (isLoading) {
     return (
@@ -223,6 +233,7 @@ export default function DadosInsights() {
       {/* ═══ TAB CONTENT ═══ */}
       <div className="min-h-[400px]">
         {activeTab === 'ai-insights' && <InsightsAISection leads={leads} proposals={proposals} cases={cases} complianceScores={complianceScores} merchants={merchants} />}
+        {activeTab === 'market-intel' && <InsightsMarketIntelSection leads={leads} />}
         {activeTab === 'tpv' && <InsightsTPVSection leads={leads} />}
         {activeTab === 'benchmark' && <InsightsBenchmarkSection leads={leads} proposals={proposals} />}
         {activeTab === 'mix' && <InsightsMixSection leads={leads} />}
@@ -235,7 +246,9 @@ export default function DadosInsights() {
         {activeTab === 'operational' && <InsightsOperationalSection leads={leads} cases={cases} />}
         {activeTab === 'risk' && <InsightsRiskPortfolioSection leads={leads} complianceScores={complianceScores} cases={cases} />}
         {activeTab === 'introducers' && <InsightsIntroducerSection leads={leads} proposals={proposals} />}
+        {activeTab === 'risk-ops' && <InsightsRiskOperationalSection leads={leads} />}
         {activeTab === 'compliance' && <InsightsComplianceSection cases={cases} complianceScores={complianceScores} merchants={merchants} documents={documents} questionnaireResponses={questionnaireResponses} />}
+        {activeTab === 'compliance-journey' && <InsightsComplianceJourneySection sessions={complianceSessions} />}
         {activeTab === 'data-health' && <InsightsDataHealthSection leads={leads} />}
         {activeTab === 'partners' && <InsightsPartnerSection partners={partners} proposals={proposals} pixProposals={pixProposals} leads={leads} />}
       </div>
