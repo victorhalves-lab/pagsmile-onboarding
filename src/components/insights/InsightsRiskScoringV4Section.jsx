@@ -2,11 +2,12 @@ import React, { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Legend } from 'recharts';
-import { Shield, AlertTriangle, TrendingUp, Activity, Lock, Gauge, ListChecks, BarChart3 } from 'lucide-react';
+import { Shield, AlertTriangle, TrendingUp, Activity, Lock, Gauge, ListChecks, BarChart3, Users } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import StatCard from './StatCard';
 import RiskCasesTable from './RiskCasesTable';
 import RiskDecisionCharts from './RiskDecisionCharts';
+import RiskClientsList from './RiskClientsList';
 
 const SUBFAIXA_COLORS = {
   '1A': '#22c55e', '1B': '#4ade80',
@@ -26,7 +27,7 @@ const SUBFAIXA_NAMES = {
 
 const MONIT_LEVELS = ['PADRAO', 'REFORÇADO_LEVE', 'REFORÇADO', 'INTENSO', 'INTENSO_PLUS', 'MAXIMO'];
 
-export default function InsightsRiskScoringV4Section({ complianceScores, cases }) {
+export default function InsightsRiskScoringV4Section({ complianceScores, cases, merchants }) {
   const v4Scores = useMemo(() =>
     complianceScores.filter(s => s.framework_version === 'v4.0' || s.score_final !== undefined),
     [complianceScores]
@@ -160,12 +161,17 @@ export default function InsightsRiskScoringV4Section({ complianceScores, cases }
       </div>
 
       {/* Tabs: Visão Geral | Decisões | Casos */}
-      <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 h-10">
+      <Tabs defaultValue="clients" className="w-full">
+        <TabsList className="grid w-full grid-cols-4 h-10">
+          <TabsTrigger value="clients" className="text-xs font-bold"><Users className="w-3.5 h-3.5 mr-1.5" />Clientes</TabsTrigger>
           <TabsTrigger value="overview" className="text-xs font-bold"><BarChart3 className="w-3.5 h-3.5 mr-1.5" />Visão Geral</TabsTrigger>
           <TabsTrigger value="decisions" className="text-xs font-bold"><TrendingUp className="w-3.5 h-3.5 mr-1.5" />Decisões & Taxas</TabsTrigger>
-          <TabsTrigger value="cases" className="text-xs font-bold"><ListChecks className="w-3.5 h-3.5 mr-1.5" />Casos Individuais</TabsTrigger>
+          <TabsTrigger value="cases" className="text-xs font-bold"><ListChecks className="w-3.5 h-3.5 mr-1.5" />Técnico</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="clients" className="mt-4">
+          <RiskClientsList scores={v4Scores} cases={cases} merchants={merchants} />
+        </TabsContent>
 
         <TabsContent value="decisions" className="mt-4">
           <RiskDecisionCharts scores={v4Scores} />

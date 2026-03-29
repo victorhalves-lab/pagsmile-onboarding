@@ -22,7 +22,12 @@ export default function RiskScoringV4() {
     queryFn: () => base44.entities.OnboardingCase.list('-created_date', 500),
   });
 
-  const isLoading = loadingScores || loadingCases;
+  const { data: merchants = [], isLoading: loadingMerchants } = useQuery({
+    queryKey: ['risk-v4-merchants'],
+    queryFn: () => base44.entities.Merchant.list('-created_date', 500),
+  });
+
+  const isLoading = loadingScores || loadingCases || loadingMerchants;
 
   const handleRevalidate = async (dryRun = false) => {
     setRevalidating(true);
@@ -125,7 +130,7 @@ export default function RiskScoringV4() {
           <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
         </div>
       ) : (
-        <InsightsRiskScoringV4Section complianceScores={complianceScores} cases={cases} />
+        <InsightsRiskScoringV4Section complianceScores={complianceScores} cases={cases} merchants={merchants} />
       )}
     </div>
   );
