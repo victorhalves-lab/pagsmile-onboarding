@@ -15,8 +15,11 @@ export default function CnaeCoherenceAlert({ cnpjData, selectedType }) {
   // Divisões 64 (financeiras), 65 (seguros), 66 (auxiliares financeiros)
   const isFinancialCnae = ['64', '65', '66'].includes(divisao);
   
-  // Só mostra alerta se selecionou Merchant e CNAE indica financeiro
-  const isMerchant = String(selectedType).toLowerCase().includes('merchant');
+  // Só mostra alerta se selecionou Merchant direto e CNAE indica financeiro
+  const selected = String(selectedType).toLowerCase();
+  const intermediaryKeywords = ['gateway', 'marketplace', 'plataforma vertical'];
+  const isIntermediary = intermediaryKeywords.some(kw => selected.includes(kw));
+  const isMerchant = selected.includes('merchant') || (!isIntermediary && !selected.includes('gateway'));
   
   if (!isFinancialCnae || !isMerchant) return null;
 

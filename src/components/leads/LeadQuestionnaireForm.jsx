@@ -291,8 +291,8 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
   const autoSaveRef = useRef(null);
   const firstErrorRef = useRef(null);
 
-  // Check if this is a v2.0 template with CNPJ autocomplete
-  const isV2Template = template?.model === 'LeadCompletoAutocomplete';
+  // Check if this is a v2.0+ template with CNPJ autocomplete
+  const isV2Template = template?.model === 'LeadCompletoAutocomplete' || template?.model === 'LeadCompletoAutocompleteV3';
 
   // Perguntas de taxa de cartão (para passar ao CardRatesGroup)
   const cardRateQuestions = questions.filter(q => CARD_RATE_QUESTION_IDS.includes(q.id));
@@ -639,10 +639,11 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
     let businessSubCategory = 'MERCHAN';
     for (const q of rawQuestions) {
       const text = (q.text || '').toLowerCase();
-      if (text.includes('sua empresa é principalmente') || text.includes('o que sua empresa é') || text.includes('tipo de empresa')) {
+      if (text.includes('sua empresa é principalmente') || text.includes('o que sua empresa é') || text.includes('tipo de empresa') || text.includes('modelo de negócio da sua empresa')) {
         const answer = String(formData[q.id] || '').toLowerCase();
         if (answer.includes('gateway')) businessSubCategory = 'GATEWAY';
         else if (answer.includes('marketplace')) businessSubCategory = 'MARKETPLACE';
+        else if (answer.includes('plataforma vertical')) businessSubCategory = 'GATEWAY';
         else businessSubCategory = 'MERCHAN';
         break;
       }
@@ -657,8 +658,8 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
         isActive: true
       });
       if (complianceTemplates.length > 0) {
-        // If the lead was filled via a v2.0 template, prefer v2.0 compliance templates
-        const isV2Lead = template.model === 'LeadCompletoAutocomplete';
+        // If the lead was filled via a v2.0+ template, prefer v2.0 compliance templates
+        const isV2Lead = template.model === 'LeadCompletoAutocomplete' || template.model === 'LeadCompletoAutocompleteV3';
         const v2Template = complianceTemplates.find(t => t.version === 2.0 || (t.model || '').includes('Autocomplete'));
         const v1Template = complianceTemplates.find(t => t.version !== 2.0 && !(t.model || '').includes('Autocomplete'));
         if (isV2Lead && v2Template) {
@@ -783,6 +784,8 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
     const text = (question.text || '').toLowerCase();
     const opts = (question.options || []).map(o => o.toLowerCase()).join(' ');
     const combined = text + ' ' + opts;
+    // V3: detect by question text "modelo de negócio" with gateway/marketplace in options
+    if (text.includes('modelo de negócio da sua empresa') && combined.includes('gateway')) return true;
     return (combined.includes('merchant') || combined.includes('merchan')) &&
            (combined.includes('gateway') || combined.includes('marketplace'));
   };
@@ -1003,11 +1006,19 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
           </div>
         ) : null}
 
-        {!isMCCQuestion(question) && question.type === 'SELECT' && (
+        {!isMCCQuestion(question) && question.type === 'SELECT' && (() => {
+          // Detect if options have descriptions (format: "Name — Description")
+          const hasDescriptions = (question.options || []).some(o => o.includes(' — '));
+          const gridClass = hasDescriptions 
+            ? 'grid grid-cols-1 gap-3' 
+            : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3';
+          
+          return (
           <div className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className={gridClass}>
               {(question.options || []).map((opt, i) => {
                 const isSelected = value === opt;
+                const parts = hasDescriptions && opt.includes(' — ') ? opt.split(' — ') : null;
                 return (
                   <button
                     key={i}
@@ -1024,9 +1035,20 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
                     }`}>
                       {isSelected && <CheckCircle className="w-3.5 h-3.5 text-white" />}
                     </div>
-                    <span className={`font-medium text-sm leading-tight ${isSelected ? 'text-[#002443]' : 'text-[#002443]/70'}`}>
-                      {opt}
-                    </span>
+                    {parts ? (
+                      <div className="flex-1 min-w-0">
+                        <span className={`font-semibold text-sm block ${isSelected ? 'text-[#002443]' : 'text-[#002443]/80'}`}>
+                          {parts[0]}
+                        </span>
+                        <span className={`text-xs leading-relaxed mt-1 block ${isSelected ? 'text-[#002443]/70' : 'text-[#002443]/50'}`}>
+                          {parts[1]}
+                        </span>
+                      </div>
+                    ) : (
+                      <span className={`font-medium text-sm leading-tight ${isSelected ? 'text-[#002443]' : 'text-[#002443]/70'}`}>
+                        {opt}
+                      </span>
+                    )}
                   </button>
                 );
               })}
@@ -1049,7 +1071,8 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
             )}
             <FormFieldError error={fieldError} />
           </div>
-        )}
+          );
+        })()}
 
         {question.type === 'MULTI_SELECT' && (
           <div className="space-y-4">
