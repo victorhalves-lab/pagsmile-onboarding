@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { 
   FileUp, CheckCircle2, AlertCircle, Trash2, 
-  Shield, Lock, Loader2, Upload, File, Camera, User
+  Shield, Lock, Loader2, Upload, File
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -122,15 +122,27 @@ export default function DynamicDocumentUploader({
   documents,
   setDocuments,
   storageKey,
-  onAllRequiredUploaded
+  onAllRequiredUploaded,
+  formData
 }) {
   const [uploadingDoc, setUploadingDoc] = useState(null);
 
-  // Documentos do template — gerar IDs determinísticos se não existirem
-  const requiredDocs = (template?.requiredDocuments || []).map((doc, index) => ({
+  // Documentos do template — filtrar condicionais pelo segmento selecionado
+  const allDocs = (template?.requiredDocuments || []).map((doc, index) => ({
     ...doc,
     _docKey: doc.documentTypeId || doc.id || `doc_${index}_${(doc.label || '').replace(/\s+/g, '_').toLowerCase().slice(0, 30)}`
   }));
+
+  // Filtrar: manter docs sem condicional + docs cujo condicional bate com formData
+  const requiredDocs = allDocs.filter(doc => {
+    if (!doc.conditionalLogic) return true;
+    const { dependsOn, value, operator } = doc.conditionalLogic;
+    if (!dependsOn || !formData) return true;
+    const fieldValue = formData[dependsOn];
+    if (operator === 'equals') return fieldValue === value;
+    if (operator === 'contains') return String(fieldValue || '').includes(value);
+    return true;
+  });
 
   // Carregar documentos salvos do localStorage
   useEffect(() => {
@@ -153,13 +165,12 @@ export default function DynamicDocumentUploader({
     }
   }, [documents, storageKey]);
 
-  // Verificar se todos os documentos obrigatórios + selfie foram enviados
+  // Verificar se todos os documentos obrigatórios foram enviados
   useEffect(() => {
     if (onAllRequiredUploaded) {
       const allMandatoryUploaded = mandatoryDocs.length === 0 || 
         mandatoryDocs.every(d => documents[d._docKey || d.documentTypeId || d.id]?.url);
-      const selfieUploaded = !!documents['__selfie_com_documento__']?.url;
-      onAllRequiredUploaded(allMandatoryUploaded && selfieUploaded);
+      onAllRequiredUploaded(allMandatoryUploaded);
     }
   }, [onAllRequiredUploaded, documents, requiredDocs]);
 
@@ -198,10 +209,9 @@ export default function DynamicDocumentUploader({
   const optionalDocs = requiredDocs.filter(d => !d.required);
 
   const uploadedCount = Object.keys(documents).length;
-  const totalRequired = mandatoryDocs.length + 1; // +1 para selfie
+  const totalRequired = mandatoryDocs.length;
   const mandatoryUploaded = mandatoryDocs.filter(d => documents[d._docKey || d.documentTypeId || d.id]?.url).length;
-  const selfieUploaded = documents['__selfie_com_documento__']?.url ? 1 : 0;
-  const progress = Math.round(((mandatoryUploaded + selfieUploaded) / totalRequired) * 100);
+  const progress = totalRequired === 0 ? 100 : Math.round((mandatoryUploaded / totalRequired) * 100);
 
   if (requiredDocs.length === 0) {
     return (
@@ -226,7 +236,7 @@ export default function DynamicDocumentUploader({
         </div>
         <Progress value={progress} className="h-2" />
         <p className="text-xs text-slate-500 mt-2">
-          {mandatoryUploaded + selfieUploaded} de {totalRequired} itens obrigatórios enviados (incluindo selfie)
+          {mandatoryUploaded} de {totalRequired} documentos obrigatórios enviados
         </p>
       </div>
 
@@ -284,20 +294,6 @@ export default function DynamicDocumentUploader({
             acessíveis apenas pela equipe de compliance.
           </p>
         </div>
-      </div>
-
-      {/* Selfie com Documento — obrigatório para todos os fluxos */}
-      <div className="mt-2">
-        <h3 className="text-sm font-bold text-[#002443] mb-3 flex items-center gap-2">
-          <Camera className="w-4 h-4 text-[#2bc196]" />
-          Verificação de Identidade
-        </h3>
-        <SelfieCard
-          uploadedFile={documents['__selfie_com_documento__']}
-          onUpload={(file) => handleUpload('__selfie_com_documento__', file)}
-          onRemove={() => handleRemove('__selfie_com_documento__')}
-          isUploading={uploadingDoc === '__selfie_com_documento__'}
-        />
       </div>
 
       {/* Requisitos */}

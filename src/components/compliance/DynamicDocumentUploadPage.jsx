@@ -108,12 +108,6 @@ export default function DynamicDocumentUploadPage({
       return;
     }
 
-    // Verificar selfie com documento
-    if (!documents['__selfie_com_documento__']?.url) {
-      toast.error('Envie a selfie com o documento (RG ou CNH) para continuar.');
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
@@ -184,12 +178,11 @@ export default function DynamicDocumentUploadPage({
         _docKey: doc.documentTypeId || doc.id || `doc_${index}_${(doc.label || '').replace(/\s+/g, '_').toLowerCase().slice(0, 30)}`
       }));
       const documentUploads = Object.entries(documents).map(([docId, docData]) => {
-        const isSelfie = docId === '__selfie_com_documento__';
-        const docDef = isSelfie ? null : allTemplateDocs.find(d => d._docKey === docId);
+        const docDef = allTemplateDocs.find(d => d._docKey === docId);
         return {
           onboardingCaseId: onboardingCase.id,
-          documentTypeId: isSelfie ? 'selfie_com_documento' : docId,
-          documentName: isSelfie ? 'Selfie com Documento' : (docDef?.label || docDef?.name || docId),
+          documentTypeId: docId,
+          documentName: docDef?.label || docDef?.name || docId,
           fileUrl: docData.url,
           fileName: docData.name,
           fileSize: docData.size,
@@ -278,6 +271,7 @@ export default function DynamicDocumentUploadPage({
         setDocuments={setDocuments}
         storageKey={documentsStorageKey}
         onAllRequiredUploaded={setAllRequiredUploaded}
+        formData={JSON.parse(localStorage.getItem(formDataStorageKey) || '{}')}
       />
 
       {/* Botões de Ação */}
