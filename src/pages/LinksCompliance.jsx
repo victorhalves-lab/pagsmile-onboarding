@@ -64,6 +64,7 @@ export default function LinksCompliance() {
     { key: 'SAAS_V4', label: 'SaaS v4', desc: '40 perguntas em 9 blocos. Foco em modelo de negócio, recorrência, segurança de dados e triagem fintech. Pré-preenchimento Lead v5.', icon: Cloud, color: '#0891b2', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceSaaSV4` },
     { key: 'MERCHANT_LINK_V4', label: 'Merchant Link Pagamento v4', desc: '41 perguntas em 9 blocos. Foco em micro-merchants (MEI/SLU), canais social, entrega presencial e triagem de reclassificação. Pré-preenchimento Lead v5.', icon: Store, color: '#16a34a', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceMerchantLinkV4` },
     { key: 'MPE_V4', label: 'Micro e Pequenas Empresas v4', desc: '38 perguntas em 9 blocos. Foco em MEI/ME, ponto físico, atividade local e triagem de reclassificação. Pré-preenchimento Lead v5.', icon: Briefcase, color: '#d97706', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceMPEV4` },
+    { key: 'DROPSHIPPING_V4', label: 'Dropshipping v4', desc: '52 perguntas em 11 blocos. Foco em fornecedor/logística, prazo de entrega, rastreamento, afiliados e risco de chargeback. Pré-preenchimento Lead v5.', icon: ShoppingCart, color: '#ea580c', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceDropshippingV4` },
   ];
 
   const quickLinksByType = [

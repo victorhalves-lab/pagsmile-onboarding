@@ -124,6 +124,14 @@ const MODEL_CONFIG = {
     badgeColor: 'bg-amber-100 text-amber-700',
     cafRedirectUrl: 'https://cadastro.io/c584e022b7936e44b8bc5acdd3a7945e',
   },
+  ComplianceDropshippingV4: {
+    storageKey: 'compliance_data_dropshipping_v4',
+    documentUploadPage: 'DocumentUploadFull',
+    flowType: 'full_kyc',
+    badgeLabel: 'DROPSHIPPING v4',
+    badgeColor: 'bg-orange-100 text-orange-700',
+    cafRedirectUrl: 'https://cadastro.io/c584e022b7936e44b8bc5acdd3a7945e',
+  },
 };
 
 export default function ComplianceDinamico() {

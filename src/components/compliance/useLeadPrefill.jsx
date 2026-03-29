@@ -366,6 +366,7 @@ export function useLeadPrefill(complianceQuestions) {
       localStorage.removeItem('compliance_data_saas_v4');
       localStorage.removeItem('compliance_data_merchant_link_v4');
       localStorage.removeItem('compliance_data_mpe_v4');
+      localStorage.removeItem('compliance_data_dropshipping_v4');
       localStorage.removeItem('compliance_data_pix');
       // Salvar o novo leadId como referência
       localStorage.setItem('lead_id_for_compliance', leadIdFromUrl);
