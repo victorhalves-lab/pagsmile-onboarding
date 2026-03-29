@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 
 import StepSegmento from '@/components/lead-pagsmile/StepSegmento';
 import StepDadosEmpresa from '@/components/lead-pagsmile/StepDadosEmpresa';
+import StepEndereco from '@/components/lead-pagsmile/StepEndereco';
 import StepContato from '@/components/lead-pagsmile/StepContato';
 import StepModeloNegocio from '@/components/lead-pagsmile/StepModeloNegocio';
 import StepVolumetria from '@/components/lead-pagsmile/StepVolumetria';
@@ -21,6 +22,7 @@ import { calculateLeadScore, calculateSilentFlags, getScoreLabel, SEGMENTS } fro
 const STEPS = [
   { id: 'segmento', label: 'Tipo de Negócio' },
   { id: 'empresa', label: 'Dados da Empresa' },
+  { id: 'endereco', label: 'Endereço' },
   { id: 'contato', label: 'Contato' },
   { id: 'modelo', label: 'Modelo de Negócio' },
   { id: 'volumetria', label: 'Volumetria' },
@@ -67,24 +69,27 @@ export default function QuestionarioLeadsPagsmile() {
       if (!form.nomeFantasia) errs.nomeFantasia = true;
     }
     if (step === 2) {
+      if (!form._enderecoConfirmado) { toast.error('Confirme o endereço antes de prosseguir'); return false; }
+    }
+    if (step === 3) {
       if (!form.email) errs.email = true;
       if (!form.phone) errs.phone = true;
       if (!form.contactName) errs.contactName = true;
       if (!form.cargo && form.cargo !== '__other__') errs.cargo = true;
     }
-    if (step === 3) {
+    if (step === 4) {
       if (!form.modeloCobranca) { toast.error('Selecione o modelo de cobrança'); return false; }
       if (!form.descricaoNegocio) { toast.error('Descreva seu negócio'); return false; }
     }
-    if (step === 4) {
+    if (step === 5) {
       if (!form.tpvMensal) errs.tpvMensal = true;
       if (!form.ticketMedio) errs.ticketMedio = true;
       if (!form.faturamentoAnual) { toast.error('Selecione o faturamento anual'); return false; }
       if (!form.funcionarios) { toast.error('Selecione o número de funcionários'); return false; }
     }
-    if (step === 5 && !form.jaProcessa) { toast.error('Informe se já processa pagamentos'); return false; }
-    if (step === 8 && !form.encerrado) { toast.error('Informe se já foi encerrado'); return false; }
-    if (step === 9) {
+    if (step === 6 && !form.jaProcessa) { toast.error('Informe se já processa pagamentos'); return false; }
+    if (step === 9 && !form.encerrado) { toast.error('Informe se já foi encerrado'); return false; }
+    if (step === 10) {
       if (!form.urgencia) { toast.error('Informe quando quer começar'); return false; }
       if (!form.crescimento) { toast.error('Informe a expectativa de crescimento'); return false; }
     }
@@ -102,8 +107,8 @@ export default function QuestionarioLeadsPagsmile() {
     // Skip taxas/processador if not applicable
     const jaProcessa = form.jaProcessa === 'Sim, já processo';
     let next = step + 1;
-    if (next === 6 && !jaProcessa) next = 8; // Skip taxas + processador
-    if (next === 7 && !jaProcessa) next = 8;
+    if (next === 7 && !jaProcessa) next = 9; // Skip taxas + processador
+    if (next === 8 && !jaProcessa) next = 9;
     setStep(Math.min(next, STEPS.length - 1));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -111,8 +116,8 @@ export default function QuestionarioLeadsPagsmile() {
   const prevStep = () => {
     const jaProcessa = form.jaProcessa === 'Sim, já processo';
     let prev = step - 1;
-    if (prev === 7 && !jaProcessa) prev = 5;
-    if (prev === 6 && !jaProcessa) prev = 5;
+    if (prev === 8 && !jaProcessa) prev = 6;
+    if (prev === 7 && !jaProcessa) prev = 6;
     setStep(Math.max(prev, 0));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -256,14 +261,15 @@ export default function QuestionarioLeadsPagsmile() {
         <CardContent className="p-6 sm:p-8">
           {step === 0 && <StepSegmento form={form} updateField={updateField} cnpjData={cnpjData} />}
           {step === 1 && <StepDadosEmpresa form={form} updateField={updateField} cnpjData={cnpjData} setCnpjData={setCnpjData} errors={errors} />}
-          {step === 2 && <StepContato form={form} updateField={updateField} errors={errors} />}
-          {step === 3 && <StepModeloNegocio form={form} updateField={updateField} errors={errors} />}
-          {step === 4 && <StepVolumetria form={form} updateField={updateField} errors={errors} />}
-          {step === 5 && <StepDistribuicao form={form} updateField={updateField} />}
-          {step === 6 && <StepTaxasAtuais form={form} updateField={updateField} />}
-          {step === 7 && <StepProcessadorAtual form={form} updateField={updateField} />}
-          {step === 8 && <StepComplianceRisco form={form} updateField={updateField} />}
-          {step === 9 && <StepFechamento form={form} updateField={updateField} />}
+          {step === 2 && <StepEndereco form={form} updateField={updateField} cnpjData={cnpjData} />}
+          {step === 3 && <StepContato form={form} updateField={updateField} errors={errors} />}
+          {step === 4 && <StepModeloNegocio form={form} updateField={updateField} errors={errors} />}
+          {step === 5 && <StepVolumetria form={form} updateField={updateField} errors={errors} />}
+          {step === 6 && <StepDistribuicao form={form} updateField={updateField} />}
+          {step === 7 && <StepTaxasAtuais form={form} updateField={updateField} />}
+          {step === 8 && <StepProcessadorAtual form={form} updateField={updateField} />}
+          {step === 9 && <StepComplianceRisco form={form} updateField={updateField} />}
+          {step === 10 && <StepFechamento form={form} updateField={updateField} />}
         </CardContent>
       </Card>
 

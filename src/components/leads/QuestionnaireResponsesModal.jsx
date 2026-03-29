@@ -9,10 +9,11 @@ import {
   Loader2, Building2, User, Briefcase, DollarSign, PieChart,
   Clock, ShoppingBag, FileText, ExternalLink, X, CreditCard,
   Paperclip, Download, Copy, CheckCircle,
-  Globe, Package, ArrowRight
+  Globe, Package, ArrowRight, FileSearch
 } from 'lucide-react';
 import CardRatesDisplay, { CARD_RATE_QUESTION_IDS } from './CardRatesDisplay';
 import PercentDistributionDisplay, { DISTRIBUTION_QUESTION_IDS } from './PercentDistributionDisplay';
+import EnrichmentPanel from './EnrichmentPanel';
 
 const SECTION_CONFIG = [
   { id: 'empresa', label: 'Dados da Empresa', icon: Building2, accent: 'bg-blue-500', orderRange: [1, 6] },
@@ -28,12 +29,13 @@ const SECTION_CONFIG = [
   { id: 'complementar', label: 'Complementares', icon: FileText, accent: 'bg-slate-500', orderRange: [66, 80] },
   { id: 'arquivos', label: 'Arquivos Enviados', icon: Paperclip, accent: 'bg-emerald-500', orderRange: [-1, -1] },
   { id: 'extras', label: 'Dados Extras', icon: ShoppingBag, accent: 'bg-gray-500', orderRange: [-2, -2] },
+  { id: 'enrichment', label: 'Enriquecimento v5', icon: FileSearch, accent: 'bg-purple-500', orderRange: [-3, -3] },
 ];
 
 const SPECIAL_IDS = new Set([...CARD_RATE_QUESTION_IDS, ...DISTRIBUTION_QUESTION_IDS]);
 
 // Keys to ignore from questionnaireData (internal/system keys)
-const IGNORED_KEYS = new Set(['aceite_termos', 'aceite_privacidade', '_product_percentages', '_expectedRates']);
+const IGNORED_KEYS = new Set(['aceite_termos', 'aceite_privacidade', '_product_percentages', '_expectedRates', '_enrichment', '_enderecoConfirmado', '_cnpjEnrichment', '_silentFlags', '_leadScore', '_siteValidation']);
 
 function assignSection(order) {
   for (const sec of SECTION_CONFIG) {
@@ -309,6 +311,11 @@ export default function QuestionnaireResponsesModal({ open, onClose, lead }) {
       usedSections.push('taxas_cartao');
     }
 
+    // Always include enrichment section for v5 leads
+    if (questionnaireData?.origem === 'questionario_leads_pagsmile_v5' || questionnaireData?._enrichment) {
+      usedSections.push('enrichment');
+    }
+
     const orderedSections = SECTION_CONFIG.filter(s => usedSections.includes(s.id));
     return { sections: orderedSections, mappedQuestions: mapped, allQuestions: questions };
   }, [questions, questionnaireData]);
@@ -456,6 +463,13 @@ export default function QuestionnaireResponsesModal({ open, onClose, lead }) {
                             }
                           </p>
                         </div>
+                      </div>
+                    )}
+
+                    {/* Enrichment section */}
+                    {activeSec === 'enrichment' && (
+                      <div className="mb-4">
+                        <EnrichmentPanel lead={lead} />
                       </div>
                     )}
 
