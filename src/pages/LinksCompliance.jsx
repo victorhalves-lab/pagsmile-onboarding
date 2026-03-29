@@ -54,6 +54,11 @@ export default function LinksCompliance() {
     { key: 'MARKETPLACE_V2', label: 'Marketplace v2.0', desc: t('lc.marketplace_v2_desc'), icon: ShoppingCart, color: '#36706c', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceMarketplaceAutocomplete` },
   ];
 
+  const quickLinksPixV4 = [
+    { key: 'PIX_MERCHANT_V4', label: 'PIX Merchant v4', desc: '40 perguntas em 8 blocos. Compliance PIX + Conta para merchants. Foco em volume, natureza, PLD/FT e UBOs. Pré-preenchimento Lead.', icon: CreditCard, color: '#2bc196', url: `${base}${createPageUrl('ComplianceDinamico')}?model=CompliancePixMerchantV4` },
+    { key: 'PIX_INTERMEDIARIO_V4', label: 'PIX Intermediário v4', desc: '47 perguntas em 8 blocos. Compliance PIX + Conta para intermediários (Gateway/PSP, Marketplace, Plataforma). Foco em split, anti-bolção, MED e regulatório BCB.', icon: Globe, color: '#4f46e5', url: `${base}${createPageUrl('ComplianceDinamico')}?model=CompliancePixIntermediarioV4` },
+  ];
+
   const quickLinksV4 = [
     { key: 'GATEWAY_V4', label: 'Gateway v4', desc: '85 perguntas em 12 blocos. Pré-preenchimento automático do Lead v5. Cobertura regulatória ~98%.', icon: Globe, color: '#4f46e5', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceGatewayV4` },
     { key: 'MARKETPLACE_V4', label: 'Marketplace v4', desc: '75 perguntas em 11 blocos. Foco em sellers, split e anti-bolsão. Pré-preenchimento Lead v5.', icon: ShoppingCart, color: '#d97706', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceMarketplaceV4` },
@@ -182,6 +187,21 @@ export default function LinksCompliance() {
       {/* Links Rápidos */}
       {activeTab === 'links' && (
         <div className="space-y-6">
+          {/* PIX v4 — Merchants e Intermediários */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-emerald-100 flex items-center justify-center"><CreditCard className="w-4 h-4 text-emerald-600" /></div>
+              <div>
+                <h2 className="text-base font-bold text-[#002443]">PIX v4 — Merchants & Intermediários</h2>
+                <p className="text-xs text-[#002443]/40">Questionários específicos para operação PIX + Conta de pagamento. Conformidade Res. BCB 80/494/501/518.</p>
+              </div>
+              <Badge className="bg-emerald-100 text-emerald-700 border-0 text-[10px] ml-2">NOVO</Badge>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {quickLinksPixV4.map(item => <QuickLinkCard key={item.key} item={item} />)}
+            </div>
+          </div>
+
           {/* v4.0 Por Segmento — Com pré-preenchimento Lead v5 */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">

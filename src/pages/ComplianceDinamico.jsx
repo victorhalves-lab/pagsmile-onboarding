@@ -141,6 +141,14 @@ const MODEL_CONFIG = {
     badgeColor: 'bg-emerald-100 text-emerald-700',
     cafRedirectUrl: 'https://cadastro.io/c584e022b7936e44b8bc5acdd3a7945e',
   },
+  CompliancePixIntermediarioV4: {
+    storageKey: 'compliance_data_pix_intermediario_v4',
+    documentUploadPage: 'DocumentUploadPix',
+    flowType: 'pix',
+    badgeLabel: 'PIX INTERMEDIÁRIO v4',
+    badgeColor: 'bg-indigo-100 text-indigo-700',
+    cafRedirectUrl: 'https://cadastro.io/9b998e4d45055dac959680cf3dcfc1c9',
+  },
 };
 
 export default function ComplianceDinamico() {
