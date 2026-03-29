@@ -1,9 +1,12 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Legend } from 'recharts';
-import { Shield, AlertTriangle, TrendingUp, Activity, Lock, Gauge } from 'lucide-react';
+import { Shield, AlertTriangle, TrendingUp, Activity, Lock, Gauge, ListChecks, BarChart3 } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import StatCard from './StatCard';
+import RiskCasesTable from './RiskCasesTable';
+import RiskDecisionCharts from './RiskDecisionCharts';
 
 const SUBFAIXA_COLORS = {
   '1A': '#22c55e', '1B': '#4ade80',
@@ -155,6 +158,24 @@ export default function InsightsRiskScoringV4Section({ complianceScores, cases }
         <StatCard label="Fluxo PIX" value={stats.pixCount} icon={Activity} color="#3b82f6" />
         <StatCard label="Bloqueios Ativos" value={stats.topBlocks.reduce((a, b) => a + b.count, 0)} icon={AlertTriangle} color="#ef4444" />
       </div>
+
+      {/* Tabs: Visão Geral | Decisões | Casos */}
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList className="grid w-full grid-cols-3 h-10">
+          <TabsTrigger value="overview" className="text-xs font-bold"><BarChart3 className="w-3.5 h-3.5 mr-1.5" />Visão Geral</TabsTrigger>
+          <TabsTrigger value="decisions" className="text-xs font-bold"><TrendingUp className="w-3.5 h-3.5 mr-1.5" />Decisões & Taxas</TabsTrigger>
+          <TabsTrigger value="cases" className="text-xs font-bold"><ListChecks className="w-3.5 h-3.5 mr-1.5" />Casos Individuais</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="decisions" className="mt-4">
+          <RiskDecisionCharts scores={v4Scores} />
+        </TabsContent>
+
+        <TabsContent value="cases" className="mt-4">
+          <RiskCasesTable scores={v4Scores} cases={cases} />
+        </TabsContent>
+
+        <TabsContent value="overview" className="mt-4 space-y-6">
 
       {/* Camadas de Score */}
       <Card>
@@ -317,6 +338,9 @@ export default function InsightsRiskScoringV4Section({ complianceScores, cases }
           </CardContent>
         </Card>
       )}
+
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
