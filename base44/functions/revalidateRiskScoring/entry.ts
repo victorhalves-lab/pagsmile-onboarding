@@ -351,11 +351,27 @@ Deno.serve(async (req) => {
           : result.subfaixa.auto ? (result.condicoes.length > 0 ? 'Aprovado com Condições' : 'Aprovado') 
           : 'Revisão Manual';
 
+        // Preserve SENTINEL qualitative fields that don't conflict with v4 deterministic engine
+        const existingQualitative = existingScore ? {
+          analise_completa_ia: existingScore.analise_completa_ia,
+          sumario_executivo: existingScore.sumario_executivo,
+          pontos_positivos: existingScore.pontos_positivos,
+          pontos_atencao: existingScore.pontos_atencao,
+          red_flags: existingScore.red_flags,
+          parecer_final: existingScore.parecer_final,
+          perguntas_sugeridas: existingScore.perguntas_sugeridas,
+          documentos_adicionais_sugeridos: existingScore.documentos_adicionais_sugeridos,
+          recomendacoes_revisao_manual: existingScore.recomendacoes_revisao_manual,
+          nivel_confianca_ia: existingScore.nivel_confianca_ia,
+          versao_agente: existingScore.versao_agente,
+        } : {};
+
         const scoreData = {
           onboarding_case_id: caseId,
           framework_version: 'v4.0',
           segmento,
           is_pix: result.isPix,
+          // ── DETERMINISTIC FIELDS (v4 engine is AUTHORITATIVE) ──
           score_base_segmento: result.c1,
           score_variaveis: result.c2,
           score_enriquecimento: result.c3,
@@ -371,6 +387,8 @@ Deno.serve(async (req) => {
           variaveis_negativas: result.varsNegativas,
           condicoes_automaticas: result.condicoes,
           recomendacao_final: recomendacao,
+          // ── PRESERVE SENTINEL qualitative analysis ──
+          ...existingQualitative,
         };
 
         const caseUpdate = {
