@@ -218,6 +218,49 @@ function extractEnrichmentData(existingScore, externalValidations, merchant) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════════
+// MONITORAMENTO DETALHADO POR SUBFAIXA (spec Parte 3)
+// ══════════════════════════════════════════════════════════════════════════════
+function buildMonitoramentoDetalhes(subfaixa) {
+  const configs = {
+    '1A': { frequencia_revisao: 'Anual', alertas_cb: 1.5, alertas_med: 0.5, alertas_pico: 5, revisao_periodica: '12 meses' },
+    '1B': { frequencia_revisao: 'Anual', alertas_cb: 1.5, alertas_med: 0.5, alertas_pico: 5, revisao_periodica: '12 meses' },
+    '2A': { frequencia_revisao: 'Semanal', alertas_cb: 1.0, alertas_med: 0.3, alertas_pico: 3, revisao_periodica: '6 meses', promocao_se_limpo: '6 meses sem incidente → 1B' },
+    '2B': { frequencia_revisao: 'Semanal', alertas_cb: 0.8, alertas_med: 0.2, alertas_pico: 3, revisao_periodica: '3 meses', promocao_se_limpo: '90 dias sem incidente → 2A (RR zerado)' },
+    '3A': { frequencia_revisao: 'Diária', alertas_cb: 0.5, alertas_med: 0.1, alertas_pico: 2, revisao_periodica: '60 dias', promocao_se_limpo: '60 dias sem incidente → 2B (RR 10%→5%)' },
+    '3B': { frequencia_revisao: 'Diária + relatório semanal', alertas_cb: 0.3, alertas_med: 0.1, alertas_pico: 2, revisao_periodica: '30 dias', promocao_se_limpo: '30 dias sem incidente → 3A (RR 15%→10%)' },
+    '4':  { frequencia_revisao: 'Diária + relatório diário + EDD obrigatório', alertas_cb: 0, alertas_med: 0, alertas_pico: 0, revisao_periodica: 'Mensal', promocao_se_limpo: 'Qualquer desvio = suspensão preventiva' },
+    '5':  { frequencia_revisao: 'N/A — Bloqueado', alertas_cb: 0, alertas_med: 0, alertas_pico: 0, revisao_periodica: 'N/A', promocao_se_limpo: 'Só Comitê de Compliance pode reverter' },
+  };
+  return configs[subfaixa.id] || configs['1A'];
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// PROMOÇÃO AUTOMÁTICA DE SUBFAIXA (spec Parte 3)
+// Cada subfaixa tem um caminho de promoção se o cliente opera sem incidentes.
+// ══════════════════════════════════════════════════════════════════════════════
+function buildPromocao(subfaixa) {
+  const now = new Date();
+  const addDays = (d) => { const dt = new Date(now); dt.setDate(dt.getDate() + d); return dt.toISOString().split('T')[0]; };
+  
+  const promoMap = {
+    '1A': { destino: null, dias: null },      // Já é o melhor
+    '1B': { destino: '1A', dias: 365 },       // Revisão anual
+    '2A': { destino: '1B', dias: 180 },       // 6 meses sem incidente
+    '2B': { destino: '2A', dias: 90 },        // 90 dias sem incidente → RR zerado
+    '3A': { destino: '2B', dias: 60 },        // 60 dias sem incidente → RR 10%→5%
+    '3B': { destino: '3A', dias: 30 },        // 30 dias sem incidente → RR 15%→10%
+    '4':  { destino: '3B', dias: 30 },        // Analista avalia mensalmente
+    '5':  { destino: null, dias: null },       // Bloqueado
+  };
+  
+  const promo = promoMap[subfaixa.id] || { destino: null, dias: null };
+  return {
+    destino: promo.destino,
+    proximaData: promo.dias ? addDays(promo.dias) : null,
+  };
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
 // MOTOR COMPLETO: 60 Variáveis + 11 Enriquecimentos + 10 Bloqueios
 // ══════════════════════════════════════════════════════════════════════════════
 function calculateFullScore(segmento, responses, existingScore, enrichData) {
@@ -542,12 +585,21 @@ function calculateFullScore(segmento, responses, existingScore, enrichData) {
   let rrFinal = subfaixa.rr;
   if (vars['V28']?.ativa && rrFinal < 5) rrFinal = 5;
 
+  // ══ MONITORAMENTO DETALHADO (spec Parte 3) ══
+  const monitoramentoDetalhes = buildMonitoramentoDetalhes(subfaixa);
+
+  // ══ PROMOÇÃO AUTOMÁTICA (spec Parte 3 — caminho de promoção) ══
+  const promocao = buildPromocao(subfaixa);
+
   return {
     c1, c2, c3, scoreFinal,
     subfaixa: { ...subfaixa, rr: rrFinal },
     bloqueios: [], isPix,
     varsPositivas, varsNegativas, varsAplicadas: allVars,
     condicoes,
+    monitoramentoDetalhes,
+    promocaoProximaData: promocao.proximaData,
+    promocaoDestino: promocao.destino,
   };
 }
 
@@ -660,6 +712,9 @@ Deno.serve(async (req) => {
           variaveis_negativas: result.varsNegativas,
           condicoes_automaticas: result.condicoes,
           recomendacao_final: recomendacao,
+          monitoramento_detalhes: result.monitoramentoDetalhes,
+          promocao_proxima_data: result.promocaoProximaData,
+          promocao_destino: result.promocaoDestino,
           // Clear legacy SENTINEL fields to avoid confusion
           classificacao_questionario: null,
           classificacao_geral: null,
