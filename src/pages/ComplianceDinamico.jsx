@@ -100,6 +100,14 @@ const MODEL_CONFIG = {
     badgeColor: 'bg-sky-100 text-sky-700',
     cafRedirectUrl: 'https://cadastro.io/c584e022b7936e44b8bc5acdd3a7945e',
   },
+  ComplianceSaaSV4: {
+    storageKey: 'compliance_data_saas_v4',
+    documentUploadPage: 'DocumentUploadFull',
+    flowType: 'full_kyc',
+    badgeLabel: 'SAAS v4',
+    badgeColor: 'bg-cyan-100 text-cyan-700',
+    cafRedirectUrl: 'https://cadastro.io/c584e022b7936e44b8bc5acdd3a7945e',
+  },
 };
 
 export default function ComplianceDinamico() {
