@@ -116,6 +116,14 @@ const MODEL_CONFIG = {
     badgeColor: 'bg-green-100 text-green-700',
     cafRedirectUrl: 'https://cadastro.io/c584e022b7936e44b8bc5acdd3a7945e',
   },
+  ComplianceMPEV4: {
+    storageKey: 'compliance_data_mpe_v4',
+    documentUploadPage: 'DocumentUploadFull',
+    flowType: 'full_kyc',
+    badgeLabel: 'MPE v4',
+    badgeColor: 'bg-amber-100 text-amber-700',
+    cafRedirectUrl: 'https://cadastro.io/c584e022b7936e44b8bc5acdd3a7945e',
+  },
 };
 
 export default function ComplianceDinamico() {
