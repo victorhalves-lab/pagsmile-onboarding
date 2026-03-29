@@ -29,6 +29,7 @@ import PropostaPixDetalhes from './pages/PropostaPixDetalhes';
 import PropostaPixPublica from './pages/PropostaPixPublica';
 import GestaoLandingPages from './pages/GestaoLandingPages';
 import DadosInsights from './pages/DadosInsights';
+import RiskScoringV4 from './pages/RiskScoringV4';
 import QuestionarioLeadsPagsmile from './pages/QuestionarioLeadsPagsmile';
 import LeadPixV4 from './pages/LeadPixV4';
 
@@ -175,6 +176,7 @@ const AuthenticatedApp = () => {
       <Route path="/PropostaPixDetalhes" element={<LayoutWrapper currentPageName="PropostaPixDetalhes"><PropostaPixDetalhes /></LayoutWrapper>} />
       <Route path="/GestaoLandingPages" element={<LayoutWrapper currentPageName="GestaoLandingPages"><GestaoLandingPages /></LayoutWrapper>} />
       <Route path="/DadosInsights" element={<LayoutWrapper currentPageName="DadosInsights"><DadosInsights /></LayoutWrapper>} />
+      <Route path="/RiskScoringV4" element={<LayoutWrapper currentPageName="RiskScoringV4"><RiskScoringV4 /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
