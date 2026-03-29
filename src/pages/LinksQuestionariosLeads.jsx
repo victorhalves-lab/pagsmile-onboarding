@@ -27,6 +27,7 @@ export default function LinksQuestionariosLeads() {
     LEAD_SIMPLIFICADO: `${window.location.origin}${createPageUrl('QuestionarioSimplificadoPublico')}`,
     LEAD_PIX: `${window.location.origin}${createPageUrl('LeadQuestionnairePix')}`,
     LEAD_PAGSMILE: `${window.location.origin}/QuestionarioLeadsPagsmile`,
+    LEAD_PIX_V4: `${window.location.origin}/LeadPixV4`,
   };
 
   const handleCopy = async (text, id) => {
@@ -110,6 +111,69 @@ export default function LinksQuestionariosLeads() {
               label="Gerar Link Rastreável" 
               basePage="QuestionarioLeadsPagsmile"
               icon={Crown}
+            />
+          </CardFooter>
+        </Card>
+
+        {/* Card Lead PIX v4.0 */}
+        <Card className="rounded-2xl border border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow overflow-hidden ring-2 ring-emerald-400/30 lg:col-span-2">
+          <div className="h-2 bg-gradient-to-r from-[#2bc196] via-emerald-400 to-[#5cf7cf]" />
+          <CardHeader className="pt-5">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-gradient-to-br from-emerald-500 to-[#2bc196] shadow-md">
+                  <Zap className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <CardTitle className="text-base font-bold text-[#002443]">Questionário Lead PIX</CardTitle>
+                    <Badge className="bg-emerald-600 text-white border-0 text-[10px]">v4.0</Badge>
+                    <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0 text-[10px]">{t('lql.autocomplete')}</Badge>
+                    <Badge className="bg-amber-400/10 text-amber-600 border-0 text-[10px]">11 FLAGS</Badge>
+                  </div>
+                  <CardDescription className="text-[#282828]/50 text-xs mt-0.5">
+                    28 perguntas + condicionais por tipo (Merchant/Intermediário) • Autocomplete CNPJ (3 APIs) • 11 flags silenciosas • Lead Score 0-100 • UI 100% botões
+                  </CardDescription>
+                </div>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.LEAD_PIX_V4, '_blank')} className="border-[#002443]/10 text-[#002443] hover:bg-[#002443]/5 rounded-lg">
+                <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
+                {t('lql.view')}
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40">{t('lql.default_link')}</Label>
+              <div className="flex gap-2">
+                <Input readOnly value={genericLinks.LEAD_PIX_V4} className="font-mono text-xs bg-[#f4f4f4] border-[#002443]/5 rounded-lg" />
+                <Button 
+                  onClick={() => handleCopy(genericLinks.LEAD_PIX_V4, 'lead-pix-v4')}
+                  className={`rounded-lg ${copied === 'lead-pix-v4' ? 'bg-[#2bc196]' : 'bg-[#002443] hover:bg-[#002443]/90'}`}
+                >
+                  {copied === 'lead-pix-v4' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                </Button>
+              </div>
+            </div>
+            
+            <div className="bg-gradient-to-r from-emerald-50 to-[#2bc196]/5 p-4 rounded-xl text-sm text-[#002443]/80 border border-emerald-200/30">
+              <p className="font-semibold text-[#002443] text-xs mb-2">Exclusivo PIX — Redesign completo:</p>
+              <ul className="list-disc pl-4 space-y-1 text-xs text-[#282828]/60">
+                <li>Pergunta-chave: Merchant Direto vs Intermediário (determina compliance PIX)</li>
+                <li>Segmentação: 8 segmentos merchant + 3 intermediário com condicionais</li>
+                <li>Autocomplete CNPJ (3 APIs cascata) + validação e-mail/telefone</li>
+                <li>11 flags silenciosas PIX (ACCOUNT_TERMINATED, MEI_AS_INTERMEDIARY, etc.)</li>
+                <li>Lead Score 0-100 com bônus/penalidades específicos para PIX</li>
+                <li>Serviços PIX: Recebimentos, Pagamentos, QR estático/dinâmico, Cobrança, Garantido, Split, Conta Digital</li>
+              </ul>
+            </div>
+          </CardContent>
+          <CardFooter>
+            <LinkGenerator 
+              type="LEAD_QUESTIONNAIRE" 
+              label="Gerar Link Rastreável" 
+              basePage="LeadPixV4"
+              icon={Zap}
             />
           </CardFooter>
         </Card>

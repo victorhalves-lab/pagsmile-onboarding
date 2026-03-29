@@ -30,6 +30,7 @@ import PropostaPixPublica from './pages/PropostaPixPublica';
 import GestaoLandingPages from './pages/GestaoLandingPages';
 import DadosInsights from './pages/DadosInsights';
 import QuestionarioLeadsPagsmile from './pages/QuestionarioLeadsPagsmile';
+import LeadPixV4 from './pages/LeadPixV4';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -70,6 +71,7 @@ const PUBLIC_PATHS = new Set([
   '/OnboardingCompletion',
   '/SubsellerQuestionnaire',
   '/QuestionarioLeadsPagsmile',
+  '/LeadPixV4',
 ]);
 
 function isPublicPath(pathname) {
@@ -117,6 +119,7 @@ const PublicRoutes = () => (
     <Route path="/SubsellerQuestionnaire" element={<LayoutWrapper currentPageName="SubsellerQuestionnaire"><SubsellerQuestionnaire /></LayoutWrapper>} />
     <Route path="/LeadQuestionnairePix" element={<LayoutWrapper currentPageName="LeadQuestionnairePix"><LeadQuestionnairePix /></LayoutWrapper>} />
     <Route path="/QuestionarioLeadsPagsmile" element={<LayoutWrapper currentPageName="QuestionarioLeadsPagsmile"><QuestionarioLeadsPagsmile /></LayoutWrapper>} />
+    <Route path="/LeadPixV4" element={<LayoutWrapper currentPageName="LeadPixV4"><LeadPixV4 /></LayoutWrapper>} />
   </Routes>
 );
 
