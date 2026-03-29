@@ -2,7 +2,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
 
 // ══════════════════════════════════════════════════════════════════════════════
 // MOTOR DE RISK SCORING v4.0 — FRAMEWORK COMPLETO CONFORME SPEC
-// 3 Camadas | 60 Variáveis | 11 Enriquecimentos | 10 Bloqueios | 8 Subfaixas
+// 3 Camadas | 60 Variáveis | 11 Enriquecimentos | 10 Bloqueios | 7 Subfaixas + Faixa 5 (Bloqueio)
 //
 // FÓRMULA: Score Final = max(0, min(849, C1 + ΣC2 + ΣC3))
 // Score só atinge 850+ por bloqueio B01-B10 (impedimentos legais).
@@ -418,10 +418,11 @@ function calculateFullScore(segmento, responses, existingScore, enrichData) {
     isIntermed && answerContains(responses, ['regulado', 'financeiro', 'cnae 64', 'cnae 65', 'cnae 66'], ['sim']) && !temBCB);
   addVar('V06', 30, 'Empresa < 6 meses', idadeEmpresa < 0.5);
   addVar('V07', 15, 'Empresa 6-12 meses', idadeEmpresa >= 0.5 && idadeEmpresa < 1);
-  // V08: spec = capital < 1% do volume anualizado (FIX gap #7)
+  // V08: spec = capital < 1% do volume anualizado | Q1-6 only (gateway, marketplace, plat_vertical, dropshipping, infoprodutos, ecommerce)
   const volAnualizado = volumeDeclarado * 12;
+  const V08_SEGMENTS = ['gateway', 'marketplace', 'plataforma_vertical', 'dropshipping', 'infoprodutos', 'ecommerce'];
   addVar('V08', 20, 'Capital desproporcional', 
-    capitalSocial > 0 && volAnualizado > 0 && capitalSocial < (volAnualizado * 0.01) && !['mpe', 'link_pagamento'].includes(segmento));
+    capitalSocial > 0 && volAnualizado > 0 && capitalSocial < (volAnualizado * 0.01) && V08_SEGMENTS.includes(segmento));
   addVar('V10', 20, 'E-mail domínio gratuito (intermediário)', isIntermed && emailGratuito);
   addVar('V11', 40, 'Zero presença digital', !temSite && !temMaps);
   addVar('V12', -100, 'Google Maps ≥50 avaliações ≥4★', temMaps);
@@ -452,7 +453,7 @@ function calculateFullScore(segmento, responses, existingScore, enrichData) {
   // ── Dimensão 3: Transacional ──
   addVar('V28', 100, 'Chargeback > 2%', cbRate > 2);
   addVar('V29', 50, 'Chargeback 1-2%', cbRate >= 1 && cbRate <= 2);
-  // V30: FIX gap #1 — cbRate=0 should NOT get this (use V41 for CB=0), only 0 < cb < 0.5
+  // V30: CB < 0,5% = -30 | Cartão | Positivo forte. Merchant saudável.
   addVar('V30', -30, 'Chargeback < 0,5%', cbRate >= 0 && cbRate < 0.5 && !isPix);
   addVar('V31', 100, 'MED PIX > 1%', isPix && medRate > 1);
   addVar('V32', 50, 'MED PIX 0,5-1%', isPix && medRate >= 0.5 && medRate <= 1);
@@ -552,9 +553,10 @@ function calculateFullScore(segmento, responses, existingScore, enrichData) {
   addE('E10', 0, 'CAF Doc falsificado', false);
   
   // E11: TUDO CONFIRMA BDC+CAF — o MAIOR REDUTOR (-150)
-  // Condições: checks limpos (V26) + sem divergências de enriquecimento (E01-E07 todas inativas)
+  // Condições: checks limpos (V26) + sem divergências de enriquecimento (E01-E07 TODAS inativas)
   const noEnrichIssues = !enrichVars['E01']?.ativa && !enrichVars['E02']?.ativa && 
-    !enrichVars['E03']?.ativa && !enrichVars['E05']?.ativa && !enrichVars['E07']?.ativa;
+    !enrichVars['E03']?.ativa && !enrichVars['E04']?.ativa && !enrichVars['E05']?.ativa && 
+    !enrichVars['E06']?.ativa && !enrichVars['E07']?.ativa;
   addE('E11', -150, 'Tudo confirma BDC+CAF', noEnrichIssues && vars['V26']?.ativa);
 
   // Merge all vars
