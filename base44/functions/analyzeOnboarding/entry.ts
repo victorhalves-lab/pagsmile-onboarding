@@ -443,12 +443,59 @@ Seja rigoroso mas justo. Documente cada finding com evidências claras.`;
     let savedScore;
     
     if (existingScore) {
-      // Atualizar score existente
-      savedScore = await base44.asServiceRole.entities.ComplianceScore.update(
-        existingScore.id, 
-        scoreData
-      );
-      console.log(`[SENTINEL] Score atualizado: ${existingScore.id}`);
+      // ── CRITICAL: Never overwrite v4 deterministic fields if they exist ──
+      // The v4 engine (revalidateRiskScoring) is the SINGLE SOURCE OF TRUTH for:
+      // score_final, subfaixa, recomendacao_final, rolling_reserve_percent, 
+      // decisao_automatica, monitoramento_nivel, variaveis_*, bloqueios_ativos, condicoes_automaticas
+      const hasV4Data = existingScore.score_final != null && existingScore.score_variaveis != null;
+      
+      if (hasV4Data) {
+        // V4 engine already ran — only update SENTINEL qualitative fields
+        const qualitativeOnly = {
+          onboarding_case_id: caseId,
+          versao_agente: scoreData.versao_agente,
+          score_questionario: scoreData.score_questionario,
+          classificacao_questionario: scoreData.classificacao_questionario,
+          score_validacao_externa: scoreData.score_validacao_externa,
+          classificacao_validacao_externa: scoreData.classificacao_validacao_externa,
+          bonus_consistencia: scoreData.bonus_consistencia,
+          score_geral_composto: scoreData.score_geral_composto,
+          classificacao_geral: scoreData.classificacao_geral,
+          // DO NOT overwrite: recomendacao_final, score_final, subfaixa, etc.
+          sumario_executivo: scoreData.sumario_executivo,
+          analise_completa_ia: scoreData.analise_completa_ia,
+          parecer_final: scoreData.parecer_final,
+          pontos_positivos: scoreData.pontos_positivos,
+          pontos_atencao: scoreData.pontos_atencao,
+          red_flags: scoreData.red_flags,
+          recomendacoes_revisao_manual: scoreData.recomendacoes_revisao_manual,
+          perguntas_sugeridas: scoreData.perguntas_sugeridas,
+          documentos_adicionais_sugeridos: scoreData.documentos_adicionais_sugeridos,
+          nivel_confianca_ia: scoreData.nivel_confianca_ia,
+          total_findings: scoreData.total_findings,
+          findings_por_severidade: scoreData.findings_por_severidade,
+          overrides_aplicados: scoreData.overrides_aplicados,
+          condicoes_aprovacao: scoreData.condicoes_aprovacao,
+          fase_1_completa: scoreData.fase_1_completa,
+          data_analise_fase_1: scoreData.data_analise_fase_1,
+          fase_2_completa: scoreData.fase_2_completa,
+          data_analise_fase_2: scoreData.data_analise_fase_2,
+          fase_3_completa: scoreData.fase_3_completa,
+          data_analise_fase_3: scoreData.data_analise_fase_3,
+        };
+        savedScore = await base44.asServiceRole.entities.ComplianceScore.update(
+          existingScore.id, 
+          qualitativeOnly
+        );
+        console.log(`[SENTINEL] Score atualizado (qualitative only, v4 preserved): ${existingScore.id}`);
+      } else {
+        // No v4 data yet — SENTINEL can write everything
+        savedScore = await base44.asServiceRole.entities.ComplianceScore.update(
+          existingScore.id, 
+          scoreData
+        );
+        console.log(`[SENTINEL] Score atualizado (full, no v4 data): ${existingScore.id}`);
+      }
     } else {
       // Criar novo score
       savedScore = await base44.asServiceRole.entities.ComplianceScore.create(scoreData);
@@ -459,42 +506,53 @@ Seja rigoroso mas justo. Documente cada finding com evidências claras.`;
     // ETAPA 5: ATUALIZAR ONBOARDING CASE
     // ═══════════════════════════════════════════════════════════
     
-    // Mapear recomendação para status
-    let newStatus = onboardingCase.status;
-    if (onboardingCase.status === 'Pendente' || onboardingCase.status === 'Em Processamento') {
-      switch (llmResponse.recomendacao_final) {
-        case 'Aprovado':
-          newStatus = 'Aprovado';
-          break;
-        case 'Aprovado com Condições':
-          newStatus = 'Manual'; // Requer revisão para confirmar condições
-          break;
-        case 'Revisão Manual':
-          newStatus = 'Manual';
-          break;
-        case 'Recusado':
-          newStatus = 'Recusado';
-          break;
-      }
-    }
+    // ── CRITICAL: Check if v4 engine already set the case status ──
+    // If v4 has run (riskScoreV4 exists), SENTINEL should NOT overwrite status/decision
+    const v4AlreadyRan = onboardingCase.riskScoreV4 != null && onboardingCase.subfaixa != null;
     
-    // Converter score para escala 0-100 para campo legado
-    const riskScore100 = Math.round(llmResponse.score_geral_composto / 10);
-    
-    await base44.asServiceRole.entities.OnboardingCase.update(caseId, {
-      status: newStatus,
-      riskScore: riskScore100,
-      iaDecision: llmResponse.recomendacao_final,
-      iaExplanation: llmResponse.sumario_executivo,
-      redFlags: llmResponse.red_flags || []
-    });
-    
-    // Atualizar merchant também
-    if (merchant) {
-      await base44.asServiceRole.entities.Merchant.update(merchant.id, {
-        onboardingStatus: newStatus,
-        riskScore: riskScore100
+    if (v4AlreadyRan) {
+      // V4 is authoritative — only update qualitative fields on the case
+      console.log(`[SENTINEL] v4 data exists on case. Only updating qualitative fields (iaExplanation, redFlags).`);
+      await base44.asServiceRole.entities.OnboardingCase.update(caseId, {
+        iaExplanation: llmResponse.sumario_executivo,
+        redFlags: llmResponse.red_flags || []
       });
+    } else {
+      // No v4 data — SENTINEL controls the decision
+      let newStatus = onboardingCase.status;
+      if (onboardingCase.status === 'Pendente' || onboardingCase.status === 'Em Processamento') {
+        switch (llmResponse.recomendacao_final) {
+          case 'Aprovado':
+            newStatus = 'Aprovado';
+            break;
+          case 'Aprovado com Condições':
+            newStatus = 'Manual';
+            break;
+          case 'Revisão Manual':
+            newStatus = 'Manual';
+            break;
+          case 'Recusado':
+            newStatus = 'Recusado';
+            break;
+        }
+      }
+      
+      const riskScore100 = Math.round(llmResponse.score_geral_composto / 10);
+      
+      await base44.asServiceRole.entities.OnboardingCase.update(caseId, {
+        status: newStatus,
+        riskScore: riskScore100,
+        iaDecision: llmResponse.recomendacao_final,
+        iaExplanation: llmResponse.sumario_executivo,
+        redFlags: llmResponse.red_flags || []
+      });
+      
+      if (merchant) {
+        await base44.asServiceRole.entities.Merchant.update(merchant.id, {
+          onboardingStatus: newStatus,
+          riskScore: riskScore100
+        });
+      }
     }
     
     const duration = Date.now() - startTime;
