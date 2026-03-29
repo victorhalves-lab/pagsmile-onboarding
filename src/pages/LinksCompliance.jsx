@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   Link as LinkIcon, Copy, Check, ExternalLink, RefreshCw,
-  Shield, Zap, ShoppingCart, Cloud, CreditCard, Globe, Briefcase,
+  Shield, Zap, ShoppingCart, Cloud, CreditCard, Globe, Briefcase, BookOpen,
   TrendingUp, MousePointer, FileCheck, Loader2, Trash2,
   BarChart3, ChevronDown, ChevronUp, Plus
 } from 'lucide-react';
