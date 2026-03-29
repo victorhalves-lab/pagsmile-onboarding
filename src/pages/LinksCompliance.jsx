@@ -57,6 +57,7 @@ export default function LinksCompliance() {
   const quickLinksV4 = [
     { key: 'GATEWAY_V4', label: 'Gateway v4', desc: '85 perguntas em 12 blocos. Pré-preenchimento automático do Lead v5. Cobertura regulatória ~98%.', icon: Globe, color: '#4f46e5', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceGatewayV4` },
     { key: 'MARKETPLACE_V4', label: 'Marketplace v4', desc: '75 perguntas em 11 blocos. Foco em sellers, split e anti-bolsão. Pré-preenchimento Lead v5.', icon: ShoppingCart, color: '#d97706', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceMarketplaceV4` },
+    { key: 'PLATAFORMA_VERTICAL_V4', label: 'Plataforma Vertical v4', desc: '52 perguntas em 9 blocos. Verticais de nicho (food, saúde, eventos). Pré-preenchimento Lead v5.', icon: Briefcase, color: '#7c3aed', url: `${base}${createPageUrl('ComplianceDinamico')}?model=CompliancePlataformaVerticalV4` },
   ];
 
   const quickLinksByType = [
