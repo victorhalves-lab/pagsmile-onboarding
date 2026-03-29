@@ -29,6 +29,8 @@ import EndToEndFlowsSection from '../components/howitworks/EndToEndFlowsSection'
 import DadosInsightsSection from '../components/howitworks/DadosInsightsSection';
 import SentinelDeepDiveSection from '../components/howitworks/SentinelDeepDiveSection';
 import NotificacoesAutomacoesSection from '../components/howitworks/NotificacoesAutomacoesSection';
+import PagsmileLeadV5Section from '../components/howitworks/PagsmileLeadV5Section';
+import ComplianceV4Section from '../components/howitworks/ComplianceV4Section';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function HowItWorks() {
@@ -55,16 +57,17 @@ export default function HowItWorks() {
           </div>
         )}
         <div className="flex flex-wrap gap-2 mt-4">
-          <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0">16 Seções</Badge>
+          <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0">18 Seções</Badge>
           <Badge className="bg-blue-50 text-blue-700 border-0">50+ Páginas</Badge>
           <Badge className="bg-purple-50 text-purple-700 border-0">27+ Entidades</Badge>
           <Badge className="bg-orange-50 text-orange-700 border-0">10 Fluxogramas Microscópicos</Badge>
           <Badge className="bg-pink-50 text-pink-700 border-0">5 Jornadas End-to-End</Badge>
           <Badge className="bg-red-50 text-red-700 border-0">3 IAs (SENTINEL, PRISCILA, Lead Qualifier)</Badge>
-          <Badge className="bg-cyan-50 text-cyan-700 border-0">17 Abas de Analytics</Badge>
-          <Badge className="bg-amber-50 text-amber-700 border-0">4 Templates Lead + 3 Templates Compliance</Badge>
+          <Badge className="bg-cyan-50 text-cyan-700 border-0">20 Abas de Analytics</Badge>
+          <Badge className="bg-amber-50 text-amber-700 border-0">5 Templates Lead + 10 Templates Compliance v4</Badge>
           <Badge className="bg-emerald-50 text-emerald-700 border-0">30+ Backend Functions</Badge>
           <Badge className="bg-violet-50 text-violet-700 border-0">3 Tipos de Proposta + Versionamento</Badge>
+          <Badge className="bg-rose-50 text-rose-700 border-0">10 Segmentos + 16 Flags Silenciosas</Badge>
         </div>
       </div>
 
@@ -86,10 +89,10 @@ export default function HowItWorks() {
             </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
-                { label: 'Leads & Qualificação', desc: 'Captação via 4 tipos de questionário, qualificação por IA PRISCILA e Lead Qualifier, pipeline Kanban' },
+                { label: 'Leads & Qualificação', desc: 'Captação via 5 tipos de questionário (incl. Pagsmile v5 com 10 segmentos), qualificação por IA PRISCILA e Lead Qualifier, 16 flags silenciosas, pipeline Kanban' },
                 { label: 'Propostas (3 tipos)', desc: 'Personalizada, Padrão por Segmento (taxas fixas), PIX — com link público, aceite digital e versionamento' },
-                { label: 'Compliance KYC/KYB', desc: '9 fluxos, 3 templates, 305+ perguntas, IA SENTINEL em 3 fases, validações CAF + BigDataCorp' },
-                { label: 'Contratos & Introducers', desc: 'Contratos automatizados via IA, portal Introducer co-branded, subcontas/subsellers' },
+                { label: 'Compliance KYC/KYB', desc: '10 templates v4 por segmento + 9 fluxos legado, pré-preenchimento automático via Lead v5, IA SENTINEL 3 fases, CAF + BigDataCorp' },
+                { label: 'Analytics & Insights', desc: '20 abas analíticas incluindo Inteligência de Mercado, Risco Operacional e Jornada de Compliance' },
               ].map((item, i) => (
                 <div key={i} className="bg-white/10 rounded-xl p-3">
                   <p className="text-xs font-bold text-[#5cf7cf]">{item.label}</p>
@@ -141,14 +144,21 @@ export default function HowItWorks() {
       </Section>
 
       {/* ═══════════════════════════════════════════════════════ */}
-      {/* 5.5. QUESTIONÁRIOS DE LEADS — RAIO-X MICROSCÓPICO */}
+      {/* 5.5. QUESTIONÁRIO PAGSMILE v5 — LEAD SEGMENTADO */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="questionarios-leads" title="5.5. Questionários de Leads — Raio-X Microscópico" icon={Inbox} badge="4 Templates" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="pagsmile-v5" title="5.5. Questionário Pagsmile v5 — Lead Segmentado (10 Verticais)" icon={Target} badge="46 perguntas + 18 condicionais + 16 flags" expandedSections={expandedSections} toggleSection={toggleSection}>
+        <PagsmileLeadV5Section />
+      </Section>
+
+      {/* ═══════════════════════════════════════════════════════ */}
+      {/* 5.6. QUESTIONÁRIOS DE LEADS ANTERIORES */}
+      {/* ═══════════════════════════════════════════════════════ */}
+      <Section id="questionarios-leads" title="5.6. Questionários de Leads — Outros 4 Templates" icon={Inbox} badge="v2.0 + PIX + Simplificado + Reunião" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="space-y-4">
           <div className="bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl p-5 text-white">
-            <h3 className="text-lg font-bold mb-2">4 Tipos de Questionário de Leads</h3>
+            <h3 className="text-lg font-bold mb-2">4 Questionários de Leads Adicionais</h3>
             <p className="text-white/80 text-sm leading-relaxed mb-3">
-              Cada questionário atende a um cenário diferente de captação: desde o wizard completo com autocomplete (Lead Completo v2.0), passando pelo focado em PIX, até o simplificado pós-reunião e o questionário de reunião com Robô IA.
+              Além do Pagsmile v5 (principal), existem 4 outros formatos para cenários específicos: Lead Completo v2.0 com autocomplete, PIX Only, Simplificado pós-reunião e Reunião com Robô IA.
             </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div className="bg-white/10 rounded-xl p-3 text-center">
@@ -178,14 +188,21 @@ export default function HowItWorks() {
       </Section>
 
       {/* ═══════════════════════════════════════════════════════ */}
-      {/* 6. QUESTIONÁRIOS DE COMPLIANCE */}
+      {/* 6. COMPLIANCE v4 — 10 TEMPLATES POR SEGMENTO */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="questionarios" title="6. Questionários de Compliance — Raio-X Microscópico" icon={ClipboardList} badge="3 Templates" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="compliance-v4" title="6. Compliance v4 — 10 Templates por Segmento (Mapeamento Lead v5)" icon={Shield} badge="10 Templates v4" expandedSections={expandedSections} toggleSection={toggleSection}>
+        <ComplianceV4Section />
+      </Section>
+
+      {/* ═══════════════════════════════════════════════════════ */}
+      {/* 6.5. COMPLIANCE LEGADO — 3 TEMPLATES v1/v2 */}
+      {/* ═══════════════════════════════════════════════════════ */}
+      <Section id="questionarios" title="6.5. Compliance Legado — 3 Templates v1/v2 (Merchant, Gateway, Marketplace)" icon={ClipboardList} badge="305+ Perguntas" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="space-y-4">
           <div className="bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl p-5 text-white">
-            <h3 className="text-lg font-bold mb-2">3 Templates Especializados</h3>
+            <h3 className="text-lg font-bold mb-2">3 Templates Hardcoded (v1/v2)</h3>
             <p className="text-white/80 text-sm leading-relaxed mb-3">
-              Cada template foi desenhado para o perfil de risco específico do tipo de negócio. Compartilham as Seções A–J (tronco comum) e se diferenciam nas seções finais.
+              Templates com perguntas fixas no código (Seções A–K). Ainda disponíveis para backwards compatibility. Compartilham as Seções A–J (tronco comum) e se diferenciam na seção K.
             </p>
             <div className="grid grid-cols-3 gap-3">
               <div className="bg-white/10 rounded-xl p-3 text-center">
@@ -219,7 +236,7 @@ export default function HowItWorks() {
       {/* ═══════════════════════════════════════════════════════ */}
       {/* 8. DADOS & INSIGHTS */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="insights" title="8. Dados & Insights — Central de Inteligência (17 Abas)" icon={BarChart3} badge="17 Abas Analíticas" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="insights" title="8. Dados & Insights — Central de Inteligência (20 Abas)" icon={BarChart3} badge="20 Abas Analíticas" expandedSections={expandedSections} toggleSection={toggleSection}>
         <DadosInsightsSection />
       </Section>
 
@@ -454,10 +471,10 @@ export default function HowItWorks() {
       {/* Footer */}
       <div className="mt-8 p-6 bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl text-center">
         <p className="text-sm text-white/70">
-          {t('hiw.footer_version')} • {new Date().toLocaleDateString()}
+          Documentação Completa e Microscópica — Pagsmile v7.0 • {new Date().toLocaleDateString()}
         </p>
         <p className="text-xs text-white/40 mt-1">
-          {t('hiw.footer_stats')}
+          18 Seções • 50+ Páginas • 27+ Entidades • 10 Fluxogramas • 5 Jornadas E2E • 3 IAs • 20 Abas Analytics • 5 Templates Lead (incl. Pagsmile v5 com 10 segmentos) • 10 Templates Compliance v4 + 3 Legados • 30+ Backend Functions • 16 Flags Silenciosas • Scoring 0-100
         </p>
       </div>
     </div>

@@ -44,14 +44,14 @@ export default function DadosInsightsSection() {
       <div className="bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl p-5 text-white">
         <h3 className="text-lg font-bold mb-2">Dados & Insights — Central de Inteligência de Negócio</h3>
         <p className="text-white/80 text-sm leading-relaxed mb-3">
-          Página premium com 17 abas analíticas organizadas em 5 grupos. Cruza dados de Leads, Proposals, PixProposals, OnboardingCases, ComplianceScores, Merchants, Partners e DocumentUploads para gerar insights acionáveis em tempo real.
+          Página premium com 20 abas analíticas organizadas em 5 grupos. Cruza dados de 10 entidades: Leads, Proposals, PixProposals, OnboardingCases, ComplianceScores, Merchants, Partners, DocumentUploads, QuestionnaireResponses e ComplianceSessions.
         </p>
         <div className="grid grid-cols-5 gap-2">
           {[
-            { label: 'Inteligência', count: '1 aba', color: 'bg-purple-500/20' },
+            { label: 'Inteligência', count: '2 abas', color: 'bg-purple-500/20' },
             { label: 'Volume & Taxas', count: '6 abas', color: 'bg-blue-500/20' },
             { label: 'Comercial', count: '3 abas', color: 'bg-green-500/20' },
-            { label: 'Perfil & Risco', count: '5 abas', color: 'bg-amber-500/20' },
+            { label: 'Perfil & Risco', count: '8 abas', color: 'bg-amber-500/20' },
             { label: 'Parceiros', count: '1 aba', color: 'bg-cyan-500/20' },
           ].map((g, i) => (
             <div key={i} className={`${g.color} rounded-lg p-2 text-center`}>
@@ -63,11 +63,16 @@ export default function DadosInsightsSection() {
       </div>
 
       {/* GRUPO: INTELIGÊNCIA */}
-      <h4 className="text-sm font-bold text-purple-600 border-b border-purple-200 pb-1 mt-6">🧠 Inteligência IA</h4>
+      <h4 className="text-sm font-bold text-purple-600 border-b border-purple-200 pb-1 mt-6">🧠 Inteligência</h4>
       <TabDetail name="Insights IA" group="Inteligência" description="IA analisa todos os dados e gera insights narrativos automáticos sobre tendências, anomalias e oportunidades."
         metricas={['Resumo executivo gerado por LLM', 'Análise de tendências (crescimento/queda)', 'Anomalias detectadas nos dados']}
         graficos={['Cards de insights com ícones por categoria', 'Priorização por impacto']}
         insights={['Recomendações de ação para comercial', 'Alertas de performance', 'Sugestões de otimização']}
+      />
+      <TabDetail name="Inteligência de Mercado" group="Inteligência" description="Extrai dados do questionário Pagsmile v5 para gerar inteligência de mercado: segmentação granular, concorrência, dores, urgência, maturidade antifraude e canal de aquisição."
+        metricas={['Leads com perfil v5 vs total', 'Novos merchants (nunca processaram)', 'Urgência imediata (count)', 'Insatisfeitos com processador atual']}
+        graficos={['Donut: Segmento granular v5 (10 verticais)', 'Donut: Satisfação com processador', 'Donut: Urgência de migração', 'Donut: Já processa pagamentos?', 'Donut: Maturidade antifraude', 'Donut: Faturamento anual', 'Donut: Modelo de cobrança', 'Donut: Funcionários', 'Donut: Expectativa de crescimento', 'HorizontalBarList: Processador atual (de onde vêm)', 'HorizontalBarList: Principais dores do mercado', 'HorizontalBarList: Canal de aquisição', 'HorizontalBarList: Plataforma e-commerce']}
+        insights={['De qual processador vêm mais leads', 'Quais dores mais recorrentes', 'Qual segmento cresce mais', 'Qual canal de marketing mais efetivo']}
       />
 
       {/* GRUPO: VOLUME & TAXAS */}
@@ -138,10 +143,20 @@ export default function DadosInsightsSection() {
         graficos={['Donut por nível de risco', 'Histograma de scores SENTINEL']}
         insights={['Exposição total ao risco', 'Tendência de deterioração']}
       />
+      <TabDetail name="Risco Operacional" group="Risco" description="Análise das 16 flags silenciosas do Lead v5, chargeback, MED PIX, encerramentos, idade empresa, capital social e CNAEs do enriquecimento CNPJ."
+        metricas={['Leads com flags (count e tipos)', 'Chargeback crítico (>2%)', 'Contas já encerradas', 'Empresas <6 meses (CNPJ enrich.)']}
+        graficos={['HorizontalBarList: Mapa de 16 flags silenciosas', 'Donut: Faixa de chargeback', 'Donut: MED PIX (contestações)', 'Donut: Encerramento de contas', 'Donut: Idade da empresa (enrichment CNPJ)', 'Donut: Porte (Receita Federal)', 'Donut: Capital Social (faixas)', 'HorizontalBarList: CNAEs mais frequentes']}
+        insights={['Flags mais recorrentes na carteira', 'Exposição a chargeback/MED PIX', 'Saúde financeira do portfólio (idade + capital)', 'Concentração de CNAEs (risco setorial)']}
+      />
       <TabDetail name="Compliance" group="Risco" description="Métricas de compliance: aprovações, rejeições, documentos, tempos."
         metricas={['Taxa aprovação automática', 'Taxa revisão manual', 'Docs por caso (média)', 'Respostas por caso']}
         graficos={['Funil compliance', 'Evolução aprovações/rejeições']}
         insights={['Eficiência da IA', 'Tipos de documento mais problemáticos']}
+      />
+      <TabDetail name="Jornada de Compliance" group="Risco" description="Análise microscópica das ComplianceSessions: taxa de conclusão, abandono por etapa e modelo, tempo mediano, conversão por vertical."
+        metricas={['Total sessões de compliance', 'Taxa de conclusão (%)', 'Sessões abandonadas (count + %)', 'Tempo mediano de preenchimento']}
+        graficos={['Donut: Status da sessão (active/completed/expired)', 'Donut: Fase atual de abandono (Questionário/Documentos/Concluído)', 'Donut: Tipo de fluxo', 'HorizontalBarList: Volume por modelo de compliance', 'BarChart: Conversão por modelo (concluídos vs abandonados)', 'BarChart: Etapa de abandono (em qual step param)']}
+        insights={['Modelo com maior/menor conversão', 'Etapa com maior drop-off', 'Eficiência do pré-preenchimento v4', 'Tempo médio por vertical']}
       />
       <TabDetail name="Saúde dos Dados" group="Risco" description="Qualidade e completude dos dados nos registros de leads."
         metricas={['% leads com e-mail', '% leads com CNPJ', '% leads com TPV', '% campos preenchidos']}

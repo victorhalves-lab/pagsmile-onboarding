@@ -469,15 +469,16 @@ export default function SidebarPagesSection() {
         subAbas={[]}
       />
 
-      <PageDetail name="Dados & Insights (DadosInsights)" description="Central premium de inteligência de negócio com 17 abas analíticas em 5 grupos. Cruza dados de todas as entidades para gerar métricas, gráficos e insights acionáveis." access="Admin"
+      <PageDetail name="Dados & Insights (DadosInsights)" description="Central premium de inteligência de negócio com 20 abas analíticas em 5 grupos. Cruza dados de 10 entidades para gerar métricas, gráficos e insights acionáveis." access="Admin"
         funcionalidades={[
           "Header premium com 5 contadores (Leads, Propostas, Compliance, Merchants, Parceiros) em tempo real",
-          "Navegação por 5 grupos de abas: Inteligência (1), Volume & Taxas (6), Comercial (3), Perfil & Risco (5), Parceiros (1)",
-          "Consulta 9 entidades simultaneamente: Lead, Proposal, PixProposal, OnboardingCase, ComplianceScore, Merchant, DocumentUpload, QuestionnaireResponse, Partner",
-          "17 abas analíticas com métricas, gráficos (Recharts) e insights por dimensão"
+          "Navegação por 5 grupos de abas: Inteligência (2), Volume & Taxas (6), Comercial (3), Perfil & Risco (8), Parceiros (1)",
+          "Consulta 10 entidades simultaneamente: Lead, Proposal, PixProposal, OnboardingCase, ComplianceScore, Merchant, DocumentUpload, QuestionnaireResponse, Partner, ComplianceSession",
+          "20 abas analíticas com métricas, gráficos (Recharts) e insights por dimensão"
         ]}
         subAbas={[
           "🧠 Insights IA (InsightsAISection): IA analisa todos os dados e gera narrativas automáticas sobre tendências, anomalias e oportunidades de ação",
+          "🎯 Inteligência de Mercado (InsightsMarketIntelSection): dados do Lead v5 — segmentação granular 10 verticais, processador atual, satisfação, dores, urgência, modelo cobrança, faturamento, funcionários, antifraude, canal aquisição, plataforma e-commerce",
           "💰 TPV & Volume (InsightsTPVSection): TPV total/médio/mediano, histograma por faixa, distribuição por tipo de negócio, evolução temporal",
           "⚔️ Benchmark (InsightsBenchmarkSection): taxas esperadas pelos leads vs taxas oferecidas nas propostas, gap de preço, posição competitiva",
           "📊 Mix (InsightsMixSection): distribuição de métodos de pagamento preferidos (PIX, Crédito, Débito, Boleto) por segmento",
@@ -489,8 +490,10 @@ export default function SidebarPagesSection() {
           "👥 Introducers (InsightsIntroducerSection): leads por parceiro, conversão por Introducer, TPV gerado, receita estimada, ROI por canal",
           "👤 Perfil de Leads (InsightsLeadProfileSection): segmentação por tipo negócio, MCC, região, score, perfil do lead ideal",
           "🏢 Operacional (InsightsOperationalSection): volume mensal de leads e casos, tempo processamento, capacidade operacional",
-          "🛡️ Risco (InsightsRiskPortfolioSection): distribuição de risco BAIXO/MÉDIO/ALTO/CRÍTICO, score médio carteira, concentração, histograma SENTINEL",
+          "🛡️ Risco Portfólio (InsightsRiskPortfolioSection): distribuição de risco BAIXO/MÉDIO/ALTO/CRÍTICO, score médio carteira, concentração, histograma SENTINEL",
+          "⚠️ Risco Operacional (InsightsRiskOperationalSection): mapa das 16 flags silenciosas, chargeback, MED PIX, encerramento de contas, idade empresa (CNPJ enrichment), porte Receita Federal, capital social, CNAEs mais frequentes",
           "✅ Compliance (InsightsComplianceSection): taxa aprovação auto, revisão manual, docs por caso, respostas por caso, funil compliance",
+          "🛤️ Jornada Compliance (InsightsComplianceJourneySection): taxa conclusão por modelo v4, abandono por etapa, tempo mediano, conversão stacked bar por vertical, drop-off analysis por step",
           "📊 Saúde dos Dados (InsightsDataHealthSection): % completude por campo (e-mail, CNPJ, TPV, etc.), impacto na qualificação",
           "🤝 Parceiros (InsightsPartnerSection): propostas por parceiro adquirente, custo médio, margem, parceiro mais competitivo por MCC"
         ]}
@@ -535,12 +538,29 @@ export default function SidebarPagesSection() {
         subAbas={[]}
       />
 
-      <PageDetail name="Lead Questionnaire" description="Questionário público de qualificação comercial para novos leads." access="Público"
+      <PageDetail name="Questionário Pagsmile v5 (QuestionarioLeadsPagsmile)" description="Questionário público de leads com 10 segmentos granulares, 46 perguntas + 18 condicionais, 16 flags silenciosas e scoring automático 0-100." access="Público"
         funcionalidades={[
-          "Formulário multi-step com seções: Dados Empresa, Tipo Negócio, Volume, Taxas Atuais, Contato",
-          "Autocomplete CNPJ via API Brasil (versão v2.0 preenche 14 campos automaticamente)",
-          "Validação de e-mail, telefone, CPF/CNPJ em tempo real",
-          "Cria Lead + LeadActivity + dispara análise PRISCILA automaticamente"
+          "10 segmentos: Gateway, Marketplace, Plataforma Vertical, E-commerce, Dropshipping, Infoprodutos, SaaS, Educação, Link Pagamento, MPE",
+          "10 etapas: Segmento → Dados Empresa → Modelo Negócio (condicional) → Volumetria → Distribuição → Taxas Atuais → Compliance/Risco → Endereço → Porte → Fechamento",
+          "Autocomplete CNPJ via BrasilAPI (14+ campos), autocomplete CEP via ViaCEP",
+          "18 perguntas condicionais que só aparecem baseadas no segmento selecionado (ex: Gateway → licença BCB, split; Infoprodutos → afiliados, garantia)",
+          "SliderDistribution: split visual PIX/Crédito/Débito/Boleto com soma=100%",
+          "16 flags silenciosas calculadas automaticamente (PERSONAL_EMAIL, NO_WEBSITE, HIGH_CHARGEBACK, TERMINATED_BEFORE, etc.)",
+          "Score calculado em tempo real (0-100): base 40 + bônus (e-mail corporativo, cargo decisor, TPV alto, urgência) - penalidades (chargeback, encerramento, etc.)",
+          "Labels: ≥80 Muito Quente, ≥60 Quente, ≥40 Morno, <40 Frio",
+          "Dados alimentam Inteligência de Mercado e Risco Operacional nos Dados & Insights",
+          "Mapeamento segmento → template de compliance v4 correto via useLeadPrefill"
+        ]}
+        subAbas={[]}
+      />
+
+      <PageDetail name="Lead Questionnaire v2 + PIX + Simplificado" description="3 variantes de questionário público: Lead Completo v2.0 (10 etapas com autocomplete), PIX Only e Simplificado pós-reunião." access="Público"
+        funcionalidades={[
+          "LeadQuestionnaire (v2 Autocomplete): 10 etapas, 45 campos, autocomplete CNPJ (brasilApiCnpj)",
+          "LeadQuestionnairePix: versão reduzida focada em PIX, 15 campos, 3 seções",
+          "QuestionarioSimplificadoPublico: versão rápida para pós-reunião, 18 campos, foco em taxas atuais",
+          "Cria Lead + LeadActivity + dispara análise PRISCILA automaticamente",
+          "Suporte a UTM params e referralCode para rastreamento"
         ]}
         subAbas={[]}
       />
