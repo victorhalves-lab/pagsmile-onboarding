@@ -133,6 +133,39 @@ export default function ComplianceV4Section() {
         </div>
       </div>
 
+      {/* Perguntas-Chave por Template v4 */}
+      <div className="bg-white rounded-xl p-4 border border-slate-200">
+        <h4 className="text-sm font-bold text-[#002443] mb-3 flex items-center gap-2">
+          <Shield className="w-4 h-4 text-purple-600" />Perguntas-Chave Específicas por Template v4 (Diferenciação)
+        </h4>
+        <p className="text-[10px] text-[#002443]/50 mb-3">Todos os templates compartilham um tronco comum (identificação, endereço, estrutura societária, PLD/sanções). Abaixo, as perguntas EXCLUSIVAS que diferem por segmento — responsáveis pelo scoring diferenciado e classificação de risco.</p>
+        <div className="space-y-3">
+          {[
+            { tmpl: 'Gateway v4', color: 'border-l-indigo-500', qs: ['Possui licença/autorização do BCB para operar como instituição de pagamento?', 'Qual modelo de split de pagamentos utiliza?', 'Quantos sub-merchants ativos processam por sua plataforma?', 'Implementa KYC de sub-merchants? Descreva o processo.', 'Possui certificação PCI DSS? Qual nível?', 'Qual o % de transações CNP (Card Not Present)?', 'Possui política formal de onboarding e offboarding de sub-merchants?', 'Monitora transações em tempo real para detecção de fraude?', 'Utiliza modelo BaaS? Qual instituição parceira?', 'Taxa de chargeback dos últimos 12 meses? (V28/V29 do motor v4)'] },
+            { tmpl: 'Marketplace v4', color: 'border-l-amber-500', qs: ['Quantos sellers ativos na plataforma?', 'Qual a taxa de take rate média?', 'Como é o processo de KYC dos sellers?', 'Sellers transferem valores para terceiros?', 'Possui política de onboarding e offboarding de sellers?', 'Monitora contestações (chargebacks) por seller?', 'Sellers vendem produtos regulados?', 'Possui programa de proteção ao comprador?'] },
+            { tmpl: 'E-commerce v4', color: 'border-l-rose-500', qs: ['Qual plataforma de e-commerce utiliza? (VTEX/Shopify/WooCommerce/Nuvemshop/própria)', 'Modelo de entrega: estoque próprio, dropshipping, digital?', 'Prazo médio de entrega ao consumidor?', 'Política de cancelamento e reembolso?', 'Taxa de chargeback últimos 12 meses?', 'Possui solução antifraude integrada? Qual?', 'Vende para outros países?', 'Ticket médio e faixa de preço?'] },
+            { tmpl: 'Infoprodutos v4', color: 'border-l-amber-500', qs: ['Utiliza rede de afiliados? Quantos afiliados ativos?', 'Oferece garantia de reembolso? Qual prazo?', 'Modelo de co-produção com outros infoprodutores?', 'Plataforma de distribuição (Hotmart/Eduzz/Monetizze/Kiwify/própria)?', 'Taxa de reembolso nos últimos 6 meses?', 'Produz conteúdo próprio ou revende?', 'Valor médio dos produtos e faixa de preço?'] },
+            { tmpl: 'SaaS v4', color: 'border-l-cyan-500', qs: ['Modelo de pricing: mensal, anual, freemium, trial?', 'Taxa de churn mensal?', 'Faturamento por recorrência vs avulso (%)?', 'Possui período trial/gratuito? Conversão trial→pago?', 'Mercado: B2B, B2C ou ambos?', 'Ticket médio mensal por cliente?'] },
+            { tmpl: 'Dropshipping v4', color: 'border-l-orange-500', qs: ['Fornecedores: nacionais, internacionais ou ambos?', 'Prazo médio de entrega ao consumidor?', 'Como gerencia garantias e devoluções?', 'Taxa de chargeback últimos 12 meses? (alto risco)', 'Possui contrato com fornecedores?', 'Já teve conta encerrada por outro processador?'] },
+            { tmpl: 'Educação v4', color: 'border-l-sky-500', qs: ['Tipo: escola, faculdade, curso técnico, curso livre?', 'Modelo de cobrança: mensalidade, matrícula, módulo?', 'Emite boleto educacional?', 'Possui inadimplência estruturada (renegociação)?', 'Parcela em quantas vezes no máximo?'] },
+            { tmpl: 'Plat. Vertical v4', color: 'border-l-violet-500', qs: ['Qual vertical atende? (foodtech, PDV, agendamento, ticketing, fitness)', 'Rede de estabelecimentos: quantos?', 'Modelo de split com estabelecimentos?', 'Possui funcionalidade de antecipação para estabelecimentos?', 'Integração com PDV/POS? Qual?'] },
+            { tmpl: 'Merchant Link v4', color: 'border-l-green-500', qs: ['Canal principal de vendas: Instagram, WhatsApp, site próprio?', 'Gera links de pagamento manualmente ou automatizado?', 'Volume médio de transações por mês?', 'Já utilizou outro processador de link?'] },
+            { tmpl: 'MPE v4', color: 'border-l-amber-500', qs: ['Regime tributário: MEI, Simples Nacional, Lucro Presumido?', 'Faturamento anual declarado?', 'Atividade principal presencial ou online?', 'Já processou pagamentos por cartão/PIX anteriormente?', 'Possui maquininha? De qual operadora?'] },
+          ].map((t, i) => (
+            <div key={i} className={`border-l-4 ${t.color} pl-3`}>
+              <Badge className="text-[10px] bg-slate-100 text-slate-700 border-0 mb-1">{t.tmpl}</Badge>
+              <div className="space-y-0.5">
+                {t.qs.map((q, j) => (
+                  <p key={j} className="text-[9px] text-[#002443]/60 flex items-start gap-1">
+                    <span className="text-purple-400 shrink-0">Q{j+1}.</span>{q}
+                  </p>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Versões anteriores */}
       <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
         <h4 className="text-xs font-bold text-[#002443]/50 uppercase tracking-wider mb-2">Gerações Anteriores (ainda disponíveis)</h4>

@@ -241,23 +241,28 @@ export default function SidebarPagesSection() {
       {/* ═══════ COMPLIANCE ═══════ */}
       <h3 className="text-base font-bold text-[#002443] border-b border-slate-200 pb-2 mt-8">🛡️ Compliance</h3>
 
-      <PageDetail name="Dashboard de Compliance" description="Dashboard executivo com 20+ KPIs, gráficos e tabela de casos." access="Admin"
+      <PageDetail name="Dashboard de Compliance" description="Dashboard executivo com 25+ KPIs, gráficos, Risk Scoring v4 e tabela de casos." access="Admin"
         funcionalidades={[
           "Hero Header com botões Atualizar e Gerar Link",
           "KPIs Row 1: Total Submissões, Aprovadas (Helena), Em Análise Manual, Reprovadas (Helena)",
           "KPIs Row 2: Tempo de Conclusão, Taxa de Conversão, Taxa de Rejeição, Aprovação Auto IA",
           "Quick Metrics: Tempo IA, Tempo Manual, Score Médio, Docs Pendentes",
           "Compliance Scores Overview (SENTINEL): médias SQ, SVE, SGC",
-          "Actionable Insights: alertas de ações necessárias (revisão manual, docs pendentes, revalidações atrasadas)",
+          "Risk Scoring v4 Overview: score v4 médio, distribuição por subfaixa (1A-5), Rolling Reserve médio, bloqueios ativos",
+          "Subfaixa Distribution Cards: 8 cards coloridos (Verde Express → Bloqueio) com contagem de casos por subfaixa",
+          "Actionable Insights: alertas de ações necessárias (revisão manual, docs pendentes, revalidações atrasadas, promoções de subfaixa pendentes)",
           "Helena Insights & Alertas: alertas inteligentes sobre tendências e anomalias",
           "Gráfico Funil de Conversão: Submissões → Análise IA → Aprovadas → Manual → Final",
           "Gráfico Pizza Helena: distribuição de decisões (Aprovado/Manual/Recusado)",
           "Gráfico Tendência: IA vs Manual nos últimos 6 meses",
           "Top Causas de Reprovação: ranking de red flags mais frequentes",
-          "Distribuição de Scores: histograma por faixa (0-199, 200-399, 400-649, 650-849, 850-1000)",
+          "Distribuição de Scores v4: histograma por subfaixa (1A: 0-99, 1B: 100-199, ..., 5: 850-1000)",
+          "Variáveis v4 mais ativas: ranking das 10 variáveis V01-V53 + E01-E11 que mais impactam o score",
+          "Bloqueios v4: contagem de casos por bloqueio (B01 CNPJ Inativo, B04 OFAC, B09 MEI Intermediário, etc.)",
           "Pipeline de Vendas: resumo integrado do funil comercial",
           "Distribuição de Risco: cards Baixo/Médio/Alto/Crítico",
-          "Tabela de Casos com 6 tabs por status + busca + filtros (Tipo PF/PJ, Período) + 7 colunas ordenáveis"
+          "Monitoramento por nível: distribuição PADRÃO → MÁXIMO com contagem",
+          "Tabela de Casos com 6 tabs por status + busca + filtros (Tipo PF/PJ, Período) + colunas: Merchant, Score v4, Subfaixa, Status, Prioridade, RR%, Analista, Data"
         ]}
         subAbas={[
           "Todos: lista completa de casos",
@@ -469,12 +474,12 @@ export default function SidebarPagesSection() {
         subAbas={[]}
       />
 
-      <PageDetail name="Dados & Insights (DadosInsights)" description="Central premium de inteligência de negócio com 20 abas analíticas em 5 grupos. Cruza dados de 10 entidades para gerar métricas, gráficos e insights acionáveis." access="Admin"
+      <PageDetail name="Dados & Insights (DadosInsights)" description="Central premium de inteligência de negócio com 21 abas analíticas em 5 grupos. Cruza dados de 10 entidades para gerar métricas, gráficos e insights acionáveis." access="Admin"
         funcionalidades={[
           "Header premium com 5 contadores (Leads, Propostas, Compliance, Merchants, Parceiros) em tempo real",
-          "Navegação por 5 grupos de abas: Inteligência (2), Volume & Taxas (6), Comercial (3), Perfil & Risco (8), Parceiros (1)",
+          "Navegação por 5 grupos de abas: Inteligência (2), Volume & Taxas (6), Comercial (3), Perfil & Risco (9 — inclui Risk Scoring v4), Parceiros (1)",
           "Consulta 10 entidades simultaneamente: Lead, Proposal, PixProposal, OnboardingCase, ComplianceScore, Merchant, DocumentUpload, QuestionnaireResponse, Partner, ComplianceSession",
-          "20 abas analíticas com métricas, gráficos (Recharts) e insights por dimensão"
+          "21 abas analíticas com métricas, gráficos (Recharts) e insights por dimensão"
         ]}
         subAbas={[
           "🧠 Insights IA (InsightsAISection): IA analisa todos os dados e gera narrativas automáticas sobre tendências, anomalias e oportunidades de ação",
@@ -495,22 +500,33 @@ export default function SidebarPagesSection() {
           "✅ Compliance (InsightsComplianceSection): taxa aprovação auto, revisão manual, docs por caso, respostas por caso, funil compliance",
           "🛤️ Jornada Compliance (InsightsComplianceJourneySection): taxa conclusão por modelo v4, abandono por etapa, tempo mediano, conversão stacked bar por vertical, drop-off analysis por step",
           "📊 Saúde dos Dados (InsightsDataHealthSection): % completude por campo (e-mail, CNPJ, TPV, etc.), impacto na qualificação",
+          "📊 Risk Scoring v4 (InsightsRiskScoringV4Section): distribuição por subfaixa (1A-5), variáveis mais ativas (V01-V53+E01-E11), bloqueios B01-B10 por frequência, Rolling Reserve médio, monitoramento por nível, promoções pendentes, evolução temporal do score v4 médio, stacked bar subfaixas×segmento, divergência v4 vs SENTINEL",
           "🤝 Parceiros (InsightsPartnerSection): propostas por parceiro adquirente, custo médio, margem, parceiro mais competitivo por MCC"
         ]}
       />
 
-      <PageDetail name="Parceiros — Adquirentes (ConfiguracaoParceiros)" description="Página dedicada à gestão de parceiros adquirentes/subadquirentes e suas taxas de custo por MCC." access="Admin"
+      <PageDetail name="Parceiros — Adquirentes (ConfiguracaoParceiros)" description="Página dedicada à gestão de parceiros adquirentes/subadquirentes e suas taxas de custo por MCC × Bandeira × Faixa." access="Admin"
         funcionalidades={[
-          "Lista de Partners com cards expandíveis",
-          "Cada parceiro tem: Nome, Modelo de Precificação, Parcelas Máx, Fee Transação, Antifraude, 3DS, Antecipação, Notas",
-          "Flag 'Principal': parceiro usado como base para cálculo de taxas e limites",
-          "Tabela MDR por MCC: cada parceiro pode ter taxas diferenciadas por MCC (código de categoria do merchant)",
-          "Cada MCC tem taxas por bandeira (Visa, Master, Elo, Amex, Outras) × 5 faixas (Débito, 1x, 2-6x, 7-12x, 13-24x)",
-          "Limites de taxas são usados para validação na criação de propostas — alertas visuais quando taxa está abaixo do custo",
-          "Criar/Editar/Excluir parceiro com formulário completo",
-          "Acessível diretamente pelo sidebar como item standalone 'Parceiros'"
+          "Lista de Partners com cards expandíveis — cada card mostra resumo + badge Principal/Secundário",
+          "Dados do parceiro: Nome, Modelo de Precificação (MDR fixo bandeira×MCC, Interchange+markup), Parcelas Máx (12x, 21x, 24x), Fee Transação (R$), Antifraude (R$), 3DS (R$), Antecipação (%), Notas",
+          "Flag 'Principal' (isPrincipal): marca o parceiro usado como referência para cálculo de custos e limites de taxas em propostas",
+          "PartnerCard: card expandível com 3 seções — Dados Gerais, Taxas Globais, MCCs",
+          "PartnerFormModal: formulário completo com campos: Nome, Modelo, Parcelas, Fee, Antifraude, 3DS, Antecipação, Notas, isPrincipal toggle",
+          "BrNumberInput: componente de input numérico formatado em padrão brasileiro (vírgula decimal, ponto milhar)",
+          "MCCRatesEditor: editor de taxas por MCC — cada linha é um MCC com código, descrição e taxas editáveis",
+          "Tabela MDR por MCC (mdrByMcc[]): cada parceiro tem N registros de MCC, cada MCC contém taxas por bandeira (Visa, Master, Elo, Amex, Outras) × 5 faixas (Débito, À Vista 1x, 2-6x, 7-12x, 13-24x) — total: até 25 taxas por MCC por parceiro",
+          "MCCRateEditor: editor inline com grid de inputs — permite edição de todas as 25 taxas de um MCC em uma visualização tabular",
+          "PartnersTab: aba central que lista todos os parceiros com botão 'Novo Parceiro'",
+          "Validação cruzada: na CriarProposta, as taxas oferecidas ao cliente são validadas contra o custo do parceiro selecionado — se a taxa proposta for MENOR que o custo do parceiro, exibe alerta vermelho 'Taxa abaixo do custo' com o delta",
+          "Cálculo de limites: partnerLimits.js calcula taxas mínimas e máximas por bandeira × faixa baseado no parceiro selecionado + MCC do merchant",
+          "Integração com Propostas: CriarProposta, CriarPropostaPadrao e CriarPropostaPix consultam Partner para pré-popular taxas base e validar limites",
+          "Integração com Rentabilidade: RentabilidadeDrawer/ProfitabilityPanel usa custos do parceiro para calcular margem bruta (receita MDR - custo parceiro)"
         ]}
-        subAbas={[]}
+        subAbas={[
+          "PartnersTab: lista visual de todos os parceiros com cards expandíveis e ações (editar, excluir, ver MCCs)",
+          "MCCRatesEditor: para cada parceiro, tabela editável de todos os MCCs com taxas por bandeira×faixa — scroll horizontal para 25+ colunas",
+          "PartnerMDRTable: visualização read-only da tabela completa de MDR para comparação e exportação"
+        ]}
       />
 
       {/* ═══════ PÁGINAS PÚBLICAS ═══════ */}

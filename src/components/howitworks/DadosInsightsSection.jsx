@@ -164,6 +164,12 @@ export default function DadosInsightsSection() {
         insights={['Campos mais ignorados', 'Impacto na qualificação']}
       />
 
+      <TabDetail name="Risk Scoring v4" group="Risco" description="Análise microscópica do Motor de Risk Scoring v4.0: distribuição por subfaixa, variáveis mais ativas, bloqueios mais frequentes, Rolling Reserve médio, promoções e evolução temporal."
+        metricas={['Score v4 médio da carteira', 'Distribuição por subfaixa (1A-5)', 'Rolling Reserve médio ponderado (%)', 'Bloqueios ativos (count B01-B10)', 'Casos com decisão automática vs manual', 'Score base médio por segmento', 'Variáveis positivas vs negativas (count)', 'Promoções programadas (próximos 90 dias)']}
+        graficos={['Donut: Distribuição por subfaixa (1A=Verde Express → 5=Bloqueio)', 'Donut: Decisão automática vs manual vs bloqueio', 'BarChart: Score base por segmento (13 segmentos)', 'HorizontalBarList: Top 10 variáveis negativas mais ativas (V28 Chargeback, V42 Sem BCB, etc.)', 'HorizontalBarList: Top 10 variáveis positivas mais aplicadas (V12 Google Maps, V15 Empresa >5 anos, etc.)', 'HorizontalBarList: Bloqueios B01-B10 por frequência', 'Donut: Nível de monitoramento (PADRÃO → MÁXIMO)', 'Donut: Rolling Reserve aplicado (0% / 5% / 10% / 15% / 20%)', 'BarChart: Evolução temporal do score v4 médio por mês', 'Stacked Bar: Subfaixas por segmento (Gateway vs E-commerce vs PIX etc.)']}
+        insights={['Segmentos com maior concentração de risco (score alto)', 'Variáveis que mais impactam o score (positiva e negativamente)', 'Eficácia dos bloqueios automáticos (B01-B10)', 'Evolução do perfil de risco ao longo do tempo', 'Rolling Reserve acumulado: exposição financeira total', 'Promoções pendentes: merchants elegíveis para redução de subfaixa', 'Divergência entre score v4 (determinístico) e SENTINEL (qualitativo)']}
+      />
+
       {/* GRUPO: PARCEIROS */}
       <h4 className="text-sm font-bold text-cyan-600 border-b border-cyan-200 pb-1 mt-6">🤝 Parceiros</h4>
       <TabDetail name="Parceiros Adquirentes" group="Parceiros" description="Análise de uso e custos dos parceiros adquirentes nas propostas."

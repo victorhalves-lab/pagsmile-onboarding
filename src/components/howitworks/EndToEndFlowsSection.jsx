@@ -80,7 +80,7 @@ export default function EndToEndFlowsSection() {
       <div className="bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl p-6 text-white">
         <h3 className="text-xl font-bold mb-2">Jornadas Completas de Ponta a Ponta</h3>
         <p className="text-white/80 text-sm leading-relaxed">
-          Cada tipo de entrada de cliente gera uma jornada diferente. Abaixo, os 5 caminhos possíveis — do primeiro contato até o contrato assinado — mostrando cada passo, quem faz, onde faz, e o que acontece automaticamente.
+          Cada tipo de entrada de cliente gera uma jornada diferente. Abaixo, os 6 caminhos possíveis — do primeiro contato até o contrato assinado — mostrando cada passo, quem faz, onde faz, e o que acontece automaticamente.
         </p>
         <div className="flex flex-wrap gap-2 mt-4">
           <Badge className="bg-[#2bc196]/20 text-[#5cf7cf] border-0">Jornada 1: Via Introducer (Landing Page)</Badge>
@@ -88,6 +88,7 @@ export default function EndToEndFlowsSection() {
           <Badge className="bg-purple-500/20 text-purple-300 border-0">Jornada 3: Via Reunião Manual</Badge>
           <Badge className="bg-pink-500/20 text-pink-300 border-0">Jornada 4: Via Robô IA (Notas)</Badge>
           <Badge className="bg-amber-500/20 text-amber-300 border-0">Jornada 5: Via Proposta Padrão (Link Rápido)</Badge>
+          <Badge className="bg-emerald-500/20 text-emerald-300 border-0">Jornada 6: Via Lead PIX v4 (Merchant/Intermediário)</Badge>
         </div>
       </div>
 
@@ -200,6 +201,47 @@ export default function EndToEndFlowsSection() {
         notificacoes={['Slack: novo lead (quando preenche questionário)']}
       />
 
+      {/* JORNADA 6 — VIA LEAD PIX v4 */}
+      <FlowJourney
+        title="Jornada 6 — Cliente PIX vem pelo Lead PIX v4"
+        subtitle="Questionário PIX v4 → Lead (com flags + score) → Pipeline → Proposta PIX → Compliance PIX → Risk Scoring v4 → Contrato"
+        color="bg-gradient-to-r from-emerald-700 to-teal-600"
+        badge="PIX v4 → Contrato"
+        steps={[
+          { title: 'Comercial gera link LeadPixV4 ou Lead chega organicamente', actor: 'Comercial', page: 'LinksQuestionariosLeads', desc: 'Link com UTMs e referralCode (Introducer opcional). URL: /LeadPixV4?utm_source=xxx&referralCode=yyy', details: ['Também pode ser acessado via landing page do Introducer ou link direto'] },
+          { title: 'Lead seleciona perfil PIX: Merchant Direto ou Intermediário', actor: 'Cliente', page: 'LeadPixV4 → StepTipoNegocio', desc: '2 cards visuais: 🏪 Merchant Direto (recebe PIX para própria empresa) ou 🔗 Intermediário (faz split/repasse). Esta escolha determina quais perguntas condicionais aparecem nos passos seguintes.', details: ['Intermediário: perguntas adicionais sobre qty merchants, split, repasse', 'Merchant: perguntas sobre modelo de cobrança, presença digital'] },
+          { title: 'Lead preenche CNPJ → autocomplete BrasilAPI', actor: 'Cliente', page: 'LeadPixV4 → StepDadosEmpresa', desc: 'CNPJ autocomplete preenche 14+ campos (Razão Social, Nome Fantasia, CNAE, Capital Social, Situação Cadastral, UF, Município, Data Abertura, Porte, Natureza Jurídica, Sócios). Dispara flags silenciosas: YOUNG_COMPANY (<1 ano), SPECIAL_SITUATION, REGULATED_SECTOR, CNAE_SEGMENT_MISMATCH.', details: ['E-mail: detecta domínio pessoal → flag PERSONAL_EMAIL', 'Cargo: Sócio/CEO/Diretor → +10 score'] },
+          { title: 'Lead preenche modelo de negócio PIX (condicional)', actor: 'Cliente', page: 'LeadPixV4 → StepModeloNegocio', desc: 'Perguntas condicionais baseadas no tipo selecionado. Merchant: modelo cobrança (avulso/recorrente/parcelado/ambos), presença digital, conta encerrada. Intermediário: quantidade merchants, finalidade Split PIX.', details: ['Flag ACCOUNT_TERMINATED se conta encerrada = Sim (-15 score)', 'Flag MEI_AS_INTERMEDIARY se porte=MEI + tipo=intermediário', 'Flag INTERMEDIARY_WANTS_SPLIT se intermediário + Split PIX'] },
+          { title: 'Lead informa volume PIX', actor: 'Cliente', page: 'LeadPixV4 → StepVolumePix', desc: 'TPV mensal (CurrencyNumberInput), ticket médio, transações calculadas automaticamente (TPV÷Ticket), horário pico.', details: ['Flag HIGH_PIX_VOLUME_MEI se TPV>R$6.750 + porte MEI (-10 score)', 'Flag TPV_EXCEEDS_REVENUE se TPV×12 > limite porte × 1.3', 'TPV ≥ R$1M: +15 score, ≥R$500k: +10, ≥R$100k: +5'] },
+          { title: 'Lead completa serviços desejados e fechamento', actor: 'Cliente', page: 'LeadPixV4 → Steps 5-7', desc: 'Situação atual (parceiro PIX, custo, motivo busca), 9 serviços PIX (QR estático/dinâmico, Cobrança, Garantido, Split, Conta Digital), urgência, canal, upload proposta concorrente.', details: ['Score finalizado: base 40 + bônus - penalidades (0-100)', 'Label atribuído: Muito Quente (≥80), Quente (≥60), Morno (≥40), Frio (<40)'] },
+          { title: 'Sistema cria Lead PIX com 11 flags + score', actor: 'Sistema', desc: 'Lead criado com: protocolo PIX4-YYYY-NNNNN, status="questionario_preenchido", businessSubCategory baseado no tipo, 11 flags calculadas, score 0-100, label de temperatura.', details: ['Lead.questionnaireData contém todas as respostas + flags + score + cnpjData', 'Introducer vinculado automaticamente se URL contém referralCode', 'Slack notificado (notifyNewLead)', 'PRISCILA + Lead Qualifier executam em paralelo'] },
+          { title: 'Lead no Pipeline → Proposta PIX', actor: 'Comercial', page: 'PipelineComercial → CriarPropostaPix', desc: 'Lead aparece no Pipeline com badge PIX e score. Comercial cria PixProposal: taxa PIX (% ou fixo), TPV mínimo garantido (3 meses). Envia link público.', details: ['Dados do lead pré-preenchidos na proposta', 'Taxa sugerida baseada no volume declarado'] },
+          { title: 'Cliente aceita Proposta PIX', actor: 'Cliente', page: 'PropostaPixPublica', desc: 'Visualiza taxa PIX e TPV mínimo. Aceita, recusa com motivo ou envia contraproposta. Status → "aceita". Notificação Slack.' },
+          { title: 'Compliance PIX (CompliancePixOnly ou ComplianceDinamico)', actor: 'Cliente', page: 'ComplianceDinamico?model=CompliancePixV4', desc: 'Questionário de compliance específico para PIX. Perguntas sobre: identificação, atividade econômica, volume PIX, clientes atendidos, responsável pela conta, SAC, PLD/sanções, confirmação.', details: ['useLeadPrefill pré-preenche campos com dados do Lead PIX v4', 'CNPJ já enriquecido → dados confirmados sem redigitar', 'Documentos obrigatórios solicitados ao final'] },
+          { title: 'Motor Risk Scoring v4 executa', actor: 'Sistema', desc: 'calculateRiskScoreV4 dispara: C1 (segmento=pix_merchant base 80 ou pix_intermediario base 205) + C2 (variáveis V01-V53 ativas por segmento) + C3 (enriquecimento E01-E11 se BDC/CAF disponível). Verifica bloqueios B01-B10.', details: ['Se bloqueio ativo → Score=1000, Subfaixa=5 (BLOQUEIO)', 'Se sem bloqueio → Score=max(0,min(849,C1+C2+C3))', 'Mapeia para subfaixa 1A-4, define Rolling Reserve (0-20%)', 'Define nível de monitoramento (PADRÃO → MÁXIMO)', 'Salva ComplianceScore com detalhamento completo'] },
+          { title: 'IA SENTINEL gera parecer qualitativo', actor: 'IA', desc: 'SENTINEL usa score v4 como base quantitativa + análise qualitativa: findings, quality assessment, parecer final. OnboardingCase atualizado: riskScoreV4, subfaixa, rollingReservePercent, monitoramentoNivel, iaDecision.', details: ['Decisão: subfaixas 1A-3B → Aprovado automático', 'Subfaixa 4 → Revisão Manual obrigatória', 'Subfaixa 5 → Bloqueio (recusa automática)'] },
+          { title: 'Contrato PIX gerado e assinado', actor: 'Sistema + Comercial + Cliente', desc: 'preGenerateContract() → Contract com módulos PIX habilitados, taxa PIX da proposta, RR do scoring v4, SLAs. Revisão pelo comercial → link público → assinatura digital.', details: ['Módulos: pixRecebimentos=true, pixPagamentos conforme serviços solicitados', 'Cláusula de Rolling Reserve baseada na subfaixa'] },
+        ]}
+        entitiesCreated={[
+          'Lead (protocolo PIX4-xxx, 11 flags, score 0-100, questionnaireData completo)',
+          'LeadActivity (cada interação registrada)',
+          'PixProposal (taxa PIX + TPV mínimo + versionamento)',
+          'OnboardingCase + ComplianceSession (sessão PIX)',
+          'ComplianceScore (framework v4: score_base 80/205 + variáveis + enriquecimento + subfaixa + RR + monitoramento)',
+          'ComplianceFinding[] (findings por severidade)',
+          'Contract (módulos PIX, RR da subfaixa, SLAs)',
+          'AuditLog (cada operação rastreada)',
+        ]}
+        notificacoes={[
+          'Slack: novo lead PIX v4 (notifyNewLead com badge PIX)',
+          'Slack: proposta PIX visualizada (notifyProposalViewed)',
+          'Slack: proposta PIX aceita (notifyProposalAccepted)',
+          'E-mail: follow-up se lead inativo >7 dias (sendFollowUpEmail)',
+          'Automação: onLeadCreatedEnrich (enriquecimento automático)',
+          'Automação: calculateRiskScoreV4 (ao criar OnboardingCase)',
+        ]}
+      />
+
       {/* Tabela Comparativa */}
       <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
         <h4 className="font-bold text-[#002443] text-sm mb-4">Comparativo: Etapas por Tipo de Entrada</h4>
@@ -213,19 +255,21 @@ export default function EndToEndFlowsSection() {
                 <th className="text-center py-2 text-amber-600 font-bold">Reunião</th>
                 <th className="text-center py-2 text-pink-600 font-bold">Robô IA</th>
                 <th className="text-center py-2 text-[#2bc196] font-bold">Link Padrão</th>
+                <th className="text-center py-2 text-emerald-600 font-bold">Lead PIX v4</th>
               </tr>
             </thead>
             <tbody>
               {[
-                { etapa: 'Quem inicia', vals: ['Introducer', 'Comercial', 'Comercial', 'Comercial', 'Comercial'] },
-                { etapa: 'Primeiro contato', vals: ['Landing Page', 'Link questionário', 'Reunião', 'Notas de reunião', 'Link proposta padrão'] },
-                { etapa: 'Quem preenche dados', vals: ['Cliente', 'Cliente', 'Comercial', 'IA + Comercial', 'Cliente (depois)'] },
-                { etapa: 'IA automática', vals: ['✅ PRISCILA', '✅ PRISCILA', '❌ Manual', '✅ LLM + PRISCILA', '❌ Só após quest.'] },
-                { etapa: 'Introducer vinculado', vals: ['✅ Automático', '❌', '❌', '❌', '❌'] },
-                { etapa: 'Lead criado por', vals: ['Sistema', 'Sistema', 'Comercial', 'Comercial', 'Sistema'] },
-                { etapa: 'Proposta', vals: ['Personalizada', '3 tipos', '3 tipos', '3 tipos', 'Personalizada'] },
-                { etapa: 'Compliance', vals: ['✅', '✅', '✅', '✅', '✅'] },
-                { etapa: 'Contrato', vals: ['✅ IA', '✅ IA', '✅ IA', '✅ IA', '✅ IA'] },
+                { etapa: 'Quem inicia', vals: ['Introducer', 'Comercial', 'Comercial', 'Comercial', 'Comercial', 'Comercial/Lead'] },
+                { etapa: 'Primeiro contato', vals: ['Landing Page', 'Link questionário', 'Reunião', 'Notas de reunião', 'Link proposta padrão', 'Link PIX v4'] },
+                { etapa: 'Quem preenche dados', vals: ['Cliente', 'Cliente', 'Comercial', 'IA + Comercial', 'Cliente (depois)', 'Cliente'] },
+                { etapa: 'IA automática', vals: ['✅ PRISCILA', '✅ PRISCILA', '❌ Manual', '✅ LLM + PRISCILA', '❌ Só após quest.', '✅ 11 flags + Score'] },
+                { etapa: 'Introducer vinculado', vals: ['✅ Automático', '❌', '❌', '❌', '❌', '✅ Se URL params'] },
+                { etapa: 'Lead criado por', vals: ['Sistema', 'Sistema', 'Comercial', 'Comercial', 'Sistema', 'Sistema'] },
+                { etapa: 'Proposta', vals: ['Personalizada', '3 tipos', '3 tipos', '3 tipos', 'Personalizada', 'PIX'] },
+                { etapa: 'Risk Scoring', vals: ['Legado', 'Legado', 'Legado', 'Legado', 'Legado', '✅ v4.0 Motor'] },
+                { etapa: 'Compliance', vals: ['✅', '✅', '✅', '✅', '✅', '✅ PIX v4'] },
+                { etapa: 'Contrato', vals: ['✅ IA', '✅ IA', '✅ IA', '✅ IA', '✅ IA', '✅ IA + RR v4'] },
               ].map((row, i) => (
                 <tr key={i} className="border-b border-slate-100">
                   <td className="py-2 font-semibold text-[#002443]">{row.etapa}</td>

@@ -63,9 +63,9 @@ export default function HowItWorks() {
           <Badge className="bg-blue-50 text-blue-700 border-0">55+ Páginas</Badge>
           <Badge className="bg-purple-50 text-purple-700 border-0">27+ Entidades</Badge>
           <Badge className="bg-orange-50 text-orange-700 border-0">10 Fluxogramas Microscópicos</Badge>
-          <Badge className="bg-pink-50 text-pink-700 border-0">5 Jornadas End-to-End</Badge>
+          <Badge className="bg-pink-50 text-pink-700 border-0">6 Jornadas End-to-End</Badge>
           <Badge className="bg-red-50 text-red-700 border-0">3 IAs (SENTINEL, PRISCILA, Lead Qualifier) + Motor v4</Badge>
-          <Badge className="bg-cyan-50 text-cyan-700 border-0">20 Abas de Analytics</Badge>
+          <Badge className="bg-cyan-50 text-cyan-700 border-0">21 Abas de Analytics</Badge>
           <Badge className="bg-amber-50 text-amber-700 border-0">6 Templates Lead + 10 Templates Compliance v4</Badge>
           <Badge className="bg-emerald-50 text-emerald-700 border-0">35+ Backend Functions</Badge>
           <Badge className="bg-violet-50 text-violet-700 border-0">3 Tipos de Proposta + Versionamento</Badge>
@@ -92,9 +92,9 @@ export default function HowItWorks() {
             </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
-                { label: 'Leads & Qualificação', desc: 'Captação via 5 tipos de questionário (incl. Pagsmile v5 com 10 segmentos), qualificação por IA PRISCILA e Lead Qualifier, 16 flags silenciosas, pipeline Kanban' },
+                { label: 'Leads & Qualificação', desc: 'Captação via 6 tipos de questionário (incl. Pagsmile v5 com 10 segmentos + PIX v4 com bifurcação), qualificação por IA PRISCILA e Lead Qualifier, 27 flags silenciosas (16 Lead + 11 PIX), pipeline Kanban' },
                 { label: 'Propostas (3 tipos)', desc: 'Personalizada, Padrão por Segmento (taxas fixas), PIX — com link público, aceite digital e versionamento' },
-                { label: 'Compliance KYC/KYB', desc: '10 templates v4 por segmento + 9 fluxos legado, pré-preenchimento automático via Lead v5, IA SENTINEL 3 fases, CAF + BigDataCorp' },
+                { label: 'Compliance KYC/KYB + Risk Scoring v4', desc: '10 templates v4 por segmento + 9 fluxos legado, Motor v4 determinístico (3 camadas, 60 variáveis, 10 bloqueios, 8 subfaixas), IA SENTINEL 3 fases, CAF + BigDataCorp' },
                 { label: 'Analytics & Insights', desc: '20 abas analíticas incluindo Inteligência de Mercado, Risco Operacional e Jornada de Compliance' },
               ].map((item, i) => (
                 <div key={i} className="bg-white/10 rounded-xl p-3">
@@ -121,14 +121,14 @@ export default function HowItWorks() {
       {/* ═══════════════════════════════════════════════════════ */}
       {/* 2. JORNADAS END-TO-END POR TIPO DE ENTRADA */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="jornadas-e2e" title="2. Jornadas End-to-End — 5 Caminhos do Primeiro Contato ao Contrato" icon={GitBranch} badge="5 Jornadas Completas" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="jornadas-e2e" title="2. Jornadas End-to-End — 6 Caminhos do Primeiro Contato ao Contrato" icon={GitBranch} badge="6 Jornadas Completas" expandedSections={expandedSections} toggleSection={toggleSection}>
         <EndToEndFlowsSection />
       </Section>
 
       {/* ═══════════════════════════════════════════════════════ */}
       {/* 3. MAPA COMPLETO DE TODAS AS PÁGINAS */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="paginas" title="3. Mapa Completo de Todas as Páginas — Detalhe Microscópico" icon={Layers} badge="50+ Páginas" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="paginas" title="3. Mapa Completo de Todas as Páginas — Detalhe Microscópico" icon={Layers} badge="55+ Páginas" expandedSections={expandedSections} toggleSection={toggleSection}>
         <SidebarPagesSection />
       </Section>
 
@@ -253,7 +253,7 @@ export default function HowItWorks() {
       {/* ═══════════════════════════════════════════════════════ */}
       {/* 8. DADOS & INSIGHTS */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="insights" title="8. Dados & Insights — Central de Inteligência (20 Abas)" icon={BarChart3} badge="20 Abas Analíticas" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="insights" title="8. Dados & Insights — Central de Inteligência (21 Abas)" icon={BarChart3} badge="21 Abas Analíticas" expandedSections={expandedSections} toggleSection={toggleSection}>
         <DadosInsightsSection />
       </Section>
 
@@ -279,7 +279,7 @@ export default function HowItWorks() {
           {[
             { category: "Core do Onboarding", color: "border-l-[#2bc196]", entities: [
               { name: "Merchant", desc: "PF/PJ: CNPJ, nome, e-mail, telefone, status (5), score, serviços, parentMerchantId (subseller)" },
-              { name: "OnboardingCase", desc: "Caso: merchantId, templateId, status (6), scores 3 fases, decisão IA, analista, prioridade, SLA, red flags" },
+              { name: "OnboardingCase", desc: "Caso: merchantId, templateId, status (6), scores 3 fases, riskScoreV4, subfaixa (1A-5), subfaixaNome, rollingReservePercent, monitoramentoNivel, condicoesAutomaticas[], bloqueiosAtivos[], iaDecision, analista, prioridade, SLA, red flags" },
               { name: "OnboardingLink", desc: "Link: uniqueCode, templateId, agente, UTMs, expiração, métricas, complianceType, linkType" },
               { name: "ComplianceSession", desc: "Sessão: token, flowType, currentPhase/Step, formData, documentsData, status" },
             ]},
@@ -294,8 +294,8 @@ export default function HowItWorks() {
               { name: "DocumentType", desc: "Tipo: nome, formatos, tamanho max, merchantType, obrigatório, conditionalLogic" },
               { name: "DocumentUpload", desc: "Upload: caseId, typeId, fileUrl, fileName, validationStatus, notas" },
             ]},
-            { category: "Análise IA", color: "border-l-pink-500", entities: [
-              { name: "ComplianceScore", desc: "Score 3 fases (0-1000), bônus consistência, score geral, classificação, recomendação, confiança" },
+            { category: "Análise IA + Risk Scoring v4", color: "border-l-pink-500", entities: [
+              { name: "ComplianceScore", desc: "SENTINEL 3 fases + Motor v4: score_base_segmento (C1), score_variaveis (C2 V01-V53), score_enriquecimento (C3 E01-E11), score_final (0-1000), subfaixa (1A-5), subfaixa_nome, rolling_reserve_percent (0-20%), monitoramento_nivel (PADRÃO→MÁXIMO), bloqueios_ativos[], variaveis_aplicadas{}, variaveis_positivas[], variaveis_negativas[], condicoes_automaticas[], decisao_automatica, segmento (13 tipos), is_pix, promocao_proxima_data, promocao_destino + campos legados SENTINEL (score_questionario, score_validacao_externa, bonus_consistencia, score_geral_composto, classificacao_geral, recomendacao_final, parecer_final, red_flags[], nivel_confianca_ia)" },
               { name: "ComplianceFinding", desc: "Finding: severidade (6 níveis), fase, seção, evidência, dedução, recomendação" },
               { name: "QualityAssessment", desc: "Qualidade: scores 1-5 em 4 dimensões + padrões evasivos" },
               { name: "HelenaAnalysis", desc: "Análise: score, decisão, justificativa, breakdown, fatores, feedback" },
@@ -389,7 +389,7 @@ export default function HowItWorks() {
       {/* ═══════════════════════════════════════════════════════ */}
       {/* 13. BACKEND FUNCTIONS */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="backend" title="13. Backend Functions" icon={Server} badge="30+ Functions" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="backend" title="13. Backend Functions" icon={Server} badge="35+ Functions" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {[
             { name: "calculateRiskScoreV4", desc: "Motor v4: 3 camadas + 60 variáveis + bloqueios → score 0-1000, subfaixa, RR, monitoramento" },
@@ -440,12 +440,15 @@ export default function HowItWorks() {
       {/* ═══════════════════════════════════════════════════════ */}
       {/* 14. PERSONAS */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="personas" title="14. Personas e Jornadas" icon={Users} badge="4 Personas" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="personas" title="14. Personas e Jornadas" icon={Users} badge="5 Personas" expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {[
-            { icon: Building2, color: "bg-[#2bc196]", name: "Merchant (Cliente)", desc: "Empresa que deseja se credenciar",
-              pages: ["Questionário de Lead (4 variantes)", "Proposta Pública (personalizada, padrão, PIX)", "Compliance Onboarding (9 variantes)", "Contrato Público", "Landing Page do Introducer"],
-              ux: ["Mobile-first", "Auto-save", "Autocomplete CNPJ", "Feedback visual tempo real"] },
+            { icon: Building2, color: "bg-[#2bc196]", name: "Merchant (Cliente Cartão + PIX)", desc: "Empresa que deseja se credenciar",
+              pages: ["Questionário Lead: Pagsmile v5 (10 segmentos), PIX v4 (Merchant/Intermediário), v2.0 (autocomplete), Simplificado", "Proposta Pública: Personalizada, Padrão por Segmento, PIX — com aceite/contraproposta/recusa", "Compliance: 10 templates v4 (DynamicQuestionnaire) + 9 legados + upload docs + biometria CAF", "Contrato Público: visualização + assinatura digital", "Landing Page Introducer: taxas por segmento + calculadora + questionário integrado"],
+              ux: ["Mobile-first responsivo", "Auto-save localStorage + backend", "Autocomplete CNPJ BrasilAPI (14+ campos)", "Autocomplete CEP ViaCEP", "Feedback visual tempo real (flags, scores, alertas)", "Sessão retomável via ComplianceResume (token)"] },
+            { icon: Building2, color: "bg-emerald-600", name: "Merchant PIX (Direto ou Intermediário)", desc: "Empresa focada exclusivamente em PIX",
+              pages: ["Lead PIX v4: bifurcação Merchant Direto / Intermediário, 25 perguntas, 11 flags, score 0-100", "Proposta PIX: taxa PIX (% ou fixo) + TPV mínimo garantido (3 meses)", "Compliance PIX v4: questionário específico para PIX (CompliancePixV4)", "Risk Scoring v4: segmento pix_merchant (base 80) ou pix_intermediario (base 205)", "Contrato PIX: módulos PIX habilitados + Rolling Reserve da subfaixa"],
+              ux: ["Cards visuais de seleção Merchant/Intermediário", "Perguntas condicionais por tipo de negócio PIX", "Cruzamento porte Receita × TPV para detecção de inconsistências", "9 serviços PIX selecionáveis (QR, Cobrança, Garantido, Split, Conta Digital)", "Score em tempo real com label de temperatura"] },
             { icon: Users, color: "bg-[#3B82F6]", name: "Time Comercial", desc: "Agentes e gestores de vendas",
               pages: ["Home: visão 360° + quick actions", "Links Questionários: 4 tipos + Introducer", "Questionários Recebidos: 6 sub-abas", "Pipeline Kanban: 7 colunas", "Propostas: 3 tipos (Personalizada, Padrão, PIX)", "Contratos: pré-gerado por IA", "Questionário Reunião + Robô IA"],
               ux: ["Pipeline com drag-and-drop", "Qualificação IA automática", "3 tipos de proposta", "Versionamento de propostas"] },
@@ -494,7 +497,7 @@ export default function HowItWorks() {
           Documentação Completa e Microscópica — Pagsmile v8.0 • {new Date().toLocaleDateString()}
         </p>
         <p className="text-xs text-white/40 mt-1">
-          20 Seções • 55+ Páginas • 27+ Entidades • 10 Fluxogramas • 5 Jornadas E2E • 3 IAs + Motor v4 • 20 Abas Analytics • 6 Templates Lead (incl. Pagsmile v5 + PIX v4) • 10 Templates Compliance v4 + 3 Legados • 35+ Backend Functions • 27 Flags Silenciosas (16 Lead + 11 PIX) • Risk Scoring v4: 60 Variáveis + 8 Subfaixas + 10 Bloqueios
+          20 Seções • 55+ Páginas • 27+ Entidades • 10 Fluxogramas • 6 Jornadas E2E • 3 IAs + Motor v4 • 21 Abas Analytics • 6 Templates Lead (incl. Pagsmile v5 + PIX v4) • 10 Templates Compliance v4 + 3 Legados • 35+ Backend Functions • 27 Flags Silenciosas (16 Lead + 11 PIX) • Risk Scoring v4: 60 Variáveis + 8 Subfaixas + 10 Bloqueios
         </p>
       </div>
     </div>

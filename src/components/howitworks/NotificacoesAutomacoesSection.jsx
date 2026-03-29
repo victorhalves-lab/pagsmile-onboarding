@@ -81,6 +81,30 @@ export default function NotificacoesAutomacoesSection() {
         </div>
       </div>
 
+      {/* Automações Entity */}
+      <div className="border border-slate-200 rounded-xl p-4">
+        <h4 className="font-bold text-[#002443] text-sm mb-3 flex items-center gap-2">
+          <div className="w-6 h-6 rounded bg-green-100 flex items-center justify-center"><span className="text-xs">⚡</span></div>
+          Automações Entity (Trigger on Create/Update)
+        </h4>
+        <div className="space-y-2">
+          {[
+            { event: 'Lead Criado → Enriquecimento Automático', fn: 'onLeadCreatedEnrich', trigger: 'Entity automation: Lead.create', desc: 'Ao criar um Lead, dispara enriquecimento via BrasilAPI (CNPJ autocomplete), valida campos (e-mail, site), calcula flags silenciosas adicionais e persiste dados enriquecidos no Lead.questionnaireData.cnpjData.' },
+            { event: 'OnboardingCase Criado → Risk Scoring v4', fn: 'calculateRiskScoreV4', trigger: 'Entity automation: OnboardingCase.create', desc: 'Ao criar OnboardingCase, dispara o Motor v4: identifica segmento, carrega respostas, calcula 3 camadas (C1 Base + C2 Variáveis V01-V53 + C3 Enriquecimento E01-E11), verifica bloqueios B01-B10, mapeia subfaixa, define Rolling Reserve e monitoramento. Salva ComplianceScore e atualiza OnboardingCase.' },
+            { event: 'OnboardingCase Atualizado → SENTINEL Reanalisa', fn: 'analyzeOnboarding', trigger: 'Entity automation: OnboardingCase.update (status="Em Processamento")', desc: 'Quando status muda para "Em Processamento", SENTINEL executa 3 fases: Fase 1 (Questionário), Fase 2 (Validações externas BDC+CAF), Fase 3 (Score composto). Gera ComplianceScore, ComplianceFindings e QualityAssessments. Usa score v4 como base quantitativa.' },
+            { event: 'Lead Atualizado → Notificação SLA', fn: 'checkLeadSLA', trigger: 'Entity automation: Lead.update (condicional: status changed)', desc: 'Quando status do lead muda, verifica se novo status viola SLA (tempo máximo em cada estágio). Se sim, gera alerta no dashboard e notifica via Slack.' },
+          ].map((n, i) => (
+            <div key={i} className="flex gap-3 items-start p-3 bg-slate-50 rounded-lg border border-slate-100">
+              <Badge className="bg-green-100 text-green-700 border-0 text-[9px] whitespace-nowrap">{n.event}</Badge>
+              <div className="flex-1">
+                <p className="text-[10px] text-[#002443]/60"><span className="font-semibold">Function:</span> {n.fn} · <span className="font-semibold">Trigger:</span> {n.trigger}</p>
+                <p className="text-[9px] text-[#002443]/40 mt-0.5">{n.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Versionamento de Propostas */}
       <div className="border border-slate-200 rounded-xl p-4">
         <h4 className="font-bold text-[#002443] text-sm mb-3 flex items-center gap-2">
