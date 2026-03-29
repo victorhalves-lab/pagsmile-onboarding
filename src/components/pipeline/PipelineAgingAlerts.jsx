@@ -24,7 +24,8 @@ export default function PipelineAgingAlerts({ leads }) {
   const staleLeads = useMemo(() => {
     return leads
       .filter(l => {
-        // Exclude terminal states
+        // Exclude virtual leads and terminal states
+        if (l._isVirtual) return false;
         if (['ativado', 'perdido', 'proposta_recusada', 'proposta_aceita'].includes(l.status)) return false;
         const lastDate = l.lastInteractionDate || l.updated_date || l.created_date;
         return moment().diff(moment(lastDate), 'days') >= 5;

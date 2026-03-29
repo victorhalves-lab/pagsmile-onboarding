@@ -199,6 +199,100 @@ export default function PipelineComercial() {
     return map;
   }, [onboardingLinks]);
 
+  // ─── Virtual Leads: Merchants with compliance/proposals/contracts but NO Lead ───
+  const virtualLeads = useMemo(() => {
+    const normalizeName = (v) => (v || '').toLowerCase().trim().replace(/\s+/g, ' ');
+    
+    // Build set of merchantIds/names already linked to a real Lead
+    const linkedMerchantIds = new Set();
+    const linkedMerchantNames = new Set();
+    leads.forEach(l => {
+      if (l.onboardingCaseId) {
+        const oc = onboardingCases.find(c => c.id === l.onboardingCaseId);
+        if (oc?.merchantId) linkedMerchantIds.add(oc.merchantId);
+      }
+      const n1 = normalizeName(l.fullName);
+      const n2 = normalizeName(l.companyName);
+      if (n1 && n1.length > 3) linkedMerchantNames.add(n1);
+      if (n2 && n2.length > 3) linkedMerchantNames.add(n2);
+    });
+
+    // Build orphan proposals (no leadId) indexed by name
+    const orphanProposalsByName = {};
+    proposals.forEach(p => {
+      if ((!p.leadId || p.leadId === '') && p.isCurrentVersion !== false) {
+        const pName = normalizeName(p.clienteNome);
+        if (pName && pName.length > 3) orphanProposalsByName[pName] = p;
+      }
+    });
+
+    // Maps by merchantId
+    const contractsByMerchantId = {};
+    contracts.forEach(c => { if (c.merchantId) contractsByMerchantId[c.merchantId] = c; });
+    const casesByMerchantId = {};
+    onboardingCases.forEach(c => { if (c.merchantId && !c.isSubsellerCase) casesByMerchantId[c.merchantId] = c; });
+
+    const result = [];
+    merchants.forEach(m => {
+      if (m.isSubseller) return;
+      if (!m.fullName && !m.companyName) return;
+      if (linkedMerchantIds.has(m.id)) return;
+      
+      const mName = normalizeName(m.fullName);
+      const mCompany = normalizeName(m.companyName);
+      
+      // Check if any lead already matches by name (exact or partial)
+      let nameMatched = false;
+      for (const ln of linkedMerchantNames) {
+        if (mName && ln && (mName.includes(ln) || ln.includes(mName))) { nameMatched = true; break; }
+        if (mCompany && ln && (mCompany.includes(ln) || ln.includes(mCompany))) { nameMatched = true; break; }
+      }
+      if (nameMatched) return;
+
+      const onbCase = casesByMerchantId[m.id];
+      const contract = contractsByMerchantId[m.id];
+      // Match orphan proposal by name (partial)
+      let proposal = null;
+      for (const [pName, p] of Object.entries(orphanProposalsByName)) {
+        if (mName && (mName.includes(pName) || pName.includes(mName))) { proposal = p; break; }
+        if (mCompany && (mCompany.includes(pName) || pName.includes(mCompany))) { proposal = p; break; }
+      }
+
+      if (!onbCase && !contract && !proposal) return;
+
+      // Determine synthetic status
+      let syntheticStatus = 'kyc_iniciado';
+      if (onbCase) {
+        if (onbCase.status === 'Aprovado') syntheticStatus = 'kyc_aprovado';
+        else if (onbCase.status === 'Manual') syntheticStatus = 'kyc_revisao_manual';
+      }
+      if (proposal) {
+        if (proposal.status === 'aceita') syntheticStatus = 'proposta_aceita';
+        else if (['enviada', 'visualizada'].includes(proposal.status)) syntheticStatus = 'proposta_enviada';
+      }
+      if (contract) syntheticStatus = 'ativado';
+
+      result.push({
+        id: `virtual_${m.id}`,
+        created_date: m.created_date,
+        updated_date: m.updated_date,
+        fullName: m.fullName || m.companyName || '',
+        companyName: m.companyName || m.fullName || '',
+        email: typeof m.email === 'string' && m.email.includes('@') ? m.email : '',
+        phone: m.phone || '',
+        cpfCnpj: '',
+        status: syntheticStatus,
+        tpvMensal: 0, ticketMedio: 0, transacoesMes: 0, mcc: '',
+        onboardingCaseId: onbCase?.id || null,
+        priscilaRiskLevel: null, leadQualifierLevel: null,
+        lastInteractionDate: m.updated_date,
+        _isVirtual: true, _merchantId: m.id,
+        _contract: contract || null, _proposal: proposal || null, _onboardingCase: onbCase || null,
+      });
+    });
+    return result;
+  }, [merchants, leads, onboardingCases, contracts, proposals]);
+
   const moveMutation = useMutation({
     mutationFn: async ({ leadId, newStatus }) => {
       await base44.entities.Lead.update(leadId, {
@@ -220,6 +314,7 @@ export default function PipelineComercial() {
   });
 
   const handleCardAction = async (action, lead) => {
+    if (lead._isVirtual) return; // Virtual leads can't be modified
     if (action === 'contact') {
       await base44.entities.Lead.update(lead.id, { status: 'em_contato_comercial', lastInteractionDate: new Date().toISOString() });
       await base44.entities.LeadActivity.create({ leadId: lead.id, activityType: 'contato_iniciado', description: 'Contato iniciado via pipeline', performedBy: 'admin', activityDate: new Date().toISOString() });
@@ -228,36 +323,34 @@ export default function PipelineComercial() {
     }
   };
 
-  // Filter by period
+  // Filter by period — combine real leads + virtual leads
   const filteredLeads = useMemo(() => {
-    let result = leads;
-
-    if (search) {
-      const s = search.toLowerCase();
-      result = result.filter(l =>
-        (l.fullName || '').toLowerCase().includes(s) ||
-        (l.cpfCnpj || '').includes(s) ||
-        (l.companyName || '').toLowerCase().includes(s)
-      );
-    }
-
-    if (period !== 'all') {
-      const now = moment();
-      const map = { week: 7, month: 30, '3months': 90, '6months': 180, '12months': 365 };
-      const days = map[period] || 30;
-      result = result.filter(l => moment(l.created_date).isAfter(now.clone().subtract(days, 'days')));
-    }
-
-    return result;
-  }, [leads, search, period]);
+    let realLeads = [...leads];
+    let virtuals = [...virtualLeads];
+    const filterFn = (l) => {
+      if (search) {
+        const s = search.toLowerCase();
+        if (!(
+          (l.fullName || '').toLowerCase().includes(s) ||
+          (l.cpfCnpj || '').includes(s) ||
+          (l.companyName || '').toLowerCase().includes(s)
+        )) return false;
+      }
+      if (period !== 'all') {
+        const days = { week: 7, month: 30, '3months': 90, '6months': 180, '12months': 365 }[period] || 30;
+        if (!moment(l.created_date).isAfter(moment().subtract(days, 'days'))) return false;
+      }
+      return true;
+    };
+    return [...realLeads.filter(filterFn), ...virtuals.filter(filterFn)];
+  }, [leads, virtualLeads, search, period]);
 
   // Enrich leads with contract/proposal data for display
   const enrichedLeads = useMemo(() => {
-    return filteredLeads.map(l => ({
-      ...l,
-      _contract: leadContractMap[l.id] || null,
-      _proposal: leadProposalMap[l.id] || null,
-    }));
+    return filteredLeads.map(l => {
+      if (l._isVirtual) return l;
+      return { ...l, _contract: leadContractMap[l.id] || null, _proposal: leadProposalMap[l.id] || null };
+    });
   }, [filteredLeads, leadContractMap, leadProposalMap]);
 
   // Set of lead IDs that have contracts (ANY status including pre_generated)
@@ -272,18 +365,15 @@ export default function PipelineComercial() {
     return set;
   }, [proposals]);
 
-  // "Negócio Fechado" = lead com CONTRATO (qualquer status, inclui pre_generated)
+  // "Negócio Fechado" = lead com CONTRATO (qualquer status)
   //                    OU proposta aceita OU status ativado/proposta_aceita
   const dealClosedIds = useMemo(() => {
     const set = new Set();
     enrichedLeads.forEach(l => {
-      // Status ativado = always closed
       if (l.status === 'ativado') { set.add(l.id); return; }
-      // Has ANY contract (pre_generated, under_review, ready, sent, signed) = closed
-      if (leadsWithContract.has(l.id)) { set.add(l.id); return; }
-      // Has accepted proposal = closed
+      if (leadsWithContract.has(l.id) || l._contract) { set.add(l.id); return; }
       if (leadsWithAcceptedProposal.has(l.id)) { set.add(l.id); return; }
-      // Status proposta_aceita = closed
+      if (l._proposal?.status === 'aceita') { set.add(l.id); return; }
       if (l.status === 'proposta_aceita') { set.add(l.id); return; }
     });
     return set;
@@ -312,8 +402,9 @@ export default function PipelineComercial() {
     if (!result.destination) return;
     const destColId = result.destination.droppableId;
     const leadId = result.draggableId;
+    if (leadId.startsWith('virtual_')) return;
     const destCol = COLUNAS.find(c => c.id === destColId);
-    if (!destCol || !destCol.statuses[0]) return; // Can't drop into special columns
+    if (!destCol || !destCol.statuses[0]) return;
 
     const newStatus = destCol.statuses[0];
     moveMutation.mutate({ leadId, newStatus });
@@ -427,7 +518,7 @@ export default function PipelineComercial() {
                       }`}
                     >
                       {col.leads.map((lead, idx) => (
-                        <Draggable key={lead.id} draggableId={lead.id} index={idx}>
+                        <Draggable key={lead.id} draggableId={lead.id} index={idx} isDragDisabled={!!lead._isVirtual}>
                           {(provided, snapshot) => (
                             <div
                               ref={provided.innerRef}

@@ -35,13 +35,21 @@ export default function LeadKanbanCard({ lead, onAction, contract, proposal }) {
     : lead.created_date ? moment().diff(moment(lead.created_date), 'days') : null;
   const isStale = daysSinceUpdate !== null && daysSinceUpdate > 5;
 
+  const isVirtual = !!lead._isVirtual;
+  const onbCase = lead._onboardingCase;
+
   return (
     <div className="space-y-2">
+      {isVirtual && (
+        <Badge className="text-[8px] px-1.5 py-0 bg-purple-100 text-purple-700 border-purple-200 mb-0.5">
+          Via Compliance
+        </Badge>
+      )}
       <p className="text-sm font-medium text-[var(--pagsmile-blue)] truncate">
         {lead.companyName || lead.fullName}
       </p>
       <p className="text-[10px] text-[var(--pagsmile-blue)]/50 truncate">
-        {lead.contactName || lead.email}
+        {lead.contactName || lead.email || (isVirtual && onbCase ? `Case: ${onbCase.status}` : '')}
       </p>
 
       <div className="flex items-center gap-2 flex-wrap">
@@ -58,7 +66,12 @@ export default function LeadKanbanCard({ lead, onAction, contract, proposal }) {
             {riskCfg.label}
           </Badge>
         )}
-        {isStale && (
+        {isVirtual && onbCase?.subfaixaNome && (
+          <Badge variant="outline" className="text-[9px] px-1.5 py-0 text-purple-600 border-purple-300 bg-purple-50">
+            {onbCase.subfaixaNome}
+          </Badge>
+        )}
+        {isStale && !isVirtual && (
           <Badge variant="outline" className="text-[9px] px-1.5 py-0 text-amber-600 border-amber-300 bg-amber-50 gap-0.5">
             <Clock className="w-2.5 h-2.5" />
             {t('kanban.stale_days', { days: daysSinceUpdate })}
@@ -87,7 +100,7 @@ export default function LeadKanbanCard({ lead, onAction, contract, proposal }) {
         </p>
       )}
 
-      <LeadSLAIndicator lead={lead} />
+      {!isVirtual && <LeadSLAIndicator lead={lead} />}
 
       {lead.lastInteractionDate && (
         <p className="text-[9px] text-[var(--pagsmile-blue)]/40">
@@ -95,36 +108,49 @@ export default function LeadKanbanCard({ lead, onAction, contract, proposal }) {
         </p>
       )}
 
-      <div className="flex gap-1 pt-1 flex-wrap">
-        <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px]"
-          onClick={(e) => { e.stopPropagation(); navigate(createPageUrl('LeadDetails') + `?id=${lead.id}`); }}>
-          <Eye className="w-3 h-3 mr-0.5" /> {t('kanban.view')}
-        </Button>
-        {['questionario_preenchido', 'analisado_priscila'].includes(lead.status) && (
-          <Button variant="default" size="sm"
-            className="h-6 px-2 text-[10px] bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white"
-            onClick={(e) => { e.stopPropagation(); onAction('contact', lead); }}>
-            <Phone className="w-3 h-3 mr-0.5" /> {t('kanban.contact')}
+      {!isVirtual && (
+        <div className="flex gap-1 pt-1 flex-wrap">
+          <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px]"
+            onClick={(e) => { e.stopPropagation(); navigate(createPageUrl('LeadDetails') + `?id=${lead.id}`); }}>
+            <Eye className="w-3 h-3 mr-0.5" /> {t('kanban.view')}
           </Button>
-        )}
-        {['em_contato_comercial', 'analisado_priscila'].includes(lead.status) && lead.priscilaRiskLevel !== 'CRITICO' && (
-          <Button variant="outline" size="sm" className="h-6 px-2 text-[10px]"
-            onClick={(e) => { e.stopPropagation(); navigate(createPageUrl('CriarProposta') + `?lead=${lead.id}`); }}>
-            <FileText className="w-3 h-3 mr-0.5" /> {t('kanban.proposal')}
+          {['questionario_preenchido', 'analisado_priscila'].includes(lead.status) && (
+            <Button variant="default" size="sm"
+              className="h-6 px-2 text-[10px] bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white"
+              onClick={(e) => { e.stopPropagation(); onAction('contact', lead); }}>
+              <Phone className="w-3 h-3 mr-0.5" /> {t('kanban.contact')}
+            </Button>
+          )}
+          {['em_contato_comercial', 'analisado_priscila'].includes(lead.status) && lead.priscilaRiskLevel !== 'CRITICO' && (
+            <Button variant="outline" size="sm" className="h-6 px-2 text-[10px]"
+              onClick={(e) => { e.stopPropagation(); navigate(createPageUrl('CriarProposta') + `?lead=${lead.id}`); }}>
+              <FileText className="w-3 h-3 mr-0.5" /> {t('kanban.proposal')}
+            </Button>
+          )}
+          <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px]"
+            onClick={(e) => { e.stopPropagation(); setShowStatusModal(true); }}>
+            <RefreshCw className="w-3 h-3 mr-0.5" /> {t('kanban.status')}
           </Button>
-        )}
-        <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px]"
-          onClick={(e) => { e.stopPropagation(); setShowStatusModal(true); }}>
-          <RefreshCw className="w-3 h-3 mr-0.5" /> {t('kanban.status')}
-        </Button>
-        <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px]"
-          onClick={(e) => { e.stopPropagation(); setShowFollowUpModal(true); }}>
-          <CalendarClock className="w-3 h-3 mr-0.5" /> {t('kanban.follow_up')}
-        </Button>
-      </div>
+          <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px]"
+            onClick={(e) => { e.stopPropagation(); setShowFollowUpModal(true); }}>
+            <CalendarClock className="w-3 h-3 mr-0.5" /> {t('kanban.follow_up')}
+          </Button>
+        </div>
+      )}
 
-      <StatusUpdateModal open={showStatusModal} onClose={() => setShowStatusModal(false)} lead={lead} />
-      <FollowUpModal open={showFollowUpModal} onClose={() => setShowFollowUpModal(false)} lead={lead} />
+      {isVirtual && (
+        <div className="flex gap-1 pt-1 flex-wrap">
+          {onbCase && (
+            <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px]"
+              onClick={(e) => { e.stopPropagation(); navigate(createPageUrl('AnaliseDeCasos') + `?id=${onbCase.id}`); }}>
+              <Eye className="w-3 h-3 mr-0.5" /> Ver Case
+            </Button>
+          )}
+        </div>
+      )}
+
+      {!isVirtual && <StatusUpdateModal open={showStatusModal} onClose={() => setShowStatusModal(false)} lead={lead} />}
+      {!isVirtual && <FollowUpModal open={showFollowUpModal} onClose={() => setShowFollowUpModal(false)} lead={lead} />}
     </div>
   );
 }
