@@ -42,6 +42,7 @@ export default function PipelineComercial() {
     { id: 'proposta_aceita', name: t('pipeline_page.col_proposal_accepted'), color: '#8B5CF6', statuses: ['proposta_aceita'] },
     { id: 'compliance_kyc', name: t('pipeline_page.col_compliance'), color: '#10B981', statuses: ['kyc_iniciado', 'kyc_aprovado', 'kyc_revisao_manual'] },
     { id: 'contrato_gerado', name: t('pipeline_page.col_contract'), color: '#059669', statuses: ['ativado'], specialRule: 'HAS_CONTRACT' },
+    { id: 'negocio_fechado', name: 'Negócio Fechado', color: '#047857', statuses: [], specialRule: 'DEAL_CLOSED' },
     { id: 'perdido', name: t('pipeline_page.col_lost'), color: '#EF4444', statuses: ['perdido', 'proposta_recusada'] },
   ];
 
@@ -70,66 +71,82 @@ export default function PipelineComercial() {
     queryFn: () => base44.entities.Merchant.list('-created_date', 500)
   });
 
+  const { data: onboardingCases = [] } = useQuery({
+    queryKey: ['pipeline-onboarding-cases'],
+    queryFn: () => base44.entities.OnboardingCase.list('-created_date', 500)
+  });
+
   // Build enrichment maps: leadId -> has contract, leadId -> has proposal
-  // Contracts may not have leadId — match by CNPJ, client name, or merchant as fallback
+  // Multi-strategy matching: leadId, CNPJ, merchantId via OnboardingCase, clientName
   const leadContractMap = useMemo(() => {
     const map = {};
     const normalizeCnpj = (v) => (v || '').replace(/[.\-\/\s]/g, '');
+    const isValidCnpj = (v) => /^\d{11,14}$/.test(v);
     const normalizeName = (v) => (v || '').toLowerCase().trim();
 
     // Build merchant CNPJ lookup
     const merchantCnpjMap = {};
     merchants.forEach(m => {
       const cnpj = normalizeCnpj(m.cpfCnpj);
-      if (cnpj) merchantCnpjMap[m.id] = cnpj;
+      if (cnpj && isValidCnpj(cnpj)) merchantCnpjMap[m.id] = cnpj;
     });
 
-    // First pass: direct leadId linkage
+    // Build OnboardingCase -> merchantId map, and Lead -> OnboardingCase map
+    const caseMerchantMap = {}; // caseId -> merchantId
+    onboardingCases.forEach(c => { if (c.merchantId) caseMerchantMap[c.id] = c.merchantId; });
+
+    // Build merchantId -> contract map (most reliable for contracts created from compliance flow)
+    const merchantToContract = {};
+    contracts.forEach(c => {
+      if (c.merchantId) merchantToContract[c.merchantId] = c;
+    });
+
+    // Strategy 1: direct leadId linkage
     contracts.forEach(c => {
       if (c.leadId) map[c.leadId] = c;
     });
 
-    // Second pass: match by CNPJ, clientName, or merchant CNPJ
-    const unleadedContracts = contracts.filter(c => !c.leadId);
-    if (unleadedContracts.length > 0) {
-      const cnpjToContract = {};
-      const nameToContract = {};
-      unleadedContracts.forEach(c => {
-        // By CNPJ
-        const cnpj = normalizeCnpj(c.clientCnpj);
-        if (cnpj && cnpj.length >= 11) cnpjToContract[cnpj] = c;
-        // By merchant CNPJ
-        if (c.merchantId && merchantCnpjMap[c.merchantId]) {
-          cnpjToContract[merchantCnpjMap[c.merchantId]] = c;
+    // Strategy 2: Lead -> OnboardingCase -> Merchant -> Contract
+    leads.forEach(l => {
+      if (map[l.id]) return;
+      if (l.onboardingCaseId) {
+        const merchantId = caseMerchantMap[l.onboardingCaseId];
+        if (merchantId && merchantToContract[merchantId]) {
+          map[l.id] = merchantToContract[merchantId];
+          return;
         }
-        // By client name (fallback)
-        const name = normalizeName(c.clientName);
-        if (name && name.length > 3) nameToContract[name] = c;
-      });
+      }
+    });
 
-      leads.forEach(l => {
-        if (map[l.id]) return;
-        // Match by CNPJ
-        const cnpj = normalizeCnpj(l.cpfCnpj);
-        if (cnpj && cnpjToContract[cnpj]) {
-          map[l.id] = cnpjToContract[cnpj];
-          return;
-        }
-        // Match by fullName (razão social)
-        const name = normalizeName(l.fullName);
-        if (name && nameToContract[name]) {
-          map[l.id] = nameToContract[name];
-          return;
-        }
-        // Match by companyName
-        const company = normalizeName(l.companyName);
-        if (company && nameToContract[company]) {
-          map[l.id] = nameToContract[company];
-        }
-      });
-    }
+    // Strategy 3: Match by CNPJ (only valid CNPJs)
+    const unleadedContracts = contracts.filter(c => !c.leadId);
+    const cnpjToContract = {};
+    const nameToContract = {};
+    unleadedContracts.forEach(c => {
+      const cnpj = normalizeCnpj(c.clientCnpj);
+      if (cnpj && isValidCnpj(cnpj)) cnpjToContract[cnpj] = c;
+      if (c.merchantId && merchantCnpjMap[c.merchantId]) {
+        cnpjToContract[merchantCnpjMap[c.merchantId]] = c;
+      }
+      const name = normalizeName(c.clientName);
+      if (name && name.length > 3) nameToContract[name] = c;
+    });
+
+    leads.forEach(l => {
+      if (map[l.id]) return;
+      const cnpj = normalizeCnpj(l.cpfCnpj);
+      if (cnpj && isValidCnpj(cnpj) && cnpjToContract[cnpj]) {
+        map[l.id] = cnpjToContract[cnpj];
+        return;
+      }
+      const name = normalizeName(l.fullName);
+      if (name && nameToContract[name]) { map[l.id] = nameToContract[name]; return; }
+      const company = normalizeName(l.companyName);
+      if (company && nameToContract[company]) { map[l.id] = nameToContract[company]; }
+    });
+
     return map;
-  }, [contracts, leads, merchants]);
+  }, [contracts, leads, merchants, onboardingCases]);
 
   const leadProposalMap = useMemo(() => {
     const map = {};
@@ -216,46 +233,64 @@ export default function PipelineComercial() {
   // Set of lead IDs that have contracts (for special column logic)
   const leadsWithContract = useMemo(() => new Set(Object.keys(leadContractMap)), [leadContractMap]);
 
-  // Group leads by column (considering questionnaire type and contract presence)
-  const columns = useMemo(() => {
-    // Pre-compute which leads belong in "Contrato Gerado" (priority column)
-    const contractLeadIds = new Set();
-    enrichedLeads.forEach(l => {
-      if (leadsWithContract.has(l.id) || l.status === 'ativado') {
-        contractLeadIds.add(l.id);
-      }
+  // Set of lead IDs that have accepted proposals
+  const leadsWithAcceptedProposal = useMemo(() => {
+    const set = new Set();
+    proposals.forEach(p => {
+      if (p.leadId && p.status === 'aceita') set.add(p.leadId);
     });
+    return set;
+  }, [proposals]);
 
+  // "Negócio Fechado" = lead com proposta aceita + contrato, OU status ativado
+  // "Contrato Gerado" = lead com contrato mas sem proposta aceita ainda (em processo)
+  const dealClosedIds = useMemo(() => {
+    const set = new Set();
+    enrichedLeads.forEach(l => {
+      if (l.status === 'ativado') { set.add(l.id); return; }
+      if (leadsWithContract.has(l.id) && leadsWithAcceptedProposal.has(l.id)) { set.add(l.id); return; }
+      // If proposal is accepted and status is proposta_aceita, that IS a closed deal
+      if (l.status === 'proposta_aceita' && leadsWithAcceptedProposal.has(l.id)) { set.add(l.id); return; }
+    });
+    return set;
+  }, [enrichedLeads, leadsWithContract, leadsWithAcceptedProposal]);
+
+  const contractOnlyIds = useMemo(() => {
+    const set = new Set();
+    enrichedLeads.forEach(l => {
+      if (dealClosedIds.has(l.id)) return;
+      if (leadsWithContract.has(l.id)) set.add(l.id);
+    });
+    return set;
+  }, [enrichedLeads, leadsWithContract, dealClosedIds]);
+
+  // Group leads by column
+  const columns = useMemo(() => {
     return COLUNAS.map(col => ({
       ...col,
       leads: enrichedLeads.filter(l => {
-        // "Contrato Gerado" special rule: lead has a contract OR status is 'ativado'
-        if (col.specialRule === 'HAS_CONTRACT') {
-          return contractLeadIds.has(l.id);
-        }
-
-        // All other columns: skip leads that belong in contract column
-        if (contractLeadIds.has(l.id)) return false;
-
+        // "Negócio Fechado": proposta aceita (com ou sem contrato)
+        if (col.specialRule === 'DEAL_CLOSED') return dealClosedIds.has(l.id);
+        // "Contrato Gerado": has contract but not yet a closed deal
+        if (col.specialRule === 'HAS_CONTRACT') return contractOnlyIds.has(l.id);
+        // All other columns: skip leads in closed/contract columns
+        if (dealClosedIds.has(l.id) || contractOnlyIds.has(l.id)) return false;
         if (!col.statuses.includes(l.status)) return false;
-
-        // For "Leads (Quest. Completo)" — only from LEAD_QUESTIONNAIRE (or no link = direct)
         if (col.questionnaireType === 'FULL') {
           const lt = l.onboardingLinkCode ? linkTypeMap[l.onboardingLinkCode] : 'LEAD_QUESTIONNAIRE';
           return lt !== 'LEAD_SIMPLIFICADO';
         }
-
         return true;
       })
     }));
-  }, [enrichedLeads, linkTypeMap, leadsWithContract]);
+  }, [enrichedLeads, linkTypeMap, dealClosedIds, contractOnlyIds]);
 
   const onDragEnd = (result) => {
     if (!result.destination) return;
     const destColId = result.destination.droppableId;
     const leadId = result.draggableId;
     const destCol = COLUNAS.find(c => c.id === destColId);
-    if (!destCol) return;
+    if (!destCol || !destCol.statuses[0]) return; // Can't drop into special columns
 
     const newStatus = destCol.statuses[0];
     moveMutation.mutate({ leadId, newStatus });
@@ -263,6 +298,7 @@ export default function PipelineComercial() {
 
   // Pipeline metrics
   const totalTPV = filteredLeads.reduce((sum, l) => sum + (l.tpvMensal || 0), 0);
+  const closedTPV = filteredLeads.filter(l => dealClosedIds.has(l.id)).reduce((sum, l) => sum + (l.tpvMensal || 0), 0);
 
   if (isLoading) {
     return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" /></div>;
@@ -279,10 +315,11 @@ export default function PipelineComercial() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">{t('pipeline_page.title')}</h1>
-              <div className="flex gap-3 text-xs text-white/60 mt-1.5">
+              <div className="flex gap-3 text-xs text-white/60 mt-1.5 flex-wrap">
                 <span className="bg-white/10 px-2 py-0.5 rounded-md">{t('pipeline_page.leads_count', { count: filteredLeads.length })}</span>
-                <span className="bg-white/10 px-2 py-0.5 rounded-md flex items-center gap-1"><DollarSign className="w-3 h-3" /> TPV: {formatMoeda(totalTPV)}</span>
-                <span className="bg-[#2bc196]/20 text-[#5cf7cf] px-2 py-0.5 rounded-md flex items-center gap-1 font-medium"><TrendingUp className="w-3 h-3" /> {t('pipeline_page.revenue')}: {formatMoeda(totalTPV * 0.025)}</span>
+                <span className="bg-white/10 px-2 py-0.5 rounded-md flex items-center gap-1"><DollarSign className="w-3 h-3" /> TPV Pipeline: {formatMoeda(totalTPV)}</span>
+                <span className="bg-[#2bc196]/20 text-[#5cf7cf] px-2 py-0.5 rounded-md flex items-center gap-1 font-medium"><TrendingUp className="w-3 h-3" /> TPV Fechado: {formatMoeda(closedTPV)}</span>
+                <span className="bg-white/10 px-2 py-0.5 rounded-md flex items-center gap-1">Fechados: {dealClosedIds.size}</span>
               </div>
             </div>
           </div>
@@ -301,11 +338,11 @@ export default function PipelineComercial() {
       </div>
 
       {/* Metrics */}
-      <PipelineMetrics leads={filteredLeads} contracts={contracts} proposals={proposals} />
+      <PipelineMetrics leads={filteredLeads} contracts={contracts} proposals={proposals} dealClosedIds={dealClosedIds} />
 
       {/* Conversion chart + Aging alerts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <PipelineConversionChart leads={filteredLeads} contracts={contracts} merchants={merchants} />
+        <PipelineConversionChart leads={filteredLeads} contracts={contracts} merchants={merchants} dealClosedIds={dealClosedIds} />
         <PipelineAgingAlerts leads={filteredLeads} />
       </div>
 
