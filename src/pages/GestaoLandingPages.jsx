@@ -8,10 +8,11 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
   Globe, Plus, Pencil, ExternalLink, Eye, EyeOff, Search,
-  Loader2, Copy, Check, LayoutTemplate
+  Loader2, Copy, Check, LayoutTemplate, BarChart3
 } from 'lucide-react';
 import { toast } from 'sonner';
 import IntroducerFormModal from '@/components/introducers/IntroducerFormModal';
+import LandingAnalyticsModal from '@/components/landing/LandingAnalyticsModal';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function GestaoLandingPages() {
@@ -21,6 +22,7 @@ export default function GestaoLandingPages() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingIntroducer, setEditingIntroducer] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
+  const [analyticsIntroducer, setAnalyticsIntroducer] = useState(null);
 
   const { data: introducers = [], isLoading } = useQuery({
     queryKey: ['introducers-lp'],
@@ -211,16 +213,19 @@ export default function GestaoLandingPages() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
-                      {intro.uniqueLandingPageSlug && (
-                        <Link to={`/parceiro/${intro.uniqueLandingPageSlug}`} target="_blank">
-                          <Button variant="ghost" size="sm" className="h-7 text-[#2bc196]" title="Visualizar Landing Page">
-                            <ExternalLink className="w-3.5 h-3.5" />
-                          </Button>
-                        </Link>
-                      )}
-                      <Button variant="ghost" size="sm" onClick={() => handleEdit(intro)} className="h-7" title="Editar">
-                        <Pencil className="w-3.5 h-3.5" />
-                      </Button>
+                     <Button variant="ghost" size="sm" onClick={() => setAnalyticsIntroducer(intro)} className="h-7 text-[#002443]/50 hover:text-[#2bc196]" title="Analytics">
+                       <BarChart3 className="w-3.5 h-3.5" />
+                     </Button>
+                     {intro.uniqueLandingPageSlug && (
+                       <Link to={`/parceiro/${intro.uniqueLandingPageSlug}`} target="_blank">
+                         <Button variant="ghost" size="sm" className="h-7 text-[#2bc196]" title="Visualizar Landing Page">
+                           <ExternalLink className="w-3.5 h-3.5" />
+                         </Button>
+                       </Link>
+                     )}
+                     <Button variant="ghost" size="sm" onClick={() => handleEdit(intro)} className="h-7" title="Editar">
+                       <Pencil className="w-3.5 h-3.5" />
+                     </Button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -236,6 +241,12 @@ export default function GestaoLandingPages() {
         introducer={editingIntroducer}
         onSave={(data) => saveMutation.mutate(data)}
         isSaving={saveMutation.isPending}
+      />
+
+      <LandingAnalyticsModal
+        open={!!analyticsIntroducer}
+        onClose={() => setAnalyticsIntroducer(null)}
+        introducer={analyticsIntroducer}
       />
     </div>
   );

@@ -12,6 +12,7 @@ import ComplianceDisclaimer from '@/components/landing/ComplianceDisclaimer';
 import SegmentRatesTable from '@/components/landing/SegmentRatesTable';
 import SegmentSelector from '@/components/landing/SegmentSelector';
 import RateCalculator from '@/components/landing/RateCalculator';
+import useLandingAnalytics from '@/components/landing/useLandingAnalytics';
 
 const PAGSMILE_LOGO = "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png";
 
@@ -62,6 +63,19 @@ export default function IntroducerLandingPage() {
 
   const segments = introducer.standardRates || [];
 
+  // Analytics tracking
+  const analytics = useLandingAnalytics({
+    introducerId: introducer.id,
+    referralCode: introducer.referralCode,
+    slug: uniqueLandingPageSlug,
+  });
+
+  // Track segment changes
+  const handleSegmentSelect = (segName) => {
+    setActiveSegment(segName);
+    analytics.trackSegmentView(segName);
+  };
+
   // Detecta se é a landing page exclusiva da Pagsmile (sem logo de parceiro)
   const isPagsmileOwn = !introducer.companyLogoUrl;
 
@@ -92,7 +106,8 @@ export default function IntroducerLandingPage() {
               <SegmentSelector
                 segments={segments}
                 activeSegment={activeSegment}
-                onSelect={setActiveSegment}
+                onSelect={handleSegmentSelect}
+                onInfoClick={analytics.trackSegmentInfo}
               />
             </div>
 
@@ -113,7 +128,10 @@ export default function IntroducerLandingPage() {
                   transition={{ delay: 0.15 }}
                   className="mt-6"
                 >
-                  <Link to={`/FechamentoLandingPage?ref=${introducer.referralCode}&segment=${encodeURIComponent(activeSegment)}&introducerId=${introducer.id}`}>
+                  <Link
+                    to={`/FechamentoLandingPage?ref=${introducer.referralCode}&segment=${encodeURIComponent(activeSegment)}&introducerId=${introducer.id}`}
+                    onClick={() => analytics.trackCtaContratar(activeSegment)}
+                  >
                     <Button
                       size="lg"
                       className="w-full bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl text-base py-6 shadow-lg shadow-[#2bc196]/20 hover:scale-[1.01] transition-all gap-2 font-bold"
@@ -130,7 +148,11 @@ export default function IntroducerLandingPage() {
         )}
 
         {/* Calculator */}
-        {activeRates && <RateCalculator segmentRates={activeRates} />}
+        {activeRates && (
+          <div onMouseDown={() => analytics.trackCalculatorInteract(activeSegment)}>
+            <RateCalculator segmentRates={activeRates} />
+          </div>
+        )}
 
         {/* CTA proposta customizada */}
         <motion.div
@@ -147,7 +169,7 @@ export default function IntroducerLandingPage() {
             <p className="text-base max-w-md mx-auto mb-8" style={{ color: 'rgba(255,255,255,0.5)' }}>
               Preencha nosso questionário rápido e receba taxas personalizadas para o seu negócio.
             </p>
-            <Link to={`/LeadQuestionnaire?ref=${introducer.referralCode}&templateId=69c3b5af17040531b06c5c16`}>
+            <Link to={`/LeadQuestionnaire?ref=${introducer.referralCode}&templateId=69c3b5af17040531b06c5c16`} onClick={() => analytics.trackCtaProposta()}>
               <Button
                 size="lg"
                 className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl text-base px-10 py-6 shadow-lg shadow-[#2bc196]/20 hover:scale-[1.02] transition-all"

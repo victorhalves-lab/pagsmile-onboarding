@@ -1,0 +1,60 @@
+{
+  "name": "LandingPageEvent",
+  "type": "object",
+  "properties": {
+    "introducerId": {
+      "type": "string",
+      "description": "ID do Introducer dono da landing page"
+    },
+    "referralCode": {
+      "type": "string",
+      "description": "C\u00f3digo de refer\u00eancia do introducer"
+    },
+    "slug": {
+      "type": "string",
+      "description": "Slug da landing page"
+    },
+    "eventType": {
+      "type": "string",
+      "enum": [
+        "page_view",
+        "segment_view",
+        "segment_info",
+        "cta_contratar",
+        "cta_proposta",
+        "calculator_interact",
+        "fechamento_start"
+      ],
+      "description": "Tipo do evento"
+    },
+    "segmentName": {
+      "type": "string",
+      "description": "Nome do segmento quando aplic\u00e1vel"
+    },
+    "sessionId": {
+      "type": "string",
+      "description": "ID \u00fanico da sess\u00e3o do visitante"
+    },
+    "deviceType": {
+      "type": "string",
+      "enum": [
+        "mobile",
+        "tablet",
+        "desktop"
+      ],
+      "description": "Tipo de dispositivo"
+    },
+    "referrer": {
+      "type": "string",
+      "description": "URL de origem do visitante"
+    },
+    "userAgent": {
+      "type": "string",
+      "description": "User agent do navegador"
+    }
+  },
+  "required": [
+    "eventType",
+    "slug"
+  ]
+}

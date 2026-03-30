@@ -15,11 +15,13 @@ const SEGMENT_DESCRIPTIONS = {
   'Gateway': 'Empresas que processam pagamentos para outros merchants (sub-adquirência ou facilitação).',
 };
 
-export default function SegmentSelector({ segments, activeSegment, onSelect }) {
+export default function SegmentSelector({ segments, activeSegment, onSelect, onInfoClick }) {
   const [expandedInfo, setExpandedInfo] = useState(null);
 
   const toggleInfo = (name) => {
+    const opening = expandedInfo !== name;
     setExpandedInfo(prev => prev === name ? null : name);
+    if (opening && onInfoClick) onInfoClick(name);
   };
 
   return (
