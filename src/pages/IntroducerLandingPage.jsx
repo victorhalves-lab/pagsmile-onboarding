@@ -161,7 +161,7 @@ export default function IntroducerLandingPage() {
             transition={{ duration: 0.5, delay: 0.15 }}
             className="space-y-6"
           >
-            <div className="sticky top-2 z-40 bg-white/95 backdrop-blur-md border border-[#002443]/[0.06] rounded-xl p-3 shadow-lg shadow-black/5">
+            <div className="bg-white/95 backdrop-blur-md border border-[#002443]/[0.06] rounded-xl p-4 md:p-5 shadow-lg shadow-black/5">
               <SegmentSelector
                 segments={segments}
                 activeSegment={activeSegment}
