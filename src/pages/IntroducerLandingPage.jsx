@@ -204,15 +204,15 @@ export default function IntroducerLandingPage() {
           </motion.div>
         )}
 
-        {/* International Payments */}
-        <InternationalPaymentsBanner />
-
         {/* Calculator */}
         {activeRates && (
           <div onMouseDown={() => handleCalculatorInteract(activeSegment)}>
             <RateCalculator segmentRates={activeRates} />
           </div>
         )}
+
+        {/* International Payments */}
+        <InternationalPaymentsBanner />
 
         {/* CTA proposta customizada */}
         <motion.div
