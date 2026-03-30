@@ -98,6 +98,7 @@ export default function Layout({ children, currentPageName }) {
       label: t('menu.leads_proposals'),
       icon: Inbox,
       items: [
+        { label: 'Dashboard Comercial', path: 'DashboardComercial', icon: LayoutDashboard },
         { label: t('menu.questionnaire_links'), path: 'LinksQuestionariosLeads', icon: LinkIcon },
         { label: t('menu.received_questionnaires'), path: 'QuestionariosLeads', icon: ClipboardList, highlight: true },
         { label: t('menu.commercial_pipeline'), path: 'PipelineComercial', icon: Users },
