@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -12,13 +12,46 @@ import ComplianceDisclaimer from '@/components/landing/ComplianceDisclaimer';
 import SegmentRatesTable from '@/components/landing/SegmentRatesTable';
 import SegmentSelector from '@/components/landing/SegmentSelector';
 import RateCalculator from '@/components/landing/RateCalculator';
-import useLandingAnalytics from '@/components/landing/useLandingAnalytics';
 
 const PAGSMILE_LOGO = "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png";
+
+// ── Inline analytics (avoids external hook that may break rules-of-hooks) ──
+function getSessionId() {
+  let id = sessionStorage.getItem('lp_session_id');
+  if (!id) {
+    id = `lps_${Date.now()}_${Math.random().toString(36).substr(2, 8)}`;
+    sessionStorage.setItem('lp_session_id', id);
+  }
+  return id;
+}
+
+function getDeviceType() {
+  const w = window.innerWidth;
+  if (w < 768) return 'mobile';
+  if (w < 1024) return 'tablet';
+  return 'desktop';
+}
+
+function fireAnalytics(eventType, ctx, extra = {}) {
+  base44.entities.LandingPageEvent.create({
+    introducerId: ctx.introducerId,
+    referralCode: ctx.referralCode,
+    slug: ctx.slug,
+    eventType,
+    sessionId: ctx.sessionId,
+    deviceType: getDeviceType(),
+    referrer: document.referrer || '',
+    userAgent: navigator.userAgent,
+    ...extra,
+  }).catch(() => {});
+}
+
+// ────────────────────────────────────────────
 
 export default function IntroducerLandingPage() {
   const { uniqueLandingPageSlug } = useParams();
   const [activeSegment, setActiveSegment] = useState('');
+  const [pageViewTracked, setPageViewTracked] = useState(false);
 
   const { data: introducer, isLoading } = useQuery({
     queryKey: ['introducerLP', uniqueLandingPageSlug],
@@ -33,27 +66,56 @@ export default function IntroducerLandingPage() {
     enabled: !!uniqueLandingPageSlug,
   });
 
+  // Set first segment as active once data loads
   useEffect(() => {
     if (introducer?.standardRates?.length > 0 && !activeSegment) {
       setActiveSegment(introducer.standardRates[0].segmentName);
     }
   }, [introducer, activeSegment]);
 
-  const activeRates = introducer?.standardRates?.find(s => s.segmentName === activeSegment);
-
-  // Analytics tracking — must be before any early returns (React hooks rule)
-  const analytics = useLandingAnalytics({
+  // Analytics context — stable reference
+  const analyticsCtx = {
     introducerId: introducer?.id || '',
     referralCode: introducer?.referralCode || '',
-    slug: uniqueLandingPageSlug,
-  });
-
-  // Track segment changes
-  const handleSegmentSelect = (segName) => {
-    setActiveSegment(segName);
-    analytics.trackSegmentView(segName);
+    slug: uniqueLandingPageSlug || '',
+    sessionId: getSessionId(),
   };
 
+  // Track page view once
+  useEffect(() => {
+    if (!pageViewTracked && uniqueLandingPageSlug && introducer) {
+      setPageViewTracked(true);
+      fireAnalytics('page_view', analyticsCtx);
+    }
+  }, [uniqueLandingPageSlug, introducer, pageViewTracked]);
+
+  const handleSegmentSelect = useCallback((segName) => {
+    setActiveSegment(segName);
+    fireAnalytics('segment_view', analyticsCtx, { segmentName: segName });
+  }, [analyticsCtx.introducerId]);
+
+  const handleSegmentInfo = useCallback((segName) => {
+    fireAnalytics('segment_info', analyticsCtx, { segmentName: segName });
+  }, [analyticsCtx.introducerId]);
+
+  const handleCtaContratar = useCallback((segName) => {
+    fireAnalytics('cta_contratar', analyticsCtx, { segmentName: segName });
+  }, [analyticsCtx.introducerId]);
+
+  const handleCtaProposta = useCallback(() => {
+    fireAnalytics('cta_proposta', analyticsCtx);
+  }, [analyticsCtx.introducerId]);
+
+  const handleCalculatorInteract = useCallback((segName) => {
+    fireAnalytics('calculator_interact', analyticsCtx, { segmentName: segName });
+  }, [analyticsCtx.introducerId]);
+
+  // ── Derived values (safe — no hooks below) ──
+  const activeRates = introducer?.standardRates?.find(s => s.segmentName === activeSegment);
+  const segments = introducer?.standardRates || [];
+  const isPagsmileOwn = introducer && !introducer.companyLogoUrl;
+
+  // ── Loading state ──
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#f4f4f4] flex items-center justify-center">
@@ -62,6 +124,7 @@ export default function IntroducerLandingPage() {
     );
   }
 
+  // ── Not found state ──
   if (!introducer || !introducer.landingPageActive) {
     return (
       <div className="min-h-screen bg-[#f4f4f4] flex items-center justify-center">
@@ -74,17 +137,13 @@ export default function IntroducerLandingPage() {
     );
   }
 
-  const segments = introducer.standardRates || [];
-
-  // Detecta se é a landing page exclusiva da Pagsmile (sem logo de parceiro)
-  const isPagsmileOwn = !introducer.companyLogoUrl;
-
+  // ── Main render ──
   return (
     <div className="min-h-screen bg-[#f4f4f4]">
       <div className="fixed top-0 left-0 w-full h-1 bg-gradient-to-r from-[#002443] via-[#2bc196] to-[#5cf7cf] z-50" />
 
       <div className="max-w-5xl mx-auto px-4 md:px-8 py-8 md:py-12 space-y-8">
-        {/* Header: exclusivo Pagsmile ou parceiro */}
+        {/* Header */}
         {isPagsmileOwn ? (
           <PagsmileHeader />
         ) : (
@@ -101,17 +160,15 @@ export default function IntroducerLandingPage() {
             transition={{ duration: 0.5, delay: 0.15 }}
             className="space-y-6"
           >
-            {/* Segment pills */}
             <div className="sticky top-2 z-40 bg-white/95 backdrop-blur-md border border-[#002443]/[0.06] rounded-xl p-3 shadow-lg shadow-black/5">
               <SegmentSelector
                 segments={segments}
                 activeSegment={activeSegment}
                 onSelect={handleSegmentSelect}
-                onInfoClick={analytics.trackSegmentInfo}
+                onInfoClick={handleSegmentInfo}
               />
             </div>
 
-            {/* Rates for selected segment */}
             {activeRates && (
               <motion.div
                 key={activeSegment}
@@ -121,7 +178,6 @@ export default function IntroducerLandingPage() {
               >
                 <SegmentRatesTable segmentRates={activeRates} />
 
-                {/* CTA: Quero contratar com essas taxas */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -130,7 +186,7 @@ export default function IntroducerLandingPage() {
                 >
                   <Link
                     to={`/FechamentoLandingPage?ref=${introducer.referralCode}&segment=${encodeURIComponent(activeSegment)}&introducerId=${introducer.id}`}
-                    onClick={() => analytics.trackCtaContratar(activeSegment)}
+                    onClick={() => handleCtaContratar(activeSegment)}
                   >
                     <Button
                       size="lg"
@@ -149,7 +205,7 @@ export default function IntroducerLandingPage() {
 
         {/* Calculator */}
         {activeRates && (
-          <div onMouseDown={() => analytics.trackCalculatorInteract(activeSegment)}>
+          <div onMouseDown={() => handleCalculatorInteract(activeSegment)}>
             <RateCalculator segmentRates={activeRates} />
           </div>
         )}
@@ -169,7 +225,7 @@ export default function IntroducerLandingPage() {
             <p className="text-base max-w-md mx-auto mb-8" style={{ color: 'rgba(255,255,255,0.5)' }}>
               Preencha nosso questionário rápido e receba taxas personalizadas para o seu negócio.
             </p>
-            <Link to={`/LeadQuestionnaire?ref=${introducer.referralCode}&templateId=69c3b5af17040531b06c5c16`} onClick={() => analytics.trackCtaProposta()}>
+            <Link to={`/LeadQuestionnaire?ref=${introducer.referralCode}&templateId=69c3b5af17040531b06c5c16`} onClick={handleCtaProposta}>
               <Button
                 size="lg"
                 className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl text-base px-10 py-6 shadow-lg shadow-[#2bc196]/20 hover:scale-[1.02] transition-all"
