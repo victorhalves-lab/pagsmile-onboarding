@@ -61,6 +61,15 @@ export default function FechamentoLandingPage() {
   } : null);
   const partnerName = introducer?.companyName || '';
 
+  // Map segment to businessSubCategory
+  const segmentToSubCategory = (seg) => {
+    if (seg === 'Gateway') return 'GATEWAY';
+    if (seg === 'Marketplace') return 'MARKETPLACE';
+    return 'MERCHAN';
+  };
+
+  const FECHAMENTO_TEMPLATE_ID = '69caaf2cd9ea49029f4de352';
+
   const handleSubmit = async () => {
     setIsSubmitting(true);
 
@@ -82,7 +91,36 @@ export default function FechamentoLandingPage() {
       }
     }
 
-    // Create Lead
+    // Build questionnaireData (minimal responses for traceability)
+    const questionnaireData = {
+      segment,
+      cnpj: formData.cnpj || '',
+      razaoSocial: formData.razaoSocial || '',
+      nomeFantasia: formData.nomeFantasia || '',
+      contactName: formData.contactName || '',
+      email: formData.email || '',
+      phone: formData.phone || '',
+      website: formData.website || '',
+      endereco: formData.endereco || {},
+      origemFechamento: 'proposta_padrao',
+      standardProposalSegment: segment,
+      introducerId: introducerId || null,
+      introducerRef: ref || null,
+      taxasAceitas: segmentRates ? {
+        mdrAvista: segmentRates.mdrAvista,
+        mdr2a6x: segmentRates.mdr2a6x,
+        mdr7a12x: segmentRates.mdr7a12x,
+        mdr13a21x: segmentRates.mdr13a21x,
+        antecipacao: segmentRates.percentualAntecipacao,
+        feeTransacao: segmentRates.feeTransacao,
+        antifraude: segmentRates.antifraude,
+        taxa3ds: segmentRates.taxa3ds,
+        pixPercentual: segmentRates.pixTaxaPercentual,
+        pixFixa: segmentRates.pixTaxaFixa,
+      } : null,
+    };
+
+    // Create Lead with full traceability
     const lead = await base44.entities.Lead.create({
       email: formData.email,
       fullName: formData.razaoSocial || '',
@@ -92,8 +130,10 @@ export default function FechamentoLandingPage() {
       website: formData.website || '',
       contactName: formData.contactName || '',
       status: 'proposta_aceita',
-      businessSubCategory: 'MERCHAN',
-      origemLead: 'landing_page_fechamento',
+      businessSubCategory: segmentToSubCategory(segment),
+      origemLead: 'proposta_padrao_fechamento',
+      leadQuestionnaireTemplateId: FECHAMENTO_TEMPLATE_ID,
+      questionnaireData,
       introducerId: introducerId || undefined,
       introducerReferralCode: ref || undefined,
       introducerName: partnerName || undefined,

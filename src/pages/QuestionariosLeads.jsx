@@ -21,7 +21,7 @@ import {
 import {
   Search, ClipboardList, Download, Eye, Trash2, Loader2, X,
   ShoppingCart, Network, Building2, ArrowUpDown, RefreshCw, Zap,
-  Phone, FileText, AlertTriangle, Shield, TrendingUp, MessageSquareText, UserPlus, Briefcase, Bot
+  Phone, FileText, AlertTriangle, Shield, TrendingUp, MessageSquareText, UserPlus, Briefcase, Bot, Rocket
 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
@@ -33,6 +33,7 @@ import IntroducerLeadsTab from '../components/leads/IntroducerLeadsTab';
 import MeetingQuestionnaireTab from '../components/meeting-questionnaire/MeetingQuestionnaireTab';
 import AIQuestionnaireTab from '../components/meeting-questionnaire/AIQuestionnaireTab';
 import PixMeetingQuestionnaireTab from '../components/pix-questionnaire/PixMeetingQuestionnaireTab';
+import PropostaPadraoLeadsTab from '../components/leads/PropostaPadraoLeadsTab';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 const getScoreColor = (score) => {
@@ -292,6 +293,10 @@ export default function QuestionariosLeads() {
             <Bot className="w-3 h-3" />
             {t('quest_leads.tab_ai')}
           </TabsTrigger>
+          <TabsTrigger value="proposta_padrao" className="gap-1">
+            <Rocket className="w-3 h-3" />
+            Propostas Padrão ({leads.filter(l => l.leadQuestionnaireTemplateId === '69caaf2cd9ea49029f4de352').length})
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="simplificado" className="mt-4">
@@ -335,6 +340,10 @@ export default function QuestionariosLeads() {
 
         <TabsContent value="ai" className="mt-4">
           <AIQuestionnaireTab />
+        </TabsContent>
+
+        <TabsContent value="proposta_padrao" className="mt-4">
+          <PropostaPadraoLeadsTab leads={leads} />
         </TabsContent>
 
         <TabsContent value="completo" className="mt-4 space-y-6">
