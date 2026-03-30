@@ -14,8 +14,8 @@ const PRAZOS = [
   { value: 'FLUXO', label: 'Fluxo' },
 ];
 
-const fmtBrl = (v) => `R$ ${v.toFixed(2).replace('.', ',')}`;
-const fmtPct = (v) => `${v.toFixed(2)}%`;
+const fmtBrl = (v) => `R$ ${(Number(v) || 0).toFixed(2).replace('.', ',')}`;
+const fmtPct = (v) => `${(Number(v) || 0).toFixed(2)}%`;
 
 export default function RateCalculator({ segmentRates }) {
   const [amount, setAmount] = useState(150);
@@ -234,7 +234,7 @@ export default function RateCalculator({ segmentRates }) {
             <div className="bg-[#f4f4f4] rounded-xl p-4 mt-3">
               <div className="flex justify-between mb-1">
                 <span className="text-xs font-medium text-[#002443]/50">
-                  Taxa ({pix.tipoAplicado === 'percentual' ? fmtPct(segmentRates.pixTaxaPercentual) : fmtBrl(segmentRates.pixTaxaFixa)})
+                  Taxa ({pix.tipoAplicado === 'percentual' ? fmtPct(segmentRates.pixTaxaPercentual || 0) : fmtBrl(segmentRates.pixTaxaFixa || 0)})
                 </span>
                 <span className="text-xs font-bold font-mono text-[#002443]">- {fmtBrl(pix.custoPix)}</span>
               </div>

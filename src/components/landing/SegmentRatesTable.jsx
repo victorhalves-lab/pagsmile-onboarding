@@ -11,8 +11,8 @@ export default function SegmentRatesTable({ segmentRates }) {
     pixTaxaPercentual, pixTaxaFixa,
   } = segmentRates;
 
-  const fmtPct = (v) => v != null ? `${v.toFixed(2)}%` : '—';
-  const fmtBrl = (v) => v != null ? `R$ ${v.toFixed(2).replace('.', ',')}` : '—';
+  const fmtPct = (v) => (v != null && !isNaN(v)) ? `${Number(v).toFixed(2)}%` : '—';
+  const fmtBrl = (v) => (v != null && !isNaN(v)) ? `R$ ${Number(v).toFixed(2).replace('.', ',')}` : '—';
 
   return (
     <div className="space-y-10">
@@ -42,7 +42,7 @@ export default function SegmentRatesTable({ segmentRates }) {
               >
                 <p className="text-xs font-semibold mb-2 uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.45)' }}>{row.label}</p>
                 <p className="text-2xl font-extrabold" style={{ color: '#2bc196' }}>
-                  {row.value.toFixed(2)}<span className="text-sm font-bold" style={{ color: 'rgba(43,193,150,0.6)' }}>%</span>
+                  {Number(row.value).toFixed(2)}<span className="text-sm font-bold" style={{ color: 'rgba(43,193,150,0.6)' }}>%</span>
                 </p>
               </motion.div>
             ))}
@@ -59,7 +59,7 @@ export default function SegmentRatesTable({ segmentRates }) {
             </div>
             <div className="text-right">
               <p className="text-2xl font-extrabold" style={{ color: '#2bc196' }}>
-                {percentualAntecipacao?.toFixed(2) || '0.00'}<span className="text-sm font-bold" style={{ color: 'rgba(43,193,150,0.6)' }}>% a.m.</span>
+                {(percentualAntecipacao != null && !isNaN(percentualAntecipacao)) ? Number(percentualAntecipacao).toFixed(2) : '0.00'}<span className="text-sm font-bold" style={{ color: 'rgba(43,193,150,0.6)' }}>% a.m.</span>
               </p>
             </div>
           </div>
@@ -77,22 +77,22 @@ export default function SegmentRatesTable({ segmentRates }) {
         </div>
 
         <div className="flex items-center justify-center gap-8 md:gap-16 py-4">
-          {pixTaxaPercentual != null && (
+          {(pixTaxaPercentual != null && !isNaN(pixTaxaPercentual)) && (
             <div className="text-center">
               <p className="text-sm font-semibold text-[#002443]/60 mb-1">Taxa Percentual</p>
               <p className="text-3xl font-extrabold text-[#2bc196]">
-                {pixTaxaPercentual.toFixed(2)}<span className="text-lg font-bold text-[#2bc196]/60">%</span>
+                {Number(pixTaxaPercentual).toFixed(2)}<span className="text-lg font-bold text-[#2bc196]/60">%</span>
               </p>
             </div>
           )}
-          {pixTaxaPercentual != null && pixTaxaFixa != null && (
+          {(pixTaxaPercentual != null && !isNaN(pixTaxaPercentual)) && (pixTaxaFixa != null && !isNaN(pixTaxaFixa)) && (
             <span className="text-lg font-bold text-[#002443]/20">ou</span>
           )}
-          {pixTaxaFixa != null && (
+          {(pixTaxaFixa != null && !isNaN(pixTaxaFixa)) && (
             <div className="text-center">
               <p className="text-sm font-semibold text-[#002443]/60 mb-1">Taxa Fixa</p>
               <p className="text-3xl font-extrabold text-[#2bc196]">
-                <span className="text-lg font-bold text-[#2bc196]/60">R$ </span>{pixTaxaFixa.toFixed(2).replace('.', ',')}
+                <span className="text-lg font-bold text-[#2bc196]/60">R$ </span>{Number(pixTaxaFixa).toFixed(2).replace('.', ',')}
               </p>
             </div>
           )}
