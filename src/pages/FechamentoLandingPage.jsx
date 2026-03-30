@@ -74,23 +74,9 @@ export default function FechamentoLandingPage() {
       expectedRates,
     });
 
-    // Save to localStorage for compliance pre-fill
+    // Save lead ID for compliance pre-fill (useLeadPrefill reads this)
     const complianceModel = SEGMENT_TO_COMPLIANCE[segment] || 'ComplianceEcommerceV4';
-    const storageKey = `compliance_data_${complianceModel.toLowerCase()}`;
-    const addr = formData.endereco || {};
-
-    const prefillData = {};
-    // Map known fields for DynamicQuestionnaire pre-fill
-    prefillData.__cnpj = formData.cnpj;
-    prefillData.__razao_social = formData.razaoSocial;
-    prefillData.__nome_fantasia = formData.nomeFantasia;
-    prefillData.__email = formData.email;
-    prefillData.__phone = formData.phone;
-    prefillData.__contact_name = formData.contactName;
-    prefillData.__website = formData.website;
-    prefillData.__endereco = addr;
-
-    localStorage.setItem(storageKey, JSON.stringify(prefillData));
+    localStorage.setItem('lead_id_for_compliance', lead.id);
     localStorage.setItem('fechamento_lead_id', lead.id);
     if (ref) localStorage.setItem('onboarding_link_code', ref);
 
