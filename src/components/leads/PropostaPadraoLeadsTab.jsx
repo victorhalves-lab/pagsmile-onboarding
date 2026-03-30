@@ -23,7 +23,7 @@ import {
 import { toast } from 'sonner';
 import moment from 'moment';
 import LeadSLAIndicator from './LeadSLAIndicator';
-import QuestionnaireResponsesModal from './QuestionnaireResponsesModal';
+import PropostaPadraoResponsesModal from './PropostaPadraoResponsesModal';
 
 const FECHAMENTO_TEMPLATE_ID = '69caaf2cd9ea49029f4de352';
 
@@ -247,8 +247,8 @@ export default function PropostaPadraoLeadsTab({ leads = [], onDelete, onViewRes
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Responses Modal */}
-      <QuestionnaireResponsesModal
+      {/* Responses Modal — dedicated for Proposta Padrão */}
+      <PropostaPadraoResponsesModal
         open={!!responsesModalLead}
         onClose={() => setResponsesModalLead(null)}
         lead={responsesModalLead}
