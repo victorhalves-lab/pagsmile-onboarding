@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Globe, CreditCard, MapPin, ArrowRight } from 'lucide-react';
+import { Globe, CreditCard, MapPin, ArrowRight, Clock } from 'lucide-react';
 
 const REGIONS = [
   { name: 'Estados Unidos', flag: '🇺🇸' },
@@ -63,6 +63,19 @@ export default function InternationalPaymentsBanner() {
             <span className="text-lg font-bold" style={{ color: 'rgba(43,193,150,0.6)' }}>USD</span>
             <span className="text-3xl md:text-4xl font-extrabold" style={{ color: '#2bc196' }}>0,50</span>
             <span className="text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.35)' }}>/transação</span>
+          </div>
+        </div>
+
+        {/* Prazo de Recebimento */}
+        <div className="bg-white/[0.06] border border-white/[0.1] rounded-xl p-4 mb-6 flex items-center gap-3">
+          <div className="p-2.5 bg-[#2bc196]/15 rounded-xl">
+            <Clock className="w-5 h-5 text-[#2bc196]" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: 'rgba(255,255,255,0.4)' }}>
+              Prazo de Recebimento
+            </p>
+            <p className="text-xl font-extrabold" style={{ color: '#2bc196' }}>D + 7</p>
           </div>
         </div>
 
