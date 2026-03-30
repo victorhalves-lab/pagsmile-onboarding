@@ -21,6 +21,7 @@ import AceiteModal from '@/components/proposals/AceiteModal';
 import ContrapropostaModal from '@/components/proposals/ContrapropostaModal';
 import RecusaModal from '@/components/proposals/RecusaModal';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
+import InternationalPaymentsBanner from '@/components/landing/InternationalPaymentsBanner';
 
 export default function PropostaPublica() {
   const { t } = useTranslation();
@@ -569,6 +570,11 @@ export default function PropostaPublica() {
           <ParcelasTableDetalhada taxas={rates} taxaRAV={taxaRAV} prazo={prazo} showSimulator={true} />
         </CardContent>
       </Card>
+
+      {/* International Payments */}
+      <div className="mb-8">
+        <InternationalPaymentsBanner />
+      </div>
 
       {/* Floating Action Bar */}
       {['enviada', 'visualizada'].includes(proposta.status) && !isAlreadyResponded && (
