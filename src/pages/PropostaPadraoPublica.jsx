@@ -281,22 +281,6 @@ export default function PropostaPadraoPublica() {
         </Card>
       </div>
 
-      {/* Tabela de Parcelas */}
-      <Card className="mb-8">
-        <CardContent className="py-4">
-          <h2 className="font-bold text-base text-[#002443] mb-4">{t('pp.installment_table')}</h2>
-          <ParcelasTableDetalhada taxas={rates} taxaRAV={taxaRAV} prazo={prazo} showSimulator={true} />
-        </CardContent>
-      </Card>
-
-      {/* International Payments */}
-      <div className="mb-8">
-        <InternationalPaymentsBanner />
-      </div>
-
-      {/* Sentinel — sticky bar appears after this point */}
-      <div ref={ratesEndRef} />
-
       {/* CTA - Quero Contratar (fluxo fechamento → compliance) */}
       <div className="relative overflow-hidden bg-gradient-to-r from-[#2bc196] to-[#5cf7cf] rounded-3xl p-8 md:p-10 mb-8 text-center shadow-xl">
         <div className="absolute -top-20 -right-20 w-56 h-56 bg-white rounded-full blur-3xl opacity-20 pointer-events-none" />
@@ -317,6 +301,22 @@ export default function PropostaPadraoPublica() {
           <p className="text-xs text-[#002443]/50 mt-3">Processo rápido e 100% digital — Sujeito à aprovação de Compliance</p>
         </div>
       </div>
+
+      {/* Tabela de Parcelas */}
+      <Card className="mb-8">
+        <CardContent className="py-4">
+          <h2 className="font-bold text-base text-[#002443] mb-4">{t('pp.installment_table')}</h2>
+          <ParcelasTableDetalhada taxas={rates} taxaRAV={taxaRAV} prazo={prazo} showSimulator={true} />
+        </CardContent>
+      </Card>
+
+      {/* International Payments */}
+      <div className="mb-8">
+        <InternationalPaymentsBanner />
+      </div>
+
+      {/* Sentinel — sticky bar appears after this point */}
+      <div ref={ratesEndRef} />
 
       {/* CTA - Proposta Personalizada */}
       <div className="relative overflow-hidden bg-gradient-to-r from-[#002443] to-[#36706c] rounded-3xl p-8 md:p-10 mb-8 text-center shadow-xl">
