@@ -1,95 +1,94 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertTriangle, Clock, XCircle, Zap, CheckCircle2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '../../utils';
+import {
+  Zap, Clock, AlertTriangle, XCircle, Send, CheckCircle2, ArrowRight
+} from 'lucide-react';
 
 export default function CommercialAlerts({ stats }) {
-  const alerts = [
+  const insights = [
     {
       icon: Clock,
-      color: 'text-amber-600',
-      bg: 'bg-amber-50 border-amber-200/50',
-      label: `${stats.staleLeads} leads sem contato há +7 dias`,
-      active: stats.staleLeads > 0,
-      severity: 'warning'
+      message: `${stats.staleLeads} leads sem contato há +7 dias`,
+      link: 'PipelineComercial',
+      show: stats.staleLeads > 0,
     },
     {
       icon: AlertTriangle,
-      color: 'text-orange-600',
-      bg: 'bg-orange-50 border-orange-200/50',
-      label: `${stats.proposalsExpiring} propostas expirando nos próximos 3 dias`,
-      active: stats.proposalsExpiring > 0,
-      severity: 'warning'
+      message: `${stats.proposalsExpiring} propostas expirando nos próximos 3 dias`,
+      link: 'GestaoPropostas',
+      show: stats.proposalsExpiring > 0,
     },
     {
       icon: XCircle,
-      color: 'text-red-600',
-      bg: 'bg-red-50 border-red-200/50',
-      label: `${stats.proposalsRejectedNoFollowup} propostas recusadas sem follow-up`,
-      active: stats.proposalsRejectedNoFollowup > 0,
-      severity: 'critical'
+      message: `${stats.proposalsRejectedNoFollowup} propostas recusadas sem follow-up`,
+      link: 'GestaoPropostas',
+      show: stats.proposalsRejectedNoFollowup > 0,
     },
     {
-      icon: Zap,
-      color: 'text-blue-600',
-      bg: 'bg-blue-50 border-blue-200/50',
-      label: `${stats.urgentLeadsNoProp} leads urgentes (IA) sem proposta`,
-      active: stats.urgentLeadsNoProp > 0,
-      severity: 'info'
+      icon: Send,
+      message: `${stats.urgentLeadsNoProp} leads urgentes (IA) sem proposta`,
+      link: 'PipelineComercial',
+      show: stats.urgentLeadsNoProp > 0,
     },
     {
       icon: CheckCircle2,
-      color: 'text-green-600',
-      bg: 'bg-green-50 border-green-200/50',
-      label: `${stats.leadsReadyForProposal} leads prontos para proposta`,
-      active: stats.leadsReadyForProposal > 0,
-      severity: 'success'
-    }
+      message: `${stats.leadsReadyForProposal} leads prontos para receber proposta`,
+      link: 'PipelineComercial',
+      show: stats.leadsReadyForProposal > 0,
+    },
   ];
 
-  const activeAlerts = alerts.filter(a => a.active);
+  const visible = insights.filter(i => i.show);
 
-  if (activeAlerts.length === 0) {
+  if (visible.length === 0) {
     return (
-      <Card className="rounded-2xl border-[#002443]/5">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm flex items-center gap-2 font-bold text-[#002443]">
-            <div className="p-1.5 rounded-lg bg-green-100">
-              <CheckCircle2 className="w-3.5 h-3.5 text-green-600" />
-            </div>
-            Alertas Acionáveis
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-green-600 font-medium text-center py-4">Tudo em dia! Nenhum alerta pendente.</p>
-        </CardContent>
-      </Card>
+      <div className="bg-gradient-to-r from-[#2bc196]/10 to-[#36706c]/10 rounded-2xl border border-[#2bc196]/20 p-5">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-xl bg-[#2bc196]/10">
+            <Zap className="w-5 h-5 text-[#2bc196]" />
+          </div>
+          <div>
+            <h3 className="font-bold text-[#002443] text-sm">Tudo em dia!</h3>
+            <p className="text-xs text-[#002443]/50">Nenhum alerta pendente no funil comercial.</p>
+          </div>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card className="rounded-2xl border-[#002443]/5">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm flex items-center gap-2 font-bold text-[#002443]">
-          <div className="p-1.5 rounded-lg bg-amber-100">
-            <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
-          </div>
-          Alertas Acionáveis
-          <span className="ml-auto text-xs font-normal bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">
-            {activeAlerts.length}
-          </span>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-2">
-        {activeAlerts.map((alert, i) => {
-          const Icon = alert.icon;
+    <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-5 shadow-lg">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="p-2 rounded-xl bg-white/10">
+          <Zap className="w-5 h-5 text-[#5cf7cf]" />
+        </div>
+        <div>
+          <h3 className="font-bold text-white text-sm">Ações Necessárias</h3>
+          <p className="text-[11px] text-white/50">{visible.length} item(s) requerem atenção</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5">
+        {visible.map((insight, i) => {
+          const Icon = insight.icon;
           return (
-            <div key={i} className={`flex items-center gap-3 p-3 rounded-xl border ${alert.bg}`}>
-              <Icon className={`w-4 h-4 ${alert.color} shrink-0`} />
-              <p className="text-xs font-medium text-[#002443]">{alert.label}</p>
-            </div>
+            <Link
+              key={i}
+              to={createPageUrl(insight.link)}
+              className="flex items-center gap-3 p-3 rounded-xl bg-white/10 border border-white/5 hover:bg-white/20 transition-all group"
+            >
+              <div className="p-1.5 rounded-lg bg-white/10">
+                <Icon className="w-4 h-4 text-[#5cf7cf]" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-white/80 font-medium truncate">{insight.message}</p>
+              </div>
+              <ArrowRight className="w-3.5 h-3.5 text-[#5cf7cf] opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+            </Link>
           );
         })}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

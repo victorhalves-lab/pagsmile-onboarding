@@ -18,6 +18,7 @@ import RevenueMarginChart from '@/components/commercial-dashboard/RevenueMarginC
 import TopIntroducersTable from '@/components/commercial-dashboard/TopIntroducersTable';
 import LeadQualifierDistribution from '@/components/commercial-dashboard/LeadQualifierDistribution';
 import CommercialAlerts from '@/components/commercial-dashboard/CommercialAlerts';
+import CommercialInsights from '@/components/commercial-dashboard/CommercialInsights';
 import StandardProposalsSummary from '@/components/commercial-dashboard/StandardProposalsSummary';
 import RecentLeadsTable from '@/components/commercial-dashboard/RecentLeadsTable';
 
@@ -195,28 +196,6 @@ export default function DashboardComercial() {
       .map(([name, tpv]) => ({ name, tpv }))
       .sort((a, b) => b.tpv - a.tpv);
 
-    // ── Revenue/Margin chart ──
-    const acceptedProps = proposals.filter(p => p.status === 'aceita' && p.isCurrentVersion !== false);
-    const revenueData = [];
-    const months6 = [];
-    for (let i = 5; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      months6.push({ name: d.toLocaleString('pt-BR', { month: 'short' }).replace('.', ''), month: d.getMonth(), year: d.getFullYear() });
-    }
-    months6.forEach(({ name, month, year }) => {
-      const monthProps = acceptedProps.filter(p => {
-        const cd = new Date(p.acceptedDate || p.created_date);
-        return cd.getMonth() === month && cd.getFullYear() === year;
-      });
-      revenueData.push({
-        name,
-        receita: monthProps.reduce((s, p) => s + (p.estimatedRevenue || 0), 0),
-        custo: monthProps.reduce((s, p) => s + (p.estimatedCost || 0), 0),
-        margem: monthProps.reduce((s, p) => s + (p.estimatedMargin || 0), 0),
-      });
-    });
-    const hasRevenueData = revenueData.some(d => d.receita > 0 || d.custo > 0);
-
     // ── Top Introducers ──
     const introducerMap = {};
     introducers.forEach(intr => { introducerMap[intr.id] = intr; });
@@ -266,7 +245,7 @@ export default function DashboardComercial() {
       proposalsThisMonth, staleLeads, proposalsExpiring,
       proposalsRejectedNoFollowup, urgentLeadsNoProp, leadsReadyForProposal,
       funnelData, trendData, leadsBySegment, leadsByOrigin,
-      tpvBySegment, revenueData: hasRevenueData ? revenueData : [],
+      tpvBySegment,
       topIntroducers, qualDist, avgQualScore, avgPriscila,
     };
   }, [leads, proposals, pixProposals, introducers]);
@@ -304,8 +283,11 @@ export default function DashboardComercial() {
       {/* Quick Metrics */}
       <CommercialQuickMetrics stats={stats} />
 
-      {/* Alerts */}
+      {/* Ações Necessárias (estilo degradê azul→verde, igual Compliance) */}
       <CommercialAlerts stats={stats} />
+
+      {/* Insights IA (estilo degradê verde, igual Helena Insights) */}
+      <CommercialInsights stats={stats} leads={leads} />
 
       {/* Funnel + Proposal Pie */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -327,7 +309,7 @@ export default function DashboardComercial() {
 
       {/* Revenue + IA Analysis */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <RevenueMarginChart data={stats.revenueData} />
+        <RevenueMarginChart proposals={proposals} leads={leads} />
         <LeadQualifierDistribution data={stats.qualDist} avgScore={stats.avgQualScore} avgPriscila={stats.avgPriscila} />
       </div>
 
