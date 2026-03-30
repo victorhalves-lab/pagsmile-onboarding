@@ -57,7 +57,7 @@ export default function InternationalPaymentsBanner() {
             </div>
           </div>
           <div className="flex items-baseline gap-1 md:ml-auto">
-            <span className="text-3xl md:text-4xl font-extrabold" style={{ color: '#2bc196' }}>7,99</span>
+            <span className="text-3xl md:text-4xl font-extrabold" style={{ color: '#2bc196' }}>6,99</span>
             <span className="text-lg font-bold" style={{ color: 'rgba(43,193,150,0.6)' }}>%</span>
             <span className="text-lg font-bold mx-2" style={{ color: 'rgba(255,255,255,0.25)' }}>+</span>
             <span className="text-lg font-bold" style={{ color: 'rgba(43,193,150,0.6)' }}>USD</span>
