@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,19 @@ export default function PropostaPadraoPublica() {
   const urlParams = new URLSearchParams(window.location.search);
   const token = urlParams.get('token');
   const propostaContentRef = useRef(null);
+  const ratesEndRef = useRef(null);
+  const [showStickyBar, setShowStickyBar] = useState(false);
+
+  // Show sticky bar once user scrolls past the rates section
+  useEffect(() => {
+    if (!ratesEndRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setShowStickyBar(entry.isIntersecting || entry.boundingClientRect.top < 0),
+      { threshold: 0 }
+    );
+    observer.observe(ratesEndRef.current);
+    return () => observer.disconnect();
+  }, [ratesEndRef.current]);
 
   const { data: proposta, isLoading } = useQuery({
     queryKey: ['std_proposta_publica', token],
@@ -274,26 +287,8 @@ export default function PropostaPadraoPublica() {
         </CardContent>
       </Card>
 
-      {/* CTA - Quero Contratar (fluxo fechamento → compliance) */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-[#2bc196] to-[#5cf7cf] rounded-3xl p-8 md:p-10 mb-8 text-center shadow-xl">
-        <div className="absolute -top-20 -right-20 w-56 h-56 bg-white rounded-full blur-3xl opacity-20 pointer-events-none" />
-        <div className="relative z-10">
-          <Rocket className="w-12 h-12 mx-auto text-[#002443] mb-4" />
-          <h2 className="text-2xl md:text-3xl font-extrabold text-[#002443] mb-3">
-            Gostou dessas condições?
-          </h2>
-          <p className="text-[#002443]/70 text-base md:text-lg max-w-xl mx-auto mb-6">
-            Preencha os dados da sua empresa e inicie o processo de contratação. É rápido e 100% digital.
-          </p>
-          <a href={`/FechamentoLandingPage?segment=${encodeURIComponent(proposta.segment)}`}>
-            <Button className="bg-[#002443] hover:bg-[#002443]/90 text-white font-bold px-10 h-14 rounded-2xl text-lg shadow-lg shadow-[#002443]/20 transition-transform hover:scale-105">
-              <Rocket className="w-5 h-5 mr-2" />
-              Quero Contratar com essas Taxas
-            </Button>
-          </a>
-          <p className="text-xs text-[#002443]/50 mt-3">Processo rápido e 100% digital — Sujeito à aprovação de Compliance</p>
-        </div>
-      </div>
+      {/* Sentinel — sticky bar appears after this point */}
+      <div ref={ratesEndRef} />
 
       {/* CTA - Proposta Personalizada */}
       <div className="relative overflow-hidden bg-gradient-to-r from-[#002443] to-[#36706c] rounded-3xl p-8 md:p-10 mb-8 text-center shadow-xl">
@@ -316,10 +311,32 @@ export default function PropostaPadraoPublica() {
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="text-center text-xs text-[#002443]/30 py-4 border-t border-slate-200">
+      {/* Footer — extra bottom padding for sticky bar */}
+      <div className="text-center text-xs text-[#002443]/30 py-4 pb-28 border-t border-slate-200">
         <p>&copy; {new Date().getFullYear()} Pagsmile. {proposta.codigo}</p>
         <p>{t('spp.footer_note')}</p>
+      </div>
+
+      {/* Sticky Bottom Bar — Quero Contratar */}
+      <div
+        className={`fixed bottom-0 left-0 right-0 z-50 transition-all duration-500 ${
+          showStickyBar ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
+        }`}
+      >
+        <div className="bg-[#002443] border-t border-[#2bc196]/30 shadow-[0_-4px_20px_rgba(0,36,67,0.3)]">
+          <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+            <div className="hidden sm:block flex-1 min-w-0">
+              <p className="text-white font-bold text-sm truncate">Quero essas taxas — {proposta.segment}</p>
+              <p className="text-white/50 text-xs">Processo rápido e 100% digital</p>
+            </div>
+            <a href={`/FechamentoLandingPage?segment=${encodeURIComponent(proposta.segment)}`} className="flex-shrink-0">
+              <Button className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white font-bold rounded-xl text-sm sm:text-base px-6 sm:px-10 h-12 shadow-lg shadow-[#2bc196]/20 hover:scale-[1.02] transition-all gap-2">
+                <Rocket className="w-5 h-5" />
+                Contratar agora
+              </Button>
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   );
