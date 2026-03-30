@@ -41,6 +41,19 @@ export default function IntroducerLandingPage() {
 
   const activeRates = introducer?.standardRates?.find(s => s.segmentName === activeSegment);
 
+  // Analytics tracking — must be before any early returns (React hooks rule)
+  const analytics = useLandingAnalytics({
+    introducerId: introducer?.id || '',
+    referralCode: introducer?.referralCode || '',
+    slug: uniqueLandingPageSlug,
+  });
+
+  // Track segment changes
+  const handleSegmentSelect = (segName) => {
+    setActiveSegment(segName);
+    analytics.trackSegmentView(segName);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#f4f4f4] flex items-center justify-center">
@@ -62,19 +75,6 @@ export default function IntroducerLandingPage() {
   }
 
   const segments = introducer.standardRates || [];
-
-  // Analytics tracking
-  const analytics = useLandingAnalytics({
-    introducerId: introducer.id,
-    referralCode: introducer.referralCode,
-    slug: uniqueLandingPageSlug,
-  });
-
-  // Track segment changes
-  const handleSegmentSelect = (segName) => {
-    setActiveSegment(segName);
-    analytics.trackSegmentView(segName);
-  };
 
   // Detecta se é a landing page exclusiva da Pagsmile (sem logo de parceiro)
   const isPagsmileOwn = !introducer.companyLogoUrl;
