@@ -1,89 +1,138 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown } from 'lucide-react';
+import { Info, X } from 'lucide-react';
 
 const SEGMENT_DESCRIPTIONS = {
-  'Educação': 'Instituições de ensino, cursos online, plataformas EAD e edtechs.',
-  'SaaS': 'Empresas de software como serviço com cobrança recorrente (assinaturas).',
-  'Plataformas Verticais': 'Plataformas especializadas em nichos como saúde, imobiliário, jurídico, agro, fitness, etc.',
-  'E-commerce': 'Lojas virtuais que vendem produtos físicos ou digitais diretamente ao consumidor.',
-  'Marketplace': 'Plataformas que conectam vendedores e compradores, intermediando transações entre múltiplos sellers.',
-  'MPE': 'Micro e Pequenas Empresas — negócios locais como lojas, salões, oficinas e prestadores de serviço.',
-  'Link de Pagamento': 'Empresas que vendem via links por WhatsApp, e-mail ou redes sociais.',
-  'Infoprodutos': 'Produtores e afiliados de cursos, mentorias, e-books e conteúdo digital.',
-  'Dropshipping': 'Lojas que vendem sem estoque próprio, com entrega feita diretamente pelo fornecedor.',
-  'Gateway': 'Empresas que processam pagamentos para outros merchants (sub-adquirência ou facilitação).',
+  'Educação': {
+    short: 'Ensino e EAD',
+    long: 'Instituições de ensino, cursos online, plataformas EAD e edtechs. Ideal para escolas, universidades, plataformas de cursos e qualquer negócio voltado à educação com cobrança de mensalidades, matrículas ou vendas de conteúdo educacional.',
+  },
+  'SaaS': {
+    short: 'Software por assinatura',
+    long: 'Empresas de software como serviço com cobrança recorrente (assinaturas). Inclui plataformas de gestão, CRMs, ERPs, ferramentas de marketing, produtividade e qualquer modelo baseado em planos mensais ou anuais.',
+  },
+  'Plataformas Verticais': {
+    short: 'Nichos especializados',
+    long: 'Plataformas especializadas em nichos como saúde, imobiliário, jurídico, agro, fitness, turismo, etc. Atendem verticais específicas com soluções de pagamento integradas ao seu ecossistema.',
+  },
+  'E-commerce': {
+    short: 'Loja virtual',
+    long: 'Lojas virtuais que vendem produtos físicos ou digitais diretamente ao consumidor. Inclui e-commerces próprios (Shopify, WooCommerce, VTEX, etc.) e qualquer modelo de venda online direta.',
+  },
+  'Marketplace': {
+    short: 'Multi-sellers',
+    long: 'Plataformas que conectam vendedores e compradores, intermediando transações entre múltiplos sellers. Inclui marketplaces de produtos, serviços e delivery com split de pagamento automático.',
+  },
+  'MPE': {
+    short: 'Micro e Pequena Empresa',
+    long: 'Micro e Pequenas Empresas — negócios locais como lojas, salões, oficinas, restaurantes e prestadores de serviço. Faturamento até R$ 4,8 milhões/ano com necessidades de pagamento simples e acessíveis.',
+  },
+  'Link de Pagamento': {
+    short: 'Vendas por link',
+    long: 'Empresas que vendem via links compartilhados por WhatsApp, e-mail, Instagram ou redes sociais. Ideal para profissionais autônomos, pequenos comércios e vendas por chat sem necessidade de loja virtual.',
+  },
+  'Infoprodutos': {
+    short: 'Conteúdo digital',
+    long: 'Produtores e afiliados de cursos, mentorias, e-books, comunidades e conteúdo digital. Engloba todo o ecossistema de infoprodutos incluindo lançamentos, perpétuos e assinaturas de conteúdo.',
+  },
+  'Dropshipping': {
+    short: 'Venda sem estoque',
+    long: 'Lojas que vendem sem estoque próprio, com entrega feita diretamente pelo fornecedor (nacional ou internacional). Modelo de maior risco por chargeback e prazo de entrega estendido.',
+  },
+  'Gateway': {
+    short: 'Processamento para terceiros',
+    long: 'Empresas que processam pagamentos para outros merchants (sub-adquirência ou facilitação). Modelo de alto risco que exige compliance reforçado, KYC dos sub-merchants e monitoramento contínuo de transações.',
+  },
 };
 
 export default function SegmentSelector({ segments, activeSegment, onSelect, onInfoClick }) {
-  const [expandedInfo, setExpandedInfo] = useState(null);
+  const [modalSegment, setModalSegment] = useState(null);
 
-  const toggleInfo = (name) => {
-    const opening = expandedInfo !== name;
-    setExpandedInfo(prev => prev === name ? null : name);
-    if (opening && onInfoClick) onInfoClick(name);
+  const openModal = (name) => {
+    setModalSegment(name);
+    if (onInfoClick) onInfoClick(name);
   };
 
   return (
-    <div className="space-y-2">
-      {/* Pills */}
-      <div className="flex flex-wrap gap-2">
+    <>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
         {segments.map((seg) => {
           const isActive = seg.segmentName === activeSegment;
           const desc = SEGMENT_DESCRIPTIONS[seg.segmentName];
-          const isInfoOpen = expandedInfo === seg.segmentName;
 
           return (
-            <button
-              key={seg.segmentName}
-              onClick={() => onSelect(seg.segmentName)}
-              className={`
-                relative flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-bold
-                transition-all duration-200 border-2 whitespace-nowrap
-                ${isActive
-                  ? 'bg-[#2bc196] text-white border-[#2bc196] shadow-md shadow-[#2bc196]/20'
-                  : 'bg-white text-[#002443] border-[#002443]/10 hover:border-[#2bc196]/40 hover:bg-[#2bc196]/5'
-                }
-              `}
-            >
-              {seg.segmentName}
+            <div key={seg.segmentName} className="flex flex-col items-center gap-1.5">
+              <button
+                onClick={() => onSelect(seg.segmentName)}
+                className={`
+                  w-full px-3 py-3 rounded-xl text-sm font-bold
+                  transition-all duration-200 border-2 text-center leading-tight
+                  ${isActive
+                    ? 'bg-[#2bc196] text-white border-[#2bc196] shadow-md shadow-[#2bc196]/20'
+                    : 'bg-white text-[#002443] border-[#002443]/10 hover:border-[#2bc196]/40 hover:bg-[#2bc196]/5'
+                  }
+                `}
+              >
+                {seg.segmentName}
+                {desc && (
+                  <span className={`block text-[10px] font-medium mt-0.5 ${isActive ? 'text-white/60' : 'text-[#002443]/40'}`}>
+                    {desc.short}
+                  </span>
+                )}
+              </button>
               {desc && (
-                <span
-                  onClick={(e) => { e.stopPropagation(); toggleInfo(seg.segmentName); }}
-                  className={`
-                    text-[10px] font-medium ml-0.5 underline decoration-dotted underline-offset-2 cursor-pointer
-                    ${isActive ? 'text-white/70 hover:text-white' : 'text-[#002443]/35 hover:text-[#2bc196]'}
-                  `}
+                <button
+                  onClick={(e) => { e.stopPropagation(); openModal(seg.segmentName); }}
+                  className="flex items-center gap-1 text-[10px] font-semibold text-[#2bc196] hover:text-[#002443] transition-colors"
                 >
-                  {isInfoOpen ? '✕' : '?'}
-                </span>
+                  <Info className="w-3 h-3" />
+                  Saiba mais
+                </button>
               )}
-            </button>
+            </div>
           );
         })}
       </div>
 
-      {/* Expanded description */}
-      <AnimatePresence mode="wait">
-        {expandedInfo && SEGMENT_DESCRIPTIONS[expandedInfo] && (
-          <motion.div
-            key={expandedInfo}
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden"
+      {/* Modal */}
+      {modalSegment && SEGMENT_DESCRIPTIONS[modalSegment] && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+          onClick={() => setModalSegment(null)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative animate-in fade-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
           >
-            <div className="bg-[#002443]/[0.04] border border-[#002443]/[0.08] rounded-xl px-4 py-3 flex items-start gap-2">
-              <ChevronDown className="w-3.5 h-3.5 text-[#2bc196] mt-0.5 flex-shrink-0" />
+            <button
+              onClick={() => setModalSegment(null)}
+              className="absolute top-4 right-4 text-[#002443]/30 hover:text-[#002443] transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2.5 bg-[#2bc196]/10 rounded-xl">
+                <Info className="w-5 h-5 text-[#2bc196]" />
+              </div>
               <div>
-                <p className="text-xs font-bold text-[#002443]/70 mb-0.5">{expandedInfo}</p>
-                <p className="text-xs text-[#002443]/55 leading-relaxed">{SEGMENT_DESCRIPTIONS[expandedInfo]}</p>
+                <h3 className="text-lg font-extrabold text-[#002443]">{modalSegment}</h3>
+                <p className="text-xs text-[#002443]/40 font-medium">{SEGMENT_DESCRIPTIONS[modalSegment].short}</p>
               </div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+
+            <p className="text-sm text-[#002443]/70 leading-relaxed">
+              {SEGMENT_DESCRIPTIONS[modalSegment].long}
+            </p>
+
+            <button
+              onClick={() => setModalSegment(null)}
+              className="mt-5 w-full bg-[#2bc196] hover:bg-[#2bc196]/90 text-white font-bold text-sm py-2.5 rounded-xl transition-colors"
+            >
+              Entendi
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
