@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Globe, CreditCard, MapPin } from 'lucide-react';
+import { Globe, CreditCard, MapPin, ArrowRight } from 'lucide-react';
 
 const REGIONS = [
   { name: 'Estados Unidos', flag: '🇺🇸' },
@@ -73,7 +73,7 @@ export default function InternationalPaymentsBanner() {
             Regiões atendidas
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 mb-6">
           {REGIONS.map((region) => (
             <div
               key={region.name}
@@ -85,6 +85,22 @@ export default function InternationalPaymentsBanner() {
               </span>
             </div>
           ))}
+        </div>
+
+        {/* CTA Proposta Internacional */}
+        <div className="text-center">
+          <p className="text-sm font-semibold mb-3" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            Quer receber uma proposta personalizada para pagamentos internacionais?
+          </p>
+          <a
+            href="https://pagsmile-international-card-proposals.base44.app/QuestionnaireForm"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white font-bold text-sm px-8 py-3 rounded-xl shadow-lg shadow-[#2bc196]/20 hover:scale-[1.02] transition-all"
+          >
+            Quero uma proposta personalizada
+            <ArrowRight className="w-4 h-4" />
+          </a>
         </div>
       </div>
     </motion.div>
