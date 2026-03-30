@@ -3,26 +3,14 @@ import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { Loader2, ArrowRight, Info, Rocket } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Loader2, ArrowRight, Rocket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-const SEGMENT_DESCRIPTIONS = {
-  'Educação': 'Instituições de ensino, cursos online, plataformas EAD e edtechs.',
-  'SaaS': 'Empresas de software como serviço com cobrança recorrente (assinaturas).',
-  'Plataformas Verticais': 'Plataformas especializadas em um nicho específico, como saúde, imobiliário, jurídico, agro, fitness, etc. Atendem um setor vertical com soluções completas.',
-  'E-commerce': 'Lojas virtuais que vendem produtos físicos ou digitais diretamente ao consumidor.',
-  'Marketplace': 'Plataformas que conectam vendedores e compradores, intermediando transações entre múltiplos sellers.',
-  'MPE': 'Micro e Pequenas Empresas — negócios locais como lojas, salões, oficinas e prestadores de serviço.',
-  'Link de Pagamento': 'Empresas que vendem via links enviados por WhatsApp, e-mail ou redes sociais, sem checkout próprio.',
-  'Infoprodutos': 'Produtores e afiliados de cursos, mentorias, e-books e conteúdo digital.',
-  'Dropshipping': 'Lojas que vendem sem estoque próprio, com entrega feita diretamente pelo fornecedor.',
-  'Gateway': 'Empresas que processam pagamentos para outros merchants (sub-adquirência ou facilitação).',
-};
 import LandingHeader from '@/components/landing/LandingHeader';
+import PagsmileHeader from '@/components/landing/PagsmileHeader';
 import ComplianceDisclaimer from '@/components/landing/ComplianceDisclaimer';
 import SegmentRatesTable from '@/components/landing/SegmentRatesTable';
+import SegmentSelector from '@/components/landing/SegmentSelector';
 import RateCalculator from '@/components/landing/RateCalculator';
 
 const PAGSMILE_LOGO = "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png";
@@ -74,89 +62,77 @@ export default function IntroducerLandingPage() {
 
   const segments = introducer.standardRates || [];
 
+  // Detecta se é a landing page exclusiva da Pagsmile (sem logo de parceiro)
+  const isPagsmileOwn = !introducer.companyLogoUrl;
+
   return (
     <div className="min-h-screen bg-[#f4f4f4]">
       <div className="fixed top-0 left-0 w-full h-1 bg-gradient-to-r from-[#002443] via-[#2bc196] to-[#5cf7cf] z-50" />
 
       <div className="max-w-5xl mx-auto px-4 md:px-8 py-8 md:py-12 space-y-8">
-        <LandingHeader companyName={introducer.companyName} companyLogoUrl={introducer.companyLogoUrl} />
+        {/* Header: exclusivo Pagsmile ou parceiro */}
+        {isPagsmileOwn ? (
+          <PagsmileHeader />
+        ) : (
+          <LandingHeader companyName={introducer.companyName} companyLogoUrl={introducer.companyLogoUrl} />
+        )}
 
         <ComplianceDisclaimer />
 
-        {/* Segment tabs + rates */}
+        {/* Segment selector + rates */}
         {segments.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.15 }}
+            className="space-y-6"
           >
-            <Tabs value={activeSegment} onValueChange={setActiveSegment}>
-              <div className="sticky top-2 z-40 mb-4">
-                <TooltipProvider delayDuration={200}>
-                  <TabsList className="bg-white/95 backdrop-blur-md border border-[#002443]/[0.06] p-1.5 h-auto flex-wrap gap-1 rounded-xl shadow-lg shadow-black/5">
-                    {segments.map((seg) => {
-                      const desc = SEGMENT_DESCRIPTIONS[seg.segmentName];
-                      return (
-                        <Tooltip key={seg.segmentName}>
-                          <TooltipTrigger asChild>
-                            <TabsTrigger
-                              value={seg.segmentName}
-                              className="text-sm font-bold data-[state=active]:bg-[#2bc196] data-[state=active]:text-white px-5 py-2.5 rounded-lg gap-1.5"
-                            >
-                              {seg.segmentName}
-                              {desc && <Info className="w-3 h-3 opacity-40" />}
-                            </TabsTrigger>
-                          </TooltipTrigger>
-                          {desc && (
-                            <TooltipContent side="bottom" className="max-w-[280px] text-xs leading-relaxed bg-[#002443] text-white border-[#002443] shadow-xl">
-                              <p>{desc}</p>
-                            </TooltipContent>
-                          )}
-                        </Tooltip>
-                      );
-                    })}
-                  </TabsList>
-                </TooltipProvider>
-              </div>
+            {/* Segment pills */}
+            <div className="sticky top-2 z-40 bg-white/95 backdrop-blur-md border border-[#002443]/[0.06] rounded-xl p-3 shadow-lg shadow-black/5">
+              <SegmentSelector
+                segments={segments}
+                activeSegment={activeSegment}
+                onSelect={setActiveSegment}
+              />
+            </div>
 
-              {segments.map((seg) => (
-                <TabsContent key={seg.segmentName} value={seg.segmentName}>
-                  {SEGMENT_DESCRIPTIONS[seg.segmentName] && (
-                    <div className="bg-[#002443]/[0.04] border border-[#002443]/[0.06] rounded-xl px-4 py-3 mb-4 flex items-start gap-2.5">
-                      <Info className="w-4 h-4 text-[#2bc196] mt-0.5 flex-shrink-0" />
-                      <p className="text-sm text-[#002443]/70">{SEGMENT_DESCRIPTIONS[seg.segmentName]}</p>
-                    </div>
-                  )}
-                  <SegmentRatesTable segmentRates={seg} />
+            {/* Rates for selected segment */}
+            {activeRates && (
+              <motion.div
+                key={activeSegment}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <SegmentRatesTable segmentRates={activeRates} />
 
-                  {/* CTA: Quero contratar com essas taxas */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="mt-6"
-                  >
-                    <Link to={`/FechamentoLandingPage?ref=${introducer.referralCode}&segment=${encodeURIComponent(seg.segmentName)}&introducerId=${introducer.id}`}>
-                      <Button
-                        size="lg"
-                        className="w-full bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl text-base py-6 shadow-lg shadow-[#2bc196]/20 hover:scale-[1.01] transition-all gap-2 font-bold"
-                      >
-                        <Rocket className="w-5 h-5" />
-                        Quero essas taxas — Contratar agora
-                      </Button>
-                    </Link>
-                    <p className="text-center text-xs text-[#002443]/40 mt-2">Processo rápido e 100% digital</p>
-                  </motion.div>
-                </TabsContent>
-              ))}
-            </Tabs>
+                {/* CTA: Quero contratar com essas taxas */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.15 }}
+                  className="mt-6"
+                >
+                  <Link to={`/FechamentoLandingPage?ref=${introducer.referralCode}&segment=${encodeURIComponent(activeSegment)}&introducerId=${introducer.id}`}>
+                    <Button
+                      size="lg"
+                      className="w-full bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl text-base py-6 shadow-lg shadow-[#2bc196]/20 hover:scale-[1.01] transition-all gap-2 font-bold"
+                    >
+                      <Rocket className="w-5 h-5" />
+                      Quero essas taxas — Contratar agora
+                    </Button>
+                  </Link>
+                  <p className="text-center text-xs text-[#002443]/40 mt-2">Processo rápido e 100% digital</p>
+                </motion.div>
+              </motion.div>
+            )}
           </motion.div>
         )}
 
         {/* Calculator */}
         {activeRates && <RateCalculator segmentRates={activeRates} />}
 
-        {/* CTA */}
+        {/* CTA proposta customizada */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
