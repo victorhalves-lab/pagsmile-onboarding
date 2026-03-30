@@ -14,7 +14,7 @@ import moment from 'moment';
 import SegmentQuickLinks from '@/components/proposals/SegmentQuickLinks';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
-const SEGMENTS = ['Educação', 'Infoprodutos', 'E-commerce', 'SaaS', 'Gateway', 'Merchan', 'Marketplace', 'Dropshipping'];
+const SEGMENTS = ['Educação', 'Infoprodutos', 'E-commerce', 'SaaS', 'Gateway', 'Marketplace', 'Dropshipping', 'MPE', 'Plataformas Verticais', 'Link de Pagamento'];
 
 export default function GestaoPropostasPadrao() {
   const { t } = useTranslation();

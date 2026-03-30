@@ -5,12 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertTriangle, CreditCard, Shield, Clock, Info, FileText, ExternalLink } from 'lucide-react';
+import { AlertTriangle, CreditCard, Shield, Clock, Info, FileText, ExternalLink, Rocket, ArrowRight } from 'lucide-react';
 import moment from 'moment';
 import TaxasPorBandeiraPublic from '@/components/proposals/TaxasPorBandeiraPublic';
 import ParcelasTableDetalhada from '@/components/proposals/ParcelasTableDetalhada';
 import ExportButtons from '@/components/proposals/ExportButtons';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
+import SEGMENT_TO_COMPLIANCE from '@/components/fechamento/segmentComplianceMap';
 
 const QUESTIONNAIRE_URL = '/LeadQuestionnaire?template=69c3b5af17040531b06c5c16';
 
@@ -272,6 +273,27 @@ export default function PropostaPadraoPublica() {
           <ParcelasTableDetalhada taxas={rates} taxaRAV={taxaRAV} prazo={prazo} showSimulator={true} />
         </CardContent>
       </Card>
+
+      {/* CTA - Quero Contratar (fluxo fechamento → compliance) */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-[#2bc196] to-[#5cf7cf] rounded-3xl p-8 md:p-10 mb-8 text-center shadow-xl">
+        <div className="absolute -top-20 -right-20 w-56 h-56 bg-white rounded-full blur-3xl opacity-20 pointer-events-none" />
+        <div className="relative z-10">
+          <Rocket className="w-12 h-12 mx-auto text-[#002443] mb-4" />
+          <h2 className="text-2xl md:text-3xl font-extrabold text-[#002443] mb-3">
+            Gostou dessas condições?
+          </h2>
+          <p className="text-[#002443]/70 text-base md:text-lg max-w-xl mx-auto mb-6">
+            Preencha os dados da sua empresa e inicie o processo de contratação. É rápido e 100% digital.
+          </p>
+          <a href={`/FechamentoLandingPage?segment=${encodeURIComponent(proposta.segment)}`}>
+            <Button className="bg-[#002443] hover:bg-[#002443]/90 text-white font-bold px-10 h-14 rounded-2xl text-lg shadow-lg shadow-[#002443]/20 transition-transform hover:scale-105">
+              <Rocket className="w-5 h-5 mr-2" />
+              Quero Contratar com essas Taxas
+            </Button>
+          </a>
+          <p className="text-xs text-[#002443]/50 mt-3">Processo rápido e 100% digital — Sujeito à aprovação de Compliance</p>
+        </div>
+      </div>
 
       {/* CTA - Proposta Personalizada */}
       <div className="relative overflow-hidden bg-gradient-to-r from-[#002443] to-[#36706c] rounded-3xl p-8 md:p-10 mb-8 text-center shadow-xl">

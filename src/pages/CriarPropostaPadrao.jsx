@@ -17,7 +17,7 @@ import PropostaPreview from '@/components/proposals/PropostaPreview';
 import { DEFAULT_SEGMENT_RATES } from '@/lib/rateCalculator';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
-const SEGMENTS = ['Educação', 'Infoprodutos', 'E-commerce', 'SaaS', 'Gateway', 'Marketplace'];
+const SEGMENTS = ['Educação', 'Infoprodutos', 'E-commerce', 'SaaS', 'Gateway', 'Marketplace', 'Dropshipping', 'MPE', 'Plataformas Verticais', 'Link de Pagamento'];
 
 
 const parseTaxa = (val) => {

@@ -15,7 +15,10 @@
         "SaaS",
         "Gateway",
         "Marketplace",
-        "Dropshipping"
+        "Dropshipping",
+        "MPE",
+        "Plataformas Verticais",
+        "Link de Pagamento"
       ],
       "description": "Segmento de cliente ao qual esta proposta padr\u00e3o se aplica"
     },

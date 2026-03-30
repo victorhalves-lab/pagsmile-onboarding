@@ -21,18 +21,44 @@ export default function FechamentoLandingPage() {
   const [formData, setFormData] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Fetch introducer to get rates
-  const { data: introducer, isLoading } = useQuery({
+  // Fetch introducer to get rates (when coming from landing page)
+  const { data: introducer, isLoading: isLoadingIntroducer } = useQuery({
     queryKey: ['fechamento-introducer', introducerId],
     queryFn: async () => {
-      if (!introducerId) return null;
       const results = await base44.entities.Introducer.filter({ id: introducerId });
       return results?.[0] || null;
     },
     enabled: !!introducerId,
   });
 
-  const segmentRates = introducer?.standardRates?.find(s => s.segmentName === segment);
+  // Fetch standard proposal rates (when coming from proposta padrão, no introducer)
+  const { data: standardProposal, isLoading: isLoadingStdProp } = useQuery({
+    queryKey: ['fechamento-std-proposal', segment],
+    queryFn: async () => {
+      const results = await base44.entities.StandardProposal.filter({ segment, status: 'ativa', isDefaultForSegment: true });
+      return results?.[0] || null;
+    },
+    enabled: !!segment && !introducerId,
+  });
+
+  const isLoading = isLoadingIntroducer || isLoadingStdProp;
+
+  // Rates: prefer introducer rates, fallback to standard proposal rates converted to same format
+  const introducerRates = introducer?.standardRates?.find(s => s.segmentName === segment);
+  const stdRates = standardProposal?.rates;
+  const segmentRates = introducerRates || (stdRates ? {
+    segmentName: segment,
+    mdrAvista: stdRates.cartao?.visa?.avista,
+    mdr2a6x: stdRates.cartao?.visa?.de2a6x,
+    mdr7a12x: stdRates.cartao?.visa?.de7a12x,
+    mdr13a21x: stdRates.cartao?.visa?.de13a21x,
+    percentualAntecipacao: stdRates.rav?.taxa,
+    feeTransacao: stdRates.feeTransacao,
+    antifraude: stdRates.antifraude,
+    taxa3ds: stdRates.taxa3ds,
+    pixTaxaPercentual: stdRates.pix?.tipo === 'percentual' ? stdRates.pix?.valor : null,
+    pixTaxaFixa: stdRates.pix?.tipo === 'fixo' ? stdRates.pix?.valor : null,
+  } : null);
   const partnerName = introducer?.companyName || '';
 
   const handleSubmit = async () => {
