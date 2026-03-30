@@ -33,6 +33,7 @@ import RiskScoringV4 from './pages/RiskScoringV4';
 import RiskScoringSubcontas from './pages/RiskScoringSubcontas';
 import QuestionarioLeadsPagsmile from './pages/QuestionarioLeadsPagsmile';
 import LeadPixV4 from './pages/LeadPixV4';
+import FechamentoLandingPage from './pages/FechamentoLandingPage';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -74,6 +75,7 @@ const PUBLIC_PATHS = new Set([
   '/SubsellerQuestionnaire',
   '/QuestionarioLeadsPagsmile',
   '/LeadPixV4',
+  '/FechamentoLandingPage',
 ]);
 
 function isPublicPath(pathname) {
@@ -122,6 +124,7 @@ const PublicRoutes = () => (
     <Route path="/LeadQuestionnairePix" element={<LayoutWrapper currentPageName="LeadQuestionnairePix"><LeadQuestionnairePix /></LayoutWrapper>} />
     <Route path="/QuestionarioLeadsPagsmile" element={<LayoutWrapper currentPageName="QuestionarioLeadsPagsmile"><QuestionarioLeadsPagsmile /></LayoutWrapper>} />
     <Route path="/LeadPixV4" element={<LayoutWrapper currentPageName="LeadPixV4"><LeadPixV4 /></LayoutWrapper>} />
+    <Route path="/FechamentoLandingPage" element={<LayoutWrapper currentPageName="FechamentoLandingPage"><FechamentoLandingPage /></LayoutWrapper>} />
   </Routes>
 );
 

@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { Loader2, ArrowRight, Info } from 'lucide-react';
+import { Loader2, ArrowRight, Info, Rocket } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
@@ -128,6 +128,25 @@ export default function IntroducerLandingPage() {
                     </div>
                   )}
                   <SegmentRatesTable segmentRates={seg} />
+
+                  {/* CTA: Quero contratar com essas taxas */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="mt-6"
+                  >
+                    <Link to={`/FechamentoLandingPage?ref=${introducer.referralCode}&segment=${encodeURIComponent(seg.segmentName)}&introducerId=${introducer.id}`}>
+                      <Button
+                        size="lg"
+                        className="w-full bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl text-base py-6 shadow-lg shadow-[#2bc196]/20 hover:scale-[1.01] transition-all gap-2 font-bold"
+                      >
+                        <Rocket className="w-5 h-5" />
+                        Quero essas taxas — Contratar agora
+                      </Button>
+                    </Link>
+                    <p className="text-center text-xs text-[#002443]/40 mt-2">Processo rápido e 100% digital</p>
+                  </motion.div>
                 </TabsContent>
               ))}
             </Tabs>

@@ -68,7 +68,8 @@ export default function Layout({ children, currentPageName }) {
     'DocumentUploadPix','DocumentUploadFull','DocumentUploadLite','DocumentUploadSaaS','DocumentUploadEcommerce',
     'LivenessFacematchStep','LivenessSimulation','OnboardingCompletion',
     'LeadQuestionnaire','LeadQuestionnairePix','LeadSuccess','PropostaPublica',
-    'QuestionarioSimplificadoPublico','ComplianceDinamico','ComplianceResume','SubsellerQuestionnaire'
+    'QuestionarioSimplificadoPublico','ComplianceDinamico','ComplianceResume','SubsellerQuestionnaire',
+    'FechamentoLandingPage'
   ];
   const isPublicPage = publicPages.includes(currentPageName);
 
