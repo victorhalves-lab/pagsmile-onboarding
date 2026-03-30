@@ -12,6 +12,7 @@ import ComplianceDisclaimer from '@/components/landing/ComplianceDisclaimer';
 import SegmentRatesTable from '@/components/landing/SegmentRatesTable';
 import SegmentSelector from '@/components/landing/SegmentSelector';
 import RateCalculator from '@/components/landing/RateCalculator';
+import InternationalPaymentsBanner from '@/components/landing/InternationalPaymentsBanner';
 
 const PAGSMILE_LOGO = "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png";
 
@@ -202,6 +203,9 @@ export default function IntroducerLandingPage() {
             )}
           </motion.div>
         )}
+
+        {/* International Payments */}
+        <InternationalPaymentsBanner />
 
         {/* Calculator */}
         {activeRates && (

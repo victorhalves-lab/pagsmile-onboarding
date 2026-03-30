@@ -12,6 +12,7 @@ import ParcelasTableDetalhada from '@/components/proposals/ParcelasTableDetalhad
 import ExportButtons from '@/components/proposals/ExportButtons';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 import SEGMENT_TO_COMPLIANCE from '@/components/fechamento/segmentComplianceMap';
+import InternationalPaymentsBanner from '@/components/landing/InternationalPaymentsBanner';
 
 const QUESTIONNAIRE_URL = '/LeadQuestionnaire?template=69c3b5af17040531b06c5c16';
 
@@ -287,6 +288,11 @@ export default function PropostaPadraoPublica() {
           <ParcelasTableDetalhada taxas={rates} taxaRAV={taxaRAV} prazo={prazo} showSimulator={true} />
         </CardContent>
       </Card>
+
+      {/* International Payments */}
+      <div className="mb-8">
+        <InternationalPaymentsBanner />
+      </div>
 
       {/* Sentinel — sticky bar appears after this point */}
       <div ref={ratesEndRef} />
