@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { createPageUrl } from '../../utils';
+
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Check, Loader2, ShieldCheck } from 'lucide-react';
 import CafeRedirectMessage from './CafeRedirectMessage';
@@ -617,7 +617,7 @@ export default function DynamicQuestionnaire({
     if (onComplete) {
       onComplete({ formData: finalFormData, template, questions });
     } else {
-      navigate(createPageUrl(documentUploadPage));
+      navigate(`/${documentUploadPage}`);
     }
   };
 
@@ -728,7 +728,7 @@ export default function DynamicQuestionnaire({
 
     await completeSession();
     setIsCompletingCaf(false);
-    navigate(createPageUrl('OnboardingCompletion'));
+    navigate('/OnboardingCompletion');
   }, [formData, complianceAlerts, currentStep, saveProgressNow, completeSession, navigate, createMerchantAndCase, clientInfo]);
 
   if (sessionLoading || loadingTemplate || loadingQuestions) {
@@ -863,7 +863,7 @@ export default function DynamicQuestionnaire({
           <div className="flex justify-between items-center mt-10 pt-6 border-t border-slate-100">
             <Button
               variant="outline"
-              onClick={currentStep === 1 ? () => navigate(createPageUrl('ComplianceOnboardingStart')) : handlePrevious}
+              onClick={currentStep === 1 ? () => navigate('/ComplianceOnboardingStart') : handlePrevious}
               className="text-[#002443]/60 hover:text-[#002443] border-slate-200 hover:border-slate-300 hover:bg-slate-50 h-11 px-5 rounded-xl"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />

@@ -1,51 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { createPageUrl } from '../utils';
-import { Loader2, RefreshCw, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { RefreshCw, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-const FLOW_PAGES = {
-  pix: { questionnaire: 'CompliancePixOnly', documents: 'DocumentUploadPix' },
-  lite: { questionnaire: 'ComplianceLite', documents: 'DocumentUploadLite' },
-  saas: { questionnaire: 'ComplianceSaaS', documents: 'DocumentUploadSaaS' },
-  ecommerce: { questionnaire: 'ComplianceEcommerce', documents: 'DocumentUploadEcommerce' },
-  full_kyc: { questionnaire: 'ComplianceFullKYC', documents: 'DocumentUploadFull' },
-  merchant: { questionnaire: 'ComplianceDinamico', documents: 'DocumentUploadFull' },
-  gateway: { questionnaire: 'ComplianceDinamico', documents: 'DocumentUploadFull' },
-  marketplace: { questionnaire: 'ComplianceDinamico', documents: 'DocumentUploadFull' },
-  ComplianceMerchantAutocomplete: { questionnaire: 'ComplianceDinamico', documents: 'DocumentUploadFull' },
-  ComplianceGatewayAutocomplete: { questionnaire: 'ComplianceDinamico', documents: 'DocumentUploadFull' },
-  ComplianceMarketplaceAutocomplete: { questionnaire: 'ComplianceDinamico', documents: 'DocumentUploadFull' },
-  subseller: { questionnaire: 'SubsellerQuestionnaire', documents: 'SubsellerQuestionnaire' },
-};
+// All dynamic V4 models go through ComplianceDinamico with ?model= param
+const DYNAMIC_MODELS = new Set([
+  'merchant', 'gateway', 'marketplace',
+  'ComplianceMerchantAutocomplete', 'ComplianceGatewayAutocomplete', 'ComplianceMarketplaceAutocomplete',
+  'ComplianceGatewayV4', 'ComplianceMarketplaceV4', 'CompliancePlataformaVerticalV4',
+  'ComplianceEcommerceV4', 'ComplianceInfoprodutosV4', 'ComplianceEducacaoV4',
+  'ComplianceSaaSV4', 'ComplianceMerchantLinkV4', 'ComplianceMPEV4', 'ComplianceDropshippingV4',
+  'CompliancePixMerchantV4', 'CompliancePixIntermediarioV4', 'subseller_v2',
+]);
 
-const STORAGE_KEYS = {
-  pix: 'compliance_data_pix',
-  lite: 'compliance_data_lite',
-  saas: 'compliance_data_saas',
-  ecommerce: 'compliance_data_ecommerce',
-  merchant: 'compliance_data_merchant',
-  gateway: 'compliance_data_gateway',
-  marketplace: 'compliance_data_marketplace',
-  full_kyc: 'compliance_data_merchant',
-  ComplianceMerchantAutocomplete: 'compliance_data_merchant_v2',
-  ComplianceGatewayAutocomplete: 'compliance_data_gateway_v2',
-  ComplianceMarketplaceAutocomplete: 'compliance_data_marketplace_v2',
-};
-
-const DOC_STORAGE_KEYS = {
-  pix: 'documents_pix',
-  lite: 'documents_lite',
-  saas: 'documents_saas',
-  ecommerce: 'documents_ecommerce',
-  merchant: 'documents_merchant',
-  gateway: 'documents_gateway',
-  marketplace: 'documents_marketplace',
-  full_kyc: 'documents_merchant',
-  ComplianceMerchantAutocomplete: 'documents_merchant_v2',
-  ComplianceGatewayAutocomplete: 'documents_gateway_v2',
-  ComplianceMarketplaceAutocomplete: 'documents_marketplace_v2',
+// Legacy fixed-page models only
+const LEGACY_FLOW_PAGES = {
+  pix: { questionnaire: '/CompliancePixOnly', documents: '/DocumentUploadPix' },
+  lite: { questionnaire: '/ComplianceLite', documents: '/DocumentUploadLite' },
+  saas: { questionnaire: '/ComplianceSaaS', documents: '/DocumentUploadSaaS' },
+  ecommerce: { questionnaire: '/ComplianceEcommerce', documents: '/DocumentUploadEcommerce' },
+  full_kyc: { questionnaire: '/ComplianceFullKYC', documents: '/DocumentUploadFull' },
+  subseller: { questionnaire: '/SubsellerQuestionnaire', documents: '/SubsellerQuestionnaire' },
 };
 
 export default function ComplianceResume() {
@@ -83,45 +59,35 @@ export default function ComplianceResume() {
         const sess = response.data.session;
         setSession(sess);
 
-        // Restore data to localStorage
+        // Restore session token to localStorage
         localStorage.setItem('compliance_session_token', token);
 
         if (sess.linkCode) {
           localStorage.setItem('onboarding_link_code', sess.linkCode);
         }
-
-        const storageKey = STORAGE_KEYS[sess.templateModel] || STORAGE_KEYS[sess.flowType];
-        if (storageKey && sess.formData && Object.keys(sess.formData).length > 0) {
-          localStorage.setItem(storageKey, JSON.stringify(sess.formData));
-        }
-
-        const docStorageKey = DOC_STORAGE_KEYS[sess.templateModel] || DOC_STORAGE_KEYS[sess.flowType];
-        if (docStorageKey && sess.documentsData && Object.keys(sess.documentsData).length > 0) {
-          localStorage.setItem(docStorageKey, JSON.stringify(sess.documentsData));
-        }
-
         if (sess.templateModel) {
           localStorage.setItem('current_compliance_model', sess.templateModel);
         }
 
-        // Determine target page
+        // Determine target page based on model
         const model = sess.templateModel || sess.flowType;
-        const pages = FLOW_PAGES[model] || FLOW_PAGES.full_kyc;
-        
-        let targetPage;
-        if (sess.currentPhase === 'documents') {
-          targetPage = pages.documents;
+        let url;
+
+        if (DYNAMIC_MODELS.has(model)) {
+          const docPage = model.startsWith('CompliancePix') ? '/DocumentUploadPix' : '/DocumentUploadFull';
+          if (sess.currentPhase === 'documents') {
+            url = docPage + `?session=${token}`;
+          } else {
+            url = `/ComplianceDinamico?model=${model}&session=${token}`;
+          }
         } else {
-          targetPage = pages.questionnaire;
+          const pages = LEGACY_FLOW_PAGES[model] || LEGACY_FLOW_PAGES.full_kyc;
+          url = sess.currentPhase === 'documents' ? pages.documents : pages.questionnaire;
+          url += (url.includes('?') ? '&' : '?') + `session=${token}`;
         }
 
-        // Add model param for dynamic questionnaires
-        let url = createPageUrl(targetPage);
-        if ((['merchant', 'gateway', 'marketplace'].includes(model) || model.startsWith('Compliance') && model.endsWith('Autocomplete')) && targetPage === 'ComplianceDinamico') {
-          url += `?model=${model}`;
-        }
         if (model === 'subseller' && sess.linkCode) {
-          url += `?ref=${sess.linkCode}`;
+          url += (url.includes('?') ? '&' : '?') + `ref=${sess.linkCode}`;
         }
 
         // Brief display then redirect
@@ -146,7 +112,7 @@ export default function ComplianceResume() {
         <h2 className="text-xl font-bold text-[var(--pagsmile-blue)] mb-2">Não foi possível retomar</h2>
         <p className="text-[var(--pagsmile-blue)]/70 mb-6">{error}</p>
         <Button
-          onClick={() => navigate(createPageUrl('ComplianceOnboardingStart'))}
+          onClick={() => navigate('/ComplianceOnboardingStart')}
           className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white"
         >
           Iniciar Novo Questionário
