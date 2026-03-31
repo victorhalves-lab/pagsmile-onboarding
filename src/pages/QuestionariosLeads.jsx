@@ -29,6 +29,7 @@ import QuestionarioSimplificadoCard from '../components/questionario-simplificad
 import LeadSLAIndicator from '../components/leads/LeadSLAIndicator';
 import LeadQualifierBadge from '../components/leads/LeadQualifierBadge';
 import QuestionnaireResponsesModal from '../components/leads/QuestionnaireResponsesModal';
+import PagsmileV5ResponsesModal from '../components/leads/PagsmileV5ResponsesModal';
 import IntroducerLeadsTab from '../components/leads/IntroducerLeadsTab';
 import MeetingQuestionnaireTab from '../components/meeting-questionnaire/MeetingQuestionnaireTab';
 import AIQuestionnaireTab from '../components/meeting-questionnaire/AIQuestionnaireTab';
@@ -568,12 +569,20 @@ export default function QuestionariosLeads() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Questionnaire Responses Modal */}
-      <QuestionnaireResponsesModal
-        open={!!responsesModalLead}
-        onClose={() => setResponsesModalLead(null)}
-        lead={responsesModalLead}
-      />
+      {/* Questionnaire Responses Modal — choose correct modal based on lead origin */}
+      {responsesModalLead?.questionnaireData?.origem === 'questionario_leads_pagsmile_v5' ? (
+        <PagsmileV5ResponsesModal
+          open={!!responsesModalLead}
+          onClose={() => setResponsesModalLead(null)}
+          lead={responsesModalLead}
+        />
+      ) : (
+        <QuestionnaireResponsesModal
+          open={!!responsesModalLead}
+          onClose={() => setResponsesModalLead(null)}
+          lead={responsesModalLead}
+        />
+      )}
       </TabsContent>
       </Tabs>
     </div>
