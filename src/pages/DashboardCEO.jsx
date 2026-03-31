@@ -12,6 +12,7 @@ import CEOFunnelOverview from '@/components/ceo-dashboard/CEOFunnelOverview';
 import CEOContractsOverview from '@/components/ceo-dashboard/CEOContractsOverview';
 import CEOComplianceOverview from '@/components/ceo-dashboard/CEOComplianceOverview';
 import CEOTrendChart from '@/components/ceo-dashboard/CEOTrendChart';
+import TeamProductivityPanel from '@/components/ceo-dashboard/TeamProductivityPanel';
 
 const formatCompact = (v) => {
   if (!v) return 'R$ 0';
@@ -181,6 +182,9 @@ export default function DashboardCEO() {
 
       {/* Performance por Vendedor */}
       <SellerPerformanceTable sellers={sellers} />
+
+      {/* Produtividade do Time */}
+      <TeamProductivityPanel sellers={sellers} leads={leads} allProposals={allProposals} />
 
       {/* Funil + Tendência */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
