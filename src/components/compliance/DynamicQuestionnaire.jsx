@@ -547,7 +547,9 @@ export default function DynamicQuestionnaire({
       saveProgressNow({
         currentStep: nextStep,
         currentPhase: 'questionnaire',
-        formData
+        formData,
+        clientEmail: clientInfo.email,
+        clientName: clientInfo.name,
       });
       window.scrollTo(0, 0);
     }
@@ -588,8 +590,13 @@ export default function DynamicQuestionnaire({
       saveProgressNow({
         currentStep,
         currentPhase: 'questionnaire',
-        formData: finalFormData
+        formData: finalFormData,
+        clientEmail: clientInfo.email,
+        clientName: clientInfo.name,
       });
+      // Create Merchant + OnboardingCase NOW (before CAF redirect), so it appears in "Recebidos"
+      // even if the client never comes back to click "Já concluí"
+      createMerchantAndCase(finalFormData);
       setShowCafRedirect(true);
       window.scrollTo(0, 0);
       return;
@@ -615,7 +622,12 @@ export default function DynamicQuestionnaire({
   };
 
   // Helper: create Merchant + OnboardingCase from compliance data so it appears in "Recebidos"
+  const merchantCreatedRef = React.useRef(false);
   const createMerchantAndCase = useCallback(async (finalFormData) => {
+    // Prevent duplicate creation
+    if (merchantCreatedRef.current) return null;
+    merchantCreatedRef.current = true;
+
     // Extract CNPJ, name, email from formData using questions
     let cnpj = '', fullName = '', companyName = '', email = '', phone = '';
     let merchantType = 'PJ';
@@ -637,7 +649,11 @@ export default function DynamicQuestionnaire({
       if (!email) email = lead.email || '';
       if (!phone) phone = lead.phone || '';
     }
-    if (!cnpj && !email) return null; // Cannot create without minimum data
+    if (!cnpj && !email) { merchantCreatedRef.current = false; return null; }
+
+    // Check if lead already has an onboardingCaseId (avoid duplicates)
+    const leadId = localStorage.getItem('lead_id_for_compliance') || localStorage.getItem('fechamento_lead_id');
+    if (leadId && lead?.onboardingCaseId) { return null; }
 
     // Create Merchant
     const merchant = await base44.entities.Merchant.create({
@@ -662,10 +678,33 @@ export default function DynamicQuestionnaire({
       commercialAgentName: lead?.commercialAgentName || '',
     });
 
-    // Update lead with onboardingCaseId if lead exists
-    const leadId = localStorage.getItem('lead_id_for_compliance') || localStorage.getItem('fechamento_lead_id');
+    // Update lead with onboardingCaseId + status if lead exists
     if (leadId) {
-      await base44.entities.Lead.update(leadId, { onboardingCaseId: onboardingCase.id });
+      await base44.entities.Lead.update(leadId, { 
+        onboardingCaseId: onboardingCase.id,
+        status: 'kyc_iniciado',
+      });
+    }
+
+    // Save questionnaire responses for the OnboardingCase
+    const responsesToCreate = [];
+    questions.forEach(q => {
+      const val = finalFormData[q.id];
+      if (val === undefined || val === null || String(q.id).startsWith('__')) return;
+      const resp = {
+        onboardingCaseId: onboardingCase.id,
+        questionId: q.id,
+        questionText: q.text,
+        questionType: q.type,
+      };
+      if (typeof val === 'boolean') resp.valueBoolean = val;
+      else if (typeof val === 'number') resp.valueNumber = val;
+      else if (Array.isArray(val)) resp.valueArray = val;
+      else resp.valueText = String(val);
+      responsesToCreate.push(resp);
+    });
+    if (responsesToCreate.length > 0) {
+      await base44.entities.QuestionnaireResponse.bulkCreate(responsesToCreate);
     }
 
     return { merchant, onboardingCase };
