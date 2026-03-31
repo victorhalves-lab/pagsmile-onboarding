@@ -82,6 +82,14 @@
       "type": "string",
       "description": "ID da proposta ativa"
     },
+    "commercialAgentId": {
+      "type": "string",
+      "description": "ID do vendedor/agente comercial respons\u00e1vel"
+    },
+    "commercialAgentName": {
+      "type": "string",
+      "description": "Nome do vendedor/agente comercial respons\u00e1vel"
+    },
     "priscilaQualityScore": {
       "type": "number",
       "description": "Score de qualidade PRISCILA (0-100)"
@@ -201,19 +209,17 @@
         },
         "pix": {
           "type": "object",
-          "description": "Taxa PIX atual do cliente (tipo: percentual ou fixo, valor: n\u00famero)",
+          "description": "Taxa PIX atual do cliente",
           "properties": {
             "tipo": {
               "type": "string",
               "enum": [
                 "percentual",
                 "fixo"
-              ],
-              "description": "Tipo de cobran\u00e7a PIX: percentual (%) ou fixo (R$)"
+              ]
             },
             "valor": {
-              "type": "number",
-              "description": "Valor da taxa PIX (% se percentual, R$ se fixo)"
+              "type": "number"
             }
           }
         }

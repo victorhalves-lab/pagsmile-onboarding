@@ -744,6 +744,8 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
         })(),
       },
       ...introducerData,
+      commercialAgentId: onboardingLink?.commercialAgentId || undefined,
+      commercialAgentName: onboardingLink?.commercialAgentName || undefined,
       expectedRates: (formData[USA_CARTAO_QUESTION_ID] === false || formData[USA_CARTAO_QUESTION_ID] === 'false')
         ? Object.fromEntries(
             EXPECTED_RATE_KEYS.map(k => [k, parseFloat((formData._expectedRates || {})[k]) || 0])

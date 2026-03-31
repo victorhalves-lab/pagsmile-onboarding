@@ -1,0 +1,183 @@
+{
+  "name": "OnboardingCase",
+  "type": "object",
+  "properties": {
+    "merchantId": {
+      "type": "string",
+      "description": "ID do Merchant associado a este caso"
+    },
+    "questionnaireTemplateId": {
+      "type": "string",
+      "description": "ID do QuestionnaireTemplate usado neste onboarding"
+    },
+    "submissionDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data e hora da submiss\u00e3o do question\u00e1rio"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Pendente",
+        "Em Processamento",
+        "Aprovado",
+        "Manual",
+        "Recusado",
+        "Docs Solicitados"
+      ],
+      "default": "Pendente",
+      "description": "Status atual do caso de onboarding"
+    },
+    "riskScore": {
+      "type": "number",
+      "description": "Score de risco legado (0-100)"
+    },
+    "riskScoreV4": {
+      "type": "number",
+      "description": "Score de risco Framework v4 (0-1000, onde 0=melhor)"
+    },
+    "subfaixa": {
+      "type": "string",
+      "enum": [
+        "1A",
+        "1B",
+        "2A",
+        "2B",
+        "3A",
+        "3B",
+        "4",
+        "5"
+      ],
+      "description": "Subfaixa de decis\u00e3o v4"
+    },
+    "subfaixaNome": {
+      "type": "string",
+      "description": "Nome da subfaixa (VERDE EXPRESS, AZUL, AMARELO, etc)"
+    },
+    "rollingReservePercent": {
+      "type": "number",
+      "default": 0,
+      "description": "Rolling Reserve aplicado (%)"
+    },
+    "monitoramentoNivel": {
+      "type": "string",
+      "enum": [
+        "PADRAO",
+        "REFOR\u00c7ADO_LEVE",
+        "REFOR\u00c7ADO",
+        "INTENSO",
+        "INTENSO_PLUS",
+        "MAXIMO"
+      ],
+      "description": "N\u00edvel de monitoramento v4"
+    },
+    "condicoesAutomaticas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Condi\u00e7\u00f5es autom\u00e1ticas aplicadas pelo framework v4"
+    },
+    "bloqueiosAtivos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Bloqueios B01-B10 ativos"
+    },
+    "iaDecision": {
+      "type": "string",
+      "enum": [
+        "Aprovado",
+        "Manual",
+        "Recusado"
+      ],
+      "description": "Decis\u00e3o sugerida pela IA"
+    },
+    "iaExplanation": {
+      "type": "string",
+      "description": "Explica\u00e7\u00e3o detalhada da IA"
+    },
+    "manualReviewerId": {
+      "type": "string"
+    },
+    "manualReviewComments": {
+      "type": "string"
+    },
+    "manualReviewDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "finalDecisionDate": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "validationsCompleted": {
+      "type": "boolean",
+      "default": false
+    },
+    "bigDataCorpCompleted": {
+      "type": "boolean",
+      "default": false
+    },
+    "cafCompleted": {
+      "type": "boolean",
+      "default": false
+    },
+    "docCompleted": {
+      "type": "boolean",
+      "default": false
+    },
+    "assignedAnalystId": {
+      "type": "string"
+    },
+    "assignedAnalystName": {
+      "type": "string"
+    },
+    "commercialAgentId": {
+      "type": "string",
+      "description": "ID do vendedor/agente comercial que originou este caso"
+    },
+    "commercialAgentName": {
+      "type": "string",
+      "description": "Nome do vendedor/agente comercial que originou este caso"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ],
+      "default": "medium"
+    },
+    "slaDeadline": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "redFlags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "onboardingLinkId": {
+      "type": "string"
+    },
+    "onboardingLinkCode": {
+      "type": "string"
+    },
+    "parentMerchantId": {
+      "type": "string"
+    },
+    "isSubsellerCase": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "merchantId",
+    "questionnaireTemplateId"
+  ]
+}

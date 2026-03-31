@@ -198,7 +198,9 @@ export default function CriarProposta() {
       debito[b] = Math.round(av * 0.6 * 100) / 100;
     });
     let criadoPor = 'sistema';
-    try { const user = await base44.auth.me(); criadoPor = user?.email || user?.id || 'sistema'; } catch (e) {}
+    let criadoPorNome = 'sistema';
+    let criadoPorId = '';
+    try { const user = await base44.auth.me(); criadoPor = user?.email || user?.id || 'sistema'; criadoPorNome = user?.full_name || user?.email || 'sistema'; criadoPorId = user?.id || ''; } catch (e) {}
     return {
       leadId: leadId || '', codigo: existingProposal?.codigo || gerarCodigo(),
       proposalName: `Proposta - ${form.clienteNome}`, status, origem: 'manual',
@@ -219,7 +221,7 @@ export default function CriarProposta() {
       },
       validUntil: form.dataValidade.toISOString(),
       tokenPublico: existingProposal?.tokenPublico || gerarToken(),
-      responsavelId: criadoPor, responsavelNome: criadoPor,
+      responsavelId: criadoPorId || criadoPor, responsavelNome: criadoPorNome,
     };
   };
 

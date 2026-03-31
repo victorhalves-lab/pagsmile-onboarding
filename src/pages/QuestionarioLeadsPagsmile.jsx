@@ -171,6 +171,8 @@ export default function QuestionarioLeadsPagsmile() {
       leadQualifierScore: leadScore,
       leadQualifierLevel: getScoreLabel(leadScore).label === 'Muito Quente' ? 'EXCELENTE' : getScoreLabel(leadScore).label === 'Quente' ? 'BOM' : getScoreLabel(leadScore).label === 'Morno' ? 'REGULAR' : 'FRACO',
       ...introducerData,
+      commercialAgentId: onboardingLink?.commercialAgentId || undefined,
+      commercialAgentName: onboardingLink?.commercialAgentName || undefined,
       lastInteractionDate: new Date().toISOString(),
       questionnaireData: {
         origem: 'questionario_leads_pagsmile_v5',

@@ -169,8 +169,9 @@ export default function CriarPropostaPadrao() {
       credito_1x[b] = av; credito_2_6x[b] = p26; credito_7_12x[b] = p712; credito_13_21x[b] = p1321;
       debito[b] = Math.round(av * 0.6 * 100) / 100;
     });
-    let criadoPor = 'sistema';
-    try { const user = await base44.auth.me(); criadoPor = user?.email || 'sistema'; } catch {}
+    let criadoPorId = '';
+    let criadoPorNome = 'sistema';
+    try { const user = await base44.auth.me(); criadoPorId = user?.id || user?.email || ''; criadoPorNome = user?.full_name || user?.email || 'sistema'; } catch {}
     return {
       templateName: form.templateName,
       segment: form.segment,
@@ -196,8 +197,8 @@ export default function CriarPropostaPadrao() {
       },
       validUntil: form.dataValidade.toISOString(),
       tokenPublico: existingProposal?.tokenPublico || gerarToken(),
-      responsavelId: criadoPor,
-      responsavelNome: criadoPor,
+      responsavelId: criadoPorId,
+      responsavelNome: criadoPorNome,
     };
   };
 

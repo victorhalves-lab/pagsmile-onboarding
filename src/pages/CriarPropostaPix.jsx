@@ -107,8 +107,9 @@ export default function CriarPropostaPix() {
   const gerarToken = () => { const c = 'abcdefghijklmnopqrstuvwxyz0123456789'; let t = ''; for (let i = 0; i < 64; i++) t += c.charAt(Math.floor(Math.random() * c.length)); return t; };
 
   const buildData = async (status) => {
-    let criadoPor = 'sistema';
-    try { const user = await base44.auth.me(); criadoPor = user?.email || user?.id || 'sistema'; } catch (e) {}
+    let criadoPorId = '';
+    let criadoPorNome = 'sistema';
+    try { const user = await base44.auth.me(); criadoPorId = user?.id || user?.email || ''; criadoPorNome = user?.full_name || user?.email || 'sistema'; } catch (e) {}
     return {
       leadId: leadId || existingProposal?.leadId || '',
       codigo: existingProposal?.codigo || gerarCodigo(),
@@ -129,8 +130,8 @@ export default function CriarPropostaPix() {
       },
       validUntil: form.dataValidade.toISOString(),
       tokenPublico: existingProposal?.tokenPublico || gerarToken(),
-      responsavelId: criadoPor,
-      responsavelNome: criadoPor,
+      responsavelId: criadoPorId,
+      responsavelNome: criadoPorNome,
     };
   };
 

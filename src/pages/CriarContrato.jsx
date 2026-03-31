@@ -53,19 +53,26 @@ export default function CriarContrato() {
   const gerarCodigo = () => `CONTR-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 99999)).padStart(5, '0')}`;
   const gerarPublicCode = () => { const c = 'abcdefghijklmnopqrstuvwxyz0123456789'; let t = ''; for (let i = 0; i < 32; i++) t += c.charAt(Math.floor(Math.random() * c.length)); return t; };
 
-  const buildContractData = (status) => {
+  const buildContractData = async (status) => {
     const data = { ...formData };
     delete data.id; delete data.created_date; delete data.updated_date; delete data.created_by;
     data.status = status;
     data.codigo = data.codigo || gerarCodigo();
     data.publicLinkCode = data.publicLinkCode || gerarPublicCode();
     data.clientCnpj = data.clientDocument?.replace(/\D/g, '') || '';
+    try {
+      const user = await base44.auth.me();
+      if (user) {
+        data.responsavelId = user.id || user.email || '';
+        data.responsavelNome = user.full_name || user.email || 'sistema';
+      }
+    } catch {}
     return data;
   };
 
   const handleSalvarRascunho = async () => {
     setSaving(true);
-    const data = buildContractData('pre_generated');
+    const data = await buildContractData('pre_generated');
     await base44.entities.Contract.create(data);
     toast.success('Rascunho de contrato salvo!');
     setSaving(false);
@@ -78,7 +85,7 @@ export default function CriarContrato() {
       return;
     }
     setSaving(true);
-    const data = buildContractData('ready');
+    const data = await buildContractData('ready');
     const created = await base44.entities.Contract.create(data);
     toast.success('Contrato gerado com sucesso!');
     setSaving(false);

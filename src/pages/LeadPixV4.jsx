@@ -148,6 +148,8 @@ export default function LeadPixV4() {
       leadQualifierScore: leadScore,
       leadQualifierLevel: scoreLabel.label === 'Muito Quente' ? 'EXCELENTE' : scoreLabel.label === 'Quente' ? 'BOM' : scoreLabel.label === 'Morno' ? 'REGULAR' : 'FRACO',
       ...introducerData,
+      commercialAgentId: onboardingLink?.commercialAgentId || undefined,
+      commercialAgentName: onboardingLink?.commercialAgentName || undefined,
       lastInteractionDate: new Date().toISOString(),
       questionnaireData: {
         origem: 'questionario_lead_pix_v4',

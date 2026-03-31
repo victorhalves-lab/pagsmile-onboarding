@@ -109,6 +109,8 @@ export default function LeadQuestionnairePix() {
       origemLead: linkCode ? `link_pix_${linkCode}` : 'questionario_pix_publico',
       onboardingLinkCode: linkCode || undefined,
       ...introducerData,
+      commercialAgentId: onboardingLink?.commercialAgentId || undefined,
+      commercialAgentName: onboardingLink?.commercialAgentName || undefined,
       lastInteractionDate: new Date().toISOString(),
       questionnaireData: {
         origem: 'questionario_pix_publico',

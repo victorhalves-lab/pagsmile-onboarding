@@ -120,6 +120,14 @@ export default function FechamentoLandingPage() {
       } : null,
     };
 
+    // Resolve commercialAgentId from StandardProposal or Introducer
+    let commercialAgentId = '';
+    let commercialAgentName = '';
+    if (standardProposal?.responsavelId) {
+      commercialAgentId = standardProposal.responsavelId;
+      commercialAgentName = standardProposal.responsavelNome || '';
+    }
+
     // Create Lead with full traceability
     const lead = await base44.entities.Lead.create({
       email: formData.email,
@@ -138,6 +146,8 @@ export default function FechamentoLandingPage() {
       introducerReferralCode: ref || undefined,
       introducerName: partnerName || undefined,
       expectedRates,
+      commercialAgentId: commercialAgentId || undefined,
+      commercialAgentName: commercialAgentName || undefined,
     });
 
     // Save lead ID for compliance pre-fill (useLeadPrefill reads this)

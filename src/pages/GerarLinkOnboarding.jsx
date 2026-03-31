@@ -55,7 +55,18 @@ export default function GerarLinkOnboarding() {
       const introducerFields = selectedIntroducer 
         ? { introducerId: selectedIntroducer.id, introducerReferralCode: selectedIntroducer.referralCode }
         : {};
-      return base44.entities.OnboardingLink.create({ ...data, ...introducerFields, uniqueCode, isActive: true, clickCount: 0, submissionCount: 0, completedCount: 0 });
+      // Auto-preencher vendedor logado
+      let agentFields = {};
+      try {
+        const user = await base44.auth.me();
+        if (user) {
+          agentFields = {
+            commercialAgentId: user.id || '',
+            commercialAgentName: data.commercialAgentName || user.full_name || user.email || '',
+          };
+        }
+      } catch {}
+      return base44.entities.OnboardingLink.create({ ...data, ...introducerFields, ...agentFields, uniqueCode, isActive: true, clickCount: 0, submissionCount: 0, completedCount: 0 });
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['onboardingLinks'] }); toast.success(t('gl.link_created')); setShowPersonalizado(false); }
   });
