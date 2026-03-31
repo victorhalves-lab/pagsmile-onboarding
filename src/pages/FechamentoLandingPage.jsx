@@ -150,6 +150,90 @@ export default function FechamentoLandingPage() {
       commercialAgentName: commercialAgentName || undefined,
     });
 
+    // === AUTO-CREATE FORMAL PROPOSAL ===
+    // Build full rates object from segmentRates (same structure as Proposal.rates)
+    const proposalRates = {};
+    if (segmentRates) {
+      // Card rates — apply same MDR across all brands
+      const buildBrandRates = () => ({
+        avista: segmentRates.mdrAvista ?? null,
+        de2a6x: segmentRates.mdr2a6x ?? null,
+        de7a12x: segmentRates.mdr7a12x ?? null,
+        de13a21x: segmentRates.mdr13a21x ?? null,
+      });
+      proposalRates.cartao = {
+        visa: buildBrandRates(),
+        mastercard: buildBrandRates(),
+        elo: buildBrandRates(),
+        amex: buildBrandRates(),
+        outras: buildBrandRates(),
+      };
+      // PIX
+      if (segmentRates.pixTaxaPercentual != null) {
+        proposalRates.pix = { tipo: 'percentual', valor: segmentRates.pixTaxaPercentual };
+      } else if (segmentRates.pixTaxaFixa != null) {
+        proposalRates.pix = { tipo: 'fixo', valor: segmentRates.pixTaxaFixa };
+      }
+      // Other fees
+      if (segmentRates.feeTransacao != null) proposalRates.feeTransacao = segmentRates.feeTransacao;
+      if (segmentRates.antifraude != null) proposalRates.antifraude = segmentRates.antifraude;
+      if (segmentRates.taxa3ds != null) proposalRates.taxa3ds = segmentRates.taxa3ds;
+      if (segmentRates.percentualAntecipacao != null) proposalRates.percentualAntecipacao = segmentRates.percentualAntecipacao;
+    }
+
+    // Also copy full rates from standardProposal if available (more complete)
+    if (stdRates) {
+      if (stdRates.cartao) proposalRates.cartao = stdRates.cartao;
+      if (stdRates.debito) proposalRates.debito = stdRates.debito;
+      if (stdRates.pix) proposalRates.pix = stdRates.pix;
+      if (stdRates.boleto != null) proposalRates.boleto = stdRates.boleto;
+      if (stdRates.antifraude != null) proposalRates.antifraude = stdRates.antifraude;
+      if (stdRates.feeTransacao != null) proposalRates.feeTransacao = stdRates.feeTransacao;
+      if (stdRates.taxa3ds != null) proposalRates.taxa3ds = stdRates.taxa3ds;
+      if (stdRates.setup != null) proposalRates.setup = stdRates.setup;
+      if (stdRates.rav) proposalRates.rav = stdRates.rav;
+      if (stdRates.minimoGarantido) proposalRates.minimoGarantido = stdRates.minimoGarantido;
+      if (stdRates.alertaPreChargeback != null) proposalRates.alertaPreChargeback = stdRates.alertaPreChargeback;
+      if (stdRates.percentualAntecipacao != null) proposalRates.percentualAntecipacao = stdRates.percentualAntecipacao;
+    }
+
+    // Generate proposal code
+    const propYear = new Date().getFullYear();
+    const propRandom = Math.floor(Math.random() * 99999).toString().padStart(5, '0');
+    const propCodigo = `PROP-${propYear}-${propRandom}`;
+    const propToken = crypto.randomUUID().replace(/-/g, '').substring(0, 16);
+
+    const now = new Date().toISOString();
+
+    const proposal = await base44.entities.Proposal.create({
+      leadId: lead.id,
+      codigo: propCodigo,
+      proposalName: `Proposta ${segment} - ${formData.razaoSocial || formData.nomeFantasia || ''}`.trim(),
+      status: 'aceita',
+      origem: 'priscila_automatica',
+      businessSubCategory: segmentToSubCategory(segment),
+      chosenPartnerId: standardProposal?.chosenPartnerId || '',
+      chosenPartnerName: standardProposal?.chosenPartnerName || '',
+      rates: proposalRates,
+      clienteNome: formData.razaoSocial || formData.nomeFantasia || '',
+      clienteCnpj: formData.cnpj || '',
+      clienteContato: formData.contactName || '',
+      terms: standardProposal?.terms || '',
+      validUntil: standardProposal?.validUntil || '',
+      sentDate: now,
+      acceptedDate: now,
+      tokenPublico: propToken,
+      responsavelId: commercialAgentId || standardProposal?.responsavelId || '',
+      responsavelNome: commercialAgentName || standardProposal?.responsavelNome || '',
+      version: 1,
+      isCurrentVersion: true,
+    });
+
+    // Update lead with proposal reference
+    await base44.entities.Lead.update(lead.id, {
+      currentProposalId: proposal.id,
+    });
+
     // Save lead ID for compliance pre-fill (useLeadPrefill reads this)
     const complianceModel = SEGMENT_TO_COMPLIANCE[segment] || 'ComplianceEcommerceV4';
     localStorage.setItem('lead_id_for_compliance', lead.id);
