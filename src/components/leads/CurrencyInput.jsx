@@ -18,10 +18,9 @@ function parseCurrency(formattedValue) {
   return parseInt(digits, 10);
 }
 
-export const CurrencyInput = React.forwardRef(({ value, onValueChange, className, ...props }, ref) => {
+const CurrencyInput = React.forwardRef(({ value, onValueChange, className, ...props }, ref) => {
   const [internalValue, setInternalValue] = React.useState(formatCurrency(value));
 
-  // Update internal value when prop changes
   React.useEffect(() => {
     setInternalValue(formatCurrency(value));
   }, [value]);
@@ -35,9 +34,9 @@ export const CurrencyInput = React.forwardRef(({ value, onValueChange, className
     }
   };
 
-  const handleBlur = (e) => {
-     setInternalValue(formatCurrency(value));
-  }
+  const handleBlur = () => {
+    setInternalValue(formatCurrency(value));
+  };
 
   return (
     <Input
@@ -53,4 +52,5 @@ export const CurrencyInput = React.forwardRef(({ value, onValueChange, className
 
 CurrencyInput.displayName = 'CurrencyInput';
 
+export { CurrencyInput };
 export default CurrencyInput;

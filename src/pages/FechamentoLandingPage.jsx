@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { createPageUrl } from '@/lib/utils';
+
 import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card } from '@/components/ui/card';
@@ -122,7 +122,7 @@ export default function FechamentoLandingPage() {
     onSuccess: ({ lead }) => {
       toast.success('Dados recebidos! Redirecionando para o compliance...');
       const complianceModel = (segmentName && SEGMENT_TO_COMPLIANCE[segmentName]) || 'ComplianceEcommerceV4';
-      const complianceUrl = `${window.location.origin}${createPageUrl('ComplianceDinamico')}?model=${complianceModel}&leadId=${lead.id}`;
+      const complianceUrl = `${window.location.origin}/ComplianceDinamico?model=${complianceModel}&leadId=${lead.id}`;
       window.location.href = complianceUrl;
     },
     onError: (error) => {
