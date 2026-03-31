@@ -176,7 +176,7 @@ export const DEFAULT_SEGMENT_RATES = [
     mcc: "Variados",
     riskLevel: "MUITO ALTO",
     mdrAvista: 4.19, mdr2a6x: 4.69, mdr7a12x: 5.19, mdr13a21x: 5.69,
-    percentualAntecipacao: 1.99,
+    percentualAntecipacao: 2.09,
     feeTransacao: 0.55, antifraude: 0.59, taxa3ds: 0.65,
     pixTaxaPercentual: 0.35, pixTaxaFixa: 0.30,
   },
