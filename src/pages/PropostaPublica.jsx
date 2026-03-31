@@ -12,7 +12,6 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
-import { createPageUrl } from '../utils';
 import { formatCNPJ } from '@/components/proposals/CnpjInput';
 import TaxasPorBandeiraPublic from '@/components/proposals/TaxasPorBandeiraPublic';
 import ParcelasTableDetalhada from '@/components/proposals/ParcelasTableDetalhada';
@@ -91,7 +90,7 @@ export default function PropostaPublica() {
       if (proposta.leadId) {
         localStorage.setItem('lead_id_for_compliance', proposta.leadId);
       }
-      complianceUrl = `${window.location.origin}${createPageUrl('ComplianceDinamico')}?model=${model}&leadId=${proposta.leadId || ''}`;
+      complianceUrl = `${window.location.origin}/ComplianceDinamico?model=${model}&leadId=${proposta.leadId || ''}`;
 
       if (proposta.leadId) {
         const leadUpdate = {
@@ -263,7 +262,7 @@ export default function PropostaPublica() {
   const getComplianceUrl = () => {
     if (proposta.status !== 'aceita') return null;
     const model = resolveComplianceModel({ businessSubCategory: proposta.businessSubCategory });
-    return `${window.location.origin}${createPageUrl('ComplianceDinamico')}?model=${model}&leadId=${proposta.leadId || ''}`;
+    return `${window.location.origin}/ComplianceDinamico?model=${model}&leadId=${proposta.leadId || ''}`;
   };
   
   // Ao clicar no botão de compliance da proposta já aceita, limpar dados residuais

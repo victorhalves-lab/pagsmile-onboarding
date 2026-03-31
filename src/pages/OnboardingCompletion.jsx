@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createPageUrl } from '../utils';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, ArrowRight, Clock, Mail, Shield } from 'lucide-react';
 import { useOnboardingAnalytics } from '../components/analytics/useOnboardingAnalytics';
@@ -112,7 +111,7 @@ export default function OnboardingCompletion() {
 
         {/* Botão */}
         <Button
-          onClick={() => navigate(createPageUrl('AdminDashboard'))}
+          onClick={() => navigate('/AdminDashboard')}
           variant="ghost"
           className="text-slate-400 hover:text-white px-8"
         >

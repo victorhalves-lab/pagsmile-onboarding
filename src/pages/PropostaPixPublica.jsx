@@ -11,7 +11,6 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
-import { createPageUrl } from '../utils';
 import { formatCNPJ } from '@/components/proposals/CnpjInput';
 import AceiteModal from '@/components/proposals/AceiteModal';
 import ContrapropostaModal from '@/components/proposals/ContrapropostaModal';
@@ -82,7 +81,7 @@ export default function PropostaPixPublica() {
         keysToClean.forEach(key => localStorage.removeItem(key));
         localStorage.setItem('lead_id_for_compliance', proposta.leadId);
         const pixModel = resolvePixComplianceModel(lead);
-        complianceUrl = `${window.location.origin}${createPageUrl('ComplianceDinamico')}?model=${pixModel}&leadId=${proposta.leadId}`;
+        complianceUrl = `${window.location.origin}/ComplianceDinamico?model=${pixModel}&leadId=${proposta.leadId}`;
       }
       return complianceUrl;
     },
@@ -134,7 +133,7 @@ export default function PropostaPixPublica() {
 
   const pixComplianceModel = resolvePixComplianceModel(leadForBanner);
   const pixComplianceUrl = (proposta?.status === 'aceita' && proposta?.leadId)
-    ? `${window.location.origin}${createPageUrl('ComplianceDinamico')}?model=${pixComplianceModel}&leadId=${proposta.leadId}`
+    ? `${window.location.origin}/ComplianceDinamico?model=${pixComplianceModel}&leadId=${proposta.leadId}`
     : null;
   const rates = proposta.rates || {};
 

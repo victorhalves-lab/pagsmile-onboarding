@@ -292,7 +292,7 @@ export default function PropostaPadraoPublica() {
           <p className="text-[#002443]/70 text-base md:text-lg max-w-xl mx-auto mb-6">
             Preencha os dados da sua empresa e inicie o processo de contratação. É rápido e 100% digital.
           </p>
-          <a href={`/FechamentoLandingPage?segment=${encodeURIComponent(proposta.segment)}`}>
+          <a href={`/FechamentoLandingPage?segmento=${encodeURIComponent(proposta.segment)}&fromStandardProposal=${token}`}>
             <Button className="bg-[#002443] hover:bg-[#002443]/90 text-white font-bold px-10 h-14 rounded-2xl text-lg shadow-lg shadow-[#002443]/20 transition-transform hover:scale-105">
               <Rocket className="w-5 h-5 mr-2" />
               Quero Contratar com essas Taxas
@@ -357,7 +357,7 @@ export default function PropostaPadraoPublica() {
               <p className="text-white font-bold text-sm truncate">Quero essas taxas — {proposta.segment}</p>
               <p className="text-white/50 text-xs">Processo rápido e 100% digital</p>
             </div>
-            <a href={`/FechamentoLandingPage?segment=${encodeURIComponent(proposta.segment)}`} className="flex-shrink-0">
+            <a href={`/FechamentoLandingPage?segmento=${encodeURIComponent(proposta.segment)}&fromStandardProposal=${token}`} className="flex-shrink-0">
               <Button className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white font-bold rounded-xl text-sm sm:text-base px-6 sm:px-10 h-12 shadow-lg shadow-[#2bc196]/20 hover:scale-[1.02] transition-all gap-2">
                 <Rocket className="w-5 h-5" />
                 Contratar agora

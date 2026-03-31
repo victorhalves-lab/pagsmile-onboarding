@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createPageUrl } from '../utils';
 import { Button } from '@/components/ui/button';
 import { QrCode, CreditCard, Wallet, ArrowRight, ArrowLeft, ShieldCheck, Zap, ShoppingCart, Cloud } from 'lucide-react';
 import SelectionButton from '../components/compliance/SelectionButton';
@@ -69,15 +68,15 @@ export default function ComplianceOnboardingStart() {
     if (selectedMethod) {
       localStorage.setItem('payment_method_type', selectedMethod);
       if (selectedMethod === 'lite') {
-        navigate(createPageUrl('ComplianceLite'));
+        navigate('/ComplianceLite');
       } else if (selectedMethod === 'saas') {
-        navigate(createPageUrl('ComplianceSaaS'));
+        navigate('/ComplianceSaaS');
       } else if (selectedMethod === 'ecommerce') {
-        navigate(createPageUrl('ComplianceEcommerce'));
+        navigate('/ComplianceEcommerce');
       } else if (selectedMethod === 'pix') {
-        navigate(createPageUrl('CompliancePixOnly'));
+        navigate('/CompliancePixOnly');
       } else {
-        navigate(createPageUrl('ComplianceFullKYC'));
+        navigate('/ComplianceFullKYC');
       }
     }
   };

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { createPageUrl } from '../../utils';
 import { Button } from '@/components/ui/button';
 import { 
   ArrowLeft, FileUp, Loader2, CheckCircle2, AlertTriangle 
@@ -208,7 +207,7 @@ export default function DynamicDocumentUploadPage({
       await completeSession();
 
       // Ir direto para tela de conclusão
-      navigate(createPageUrl('OnboardingCompletion') + `?caseId=${onboardingCase.id}`);
+      navigate(`/OnboardingCompletion?caseId=${onboardingCase.id}`);
 
     } catch (error) {
       console.error('Erro ao submeter:', error);
@@ -278,7 +277,7 @@ export default function DynamicDocumentUploadPage({
       <div className="flex justify-between items-center mt-8 pt-6 border-t border-slate-200">
         <Button
           variant="ghost"
-          onClick={() => navigate(createPageUrl(questionnairePageName))}
+          onClick={() => navigate(`/${questionnairePageName}`)}
           className="text-slate-500 hover:text-[var(--pagsmile-blue)]"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
