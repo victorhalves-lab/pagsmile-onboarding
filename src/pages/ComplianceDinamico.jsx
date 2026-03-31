@@ -74,7 +74,7 @@ const MODEL_CONFIG = {
     flowType: 'full_kyc',
     badgeLabel: 'PLATAFORMA VERTICAL v4',
     badgeColor: 'bg-violet-100 text-violet-700',
-    cafRedirectUrl: 'https://cadastro.io/c584e022b7936e44b8bc5acdd3a7945e',
+    cafRedirectUrl: 'https://cadastro.io/c970cf175a8facad0185d452edf39ccb',
   },
   ComplianceEcommerceV4: {
     storageKey: 'compliance_data_ecommerce_v4',
@@ -82,7 +82,7 @@ const MODEL_CONFIG = {
     flowType: 'full_kyc',
     badgeLabel: 'E-COMMERCE v4',
     badgeColor: 'bg-rose-100 text-rose-700',
-    cafRedirectUrl: 'https://cadastro.io/c584e022b7936e44b8bc5acdd3a7945e',
+    cafRedirectUrl: 'https://cadastro.io/f97ba64b86ae1964ff85e0ad9e833d63',
   },
   ComplianceInfoprodutosV4: {
     storageKey: 'compliance_data_infoprodutos_v4',
@@ -90,7 +90,7 @@ const MODEL_CONFIG = {
     flowType: 'full_kyc',
     badgeLabel: 'INFOPRODUTOS v4',
     badgeColor: 'bg-amber-100 text-amber-700',
-    cafRedirectUrl: 'https://cadastro.io/c584e022b7936e44b8bc5acdd3a7945e',
+    cafRedirectUrl: 'https://cadastro.io/ede0e7c940889f03adbbf5f5a49400b9',
   },
   ComplianceEducacaoV4: {
     storageKey: 'compliance_data_educacao_v4',
@@ -98,7 +98,7 @@ const MODEL_CONFIG = {
     flowType: 'full_kyc',
     badgeLabel: 'EDUCAÇÃO v4',
     badgeColor: 'bg-sky-100 text-sky-700',
-    cafRedirectUrl: 'https://cadastro.io/c584e022b7936e44b8bc5acdd3a7945e',
+    cafRedirectUrl: 'https://cadastro.io/6b2852b7919ea3f65edca7667f81bf58',
   },
   ComplianceSaaSV4: {
     storageKey: 'compliance_data_saas_v4',
@@ -106,7 +106,7 @@ const MODEL_CONFIG = {
     flowType: 'full_kyc',
     badgeLabel: 'SAAS v4',
     badgeColor: 'bg-cyan-100 text-cyan-700',
-    cafRedirectUrl: 'https://cadastro.io/c584e022b7936e44b8bc5acdd3a7945e',
+    cafRedirectUrl: 'https://cadastro.io/597a5b430412b83fa526211e0e9beb7e',
   },
   ComplianceMerchantLinkV4: {
     storageKey: 'compliance_data_merchant_link_v4',
@@ -114,7 +114,7 @@ const MODEL_CONFIG = {
     flowType: 'full_kyc',
     badgeLabel: 'MERCHANT LINK v4',
     badgeColor: 'bg-green-100 text-green-700',
-    cafRedirectUrl: 'https://cadastro.io/c584e022b7936e44b8bc5acdd3a7945e',
+    cafRedirectUrl: 'https://cadastro.io/3ff25303e2a775e8aefa01575f4435fb',
   },
   ComplianceMPEV4: {
     storageKey: 'compliance_data_mpe_v4',
@@ -122,7 +122,7 @@ const MODEL_CONFIG = {
     flowType: 'full_kyc',
     badgeLabel: 'MPE v4',
     badgeColor: 'bg-amber-100 text-amber-700',
-    cafRedirectUrl: 'https://cadastro.io/c584e022b7936e44b8bc5acdd3a7945e',
+    cafRedirectUrl: 'https://cadastro.io/2df6ae66b394e25da18ae5acb2afc221',
   },
   ComplianceDropshippingV4: {
     storageKey: 'compliance_data_dropshipping_v4',
@@ -130,7 +130,7 @@ const MODEL_CONFIG = {
     flowType: 'full_kyc',
     badgeLabel: 'DROPSHIPPING v4',
     badgeColor: 'bg-orange-100 text-orange-700',
-    cafRedirectUrl: 'https://cadastro.io/c584e022b7936e44b8bc5acdd3a7945e',
+    cafRedirectUrl: 'https://cadastro.io/11b31cdf4650c56126d766671e15e8d4',
   },
   // PIX Compliance — Merchants e Intermediários
   CompliancePixMerchantV4: {
