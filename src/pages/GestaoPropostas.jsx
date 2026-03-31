@@ -29,6 +29,7 @@ import ProposalMetrics from '../components/proposals/ProposalMetrics';
 import ProposalHistoryModal from '../components/proposals/ProposalHistoryModal';
 import ProposalsByCompanyTab from '../components/proposals/ProposalsByCompanyTab';
 import RentabilidadeDrawer from '../components/proposals/RentabilidadeDrawer';
+import AssignSellerModal from '../components/proposals/AssignSellerModal';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function GestaoPropostas() {
@@ -50,6 +51,7 @@ export default function GestaoPropostas() {
   const [deleteId, setDeleteId] = useState(null);
   const [historyProposalId, setHistoryProposalId] = useState(null);
   const [rentabilidadeProposal, setRentabilidadeProposal] = useState(null);
+  const [assignSellerProposal, setAssignSellerProposal] = useState(null);
 
   const [activeTab, setActiveTab] = useState('lista');
 
@@ -215,19 +217,19 @@ export default function GestaoPropostas() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>{t('gestao_propostas.number')}</TableHead>
-                    <TableHead>{t('gestao_propostas.company')}</TableHead>
-                    <TableHead>{t('gestao_propostas.model')}</TableHead>
-                    <TableHead>{t('gestao_propostas.cnpj')}</TableHead>
-                    <TableHead>{t('common.status')}</TableHead>
-                    <TableHead>{t('gestao_propostas.timeline')}</TableHead>
-                    <TableHead>{t('gestao_propostas.validity')}</TableHead>
-                    <TableHead className="text-right">{t('common.actions')}</TableHead>
+                     <TableHead>{t('gestao_propostas.company')}</TableHead>
+                     <TableHead>Responsável</TableHead>
+                     <TableHead>{t('gestao_propostas.model')}</TableHead>
+                     <TableHead>{t('common.status')}</TableHead>
+                     <TableHead>{t('gestao_propostas.timeline')}</TableHead>
+                     <TableHead>{t('gestao_propostas.validity')}</TableHead>
+                     <TableHead className="text-right">{t('common.actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filtered.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={8} className="text-center py-12">
+                      <TableCell colSpan={9} className="text-center py-12">
                         <FileText className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/30 mb-3" />
                         <p className="text-[var(--pagsmile-blue)]/60">{t('gestao_propostas.no_proposals')}</p>
                         <Button variant="link" onClick={() => navigate(createPageUrl('CriarProposta'))} className="mt-2 text-[var(--pagsmile-green)]">
@@ -250,7 +252,21 @@ export default function GestaoPropostas() {
                           </div>
                         </TableCell>
                         <TableCell className="font-medium text-sm">{p.clienteNome || '-'}</TableCell>
-                        <TableCell>
+                         <TableCell>
+                           {p.responsavelNome && p.responsavelNome !== 'sistema' ? (
+                             <button onClick={() => setAssignSellerProposal(p)} className="flex items-center gap-1.5 group">
+                               <div className="w-5 h-5 rounded-full bg-[#2bc196]/20 flex items-center justify-center text-[8px] font-bold text-[#2bc196]">
+                                 {(p.responsavelNome)[0]?.toUpperCase()}
+                               </div>
+                               <span className="text-xs text-[#002443]/70 group-hover:text-[#2bc196] transition-colors truncate max-w-[80px]">{p.responsavelNome}</span>
+                             </button>
+                           ) : (
+                             <button onClick={() => setAssignSellerProposal(p)} className="text-[10px] text-red-400 hover:text-[#2bc196] border border-dashed border-red-200 hover:border-[#2bc196] rounded-lg px-2 py-1 transition-all">
+                               + Atribuir
+                             </button>
+                           )}
+                         </TableCell>
+                         <TableCell>
                           {p.businessSubCategory ? (
                             <Badge className={`text-[10px] border-0 ${
                               p.businessSubCategory === 'GATEWAY' ? 'bg-indigo-100 text-indigo-700' :
@@ -354,6 +370,14 @@ export default function GestaoPropostas() {
         open={!!historyProposalId}
         onClose={() => setHistoryProposalId(null)}
         proposalId={historyProposalId}
+      />
+
+      {/* Assign Seller Modal */}
+      <AssignSellerModal
+        open={!!assignSellerProposal}
+        onClose={() => setAssignSellerProposal(null)}
+        proposal={assignSellerProposal || {}}
+        onAssigned={() => queryClient.invalidateQueries({ queryKey: ['propostas'] })}
       />
 
       {/* Rentabilidade Drawer */}
