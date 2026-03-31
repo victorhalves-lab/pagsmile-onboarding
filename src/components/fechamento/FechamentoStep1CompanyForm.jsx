@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/select';
 import {
   Building2, CheckCircle, AlertTriangle, Loader2, XCircle,
-  MapPin, ShieldCheck, Pencil, User, Mail, Phone, Globe
+  MapPin, ShieldCheck, Pencil, User, Mail, Phone, Globe, ArrowRight, Briefcase
 } from 'lucide-react';
 import useCnpjAutocomplete, { formatCnpj } from '@/hooks/useCnpjAutocomplete';
 
@@ -34,16 +34,21 @@ async function fetchCep(cep) {
   return { logradouro: data.logradouro || '', bairro: data.bairro || '', cidade: data.localidade || '', uf: data.uf || '' };
 }
 
-export default function FechamentoCompanyForm({ formData, setFormData, onSubmit, isSubmitting }) {
+export default function FechamentoStep1CompanyForm({ formData, setFormData, nextStep }) {
   const { data: cnpjData, isLoading: cnpjLoading, error: cnpjError, validationError, consultarCnpj, reset } = useCnpjAutocomplete();
-  const [cnpjDisplay, setCnpjDisplay] = useState('');
-  const [hasConsulted, setHasConsulted] = useState(false);
-  const [addressConfirmed, setAddressConfirmed] = useState(false);
+  const [cnpjDisplay, setCnpjDisplay] = useState(formData.cnpj ? formatCnpj(formData.cnpj) : '');
+  const [hasConsulted, setHasConsulted] = useState(!!cnpjData || false);
+  const [addressConfirmed, setAddressConfirmed] = useState(formData.addressConfirmed || false);
   const [editingAddress, setEditingAddress] = useState(false);
-  const [cepDisplay, setCepDisplay] = useState('');
+  const [cepDisplay, setCepDisplay] = useState(formData.endereco?.cep ? formatCep(formData.endereco.cep) : '');
   const [cepLoading, setCepLoading] = useState(false);
 
   const update = useCallback((key, val) => setFormData(prev => ({ ...prev, [key]: val })), [setFormData]);
+  
+  useEffect(() => {
+    update('addressConfirmed', addressConfirmed);
+  }, [addressConfirmed, update]);
+
 
   const handleCnpjChange = useCallback((e) => {
     const raw = e.target.value.replace(/\D/g, '').slice(0, 14);
@@ -85,19 +90,32 @@ export default function FechamentoCompanyForm({ formData, setFormData, onSubmit,
       update('endereco', { ...(formData.endereco || {}), cep: digits, logradouro: result.logradouro, bairro: result.bairro, cidade: result.cidade, uf: result.uf });
     }
   }, [formData.endereco, update, updateAddr]);
+  
+  useEffect(() => {
+      if (formData.cnpj && formData.cnpj.length === 14 && !hasConsulted) {
+          handleCnpjChange({ target: { value: formData.cnpj }});
+      }
+  }, [formData.cnpj, hasConsulted, handleCnpjChange]);
 
   const isActive = cnpjData?.situacao_cadastral === 2;
   const isInactive = cnpjData && cnpjData.situacao_cadastral !== 2;
   const hasPrefillAddr = !!(addr.cep || addr.logradouro);
 
-  const canSubmit = formData.cnpj?.length === 14 && formData.razaoSocial && formData.contactName && formData.email && addressConfirmed;
+  const canProceed = formData.cnpj?.length === 14 && formData.razaoSocial && formData.contactName && formData.email?.includes('@') && formData.contactRole && addressConfirmed;
 
   return (
     <div className="space-y-6">
+       <div>
+        <div className="flex items-center gap-3 mb-2">
+          <Building2 className="w-5 h-5 text-[#002443]/50" />
+          <h3 className="text-lg font-semibold text-[#002443]">Dados da Empresa e Contato</h3>
+        </div>
+        <p className="text-sm text-[#002443]/70">Comece informando o CNPJ para pré-preenchermos os dados.</p>
+      </div>
+
       {/* CNPJ */}
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          <Building2 className="w-4 h-4 text-[#002443]/40" />
           <Label className="text-sm font-semibold text-[#002443]">CNPJ <span className="text-red-500">*</span></Label>
           {isActive && <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] gap-1"><CheckCircle className="w-3 h-3" />Ativo na RF</Badge>}
           {isInactive && <Badge className="bg-red-50 text-red-700 border-red-200 text-[10px] gap-1"><XCircle className="w-3 h-3" />{cnpjData.descricao_situacao_cadastral}</Badge>}
@@ -192,7 +210,6 @@ export default function FechamentoCompanyForm({ formData, setFormData, onSubmit,
 
       {/* Contato */}
       <div className="space-y-4">
-        <p className="text-sm font-semibold text-[#002443] flex items-center gap-2"><User className="w-4 h-4 text-[#002443]/40" />Dados de Contato</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-1">
             <Label className="text-xs font-medium text-[#002443]/70">Nome do Responsável <span className="text-red-500">*</span></Label>
@@ -206,7 +223,11 @@ export default function FechamentoCompanyForm({ formData, setFormData, onSubmit,
             <Label className="text-xs font-medium text-[#002443]/70">Telefone / WhatsApp <span className="text-red-500">*</span></Label>
             <div className="relative"><Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/30" /><Input value={formData.phone || ''} onChange={e => update('phone', e.target.value)} placeholder="(11) 99999-9999" className="h-11 rounded-xl text-sm pl-10" /></div>
           </div>
-          <div className="space-y-1">
+           <div className="space-y-1">
+            <Label className="text-xs font-medium text-[#002443]/70">Cargo do Responsável <span className="text-red-500">*</span></Label>
+            <div className="relative"><Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/30" /><Input value={formData.contactRole || ''} onChange={e => update('contactRole', e.target.value)} placeholder="Ex: CEO, Diretor Financeiro" className="h-11 rounded-xl text-sm pl-10" /></div>
+          </div>
+          <div className="space-y-1 col-span-1 md:col-span-2">
             <Label className="text-xs font-medium text-[#002443]/70">Website <span className="text-[#002443]/40">(opcional)</span></Label>
             <div className="relative"><Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/30" /><Input value={formData.website || ''} onChange={e => update('website', e.target.value)} placeholder="https://www.suaempresa.com" className="h-11 rounded-xl text-sm pl-10" /></div>
           </div>
@@ -214,15 +235,10 @@ export default function FechamentoCompanyForm({ formData, setFormData, onSubmit,
       </div>
 
       {/* Submit */}
-      <Button
-        onClick={onSubmit}
-        disabled={!canSubmit || isSubmitting}
-        className="w-full h-14 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl text-base font-bold shadow-lg shadow-[#2bc196]/20 hover:scale-[1.01] transition-all gap-2"
-      >
-        {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <ShieldCheck className="w-5 h-5" />}
-        {isSubmitting ? 'Processando...' : 'Avançar para Compliance →'}
-      </Button>
-      {!canSubmit && !isSubmitting && (
+       <div className="flex justify-end items-center pt-4">
+        <Button onClick={nextStep} disabled={!canProceed} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white gap-2">Próximo <ArrowRight /></Button>
+      </div>
+       {!canProceed && (
         <p className="text-xs text-center text-[#002443]/40">Preencha todos os campos obrigatórios e confirme o endereço para continuar.</p>
       )}
     </div>

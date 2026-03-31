@@ -1,328 +1,199 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { motion } from 'framer-motion';
-import { Loader2, ArrowLeft, Handshake, ShieldCheck, Lock } from 'lucide-react';
+import { createPageUrl } from '@/lib/utils';
+import { toast } from 'sonner';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
 import FechamentoRatesResume from '@/components/fechamento/FechamentoRatesResume';
-import FechamentoCompanyForm from '@/components/fechamento/FechamentoCompanyForm';
+import FechamentoStep1CompanyForm from '@/components/fechamento/FechamentoStep1CompanyForm';
+import FechamentoStep2Volumetria from '@/components/fechamento/FechamentoStep2Volumetria';
+import FechamentoStep3ModeloNegocio from '@/components/fechamento/FechamentoStep3ModeloNegocio';
 import SEGMENT_TO_COMPLIANCE from '@/components/fechamento/segmentComplianceMap';
 
-const PAGSMILE_LOGO = "https://media.base44.com/images/public/6983b65f017b96d5f695f9bb/85ecf04f8_Logo-modo-claro.png";
+const StepIndicator = ({ current, total }) => (
+  <div className="flex items-center justify-center gap-2 mb-8">
+    {[...Array(total)].map((_, i) => (
+      <div
+        key={i}
+        className={`h-2 rounded-full transition-all duration-300 ${
+          i + 1 === current ? 'w-8 bg-[#2bc196]' : 'w-2 bg-[#002443]/10'
+        }`}
+      />
+    ))}
+  </div>
+);
 
 export default function FechamentoLandingPage() {
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const urlParams = new URLSearchParams(window.location.search);
-  const ref = urlParams.get('ref') || '';
-  const segment = urlParams.get('segment') || '';
-  const introducerId = urlParams.get('introducerId') || '';
-
-  const [formData, setFormData] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Fetch introducer to get rates (when coming from landing page)
-  const { data: introducer, isLoading: isLoadingIntroducer } = useQuery({
-    queryKey: ['fechamento-introducer', introducerId],
-    queryFn: async () => {
-      const results = await base44.entities.Introducer.filter({ id: introducerId });
-      return results?.[0] || null;
-    },
-    enabled: !!introducerId,
+  const queryClient = useQueryClient();
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({
+    distribuicaoTpv: { cartao: 40, pix: 50, boleto: 10 },
   });
 
-  // Fetch standard proposal rates (when coming from proposta padrão, no introducer)
-  const { data: standardProposal, isLoading: isLoadingStdProp } = useQuery({
-    queryKey: ['fechamento-std-proposal', segment],
+  const segmentName = searchParams.get('segmento');
+  const partnerId = searchParams.get('partnerId');
+  const fromStandardProposalToken = searchParams.get('fromStandardProposal');
+  const introducerId = searchParams.get('introducerId');
+  const commercialAgentId = searchParams.get('agentId');
+
+  const { data: ratesData, isLoading: isLoadingRates } = useQuery({
+    queryKey: ['fechamentoRates', fromStandardProposalToken, introducerId, segmentName],
     queryFn: async () => {
-      const results = await base44.entities.StandardProposal.filter({ segment, status: 'ativa', isDefaultForSegment: true });
-      return results?.[0] || null;
-    },
-    enabled: !!segment && !introducerId,
-  });
-
-  const isLoading = isLoadingIntroducer || isLoadingStdProp;
-
-  // Rates: prefer introducer rates, fallback to standard proposal rates converted to same format
-  const introducerRates = introducer?.standardRates?.find(s => s.segmentName === segment);
-  const stdRates = standardProposal?.rates;
-  const segmentRates = introducerRates || (stdRates ? {
-    segmentName: segment,
-    mdrAvista: stdRates.cartao?.visa?.avista,
-    mdr2a6x: stdRates.cartao?.visa?.de2a6x,
-    mdr7a12x: stdRates.cartao?.visa?.de7a12x,
-    mdr13a21x: stdRates.cartao?.visa?.de13a21x,
-    percentualAntecipacao: stdRates.rav?.taxa,
-    feeTransacao: stdRates.feeTransacao,
-    antifraude: stdRates.antifraude,
-    taxa3ds: stdRates.taxa3ds,
-    pixTaxaPercentual: stdRates.pix?.tipo === 'percentual' ? stdRates.pix?.valor : null,
-    pixTaxaFixa: stdRates.pix?.tipo === 'fixo' ? stdRates.pix?.valor : null,
-  } : null);
-  const partnerName = introducer?.companyName || '';
-
-  // Map segment to businessSubCategory
-  const segmentToSubCategory = (seg) => {
-    if (seg === 'Gateway') return 'GATEWAY';
-    if (seg === 'Marketplace') return 'MARKETPLACE';
-    return 'MERCHAN';
-  };
-
-  const FECHAMENTO_TEMPLATE_ID = '69caaf2cd9ea49029f4de352';
-
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-
-    // Build expected rates from segment
-    const expectedRates = {};
-    if (segmentRates) {
-      if (segmentRates.mdrAvista != null) expectedRates.mdr1x = segmentRates.mdrAvista;
-      if (segmentRates.mdr2a6x != null) expectedRates.mdr2a6x = segmentRates.mdr2a6x;
-      if (segmentRates.mdr7a12x != null) expectedRates.mdr7a12x = segmentRates.mdr7a12x;
-      if (segmentRates.percentualAntecipacao != null) expectedRates.antecipacao = segmentRates.percentualAntecipacao;
-      if (segmentRates.feeTransacao != null) expectedRates.feeTransacao = segmentRates.feeTransacao;
-      if (segmentRates.antifraude != null) expectedRates.antifraude = segmentRates.antifraude;
-      if (segmentRates.taxa3ds != null) expectedRates.taxa3ds = segmentRates.taxa3ds;
-      if (segmentRates.pixTaxaPercentual != null || segmentRates.pixTaxaFixa != null) {
-        expectedRates.pix = {
-          tipo: segmentRates.pixTaxaPercentual != null ? 'percentual' : 'fixo',
-          valor: segmentRates.pixTaxaPercentual ?? segmentRates.pixTaxaFixa,
-        };
+      if (fromStandardProposalToken) {
+        const proposals = await base44.entities.StandardProposal.filter({ tokenPublico: fromStandardProposalToken });
+        if (proposals.length > 0) return { rates: proposals[0].rates, partnerId: proposals[0].chosenPartnerId };
       }
-    }
+      if (introducerId && segmentName) {
+        const introducers = await base44.entities.Introducer.filter({ id: introducerId });
+        if (introducers.length > 0) {
+          const segmentRate = introducers[0].standardRates?.find(r => r.segmentName === segmentName);
+          if (segmentRate) return { rates: segmentRate, isFromIntroducer: true };
+        }
+      }
+      return null;
+    },
+    retry: false,
+  });
 
-    // Build questionnaireData (minimal responses for traceability)
-    const questionnaireData = {
-      segment,
-      cnpj: formData.cnpj || '',
-      razaoSocial: formData.razaoSocial || '',
-      nomeFantasia: formData.nomeFantasia || '',
-      contactName: formData.contactName || '',
-      email: formData.email || '',
-      phone: formData.phone || '',
-      website: formData.website || '',
-      endereco: formData.endereco || {},
-      origemFechamento: 'proposta_padrao',
-      standardProposalSegment: segment,
-      introducerId: introducerId || null,
-      introducerRef: ref || null,
-      taxasAceitas: segmentRates ? {
-        mdrAvista: segmentRates.mdrAvista,
-        mdr2a6x: segmentRates.mdr2a6x,
-        mdr7a12x: segmentRates.mdr7a12x,
-        mdr13a21x: segmentRates.mdr13a21x,
-        antecipacao: segmentRates.percentualAntecipacao,
-        feeTransacao: segmentRates.feeTransacao,
-        antifraude: segmentRates.antifraude,
-        taxa3ds: segmentRates.taxa3ds,
-        pixPercentual: segmentRates.pixTaxaPercentual,
-        pixFixa: segmentRates.pixTaxaFixa,
-      } : null,
-    };
+  const { data: commercialAgent } = useQuery({
+    queryKey: ['commercialAgent', commercialAgentId],
+    queryFn: () => base44.entities.User.filter({ id: commercialAgentId }).then(res => res[0]),
+    enabled: !!commercialAgentId,
+  });
 
-    // Resolve commercialAgentId from StandardProposal or Introducer
-    let commercialAgentId = '';
-    let commercialAgentName = '';
-    if (standardProposal?.responsavelId) {
-      commercialAgentId = standardProposal.responsavelId;
-      commercialAgentName = standardProposal.responsavelNome || '';
-    }
+  const createLeadAndProposalMutation = useMutation({
+    mutationFn: async (finalFormData) => {
+      // TPV is stored in centavos in the form, convert to reais for the Lead entity
+      const tpvReais = (finalFormData.tpvMensal || 0) / 100;
 
-    // Create Lead with full traceability
-    const lead = await base44.entities.Lead.create({
-      email: formData.email,
-      fullName: formData.razaoSocial || '',
-      cpfCnpj: formData.cnpj || '',
-      phone: formData.phone || '',
-      companyName: formData.nomeFantasia || '',
-      website: formData.website || '',
-      contactName: formData.contactName || '',
-      status: 'proposta_aceita',
-      businessSubCategory: segmentToSubCategory(segment),
-      origemLead: 'proposta_padrao_fechamento',
-      leadQuestionnaireTemplateId: FECHAMENTO_TEMPLATE_ID,
-      questionnaireData,
-      introducerId: introducerId || undefined,
-      introducerReferralCode: ref || undefined,
-      introducerName: partnerName || undefined,
-      expectedRates,
-      commercialAgentId: commercialAgentId || undefined,
-      commercialAgentName: commercialAgentName || undefined,
-    });
-
-    // === AUTO-CREATE FORMAL PROPOSAL ===
-    // Build full rates object from segmentRates (same structure as Proposal.rates)
-    const proposalRates = {};
-    if (segmentRates) {
-      // Card rates — apply same MDR across all brands
-      const buildBrandRates = () => ({
-        avista: segmentRates.mdrAvista ?? null,
-        de2a6x: segmentRates.mdr2a6x ?? null,
-        de7a12x: segmentRates.mdr7a12x ?? null,
-        de13a21x: segmentRates.mdr13a21x ?? null,
-      });
-      proposalRates.cartao = {
-        visa: buildBrandRates(),
-        mastercard: buildBrandRates(),
-        elo: buildBrandRates(),
-        amex: buildBrandRates(),
-        outras: buildBrandRates(),
+      const internalQuestionnaire = {
+        tpvMensal: tpvReais,
+        distribuicaoTpv: finalFormData.distribuicaoTpv,
+        modeloNegocio: finalFormData.modeloNegocio,
+        sellersDescription: finalFormData.sellersDescription,
+        fornecedores: finalFormData.fornecedores,
+        segmentoLandingPage: segmentName,
+        contactRole: finalFormData.contactRole,
       };
-      // PIX
-      if (segmentRates.pixTaxaPercentual != null) {
-        proposalRates.pix = { tipo: 'percentual', valor: segmentRates.pixTaxaPercentual };
-      } else if (segmentRates.pixTaxaFixa != null) {
-        proposalRates.pix = { tipo: 'fixo', valor: segmentRates.pixTaxaFixa };
-      }
-      // Other fees
-      if (segmentRates.feeTransacao != null) proposalRates.feeTransacao = segmentRates.feeTransacao;
-      if (segmentRates.antifraude != null) proposalRates.antifraude = segmentRates.antifraude;
-      if (segmentRates.taxa3ds != null) proposalRates.taxa3ds = segmentRates.taxa3ds;
-      if (segmentRates.percentualAntecipacao != null) proposalRates.percentualAntecipacao = segmentRates.percentualAntecipacao;
-    }
 
-    // Also copy full rates from standardProposal if available (more complete)
-    if (stdRates) {
-      if (stdRates.cartao) proposalRates.cartao = stdRates.cartao;
-      if (stdRates.debito) proposalRates.debito = stdRates.debito;
-      if (stdRates.pix) proposalRates.pix = stdRates.pix;
-      if (stdRates.boleto != null) proposalRates.boleto = stdRates.boleto;
-      if (stdRates.antifraude != null) proposalRates.antifraude = stdRates.antifraude;
-      if (stdRates.feeTransacao != null) proposalRates.feeTransacao = stdRates.feeTransacao;
-      if (stdRates.taxa3ds != null) proposalRates.taxa3ds = stdRates.taxa3ds;
-      if (stdRates.setup != null) proposalRates.setup = stdRates.setup;
-      if (stdRates.rav) proposalRates.rav = stdRates.rav;
-      if (stdRates.minimoGarantido) proposalRates.minimoGarantido = stdRates.minimoGarantido;
-      if (stdRates.alertaPreChargeback != null) proposalRates.alertaPreChargeback = stdRates.alertaPreChargeback;
-      if (stdRates.percentualAntecipacao != null) proposalRates.percentualAntecipacao = stdRates.percentualAntecipacao;
-    }
+      const leadPayload = {
+        fullName: finalFormData.razaoSocial,
+        companyName: finalFormData.nomeFantasia,
+        cpfCnpj: finalFormData.cnpj,
+        email: finalFormData.email,
+        phone: finalFormData.phone,
+        contactName: finalFormData.contactName,
+        contactRole: finalFormData.contactRole,
+        website: finalFormData.website,
+        businessSubCategory: ratesData?.rates?.businessSubCategory || 'MERCHAN',
+        status: 'questionario_preenchido',
+        origemLead: fromStandardProposalToken ? 'proposta_padrao' : 'landing_page',
+        questionnaireData: internalQuestionnaire,
+        tpvMensal: tpvReais,
+        ...(introducerId && { introducerId }),
+        ...(commercialAgent && { commercialAgentId: commercialAgent.id, commercialAgentName: commercialAgent.full_name }),
+      };
 
-    // Generate proposal code
-    const propYear = new Date().getFullYear();
-    const propRandom = Math.floor(Math.random() * 99999).toString().padStart(5, '0');
-    const propCodigo = `PROP-${propYear}-${propRandom}`;
-    const propToken = crypto.randomUUID().replace(/-/g, '').substring(0, 16);
+      const createdLead = await base44.entities.Lead.create(leadPayload);
 
-    const now = new Date().toISOString();
+      const proposalPayload = {
+        leadId: createdLead.id,
+        status: 'rascunho',
+        rates: ratesData.rates,
+        clienteNome: createdLead.fullName,
+        clienteCnpj: createdLead.cpfCnpj,
+        chosenPartnerId: ratesData.partnerId,
+        businessSubCategory: ratesData?.rates?.businessSubCategory || 'MERCHAN',
+      };
+      
+      const proposalEntity = ratesData.rates.pix ? 'PixProposal' : 'Proposal';
+      const createdProposal = await base44.entities[proposalEntity].create(proposalPayload);
 
-    const proposal = await base44.entities.Proposal.create({
-      leadId: lead.id,
-      codigo: propCodigo,
-      proposalName: `Proposta ${segment} - ${formData.razaoSocial || formData.nomeFantasia || ''}`.trim(),
-      status: 'aceita',
-      origem: 'priscila_automatica',
-      businessSubCategory: segmentToSubCategory(segment),
-      chosenPartnerId: standardProposal?.chosenPartnerId || '',
-      chosenPartnerName: standardProposal?.chosenPartnerName || '',
-      rates: proposalRates,
-      clienteNome: formData.razaoSocial || formData.nomeFantasia || '',
-      clienteCnpj: formData.cnpj || '',
-      clienteContato: formData.contactName || '',
-      terms: standardProposal?.terms || '',
-      validUntil: standardProposal?.validUntil || '',
-      sentDate: now,
-      acceptedDate: now,
-      tokenPublico: propToken,
-      responsavelId: commercialAgentId || standardProposal?.responsavelId || '',
-      responsavelNome: commercialAgentName || standardProposal?.responsavelNome || '',
-      version: 1,
-      isCurrentVersion: true,
-    });
+      await base44.entities.Lead.update(createdLead.id, { currentProposalId: createdProposal.id });
 
-    // Update lead with proposal reference
-    await base44.entities.Lead.update(lead.id, {
-      currentProposalId: proposal.id,
-    });
+      return { lead: createdLead, proposal: createdProposal };
+    },
+    onSuccess: ({ lead }) => {
+      toast.success('Dados recebidos! Redirecionando para o compliance...');
+      const complianceModel = (segmentName && SEGMENT_TO_COMPLIANCE[segmentName]) || 'ComplianceEcommerceV4';
+      const complianceUrl = `${window.location.origin}${createPageUrl('ComplianceDinamico')}?model=${complianceModel}&leadId=${lead.id}`;
+      window.location.href = complianceUrl;
+    },
+    onError: (error) => {
+      console.error("Mutation Error:", error);
+      toast.error('Ocorreu um erro ao enviar seus dados. Tente novamente.');
+    },
+  });
 
-    // Save lead ID for compliance pre-fill (useLeadPrefill reads this)
-    const complianceModel = SEGMENT_TO_COMPLIANCE[segment] || 'ComplianceEcommerceV4';
-    localStorage.setItem('lead_id_for_compliance', lead.id);
-    localStorage.setItem('fechamento_lead_id', lead.id);
-    if (ref) localStorage.setItem('onboarding_link_code', ref);
-
-    // Navigate to compliance
-    navigate(`/ComplianceDinamico?model=${complianceModel}`);
+  const handleFinalSubmit = () => {
+    createLeadAndProposalMutation.mutate(formData);
   };
-
-  if (isLoading) {
+  
+  if (isLoadingRates) {
     return (
-      <div className="min-h-screen bg-[#f4f4f4] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" />
+      <div className="max-w-4xl mx-auto py-12 px-4">
+        <Skeleton className="h-8 w-1/2 mb-4" />
+        <Skeleton className="h-4 w-3/4 mb-8" />
+        <div className="grid md:grid-cols-3 gap-6">
+          <div className="md:col-span-1 space-y-4">
+            <Skeleton className="h-32 w-full" />
+            <Skeleton className="h-32 w-full" />
+          </div>
+          <div className="md:col-span-2">
+            <Skeleton className="h-96 w-full" />
+          </div>
+        </div>
       </div>
     );
   }
 
+  if (!ratesData) {
+    return (
+      <div className="max-w-xl mx-auto py-20 text-center">
+        <h2 className="text-2xl font-bold text-red-600 mb-4">Link de Proposta Inválido</h2>
+        <p className="text-[#002443]/80">Não foi possível encontrar os dados da proposta. Por favor, verifique o link ou entre em contato com nosso time comercial.</p>
+        <Button onClick={() => navigate('/')} className="mt-8 gap-2"><ArrowLeft /> Voltar ao Início</Button>
+      </div>
+    );
+  }
+  
+  const renderStep = () => {
+    switch (step) {
+      case 1:
+        return <FechamentoStep1CompanyForm formData={formData} setFormData={setFormData} nextStep={() => setStep(2)} />;
+      case 2:
+        return <FechamentoStep2Volumetria formData={formData} setFormData={setFormData} nextStep={() => setStep(3)} prevStep={() => setStep(1)} />;
+      case 3:
+        return <FechamentoStep3ModeloNegocio formData={formData} setFormData={setFormData} segmentName={segmentName} prevStep={() => setStep(2)} onSubmit={handleFinalSubmit} isSubmitting={createLeadAndProposalMutation.isPending} />;
+      default:
+        return <FechamentoStep1CompanyForm formData={formData} setFormData={setFormData} nextStep={() => setStep(2)} />;
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-[#f4f4f4]">
-      <div className="fixed top-0 left-0 w-full h-1 bg-gradient-to-r from-[#002443] via-[#2bc196] to-[#5cf7cf] z-50" />
-
-      <div className="max-w-3xl mx-auto px-4 md:px-8 py-8 md:py-12 space-y-8">
-
-        {/* Header */}
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
-          <Button variant="ghost" size="sm" onClick={() => window.history.back()} className="text-[#002443]/60 hover:text-[#002443] gap-1 text-xs">
-            <ArrowLeft className="w-4 h-4" /> Voltar às taxas
-          </Button>
-          <img src={PAGSMILE_LOGO} alt="Pagsmile" className="h-6 opacity-40" />
-        </motion.div>
-
-        {/* Welcome message */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-center">
-          <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-gradient-to-br from-[#2bc196] to-[#002443] mb-4">
-            <Handshake className="w-8 h-8" style={{ color: '#ffffff' }} />
-          </div>
-          <h1 className="text-2xl md:text-3xl font-extrabold text-[#002443] mb-3">
-            Que bom que quer ser nosso <span className="text-[#2bc196]">parceiro</span>!
-          </h1>
-          <p className="text-sm text-[#002443]/60 max-w-lg mx-auto leading-relaxed">
-            Estamos muito felizes com a sua decisão. Juntos, vamos construir uma parceria sólida para impulsionar o crescimento do seu negócio. Preencha os dados abaixo e em poucos minutos você estará pronto para operar.
-          </p>
-        </motion.div>
-
-        {/* Progress bar */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[#002443]/40">
-          <div className="flex items-center gap-1.5"><div className="w-6 h-6 rounded-full bg-[#2bc196] flex items-center justify-center text-white text-[10px] font-bold">1</div><span className="text-[#2bc196]">Dados</span></div>
-          <div className="flex-1 h-px bg-[#002443]/10" />
-          <div className="flex items-center gap-1.5"><div className="w-6 h-6 rounded-full bg-[#002443]/10 flex items-center justify-center text-[#002443]/40 text-[10px] font-bold">2</div><span>Compliance</span></div>
-          <div className="flex-1 h-px bg-[#002443]/10" />
-          <div className="flex items-center gap-1.5"><div className="w-6 h-6 rounded-full bg-[#002443]/10 flex items-center justify-center text-[#002443]/40 text-[10px] font-bold">3</div><span>Documentos</span></div>
-          <div className="flex-1 h-px bg-[#002443]/10" />
-          <div className="flex items-center gap-1.5"><div className="w-6 h-6 rounded-full bg-[#002443]/10 flex items-center justify-center text-[#002443]/40 text-[10px] font-bold">4</div><span>Conclusão</span></div>
-        </motion.div>
-
-        {/* Rates resume */}
-        {segmentRates && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-            <p className="text-xs font-bold uppercase tracking-widest text-[#002443]/40 mb-3">Condições selecionadas</p>
-            <FechamentoRatesResume segmentRates={segmentRates} segmentName={segment} partnerName={partnerName} />
-          </motion.div>
-        )}
-
-        {!segmentRates && segment && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-            <div className="bg-[#002443] rounded-2xl p-6 text-center">
-              <p className="text-xs uppercase tracking-widest mb-1" style={{ color: 'rgba(255,255,255,0.4)' }}>Segmento selecionado</p>
-              <p className="text-xl font-extrabold" style={{ color: '#2bc196' }}>{segment}</p>
-            </div>
-          </motion.div>
-        )}
-
-        {/* Company form */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="bg-white border border-[#002443]/[0.06] rounded-2xl p-6 md:p-8">
-          <div className="flex items-center gap-2 mb-6">
-            <ShieldCheck className="w-5 h-5 text-[#2bc196]" />
-            <h2 className="text-lg font-bold text-[#002443]">Dados da Empresa</h2>
-          </div>
-          <FechamentoCompanyForm formData={formData} setFormData={setFormData} onSubmit={handleSubmit} isSubmitting={isSubmitting} />
-        </motion.div>
-
-        {/* Trust footer */}
-        <div className="text-center pb-8">
-          <div className="flex items-center justify-center gap-2 text-xs text-[#002443]/30">
-            <Lock className="w-3 h-3" />
-            <span>Ambiente seguro e criptografado de ponta a ponta</span>
-          </div>
-          <img src={PAGSMILE_LOGO} alt="Pagsmile" className="h-5 mx-auto mt-4 opacity-20" />
+    <div className="max-w-6xl mx-auto py-12 px-4">
+      <div className="text-center mb-10">
+        <h1 className="text-3xl font-bold text-[#002443] tracking-tight">Estamos quase lá!</h1>
+        <p className="text-lg text-[#002443]/70 mt-2">
+          Confira as taxas da sua proposta e preencha os dados para iniciarmos o processo de compliance.
+        </p>
+      </div>
+      
+      <div className="grid md:grid-cols-5 gap-10 lg:gap-16">
+        <div className="md:col-span-2">
+          <FechamentoRatesResume segmentRates={ratesData.rates} segmentName={segmentName} />
+        </div>
+        <div className="md:col-span-3">
+          <Card className="p-6 sm:p-8 shadow-xl bg-white/80 backdrop-blur-sm">
+            <StepIndicator current={step} total={3} />
+            {renderStep()}
+          </Card>
         </div>
       </div>
     </div>
