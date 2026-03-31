@@ -17,6 +17,7 @@ import AceiteModal from '@/components/proposals/AceiteModal';
 import ContrapropostaModal from '@/components/proposals/ContrapropostaModal';
 import RecusaModal from '@/components/proposals/RecusaModal';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
+import { resolvePixComplianceModel } from '@/components/compliance/segmentToComplianceV4Map';
 
 export default function PropostaPixPublica() {
   const { t } = useTranslation();
@@ -59,8 +60,13 @@ export default function PropostaPixPublica() {
   const aceitarMutation = useMutation({
     mutationFn: async () => {
       await base44.entities.PixProposal.update(proposta.id, { status: 'aceita', acceptedDate: new Date().toISOString() });
+
+      // Fetch lead to resolve PIX compliance model (merchant vs intermediario)
+      let lead = null;
       if (proposta.leadId) {
         await base44.entities.Lead.update(proposta.leadId, { status: 'proposta_aceita', lastInteractionDate: new Date().toISOString() });
+        const leads = await base44.entities.Lead.filter({ id: proposta.leadId });
+        lead = leads[0];
       }
       await base44.entities.LeadActivity.create({
         leadId: proposta.leadId || '', activityType: 'proposta_aceita',
@@ -69,13 +75,14 @@ export default function PropostaPixPublica() {
       });
       base44.analytics.track({ eventName: 'pix_proposta_aceita', properties: { proposal_id: proposta.id, proposal_code: proposta.codigo || '', client_name: proposta.clienteNome || '', success: true } });
 
-      // Redirect to PIX compliance questionnaire
+      // Redirect to PIX compliance V4 questionnaire
       let complianceUrl = null;
       if (proposta.leadId) {
-        const keysToClean = ['compliance_session_token', 'compliance_data_pix'];
+        const keysToClean = ['compliance_session_token', 'compliance_data_pix', 'compliance_data_pix_merchant_v4', 'compliance_data_pix_intermediario_v4'];
         keysToClean.forEach(key => localStorage.removeItem(key));
         localStorage.setItem('lead_id_for_compliance', proposta.leadId);
-        complianceUrl = `${window.location.origin}${createPageUrl('ComplianceDinamico')}?model=pix&leadId=${proposta.leadId}`;
+        const pixModel = resolvePixComplianceModel(lead);
+        complianceUrl = `${window.location.origin}${createPageUrl('ComplianceDinamico')}?model=${pixModel}&leadId=${proposta.leadId}`;
       }
       return complianceUrl;
     },
@@ -114,6 +121,11 @@ export default function PropostaPixPublica() {
   }
 
   const isAlreadyResponded = ['aceita', 'recusada'].includes(proposta.status);
+  const getPixComplianceUrl = () => {
+    if (proposta.status !== 'aceita' || !proposta.leadId) return null;
+    return `${window.location.origin}${createPageUrl('ComplianceDinamico')}?model=CompliancePixMerchantV4&leadId=${proposta.leadId}`;
+  };
+  const pixComplianceUrl = getPixComplianceUrl();
   const rates = proposta.rates || {};
 
   return (
@@ -130,6 +142,20 @@ export default function PropostaPixPublica() {
           <p className={`text-sm ${proposta.status === 'aceita' ? 'text-green-600' : 'text-red-600'}`}>
             {proposta.status === 'aceita' ? t('pp.accepted_msg') : t('pp.rejected_msg')}
           </p>
+          {proposta.status === 'aceita' && pixComplianceUrl && (
+            <Button
+              onClick={() => {
+                const keysToClean = ['compliance_session_token', 'compliance_data_pix', 'compliance_data_pix_merchant_v4', 'compliance_data_pix_intermediario_v4'];
+                keysToClean.forEach(key => localStorage.removeItem(key));
+                if (proposta.leadId) localStorage.setItem('lead_id_for_compliance', proposta.leadId);
+                window.location.href = pixComplianceUrl;
+              }}
+              className="mt-4 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-8 h-12 rounded-2xl font-bold"
+            >
+              <Shield className="w-4 h-4 mr-2" />
+              {t('pp.start_compliance')}
+            </Button>
+          )}
         </div>
       )}
 

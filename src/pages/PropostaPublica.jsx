@@ -22,6 +22,7 @@ import ContrapropostaModal from '@/components/proposals/ContrapropostaModal';
 import RecusaModal from '@/components/proposals/RecusaModal';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 import InternationalPaymentsBanner from '@/components/landing/InternationalPaymentsBanner';
+import { resolveComplianceModel } from '@/components/compliance/segmentToComplianceV4Map';
 
 export default function PropostaPublica() {
   const { t } = useTranslation();
@@ -69,73 +70,34 @@ export default function PropostaPublica() {
   // Mutations
   const aceitarMutation = useMutation({
     mutationFn: async () => {
-      // Determine compliance template based on proposal's businessSubCategory (or fall back to lead's)
       let complianceUrl = null;
-      let subCat = proposta.businessSubCategory;
-
-      // Determine which compliance version to use based on lead's questionnaire template
-      let useV2 = false;
       let lead = null;
       if (proposta.leadId) {
         const leads = await base44.entities.Lead.filter({ id: proposta.leadId });
         lead = leads[0];
-        if (lead) {
-          if (!subCat) subCat = lead.businessSubCategory;
-          if (lead.leadQuestionnaireTemplateId === '69c3b5af17040531b06c5c16') {
-            useV2 = true;
-          }
-        }
       }
 
-      const COMPLIANCE_TEMPLATES_V1 = {
-        'MERCHAN': '69a691da6b5ed4982b8a4055',
-        'GATEWAY': '69a691da6b5ed4982b8a4056',
-        'MARKETPLACE': '69a691da6b5ed4982b8a4057',
-      };
-      const COMPLIANCE_TEMPLATES_V2 = {
-        'MERCHAN': '69c3b5af17040531b06c5c17',
-        'GATEWAY': '69c3b5af17040531b06c5c19',
-        'MARKETPLACE': '69c3b5af17040531b06c5c18',
-      };
-      const COMPLIANCE_MODELS_V1 = {
-        'MERCHAN': 'merchant',
-        'GATEWAY': 'gateway',
-        'MARKETPLACE': 'marketplace',
-      };
-      const COMPLIANCE_MODELS_V2 = {
-        'MERCHAN': 'ComplianceMerchantAutocomplete',
-        'GATEWAY': 'ComplianceGatewayAutocomplete',
-        'MARKETPLACE': 'ComplianceMarketplaceAutocomplete',
-      };
+      // Resolve compliance model V4 based on lead's segment data
+      const model = resolveComplianceModel(lead || { businessSubCategory: proposta.businessSubCategory });
 
-      const templates = useV2 ? COMPLIANCE_TEMPLATES_V2 : COMPLIANCE_TEMPLATES_V1;
-      const models = useV2 ? COMPLIANCE_MODELS_V2 : COMPLIANCE_MODELS_V1;
-      const templateId = subCat ? templates[subCat] : null;
-      const model = subCat ? models[subCat] : null;
-
-      if (model) {
-        // Limpar dados residuais de outros leads antes de redirecionar
-        // Isso garante que o novo lead comece com dados limpos
-        const keysToClean = [
-          'compliance_session_token',
-          'compliance_data_merchant', 'compliance_data_gateway', 'compliance_data_marketplace',
-          'compliance_data_merchant_v2', 'compliance_data_gateway_v2', 'compliance_data_marketplace_v2',
-          'compliance_data_pix',
-        ];
-        keysToClean.forEach(key => localStorage.removeItem(key));
-        // Salvar o leadId correto para que useLeadPrefill e useComplianceSession o usem
-        if (proposta.leadId) {
-          localStorage.setItem('lead_id_for_compliance', proposta.leadId);
-        }
-        complianceUrl = `${window.location.origin}${createPageUrl('ComplianceDinamico')}?model=${model}&leadId=${proposta.leadId || ''}`;
+      // Limpar dados residuais antes de redirecionar
+      const keysToClean = [
+        'compliance_session_token',
+        'compliance_data_merchant', 'compliance_data_gateway', 'compliance_data_marketplace',
+        'compliance_data_merchant_v2', 'compliance_data_gateway_v2', 'compliance_data_marketplace_v2',
+        'compliance_data_pix',
+      ];
+      keysToClean.forEach(key => localStorage.removeItem(key));
+      if (proposta.leadId) {
+        localStorage.setItem('lead_id_for_compliance', proposta.leadId);
       }
+      complianceUrl = `${window.location.origin}${createPageUrl('ComplianceDinamico')}?model=${model}&leadId=${proposta.leadId || ''}`;
 
       if (proposta.leadId) {
         const leadUpdate = {
           status: 'proposta_aceita',
           lastInteractionDate: new Date().toISOString()
         };
-        if (templateId) leadUpdate.recommendedComplianceTemplateId = templateId;
         await base44.entities.Lead.update(proposta.leadId, leadUpdate);
       }
 
@@ -300,10 +262,7 @@ export default function PropostaPublica() {
   const isAlreadyResponded = ['aceita', 'recusada'].includes(proposta.status);
   const getComplianceUrl = () => {
     if (proposta.status !== 'aceita') return null;
-    const subCat = proposta.businessSubCategory;
-    // Check if lead uses v2 template
-    const modelMapV1 = { 'MERCHAN': 'merchant', 'GATEWAY': 'gateway', 'MARKETPLACE': 'marketplace' };
-    const model = modelMapV1[subCat] || 'merchant';
+    const model = resolveComplianceModel({ businessSubCategory: proposta.businessSubCategory });
     return `${window.location.origin}${createPageUrl('ComplianceDinamico')}?model=${model}&leadId=${proposta.leadId || ''}`;
   };
   
