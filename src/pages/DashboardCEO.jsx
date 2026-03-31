@@ -84,7 +84,11 @@ export default function DashboardCEO() {
     });
     const getKpiTpv = (l) => kpiProposalTpv[l.id] || l.tpvMensal || 0;
 
-    const tpvPipeline = activeLeads.reduce((s, l) => s + getKpiTpv(l), 0);
+    // Also add TPV from accepted proposals without leadId
+    const orphanAcceptedTpv = allProposals
+      .filter(p => p.status === 'aceita' && !p.leadId)
+      .reduce((s, p) => s + (p.rates?.minimoGarantido?.mes3 || p.rates?.minimoGarantido?.mes2 || p.rates?.minimoGarantido?.mes1 || 0), 0);
+    const tpvPipeline = activeLeads.reduce((s, l) => s + getKpiTpv(l), 0) + orphanAcceptedTpv;
     const leadsWithTicket = leads.filter(l => l.ticketMedio > 0);
     const avgTicket = leadsWithTicket.length > 0 ? leadsWithTicket.reduce((s, l) => s + l.ticketMedio, 0) / leadsWithTicket.length : 0;
 
@@ -135,25 +139,31 @@ export default function DashboardCEO() {
     return result;
   }, [leads]);
 
-  // ── Build proposal TPV map (leadId → best TPV from proposal) ──
+  // ── Build proposal TPV helpers ──
+  // Map leadId → best TPV from proposal minimoGarantido
   const proposalTpvMap = useMemo(() => {
-    const map = {};
+    const byLead = {};
     allProposals.forEach(p => {
       if (!p.leadId) return;
-      let tpv = 0;
-      // Priority: minimoGarantido.mes3 > mes2 > mes1
-      if (p.rates?.minimoGarantido) {
-        tpv = p.rates.minimoGarantido.mes3 || p.rates.minimoGarantido.mes2 || p.rates.minimoGarantido.mes1 || 0;
-      }
-      // Keep highest TPV per lead
-      if (tpv > (map[p.leadId] || 0)) {
-        map[p.leadId] = tpv;
-      }
+      const tpv = p.rates?.minimoGarantido?.mes3 || p.rates?.minimoGarantido?.mes2 || p.rates?.minimoGarantido?.mes1 || 0;
+      if (tpv > (byLead[p.leadId] || 0)) byLead[p.leadId] = tpv;
     });
-    return map;
+    return byLead;
   }, [allProposals]);
 
-  // Helper: get best TPV for a lead (proposal minimoGarantido > lead.tpvMensal)
+  // Map responsavelId → total TPV from accepted proposals (including those without leadId)
+  const sellerAcceptedTpv = useMemo(() => {
+    const map = {};
+    // Use ALL accepted proposals (including isCurrentVersion=false, since they are real deals)
+    [...proposals, ...pixProposals].filter(p => p.status === 'aceita').forEach(p => {
+      const rId = p.responsavelId || p.created_by || '_unassigned';
+      const tpv = p.rates?.minimoGarantido?.mes3 || p.rates?.minimoGarantido?.mes2 || p.rates?.minimoGarantido?.mes1 || 0;
+      map[rId] = (map[rId] || 0) + tpv;
+    });
+    return map;
+  }, [proposals, pixProposals]);
+
+  // Helper: get best TPV for a lead
   const getLeadTpv = (lead) => {
     return proposalTpvMap[lead.id] || lead.tpvMensal || 0;
   };
@@ -177,20 +187,35 @@ export default function DashboardCEO() {
       if (['perdido', 'proposta_recusada'].includes(l.status)) map[agentId].leadsLost++;
     });
 
-    // Count proposals per seller
-    allProposals.forEach(p => {
-      const rId = p.responsavelId || '_unassigned';
-      if (map[rId]) {
-        const clientStatuses = ['enviada', 'visualizada', 'aceita', 'recusada', 'contraproposta', 'expirada'];
-        if (clientStatuses.includes(p.status)) map[rId].proposalsSent++;
-        if (p.status === 'aceita') map[rId].proposalsAccepted++;
+    // Count proposals per seller (including those without lead)
+    // Also ensure sellers with proposals but no leads appear in the map
+    [...proposals, ...pixProposals].forEach(p => {
+      const rId = p.responsavelId || p.created_by || '_unassigned';
+      const rName = p.responsavelNome || p.created_by || 'Não atribuído';
+      if (!map[rId]) {
+        map[rId] = {
+          id: rId, name: rName, email: rId.includes('@') ? rId : '',
+          totalLeads: 0, proposalsSent: 0, proposalsAccepted: 0, tpvPipeline: 0,
+          leadsActivated: 0, leadsLost: 0,
+        };
+      }
+      const clientStatuses = ['enviada', 'visualizada', 'aceita', 'recusada', 'contraproposta', 'expirada'];
+      if (clientStatuses.includes(p.status)) map[rId].proposalsSent++;
+      if (p.status === 'aceita') map[rId].proposalsAccepted++;
+    });
+
+    // Override TPV with accepted proposals TPV (more accurate, includes proposals without lead)
+    Object.keys(map).forEach(sid => {
+      const acceptedTpv = sellerAcceptedTpv[sid] || 0;
+      if (acceptedTpv > map[sid].tpvPipeline) {
+        map[sid].tpvPipeline = acceptedTpv;
       }
     });
 
     return Object.values(map)
       .filter(s => s.id !== '_unassigned' || s.totalLeads > 0)
       .sort((a, b) => b.totalLeads - a.totalLeads);
-  }, [leads, allProposals, proposalTpvMap]);
+  }, [leads, proposals, pixProposals, proposalTpvMap, sellerAcceptedTpv]);
 
   return (
     <div className="space-y-6">

@@ -154,18 +154,24 @@ export default function TeamProductivityPanel({ sellers, leads, allProposals, on
       const conversionRate = sellerLeads.length > 0 ? ((leadsAtivado / sellerLeads.length) * 100).toFixed(1) : null;
       const lossRate = sellerLeads.length > 0 ? ((leadsPerdido / sellerLeads.length) * 100).toFixed(1) : null;
 
-      // TPV pipeline — use proposal minimoGarantido when available, fallback to lead.tpvMensal
+      // TPV pipeline — use proposal minimoGarantido (including proposals without lead)
+      // 1) TPV from leads with linked proposals
       const proposalTpvLookup = {};
       sellerProposals.forEach(p => {
         if (!p.leadId) return;
-        let tpv = 0;
-        if (p.rates?.minimoGarantido) {
-          tpv = p.rates.minimoGarantido.mes3 || p.rates.minimoGarantido.mes2 || p.rates.minimoGarantido.mes1 || 0;
-        }
+        const tpv = p.rates?.minimoGarantido?.mes3 || p.rates?.minimoGarantido?.mes2 || p.rates?.minimoGarantido?.mes1 || 0;
         if (tpv > (proposalTpvLookup[p.leadId] || 0)) proposalTpvLookup[p.leadId] = tpv;
       });
       const getSellerLeadTpv = (l) => proposalTpvLookup[l.id] || l.tpvMensal || 0;
-      const tpvPipeline = sellerLeads.filter(l => !['perdido', 'proposta_recusada'].includes(l.status)).reduce((s, l) => s + getSellerLeadTpv(l), 0);
+      const tpvFromLeads = sellerLeads.filter(l => !['perdido', 'proposta_recusada'].includes(l.status)).reduce((s, l) => s + getSellerLeadTpv(l), 0);
+
+      // 2) TPV from accepted proposals without leadId (orphan proposals)
+      const leadIdsWithTpv = new Set(Object.keys(proposalTpvLookup));
+      const tpvFromOrphanProposals = sellerProposals
+        .filter(p => p.status === 'aceita' && (!p.leadId || !leadIdsWithTpv.has(p.leadId)))
+        .reduce((s, p) => s + (p.rates?.minimoGarantido?.mes3 || p.rates?.minimoGarantido?.mes2 || p.rates?.minimoGarantido?.mes1 || 0), 0);
+
+      const tpvPipeline = tpvFromLeads + tpvFromOrphanProposals;
 
       // Ticket médio
       const leadsWithTicket = sellerLeads.filter(l => l.ticketMedio > 0);

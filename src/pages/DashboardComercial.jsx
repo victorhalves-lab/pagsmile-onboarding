@@ -103,7 +103,11 @@ export default function DashboardComercial() {
 
     // TPV & Ticket
     const activeLeads = leads.filter(l => !['perdido', 'proposta_recusada'].includes(l.status));
-    const tpvPipeline = activeLeads.reduce((s, l) => s + getLeadTpv(l), 0);
+    // Also add TPV from accepted proposals without leadId
+    const orphanAcceptedTpv = allProposalsList
+      .filter(p => p.status === 'aceita' && !p.leadId)
+      .reduce((s, p) => s + (p.rates?.minimoGarantido?.mes3 || p.rates?.minimoGarantido?.mes2 || p.rates?.minimoGarantido?.mes1 || 0), 0);
+    const tpvPipeline = activeLeads.reduce((s, l) => s + getLeadTpv(l), 0) + orphanAcceptedTpv;
     const leadsWithTicket = leads.filter(l => l.ticketMedio > 0);
     const avgTicket = leadsWithTicket.length > 0 ? leadsWithTicket.reduce((s, l) => s + l.ticketMedio, 0) / leadsWithTicket.length : 0;
 
