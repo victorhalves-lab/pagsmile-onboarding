@@ -51,6 +51,16 @@ export default function DashboardCEO() {
     ...pixProposals.filter(p => p.isCurrentVersion !== false)
   ], [proposals, pixProposals]);
 
+  // ── Detect leads that accepted standard proposals (no Proposal entity created) ──
+  const ACCEPTED_VIA_STANDARD = new Set(['kyc_iniciado', 'kyc_aprovado', 'kyc_revisao_manual', 'proposta_aceita', 'ativado']);
+  const leadsWithStandardAcceptance = useMemo(() => {
+    return leads.filter(l =>
+      ACCEPTED_VIA_STANDARD.has(l.status) &&
+      !l.currentProposalId &&
+      (l.origemLead === 'proposta_padrao_fechamento' || l.questionnaireData?.origemFechamento === 'proposta_padrao' || l.questionnaireData?.taxasAceitas)
+    );
+  }, [leads]);
+
   // ── Global KPIs ──
   const stats = useMemo(() => {
     const now = new Date();
@@ -60,9 +70,10 @@ export default function DashboardCEO() {
     const leadsThisMonth = leads.filter(l => new Date(l.created_date) >= thisMonthStart).length;
 
     const clientStatuses = ['enviada', 'visualizada', 'aceita', 'recusada', 'contraproposta', 'expirada'];
-    const proposalsSent = allProposals.filter(p => clientStatuses.includes(p.status)).length;
-    const proposalsThisMonth = allProposals.filter(p => new Date(p.created_date) >= thisMonthStart && clientStatuses.includes(p.status)).length;
-    const proposalsAccepted = allProposals.filter(p => p.status === 'aceita').length;
+    const proposalsSent = allProposals.filter(p => clientStatuses.includes(p.status)).length + leadsWithStandardAcceptance.length;
+    const proposalsThisMonth = allProposals.filter(p => new Date(p.created_date) >= thisMonthStart && clientStatuses.includes(p.status)).length
+      + leadsWithStandardAcceptance.filter(l => new Date(l.created_date) >= thisMonthStart).length;
+    const proposalsAccepted = allProposals.filter(p => p.status === 'aceita').length + leadsWithStandardAcceptance.length;
     const proposalConversionRate = proposalsSent > 0 ? ((proposalsAccepted / proposalsSent) * 100).toFixed(1) : '0';
 
     const leadsActivated = leads.filter(l => l.status === 'ativado').length;
@@ -108,7 +119,7 @@ export default function DashboardCEO() {
       avgTicketFormatted: formatCompact(avgTicket),
       avgFunnelTime: avgFunnelDays === '-' ? '-' : `${avgFunnelDays}d`,
     };
-  }, [leads, allProposals]);
+  }, [leads, allProposals, leadsWithStandardAcceptance]);
 
   // ── Funnel ──
   const funnelData = useMemo(() => [
@@ -168,12 +179,21 @@ export default function DashboardCEO() {
     return proposalTpvMap[lead.id] || lead.tpvMensal || 0;
   };
 
+  // ── Resolve seller identity: use commercialAgentName as key when commercialAgentId is missing ──
+  const resolveSellerKey = (l) => {
+    if (l.commercialAgentId) return l.commercialAgentId;
+    if (l.commercialAgentName) return `name:${l.commercialAgentName}`;
+    if (l.created_by && l.created_by !== 'anonymous') return l.created_by;
+    return '_unassigned';
+  };
+  const resolveSellerName = (l) => l.commercialAgentName || l.created_by || 'Não atribuído';
+
   // ── Seller Performance ──
   const sellers = useMemo(() => {
     const map = {};
     leads.forEach(l => {
-      const agentId = l.commercialAgentId || l.created_by || '_unassigned';
-      const agentName = l.commercialAgentName || l.created_by || 'Não atribuído';
+      const agentId = resolveSellerKey(l);
+      const agentName = resolveSellerName(l);
       if (!map[agentId]) {
         map[agentId] = {
           id: agentId, name: agentName, email: agentId.includes('@') ? agentId : '',
@@ -185,10 +205,16 @@ export default function DashboardCEO() {
       if (!['perdido', 'proposta_recusada'].includes(l.status)) map[agentId].tpvPipeline += getLeadTpv(l);
       if (l.status === 'ativado') map[agentId].leadsActivated++;
       if (['perdido', 'proposta_recusada'].includes(l.status)) map[agentId].leadsLost++;
+
+      // Gap 2+4: If lead accepted a standard proposal (no Proposal entity), count as proposal sent+accepted
+      if (ACCEPTED_VIA_STANDARD.has(l.status) && !l.currentProposalId &&
+          (l.origemLead === 'proposta_padrao_fechamento' || l.questionnaireData?.origemFechamento === 'proposta_padrao' || l.questionnaireData?.taxasAceitas)) {
+        map[agentId].proposalsSent++;
+        map[agentId].proposalsAccepted++;
+      }
     });
 
-    // Count proposals per seller (including those without lead)
-    // Also ensure sellers with proposals but no leads appear in the map
+    // Count proposals per seller from Proposal/PixProposal entities
     [...proposals, ...pixProposals].forEach(p => {
       const rId = p.responsavelId || p.created_by || '_unassigned';
       const rName = p.responsavelNome || p.created_by || 'Não atribuído';

@@ -44,6 +44,19 @@ export default function TeamProductivityPanel({ sellers, leads, allProposals, on
   const [expanded, setExpanded] = useState(false);
   const [selectedSeller, setSelectedSeller] = useState(null);
 
+  const ACCEPTED_VIA_STANDARD = new Set(['kyc_iniciado', 'kyc_aprovado', 'kyc_revisao_manual', 'proposta_aceita', 'ativado']);
+  const isStandardAcceptance = (l) =>
+    ACCEPTED_VIA_STANDARD.has(l.status) &&
+    !l.currentProposalId &&
+    (l.origemLead === 'proposta_padrao_fechamento' || l.questionnaireData?.origemFechamento === 'proposta_padrao' || l.questionnaireData?.taxasAceitas);
+
+  const resolveSellerKey = (l) => {
+    if (l.commercialAgentId) return l.commercialAgentId;
+    if (l.commercialAgentName) return `name:${l.commercialAgentName}`;
+    if (l.created_by && l.created_by !== 'anonymous') return l.created_by;
+    return '_unassigned';
+  };
+
   const productivity = useMemo(() => {
     const now = new Date();
     const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -57,8 +70,8 @@ export default function TeamProductivityPanel({ sellers, leads, allProposals, on
     return sellers.map(seller => {
       const sid = seller.id;
 
-      // ── LEADS ──
-      const sellerLeads = leads.filter(l => (l.commercialAgentId || l.created_by) === sid);
+      // ── LEADS ── (match by commercialAgentId, name-based key, or created_by)
+      const sellerLeads = leads.filter(l => resolveSellerKey(l) === sid);
       const sellerLeadsThisMonth = sellerLeads.filter(l => new Date(l.created_date) >= thisMonthStart);
       const sellerLeadsLastMonth = sellerLeads.filter(l => {
         const d = new Date(l.created_date);
@@ -89,9 +102,13 @@ export default function TeamProductivityPanel({ sellers, leads, allProposals, on
       const sellerProposals = allProposals.filter(p => p.responsavelId === sid || p.created_by === sid);
       const proposalsCreated = sellerProposals.length;
       const proposalsDraft = sellerProposals.filter(p => p.status === 'rascunho').length;
-      const proposalsSent = sellerProposals.filter(p => ['enviada', 'visualizada', 'aceita', 'recusada', 'contraproposta', 'expirada'].includes(p.status)).length;
-      const proposalsViewed = sellerProposals.filter(p => ['visualizada', 'aceita', 'recusada', 'contraproposta'].includes(p.status)).length;
-      const proposalsAccepted = sellerProposals.filter(p => p.status === 'aceita').length;
+
+      // Count standard proposal acceptances from leads (Gap 2+4)
+      const stdAcceptedFromLeads = sellerLeads.filter(l => isStandardAcceptance(l)).length;
+
+      const proposalsSent = sellerProposals.filter(p => ['enviada', 'visualizada', 'aceita', 'recusada', 'contraproposta', 'expirada'].includes(p.status)).length + stdAcceptedFromLeads;
+      const proposalsViewed = sellerProposals.filter(p => ['visualizada', 'aceita', 'recusada', 'contraproposta'].includes(p.status)).length + stdAcceptedFromLeads;
+      const proposalsAccepted = sellerProposals.filter(p => p.status === 'aceita').length + stdAcceptedFromLeads;
       const proposalsRejected = sellerProposals.filter(p => p.status === 'recusada').length;
       const proposalsCounterOffer = sellerProposals.filter(p => p.status === 'contraproposta').length;
       const proposalAcceptRate = proposalsSent > 0 ? ((proposalsAccepted / proposalsSent) * 100).toFixed(0) : null;
