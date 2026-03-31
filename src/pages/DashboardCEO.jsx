@@ -37,6 +37,12 @@ export default function DashboardCEO() {
   const { data: cases = [] } = useQuery({
     queryKey: ['ceo-cases'], queryFn: () => base44.entities.OnboardingCase.list('-created_date', 500)
   });
+  const { data: onboardingLinks = [] } = useQuery({
+    queryKey: ['ceo-links'], queryFn: () => base44.entities.OnboardingLink.list('-created_date', 500)
+  });
+  const { data: standardProposals = [] } = useQuery({
+    queryKey: ['ceo-std-proposals'], queryFn: () => base44.entities.StandardProposal.list('-created_date', 500)
+  });
 
   const refetchAll = () => { r1(); r2(); };
 
@@ -184,7 +190,16 @@ export default function DashboardCEO() {
       <SellerPerformanceTable sellers={sellers} />
 
       {/* Produtividade do Time */}
-      <TeamProductivityPanel sellers={sellers} leads={leads} allProposals={allProposals} />
+      <TeamProductivityPanel
+        sellers={sellers}
+        leads={leads}
+        allProposals={allProposals}
+        onboardingLinks={onboardingLinks}
+        cases={cases}
+        contracts={contracts}
+        standardProposals={standardProposals}
+        pixProposals={pixProposals}
+      />
 
       {/* Funil + Tendência */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
