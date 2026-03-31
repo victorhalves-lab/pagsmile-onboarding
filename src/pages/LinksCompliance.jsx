@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { createPageUrl } from '../utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -43,42 +42,42 @@ export default function LinksCompliance() {
   };
 
   const quickLinksByBusiness = [
-    { key: 'MERCHANT', label: 'Merchant', desc: t('lc.merchant_desc'), icon: CreditCard, color: '#2bc196', url: `${base}${createPageUrl('ComplianceDinamico')}?model=merchant` },
-    { key: 'GATEWAY', label: 'Gateway', desc: t('lc.gateway_desc'), icon: Globe, color: '#002443', url: `${base}${createPageUrl('ComplianceDinamico')}?model=gateway` },
-    { key: 'MARKETPLACE', label: 'Marketplace', desc: t('lc.marketplace_desc'), icon: ShoppingCart, color: '#36706c', url: `${base}${createPageUrl('ComplianceDinamico')}?model=marketplace` },
+    { key: 'MERCHANT', label: 'Merchant', desc: t('lc.merchant_desc'), icon: CreditCard, color: '#2bc196', url: `${base}/ComplianceDinamico?model=merchant` },
+    { key: 'GATEWAY', label: 'Gateway', desc: t('lc.gateway_desc'), icon: Globe, color: '#002443', url: `${base}/ComplianceDinamico?model=gateway` },
+    { key: 'MARKETPLACE', label: 'Marketplace', desc: t('lc.marketplace_desc'), icon: ShoppingCart, color: '#36706c', url: `${base}/ComplianceDinamico?model=marketplace` },
   ];
 
   const quickLinksV2 = [
-    { key: 'MERCHANT_V2', label: 'Merchant v2.0', desc: t('lc.merchant_v2_desc'), icon: CreditCard, color: '#2bc196', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceMerchantAutocomplete` },
-    { key: 'GATEWAY_V2', label: 'Gateway v2.0', desc: t('lc.gateway_v2_desc'), icon: Globe, color: '#002443', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceGatewayAutocomplete` },
-    { key: 'MARKETPLACE_V2', label: 'Marketplace v2.0', desc: t('lc.marketplace_v2_desc'), icon: ShoppingCart, color: '#36706c', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceMarketplaceAutocomplete` },
+    { key: 'MERCHANT_V2', label: 'Merchant v2.0', desc: t('lc.merchant_v2_desc'), icon: CreditCard, color: '#2bc196', url: `${base}/ComplianceDinamico?model=ComplianceMerchantAutocomplete` },
+    { key: 'GATEWAY_V2', label: 'Gateway v2.0', desc: t('lc.gateway_v2_desc'), icon: Globe, color: '#002443', url: `${base}/ComplianceDinamico?model=ComplianceGatewayAutocomplete` },
+    { key: 'MARKETPLACE_V2', label: 'Marketplace v2.0', desc: t('lc.marketplace_v2_desc'), icon: ShoppingCart, color: '#36706c', url: `${base}/ComplianceDinamico?model=ComplianceMarketplaceAutocomplete` },
   ];
 
   const quickLinksPixV4 = [
-    { key: 'PIX_MERCHANT_V4', label: 'PIX Merchant v4', desc: '40 perguntas em 8 blocos. Compliance PIX + Conta para merchants. Foco em volume, natureza, PLD/FT e UBOs. Pré-preenchimento Lead.', icon: CreditCard, color: '#2bc196', url: `${base}${createPageUrl('ComplianceDinamico')}?model=CompliancePixMerchantV4` },
-    { key: 'PIX_INTERMEDIARIO_V4', label: 'PIX Intermediário v4', desc: '47 perguntas em 8 blocos. Compliance PIX + Conta para intermediários (Gateway/PSP, Marketplace, Plataforma). Foco em split, anti-bolção, MED e regulatório BCB.', icon: Globe, color: '#4f46e5', url: `${base}${createPageUrl('ComplianceDinamico')}?model=CompliancePixIntermediarioV4` },
+    { key: 'PIX_MERCHANT_V4', label: 'PIX Merchant v4', desc: '40 perguntas em 8 blocos. Compliance PIX + Conta para merchants. Foco em volume, natureza, PLD/FT e UBOs. Pré-preenchimento Lead.', icon: CreditCard, color: '#2bc196', url: `${base}/ComplianceDinamico?model=CompliancePixMerchantV4` },
+    { key: 'PIX_INTERMEDIARIO_V4', label: 'PIX Intermediário v4', desc: '47 perguntas em 8 blocos. Compliance PIX + Conta para intermediários (Gateway/PSP, Marketplace, Plataforma). Foco em split, anti-bolção, MED e regulatório BCB.', icon: Globe, color: '#4f46e5', url: `${base}/ComplianceDinamico?model=CompliancePixIntermediarioV4` },
   ];
 
   const quickLinksV4 = [
-    { key: 'GATEWAY_V4', label: 'Gateway v4', desc: '85 perguntas em 12 blocos. Pré-preenchimento automático do Lead v5. Cobertura regulatória ~98%.', icon: Globe, color: '#4f46e5', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceGatewayV4` },
-    { key: 'MARKETPLACE_V4', label: 'Marketplace v4', desc: '75 perguntas em 11 blocos. Foco em sellers, split e anti-bolsão. Pré-preenchimento Lead v5.', icon: ShoppingCart, color: '#d97706', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceMarketplaceV4` },
-    { key: 'PLATAFORMA_VERTICAL_V4', label: 'Plataforma Vertical v4', desc: '52 perguntas em 9 blocos. Verticais de nicho (food, saúde, eventos). Pré-preenchimento Lead v5.', icon: Briefcase, color: '#7c3aed', url: `${base}${createPageUrl('ComplianceDinamico')}?model=CompliancePlataformaVerticalV4` },
-    { key: 'ECOMMERCE_V4', label: 'E-commerce v4', desc: '44 perguntas em 8 blocos. Foco em produtos, logística e entrega. Pré-preenchimento Lead v5.', icon: ShoppingCart, color: '#e11d48', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceEcommerceV4` },
-    { key: 'INFOPRODUTOS_V4', label: 'Infoprodutos v4', desc: '56 perguntas em 11 blocos. Foco em produto digital, afiliados e práticas de vendas. Pré-preenchimento Lead v5.', icon: BookOpen, color: '#d97706', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceInfoprodutosV4` },
-    { key: 'EDUCACAO_V4', label: 'Educação v4', desc: '37 perguntas em 8 blocos. Foco em reconhecimento MEC, modalidade de ensino e perfil de alunos. Pré-preenchimento Lead v5.', icon: BookOpen, color: '#0284c7', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceEducacaoV4` },
-    { key: 'SAAS_V4', label: 'SaaS v4', desc: '40 perguntas em 9 blocos. Foco em modelo de negócio, recorrência, segurança de dados e triagem fintech. Pré-preenchimento Lead v5.', icon: Cloud, color: '#0891b2', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceSaaSV4` },
-    { key: 'MERCHANT_LINK_V4', label: 'Merchant Link Pagamento v4', desc: '41 perguntas em 9 blocos. Foco em micro-merchants (MEI/SLU), canais social, entrega presencial e triagem de reclassificação. Pré-preenchimento Lead v5.', icon: Store, color: '#16a34a', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceMerchantLinkV4` },
-    { key: 'MPE_V4', label: 'Micro e Pequenas Empresas v4', desc: '38 perguntas em 9 blocos. Foco em MEI/ME, ponto físico, atividade local e triagem de reclassificação. Pré-preenchimento Lead v5.', icon: Briefcase, color: '#d97706', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceMPEV4` },
-    { key: 'DROPSHIPPING_V4', label: 'Dropshipping v4', desc: '52 perguntas em 11 blocos. Foco em fornecedor/logística, prazo de entrega, rastreamento, afiliados e risco de chargeback. Pré-preenchimento Lead v5.', icon: ShoppingCart, color: '#ea580c', url: `${base}${createPageUrl('ComplianceDinamico')}?model=ComplianceDropshippingV4` },
+    { key: 'GATEWAY_V4', label: 'Gateway v4', desc: '85 perguntas em 12 blocos. Pré-preenchimento automático do Lead v5. Cobertura regulatória ~98%.', icon: Globe, color: '#4f46e5', url: `${base}/ComplianceDinamico?model=ComplianceGatewayV4` },
+    { key: 'MARKETPLACE_V4', label: 'Marketplace v4', desc: '75 perguntas em 11 blocos. Foco em sellers, split e anti-bolsão. Pré-preenchimento Lead v5.', icon: ShoppingCart, color: '#d97706', url: `${base}/ComplianceDinamico?model=ComplianceMarketplaceV4` },
+    { key: 'PLATAFORMA_VERTICAL_V4', label: 'Plataforma Vertical v4', desc: '52 perguntas em 9 blocos. Verticais de nicho (food, saúde, eventos). Pré-preenchimento Lead v5.', icon: Briefcase, color: '#7c3aed', url: `${base}/ComplianceDinamico?model=CompliancePlataformaVerticalV4` },
+    { key: 'ECOMMERCE_V4', label: 'E-commerce v4', desc: '44 perguntas em 8 blocos. Foco em produtos, logística e entrega. Pré-preenchimento Lead v5.', icon: ShoppingCart, color: '#e11d48', url: `${base}/ComplianceDinamico?model=ComplianceEcommerceV4` },
+    { key: 'INFOPRODUTOS_V4', label: 'Infoprodutos v4', desc: '56 perguntas em 11 blocos. Foco em produto digital, afiliados e práticas de vendas. Pré-preenchimento Lead v5.', icon: BookOpen, color: '#d97706', url: `${base}/ComplianceDinamico?model=ComplianceInfoprodutosV4` },
+    { key: 'EDUCACAO_V4', label: 'Educação v4', desc: '37 perguntas em 8 blocos. Foco em reconhecimento MEC, modalidade de ensino e perfil de alunos. Pré-preenchimento Lead v5.', icon: BookOpen, color: '#0284c7', url: `${base}/ComplianceDinamico?model=ComplianceEducacaoV4` },
+    { key: 'SAAS_V4', label: 'SaaS v4', desc: '40 perguntas em 9 blocos. Foco em modelo de negócio, recorrência, segurança de dados e triagem fintech. Pré-preenchimento Lead v5.', icon: Cloud, color: '#0891b2', url: `${base}/ComplianceDinamico?model=ComplianceSaaSV4` },
+    { key: 'MERCHANT_LINK_V4', label: 'Merchant Link Pagamento v4', desc: '41 perguntas em 9 blocos. Foco em micro-merchants (MEI/SLU), canais social, entrega presencial e triagem de reclassificação. Pré-preenchimento Lead v5.', icon: Store, color: '#16a34a', url: `${base}/ComplianceDinamico?model=ComplianceMerchantLinkV4` },
+    { key: 'MPE_V4', label: 'Micro e Pequenas Empresas v4', desc: '38 perguntas em 9 blocos. Foco em MEI/ME, ponto físico, atividade local e triagem de reclassificação. Pré-preenchimento Lead v5.', icon: Briefcase, color: '#d97706', url: `${base}/ComplianceDinamico?model=ComplianceMPEV4` },
+    { key: 'DROPSHIPPING_V4', label: 'Dropshipping v4', desc: '52 perguntas em 11 blocos. Foco em fornecedor/logística, prazo de entrega, rastreamento, afiliados e risco de chargeback. Pré-preenchimento Lead v5.', icon: ShoppingCart, color: '#ea580c', url: `${base}/ComplianceDinamico?model=ComplianceDropshippingV4` },
   ];
 
   const quickLinksByType = [
-    { key: 'GENERIC', label: 'Genérico', desc: t('lc.generic_desc'), icon: Globe, color: '#002443', url: `${base}${createPageUrl('ComplianceOnboardingStart')}` },
-    { key: 'PIX', label: 'Pix', desc: t('lc.pix_desc'), icon: CreditCard, color: '#2bc196', url: `${base}${createPageUrl('CompliancePixOnly')}` },
-    { key: 'FULL', label: 'Full KYC', desc: t('lc.full_desc'), icon: Shield, color: '#002443', url: `${base}${createPageUrl('ComplianceFullKYC')}` },
-    { key: 'LITE', label: 'Lite', desc: t('lc.lite_desc'), icon: Zap, color: '#36706c', url: `${base}${createPageUrl('ComplianceLite')}` },
-    { key: 'ECOMMERCE', label: 'E-commerce', desc: t('lc.ecommerce_desc'), icon: ShoppingCart, color: '#002443', url: `${base}${createPageUrl('ComplianceEcommerce')}` },
-    { key: 'SAAS', label: 'SaaS', desc: t('lc.saas_desc'), icon: Cloud, color: '#36706c', url: `${base}${createPageUrl('ComplianceSaaS')}` },
+    { key: 'GENERIC', label: 'Genérico', desc: t('lc.generic_desc'), icon: Globe, color: '#002443', url: `${base}/ComplianceOnboardingStart` },
+    { key: 'PIX', label: 'Pix', desc: t('lc.pix_desc'), icon: CreditCard, color: '#2bc196', url: `${base}/CompliancePixOnly` },
+    { key: 'FULL', label: 'Full KYC', desc: t('lc.full_desc'), icon: Shield, color: '#002443', url: `${base}/ComplianceFullKYC` },
+    { key: 'LITE', label: 'Lite', desc: t('lc.lite_desc'), icon: Zap, color: '#36706c', url: `${base}/ComplianceLite` },
+    { key: 'ECOMMERCE', label: 'E-commerce', desc: t('lc.ecommerce_desc'), icon: ShoppingCart, color: '#002443', url: `${base}/ComplianceEcommerce` },
+    { key: 'SAAS', label: 'SaaS', desc: t('lc.saas_desc'), icon: Cloud, color: '#36706c', url: `${base}/ComplianceSaaS` },
   ];
 
   const stats = React.useMemo(() => {
@@ -105,7 +104,7 @@ export default function LinksCompliance() {
 
   const generateLinkUrl = (link) => {
     const page = getPageByLink(link);
-    let url = `${base}${createPageUrl(page)}?ref=${link.uniqueCode}`;
+    let url = `${base}/${page}?ref=${link.uniqueCode}`;
     if (link.utmSource) url += `&utm_source=${link.utmSource}`;
     return url;
   };

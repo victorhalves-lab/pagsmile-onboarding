@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { createPageUrl } from '../../utils';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
@@ -73,7 +72,7 @@ export default function IntroducerLinkGeneratorModal({ open, onOpenChange }) {
         complianceType: 'GENERIC',
       });
 
-      const url = `${window.location.origin}${createPageUrl(basePage)}?ref=${link.uniqueCode}`;
+      const url = `${window.location.origin}/${basePage}?ref=${link.uniqueCode}`;
       return url;
     },
     onSuccess: (url) => {

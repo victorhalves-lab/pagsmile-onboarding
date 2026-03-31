@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { createPageUrl } from '../utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,11 +20,11 @@ export default function LinksQuestionariosLeads() {
 
   // Links genéricos
   const genericLinks = {
-    LEAD: `${window.location.origin}${createPageUrl('LeadQuestionnaire')}`,
-    LEAD_V2: `${window.location.origin}${createPageUrl('LeadQuestionnaire')}?templateId=69c3b5af17040531b06c5c16`,
-    LEAD_V3: `${window.location.origin}${createPageUrl('LeadQuestionnaire')}?templateId=69c8b3a45e38d14f0a741f63`,
-    LEAD_SIMPLIFICADO: `${window.location.origin}${createPageUrl('QuestionarioSimplificadoPublico')}`,
-    LEAD_PIX: `${window.location.origin}${createPageUrl('LeadQuestionnairePix')}`,
+    LEAD: `${window.location.origin}/LeadQuestionnaire`,
+    LEAD_V2: `${window.location.origin}/LeadQuestionnaire?templateId=69c3b5af17040531b06c5c16`,
+    LEAD_V3: `${window.location.origin}/LeadQuestionnaire?templateId=69c8b3a45e38d14f0a741f63`,
+    LEAD_SIMPLIFICADO: `${window.location.origin}/QuestionarioSimplificadoPublico`,
+    LEAD_PIX: `${window.location.origin}/LeadQuestionnairePix`,
     LEAD_PAGSMILE: `${window.location.origin}/QuestionarioLeadsPagsmile`,
     LEAD_PIX_V4: `${window.location.origin}/LeadPixV4`,
   };
@@ -510,7 +509,7 @@ function LinkGenerator({ type, label, basePage, baseParams, icon: Icon }) {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['onboardingLinks'] });
-      let url = `${window.location.origin}${createPageUrl(basePage)}?ref=${data.uniqueCode}`;
+      let url = `${window.location.origin}/${basePage}?ref=${data.uniqueCode}`;
       if (baseParams) url += `&${baseParams}`;
       setGeneratedLink(url);
       toast.success(t('lg.success'));

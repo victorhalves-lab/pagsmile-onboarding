@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { createPageUrl } from '../utils';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import LeadQuestionnaireForm from '@/components/leads/LeadQuestionnaireForm';
@@ -69,7 +68,7 @@ export default function LeadQuestionnaire() {
       });
     }
 
-    navigate(createPageUrl('LeadSuccess') + `?protocolo=${leadData.protocolo}`);
+    navigate(`/LeadSuccess?protocolo=${leadData.protocolo}`);
   };
 
   if (isLoading || loadingQuestions) {
