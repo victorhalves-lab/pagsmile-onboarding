@@ -68,12 +68,20 @@ export default function DraftsTab() {
   const filteredSessions = sessions.filter(s => {
     if (!searchTerm) return true;
     const term = searchTerm.toLowerCase();
-    return (
+    // Search in direct fields
+    if (
       (s.clientName || '').toLowerCase().includes(term) ||
       (s.clientEmail || '').toLowerCase().includes(term) ||
       (s.sessionToken || '').toLowerCase().includes(term) ||
       (s.linkCode || '').toLowerCase().includes(term)
-    );
+    ) return true;
+    // Also search in formData values (for sessions where clientName/Email are empty)
+    if (s.formData && typeof s.formData === 'object') {
+      for (const val of Object.values(s.formData)) {
+        if (typeof val === 'string' && val.toLowerCase().includes(term)) return true;
+      }
+    }
+    return false;
   });
 
   const totalPages = Math.ceil(filteredSessions.length / itemsPerPage);
@@ -144,6 +152,28 @@ export default function DraftsTab() {
                 const model = MODEL_LABELS[s.templateModel] || MODEL_LABELS[s.flowType] || { label: s.templateModel || s.flowType, color: 'bg-slate-100 text-slate-700' };
                 const phase = PHASE_LABELS[s.currentPhase] || PHASE_LABELS.questionnaire;
 
+                // Extract name/email from formData if direct fields are empty
+                let displayName = s.clientName || '';
+                let displayEmail = s.clientEmail || '';
+                if ((!displayName || !displayEmail) && s.formData && typeof s.formData === 'object') {
+                  const values = Object.values(s.formData);
+                  if (!displayName) {
+                    // Look for razão social / nome fantasia patterns in formData values
+                    const fd = s.formData;
+                    for (const [key, val] of Object.entries(fd)) {
+                      if (typeof val === 'string' && val.length > 3 && val.length < 200 && !key.startsWith('__')) {
+                        // Heuristic: CNPJ-like values or company names are usually uppercase
+                        if (!displayName && /^[A-ZÀÁÂÃÉÊÍÓÔÕÚÇ\s]+$/.test(val) && val.length > 5) {
+                          displayName = val;
+                        }
+                        if (!displayEmail && val.includes('@') && val.includes('.')) {
+                          displayEmail = val;
+                        }
+                      }
+                    }
+                  }
+                }
+
                 return (
                   <TableRow key={s.id} className="hover:bg-[#f4f4f4] transition-colors">
                     <TableCell>
@@ -153,10 +183,10 @@ export default function DraftsTab() {
                         </div>
                         <div className="min-w-0">
                           <p className="font-medium text-[var(--pagsmile-blue)] truncate">
-                            {s.clientName || 'Sem nome'}
+                            {displayName || 'Sem nome'}
                           </p>
                           <p className="text-xs text-[var(--pagsmile-blue)]/60 truncate">
-                            {s.clientEmail || 'E-mail não informado'}
+                            {displayEmail || 'E-mail não informado'}
                           </p>
                         </div>
                       </div>

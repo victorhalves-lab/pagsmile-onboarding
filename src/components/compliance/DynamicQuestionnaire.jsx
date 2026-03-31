@@ -296,6 +296,28 @@ export default function DynamicQuestionnaire({
     }
   }, [hasPrefill, JSON.stringify(prefillData)]);
 
+  // Extract clientEmail and clientName from formData (look in question answers)
+  const clientInfo = React.useMemo(() => {
+    let email = '';
+    let name = '';
+    // Try from lead first
+    if (lead) {
+      email = lead.email || '';
+      name = lead.fullName || lead.companyName || '';
+    }
+    // Also scan formData for email/name fields
+    if (questions.length > 0) {
+      questions.forEach(q => {
+        const t = (q.text || '').toLowerCase().trim();
+        const val = formData[q.id];
+        if (!val) return;
+        if (!email && (q.type === 'EMAIL' || t === 'e-mail' || t === 'email')) email = val;
+        if (!name && (t === 'razão social' || t === 'nome fantasia')) name = val;
+      });
+    }
+    return { email, name };
+  }, [formData, questions, lead]);
+
   // Salvar dados localmente e no servidor (debounced)
   useEffect(() => {
     if (storageKey && Object.keys(formData).length > 0) {
@@ -304,10 +326,12 @@ export default function DynamicQuestionnaire({
       saveProgress({
         currentStep,
         currentPhase: 'questionnaire',
-        formData
+        formData,
+        clientEmail: clientInfo.email,
+        clientName: clientInfo.name,
       });
     }
-  }, [formData, storageKey, currentStep, saveProgress]);
+  }, [formData, storageKey, currentStep, saveProgress, clientInfo.email, clientInfo.name]);
 
   const handleFieldChange = (questionId, value) => {
     setFormData(prev => ({ ...prev, [questionId]: value }));
@@ -575,14 +599,77 @@ export default function DynamicQuestionnaire({
     saveProgressNow({
       currentStep: 1,
       currentPhase: 'documents',
-      formData: finalFormData
+      formData: finalFormData,
+      clientEmail: clientInfo.email,
+      clientName: clientInfo.name,
     });
+
+    // Create Merchant + OnboardingCase for visibility in compliance dashboard
+    createMerchantAndCase(finalFormData);
+
     if (onComplete) {
       onComplete({ formData: finalFormData, template, questions });
     } else {
       navigate(createPageUrl(documentUploadPage));
     }
   };
+
+  // Helper: create Merchant + OnboardingCase from compliance data so it appears in "Recebidos"
+  const createMerchantAndCase = useCallback(async (finalFormData) => {
+    // Extract CNPJ, name, email from formData using questions
+    let cnpj = '', fullName = '', companyName = '', email = '', phone = '';
+    let merchantType = 'PJ';
+    questions.forEach(q => {
+      const t = (q.text || '').toLowerCase().trim();
+      const val = finalFormData[q.id];
+      if (!val) return;
+      if (q.type === 'CPF_CNPJ' || t === 'cnpj') cnpj = val;
+      if (t === 'razão social') fullName = val;
+      if (t === 'nome fantasia') companyName = val;
+      if (q.type === 'EMAIL' || t === 'e-mail' || t === 'email') email = val;
+      if (q.type === 'PHONE' || t === 'telefone') phone = val;
+    });
+    // Fallback from lead
+    if (lead) {
+      if (!cnpj) cnpj = lead.cpfCnpj || '';
+      if (!fullName) fullName = lead.fullName || '';
+      if (!companyName) companyName = lead.companyName || '';
+      if (!email) email = lead.email || '';
+      if (!phone) phone = lead.phone || '';
+    }
+    if (!cnpj && !email) return null; // Cannot create without minimum data
+
+    // Create Merchant
+    const merchant = await base44.entities.Merchant.create({
+      type: merchantType,
+      cpfCnpj: cnpj,
+      fullName: fullName || companyName || 'N/A',
+      companyName: companyName || fullName || '',
+      email: email || 'nao-informado@placeholder.com',
+      phone: phone || '',
+      onboardingStatus: 'Em Análise',
+    });
+
+    // Create OnboardingCase
+    const onboardingCase = await base44.entities.OnboardingCase.create({
+      merchantId: merchant.id,
+      questionnaireTemplateId: template?.id || '',
+      submissionDate: new Date().toISOString(),
+      status: 'Pendente',
+      priority: 'medium',
+      onboardingLinkCode: linkCode || '',
+      commercialAgentId: lead?.commercialAgentId || '',
+      commercialAgentName: lead?.commercialAgentName || '',
+    });
+
+    // Update lead with onboardingCaseId if lead exists
+    const leadId = localStorage.getItem('lead_id_for_compliance') || localStorage.getItem('fechamento_lead_id');
+    if (leadId) {
+      await base44.entities.Lead.update(leadId, { onboardingCaseId: onboardingCase.id });
+    }
+
+    return { merchant, onboardingCase };
+  }, [questions, lead, template, linkCode]);
 
   // Callback quando o cliente confirma que concluiu na CAF
   const handleCafCompletion = useCallback(async () => {
@@ -592,12 +679,18 @@ export default function DynamicQuestionnaire({
     await saveProgressNow({
       currentStep,
       currentPhase: 'completed',
-      formData: finalFormData
+      formData: finalFormData,
+      clientEmail: clientInfo.email,
+      clientName: clientInfo.name,
     });
+
+    // Create Merchant + OnboardingCase for visibility in compliance dashboard
+    await createMerchantAndCase(finalFormData);
+
     await completeSession();
     setIsCompletingCaf(false);
     navigate(createPageUrl('OnboardingCompletion'));
-  }, [formData, complianceAlerts, currentStep, saveProgressNow, completeSession, navigate]);
+  }, [formData, complianceAlerts, currentStep, saveProgressNow, completeSession, navigate, createMerchantAndCase, clientInfo]);
 
   if (sessionLoading || loadingTemplate || loadingQuestions) {
     return (
