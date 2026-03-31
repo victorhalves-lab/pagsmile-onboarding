@@ -251,7 +251,8 @@ export const pt = {
   'pipeline_page.col_proposal_sent': 'Proposta Enviada',
   'pipeline_page.col_proposal_accepted': 'Proposta Aceita',
   'pipeline_page.col_compliance': 'Em Compliance / KYC',
-  'pipeline_page.col_contract': '✅ Contrato Gerado',
+  'pipeline_page.col_deal_closed': 'Negócio Fechado',
+  'pipeline_page.col_contract': 'Contrato Gerado',
   'pipeline_page.col_lost': 'Perdido',
 
   // ═══ QUESTIONÁRIOS RECEBIDOS ═══

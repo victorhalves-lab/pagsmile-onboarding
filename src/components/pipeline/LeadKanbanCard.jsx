@@ -5,6 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Eye, Phone, FileText, Clock, RefreshCw, CalendarClock, FileCheck2, Send } from 'lucide-react';
 import moment from 'moment';
+import 'moment/locale/pt-br';
+moment.locale('pt-br');
 import LeadSLAIndicator from '../leads/LeadSLAIndicator';
 import StatusUpdateModal from './StatusUpdateModal';
 import FollowUpModal from './FollowUpModal';

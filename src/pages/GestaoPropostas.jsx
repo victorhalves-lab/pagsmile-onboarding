@@ -145,6 +145,7 @@ export default function GestaoPropostas() {
 
   const isExpiring = (p) => {
     if (!p.validUntil) return false;
+    if (['aceita', 'recusada', 'cancelada', 'expirada'].includes(p.status)) return false;
     const diff = moment(p.validUntil).diff(moment(), 'days');
     return diff <= 3 && diff >= 0;
   };

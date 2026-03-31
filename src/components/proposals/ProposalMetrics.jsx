@@ -18,11 +18,24 @@ export default function ProposalMetrics({ propostas }) {
     const expiradas = byStatus['expirada'] || 0;
     const sentTotal = aceitas + recusadas + enviadas + visualizadas + expiradas;
     const taxaAceite = sentTotal > 0 ? ((aceitas / sentTotal) * 100) : 0;
-    const aceitasComDatas = propostas.filter(p => p.status === 'aceita' && p.sentDate && p.acceptedDate);
+    const aceitasComDatas = propostas.filter(p => p.status === 'aceita' && p.acceptedDate);
     const tempoMedioAceite = aceitasComDatas.length > 0
-      ? Math.round(aceitasComDatas.reduce((s, p) => s + moment(p.acceptedDate).diff(moment(p.sentDate), 'days'), 0) / aceitasComDatas.length)
+      ? Math.round(aceitasComDatas.reduce((s, p) => {
+          const startDate = p.sentDate || p.created_date;
+          return s + moment(p.acceptedDate).diff(moment(startDate), 'days');
+        }, 0) / aceitasComDatas.length)
       : null;
-    const revenueGanha = propostas.filter(p => p.status === 'aceita').reduce((s, p) => s + (p.estimatedRevenue || 0), 0);
+    const aceitasList = propostas.filter(p => p.status === 'aceita');
+    const revenueGanha = aceitasList.reduce((s, p) => {
+      if (p.estimatedRevenue) return s + p.estimatedRevenue;
+      // Fallback: estimate from rates if TPV info available from lead data
+      const tpv = p.profitabilityDetails?.tpvBase || 0;
+      const margin = p.profitabilityDetails?.margemPercentual || 0;
+      if (tpv > 0 && margin > 0) return s + (tpv * margin / 100);
+      // Last resort: use estimatedMargin
+      if (p.estimatedMargin) return s + p.estimatedMargin;
+      return s;
+    }, 0);
     const expirando = propostas.filter(p => {
       if (!p.validUntil || !['enviada', 'visualizada'].includes(p.status)) return false;
       const diff = moment(p.validUntil).diff(moment(), 'days');

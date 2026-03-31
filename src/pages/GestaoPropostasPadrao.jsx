@@ -121,7 +121,6 @@ export default function GestaoPropostasPadrao() {
                 <TableHead>{t('gsp.code')}</TableHead>
                 <TableHead>{t('gsp.name')}</TableHead>
                 <TableHead>{t('gsp.segment')}</TableHead>
-                <TableHead>{t('gsp.model')}</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>{t('gsp.created')}</TableHead>
                 <TableHead className="text-right">{t('common.actions')}</TableHead>
@@ -130,7 +129,7 @@ export default function GestaoPropostasPadrao() {
             <TableBody>
               {filtered.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-12">
+                  <TableCell colSpan={6} className="text-center py-12">
                     <FileText className="w-12 h-12 mx-auto text-[#002443]/30 mb-3" />
                     <p className="text-[#002443]/60">{t('gsp.no_proposals')}</p>
                     <Button variant="link" onClick={() => navigate('/CriarPropostaPadrao')} className="mt-2 text-[#2bc196]">{t('gsp.create_first')}</Button>
@@ -143,13 +142,6 @@ export default function GestaoPropostasPadrao() {
                     <TableCell><span className="font-mono text-sm text-[#2bc196]">{p.codigo || '-'}</span></TableCell>
                     <TableCell className="font-medium text-sm">{p.templateName}</TableCell>
                     <TableCell><Badge className="bg-[#2bc196]/10 text-[#002443] border-0">{p.segment}</Badge></TableCell>
-                    <TableCell>
-                      {p.businessSubCategory ? (
-                        <Badge className={`text-[10px] border-0 ${p.businessSubCategory === 'GATEWAY' ? 'bg-indigo-100 text-indigo-700' : p.businessSubCategory === 'MARKETPLACE' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>
-                          {p.businessSubCategory === 'MERCHAN' ? 'Merchant' : p.businessSubCategory === 'GATEWAY' ? 'Gateway' : 'Marketplace'}
-                        </Badge>
-                      ) : <span className="text-xs text-slate-400">—</span>}
-                    </TableCell>
                     <TableCell><Badge className={sCfg.color}>{sCfg.label}</Badge></TableCell>
                     <TableCell className="text-xs text-[#002443]/60">{moment(p.created_date).format('DD/MM/YYYY')}</TableCell>
                     <TableCell className="text-right">

@@ -249,6 +249,7 @@ export const en = {
   'pipeline_page.col_proposal_sent': 'Proposal Sent',
   'pipeline_page.col_proposal_accepted': 'Proposal Accepted',
   'pipeline_page.col_compliance': 'In Compliance / KYC',
+  'pipeline_page.col_deal_closed': 'Deal Closed',
   'pipeline_page.col_contract': '✅ Contract Generated',
   'pipeline_page.col_lost': 'Lost',
 

@@ -46,6 +46,7 @@ export default function StepDadosEmpresa({ form, updateField, cnpjData, setCnpjD
           {isLoading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-[#2bc196]" />}
           {cnpjData && !isLoading && <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-500" />}
         </div>
+        {errors?.cnpj && !validationError && <p className="text-xs text-red-500">CNPJ válido é obrigatório</p>}
         {validationError && <p className="text-xs text-red-500 flex items-center gap-1"><AlertTriangle className="w-3 h-3" />{validationError}</p>}
         {error && <p className="text-xs text-amber-600 flex items-center gap-1"><AlertTriangle className="w-3 h-3" />{error}</p>}
       </div>
@@ -70,8 +71,9 @@ export default function StepDadosEmpresa({ form, updateField, cnpjData, setCnpjD
           value={form.nomeFantasia || ''}
           onChange={(e) => updateField('nomeFantasia', e.target.value)}
           placeholder="Nome Fantasia (editável)"
-          className="h-12 rounded-xl"
+          className={`h-12 rounded-xl ${errors?.nomeFantasia ? 'border-red-400' : ''}`}
         />
+        {errors?.nomeFantasia && <p className="text-xs text-red-500">Campo obrigatório</p>}
         {cnpjData && <p className="text-[10px] text-[#002443]/50">Preenchido pela RF. Você pode editar se estiver desatualizado.</p>}
       </div>
 

@@ -249,6 +249,7 @@ export const zh = {
   'pipeline_page.col_proposal_sent': '报价已发送',
   'pipeline_page.col_proposal_accepted': '报价已接受',
   'pipeline_page.col_compliance': '合规/KYC中',
+  'pipeline_page.col_deal_closed': '交易完成',
   'pipeline_page.col_contract': '✅ 合同已生成',
   'pipeline_page.col_lost': '已流失',
 

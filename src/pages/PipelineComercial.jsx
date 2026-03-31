@@ -41,7 +41,7 @@ export default function PipelineComercial() {
     { id: 'proposta_enviada', name: t('pipeline_page.col_proposal_sent'), color: '#3B82F6', statuses: ['proposta_enviada'] },
     { id: 'proposta_aceita', name: t('pipeline_page.col_proposal_accepted'), color: '#8B5CF6', statuses: ['proposta_aceita'] },
     { id: 'compliance_kyc', name: t('pipeline_page.col_compliance'), color: '#10B981', statuses: ['kyc_iniciado', 'kyc_aprovado', 'kyc_revisao_manual'] },
-    { id: 'negocio_fechado', name: '✅ Negócio Fechado', color: '#047857', statuses: ['ativado'], specialRule: 'DEAL_CLOSED' },
+    { id: 'negocio_fechado', name: t('pipeline_page.col_deal_closed') || 'Negócio Fechado', color: '#047857', statuses: ['ativado'], specialRule: 'DEAL_CLOSED' },
     { id: 'perdido', name: t('pipeline_page.col_lost'), color: '#EF4444', statuses: ['perdido', 'proposta_recusada'] },
   ];
 

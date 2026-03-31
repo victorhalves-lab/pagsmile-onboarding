@@ -56,7 +56,7 @@ const getActionButtons = (lead, navigate, t) => {
   return actions;
 };
 
-const SUB_CAT = { MERCHAN: { label: 'Merchan', icon: ShoppingCart }, GATEWAY: { label: 'Gateway', icon: Network }, MARKETPLACE: { label: 'Marketplace', icon: Building2 } };
+const SUB_CAT = { MERCHAN: { label: 'Merchant', icon: ShoppingCart }, GATEWAY: { label: 'Gateway', icon: Network }, MARKETPLACE: { label: 'Marketplace', icon: Building2 } };
 
 export default function QuestionariosLeads() {
   const { t } = useTranslation();
@@ -110,6 +110,11 @@ export default function QuestionariosLeads() {
   const { data: questionariosSimplificados = [], isLoading: loadingSimplificados, refetch: refetchSimplificados } = useQuery({
     queryKey: ['questionarios-simplificados'],
     queryFn: () => base44.entities.QuestionarioSimplificado.list('-created_date', 500)
+  });
+
+  const { data: internalQuestionnaires = [] } = useQuery({
+    queryKey: ['internal-questionnaires'],
+    queryFn: () => base44.entities.InternalCommercialQuestionnaire.list('-created_date', 500)
   });
 
   const deleteMutation = useMutation({
@@ -283,15 +288,15 @@ export default function QuestionariosLeads() {
           </TabsTrigger>
           <TabsTrigger value="reuniao" className="gap-1">
             <Briefcase className="w-3 h-3" />
-            {t('quest_leads.tab_meeting')}
+            {t('quest_leads.tab_meeting')} ({internalQuestionnaires.filter(q => !q.protocolo?.startsWith('PIX-') && q.origemIA !== true).length})
           </TabsTrigger>
           <TabsTrigger value="reuniao_pix" className="gap-1">
             <Zap className="w-3 h-3" />
-            {t('quest_leads.tab_meeting_pix')}
+            {t('quest_leads.tab_meeting_pix')} ({internalQuestionnaires.filter(q => q.protocolo?.startsWith('PIX-')).length})
           </TabsTrigger>
           <TabsTrigger value="ai" className="gap-1">
             <Bot className="w-3 h-3" />
-            {t('quest_leads.tab_ai')}
+            {t('quest_leads.tab_ai')} ({internalQuestionnaires.filter(q => q.origemIA === true).length})
           </TabsTrigger>
           <TabsTrigger value="proposta_padrao" className="gap-1">
             <Rocket className="w-3 h-3" />

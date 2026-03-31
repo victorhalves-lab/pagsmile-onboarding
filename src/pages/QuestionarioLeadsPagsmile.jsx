@@ -63,40 +63,41 @@ export default function QuestionarioLeadsPagsmile() {
   // Validação por step
   const validateStep = () => {
     const errs = {};
+    const errorMessages = [];
     if (step === 0 && !form.segmento) { toast.error('Selecione o tipo de negócio'); return false; }
     if (step === 1) {
-      if (!form.cnpj || form.cnpj.replace(/\D/g, '').length < 14) errs.cnpj = true;
-      if (!form.nomeFantasia) errs.nomeFantasia = true;
+      if (!form.cnpj || form.cnpj.replace(/\D/g, '').length < 14) { errs.cnpj = true; errorMessages.push('CNPJ válido é obrigatório'); }
+      if (!form.nomeFantasia) { errs.nomeFantasia = true; errorMessages.push('Nome Fantasia é obrigatório'); }
     }
     if (step === 2) {
       if (!form._enderecoConfirmado) { toast.error('Confirme o endereço antes de prosseguir'); return false; }
     }
     if (step === 3) {
-      if (!form.email) errs.email = true;
-      if (!form.phone) errs.phone = true;
-      if (!form.contactName) errs.contactName = true;
-      if (!form.cargo && form.cargo !== '__other__') errs.cargo = true;
+      if (!form.email) { errs.email = true; errorMessages.push('E-mail é obrigatório'); }
+      if (!form.phone) { errs.phone = true; errorMessages.push('Telefone é obrigatório'); }
+      if (!form.contactName) { errs.contactName = true; errorMessages.push('Nome do contato é obrigatório'); }
+      if (!form.cargo && form.cargo !== '__other__') { errs.cargo = true; errorMessages.push('Cargo é obrigatório'); }
     }
     if (step === 4) {
-      if (!form.modeloCobranca) { toast.error('Selecione o modelo de cobrança'); return false; }
-      if (!form.descricaoNegocio) { toast.error('Descreva seu negócio'); return false; }
+      if (!form.modeloCobranca) { errs.modeloCobranca = true; errorMessages.push('Modelo de cobrança é obrigatório'); }
+      if (!form.descricaoNegocio) { errs.descricaoNegocio = true; errorMessages.push('Descrição do negócio é obrigatória'); }
     }
     if (step === 5) {
-      if (!form.tpvMensal) errs.tpvMensal = true;
-      if (!form.ticketMedio) errs.ticketMedio = true;
-      if (!form.faturamentoAnual) { toast.error('Selecione o faturamento anual'); return false; }
-      if (!form.funcionarios) { toast.error('Selecione o número de funcionários'); return false; }
+      if (!form.tpvMensal) { errs.tpvMensal = true; errorMessages.push('TPV Mensal é obrigatório'); }
+      if (!form.ticketMedio) { errs.ticketMedio = true; errorMessages.push('Ticket Médio é obrigatório'); }
+      if (!form.faturamentoAnual) { errs.faturamentoAnual = true; errorMessages.push('Faturamento anual é obrigatório'); }
+      if (!form.funcionarios) { errs.funcionarios = true; errorMessages.push('Número de funcionários é obrigatório'); }
     }
-    if (step === 6 && !form.jaProcessa) { toast.error('Informe se já processa pagamentos'); return false; }
-    if (step === 9 && !form.encerrado) { toast.error('Informe se já foi encerrado'); return false; }
+    if (step === 6 && !form.jaProcessa) { errs.jaProcessa = true; errorMessages.push('Informe se já processa pagamentos'); }
+    if (step === 9 && !form.encerrado) { errs.encerrado = true; errorMessages.push('Informe se já foi encerrado'); }
     if (step === 10) {
-      if (!form.urgencia) { toast.error('Informe quando quer começar'); return false; }
-      if (!form.crescimento) { toast.error('Informe a expectativa de crescimento'); return false; }
+      if (!form.urgencia) { errs.urgencia = true; errorMessages.push('Informe quando quer começar'); }
+      if (!form.crescimento) { errs.crescimento = true; errorMessages.push('Informe a expectativa de crescimento'); }
     }
 
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
-      toast.error('Preencha os campos obrigatórios');
+      toast.error(errorMessages[0] || 'Preencha os campos obrigatórios');
       return false;
     }
     return true;
@@ -236,7 +237,8 @@ export default function QuestionarioLeadsPagsmile() {
         <img 
           src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png" 
           alt="Pagsmile" 
-          className="h-8 mx-auto mb-4 invert"
+          className="h-8 mx-auto mb-4"
+          style={{ filter: 'brightness(0) saturate(100%) invert(12%) sepia(36%) saturate(2476%) hue-rotate(183deg) brightness(91%) contrast(107%)' }}
         />
         <h1 className="text-2xl font-bold text-[#002443]">Questionário de Lead PagSmile</h1>
         <p className="text-sm text-[#002443]/50 mt-1">{STEPS.length} etapas</p>

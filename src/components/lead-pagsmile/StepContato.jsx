@@ -44,6 +44,7 @@ export default function StepContato({ form, updateField, errors }) {
           placeholder="Nome completo"
           className={`h-12 rounded-xl ${errors?.contactName ? 'border-red-400' : ''}`}
         />
+        {errors?.contactName && <p className="text-xs text-red-500">Campo obrigatório</p>}
       </div>
 
       {/* P9 — Cargo */}
