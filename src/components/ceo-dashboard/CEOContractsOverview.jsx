@@ -22,6 +22,8 @@ export default function CEOContractsOverview({ contracts }) {
   const signed = statusCounts['signed'] || 0;
   const sent = statusCounts['sent'] || 0;
   const ready = statusCounts['ready'] || 0;
+  const preGenerated = statusCounts['pre_generated'] || 0;
+  const underReview = statusCounts['under_review'] || 0;
 
   return (
     <div className="bg-white rounded-2xl border border-[#002443]/5 p-5">
@@ -35,18 +37,26 @@ export default function CEOContractsOverview({ contracts }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-3 mb-4">
-        <div className="text-center p-3 rounded-xl bg-[#2bc196]/5">
-          <p className="text-xl font-extrabold text-[#2bc196]">{signed}</p>
-          <p className="text-[10px] text-[#002443]/40 font-bold">Assinados</p>
+      <div className="grid grid-cols-5 gap-2 mb-4">
+        <div className="text-center p-2.5 rounded-xl bg-slate-50">
+          <p className="text-lg font-extrabold text-slate-500">{preGenerated}</p>
+          <p className="text-[9px] text-[#002443]/40 font-bold">Pré-gerado</p>
         </div>
-        <div className="text-center p-3 rounded-xl bg-[#36706c]/5">
-          <p className="text-xl font-extrabold text-[#36706c]">{sent}</p>
-          <p className="text-[10px] text-[#002443]/40 font-bold">Enviados</p>
+        <div className="text-center p-2.5 rounded-xl bg-blue-50">
+          <p className="text-lg font-extrabold text-blue-500">{underReview}</p>
+          <p className="text-[9px] text-[#002443]/40 font-bold">Em Revisão</p>
         </div>
-        <div className="text-center p-3 rounded-xl bg-yellow-50">
-          <p className="text-xl font-extrabold text-yellow-600">{ready}</p>
-          <p className="text-[10px] text-[#002443]/40 font-bold">Prontos</p>
+        <div className="text-center p-2.5 rounded-xl bg-yellow-50">
+          <p className="text-lg font-extrabold text-yellow-600">{ready}</p>
+          <p className="text-[9px] text-[#002443]/40 font-bold">Prontos</p>
+        </div>
+        <div className="text-center p-2.5 rounded-xl bg-[#36706c]/5">
+          <p className="text-lg font-extrabold text-[#36706c]">{sent}</p>
+          <p className="text-[9px] text-[#002443]/40 font-bold">Enviados</p>
+        </div>
+        <div className="text-center p-2.5 rounded-xl bg-[#2bc196]/5">
+          <p className="text-lg font-extrabold text-[#2bc196]">{signed}</p>
+          <p className="text-[9px] text-[#002443]/40 font-bold">Assinados</p>
         </div>
       </div>
 
