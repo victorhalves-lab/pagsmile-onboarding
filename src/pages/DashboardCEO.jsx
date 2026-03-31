@@ -71,7 +71,20 @@ export default function DashboardCEO() {
     const lossRate = totalLeads > 0 ? ((leadsLost / totalLeads) * 100).toFixed(1) : '0';
 
     const activeLeads = leads.filter(l => !['perdido', 'proposta_recusada'].includes(l.status));
-    const tpvPipeline = activeLeads.reduce((s, l) => s + (l.tpvMensal || 0), 0);
+
+    // Build proposal TPV lookup for KPI calculation
+    const kpiProposalTpv = {};
+    allProposals.forEach(p => {
+      if (!p.leadId) return;
+      let tpv = 0;
+      if (p.rates?.minimoGarantido) {
+        tpv = p.rates.minimoGarantido.mes3 || p.rates.minimoGarantido.mes2 || p.rates.minimoGarantido.mes1 || 0;
+      }
+      if (tpv > (kpiProposalTpv[p.leadId] || 0)) kpiProposalTpv[p.leadId] = tpv;
+    });
+    const getKpiTpv = (l) => kpiProposalTpv[l.id] || l.tpvMensal || 0;
+
+    const tpvPipeline = activeLeads.reduce((s, l) => s + getKpiTpv(l), 0);
     const leadsWithTicket = leads.filter(l => l.ticketMedio > 0);
     const avgTicket = leadsWithTicket.length > 0 ? leadsWithTicket.reduce((s, l) => s + l.ticketMedio, 0) / leadsWithTicket.length : 0;
 
@@ -122,6 +135,29 @@ export default function DashboardCEO() {
     return result;
   }, [leads]);
 
+  // ── Build proposal TPV map (leadId → best TPV from proposal) ──
+  const proposalTpvMap = useMemo(() => {
+    const map = {};
+    allProposals.forEach(p => {
+      if (!p.leadId) return;
+      let tpv = 0;
+      // Priority: minimoGarantido.mes3 > mes2 > mes1
+      if (p.rates?.minimoGarantido) {
+        tpv = p.rates.minimoGarantido.mes3 || p.rates.minimoGarantido.mes2 || p.rates.minimoGarantido.mes1 || 0;
+      }
+      // Keep highest TPV per lead
+      if (tpv > (map[p.leadId] || 0)) {
+        map[p.leadId] = tpv;
+      }
+    });
+    return map;
+  }, [allProposals]);
+
+  // Helper: get best TPV for a lead (proposal minimoGarantido > lead.tpvMensal)
+  const getLeadTpv = (lead) => {
+    return proposalTpvMap[lead.id] || lead.tpvMensal || 0;
+  };
+
   // ── Seller Performance ──
   const sellers = useMemo(() => {
     const map = {};
@@ -136,7 +172,7 @@ export default function DashboardCEO() {
         };
       }
       map[agentId].totalLeads++;
-      if (!['perdido', 'proposta_recusada'].includes(l.status)) map[agentId].tpvPipeline += (l.tpvMensal || 0);
+      if (!['perdido', 'proposta_recusada'].includes(l.status)) map[agentId].tpvPipeline += getLeadTpv(l);
       if (l.status === 'ativado') map[agentId].leadsActivated++;
       if (['perdido', 'proposta_recusada'].includes(l.status)) map[agentId].leadsLost++;
     });
@@ -154,7 +190,7 @@ export default function DashboardCEO() {
     return Object.values(map)
       .filter(s => s.id !== '_unassigned' || s.totalLeads > 0)
       .sort((a, b) => b.totalLeads - a.totalLeads);
-  }, [leads, allProposals]);
+  }, [leads, allProposals, proposalTpvMap]);
 
   return (
     <div className="space-y-6">

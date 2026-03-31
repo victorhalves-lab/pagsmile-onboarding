@@ -29,11 +29,23 @@ export default function PipelineMetrics({ leads, contracts = [], proposals = [],
     // Conversion rate
     const conversionRate = total > 0 ? ((closedCount / total) * 100).toFixed(1) : 0;
 
+    // Build proposal TPV lookup (minimoGarantido > lead.tpvMensal)
+    const proposalTpvLookup = {};
+    proposals.forEach(p => {
+      if (!p.leadId) return;
+      let tpv = 0;
+      if (p.rates?.minimoGarantido) {
+        tpv = p.rates.minimoGarantido.mes3 || p.rates.minimoGarantido.mes2 || p.rates.minimoGarantido.mes1 || 0;
+      }
+      if (tpv > (proposalTpvLookup[p.leadId] || 0)) proposalTpvLookup[p.leadId] = tpv;
+    });
+    const getLeadTpv = (l) => proposalTpvLookup[l.id] || l.tpvMensal || 0;
+
     // TPV metrics
-    const totalTPV = leads.reduce((s, l) => s + (l.tpvMensal || 0), 0);
-    const tpvFechado = closedLeads.reduce((s, l) => s + (l.tpvMensal || 0), 0);
-    const tpvPipeline = activeLeads.reduce((s, l) => s + (l.tpvMensal || 0), 0);
-    const tpvPropostaEnviada = leads.filter(l => l.status === 'proposta_enviada').reduce((s, l) => s + (l.tpvMensal || 0), 0);
+    const totalTPV = leads.reduce((s, l) => s + getLeadTpv(l), 0);
+    const tpvFechado = closedLeads.reduce((s, l) => s + getLeadTpv(l), 0);
+    const tpvPipeline = activeLeads.reduce((s, l) => s + getLeadTpv(l), 0);
+    const tpvPropostaEnviada = leads.filter(l => l.status === 'proposta_enviada').reduce((s, l) => s + getLeadTpv(l), 0);
 
     // Real revenue from accepted proposals (using actual rates)
     const proposalMap = {};

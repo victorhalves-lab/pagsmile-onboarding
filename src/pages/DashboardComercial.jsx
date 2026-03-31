@@ -88,9 +88,22 @@ export default function DashboardComercial() {
     const leadsLost = leads.filter(l => ['perdido', 'proposta_recusada'].includes(l.status)).length;
     const lossRate = totalLeads > 0 ? ((leadsLost / totalLeads) * 100).toFixed(1) : 0;
 
+    // Build proposal TPV lookup (minimoGarantido > lead.tpvMensal)
+    const allProposalsList = [...proposals.filter(p => p.isCurrentVersion !== false), ...pixProposals.filter(p => p.isCurrentVersion !== false)];
+    const proposalTpvLookup = {};
+    allProposalsList.forEach(p => {
+      if (!p.leadId) return;
+      let tpv = 0;
+      if (p.rates?.minimoGarantido) {
+        tpv = p.rates.minimoGarantido.mes3 || p.rates.minimoGarantido.mes2 || p.rates.minimoGarantido.mes1 || 0;
+      }
+      if (tpv > (proposalTpvLookup[p.leadId] || 0)) proposalTpvLookup[p.leadId] = tpv;
+    });
+    const getLeadTpv = (l) => proposalTpvLookup[l.id] || l.tpvMensal || 0;
+
     // TPV & Ticket
     const activeLeads = leads.filter(l => !['perdido', 'proposta_recusada'].includes(l.status));
-    const tpvPipeline = activeLeads.reduce((s, l) => s + (l.tpvMensal || 0), 0);
+    const tpvPipeline = activeLeads.reduce((s, l) => s + getLeadTpv(l), 0);
     const leadsWithTicket = leads.filter(l => l.ticketMedio > 0);
     const avgTicket = leadsWithTicket.length > 0 ? leadsWithTicket.reduce((s, l) => s + l.ticketMedio, 0) / leadsWithTicket.length : 0;
 
@@ -190,7 +203,7 @@ export default function DashboardComercial() {
     leads.forEach(l => {
       const seg = l.businessSubCategory || 'Outros';
       const label = seg === 'MERCHAN' ? 'Merchant' : seg === 'GATEWAY' ? 'Gateway' : seg === 'MARKETPLACE' ? 'Marketplace' : seg;
-      tpvBySeg[label] = (tpvBySeg[label] || 0) + (l.tpvMensal || 0);
+      tpvBySeg[label] = (tpvBySeg[label] || 0) + getLeadTpv(l);
     });
     const tpvBySegment = Object.entries(tpvBySeg)
       .map(([name, tpv]) => ({ name, tpv }))
@@ -213,7 +226,7 @@ export default function DashboardComercial() {
         };
       }
       introLeadCounts[l.introducerId].leadsCount++;
-      introLeadCounts[l.introducerId].tpv += (l.tpvMensal || 0);
+      introLeadCounts[l.introducerId].tpv += getLeadTpv(l);
       if (['proposta_aceita', 'kyc_iniciado', 'kyc_aprovado', 'ativado'].includes(l.status)) {
         introLeadCounts[l.introducerId].acceptedCount++;
       }
