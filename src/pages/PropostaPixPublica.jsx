@@ -121,11 +121,21 @@ export default function PropostaPixPublica() {
   }
 
   const isAlreadyResponded = ['aceita', 'recusada'].includes(proposta.status);
-  const getPixComplianceUrl = () => {
-    if (proposta.status !== 'aceita' || !proposta.leadId) return null;
-    return `${window.location.origin}${createPageUrl('ComplianceDinamico')}?model=CompliancePixMerchantV4&leadId=${proposta.leadId}`;
-  };
-  const pixComplianceUrl = getPixComplianceUrl();
+
+  // Fetch lead to resolve PIX compliance model for the "already accepted" banner
+  const { data: leadForBanner } = useQuery({
+    queryKey: ['pix_proposta_lead', proposta?.leadId],
+    queryFn: async () => {
+      const leads = await base44.entities.Lead.filter({ id: proposta.leadId });
+      return leads[0] || null;
+    },
+    enabled: !!proposta?.leadId && proposta?.status === 'aceita',
+  });
+
+  const pixComplianceModel = resolvePixComplianceModel(leadForBanner);
+  const pixComplianceUrl = (proposta?.status === 'aceita' && proposta?.leadId)
+    ? `${window.location.origin}${createPageUrl('ComplianceDinamico')}?model=${pixComplianceModel}&leadId=${proposta.leadId}`
+    : null;
   const rates = proposta.rates || {};
 
   return (
