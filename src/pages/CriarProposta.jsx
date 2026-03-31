@@ -15,6 +15,7 @@ import CardOutrasTaxas from '@/components/proposals/CardOutrasTaxas';
 import ProfitabilityPanel from '@/components/proposals/ProfitabilityPanel';
 import PropostaPreview from '@/components/proposals/PropostaPreview';
 import CopyRatesModal from '@/components/proposals/CopyRatesModal';
+import SegmentRatesLoader from '@/components/proposals/SegmentRatesLoader';
 
 const parseTaxa = (val) => {
   if (!val && val !== 0) return 0;
@@ -286,6 +287,10 @@ export default function CriarProposta() {
         {/* Left Column - Form */}
         <div className="flex-1 overflow-y-auto p-6 space-y-5 pb-32">
           <CardDadosCliente form={form} errors={errors} onUpdate={updateForm} />
+          <SegmentRatesLoader onApply={(newRates, formUpdates) => {
+            setRates(newRates);
+            setForm(prev => ({ ...prev, ...formUpdates }));
+          }} />
           <PartnerSelector
             selectedPartnerId={selectedPartnerId}
             onSelectPartner={setSelectedPartnerId}
