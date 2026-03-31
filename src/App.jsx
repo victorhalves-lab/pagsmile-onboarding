@@ -35,6 +35,7 @@ import QuestionarioLeadsPagsmile from './pages/QuestionarioLeadsPagsmile';
 import LeadPixV4 from './pages/LeadPixV4';
 import FechamentoLandingPage from './pages/FechamentoLandingPage';
 import DashboardComercial from './pages/DashboardComercial';
+import DashboardCEO from './pages/DashboardCEO';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -184,6 +185,7 @@ const AuthenticatedApp = () => {
       <Route path="/RiskScoringV4" element={<LayoutWrapper currentPageName="RiskScoringV4"><RiskScoringV4 /></LayoutWrapper>} />
       <Route path="/RiskScoringSubcontas" element={<LayoutWrapper currentPageName="RiskScoringSubcontas"><RiskScoringSubcontas /></LayoutWrapper>} />
       <Route path="/DashboardComercial" element={<LayoutWrapper currentPageName="DashboardComercial"><DashboardComercial /></LayoutWrapper>} />
+      <Route path="/DashboardCEO" element={<LayoutWrapper currentPageName="DashboardCEO"><DashboardCEO /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
