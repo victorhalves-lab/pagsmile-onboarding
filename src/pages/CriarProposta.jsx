@@ -286,11 +286,11 @@ export default function CriarProposta() {
       <div className="flex h-[calc(100vh-65px)]">
         {/* Left Column - Form */}
         <div className="flex-1 overflow-y-auto p-6 space-y-5 pb-32">
-          <CardDadosCliente form={form} errors={errors} onUpdate={updateForm} />
           <SegmentRatesLoader onApply={(newRates, formUpdates) => {
             setRates(newRates);
             setForm(prev => ({ ...prev, ...formUpdates }));
           }} />
+          <CardDadosCliente form={form} errors={errors} onUpdate={updateForm} />
           <PartnerSelector
             selectedPartnerId={selectedPartnerId}
             onSelectPartner={setSelectedPartnerId}
