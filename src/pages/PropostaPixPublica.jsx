@@ -180,7 +180,7 @@ export default function PropostaPixPublica() {
           <p className="text-white/80 text-base md:text-lg max-w-lg mx-auto">
             {t('pp.prepared_for')} <span className="font-bold text-white">{proposta.clienteNome}</span>
           </p>
-          <p className="text-white/40 text-xs mt-8">{t('pp.issued_on')} {proposta.created_date ? moment(proposta.created_date).format('DD/MM/YYYY') : '-'}</p>
+
         </div>
       </div>
 
@@ -276,7 +276,7 @@ export default function PropostaPixPublica() {
       {/* Footer */}
       <div className="text-center text-xs text-[#002443]/30 py-4 border-t border-slate-200">
         <p>&copy; {new Date().getFullYear()} Pagsmile. Proposta {proposta.codigo}</p>
-        <p>{t('pp.issued_on')} {proposta.created_date ? moment(proposta.created_date).format('DD/MM/YYYY HH:mm') : '-'}</p>
+
       </div>
 
       {/* Modals */}
