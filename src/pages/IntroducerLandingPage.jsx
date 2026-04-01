@@ -167,6 +167,7 @@ export default function IntroducerLandingPage() {
                 activeSegment={activeSegment}
                 onSelect={handleSegmentSelect}
                 onInfoClick={handleSegmentInfo}
+                introducerSlug={uniqueLandingPageSlug}
               />
             </div>
 

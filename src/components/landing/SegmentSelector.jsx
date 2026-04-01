@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Info, X } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 
 const SEGMENT_DESCRIPTIONS = {
   'Educação': {
@@ -44,7 +45,7 @@ const SEGMENT_DESCRIPTIONS = {
   },
 };
 
-export default function SegmentSelector({ segments, activeSegment, onSelect, onInfoClick }) {
+export default function SegmentSelector({ segments, activeSegment, onSelect, onInfoClick, introducerSlug }) {
   const [modalSegment, setModalSegment] = useState(null);
 
   const openModal = (name) => {
@@ -62,7 +63,17 @@ export default function SegmentSelector({ segments, activeSegment, onSelect, onI
           return (
             <div key={seg.segmentName} className="flex flex-col items-center gap-1.5">
               <button
-                onClick={() => onSelect(seg.segmentName)}
+                onClick={() => {
+                  base44.analytics.track({
+                    eventName: 'landing_segment_selected',
+                    properties: {
+                      segment_name: seg.segmentName,
+                      introducer_slug: introducerSlug || '',
+                      device: window.innerWidth < 768 ? 'mobile' : window.innerWidth < 1024 ? 'tablet' : 'desktop',
+                    }
+                  });
+                  onSelect(seg.segmentName);
+                }}
                 className={`
                   w-full px-3 py-3 rounded-xl text-sm font-bold
                   transition-all duration-200 border-2 text-center leading-tight
