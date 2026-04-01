@@ -14,7 +14,6 @@ import QuestionarioReuniao from './pages/QuestionarioReuniao';
 import ProcessMeetingNotes from './pages/ProcessMeetingNotes';
 import ComplianceResume from './pages/ComplianceResume';
 import QuestionarioReuniaoPix from './pages/QuestionarioReuniaoPix';
-import LeadQuestionnairePix from './pages/LeadQuestionnairePix';
 import SubsellerQuestionnaire from './pages/SubsellerQuestionnaire';
 import GerenciarSubsellerLinks from './pages/GerenciarSubsellerLinks';
 import ConfiguracaoParceiros from './pages/ConfiguracaoParceiros';
@@ -47,32 +46,12 @@ const LayoutWrapper = ({ children, currentPageName }) => Layout ?
 
 // --- Public routes: these pages do NOT require authentication ---
 const PUBLIC_PATHS = new Set([
-  '/LeadQuestionnaire',
-  '/LeadQuestionnairePix',
-  '/LeadSuccess',
-  '/QuestionarioSimplificadoPublico',
   '/PropostaPublica',
   '/PropostaPadraoPublica',
   '/PropostaPixPublica',
   '/ContratoPublico',
-  '/ComplianceOnboardingStart',
   '/ComplianceDinamico',
   '/ComplianceResume',
-  '/CompliancePixOnly',
-  '/ComplianceFullKYC',
-  '/ComplianceLite',
-  '/ComplianceSaaS',
-  '/ComplianceGateway',
-  '/ComplianceMerchant',
-  '/ComplianceMarketplace',
-  '/ComplianceEcommerce',
-  '/DocumentUploadPix',
-  '/DocumentUploadFull',
-  '/DocumentUploadLite',
-  '/DocumentUploadSaaS',
-  '/DocumentUploadEcommerce',
-  '/LivenessFacematchStep',
-  '/LivenessSimulation',
   '/OnboardingCompletion',
   '/SubsellerQuestionnaire',
   '/QuestionarioLeadsPagsmile',
@@ -89,14 +68,8 @@ function isPublicPath(pathname) {
 // --- Public pages are rendered without auth checks ---
 const PublicRoutes = () => (
   <Routes>
-    {/* Lead Questionnaires */}
-    {['LeadQuestionnaire', 'LeadQuestionnairePix', 'LeadSuccess', 'QuestionarioSimplificadoPublico'].map(name => {
-      const Page = Pages[name];
-      return Page ? <Route key={name} path={`/${name}`} element={<LayoutWrapper currentPageName={name}><Page /></LayoutWrapper>} /> : null;
-    })}
-
     {/* Propostas Públicas */}
-    {['PropostaPublica', 'PropostaPadraoPublica', 'PropostaPixPublica'].map(name => {
+    {['PropostaPublica'].map(name => {
       const Page = Pages[name];
       return Page ? <Route key={name} path={`/${name}`} element={<LayoutWrapper currentPageName={name}><Page /></LayoutWrapper>} /> : null;
     })}
@@ -109,13 +82,8 @@ const PublicRoutes = () => (
     {/* Landing Pages */}
     <Route path="/parceiro/:uniqueLandingPageSlug" element={<LayoutWrapper currentPageName="IntroducerLandingPage"><IntroducerLandingPage /></LayoutWrapper>} />
 
-    {/* Compliance / Onboarding */}
-    {['ComplianceOnboardingStart', 'ComplianceDinamico', 'CompliancePixOnly', 'ComplianceFullKYC',
-      'ComplianceLite', 'ComplianceSaaS', 'ComplianceGateway', 'ComplianceMerchant',
-      'ComplianceMarketplace', 'ComplianceEcommerce',
-      'DocumentUploadPix', 'DocumentUploadFull', 'DocumentUploadLite', 'DocumentUploadSaaS', 'DocumentUploadEcommerce',
-      'LivenessFacematchStep', 'LivenessSimulation', 'OnboardingCompletion'
-    ].map(name => {
+    {/* Compliance V4 (dinâmico) */}
+    {['ComplianceDinamico', 'OnboardingCompletion'].map(name => {
       const Page = Pages[name];
       return Page ? <Route key={name} path={`/${name}`} element={<LayoutWrapper currentPageName={name}><Page /></LayoutWrapper>} /> : null;
     })}
@@ -123,7 +91,8 @@ const PublicRoutes = () => (
 
     {/* Subseller */}
     <Route path="/SubsellerQuestionnaire" element={<LayoutWrapper currentPageName="SubsellerQuestionnaire"><SubsellerQuestionnaire /></LayoutWrapper>} />
-    <Route path="/LeadQuestionnairePix" element={<LayoutWrapper currentPageName="LeadQuestionnairePix"><LeadQuestionnairePix /></LayoutWrapper>} />
+
+    {/* Leads V5 / PIX V4 */}
     <Route path="/QuestionarioLeadsPagsmile" element={<LayoutWrapper currentPageName="QuestionarioLeadsPagsmile"><QuestionarioLeadsPagsmile /></LayoutWrapper>} />
     <Route path="/LeadPixV4" element={<LayoutWrapper currentPageName="LeadPixV4"><LeadPixV4 /></LayoutWrapper>} />
     <Route path="/FechamentoLandingPage" element={<LayoutWrapper currentPageName="FechamentoLandingPage"><FechamentoLandingPage /></LayoutWrapper>} />

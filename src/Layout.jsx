@@ -62,14 +62,9 @@ export default function Layout({ children, currentPageName }) {
 
   const publicPages = [
     'IntroducerLandingPage','ContratoPublico','PropostaPadraoPublica','PropostaPixPublica',
-    'ComplianceOnboardingStart','CompliancePixOnly','ComplianceFullKYC',
-    'ComplianceLite','ComplianceSaaS','ComplianceGateway','ComplianceMerchant',
-    'ComplianceMarketplace','ComplianceEcommerce',
-    'DocumentUploadPix','DocumentUploadFull','DocumentUploadLite','DocumentUploadSaaS','DocumentUploadEcommerce',
-    'LivenessFacematchStep','LivenessSimulation','OnboardingCompletion',
-    'LeadQuestionnaire','LeadQuestionnairePix','LeadSuccess','PropostaPublica',
-    'QuestionarioSimplificadoPublico','ComplianceDinamico','ComplianceResume','SubsellerQuestionnaire',
-    'FechamentoLandingPage'
+    'OnboardingCompletion','PropostaPublica',
+    'ComplianceDinamico','ComplianceResume','SubsellerQuestionnaire',
+    'QuestionarioLeadsPagsmile','LeadPixV4','FechamentoLandingPage'
   ];
   const isPublicPage = publicPages.includes(currentPageName);
 
