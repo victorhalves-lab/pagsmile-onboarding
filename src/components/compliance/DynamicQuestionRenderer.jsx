@@ -200,8 +200,8 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
         return (
           <>
             <CurrencyInput
-              value={value || ''}
-              onValueChange={(val) => handleChange(val)}
+              value={value != null ? Math.round(value * 100) : ''}
+              onValueChange={(centavos) => handleChange(centavos / 100)}
               placeholder={placeholder || 'R$ 0,00'}
               className="h-11"
             />
