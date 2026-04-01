@@ -19,6 +19,13 @@ import { useComplianceSession } from '../../hooks/useComplianceSession';
 import useComplianceFlags from '../../hooks/useComplianceFlags';
 import AutoSaveIndicator from './AutoSaveIndicator';
 import { toast } from 'sonner';
+import {
+  trackOnboardingStepCompleted,
+  trackOnboardingDropoff,
+  trackOnboardingStarted,
+  trackOnboardingCompleted,
+  trackOnboardingValidationFailed,
+} from '@/lib/onboardingTracker';
 
 // Mapeamento de ícones por palavra-chave no título da pergunta
 const ICON_MAPPINGS = {
@@ -251,6 +258,42 @@ export default function DynamicQuestionnaire({
     flowType: flowType || templateModel,
     linkCode
   });
+
+  // Track step start time for duration calculation
+  const stepStartTimeRef = React.useRef(Date.now());
+  const onboardingStartTimeRef = React.useRef(Date.now());
+  const hasTrackedStart = React.useRef(false);
+
+  // Track onboarding_started once steps are loaded
+  useEffect(() => {
+    if (steps.length > 0 && !hasTrackedStart.current) {
+      hasTrackedStart.current = true;
+      trackOnboardingStarted({ totalSteps: steps.length, flowType, templateModel });
+    }
+  }, [steps.length, flowType, templateModel]);
+
+  // Reset step timer when step changes
+  useEffect(() => {
+    stepStartTimeRef.current = Date.now();
+  }, [currentStep]);
+
+  // Track drop-off on page unload
+  useEffect(() => {
+    const handleUnload = () => {
+      const timeOnStep = Math.round((Date.now() - stepStartTimeRef.current) / 1000);
+      const stepData = steps[currentStep - 1];
+      trackOnboardingDropoff({
+        stepNumber: currentStep,
+        totalSteps: steps.length,
+        stepTitle: stepData?.title,
+        flowType,
+        templateModel,
+        timeOnStepSec: timeOnStep,
+      });
+    };
+    window.addEventListener('beforeunload', handleUnload);
+    return () => window.removeEventListener('beforeunload', handleUnload);
+  }, [currentStep, steps, flowType, templateModel]);
 
   // Restore session data if available (from server)
   useEffect(() => {
@@ -539,9 +582,20 @@ export default function DynamicQuestionnaire({
       }
       const missing = validateCurrentStep();
       if (missing.length > 0) {
+        trackOnboardingValidationFailed({
+          stepNumber: currentStep, totalSteps: steps.length,
+          stepTitle: currentStepData?.title, flowType, templateModel,
+          missingFieldsCount: missing.length,
+        });
         toast.error(`Preencha todos os campos obrigatórios (${missing.length} campo${missing.length > 1 ? 's' : ''} pendente${missing.length > 1 ? 's' : ''}).`);
         return;
       }
+      const timeOnStep = Math.round((Date.now() - stepStartTimeRef.current) / 1000);
+      trackOnboardingStepCompleted({
+        stepNumber: currentStep, totalSteps: steps.length,
+        stepTitle: currentStepData?.title, flowType, templateModel,
+        timeOnStepSec: timeOnStep,
+      });
       trackPageComplete({ stepNumber: currentStep });
       const nextStep = currentStep + 1;
       setCurrentStep(nextStep);
@@ -572,9 +626,23 @@ export default function DynamicQuestionnaire({
     }
     const missing = validateCurrentStep();
     if (missing.length > 0) {
+      trackOnboardingValidationFailed({
+        stepNumber: currentStep, totalSteps: steps.length,
+        stepTitle: currentStepData?.title, flowType, templateModel,
+        missingFieldsCount: missing.length,
+      });
       toast.error(`Preencha todos os campos obrigatórios (${missing.length} campo${missing.length > 1 ? 's' : ''} pendente${missing.length > 1 ? 's' : ''}).`);
       return;
     }
+    // Track final step + full completion
+    const timeOnStep = Math.round((Date.now() - stepStartTimeRef.current) / 1000);
+    trackOnboardingStepCompleted({
+      stepNumber: currentStep, totalSteps: steps.length,
+      stepTitle: currentStepData?.title, flowType, templateModel,
+      timeOnStepSec: timeOnStep,
+    });
+    const totalTime = Math.round((Date.now() - onboardingStartTimeRef.current) / 1000);
+    trackOnboardingCompleted({ totalSteps: steps.length, flowType, templateModel, totalTimeSec: totalTime });
     // Salvar flags de compliance no formData para análise interna
     const finalFormData = { ...formData, __complianceFlags: complianceAlerts };
     if (storageKey) {
