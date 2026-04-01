@@ -67,12 +67,16 @@ export default function FechamentoLandingPage() {
     enabled: !!commercialAgentId,
   });
 
+  const isFromStandardProposal = !!fromStandardProposalToken;
+  const isFromLandingPage = !isFromStandardProposal;
+  const slug = searchParams.get('slug') || '';
+  const introducerReferralCode = searchParams.get('refCode') || '';
+
   const createLeadAndProposalMutation = useMutation({
     mutationFn: async (finalFormData) => {
       const tpvReais = (finalFormData.tpvMensal || 0) / 100;
 
-      // 1. Create StandardProposalLead (entidade separada)
-      const spLeadPayload = {
+      const commonFields = {
         cnpj: finalFormData.cnpj,
         razaoSocial: finalFormData.razaoSocial,
         nomeFantasia: finalFormData.nomeFantasia,
@@ -88,16 +92,43 @@ export default function FechamentoLandingPage() {
         sellersDescription: finalFormData.sellersDescription,
         fornecedores: finalFormData.fornecedores,
         segment: segmentName,
-        standardProposalToken: fromStandardProposalToken || '',
         businessSubCategory: ratesData?.rates?.businessSubCategory || 'MERCHAN',
         status: 'novo',
-        ...(introducerId && { introducerId }),
         ...(commercialAgent && { commercialAgentId: commercialAgent.id, commercialAgentName: commercialAgent.full_name }),
       };
 
-      const createdSpLead = await base44.entities.StandardProposalLead.create(spLeadPayload);
+      let createdOriginLead;
+
+      if (isFromStandardProposal) {
+        // === PROPOSTA PADRÃO ===
+        createdOriginLead = await base44.entities.StandardProposalLead.create({
+          ...commonFields,
+          standardProposalToken: fromStandardProposalToken,
+          ...(introducerId && { introducerId }),
+        });
+      } else {
+        // === LANDING PAGE ===
+        // Buscar dados do introducer
+        let introducerData = {};
+        if (introducerId) {
+          const intros = await base44.entities.Introducer.filter({ id: introducerId });
+          if (intros.length > 0) {
+            introducerData = {
+              introducerId: intros[0].id,
+              introducerName: intros[0].name,
+              introducerReferralCode: intros[0].referralCode,
+            };
+          }
+        }
+        createdOriginLead = await base44.entities.LandingPageLead.create({
+          ...commonFields,
+          slug,
+          ...introducerData,
+        });
+      }
 
       // 2. Create Lead (para pipeline comercial)
+      const origemLead = isFromStandardProposal ? 'proposta_padrao' : 'landing_page';
       const leadPayload = {
         fullName: finalFormData.razaoSocial,
         companyName: finalFormData.nomeFantasia,
@@ -109,7 +140,7 @@ export default function FechamentoLandingPage() {
         website: finalFormData.website,
         businessSubCategory: ratesData?.rates?.businessSubCategory || 'MERCHAN',
         status: 'questionario_preenchido',
-        origemLead: fromStandardProposalToken ? 'proposta_padrao' : 'landing_page',
+        origemLead,
         tpvMensal: tpvReais,
         questionnaireData: {
           tpvMensal: tpvReais,
@@ -142,7 +173,8 @@ export default function FechamentoLandingPage() {
 
       // 4. Link everything
       await base44.entities.Lead.update(createdLead.id, { currentProposalId: createdProposal.id });
-      await base44.entities.StandardProposalLead.update(createdSpLead.id, { leadId: createdLead.id, proposalId: createdProposal.id });
+      const updateEntity = isFromStandardProposal ? 'StandardProposalLead' : 'LandingPageLead';
+      await base44.entities[updateEntity].update(createdOriginLead.id, { leadId: createdLead.id, proposalId: createdProposal.id });
 
       return { lead: createdLead, proposal: createdProposal };
     },

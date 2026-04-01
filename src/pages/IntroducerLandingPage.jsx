@@ -186,7 +186,7 @@ export default function IntroducerLandingPage() {
                   className="mt-6"
                 >
                   <Link
-                    to={`/FechamentoLandingPage?ref=${introducer.referralCode}&segmento=${encodeURIComponent(activeSegment)}&introducerId=${introducer.id}`}
+                    to={`/FechamentoLandingPage?ref=${introducer.referralCode}&segmento=${encodeURIComponent(activeSegment)}&introducerId=${introducer.id}&slug=${uniqueLandingPageSlug}&refCode=${introducer.referralCode}`}
                     onClick={() => handleCtaContratar(activeSegment)}
                   >
                     <Button

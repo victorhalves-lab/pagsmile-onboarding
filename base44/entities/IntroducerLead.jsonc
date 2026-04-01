@@ -1,0 +1,101 @@
+{
+  "name": "IntroducerLead",
+  "type": "object",
+  "properties": {
+    "leadId": {
+      "type": "string",
+      "description": "ID do Lead principal"
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "fullName": {
+      "type": "string",
+      "description": "Raz\u00e3o Social ou Nome"
+    },
+    "cpfCnpj": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "companyName": {
+      "type": "string"
+    },
+    "contactName": {
+      "type": "string"
+    },
+    "contactRole": {
+      "type": "string"
+    },
+    "website": {
+      "type": "string"
+    },
+    "businessSubCategory": {
+      "type": "string",
+      "enum": [
+        "MERCHAN",
+        "GATEWAY",
+        "MARKETPLACE"
+      ]
+    },
+    "tpvMensal": {
+      "type": "number"
+    },
+    "ticketMedio": {
+      "type": "number"
+    },
+    "protocolo": {
+      "type": "string"
+    },
+    "introducerId": {
+      "type": "string",
+      "description": "ID do Introducer"
+    },
+    "introducerName": {
+      "type": "string",
+      "description": "Nome do Introducer"
+    },
+    "introducerReferralCode": {
+      "type": "string",
+      "description": "C\u00f3digo de refer\u00eancia"
+    },
+    "onboardingLinkCode": {
+      "type": "string"
+    },
+    "questionnaireData": {
+      "type": "object",
+      "description": "Dados completos do question\u00e1rio"
+    },
+    "leadQualifierScore": {
+      "type": "number"
+    },
+    "leadQualifierLevel": {
+      "type": "string",
+      "enum": [
+        "EXCELENTE",
+        "BOM",
+        "REGULAR",
+        "FRACO",
+        "INSUFICIENTE",
+        "PENDENTE"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "novo",
+        "em_contato",
+        "proposta_enviada",
+        "aceito",
+        "perdido"
+      ],
+      "default": "novo"
+    }
+  },
+  "required": [
+    "email",
+    "fullName"
+  ]
+}

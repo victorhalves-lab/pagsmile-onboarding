@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import {
   Search, ClipboardList, Download, Eye, Trash2, Loader2, X,
-  ShoppingCart, Network, Building2, ArrowUpDown, RefreshCw, Zap,
+  ShoppingCart, Network, Building2, ArrowUpDown, RefreshCw, Zap, Globe,
   Phone, FileText, AlertTriangle, Shield, TrendingUp, MessageSquareText, UserPlus, Briefcase, Bot, Rocket
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -35,6 +35,7 @@ import MeetingQuestionnaireTab from '../components/meeting-questionnaire/Meeting
 import AIQuestionnaireTab from '../components/meeting-questionnaire/AIQuestionnaireTab';
 import PixMeetingQuestionnaireTab from '../components/pix-questionnaire/PixMeetingQuestionnaireTab';
 import PropostaPadraoLeadsTab from '../components/leads/PropostaPadraoLeadsTab';
+import LandingPageLeadsTab from '../components/leads/LandingPageLeadsTab';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 const getScoreColor = (score) => {
@@ -123,6 +124,16 @@ export default function QuestionariosLeads() {
     queryFn: () => base44.entities.StandardProposalLead.list('-created_date', 500)
   });
 
+  const { data: lpLeads = [] } = useQuery({
+    queryKey: ['landing-page-leads'],
+    queryFn: () => base44.entities.LandingPageLead.list('-created_date', 500)
+  });
+
+  const { data: introducerLeads = [] } = useQuery({
+    queryKey: ['introducer-leads'],
+    queryFn: () => base44.entities.IntroducerLead.list('-created_date', 500)
+  });
+
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.Lead.delete(id),
     onSuccess: () => {
@@ -132,8 +143,21 @@ export default function QuestionariosLeads() {
     }
   });
 
+  // Filter leads for "completo" tab: only questionario_completo or untagged (no introducer, not proposta_padrao/landing_page)
+  const completoLeads = useMemo(() => {
+    return leads.filter(l => {
+      if (l.origemLead === 'proposta_padrao') return false;
+      if (l.origemLead === 'landing_page') return false;
+      if (l.origemLead === 'introducer') return false;
+      if (l.origemLead === 'simplificado') return false;
+      // Legacy: if has introducer ref code, it's an introducer lead
+      if (l.introducerReferralCode && l.origemLead !== 'questionario_completo') return false;
+      return true;
+    });
+  }, [leads]);
+
   const filtered = useMemo(() => {
-    let result = leads;
+    let result = completoLeads;
     if (search) {
       const s = search.toLowerCase();
       result = result.filter(l =>
@@ -160,31 +184,23 @@ export default function QuestionariosLeads() {
     else if (sortBy === 'tpv') result = [...result].sort((a, b) => (b.tpvMensal || 0) - (a.tpvMensal || 0));
     else result = [...result].sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
     return result;
-  }, [leads, search, statusFilter, periodoFilter, riskFilter, sortBy, introducerFilter]);
+  }, [completoLeads, search, statusFilter, periodoFilter, riskFilter, sortBy, introducerFilter]);
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const paginatedLeads = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
-  // Stats
-  const thisMonth = leads.filter(l => moment(l.created_date).isSame(moment(), 'month')).length;
-  const aguardando = leads.filter(l => ['questionario_preenchido', 'analisado_priscila'].includes(l.status)).length;
+  // Stats (only for completo leads)
+  const thisMonth = completoLeads.filter(l => moment(l.created_date).isSame(moment(), 'month')).length;
+  const aguardando = completoLeads.filter(l => ['questionario_preenchido', 'analisado_priscila'].includes(l.status)).length;
 
-  const hasFilters = search || statusFilter !== 'all' || periodoFilter !== 'all' || riskFilter !== 'all' || introducerFilter !== 'all';
+  const hasFilters = search || statusFilter !== 'all' || periodoFilter !== 'all' || riskFilter !== 'all';
 
-  // Get unique introducer codes from leads for filter dropdown
-  const introducerOptions = useMemo(() => {
-    const map = new Map();
-    leads.forEach(l => {
-      if (l.introducerReferralCode && l.introducerName) {
-        map.set(l.introducerReferralCode, l.introducerName);
-      }
-    });
-    return Array.from(map.entries()); // [[code, name], ...]
-  }, [leads]);
+  // Stats aprimorados (only completo)
+  const highScoreLeads = completoLeads.filter(l => (l.priscilaQualityScore || 0) >= 70).length;
+  const criticalLeads = completoLeads.filter(l => l.priscilaRiskLevel === 'CRITICO' || l.priscilaRiskLevel === 'ALTO').length;
 
-  // Stats aprimorados
-  const highScoreLeads = leads.filter(l => (l.priscilaQualityScore || 0) >= 70).length;
-  const criticalLeads = leads.filter(l => l.priscilaRiskLevel === 'CRITICO' || l.priscilaRiskLevel === 'ALTO').length;
+  // Total across all sources for header
+  const totalAllSources = completoLeads.length + spLeads.length + lpLeads.length + introducerLeads.length + questionariosSimplificados.length;
 
   const exportCSV = () => {
     const headers = ['Protocolo', 'CNPJ', 'Razão Social', 'Contato', 'Email', 'TPV', 'Score', 'Status', 'Origem', 'Data'];
@@ -226,6 +242,7 @@ export default function QuestionariosLeads() {
       contactRole: q.contato_cargo,
       status: 'em_contato_comercial',
       businessSubCategory: 'MERCHAN',
+      origemLead: 'simplificado',
       onboardingLinkCode: q.onboarding_link_code || '',
       lastInteractionDate: new Date().toISOString(),
     });
@@ -262,11 +279,13 @@ export default function QuestionariosLeads() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">{t('quest_leads.title')}</h1>
-              <div className="flex gap-3 text-xs text-white/60 mt-1.5">
-                <span className="bg-white/10 px-2 py-0.5 rounded-md">{t('quest_leads.this_month', { count: thisMonth })}</span>
-                <span className="bg-white/10 px-2 py-0.5 rounded-md">{t('quest_leads.waiting', { count: aguardando })}</span>
-                <span className="bg-[#2bc196]/20 text-[#5cf7cf] px-2 py-0.5 rounded-md font-medium">{t('quest_leads.high_score', { count: highScoreLeads })}</span>
-                {criticalLeads > 0 && <span className="bg-red-500/20 text-red-300 px-2 py-0.5 rounded-md font-medium">{t('quest_leads.high_risk', { count: criticalLeads })}</span>}
+              <div className="flex gap-3 text-xs text-white/60 mt-1.5 flex-wrap">
+                <span className="bg-white/10 px-2 py-0.5 rounded-md">Total: {totalAllSources}</span>
+                <span className="bg-white/10 px-2 py-0.5 rounded-md">Completo: {completoLeads.length}</span>
+                <span className="bg-[#2bc196]/20 text-[#5cf7cf] px-2 py-0.5 rounded-md">Prop. Padrão: {spLeads.length}</span>
+                <span className="bg-amber-500/20 text-amber-200 px-2 py-0.5 rounded-md">Landing: {lpLeads.length}</span>
+                <span className="bg-purple-500/20 text-purple-200 px-2 py-0.5 rounded-md">Introducer: {introducerLeads.length}</span>
+                <span className="bg-white/10 px-2 py-0.5 rounded-md">Simplificado: {questionariosSimplificados.length}</span>
               </div>
             </div>
           </div>
@@ -279,18 +298,26 @@ export default function QuestionariosLeads() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
+        <TabsList className="flex-wrap h-auto gap-1">
           <TabsTrigger value="completo" className="gap-1">
             <ClipboardList className="w-3 h-3" />
-            {t('quest_leads.tab_complete')} ({leads.length})
+            Completo ({completoLeads.length})
+          </TabsTrigger>
+          <TabsTrigger value="proposta_padrao" className="gap-1">
+            <Rocket className="w-3 h-3" />
+            Proposta Padrão ({spLeads.length})
+          </TabsTrigger>
+          <TabsTrigger value="landing_page" className="gap-1">
+            <Globe className="w-3 h-3" />
+            Landing Page ({lpLeads.length})
+          </TabsTrigger>
+          <TabsTrigger value="introducers" className="gap-1">
+            <UserPlus className="w-3 h-3" />
+            Introducer ({introducerLeads.length})
           </TabsTrigger>
           <TabsTrigger value="simplificado" className="gap-1">
             <Zap className="w-3 h-3" />
             {t('quest_leads.tab_simplified')} ({questionariosSimplificados.length})
-          </TabsTrigger>
-          <TabsTrigger value="introducers" className="gap-1">
-            <UserPlus className="w-3 h-3" />
-            {t('quest_leads.tab_introducers')} ({leads.filter(l => l.introducerReferralCode).length})
           </TabsTrigger>
           <TabsTrigger value="reuniao" className="gap-1">
             <Briefcase className="w-3 h-3" />
@@ -303,10 +330,6 @@ export default function QuestionariosLeads() {
           <TabsTrigger value="ai" className="gap-1">
             <Bot className="w-3 h-3" />
             {t('quest_leads.tab_ai')} ({internalQuestionnaires.filter(q => q.origemIA === true).length})
-          </TabsTrigger>
-          <TabsTrigger value="proposta_padrao" className="gap-1">
-            <Rocket className="w-3 h-3" />
-            Propostas Padrão ({spLeads.length})
           </TabsTrigger>
         </TabsList>
 
@@ -333,12 +356,12 @@ export default function QuestionariosLeads() {
           )}
         </TabsContent>
 
+        <TabsContent value="landing_page" className="mt-4">
+          <LandingPageLeadsTab />
+        </TabsContent>
+
         <TabsContent value="introducers" className="mt-4">
-          <IntroducerLeadsTab
-            leads={leads}
-            onDelete={setDeleteTarget}
-            onViewResponses={setResponsesModalLead}
-          />
+          <IntroducerLeadsTab />
         </TabsContent>
 
         <TabsContent value="reuniao" className="mt-4">
@@ -401,19 +424,8 @@ export default function QuestionariosLeads() {
             <SelectItem value="tpv">{t('quest_leads.highest_tpv')}</SelectItem>
           </SelectContent>
         </Select>
-        {introducerOptions.length > 0 && (
-          <Select value={introducerFilter} onValueChange={setIntroducerFilter}>
-            <SelectTrigger className="w-[180px] h-10"><SelectValue placeholder="Introducer" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t('quest_leads.all_introducers')}</SelectItem>
-              {introducerOptions.map(([code, name]) => (
-                <SelectItem key={code} value={code}>{name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
         {hasFilters && (
-          <Button variant="ghost" size="sm" onClick={() => { setSearch(''); setStatusFilter('all'); setPeriodoFilter('all'); setRiskFilter('all'); setIntroducerFilter('all'); }}>
+          <Button variant="ghost" size="sm" onClick={() => { setSearch(''); setStatusFilter('all'); setPeriodoFilter('all'); setRiskFilter('all'); }}>
             <X className="w-4 h-4 mr-1" /> {t('common.clear')}
           </Button>
         )}
@@ -433,7 +445,6 @@ export default function QuestionariosLeads() {
                 <TableHead>{t('quest_leads.lead_ia')}</TableHead>
                 <TableHead>{t('quest_leads.risk')}</TableHead>
                 <TableHead>{t('quest_leads.monthly_tpv')}</TableHead>
-                <TableHead>{t('quest_leads.introducer')}</TableHead>
                 <TableHead>{t('common.date')}</TableHead>
                 <TableHead className="text-right">{t('common.actions')}</TableHead>
               </TableRow>
@@ -441,7 +452,7 @@ export default function QuestionariosLeads() {
             <TableBody>
               {paginatedLeads.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={11} className="text-center py-12">
+                  <TableCell colSpan={10} className="text-center py-12">
                     <ClipboardList className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/30 mb-3" />
                     <p className="text-[var(--pagsmile-blue)]/60">
                       {hasFilters ? t('quest_leads.no_results_filter') : t('quest_leads.no_questionnaires')}
@@ -490,11 +501,6 @@ export default function QuestionariosLeads() {
                       <span className="text-sm font-mono">
                         {lead.tpvMensal ? `R$ ${lead.tpvMensal.toLocaleString('pt-BR')}` : '-'}
                       </span>
-                    </TableCell>
-                    <TableCell>
-                      {lead.introducerName ? (
-                        <Badge className="bg-purple-100 text-purple-700 text-[10px] border-0">{lead.introducerName}</Badge>
-                      ) : <span className="text-[10px] text-slate-300">—</span>}
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col gap-1">

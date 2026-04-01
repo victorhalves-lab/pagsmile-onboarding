@@ -169,7 +169,10 @@ export default function QuestionarioLeadsPagsmile() {
       }
     }
 
-    await base44.entities.Lead.create({
+    const hasIntroducer = !!introducerData.introducerId;
+    const origemLead = hasIntroducer ? 'introducer' : 'questionario_completo';
+
+    const leadCommonData = {
       email: form.email,
       fullName: form.razaoSocial || form.nomeFantasia || form.contactName,
       cpfCnpj: form.cnpj?.replace(/\D/g, ''),
@@ -185,7 +188,7 @@ export default function QuestionarioLeadsPagsmile() {
       transacoesMes: form.transacoesMes ? Number(form.transacoesMes) : undefined,
       expectativaCrescimento: form.crescimento,
       protocolo: proto,
-      origemLead: linkCode ? `link_pagsmile_${linkCode}` : 'questionario_pagsmile_publico',
+      origemLead,
       onboardingLinkCode: linkCode || undefined,
       leadQualifierScore: leadScore,
       leadQualifierLevel: getScoreLabel(leadScore).label === 'Muito Quente' ? 'EXCELENTE' : getScoreLabel(leadScore).label === 'Quente' ? 'BOM' : getScoreLabel(leadScore).label === 'Morno' ? 'REGULAR' : 'FRACO',
@@ -213,7 +216,34 @@ export default function QuestionarioLeadsPagsmile() {
         taxa3ds: form.taxa3ds ? Number(form.taxa3ds) : undefined,
         pix: form.taxaPix ? { tipo: 'percentual', valor: Number(form.taxaPix) } : undefined,
       },
-    });
+    };
+
+    const createdLead = await base44.entities.Lead.create(leadCommonData);
+
+    // Se tiver introducer, salva também na entidade IntroducerLead
+    if (hasIntroducer) {
+      await base44.entities.IntroducerLead.create({
+        leadId: createdLead.id,
+        email: createdLead.email,
+        fullName: createdLead.fullName,
+        cpfCnpj: createdLead.cpfCnpj,
+        phone: createdLead.phone,
+        companyName: createdLead.companyName,
+        contactName: createdLead.contactName,
+        contactRole: createdLead.contactRole,
+        website: createdLead.website,
+        businessSubCategory: createdLead.businessSubCategory,
+        tpvMensal: createdLead.tpvMensal,
+        ticketMedio: createdLead.ticketMedio,
+        protocolo: proto,
+        ...introducerData,
+        onboardingLinkCode: linkCode || '',
+        questionnaireData: leadCommonData.questionnaireData,
+        leadQualifierScore: leadScore,
+        leadQualifierLevel: createdLead.leadQualifierLevel,
+        status: 'novo',
+      });
+    }
 
     if (onboardingLink) {
       await base44.entities.OnboardingLink.update(onboardingLink.id, {

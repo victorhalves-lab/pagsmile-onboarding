@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { createPageUrl } from '../../utils';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -7,25 +7,19 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue
-} from '@/components/ui/select';
-import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import {
-  Search, Eye, Trash2, Loader2, X,
-  ShoppingCart, Network, Building2, Phone, FileText,
-  MessageSquareText, UserPlus
-} from 'lucide-react';
+import { Search, Eye, Trash2, Loader2, X, Globe, MessageSquareText, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
-import LeadQualifierBadge from './LeadQualifierBadge';
-
-const SUB_CAT = { MERCHAN: { label: 'Merchan', icon: ShoppingCart }, GATEWAY: { label: 'Gateway', icon: Network }, MARKETPLACE: { label: 'Marketplace', icon: Building2 } };
+import StandardProposalResponsesModal from './StandardProposalResponsesModal';
 
 const STATUS_CONFIG = {
   novo: { label: 'Novo', color: 'bg-blue-100 text-blue-700' },
@@ -35,67 +29,52 @@ const STATUS_CONFIG = {
   perdido: { label: 'Perdido', color: 'bg-slate-100 text-slate-600' },
 };
 
-export default function IntroducerLeadsTab() {
-  const navigate = useNavigate();
+export default function LandingPageLeadsTab() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
-  const [introducerFilter, setIntroducerFilter] = useState('all');
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [responsesRecord, setResponsesRecord] = useState(null);
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
 
-  const { data: introducerLeads = [], isLoading } = useQuery({
-    queryKey: ['introducer-leads'],
-    queryFn: () => base44.entities.IntroducerLead.list('-created_date', 500),
+  const { data: lpLeads = [], isLoading } = useQuery({
+    queryKey: ['landing-page-leads'],
+    queryFn: () => base44.entities.LandingPageLead.list('-created_date', 500),
   });
 
-  const introducerOptions = useMemo(() => {
-    const map = new Map();
-    introducerLeads.forEach(l => {
-      if (l.introducerReferralCode && l.introducerName) {
-        map.set(l.introducerReferralCode, l.introducerName);
-      }
-    });
-    return Array.from(map.entries());
-  }, [introducerLeads]);
-
   const filtered = useMemo(() => {
-    let result = introducerLeads;
+    let result = lpLeads;
     if (search) {
       const s = search.toLowerCase();
       result = result.filter(l =>
-        (l.fullName || '').toLowerCase().includes(s) ||
-        (l.cpfCnpj || '').includes(s) ||
-        (l.contactName || '').toLowerCase().includes(s) ||
-        (l.email || '').toLowerCase().includes(s) ||
-        (l.introducerName || '').toLowerCase().includes(s)
+        (l.razaoSocial || '').toLowerCase().includes(s) ||
+        (l.cnpj || '').includes(s) ||
+        (l.introducerName || '').toLowerCase().includes(s) ||
+        (l.email || '').toLowerCase().includes(s)
       );
     }
-    if (introducerFilter !== 'all') result = result.filter(l => l.introducerReferralCode === introducerFilter);
-    return result.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
-  }, [introducerLeads, search, introducerFilter]);
+    return result;
+  }, [lpLeads, search]);
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const paginated = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.IntroducerLead.delete(id),
+    mutationFn: (id) => base44.entities.LandingPageLead.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['introducer-leads'] });
+      queryClient.invalidateQueries({ queryKey: ['landing-page-leads'] });
       toast.success('Excluído com sucesso');
       setDeleteTarget(null);
     }
   });
 
-  React.useEffect(() => { setPage(1); }, [search, introducerFilter]);
-
   if (isLoading) return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" /></div>;
 
-  if (introducerLeads.length === 0) {
+  if (lpLeads.length === 0) {
     return (
       <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
-        <UserPlus className="w-12 h-12 mx-auto text-[#002443]/20 mb-3" />
-        <p className="text-[#002443]/50 font-medium">Nenhum lead via Introducer ainda</p>
+        <Globe className="w-12 h-12 mx-auto text-[#002443]/20 mb-3" />
+        <p className="text-[#002443]/50 font-medium">Nenhum lead via Landing Page ainda</p>
       </div>
     );
   }
@@ -103,29 +82,15 @@ export default function IntroducerLeadsTab() {
   return (
     <div className="space-y-4">
       <div className="flex gap-3 flex-wrap">
-        <Badge className="bg-purple-50 text-purple-700 border-purple-200 px-3 py-1">{introducerLeads.length} leads de introducers</Badge>
-        <Badge className="bg-purple-50 text-purple-600 border-purple-200 px-3 py-1">{introducerOptions.length} introducers</Badge>
+        <Badge className="bg-amber-50 text-amber-700 border-amber-200 px-3 py-1">{lpLeads.length} leads via landing</Badge>
       </div>
 
       <div className="flex flex-wrap gap-3 items-center">
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/40" />
-          <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar por CNPJ, empresa, introducer..." className="pl-10 h-10" />
+          <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar por empresa, CNPJ, introducer..." className="pl-10 h-10" />
         </div>
-        <Select value={introducerFilter} onValueChange={setIntroducerFilter}>
-          <SelectTrigger className="w-[180px] h-10"><SelectValue placeholder="Introducer" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos os Introducers</SelectItem>
-            {introducerOptions.map(([code, name]) => (
-              <SelectItem key={code} value={code}>{name}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {(search || introducerFilter !== 'all') && (
-          <Button variant="ghost" size="sm" onClick={() => { setSearch(''); setIntroducerFilter('all'); }}>
-            <X className="w-4 h-4 mr-1" /> Limpar
-          </Button>
-        )}
+        {search && <Button variant="ghost" size="sm" onClick={() => setSearch('')}><X className="w-4 h-4 mr-1" /> Limpar</Button>}
       </div>
 
       <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
@@ -133,12 +98,11 @@ export default function IntroducerLeadsTab() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Protocolo</TableHead>
                 <TableHead>Empresa</TableHead>
-                <TableHead>Introducer</TableHead>
-                <TableHead>Tipo</TableHead>
+                <TableHead>Parceiro (Introducer)</TableHead>
+                <TableHead>Segmento</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Lead IA</TableHead>
+                <TableHead>Contato</TableHead>
                 <TableHead>TPV Mensal</TableHead>
                 <TableHead>Data</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
@@ -146,39 +110,37 @@ export default function IntroducerLeadsTab() {
             </TableHeader>
             <TableBody>
               {paginated.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={9} className="text-center py-12">
-                    <UserPlus className="w-12 h-12 mx-auto text-[#002443]/20 mb-3" />
-                    <p className="text-[#002443]/40">Nenhum resultado</p>
-                  </TableCell>
-                </TableRow>
+                <TableRow><TableCell colSpan={8} className="text-center py-12 text-[#002443]/40">Nenhum resultado</TableCell></TableRow>
               ) : paginated.map(record => {
-                const sc = SUB_CAT[record.businessSubCategory];
-                const ScIcon = sc?.icon || ShoppingCart;
                 const sCfg = STATUS_CONFIG[record.status] || STATUS_CONFIG.novo;
                 return (
                   <TableRow key={record.id} className="hover:bg-[#f4f4f4]">
-                    <TableCell><span className="font-mono text-xs text-[#2bc196]">{record.protocolo || '-'}</span></TableCell>
                     <TableCell>
-                      <p className="font-medium text-sm">{record.fullName || record.email}</p>
-                      <p className="text-[10px] text-[#002443]/50">{record.cpfCnpj}</p>
+                      <p className="font-medium text-sm">{record.razaoSocial || record.email}</p>
+                      <p className="text-[10px] text-[#002443]/50">{record.cnpj}</p>
                     </TableCell>
                     <TableCell>
-                      <Badge className="bg-purple-100 text-purple-700 text-xs border-0 gap-1">
-                        <UserPlus className="w-3 h-3" />
-                        {record.introducerName}
-                      </Badge>
-                      <p className="text-[10px] text-[#002443]/40 mt-0.5">{record.introducerReferralCode}</p>
+                      {record.introducerName ? (
+                        <Badge className="bg-amber-100 text-amber-700 border-0 text-xs gap-1">
+                          <Globe className="w-3 h-3" />
+                          {record.introducerName}
+                        </Badge>
+                      ) : <span className="text-[10px] text-slate-300">—</span>}
+                      {record.slug && <p className="text-[10px] text-[#002443]/40 mt-0.5">/parceiro/{record.slug}</p>}
                     </TableCell>
-                    <TableCell>
-                      {sc && <div className="flex items-center gap-1"><ScIcon className="w-3 h-3" /><span className="text-xs">{sc.label}</span></div>}
-                    </TableCell>
+                    <TableCell><Badge className="bg-[#002443]/5 text-[#002443] text-xs border-0">{record.segment || '-'}</Badge></TableCell>
                     <TableCell><Badge className={`text-xs ${sCfg.color}`}>{sCfg.label}</Badge></TableCell>
-                    <TableCell><LeadQualifierBadge lead={record} size="xs" /></TableCell>
+                    <TableCell>
+                      <p className="text-xs">{record.contactName || '-'}</p>
+                      <p className="text-[10px] text-[#002443]/50">{record.email}</p>
+                    </TableCell>
                     <TableCell><span className="text-sm font-mono">{record.tpvMensal ? `R$ ${record.tpvMensal.toLocaleString('pt-BR')}` : '-'}</span></TableCell>
                     <TableCell><span className="text-xs text-[#002443]/60">{record.created_date ? moment(record.created_date).format('DD/MM/YY HH:mm') : '-'}</span></TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
+                        <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => setResponsesRecord(record)}>
+                          <MessageSquareText className="w-3 h-3 mr-1" /> Respostas
+                        </Button>
                         {record.leadId && (
                           <Link to={createPageUrl('LeadDetails') + `?id=${record.leadId}`}>
                             <Button variant="ghost" size="sm" className="h-7"><Eye className="w-4 h-4" /></Button>
@@ -212,7 +174,7 @@ export default function IntroducerLeadsTab() {
       <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader><AlertDialogTitle>Excluir registro?</AlertDialogTitle>
-            <AlertDialogDescription>{deleteTarget && <><strong>{deleteTarget.cpfCnpj}</strong> - {deleteTarget.fullName}</>}</AlertDialogDescription>
+            <AlertDialogDescription>{deleteTarget && <><strong>{deleteTarget.cnpj}</strong> - {deleteTarget.razaoSocial}</>}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
@@ -222,6 +184,8 @@ export default function IntroducerLeadsTab() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <StandardProposalResponsesModal open={!!responsesRecord} onClose={() => setResponsesRecord(null)} record={responsesRecord} />
     </div>
   );
 }

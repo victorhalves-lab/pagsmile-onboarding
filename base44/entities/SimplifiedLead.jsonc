@@ -1,0 +1,51 @@
+{
+  "name": "SimplifiedLead",
+  "type": "object",
+  "properties": {
+    "leadId": {
+      "type": "string",
+      "description": "ID do Lead (se vinculado)"
+    },
+    "protocolo": {
+      "type": "string"
+    },
+    "nome_empresa": {
+      "type": "string"
+    },
+    "cnpj": {
+      "type": "string"
+    },
+    "contato_nome": {
+      "type": "string"
+    },
+    "contato_email": {
+      "type": "string",
+      "format": "email"
+    },
+    "contato_telefone": {
+      "type": "string"
+    },
+    "contato_cargo": {
+      "type": "string"
+    },
+    "onboarding_link_code": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "novo",
+        "vinculado",
+        "em_contato",
+        "proposta_enviada",
+        "aceito",
+        "perdido"
+      ],
+      "default": "novo"
+    }
+  },
+  "required": [
+    "contato_email",
+    "nome_empresa"
+  ]
+}
