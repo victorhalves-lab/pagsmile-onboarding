@@ -69,19 +69,35 @@ export default function FechamentoLandingPage() {
 
   const createLeadAndProposalMutation = useMutation({
     mutationFn: async (finalFormData) => {
-      // TPV is stored in centavos in the form, convert to reais for the Lead entity
       const tpvReais = (finalFormData.tpvMensal || 0) / 100;
 
-      const internalQuestionnaire = {
+      // 1. Create StandardProposalLead (entidade separada)
+      const spLeadPayload = {
+        cnpj: finalFormData.cnpj,
+        razaoSocial: finalFormData.razaoSocial,
+        nomeFantasia: finalFormData.nomeFantasia,
+        website: finalFormData.website,
+        email: finalFormData.email,
+        phone: finalFormData.phone,
+        contactName: finalFormData.contactName,
+        contactRole: finalFormData.contactRole,
+        endereco: finalFormData.endereco,
         tpvMensal: tpvReais,
         distribuicaoTpv: finalFormData.distribuicaoTpv,
         modeloNegocio: finalFormData.modeloNegocio,
         sellersDescription: finalFormData.sellersDescription,
         fornecedores: finalFormData.fornecedores,
-        segmentoLandingPage: segmentName,
-        contactRole: finalFormData.contactRole,
+        segment: segmentName,
+        standardProposalToken: fromStandardProposalToken || '',
+        businessSubCategory: ratesData?.rates?.businessSubCategory || 'MERCHAN',
+        status: 'novo',
+        ...(introducerId && { introducerId }),
+        ...(commercialAgent && { commercialAgentId: commercialAgent.id, commercialAgentName: commercialAgent.full_name }),
       };
 
+      const createdSpLead = await base44.entities.StandardProposalLead.create(spLeadPayload);
+
+      // 2. Create Lead (para pipeline comercial)
       const leadPayload = {
         fullName: finalFormData.razaoSocial,
         companyName: finalFormData.nomeFantasia,
@@ -94,14 +110,23 @@ export default function FechamentoLandingPage() {
         businessSubCategory: ratesData?.rates?.businessSubCategory || 'MERCHAN',
         status: 'questionario_preenchido',
         origemLead: fromStandardProposalToken ? 'proposta_padrao' : 'landing_page',
-        questionnaireData: internalQuestionnaire,
         tpvMensal: tpvReais,
+        questionnaireData: {
+          tpvMensal: tpvReais,
+          distribuicaoTpv: finalFormData.distribuicaoTpv,
+          modeloNegocio: finalFormData.modeloNegocio,
+          sellersDescription: finalFormData.sellersDescription,
+          fornecedores: finalFormData.fornecedores,
+          segmentoLandingPage: segmentName,
+          contactRole: finalFormData.contactRole,
+        },
         ...(introducerId && { introducerId }),
         ...(commercialAgent && { commercialAgentId: commercialAgent.id, commercialAgentName: commercialAgent.full_name }),
       };
 
       const createdLead = await base44.entities.Lead.create(leadPayload);
 
+      // 3. Create Proposal
       const proposalPayload = {
         leadId: createdLead.id,
         status: 'rascunho',
@@ -111,11 +136,13 @@ export default function FechamentoLandingPage() {
         chosenPartnerId: ratesData.partnerId,
         businessSubCategory: ratesData?.rates?.businessSubCategory || 'MERCHAN',
       };
-      
+
       const proposalEntity = ratesData.rates.pix ? 'PixProposal' : 'Proposal';
       const createdProposal = await base44.entities[proposalEntity].create(proposalPayload);
 
+      // 4. Link everything
       await base44.entities.Lead.update(createdLead.id, { currentProposalId: createdProposal.id });
+      await base44.entities.StandardProposalLead.update(createdSpLead.id, { leadId: createdLead.id, proposalId: createdProposal.id });
 
       return { lead: createdLead, proposal: createdProposal };
     },

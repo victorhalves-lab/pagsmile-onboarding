@@ -118,6 +118,11 @@ export default function QuestionariosLeads() {
     queryFn: () => base44.entities.InternalCommercialQuestionnaire.list('-created_date', 500)
   });
 
+  const { data: spLeads = [] } = useQuery({
+    queryKey: ['standard-proposal-leads'],
+    queryFn: () => base44.entities.StandardProposalLead.list('-created_date', 500)
+  });
+
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.Lead.delete(id),
     onSuccess: () => {
@@ -301,7 +306,7 @@ export default function QuestionariosLeads() {
           </TabsTrigger>
           <TabsTrigger value="proposta_padrao" className="gap-1">
             <Rocket className="w-3 h-3" />
-            Propostas Padrão ({leads.filter(l => l.leadQuestionnaireTemplateId === '69caaf2cd9ea49029f4de352').length})
+            Propostas Padrão ({spLeads.length})
           </TabsTrigger>
         </TabsList>
 
@@ -349,7 +354,7 @@ export default function QuestionariosLeads() {
         </TabsContent>
 
         <TabsContent value="proposta_padrao" className="mt-4">
-          <PropostaPadraoLeadsTab leads={leads} />
+          <PropostaPadraoLeadsTab />
         </TabsContent>
 
         <TabsContent value="completo" className="mt-4 space-y-6">

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { createPageUrl } from '../../utils';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -22,10 +22,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
-import LeadSLAIndicator from './LeadSLAIndicator';
-import PropostaPadraoResponsesModal from './PropostaPadraoResponsesModal';
-
-const FECHAMENTO_TEMPLATE_ID = '69caaf2cd9ea49029f4de352';
+import StandardProposalResponsesModal from './StandardProposalResponsesModal';
 
 const SUB_CAT = {
   MERCHAN: { label: 'Merchan', icon: ShoppingCart },
@@ -34,61 +31,61 @@ const SUB_CAT = {
 };
 
 const STATUS_CONFIG = {
-  proposta_aceita: { label: 'Proposta Aceita', color: 'bg-green-100 text-green-700', icon: '🟢' },
-  questionario_preenchido: { label: 'Novo', color: 'bg-blue-100 text-blue-700', icon: '🔵' },
-  em_contato_comercial: { label: 'Em Contato', color: 'bg-amber-100 text-amber-700', icon: '🟡' },
+  novo: { label: 'Novo', color: 'bg-blue-100 text-blue-700', icon: '🔵' },
+  em_contato: { label: 'Em Contato', color: 'bg-amber-100 text-amber-700', icon: '🟡' },
   proposta_enviada: { label: 'Proposta Enviada', color: 'bg-indigo-100 text-indigo-700', icon: '🟣' },
-  kyc_iniciado: { label: 'KYC Iniciado', color: 'bg-purple-100 text-purple-700', icon: '🟣' },
-  ativado: { label: 'Ativado', color: 'bg-emerald-100 text-emerald-700', icon: '✅' },
+  aceito: { label: 'Aceito', color: 'bg-green-100 text-green-700', icon: '🟢' },
   perdido: { label: 'Perdido', color: 'bg-slate-100 text-slate-600', icon: '⚫' },
 };
 
-export default function PropostaPadraoLeadsTab({ leads = [], onDelete, onViewResponses }) {
-  const navigate = useNavigate();
+export default function PropostaPadraoLeadsTab() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [deleteTarget, setDeleteTarget] = useState(null);
-  const [responsesModalLead, setResponsesModalLead] = useState(null);
+  const [responsesRecord, setResponsesRecord] = useState(null);
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
 
-  // Filter only leads from Proposta Padrão fechamento
-  const propostaPadraoLeads = useMemo(() => {
-    return leads.filter(l => l.leadQuestionnaireTemplateId === FECHAMENTO_TEMPLATE_ID);
-  }, [leads]);
+  const { data: spLeads = [], isLoading } = useQuery({
+    queryKey: ['standard-proposal-leads'],
+    queryFn: () => base44.entities.StandardProposalLead.list('-created_date', 500),
+  });
 
   const filtered = useMemo(() => {
-    let result = propostaPadraoLeads;
+    let result = spLeads;
     if (search) {
       const s = search.toLowerCase();
       result = result.filter(l =>
-        (l.fullName || '').toLowerCase().includes(s) ||
-        (l.cpfCnpj || '').includes(s) ||
+        (l.razaoSocial || '').toLowerCase().includes(s) ||
+        (l.cnpj || '').includes(s) ||
         (l.contactName || '').toLowerCase().includes(s) ||
-        (l.email || '').toLowerCase().includes(s) ||
-        (l.protocolo || '').toLowerCase().includes(s)
+        (l.email || '').toLowerCase().includes(s)
       );
     }
     if (statusFilter !== 'all') result = result.filter(l => l.status === statusFilter);
     return result.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
-  }, [propostaPadraoLeads, search, statusFilter]);
+  }, [spLeads, search, statusFilter]);
 
   const totalPages = Math.ceil(filtered.length / itemsPerPage);
   const paginated = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.Lead.delete(id),
+    mutationFn: (id) => base44.entities.StandardProposalLead.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['leads-questionarios'] });
-      toast.success('Lead excluído com sucesso');
+      queryClient.invalidateQueries({ queryKey: ['standard-proposal-leads'] });
+      toast.success('Registro excluído com sucesso');
       setDeleteTarget(null);
     }
   });
 
   React.useEffect(() => { setPage(1); }, [search, statusFilter]);
 
-  if (propostaPadraoLeads.length === 0) {
+  if (isLoading) {
+    return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[#2bc196]" /></div>;
+  }
+
+  if (spLeads.length === 0) {
     return (
       <div className="bg-white rounded-xl border border-slate-200 p-12 text-center">
         <Rocket className="w-12 h-12 mx-auto text-[#002443]/20 mb-3" />
@@ -103,10 +100,10 @@ export default function PropostaPadraoLeadsTab({ leads = [], onDelete, onViewRes
       {/* Stats */}
       <div className="flex gap-3 flex-wrap">
         <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-[#2bc196]/20 px-3 py-1">
-          {propostaPadraoLeads.length} fechamentos
+          {spLeads.length} fechamentos
         </Badge>
         <Badge className="bg-green-50 text-green-700 border-green-200 px-3 py-1">
-          {propostaPadraoLeads.filter(l => l.status === 'proposta_aceita').length} aceitos
+          {spLeads.filter(l => l.status === 'aceito').length} aceitos
         </Badge>
       </div>
 
@@ -143,7 +140,7 @@ export default function PropostaPadraoLeadsTab({ leads = [], onDelete, onViewRes
                 <TableHead>Tipo</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Contato</TableHead>
-                <TableHead>Introducer</TableHead>
+                <TableHead>TPV Mensal</TableHead>
                 <TableHead>Data</TableHead>
                 <TableHead className="text-right">Ações</TableHead>
               </TableRow>
@@ -155,21 +152,20 @@ export default function PropostaPadraoLeadsTab({ leads = [], onDelete, onViewRes
                     <p className="text-[#002443]/40">Nenhum resultado encontrado</p>
                   </TableCell>
                 </TableRow>
-              ) : paginated.map(lead => {
-                const sCfg = STATUS_CONFIG[lead.status] || { label: lead.status, color: 'bg-slate-100' };
-                const sc = SUB_CAT[lead.businessSubCategory];
+              ) : paginated.map(record => {
+                const sCfg = STATUS_CONFIG[record.status] || { label: record.status || 'Novo', color: 'bg-blue-100 text-blue-700' };
+                const sc = SUB_CAT[record.businessSubCategory];
                 const ScIcon = sc?.icon || ShoppingCart;
-                const segmentFromData = lead.questionnaireData?.segment || '';
 
                 return (
-                  <TableRow key={lead.id} className="hover:bg-[#f4f4f4] transition-colors">
+                  <TableRow key={record.id} className="hover:bg-[#f4f4f4] transition-colors">
                     <TableCell>
-                      <p className="font-medium text-sm">{lead.fullName || lead.email}</p>
-                      <p className="text-[10px] text-[#002443]/50">{lead.cpfCnpj || ''}</p>
+                      <p className="font-medium text-sm">{record.razaoSocial || record.email}</p>
+                      <p className="text-[10px] text-[#002443]/50">{record.cnpj || ''}</p>
                     </TableCell>
                     <TableCell>
                       <Badge className="bg-[#002443]/5 text-[#002443] text-xs border-0">
-                        {segmentFromData}
+                        {record.segment || '-'}
                       </Badge>
                     </TableCell>
                     <TableCell>
@@ -179,36 +175,35 @@ export default function PropostaPadraoLeadsTab({ leads = [], onDelete, onViewRes
                       <Badge className={`text-xs ${sCfg.color}`}>{sCfg.label}</Badge>
                     </TableCell>
                     <TableCell>
-                      <p className="text-xs">{lead.contactName || '-'}</p>
-                      <p className="text-[10px] text-[#002443]/50">{lead.email}</p>
+                      <p className="text-xs">{record.contactName || '-'}</p>
+                      <p className="text-[10px] text-[#002443]/50">{record.email}</p>
                     </TableCell>
                     <TableCell>
-                      {lead.introducerName ? (
-                        <Badge className="bg-purple-100 text-purple-700 text-[10px] border-0">{lead.introducerName}</Badge>
-                      ) : <span className="text-[10px] text-slate-300">—</span>}
+                      <span className="text-sm font-mono">
+                        {record.tpvMensal ? `R$ ${record.tpvMensal.toLocaleString('pt-BR')}` : '-'}
+                      </span>
                     </TableCell>
                     <TableCell>
-                      <div className="flex flex-col gap-1">
-                        <span className="text-xs text-[#002443]/60">
-                          {lead.created_date ? moment(lead.created_date).format('DD/MM/YY HH:mm') : '-'}
-                        </span>
-                        <LeadSLAIndicator lead={lead} />
-                      </div>
+                      <span className="text-xs text-[#002443]/60">
+                        {record.created_date ? moment(record.created_date).format('DD/MM/YY HH:mm') : '-'}
+                      </span>
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
-                        {lead.questionnaireData && (
-                          <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => setResponsesModalLead(lead)}>
-                            <MessageSquareText className="w-3 h-3 mr-1" /> Respostas
-                          </Button>
+                        <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => setResponsesRecord(record)}>
+                          <MessageSquareText className="w-3 h-3 mr-1" /> Respostas
+                        </Button>
+                        {record.leadId && (
+                          <Link to={createPageUrl('LeadDetails') + `?id=${record.leadId}`}>
+                            <Button variant="ghost" size="sm" className="h-7"><Eye className="w-4 h-4" /></Button>
+                          </Link>
                         )}
-                        <Link to={createPageUrl('LeadDetails') + `?id=${lead.id}`}>
-                          <Button variant="ghost" size="sm" className="h-7"><Eye className="w-4 h-4" /></Button>
-                        </Link>
-                        <Link to={createPageUrl('CriarProposta') + `?lead=${lead.id}`}>
-                          <Button variant="outline" size="sm" className="h-7 text-xs"><FileText className="w-3 h-3 mr-1" /> Proposta</Button>
-                        </Link>
-                        <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(lead)} className="text-red-500 hover:text-red-700 h-7">
+                        {record.leadId && (
+                          <Link to={createPageUrl('CriarProposta') + `?lead=${record.leadId}`}>
+                            <Button variant="outline" size="sm" className="h-7 text-xs"><FileText className="w-3 h-3 mr-1" /> Proposta</Button>
+                          </Link>
+                        )}
+                        <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(record)} className="text-red-500 hover:text-red-700 h-7">
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
@@ -232,10 +227,10 @@ export default function PropostaPadraoLeadsTab({ leads = [], onDelete, onViewRes
       <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Excluir lead?</AlertDialogTitle>
+            <AlertDialogTitle>Excluir registro?</AlertDialogTitle>
             <AlertDialogDescription>
               Esta ação não pode ser desfeita.
-              {deleteTarget && <><br /><strong>{deleteTarget.cpfCnpj}</strong> - {deleteTarget.fullName}</>}
+              {deleteTarget && <><br /><strong>{deleteTarget.cnpj}</strong> - {deleteTarget.razaoSocial}</>}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -247,11 +242,11 @@ export default function PropostaPadraoLeadsTab({ leads = [], onDelete, onViewRes
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Responses Modal — dedicated for Proposta Padrão */}
-      <PropostaPadraoResponsesModal
-        open={!!responsesModalLead}
-        onClose={() => setResponsesModalLead(null)}
-        lead={responsesModalLead}
+      {/* Responses Modal — dedicado para Proposta Padrão */}
+      <StandardProposalResponsesModal
+        open={!!responsesRecord}
+        onClose={() => setResponsesRecord(null)}
+        record={responsesRecord}
       />
     </div>
   );
