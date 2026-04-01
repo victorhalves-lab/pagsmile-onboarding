@@ -89,6 +89,24 @@ export default function QuestionarioLeadsPagsmile() {
       if (!form.funcionarios) { errs.funcionarios = true; errorMessages.push('Número de funcionários é obrigatório'); }
     }
     if (step === 6 && !form.jaProcessa) { errs.jaProcessa = true; errorMessages.push('Informe se já processa pagamentos'); }
+    if (step === 7 && form.jaProcessa === 'Sim, já processo') {
+      const dist = form.distribuicao || {};
+      const temPix = (dist.pix || 0) > 0;
+      const temBoleto = (dist.boleto || 0) > 0;
+      const temCartao = (dist.credito || 0) > 0 || (dist.debito || 0) > 0;
+      if (temCartao) {
+        if (!form.mdrAvista) { errs.mdrAvista = true; errorMessages.push('MDR Crédito à Vista é obrigatório'); }
+        if (!form.mdr2a6x) { errs.mdr2a6x = true; errorMessages.push('MDR Crédito 2-6x é obrigatório'); }
+        if (!form.mdr7a12x) { errs.mdr7a12x = true; errorMessages.push('MDR Crédito 7-12x é obrigatório'); }
+        if (!form.mdrDebito) { errs.mdrDebito = true; errorMessages.push('MDR Débito é obrigatório'); }
+      }
+      if (temPix && !form.taxaPix) { errs.taxaPix = true; errorMessages.push('Taxa PIX é obrigatória'); }
+      if (temBoleto && !form.taxaBoleto) { errs.taxaBoleto = true; errorMessages.push('Taxa Boleto é obrigatória'); }
+      if (!form.taxaAntecipacao) { errs.taxaAntecipacao = true; errorMessages.push('Taxa Antecipação é obrigatória'); }
+      if (!form.feeTransacao) { errs.feeTransacao = true; errorMessages.push('Fee por transação é obrigatório'); }
+      if (!form.custoAntifraude) { errs.custoAntifraude = true; errorMessages.push('Custo antifraude é obrigatório'); }
+      if (!form.taxa3ds) { errs.taxa3ds = true; errorMessages.push('Taxa 3DS é obrigatória'); }
+    }
     if (step === 9 && !form.encerrado) { errs.encerrado = true; errorMessages.push('Informe se já foi encerrado'); }
     if (step === 10) {
       if (!form.urgencia) { errs.urgencia = true; errorMessages.push('Informe quando quer começar'); }
@@ -192,6 +210,7 @@ export default function QuestionarioLeadsPagsmile() {
         antecipacao: form.taxaAntecipacao ? Number(form.taxaAntecipacao) : undefined,
         feeTransacao: form.feeTransacao ? Number(form.feeTransacao) : undefined,
         antifraude: form.custoAntifraude ? Number(form.custoAntifraude) : undefined,
+        taxa3ds: form.taxa3ds ? Number(form.taxa3ds) : undefined,
         pix: form.taxaPix ? { tipo: 'percentual', valor: Number(form.taxaPix) } : undefined,
       },
     });
@@ -270,7 +289,7 @@ export default function QuestionarioLeadsPagsmile() {
           {step === 4 && <StepModeloNegocio form={form} updateField={updateField} errors={errors} />}
           {step === 5 && <StepVolumetria form={form} updateField={updateField} errors={errors} />}
           {step === 6 && <StepDistribuicao form={form} updateField={updateField} />}
-          {step === 7 && <StepTaxasAtuais form={form} updateField={updateField} />}
+          {step === 7 && <StepTaxasAtuais form={form} updateField={updateField} errors={errors} />}
           {step === 8 && <StepProcessadorAtual form={form} updateField={updateField} />}
           {step === 9 && <StepComplianceRisco form={form} updateField={updateField} />}
           {step === 10 && <StepFechamento form={form} updateField={updateField} />}
