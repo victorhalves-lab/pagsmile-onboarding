@@ -27,12 +27,25 @@ export default function ComplianceCaseFilters({
           <Filter className="w-4 h-4 text-[var(--pagsmile-blue)]/50" />
           
           <Select value={modelFilter} onValueChange={onModelFilterChange}>
-            <SelectTrigger className="w-32"><SelectValue placeholder="Modelo" /></SelectTrigger>
+            <SelectTrigger className="w-44"><SelectValue placeholder="Modelo" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos Modelos</SelectItem>
-              <SelectItem value="lite">Lite</SelectItem>
-              <SelectItem value="pix">Pix</SelectItem>
-              <SelectItem value="full">Full</SelectItem>
+              <SelectItem value="ComplianceEcommerceV4">E-commerce v4</SelectItem>
+              <SelectItem value="ComplianceGatewayV4">Gateway v4</SelectItem>
+              <SelectItem value="ComplianceMarketplaceV4">Marketplace v4</SelectItem>
+              <SelectItem value="CompliancePlataformaVerticalV4">Plat. Vertical v4</SelectItem>
+              <SelectItem value="ComplianceInfoprodutosV4">Infoprodutos v4</SelectItem>
+              <SelectItem value="ComplianceEducacaoV4">Educação v4</SelectItem>
+              <SelectItem value="ComplianceSaaSV4">SaaS v4</SelectItem>
+              <SelectItem value="ComplianceMerchantLinkV4">Link Pgto v4</SelectItem>
+              <SelectItem value="ComplianceMPEV4">MPE v4</SelectItem>
+              <SelectItem value="ComplianceDropshippingV4">Dropshipping v4</SelectItem>
+              <SelectItem value="CompliancePixMerchantV4">PIX Merchant v4</SelectItem>
+              <SelectItem value="CompliancePixIntermediarioV4">PIX Intermediário v4</SelectItem>
+              <SelectItem value="subseller_v2">Subseller v2</SelectItem>
+              <SelectItem value="merchant">Merchant (legado)</SelectItem>
+              <SelectItem value="gateway">Gateway (legado)</SelectItem>
+              <SelectItem value="marketplace">Marketplace (legado)</SelectItem>
             </SelectContent>
           </Select>
 

@@ -159,10 +159,22 @@ const MODEL_CONFIG = {
   },
 };
 
+// Mapa de redirecionamento: modelos legados → V4
+const LEGACY_TO_V4 = {
+  'merchant': 'ComplianceEcommerceV4',
+  'gateway': 'ComplianceGatewayV4',
+  'marketplace': 'ComplianceMarketplaceV4',
+  'ComplianceMerchantAutocomplete': 'ComplianceEcommerceV4',
+  'ComplianceGatewayAutocomplete': 'ComplianceGatewayV4',
+  'ComplianceMarketplaceAutocomplete': 'ComplianceMarketplaceV4',
+};
+
 export default function ComplianceDinamico() {
   const urlParams = new URLSearchParams(window.location.search);
-  const model = urlParams.get('model') || 'merchant';
-  const config = MODEL_CONFIG[model] || MODEL_CONFIG.merchant;
+  const rawModel = urlParams.get('model') || 'ComplianceEcommerceV4';
+  // Redirecionar modelos legados para V4
+  const model = LEGACY_TO_V4[rawModel] || rawModel;
+  const config = MODEL_CONFIG[model] || MODEL_CONFIG.ComplianceEcommerceV4;
 
   return (
     <DynamicQuestionnaire

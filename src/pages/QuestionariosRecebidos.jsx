@@ -99,16 +99,17 @@ export default function QuestionariosRecebidos() {
 
   // ── Helpers ──
   const getCaseModel = (c) => {
+    // Prioridade 1: modelo do template V4 (fonte de verdade)
+    if (c.questionnaireTemplateId && templatesMap[c.questionnaireTemplateId]) {
+      return templatesMap[c.questionnaireTemplateId].model || 'desconhecido';
+    }
+    // Prioridade 2: link de onboarding (legado)
     if (c.onboardingLinkCode && linksMap[c.onboardingLinkCode]) {
       const link = linksMap[c.onboardingLinkCode];
       if (link.complianceType === 'LITE') return 'lite';
       if (link.complianceType === 'PIX') return 'pix';
-      if (link.complianceType === 'FULL') return 'full';
     }
-    if (c.questionnaireTemplateId && templatesMap[c.questionnaireTemplateId]) {
-      return templatesMap[c.questionnaireTemplateId].model || 'full';
-    }
-    return 'full';
+    return 'desconhecido';
   };
 
   // ── Stats ──

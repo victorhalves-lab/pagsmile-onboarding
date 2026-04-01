@@ -45,13 +45,33 @@ const getStatusBadge = (status) => {
 
 const getModelBadge = (model) => {
   const config = {
+    // V4 — Segmentos
+    'ComplianceEcommerceV4': { color: 'bg-rose-100 text-rose-700', label: 'E-commerce v4' },
+    'ComplianceGatewayV4': { color: 'bg-indigo-100 text-indigo-700', label: 'Gateway v4' },
+    'ComplianceMarketplaceV4': { color: 'bg-amber-100 text-amber-700', label: 'Marketplace v4' },
+    'CompliancePlataformaVerticalV4': { color: 'bg-violet-100 text-violet-700', label: 'Plat. Vertical v4' },
+    'ComplianceInfoprodutosV4': { color: 'bg-amber-100 text-amber-700', label: 'Infoprodutos v4' },
+    'ComplianceEducacaoV4': { color: 'bg-sky-100 text-sky-700', label: 'Educação v4' },
+    'ComplianceSaaSV4': { color: 'bg-cyan-100 text-cyan-700', label: 'SaaS v4' },
+    'ComplianceMerchantLinkV4': { color: 'bg-green-100 text-green-700', label: 'Link Pgto v4' },
+    'ComplianceMPEV4': { color: 'bg-amber-100 text-amber-700', label: 'MPE v4' },
+    'ComplianceDropshippingV4': { color: 'bg-orange-100 text-orange-700', label: 'Dropshipping v4' },
+    // PIX V4
+    'CompliancePixMerchantV4': { color: 'bg-emerald-100 text-emerald-700', label: 'PIX Merchant v4' },
+    'CompliancePixIntermediarioV4': { color: 'bg-indigo-100 text-indigo-700', label: 'PIX Intermediário v4' },
+    'pix_intermediario_v4': { color: 'bg-indigo-100 text-indigo-700', label: 'PIX Intermediário v4' },
+    // Subseller
+    'subseller_v2': { color: 'bg-indigo-100 text-indigo-700', label: 'Subseller v2' },
+    // Legados (não devem aparecer mais, mas por segurança)
+    'merchant': { color: 'bg-purple-100 text-purple-700', label: 'Merchant (legado)' },
+    'gateway': { color: 'bg-indigo-100 text-indigo-700', label: 'Gateway (legado)' },
+    'marketplace': { color: 'bg-amber-100 text-amber-700', label: 'Marketplace (legado)' },
     'lite': { color: 'bg-teal-100 text-teal-700', label: 'Lite' },
     'pix': { color: 'bg-blue-100 text-blue-700', label: 'Pix' },
-    'full': { color: 'bg-purple-100 text-purple-700', label: 'Full' },
+    'full': { color: 'bg-purple-100 text-purple-700', label: 'Full (legado)' },
     'ecommerce': { color: 'bg-amber-100 text-amber-700', label: 'E-commerce' },
-    'gateway': { color: 'bg-indigo-100 text-indigo-700', label: 'Gateway' }
   };
-  const { color, label } = config[model] || config['full'];
+  const { color, label } = config[model] || { color: 'bg-slate-100 text-slate-700', label: model || 'Desconhecido' };
   return <Badge className={`${color} text-xs font-medium border-0`}>{label}</Badge>;
 };
 
