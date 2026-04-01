@@ -88,6 +88,20 @@ export default function LeadPixV4() {
     }
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
+      const currencyFields = ['tpvPix', 'ticketMedioPix'];
+      const failedCurrencyFields = Object.keys(errs).filter(f => currencyFields.includes(f));
+      if (failedCurrencyFields.length > 0) {
+        base44.analytics.track({
+          eventName: 'currency_input_validation_error',
+          properties: {
+            form_type: 'lead_pix_v4',
+            step: step,
+            step_label: STEPS[step]?.label || '',
+            failed_fields: failedCurrencyFields.join(','),
+            field_count: failedCurrencyFields.length,
+          }
+        });
+      }
       toast.error('Preencha os campos obrigatórios');
       return false;
     }

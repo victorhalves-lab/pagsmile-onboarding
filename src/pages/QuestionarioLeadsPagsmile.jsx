@@ -115,6 +115,20 @@ export default function QuestionarioLeadsPagsmile() {
 
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
+      const currencyFields = ['tpvMensal', 'ticketMedio', 'mdrAvista', 'mdr2a6x', 'mdr7a12x', 'mdrDebito', 'taxaPix', 'taxaBoleto', 'taxaAntecipacao', 'feeTransacao', 'custoAntifraude', 'taxa3ds'];
+      const failedCurrencyFields = Object.keys(errs).filter(f => currencyFields.includes(f));
+      if (failedCurrencyFields.length > 0) {
+        base44.analytics.track({
+          eventName: 'currency_input_validation_error',
+          properties: {
+            form_type: 'lead_pagsmile_v5',
+            step: step,
+            step_label: STEPS[step]?.label || '',
+            failed_fields: failedCurrencyFields.join(','),
+            field_count: failedCurrencyFields.length,
+          }
+        });
+      }
       toast.error(errorMessages[0] || 'Preencha os campos obrigatórios');
       return false;
     }
