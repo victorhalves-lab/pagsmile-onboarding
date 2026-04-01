@@ -242,20 +242,8 @@ export default function PropostaPublica() {
     );
   }
 
-  // Expired
-  const isExpired = proposta.validUntil && new Date(proposta.validUntil) < new Date();
-  if (isExpired && !['aceita', 'recusada', 'contraproposta'].includes(proposta.status)) {
-    return (
-      <div className="max-w-lg mx-auto py-20 text-center">
-        <Clock className="w-16 h-16 mx-auto text-slate-400 mb-4" />
-        <h1 className="text-2xl font-bold text-[#002443] mb-2">{t('pp.expired_title')}</h1>
-        <p className="text-[#002443]/60">
-          {t('pp.expired_desc', { date: moment(proposta.validUntil).format('DD/MM/YYYY') })}
-        </p>
-        <p className="text-[#002443]/40 mt-2 text-sm">{t('pp.expired_contact')}</p>
-      </div>
-    );
-  }
+  // Expired check (show proposal content but disable actions)
+  const isExpired = proposta.validUntil && new Date(proposta.validUntil) < new Date() && !['aceita', 'recusada', 'contraproposta'].includes(proposta.status);
 
   // Already responded — show banner + full proposal
   const isAlreadyResponded = ['aceita', 'recusada'].includes(proposta.status);
@@ -288,6 +276,20 @@ export default function PropostaPublica() {
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4" ref={propostaContentRef}>
+      {/* Expired Banner */}
+      {isExpired && (
+        <div className="rounded-2xl p-6 mb-6 text-center bg-amber-50 border border-amber-200">
+          <div className="flex items-center justify-center gap-3 mb-2">
+            <Clock className="w-8 h-8 text-amber-500" />
+            <h2 className="text-xl font-bold text-amber-800">{t('pp.expired_title')}</h2>
+          </div>
+          <p className="text-sm text-amber-600">
+            {t('pp.expired_desc', { date: moment(proposta.validUntil).format('DD/MM/YYYY') })}
+          </p>
+          <p className="text-xs text-amber-500 mt-2">{t('pp.expired_contact')}</p>
+        </div>
+      )}
+
       {/* Status Banner for already responded proposals */}
       {isAlreadyResponded && (
         <div className={`rounded-2xl p-6 mb-6 text-center ${proposta.status === 'aceita' ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
@@ -535,7 +537,7 @@ export default function PropostaPublica() {
       </div>
 
       {/* Floating Action Bar */}
-      {['enviada', 'visualizada'].includes(proposta.status) && !isAlreadyResponded && (
+      {['enviada', 'visualizada'].includes(proposta.status) && !isAlreadyResponded && !isExpired && (
         <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-md border-t border-slate-200 z-50 md:relative md:bg-transparent md:backdrop-blur-none md:border-none md:p-0 flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4 md:mb-8 shadow-[0_-10px_40px_rgba(0,36,67,0.08)] md:shadow-none pb-safe">
           <Button
             onClick={() => setShowAceiteModal(true)}
