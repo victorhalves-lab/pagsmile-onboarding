@@ -181,6 +181,7 @@ export default function DynamicQuestionnaire({
   badgeColor = 'bg-blue-100 text-blue-700',
   questionsPerStep = 4,
   cafRedirectUrl,
+  cafRedirectUrlMap, // Map of segment value → CAF URL (dynamic per segment)
   onComplete // Callback opcional quando completa o questionário
 }) {
   const navigate = useNavigate();
@@ -191,6 +192,7 @@ export default function DynamicQuestionnaire({
   const [cnpjAutocompleteData, setCnpjAutocompleteData] = useState(null);
   const [showCafRedirect, setShowCafRedirect] = useState(false);
   const [isCompletingCaf, setIsCompletingCaf] = useState(false);
+  const [resolvedCafRedirectUrl, setResolvedCafRedirectUrl] = useState(null);
 
   const linkCode = localStorage.getItem('onboarding_link_code');
 
@@ -585,8 +587,27 @@ export default function DynamicQuestionnaire({
       localStorage.setItem('current_compliance_model', templateModel);
     }
 
+    // Resolve dynamic CAF URL from segment if map is provided
+    const resolvedCafUrl = (() => {
+      if (cafRedirectUrl) return cafRedirectUrl;
+      if (cafRedirectUrlMap) {
+        // Find the segment question answer in formData
+        for (const q of questions) {
+          const t = (q.text || '').toLowerCase();
+          if (t.includes('segmento') && q.type === 'SELECT') {
+            const segValue = finalFormData[q.id];
+            if (segValue && cafRedirectUrlMap[segValue]) return cafRedirectUrlMap[segValue];
+          }
+        }
+        // Fallback: first URL in map
+        const urls = Object.values(cafRedirectUrlMap);
+        return urls.length > 0 ? urls[0] : null;
+      }
+      return null;
+    })();
+
     // Se o modelo usa redirecionamento CAF, salvar dados e mostrar tela de redirect
-    if (cafRedirectUrl) {
+    if (resolvedCafUrl) {
       saveProgressNow({
         currentStep,
         currentPhase: 'questionnaire',
@@ -597,6 +618,7 @@ export default function DynamicQuestionnaire({
       // Create Merchant + OnboardingCase NOW (before CAF redirect), so it appears in "Recebidos"
       // even if the client never comes back to click "Já concluí"
       createMerchantAndCase(finalFormData);
+      setResolvedCafRedirectUrl(resolvedCafUrl);
       setShowCafRedirect(true);
       window.scrollTo(0, 0);
       return;
@@ -767,10 +789,11 @@ export default function DynamicQuestionnaire({
   const StepIcon = currentStepData?.icon || FileText;
 
   // Mostrar tela de redirecionamento CAF
-  if (showCafRedirect && cafRedirectUrl) {
+  const activeCafUrl = resolvedCafRedirectUrl || cafRedirectUrl;
+  if (showCafRedirect && activeCafUrl) {
     return (
       <CafeRedirectMessage
-        redirectUrl={cafRedirectUrl}
+        redirectUrl={activeCafUrl}
         onConfirmCompletion={handleCafCompletion}
         isCompleting={isCompletingCaf}
       />
