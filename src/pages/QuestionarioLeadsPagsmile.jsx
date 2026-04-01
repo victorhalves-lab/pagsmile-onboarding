@@ -251,6 +251,18 @@ export default function QuestionarioLeadsPagsmile() {
       });
     }
 
+    base44.analytics.track({
+      eventName: 'onboarding_form_submitted',
+      properties: {
+        form_type: 'lead_pagsmile_v5',
+        segment: form.segmento || '',
+        has_introducer: !!introducerData.introducerId,
+        link_code: linkCode || '',
+        protocolo: proto,
+        lead_score: leadScore,
+      }
+    });
+
     setProtocolo(proto);
     setSubmitting(false);
     setSubmitted(true);

@@ -180,6 +180,16 @@ export default function FechamentoLandingPage() {
       return { lead: createdLead, proposal: createdProposal };
     },
     onSuccess: ({ lead }) => {
+      base44.analytics.track({
+        eventName: 'onboarding_form_submitted',
+        properties: {
+          form_type: 'fechamento_landing_page',
+          segment: segmentName || '',
+          has_introducer: !!introducerId,
+          from_standard_proposal: isFromStandardProposal,
+          slug: slug || '',
+        }
+      });
       toast.success('Dados recebidos! Redirecionando para o compliance...');
       const complianceModel = (segmentName && SEGMENT_TO_COMPLIANCE[segmentName]) || 'ComplianceEcommerceV4';
       const complianceUrl = `${window.location.origin}/ComplianceDinamico?model=${complianceModel}&leadId=${lead.id}`;

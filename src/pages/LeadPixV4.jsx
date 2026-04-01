@@ -171,6 +171,19 @@ export default function LeadPixV4() {
       });
     }
 
+    base44.analytics.track({
+      eventName: 'onboarding_form_submitted',
+      properties: {
+        form_type: 'lead_pix_v4',
+        segment: form.segmentoPix || '',
+        tipo_negocio: form.tipoNegocio || '',
+        has_introducer: !!introducerData.introducerId,
+        link_code: linkCode || '',
+        protocolo: proto,
+        lead_score: leadScore,
+      }
+    });
+
     setProtocolo(proto);
     setSubmitting(false);
     setSubmitted(true);
