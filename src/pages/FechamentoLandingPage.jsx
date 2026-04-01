@@ -14,6 +14,20 @@ import FechamentoStep2Volumetria from '@/components/fechamento/FechamentoStep2Vo
 import FechamentoStep3ModeloNegocio from '@/components/fechamento/FechamentoStep3ModeloNegocio';
 import SEGMENT_TO_COMPLIANCE from '@/components/fechamento/segmentComplianceMap';
 
+// Mapa: nome do segmento → businessSubCategory para o Lead
+const SEGMENT_TO_BIZ_CATEGORY = {
+  'Gateway': 'GATEWAY',
+  'Marketplace': 'MARKETPLACE',
+  'Plataformas Verticais': 'GATEWAY',
+  'Educação': 'MERCHAN',
+  'Infoprodutos': 'MERCHAN',
+  'E-commerce': 'MERCHAN',
+  'SaaS': 'MERCHAN',
+  'Dropshipping': 'MERCHAN',
+  'MPE': 'MERCHAN',
+  'Link de Pagamento': 'MERCHAN',
+};
+
 const StepIndicator = ({ current, total }) => (
   <div className="flex items-center justify-center gap-2 mb-8">
     {[...Array(total)].map((_, i) => (
@@ -92,7 +106,7 @@ export default function FechamentoLandingPage() {
         sellersDescription: finalFormData.sellersDescription,
         fornecedores: finalFormData.fornecedores,
         segment: segmentName,
-        businessSubCategory: ratesData?.rates?.businessSubCategory || 'MERCHAN',
+        businessSubCategory: SEGMENT_TO_BIZ_CATEGORY[segmentName] || 'MERCHAN',
         status: 'novo',
         ...(commercialAgent && { commercialAgentId: commercialAgent.id, commercialAgentName: commercialAgent.full_name }),
       };
@@ -138,7 +152,7 @@ export default function FechamentoLandingPage() {
         contactName: finalFormData.contactName,
         contactRole: finalFormData.contactRole,
         website: finalFormData.website,
-        businessSubCategory: ratesData?.rates?.businessSubCategory || 'MERCHAN',
+        businessSubCategory: SEGMENT_TO_BIZ_CATEGORY[segmentName] || 'MERCHAN',
         status: 'questionario_preenchido',
         origemLead,
         tpvMensal: tpvReais,
@@ -165,7 +179,7 @@ export default function FechamentoLandingPage() {
         clienteNome: createdLead.fullName,
         clienteCnpj: createdLead.cpfCnpj,
         chosenPartnerId: ratesData.partnerId,
-        businessSubCategory: ratesData?.rates?.businessSubCategory || 'MERCHAN',
+        businessSubCategory: SEGMENT_TO_BIZ_CATEGORY[segmentName] || 'MERCHAN',
       };
 
       const proposalEntity = ratesData.rates.pix ? 'PixProposal' : 'Proposal';

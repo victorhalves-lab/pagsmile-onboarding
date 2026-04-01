@@ -727,7 +727,7 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
       transacoesMes: parseFloat(formData[transacoesId] || '0') || 0,
       expectativaCrescimento: findFieldValue(['crescimento']) || '',
       protocolo,
-      origemLead: utmSource,
+      origemLead: utmSource || 'questionario_completo',
       onboardingLinkCode: linkCode || '',
       questionnaireData: {
         ...formData,
