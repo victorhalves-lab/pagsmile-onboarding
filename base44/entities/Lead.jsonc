@@ -60,11 +60,18 @@
     "businessSubCategory": {
       "type": "string",
       "enum": [
-        "MERCHAN",
-        "GATEWAY",
-        "MARKETPLACE"
+        "educacao",
+        "infoprodutos",
+        "ecommerce",
+        "saas",
+        "gateway",
+        "marketplace",
+        "mpe",
+        "dropshipping",
+        "plataformas_verticais",
+        "link_pagamento"
       ],
-      "description": "Tipo de neg\u00f3cio"
+      "description": "Segmento de neg\u00f3cio do lead"
     },
     "leadQuestionnaireTemplateId": {
       "type": "string",
@@ -282,7 +289,6 @@
   "required": [
     "email",
     "fullName",
-    "status",
-    "businessSubCategory"
+    "status"
   ]
 }

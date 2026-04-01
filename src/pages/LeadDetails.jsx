@@ -19,7 +19,7 @@ import {
   ArrowLeft, Loader2, Building2, Mail, Phone, Globe,
   ShieldCheck, AlertTriangle, TrendingUp, Clock,
   FileText, Send, XCircle, CheckCircle2, User,
-  ShoppingCart, Network, Download, ExternalLink
+  Network, Download, ExternalLink
 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
@@ -30,6 +30,7 @@ import LeadQualifierPanel from '../components/leads/LeadQualifierPanel';
 import PriscilaPanel from '../components/leads/PriscilaPanel';
 import IARiskPanel from '../components/leads/IARiskPanel';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
+import { SEGMENTS, getSegmentLabel, normalizeSegment } from '@/lib/segmentConfig';
 
 const STATUS_CONFIG = {
   questionario_preenchido: { label: 'Questionário Preenchido', color: 'bg-blue-100 text-blue-700' },
@@ -122,8 +123,37 @@ export default function LeadDetails() {
   }
 
   const statusCfg = STATUS_CONFIG[lead.status] || { label: lead.status, color: 'bg-slate-100' };
-  const SubCatIcon = lead.businessSubCategory === 'GATEWAY' ? Network :
-                     lead.businessSubCategory === 'MARKETPLACE' ? Building2 : ShoppingCart;
+  const segmentLabel = getSegmentLabel(lead.businessSubCategory) || lead.businessSubCategory;
+
+  const updateSegmentMutation = useMutation({
+    mutationFn: async (newSegment) => {
+      const updateData = { 
+        businessSubCategory: newSegment,
+        lastInteractionDate: new Date().toISOString()
+      };
+      // Also update questionnaireData.segmentoLandingPage if it exists
+      if (lead.questionnaireData?.segmentoLandingPage) {
+        const seg = SEGMENTS.find(s => s.id === newSegment);
+        updateData.questionnaireData = {
+          ...lead.questionnaireData,
+          segmentoLandingPage: seg?.label || lead.questionnaireData.segmentoLandingPage
+        };
+      }
+      await base44.entities.Lead.update(leadId, updateData);
+      await base44.entities.LeadActivity.create({
+        leadId,
+        activityType: 'segmento_alterado',
+        description: `Segmento alterado de "${segmentLabel}" para "${getSegmentLabel(newSegment)}"`,
+        performedBy: 'admin',
+        activityDate: new Date().toISOString()
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['lead', leadId] });
+      queryClient.invalidateQueries({ queryKey: ['leadActivities', leadId] });
+      toast.success('Segmento atualizado com sucesso');
+    }
+  });
 
   return (
     <div className="space-y-6">
@@ -138,22 +168,39 @@ export default function LeadDetails() {
             <Badge className={statusCfg.color}>{statusCfg.label}</Badge>
             {lead.businessSubCategory && (
               <Badge variant="outline" className="gap-1">
-                <SubCatIcon className="w-3 h-3" />
-                {lead.businessSubCategory}
+                <Network className="w-3 h-3" />
+                {segmentLabel}
               </Badge>
             )}
             {lead.protocolo && <span className="text-xs font-mono text-[var(--pagsmile-blue)]/50">{lead.protocolo}</span>}
             <LeadSLAIndicator lead={lead} />
           </div>
         </div>
-        <Select value={newStatus || lead.status} onValueChange={(v) => { setNewStatus(v); updateStatusMutation.mutate(v); }}>
-          <SelectTrigger className="w-[200px]"><SelectValue placeholder={t('ld.change_status')} /></SelectTrigger>
-          <SelectContent>
-            {Object.entries(STATUS_CONFIG).map(([k, v]) => (
-              <SelectItem key={k} value={k}>{v.label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-2">
+          <Select 
+            value={normalizeSegment(lead.businessSubCategory) || ''} 
+            onValueChange={(v) => updateSegmentMutation.mutate(v)}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Segmento">
+                {lead.businessSubCategory ? getSegmentLabel(lead.businessSubCategory) : 'Segmento'}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {SEGMENTS.map(seg => (
+                <SelectItem key={seg.id} value={seg.id}>{seg.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={newStatus || lead.status} onValueChange={(v) => { setNewStatus(v); updateStatusMutation.mutate(v); }}>
+            <SelectTrigger className="w-[200px]"><SelectValue placeholder={t('ld.change_status')} /></SelectTrigger>
+            <SelectContent>
+              {Object.entries(STATUS_CONFIG).map(([k, v]) => (
+                <SelectItem key={k} value={k}>{v.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Quick Actions Bar */}

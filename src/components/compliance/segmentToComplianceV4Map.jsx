@@ -1,32 +1,23 @@
 /**
- * Mapa centralizado: segmento do Lead (questionnaireData.segmento do PagSmile V5)
- * → modelo de compliance V4 (ComplianceDinamico ?model=)
- *
- * Usado por:
- * - PropostaPublica (aceitar proposta personalizada → compliance)
- * - PropostaPixPublica (aceitar proposta PIX → compliance PIX)
- * - FechamentoLandingPage (já usa segmentComplianceMap com nomes de segmento)
+ * Mapa centralizado: segmento do Lead → modelo de compliance V4 (ComplianceDinamico ?model=)
+ * Usa segmentConfig como fonte de verdade.
  */
+import { 
+  SEGMENT_ID_TO_COMPLIANCE,
+  SEGMENT_LABEL_TO_COMPLIANCE,
+  resolveComplianceFromSegment
+} from '@/lib/segmentConfig';
 
-// Segmento interno (id do questionário PagSmile V5) → modelo ComplianceDinamico
-export const LEAD_SEGMENT_TO_COMPLIANCE_V4 = {
-  gateway: 'ComplianceGatewayV4',
-  marketplace: 'ComplianceMarketplaceV4',
-  plataforma_vertical: 'CompliancePlataformaVerticalV4',
-  ecommerce: 'ComplianceEcommerceV4',
-  dropshipping: 'ComplianceDropshippingV4',
-  infoprodutos: 'ComplianceInfoprodutosV4',
-  saas: 'ComplianceSaaSV4',
-  educacao: 'ComplianceEducacaoV4',
-  link_pagamento: 'ComplianceMerchantLinkV4',
-  mpe: 'ComplianceMPEV4',
-};
+// Re-export para compatibilidade com imports existentes
+export const LEAD_SEGMENT_TO_COMPLIANCE_V4 = SEGMENT_ID_TO_COMPLIANCE;
 
-// businessSubCategory → modelo V4 fallback (quando o segmento granular não está disponível)
+// Retrocompatibilidade com valores antigos (MERCHAN/GATEWAY/MARKETPLACE)
 export const BIZ_SUB_CATEGORY_TO_COMPLIANCE_V4 = {
   GATEWAY: 'ComplianceGatewayV4',
   MARKETPLACE: 'ComplianceMarketplaceV4',
-  MERCHAN: 'ComplianceEcommerceV4', // default para merchants genéricos
+  MERCHAN: 'ComplianceEcommerceV4',
+  // Novos slugs mapeiam diretamente
+  ...SEGMENT_ID_TO_COMPLIANCE,
 };
 
 // PIX: tipoNegocio do Lead PIX V4 → modelo ComplianceDinamico
@@ -37,7 +28,8 @@ export const PIX_TIPO_TO_COMPLIANCE_V4 = {
 
 /**
  * Resolve o modelo de compliance V4 a partir dos dados do Lead.
- * Prioriza segmento granular, cai para businessSubCategory se não tiver.
+ * Prioriza segmento granular, cai para businessSubCategory.
+ * Suporta valores novos (slugs) e legados (MERCHAN/GATEWAY/MARKETPLACE).
  */
 export function resolveComplianceModel(lead) {
   if (!lead) return 'ComplianceEcommerceV4';
@@ -45,13 +37,18 @@ export function resolveComplianceModel(lead) {
   const qData = lead.questionnaireData || {};
 
   // 1. Se veio do questionário PagSmile V5, usar segmento granular
-  if (qData.segmento && LEAD_SEGMENT_TO_COMPLIANCE_V4[qData.segmento]) {
-    return LEAD_SEGMENT_TO_COMPLIANCE_V4[qData.segmento];
+  if (qData.segmento && SEGMENT_ID_TO_COMPLIANCE[qData.segmento]) {
+    return SEGMENT_ID_TO_COMPLIANCE[qData.segmento];
   }
 
-  // 2. Fallback por businessSubCategory
-  if (lead.businessSubCategory && BIZ_SUB_CATEGORY_TO_COMPLIANCE_V4[lead.businessSubCategory]) {
-    return BIZ_SUB_CATEGORY_TO_COMPLIANCE_V4[lead.businessSubCategory];
+  // 2. Se veio da landing page, segmentoLandingPage é o label
+  if (qData.segmentoLandingPage && SEGMENT_LABEL_TO_COMPLIANCE[qData.segmentoLandingPage]) {
+    return SEGMENT_LABEL_TO_COMPLIANCE[qData.segmentoLandingPage];
+  }
+
+  // 3. businessSubCategory (slug novo ou valor legado)
+  if (lead.businessSubCategory) {
+    return resolveComplianceFromSegment(lead.businessSubCategory);
   }
 
   return 'ComplianceEcommerceV4';

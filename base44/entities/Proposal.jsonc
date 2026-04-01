@@ -42,11 +42,18 @@
     "businessSubCategory": {
       "type": "string",
       "enum": [
-        "MERCHAN",
-        "GATEWAY",
-        "MARKETPLACE"
+        "educacao",
+        "infoprodutos",
+        "ecommerce",
+        "saas",
+        "gateway",
+        "marketplace",
+        "mpe",
+        "dropshipping",
+        "plataformas_verticais",
+        "link_pagamento"
       ],
-      "description": "Tipo de neg\u00f3cio do cliente"
+      "description": "Segmento de neg\u00f3cio do cliente"
     },
     "chosenPartnerId": {
       "type": "string",
@@ -153,7 +160,6 @@
         },
         "debito": {
           "type": "object",
-          "description": "Taxas de d\u00e9bito por bandeira",
           "properties": {
             "visa": {
               "type": "number"

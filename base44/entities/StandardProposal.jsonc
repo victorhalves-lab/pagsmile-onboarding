@@ -29,11 +29,18 @@
     "businessSubCategory": {
       "type": "string",
       "enum": [
-        "MERCHAN",
-        "GATEWAY",
-        "MARKETPLACE"
+        "educacao",
+        "infoprodutos",
+        "ecommerce",
+        "saas",
+        "gateway",
+        "marketplace",
+        "mpe",
+        "dropshipping",
+        "plataformas_verticais",
+        "link_pagamento"
       ],
-      "description": "Tipo de neg\u00f3cio"
+      "description": "Segmento de neg\u00f3cio"
     },
     "status": {
       "type": "string",
@@ -51,36 +58,29 @@
       "description": "Indica se esta \u00e9 a proposta padr\u00e3o principal do segmento (para links r\u00e1pidos)"
     },
     "clienteNome": {
-      "type": "string",
-      "description": "Nome da empresa do cliente"
+      "type": "string"
     },
     "clienteCnpj": {
-      "type": "string",
-      "description": "CNPJ da empresa do cliente"
+      "type": "string"
     },
     "clienteContato": {
-      "type": "string",
-      "description": "Nome do contato principal da empresa"
+      "type": "string"
     },
     "clienteTelefone": {
-      "type": "string",
-      "description": "Telefone do contato da empresa"
+      "type": "string"
     },
     "clienteEmail": {
-      "type": "string",
-      "description": "E-mail do contato da empresa"
+      "type": "string"
     },
     "chosenPartnerId": {
-      "type": "string",
-      "description": "ID do Parceiro selecionado"
+      "type": "string"
     },
     "chosenPartnerName": {
-      "type": "string",
-      "description": "Nome do Parceiro selecionado"
+      "type": "string"
     },
     "rates": {
       "type": "object",
-      "description": "Taxas oferecidas (mesma estrutura da entidade Proposal)",
+      "description": "Taxas oferecidas",
       "properties": {
         "cartao": {
           "type": "object",
@@ -253,29 +253,23 @@
       }
     },
     "tokenPublico": {
-      "type": "string",
-      "description": "Token p\u00fablico para acesso \u00e0 proposta padr\u00e3o"
+      "type": "string"
     },
     "codigo": {
-      "type": "string",
-      "description": "C\u00f3digo \u00fanico da proposta padr\u00e3o (STDP-YYYY-NNNNN)"
+      "type": "string"
     },
     "terms": {
-      "type": "string",
-      "description": "Termos e condi\u00e7\u00f5es padr\u00e3o"
+      "type": "string"
     },
     "validUntil": {
       "type": "string",
-      "format": "date-time",
-      "description": "Data de validade"
+      "format": "date-time"
     },
     "responsavelId": {
-      "type": "string",
-      "description": "ID do respons\u00e1vel"
+      "type": "string"
     },
     "responsavelNome": {
-      "type": "string",
-      "description": "Nome do respons\u00e1vel"
+      "type": "string"
     }
   },
   "required": [

@@ -35,9 +35,16 @@
     "businessSubCategory": {
       "type": "string",
       "enum": [
-        "MERCHAN",
-        "GATEWAY",
-        "MARKETPLACE"
+        "educacao",
+        "infoprodutos",
+        "ecommerce",
+        "saas",
+        "gateway",
+        "marketplace",
+        "mpe",
+        "dropshipping",
+        "plataformas_verticais",
+        "link_pagamento"
       ]
     },
     "tpvMensal": {

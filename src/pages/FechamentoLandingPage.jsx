@@ -13,20 +13,7 @@ import FechamentoStep1CompanyForm from '@/components/fechamento/FechamentoStep1C
 import FechamentoStep2Volumetria from '@/components/fechamento/FechamentoStep2Volumetria';
 import FechamentoStep3ModeloNegocio from '@/components/fechamento/FechamentoStep3ModeloNegocio';
 import SEGMENT_TO_COMPLIANCE from '@/components/fechamento/segmentComplianceMap';
-
-// Mapa: nome do segmento → businessSubCategory para o Lead
-const SEGMENT_TO_BIZ_CATEGORY = {
-  'Gateway': 'GATEWAY',
-  'Marketplace': 'MARKETPLACE',
-  'Plataformas Verticais': 'GATEWAY',
-  'Educação': 'MERCHAN',
-  'Infoprodutos': 'MERCHAN',
-  'E-commerce': 'MERCHAN',
-  'SaaS': 'MERCHAN',
-  'Dropshipping': 'MERCHAN',
-  'MPE': 'MERCHAN',
-  'Link de Pagamento': 'MERCHAN',
-};
+import { SEGMENT_LABEL_TO_ID } from '@/lib/segmentConfig';
 
 const StepIndicator = ({ current, total }) => (
   <div className="flex items-center justify-center gap-2 mb-8">
@@ -106,7 +93,7 @@ export default function FechamentoLandingPage() {
         sellersDescription: finalFormData.sellersDescription,
         fornecedores: finalFormData.fornecedores,
         segment: segmentName,
-        businessSubCategory: SEGMENT_TO_BIZ_CATEGORY[segmentName] || 'MERCHAN',
+        businessSubCategory: SEGMENT_LABEL_TO_ID[segmentName] || 'ecommerce',
         status: 'novo',
         ...(commercialAgent && { commercialAgentId: commercialAgent.id, commercialAgentName: commercialAgent.full_name }),
       };
@@ -152,7 +139,7 @@ export default function FechamentoLandingPage() {
         contactName: finalFormData.contactName,
         contactRole: finalFormData.contactRole,
         website: finalFormData.website,
-        businessSubCategory: SEGMENT_TO_BIZ_CATEGORY[segmentName] || 'MERCHAN',
+        businessSubCategory: SEGMENT_LABEL_TO_ID[segmentName] || 'ecommerce',
         status: 'questionario_preenchido',
         origemLead,
         tpvMensal: tpvReais,
@@ -179,7 +166,7 @@ export default function FechamentoLandingPage() {
         clienteNome: createdLead.fullName,
         clienteCnpj: createdLead.cpfCnpj,
         chosenPartnerId: ratesData.partnerId,
-        businessSubCategory: SEGMENT_TO_BIZ_CATEGORY[segmentName] || 'MERCHAN',
+        businessSubCategory: SEGMENT_LABEL_TO_ID[segmentName] || 'ecommerce',
       };
 
       const proposalEntity = ratesData.rates.pix ? 'PixProposal' : 'Proposal';
