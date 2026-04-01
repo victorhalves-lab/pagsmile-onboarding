@@ -1,15 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../../utils';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { Phone, FileText, Shield, Send, CheckCircle2 } from 'lucide-react';
+import { Phone, FileText, Shield, Send, CheckCircle2, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
+import ReassignComplianceModal from './ReassignComplianceModal';
 
 export default function LeadQuickActions({ lead }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [showReassignModal, setShowReassignModal] = useState(false);
 
   const updateMutation = useMutation({
     mutationFn: async ({ status, activityType, description }) => {
@@ -93,26 +95,44 @@ export default function LeadQuickActions({ lead }) {
     });
   }
 
+  // Always show reassign compliance action
+  actions.push({
+    label: 'Reenviar Compliance',
+    icon: RefreshCw,
+    variant: 'outline',
+    className: 'border-teal-300 text-teal-700 hover:bg-teal-50',
+    onClick: () => setShowReassignModal(true),
+  });
+
   if (actions.length === 0) return null;
 
   return (
-    <div className="flex flex-wrap gap-2">
-      {actions.map((action, i) => {
-        const Icon = action.icon;
-        return (
-          <Button
-            key={i}
-            variant={action.variant}
-            size="sm"
-            className={`gap-1.5 ${action.className}`}
-            onClick={action.onClick}
-            disabled={updateMutation.isPending}
-          >
-            <Icon className="w-4 h-4" />
-            {action.label}
-          </Button>
-        );
-      })}
-    </div>
+    <>
+      <div className="flex flex-wrap gap-2">
+        {actions.map((action, i) => {
+          const Icon = action.icon;
+          return (
+            <Button
+              key={i}
+              variant={action.variant}
+              size="sm"
+              className={`gap-1.5 ${action.className}`}
+              onClick={action.onClick}
+              disabled={updateMutation.isPending}
+            >
+              <Icon className="w-4 h-4" />
+              {action.label}
+            </Button>
+          );
+        })}
+      </div>
+      <ReassignComplianceModal
+        open={showReassignModal}
+        onClose={() => setShowReassignModal(false)}
+        lead={lead}
+        entityName="Lead"
+        invalidateKeys={[['lead', lead.id], ['leadActivities', lead.id]]}
+      />
+    </>
   );
 }
