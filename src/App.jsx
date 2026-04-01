@@ -54,6 +54,7 @@ const PUBLIC_PATHS = new Set([
   '/ComplianceResume',
   '/OnboardingCompletion',
   '/SubsellerQuestionnaire',
+  '/QuestionarioSimplificadoPublico',
   '/QuestionarioLeadsPagsmile',
   '/LeadPixV4',
   '/FechamentoLandingPage',
@@ -91,6 +92,9 @@ const PublicRoutes = () => (
 
     {/* Subseller */}
     <Route path="/SubsellerQuestionnaire" element={<LayoutWrapper currentPageName="SubsellerQuestionnaire"><SubsellerQuestionnaire /></LayoutWrapper>} />
+
+    {/* Questionário Simplificado */}
+    {Pages['QuestionarioSimplificadoPublico'] && <Route path="/QuestionarioSimplificadoPublico" element={<LayoutWrapper currentPageName="QuestionarioSimplificadoPublico"><Pages.QuestionarioSimplificadoPublico /></LayoutWrapper>} />}
 
     {/* Leads V5 / PIX V4 */}
     <Route path="/QuestionarioLeadsPagsmile" element={<LayoutWrapper currentPageName="QuestionarioLeadsPagsmile"><QuestionarioLeadsPagsmile /></LayoutWrapper>} />
