@@ -243,7 +243,7 @@ export default function PropostaPublica() {
   }
 
   // Expired check (show proposal content but disable actions)
-  const isExpired = proposta.validUntil && new Date(proposta.validUntil) < new Date() && !['aceita', 'recusada', 'contraproposta'].includes(proposta.status);
+  const isExpired = proposta.status === 'expirada' || (proposta.validUntil && new Date(proposta.validUntil) < new Date() && !['aceita', 'recusada', 'contraproposta'].includes(proposta.status));
 
   // Already responded — show banner + full proposal
   const isAlreadyResponded = ['aceita', 'recusada'].includes(proposta.status);
