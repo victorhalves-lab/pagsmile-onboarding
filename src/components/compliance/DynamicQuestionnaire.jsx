@@ -596,6 +596,17 @@ export default function DynamicQuestionnaire({
           stepTitle: currentStepData?.title, flowType, templateModel,
           missingFieldsCount: missing.length,
         });
+        base44.analytics.track({
+          eventName: 'compliance_validation_error_by_field',
+          properties: {
+            flow_type: flowType || templateModel || '',
+            step_number: currentStep,
+            step_title: currentStepData?.title || '',
+            failed_fields: missing.map(q => q.text || q.id).slice(0, 10).join(' | '),
+            failed_field_types: missing.map(q => q.type).slice(0, 10).join(','),
+            field_count: missing.length,
+          }
+        });
         toast.error(`Preencha todos os campos obrigatórios (${missing.length} campo${missing.length > 1 ? 's' : ''} pendente${missing.length > 1 ? 's' : ''}).`);
         return;
       }
@@ -639,6 +650,17 @@ export default function DynamicQuestionnaire({
         stepNumber: currentStep, totalSteps: steps.length,
         stepTitle: currentStepData?.title, flowType, templateModel,
         missingFieldsCount: missing.length,
+      });
+      base44.analytics.track({
+        eventName: 'compliance_validation_error_by_field',
+        properties: {
+          flow_type: flowType || templateModel || '',
+          step_number: currentStep,
+          step_title: currentStepData?.title || '',
+          failed_fields: missing.map(q => q.text || q.id).slice(0, 10).join(' | '),
+          failed_field_types: missing.map(q => q.type).slice(0, 10).join(','),
+          field_count: missing.length,
+        }
       });
       toast.error(`Preencha todos os campos obrigatórios (${missing.length} campo${missing.length > 1 ? 's' : ''} pendente${missing.length > 1 ? 's' : ''}).`);
       return;
