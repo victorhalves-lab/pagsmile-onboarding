@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -41,6 +41,39 @@ export default function DynamicDocumentUploadPage({
     templateModel: templateModel || 'unknown',
     storageKey: formDataStorageKey
   });
+
+  // Track stage entry
+  const hasTrackedEntry = useRef(false);
+  useEffect(() => {
+    if (!hasTrackedEntry.current) {
+      hasTrackedEntry.current = true;
+      base44.analytics.track({
+        eventName: 'compliance_stage_entered',
+        properties: {
+          stage: 'documents',
+          flow_type: flowType || templateModel || '',
+          template_model: templateModel || '',
+        }
+      });
+    }
+  }, [flowType, templateModel]);
+
+  // Track drop-off on page unload
+  useEffect(() => {
+    const handleUnload = () => {
+      base44.analytics.track({
+        eventName: 'compliance_stage_dropoff',
+        properties: {
+          stage: 'documents',
+          flow_type: flowType || templateModel || '',
+          template_model: templateModel || '',
+          docs_uploaded: Object.keys(documents).length,
+        }
+      });
+    };
+    window.addEventListener('beforeunload', handleUnload);
+    return () => window.removeEventListener('beforeunload', handleUnload);
+  }, [flowType, templateModel, documents]);
 
   // Restore documents from session
   useEffect(() => {
@@ -200,6 +233,16 @@ export default function DynamicDocumentUploadPage({
       localStorage.removeItem(documentsStorageKey);
       localStorage.removeItem('current_template_id');
       localStorage.removeItem('current_compliance_model');
+
+      base44.analytics.track({
+        eventName: 'compliance_stage_completed',
+        properties: {
+          stage: 'documents',
+          flow_type: flowType || templateModel || '',
+          template_model: templateModel || '',
+          docs_uploaded: Object.keys(documents).length,
+        }
+      });
 
       toast.success('Documentos enviados com sucesso!');
 

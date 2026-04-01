@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, ArrowRight, Clock, Mail, Shield } from 'lucide-react';
 import { useOnboardingAnalytics } from '../components/analytics/useOnboardingAnalytics';
@@ -18,6 +19,14 @@ export default function OnboardingCompletion() {
   useEffect(() => {
     // Rastreia conclusão do onboarding
     trackOnboardingComplete();
+    
+    base44.analytics.track({
+      eventName: 'compliance_stage_entered',
+      properties: {
+        stage: 'completed',
+        flow_type: flowType || '',
+      }
+    });
     
     // Limpa dados de sessão
     sessionStorage.removeItem('onboarding_session_id');

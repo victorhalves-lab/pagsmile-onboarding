@@ -269,6 +269,15 @@ export default function DynamicQuestionnaire({
     if (steps.length > 0 && !hasTrackedStart.current) {
       hasTrackedStart.current = true;
       trackOnboardingStarted({ totalSteps: steps.length, flowType, templateModel });
+      base44.analytics.track({
+        eventName: 'compliance_stage_entered',
+        properties: {
+          stage: 'questionnaire',
+          flow_type: flowType || templateModel || '',
+          template_model: templateModel || '',
+          total_steps: steps.length,
+        }
+      });
     }
   }, [steps.length, flowType, templateModel]);
 
@@ -643,6 +652,16 @@ export default function DynamicQuestionnaire({
     });
     const totalTime = Math.round((Date.now() - onboardingStartTimeRef.current) / 1000);
     trackOnboardingCompleted({ totalSteps: steps.length, flowType, templateModel, totalTimeSec: totalTime });
+    base44.analytics.track({
+      eventName: 'compliance_stage_completed',
+      properties: {
+        stage: 'questionnaire',
+        flow_type: flowType || templateModel || '',
+        template_model: templateModel || '',
+        total_steps: steps.length,
+        total_time_sec: totalTime,
+      }
+    });
     // Salvar flags de compliance no formData para análise interna
     const finalFormData = { ...formData, __complianceFlags: complianceAlerts };
     if (storageKey) {
