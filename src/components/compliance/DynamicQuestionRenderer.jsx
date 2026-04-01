@@ -201,7 +201,7 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
           <>
             <CurrencyInput
               value={value || ''}
-              onChange={(val) => handleChange(val)}
+              onValueChange={(val) => handleChange(val)}
               placeholder={placeholder || 'R$ 0,00'}
               className="h-11"
             />
