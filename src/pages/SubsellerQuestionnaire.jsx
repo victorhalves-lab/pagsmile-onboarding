@@ -4,11 +4,23 @@ import { base44 } from '@/api/base44Client';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import DynamicQuestionnaire from '../components/compliance/DynamicQuestionnaire';
 
+const SUBSELLER_CAF_URLS = {
+  'Gateway': 'https://cadastro.io/9b998e4d45055dac959680cf3dcfc1c9',
+  'Dropshipping': 'https://cadastro.io/11b31cdf4650c56126d766671e15e8d4',
+  'E-commerce': 'https://cadastro.io/f97ba64b86ae1964ff85e0ad9e833d63',
+  'Educação': 'https://cadastro.io/6b2852b7919ea3f65edca7667f81bf58',
+  'Infoprodutos': 'https://cadastro.io/ede0e7c940889f03adbbf5f5a49400b9',
+  'Link de Pagamento': 'https://cadastro.io/3ff25303e2a775e8aefa01575f4435fb',
+  'MPE': 'https://cadastro.io/2df6ae66b394e25da18ae5acb2afc221',
+  'Plataforma Vertical': 'https://cadastro.io/c970cf175a8facad0185d452edf39ccb',
+  'SaaS / Recorrência': 'https://cadastro.io/597a5b430412b83fa526211e0e9beb7e',
+  'Marketplace': 'https://cadastro.io/119c66a9c7f1e2618b20b3a41f656d3b',
+};
+
 export default function SubsellerQuestionnaire() {
   const urlParams = new URLSearchParams(window.location.search);
   const linkCode = urlParams.get('ref');
 
-  // Fetch OnboardingLink to validate
   const { data: onboardingLink, isLoading } = useQuery({
     queryKey: ['subsellerLink', linkCode],
     queryFn: async () => {
@@ -19,7 +31,6 @@ export default function SubsellerQuestionnaire() {
     enabled: !!linkCode
   });
 
-  // Store link code for session management
   React.useEffect(() => {
     if (linkCode) {
       localStorage.setItem('onboarding_link_code', linkCode);
@@ -56,7 +67,7 @@ export default function SubsellerQuestionnaire() {
       badgeLabel="SUBSELLER"
       badgeColor="bg-indigo-100 text-indigo-700"
       questionsPerStep={4}
-      cafRedirectUrl="https://cadastro.io/c584e022b7936e44b8bc5acdd3a7945e"
+      cafRedirectUrlMap={SUBSELLER_CAF_URLS}
     />
   );
 }
