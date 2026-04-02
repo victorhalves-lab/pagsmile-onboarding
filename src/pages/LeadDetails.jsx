@@ -106,6 +106,36 @@ export default function LeadDetails() {
     }
   });
 
+  const updateSegmentMutation = useMutation({
+    mutationFn: async (newSegment) => {
+      const currentSegmentLabel = getSegmentLabel(lead?.businessSubCategory) || lead?.businessSubCategory;
+      const updateData = { 
+        businessSubCategory: newSegment,
+        lastInteractionDate: new Date().toISOString()
+      };
+      if (lead?.questionnaireData?.segmentoLandingPage) {
+        const seg = SEGMENTS.find(s => s.id === newSegment);
+        updateData.questionnaireData = {
+          ...lead.questionnaireData,
+          segmentoLandingPage: seg?.label || lead.questionnaireData.segmentoLandingPage
+        };
+      }
+      await base44.entities.Lead.update(leadId, updateData);
+      await base44.entities.LeadActivity.create({
+        leadId,
+        activityType: 'segmento_alterado',
+        description: `Segmento alterado de "${currentSegmentLabel}" para "${getSegmentLabel(newSegment)}"`,
+        performedBy: 'admin',
+        activityDate: new Date().toISOString()
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['lead', leadId] });
+      queryClient.invalidateQueries({ queryKey: ['leadActivities', leadId] });
+      toast.success('Segmento atualizado com sucesso');
+    }
+  });
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -124,36 +154,6 @@ export default function LeadDetails() {
 
   const statusCfg = STATUS_CONFIG[lead.status] || { label: lead.status, color: 'bg-slate-100' };
   const segmentLabel = getSegmentLabel(lead.businessSubCategory) || lead.businessSubCategory;
-
-  const updateSegmentMutation = useMutation({
-    mutationFn: async (newSegment) => {
-      const updateData = { 
-        businessSubCategory: newSegment,
-        lastInteractionDate: new Date().toISOString()
-      };
-      // Also update questionnaireData.segmentoLandingPage if it exists
-      if (lead.questionnaireData?.segmentoLandingPage) {
-        const seg = SEGMENTS.find(s => s.id === newSegment);
-        updateData.questionnaireData = {
-          ...lead.questionnaireData,
-          segmentoLandingPage: seg?.label || lead.questionnaireData.segmentoLandingPage
-        };
-      }
-      await base44.entities.Lead.update(leadId, updateData);
-      await base44.entities.LeadActivity.create({
-        leadId,
-        activityType: 'segmento_alterado',
-        description: `Segmento alterado de "${segmentLabel}" para "${getSegmentLabel(newSegment)}"`,
-        performedBy: 'admin',
-        activityDate: new Date().toISOString()
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['lead', leadId] });
-      queryClient.invalidateQueries({ queryKey: ['leadActivities', leadId] });
-      toast.success('Segmento atualizado com sucesso');
-    }
-  });
 
   return (
     <div className="space-y-6">
