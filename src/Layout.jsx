@@ -161,7 +161,6 @@ export default function Layout({ children, currentPageName }) {
       items: [
         { label: t('menu.settings'), path: 'Configuracoes', icon: Settings },
         { label: t('menu.audit'), path: 'Auditoria', icon: History },
-        { label: 'Processos Modelo', path: 'ProcessosModelo', icon: BookOpen },
       ]
     }
   ];
@@ -462,8 +461,17 @@ export default function Layout({ children, currentPageName }) {
 
               <SectionDivider isCollapsed={collapsed} />
 
+              {/* Processos Modelo */}
+              <div className="mt-1">
+                <NavItem 
+                  item={{ label: 'Processos Modelo', path: 'ProcessosModelo', icon: BookOpen }} 
+                  isActive={currentPageName === 'ProcessosModelo'}
+                  isCollapsed={collapsed}
+                />
+              </div>
+
               {/* How It Works */}
-              <div className="mt-2">
+              <div className="mt-1">
                 <NavItem 
                   item={{ label: t('menu.how_it_works'), path: 'HowItWorks', icon: BookOpen }} 
                   isActive={currentPageName === 'HowItWorks'}
@@ -607,7 +615,17 @@ export default function Layout({ children, currentPageName }) {
 
                 <SectionDivider isCollapsed={false} />
 
-                <div className="mt-2">
+                {/* Processos Modelo mobile */}
+                <div className="mt-1">
+                  <NavItem 
+                    item={{ label: 'Processos Modelo', path: 'ProcessosModelo', icon: BookOpen }} 
+                    isActive={currentPageName === 'ProcessosModelo'}
+                    onClick={() => setMobileMenuOpen(false)}
+                    isCollapsed={false}
+                  />
+                </div>
+
+                <div className="mt-1">
                   <NavItem 
                     item={{ label: t('menu.how_it_works'), path: 'HowItWorks', icon: BookOpen }} 
                     isActive={currentPageName === 'HowItWorks'}
