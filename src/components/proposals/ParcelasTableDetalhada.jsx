@@ -26,7 +26,7 @@ function getTaxasForBandeira(taxas, bandeira) {
   return {};
 }
 
-export default function ParcelasTableDetalhada({ taxas, taxaRAV = 0, prazo = 'D+1', showSimulator = false }) {
+export default function ParcelasTableDetalhada({ taxas, taxaRAV = 0, prazo = 'D+1', showSimulator = false, taxaFinalOverrides = {} }) {
   const [activeBandeira, setActiveBandeira] = useState('mastercard');
   const [simulatedPrazo, setSimulatedPrazo] = useState(prazo);
   
@@ -78,7 +78,9 @@ export default function ParcelasTableDetalhada({ taxas, taxaRAV = 0, prazo = 'D+
                           {r.taxaAntecipacao > 0 ? `+${r.taxaAntecipacao.toFixed(2)}%` : '-'}
                         </td>
                       )}
-                      <td className="py-2 px-3 text-right font-bold text-[#2bc196]">{r.taxaFinal.toFixed(2)}%</td>
+                      <td className={`py-2 px-3 text-right font-bold ${taxaFinalOverrides[String(r.parcela)] != null ? 'text-amber-600' : 'text-[#2bc196]'}`}>
+                        {(taxaFinalOverrides[String(r.parcela)] != null ? taxaFinalOverrides[String(r.parcela)] : r.taxaFinal).toFixed(2)}%
+                      </td>
                     </tr>
                   ))}
                 </tbody>

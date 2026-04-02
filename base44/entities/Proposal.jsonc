@@ -255,6 +255,10 @@
         }
       }
     },
+    "taxaFinalOverrides": {
+      "type": "object",
+      "description": "Sobrescritas manuais da taxa final por parcela. Chaves s\u00e3o n\u00fameros de parcela (1-21), valores s\u00e3o a taxa final em %. Ex: {\"1\": 1.99, \"5\": 2.50}"
+    },
     "clienteNome": {
       "type": "string",
       "description": "Nome da empresa do cliente"

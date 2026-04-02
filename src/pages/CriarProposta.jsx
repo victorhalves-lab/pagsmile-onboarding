@@ -16,6 +16,7 @@ import ProfitabilityPanel from '@/components/proposals/ProfitabilityPanel';
 import PropostaPreview from '@/components/proposals/PropostaPreview';
 import CopyRatesModal from '@/components/proposals/CopyRatesModal';
 import SegmentRatesLoader from '@/components/proposals/SegmentRatesLoader';
+import FinalRateOverridesEditor from '@/components/proposals/FinalRateOverridesEditor';
 
 const parseTaxa = (val) => {
   if (!val && val !== 0) return 0;
@@ -46,6 +47,7 @@ export default function CriarProposta() {
     prazoRecebimento: 'D+1', usaAntecipacao: false, percentualAntecipacao: '',
     taxaAntecipacao: '',
     dataValidade: new Date(new Date().setDate(new Date().getDate() + 15)),
+    taxaFinalOverrides: {},
   });
 
   const [rates, setRates] = useState({
@@ -121,6 +123,7 @@ export default function CriarProposta() {
         percentualAntecipacao: existingProposal.rates?.percentualAntecipacao || '',
         taxaAntecipacao: existingProposal.rates?.rav?.taxa || '',
         dataValidade: existingProposal.validUntil ? new Date(existingProposal.validUntil) : new Date(),
+        taxaFinalOverrides: existingProposal.taxaFinalOverrides || {},
       });
       const r = existingProposal.rates || {};
       setRates({
@@ -221,6 +224,7 @@ export default function CriarProposta() {
         rav: { taxa: parseTaxa(form.taxaAntecipacao), prazo: form.prazoRecebimento },
         percentualAntecipacao: parseTaxa(form.percentualAntecipacao),
       },
+      taxaFinalOverrides: form.taxaFinalOverrides || {},
       validUntil: form.dataValidade.toISOString(),
       tokenPublico: existingProposal?.tokenPublico || gerarToken(),
       responsavelId: criadoPorId || criadoPor, responsavelNome: criadoPorNome,
@@ -303,6 +307,7 @@ export default function CriarProposta() {
           />
           <CardTaxasCartao rates={rates} onUpdateRates={updateRates} selectedBrand={selectedBrand} setSelectedBrand={setSelectedBrand} partner={selectedPartner} clientMcc={form.clienteMcc} />
           <CardAntecipacao form={form} onUpdate={updateForm} />
+          <FinalRateOverridesEditor overrides={form.taxaFinalOverrides || {}} onChange={(v) => updateForm('taxaFinalOverrides', v)} />
           <CardOutrasTaxas rates={rates} onUpdateRates={updateRates} partner={selectedPartner} />
         </div>
 
@@ -317,7 +322,7 @@ export default function CriarProposta() {
               leadTransacoes={lead?.transacoesMes}
               selectedMccCode={selectedMccCode}
             />
-            <PropostaPreview form={form} rates={rates} selectedBrand={selectedBrand} onBandeiraChange={setSelectedBrand} />
+            <PropostaPreview form={form} rates={rates} selectedBrand={selectedBrand} onBandeiraChange={setSelectedBrand} taxaFinalOverrides={form.taxaFinalOverrides} />
           </div>
         </div>
       </div>

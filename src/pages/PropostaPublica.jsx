@@ -525,7 +525,7 @@ export default function PropostaPublica() {
           <h2 className="font-bold text-base text-[#002443] mb-4">
             {t('pp.installment_table')}
           </h2>
-          <ParcelasTableDetalhada taxas={rates} taxaRAV={taxaRAV} prazo={prazo} showSimulator={true} />
+          <ParcelasTableDetalhada taxas={rates} taxaRAV={taxaRAV} prazo={prazo} showSimulator={true} taxaFinalOverrides={proposta.taxaFinalOverrides || {}} />
         </CardContent>
       </Card>
 

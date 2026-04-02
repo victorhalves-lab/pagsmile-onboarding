@@ -46,7 +46,7 @@ export function calcularTabelaParcelas(taxas, taxaRAV, prazo) {
   return rows;
 }
 
-export default function ParcelasTable({ taxas, taxaRAV = 0, prazo = 'D+1', compact = false }) {
+export default function ParcelasTable({ taxas, taxaRAV = 0, prazo = 'D+1', compact = false, taxaFinalOverrides = {} }) {
   const rows = calcularTabelaParcelas(taxas, taxaRAV, prazo);
 
   if (!taxas || (!taxas.avista && !taxas.vista && !taxas.de2a6x && !taxas.parcelado_2_6)) {
@@ -78,8 +78,8 @@ export default function ParcelasTable({ taxas, taxaRAV = 0, prazo = 'D+1', compa
                   {r.taxaAntecipacao > 0 ? `+${r.taxaAntecipacao.toFixed(2)}%` : '-'}
                 </td>
               )}
-              <td className="py-1.5 px-2 text-right font-bold text-[var(--pagsmile-green)]">
-                {r.taxaFinal.toFixed(2)}%
+              <td className={`py-1.5 px-2 text-right font-bold ${taxaFinalOverrides[String(r.parcela)] != null ? 'text-amber-600' : 'text-[var(--pagsmile-green)]'}`}>
+                {(taxaFinalOverrides[String(r.parcela)] != null ? taxaFinalOverrides[String(r.parcela)] : r.taxaFinal).toFixed(2)}%
               </td>
             </tr>
           ))}

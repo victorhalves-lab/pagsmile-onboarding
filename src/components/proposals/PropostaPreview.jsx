@@ -8,7 +8,7 @@ const BANDEIRAS = [
   { id: 'outras', label: 'Outras' },
 ];
 
-export default function PropostaPreview({ form, rates, selectedBrand, onBandeiraChange }) {
+export default function PropostaPreview({ form, rates, selectedBrand, onBandeiraChange, taxaFinalOverrides = {} }) {
   const parseVal = (val) => { if (!val && val !== 0) return 0; if (typeof val === 'number') return isNaN(val) ? 0 : val; const cleaned = String(val).replace(/\./g, '').replace(',', '.'); const num = parseFloat(cleaned); return isNaN(num) ? 0 : num; };
   const fmtPct = (val) => { const num = typeof val === 'number' ? val : parseVal(val); return isNaN(num) ? '0.00%' : `${num.toFixed(2)}%`; };
 
@@ -36,7 +36,9 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
       }
       taxaAntecipacao = somaAntecip / parcela;
     }
-    rows.push({ parcela, faixaLabel, taxaBase, taxaAntecipacao, taxaFinal: taxaBase + taxaAntecipacao });
+    const overrideVal = taxaFinalOverrides[String(parcela)];
+    const taxaFinal = overrideVal != null ? overrideVal : taxaBase + taxaAntecipacao;
+    rows.push({ parcela, faixaLabel, taxaBase, taxaAntecipacao, taxaFinal, hasOverride: overrideVal != null });
   }
 
   return (
@@ -72,7 +74,7 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
             <div className="text-[10px] text-right font-mono">
               {row.taxaAntecipacao > 0 ? <span className="text-[#5cf7cf]">+{fmtPct(row.taxaAntecipacao)}</span> : <span className="text-white/30">—</span>}
             </div>
-            <div className="text-[11px] text-right font-bold text-[#2bc196]">{fmtPct(row.taxaFinal)}</div>
+            <div className={`text-[11px] text-right font-bold ${row.hasOverride ? 'text-amber-400' : 'text-[#2bc196]'}`}>{fmtPct(row.taxaFinal)}</div>
           </div>
         ))}
       </div>
