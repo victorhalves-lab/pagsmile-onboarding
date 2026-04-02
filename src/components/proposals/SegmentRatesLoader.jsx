@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { LayoutGrid, Check, Info } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
+import { LayoutGrid, Check, Info, Loader2 } from 'lucide-react';
 import { DEFAULT_SEGMENT_RATES } from '@/lib/rateCalculator';
 import { toast } from 'sonner';
 
@@ -11,8 +13,21 @@ const SEGMENTS = [
 export default function SegmentRatesLoader({ onApply }) {
   const [selected, setSelected] = useState(null);
 
+  const { data: dbRates, isLoading } = useQuery({
+    queryKey: ['segmentDefaultRates'],
+    queryFn: () => base44.entities.SegmentDefaultRates.list(),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const getRatesForSegment = (segment) => {
+    // Tenta banco primeiro, fallback para hardcoded
+    const fromDb = dbRates?.find(s => s.segmentName === segment);
+    if (fromDb) return fromDb;
+    return DEFAULT_SEGMENT_RATES.find(s => s.segmentName === segment);
+  };
+
   const handleSelect = (segment) => {
-    const segDefault = DEFAULT_SEGMENT_RATES.find(s => s.segmentName === segment);
+    const segDefault = getRatesForSegment(segment);
     if (!segDefault) return;
 
     const bandeiras = ['visa', 'mastercard', 'elo', 'amex', 'outras'];
@@ -29,7 +44,7 @@ export default function SegmentRatesLoader({ onApply }) {
     const rates = {
       cartao,
       pix: { tipo: 'percentual', valor: segDefault.pixTaxaPercentual },
-      boleto: 2.99,
+      boleto: segDefault.boleto || 2.99,
       feeTransacao: segDefault.feeTransacao,
       antifraude: segDefault.antifraude,
       alertaPreChargeback: 55,
@@ -59,6 +74,7 @@ export default function SegmentRatesLoader({ onApply }) {
           <h2 className="text-sm font-bold text-white/80">Taxas Padrão por Segmento</h2>
           <p className="text-[10px] text-white/30">Opcional — carrega as taxas base do segmento como ponto de partida</p>
         </div>
+        {isLoading && <Loader2 className="w-3.5 h-3.5 text-white/30 animate-spin" />}
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-2">

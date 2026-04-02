@@ -1,8 +1,10 @@
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Plus, Trash2, Sparkles } from 'lucide-react';
+import { Plus, Trash2, Sparkles, Loader2 } from 'lucide-react';
 import { DEFAULT_SEGMENT_RATES } from '@/lib/rateCalculator';
 import { toast } from 'sonner';
 
@@ -90,6 +92,12 @@ function SegmentCard({ segment, index, onUpdate, onRemove }) {
 }
 
 export default function StandardRatesEditor({ rates = [], onChange }) {
+  const { data: dbRates, isLoading: isLoadingDefaults } = useQuery({
+    queryKey: ['segmentDefaultRates'],
+    queryFn: () => base44.entities.SegmentDefaultRates.list(),
+    staleTime: 5 * 60 * 1000,
+  });
+
   const handleUpdate = (index, updated) => {
     const newRates = [...rates];
     newRates[index] = updated;
@@ -105,13 +113,22 @@ export default function StandardRatesEditor({ rates = [], onChange }) {
       segmentName: '', mcc: '', riskLevel: '',
       mdrAvista: 0, mdr2a6x: 0, mdr7a12x: 0, mdr13a21x: 0,
       percentualAntecipacao: 0, feeTransacao: 0, antifraude: 0, taxa3ds: 0,
-      pixTaxaPercentual: 0.35, pixTaxaFixa: 0.30,
+      pixTaxaPercentual: 0.45, pixTaxaFixa: 0.30,
     }]);
   };
 
   const handleLoadDefaults = () => {
-    onChange([...DEFAULT_SEGMENT_RATES]);
-    toast.success('6 segmentos padrão carregados!');
+    // Banco é fonte de verdade, fallback para hardcoded
+    const source = (dbRates && dbRates.length > 0) ? dbRates : DEFAULT_SEGMENT_RATES;
+    const cleaned = source.map(s => ({
+      segmentName: s.segmentName, mcc: s.mcc, riskLevel: s.riskLevel,
+      mdrAvista: s.mdrAvista, mdr2a6x: s.mdr2a6x, mdr7a12x: s.mdr7a12x, mdr13a21x: s.mdr13a21x,
+      percentualAntecipacao: s.percentualAntecipacao, feeTransacao: s.feeTransacao,
+      antifraude: s.antifraude, taxa3ds: s.taxa3ds,
+      pixTaxaPercentual: s.pixTaxaPercentual, pixTaxaFixa: s.pixTaxaFixa,
+    }));
+    onChange(cleaned);
+    toast.success(`${cleaned.length} segmentos padrão carregados!`);
   };
 
   return (
@@ -119,8 +136,9 @@ export default function StandardRatesEditor({ rates = [], onChange }) {
       <div className="flex items-center justify-between">
         <p className="text-xs font-bold text-[#2bc196] uppercase tracking-wider">Taxas por Segmento</p>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleLoadDefaults} className="rounded-xl text-xs h-7">
-            <Sparkles className="w-3 h-3 mr-1" /> Carregar Padrão (6 segmentos)
+          <Button variant="outline" size="sm" onClick={handleLoadDefaults} disabled={isLoadingDefaults} className="rounded-xl text-xs h-7">
+            {isLoadingDefaults ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <Sparkles className="w-3 h-3 mr-1" />}
+            Carregar Padrão (10 segmentos)
           </Button>
           <Button variant="outline" size="sm" onClick={handleAdd} className="rounded-xl text-xs h-7">
             <Plus className="w-3 h-3 mr-1" /> Adicionar
@@ -131,8 +149,9 @@ export default function StandardRatesEditor({ rates = [], onChange }) {
       {rates.length === 0 && (
         <div className="text-center py-6 bg-[#f4f4f4] rounded-xl">
           <p className="text-xs text-[#002443]/40 mb-2">Nenhum segmento configurado</p>
-          <Button variant="outline" size="sm" onClick={handleLoadDefaults} className="rounded-xl text-xs">
-            <Sparkles className="w-3.5 h-3.5 mr-1.5" /> Carregar os 6 Segmentos Padrão
+          <Button variant="outline" size="sm" onClick={handleLoadDefaults} disabled={isLoadingDefaults} className="rounded-xl text-xs">
+            {isLoadingDefaults ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5 mr-1.5" />}
+            Carregar os 10 Segmentos Padrão
           </Button>
         </div>
       )}

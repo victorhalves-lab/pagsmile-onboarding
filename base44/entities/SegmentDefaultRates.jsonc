@@ -1,0 +1,65 @@
+{
+  "name": "SegmentDefaultRates",
+  "type": "object",
+  "properties": {
+    "segmentName": {
+      "type": "string",
+      "description": "Nome do segmento (ex: Educa\u00e7\u00e3o, E-commerce)"
+    },
+    "mcc": {
+      "type": "string",
+      "description": "MCC principal do segmento"
+    },
+    "riskLevel": {
+      "type": "string",
+      "description": "N\u00edvel de risco do segmento"
+    },
+    "mdrAvista": {
+      "type": "number",
+      "description": "MDR Cr\u00e9dito \u00e0 Vista 1x em %"
+    },
+    "mdr2a6x": {
+      "type": "number",
+      "description": "MDR Cr\u00e9dito 2-6x em %"
+    },
+    "mdr7a12x": {
+      "type": "number",
+      "description": "MDR Cr\u00e9dito 7-12x em %"
+    },
+    "mdr13a21x": {
+      "type": "number",
+      "description": "MDR Cr\u00e9dito 13-21x em %"
+    },
+    "percentualAntecipacao": {
+      "type": "number",
+      "description": "Taxa de antecipa\u00e7\u00e3o mensal em %"
+    },
+    "feeTransacao": {
+      "type": "number",
+      "description": "Fee por transa\u00e7\u00e3o em R$"
+    },
+    "antifraude": {
+      "type": "number",
+      "description": "Custo de antifraude por transa\u00e7\u00e3o em R$"
+    },
+    "taxa3ds": {
+      "type": "number",
+      "description": "Custo de 3DS por transa\u00e7\u00e3o em R$"
+    },
+    "pixTaxaPercentual": {
+      "type": "number",
+      "description": "Taxa PIX percentual em %"
+    },
+    "pixTaxaFixa": {
+      "type": "number",
+      "description": "Taxa PIX fixa em R$"
+    },
+    "boleto": {
+      "type": "number",
+      "description": "Taxa de boleto em R$"
+    }
+  },
+  "required": [
+    "segmentName"
+  ]
+}
