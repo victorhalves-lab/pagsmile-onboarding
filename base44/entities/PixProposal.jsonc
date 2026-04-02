@@ -39,6 +39,21 @@
       "default": "manual",
       "description": "Origem da proposta"
     },
+    "sourceFlow": {
+      "type": "string",
+      "enum": [
+        "manual_creation",
+        "standard_proposal_link",
+        "introducer_landing_page",
+        "pix_proposal_link",
+        "pagsmile_lead_v5_questionnaire",
+        "lead_pix_v4_form",
+        "from_existing_proposal_rates",
+        "proposal_versioning"
+      ],
+      "default": "manual_creation",
+      "description": "Caminho de origem da cria\u00e7\u00e3o da proposta"
+    },
     "rates": {
       "type": "object",
       "description": "Taxas oferecidas para PIX",

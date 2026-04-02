@@ -205,6 +205,7 @@ export default function CriarProposta() {
     return {
       leadId: leadId || '', codigo: existingProposal?.codigo || gerarCodigo(),
       proposalName: `Proposta - ${form.clienteNome}`, status, origem: 'manual',
+      sourceFlow: templateFromId ? 'from_existing_proposal_rates' : (existingProposal?.sourceFlow || 'manual_creation'),
       businessSubCategory: form.businessSubCategory,
       chosenPartnerId: selectedPartnerId || '',
       chosenPartnerName: selectedPartner?.name || '',

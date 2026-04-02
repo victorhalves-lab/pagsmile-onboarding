@@ -53,6 +53,7 @@ export default function GestaoPropostas() {
   const [rentabilidadeProposal, setRentabilidadeProposal] = useState(null);
   const [assignSellerProposal, setAssignSellerProposal] = useState(null);
 
+  const [sourceFlowFilter, setSourceFlowFilter] = useState('all');
   const [activeTab, setActiveTab] = useState('lista');
 
   const { data: allPropostas = [], isLoading } = useQuery({
@@ -72,6 +73,17 @@ export default function GestaoPropostas() {
     }
   });
 
+  const SOURCE_FLOW_LABELS = {
+    manual_creation: 'Criação Manual',
+    standard_proposal_link: 'Proposta Padrão',
+    introducer_landing_page: 'Landing Page Introducer',
+    pix_proposal_link: 'Proposta PIX Pública',
+    pagsmile_lead_v5_questionnaire: 'Questionário Lead V5',
+    lead_pix_v4_form: 'Questionário PIX V4',
+    from_existing_proposal_rates: 'Cópia de Taxas',
+    proposal_versioning: 'Nova Versão',
+  };
+
   const filtered = useMemo(() => {
     let result = propostas;
     if (search) {
@@ -83,8 +95,9 @@ export default function GestaoPropostas() {
       );
     }
     if (statusFilter !== 'all') result = result.filter(p => p.status === statusFilter);
+    if (sourceFlowFilter !== 'all') result = result.filter(p => (p.sourceFlow || 'manual_creation') === sourceFlowFilter);
     return result;
-  }, [propostas, search, statusFilter]);
+  }, [propostas, search, statusFilter, sourceFlowFilter]);
 
   const copyLink = (proposta) => {
     const url = window.location.origin + createPageUrl('PropostaPublica') + `?token=${proposta.tokenPublico}`;
@@ -134,6 +147,7 @@ export default function GestaoPropostas() {
       previousVersionId: proposta.id,
       rootProposalId: rootId,
       isCurrentVersion: true,
+      sourceFlow: 'proposal_versioning',
     };
 
     const created = await base44.entities.Proposal.create(newProposta);
@@ -204,8 +218,17 @@ export default function GestaoPropostas() {
                 ))}
               </SelectContent>
             </Select>
-            {(search || statusFilter !== 'all') && (
-              <Button variant="ghost" size="sm" onClick={() => { setSearch(''); setStatusFilter('all'); }}>
+            <Select value={sourceFlowFilter} onValueChange={setSourceFlowFilter}>
+              <SelectTrigger className="w-[200px] h-10"><SelectValue placeholder="Origem" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas as Origens</SelectItem>
+                {Object.entries(SOURCE_FLOW_LABELS).map(([k, v]) => (
+                  <SelectItem key={k} value={k}>{v}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {(search || statusFilter !== 'all' || sourceFlowFilter !== 'all') && (
+              <Button variant="ghost" size="sm" onClick={() => { setSearch(''); setStatusFilter('all'); setSourceFlowFilter('all'); }}>
                 <X className="w-4 h-4" />
               </Button>
             )}
@@ -220,6 +243,7 @@ export default function GestaoPropostas() {
                     <TableHead>{t('gestao_propostas.number')}</TableHead>
                      <TableHead>{t('gestao_propostas.company')}</TableHead>
                      <TableHead>Responsável</TableHead>
+                     <TableHead>Origem</TableHead>
                      <TableHead>{t('gestao_propostas.model')}</TableHead>
                      <TableHead>{t('common.status')}</TableHead>
                      <TableHead>{t('gestao_propostas.timeline')}</TableHead>
@@ -230,7 +254,7 @@ export default function GestaoPropostas() {
                 <TableBody>
                   {filtered.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={9} className="text-center py-12">
+                      <TableCell colSpan={10} className="text-center py-12">
                         <FileText className="w-12 h-12 mx-auto text-[var(--pagsmile-blue)]/30 mb-3" />
                         <p className="text-[var(--pagsmile-blue)]/60">{t('gestao_propostas.no_proposals')}</p>
                         <Button variant="link" onClick={() => navigate(createPageUrl('CriarProposta'))} className="mt-2 text-[var(--pagsmile-green)]">
@@ -266,6 +290,11 @@ export default function GestaoPropostas() {
                                + Atribuir
                              </button>
                            )}
+                         </TableCell>
+                         <TableCell>
+                          <Badge className="text-[10px] border-0 bg-slate-100 text-slate-600">
+                            {SOURCE_FLOW_LABELS[p.sourceFlow] || 'Criação Manual'}
+                          </Badge>
                          </TableCell>
                          <TableCell>
                           {p.businessSubCategory ? (

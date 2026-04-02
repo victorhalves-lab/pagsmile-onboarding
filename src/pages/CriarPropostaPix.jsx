@@ -116,6 +116,7 @@ export default function CriarPropostaPix() {
       proposalName: `Proposta PIX - ${form.clienteNome}`,
       status,
       origem: 'manual',
+      sourceFlow: existingProposal?.sourceFlow || 'manual_creation',
       clienteNome: form.clienteNome,
       clienteCnpj: form.clienteCnpj.replace(/\D/g, ''),
       clienteContato: form.clienteContato,

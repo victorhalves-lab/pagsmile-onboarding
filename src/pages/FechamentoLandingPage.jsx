@@ -167,6 +167,7 @@ export default function FechamentoLandingPage() {
         clienteCnpj: createdLead.cpfCnpj,
         chosenPartnerId: ratesData.partnerId,
         businessSubCategory: SEGMENT_LABEL_TO_ID[segmentName] || 'ecommerce',
+        sourceFlow: isFromStandardProposal ? 'standard_proposal_link' : 'introducer_landing_page',
       };
 
       const proposalEntity = ratesData.rates.pix ? 'PixProposal' : 'Proposal';
