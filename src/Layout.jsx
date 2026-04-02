@@ -161,6 +161,7 @@ export default function Layout({ children, currentPageName }) {
       items: [
         { label: t('menu.settings'), path: 'Configuracoes', icon: Settings },
         { label: t('menu.audit'), path: 'Auditoria', icon: History },
+        { label: 'Processos Modelo', path: 'ProcessosModelo', icon: BookOpen },
       ]
     }
   ];
