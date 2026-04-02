@@ -48,7 +48,7 @@ export default function GestaoPropostas() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [deleteId, setDeleteId] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
   const [historyProposalId, setHistoryProposalId] = useState(null);
   const [rentabilidadeProposal, setRentabilidadeProposal] = useState(null);
   const [assignSellerProposal, setAssignSellerProposal] = useState(null);
@@ -56,20 +56,38 @@ export default function GestaoPropostas() {
   const [sourceFlowFilter, setSourceFlowFilter] = useState('all');
   const [activeTab, setActiveTab] = useState('lista');
 
-  const { data: allPropostas = [], isLoading } = useQuery({
+  const { data: proposalsData = [], isLoading: isLoadingProposals } = useQuery({
     queryKey: ['propostas'],
     queryFn: () => base44.entities.Proposal.list('-created_date', 500)
   });
+
+  const { data: pixProposalsData = [], isLoading: isLoadingPix } = useQuery({
+    queryKey: ['pix-propostas'],
+    queryFn: () => base44.entities.PixProposal.list('-created_date', 500)
+  });
+
+  const isLoading = isLoadingProposals || isLoadingPix;
+
+  // Merge both entity types, marking PixProposals
+  const allPropostas = useMemo(() => {
+    const proposals = proposalsData.map(p => ({ ...p, _entityType: 'Proposal' }));
+    const pixProposals = pixProposalsData.map(p => ({ ...p, _entityType: 'PixProposal' }));
+    return [...proposals, ...pixProposals].sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+  }, [proposalsData, pixProposalsData]);
 
   // Filtra apenas versões atuais para a lista principal
   const propostas = useMemo(() => allPropostas.filter(p => p.isCurrentVersion !== false), [allPropostas]);
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.Proposal.delete(id),
+    mutationFn: ({ id, entityType }) => {
+      const entity = entityType === 'PixProposal' ? base44.entities.PixProposal : base44.entities.Proposal;
+      return entity.delete(id);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['propostas'] });
+      queryClient.invalidateQueries({ queryKey: ['pix-propostas'] });
       toast.success(t('gestao_propostas.deleted'));
-      setDeleteId(null);
+      setDeleteTarget(null);
     }
   });
 
@@ -125,6 +143,7 @@ export default function GestaoPropostas() {
     delete newProposta.created_date;
     delete newProposta.updated_date;
     delete newProposta.created_by;
+    delete newProposta._entityType;
     const created = await base44.entities.Proposal.create(newProposta);
     queryClient.invalidateQueries({ queryKey: ['propostas'] });
     toast.success(t('gestao_propostas.duplicated'));
@@ -134,7 +153,7 @@ export default function GestaoPropostas() {
   const criarNovaVersao = async (proposta) => {
     const year = new Date().getFullYear();
     const seq = String(Math.floor(Math.random() * 99999)).padStart(5, '0');
-    const { id, created_date, updated_date, created_by, publicLinkCode, tokenPublico, sentDate, acceptedDate, rejectedDate, rejectedReason, counterProposalDetails, ...dataToCopy } = proposta;
+    const { id, created_date, updated_date, created_by, publicLinkCode, tokenPublico, sentDate, acceptedDate, rejectedDate, rejectedReason, counterProposalDetails, _entityType, ...dataToCopy } = proposta;
     const newVersion = (proposta.version || 1) + 1;
     const rootId = proposta.rootProposalId || proposta.id;
 
@@ -297,15 +316,20 @@ export default function GestaoPropostas() {
                           </Badge>
                          </TableCell>
                          <TableCell>
-                          {p.businessSubCategory ? (
-                            <Badge className={`text-[10px] border-0 ${
-                              p.businessSubCategory === 'GATEWAY' ? 'bg-indigo-100 text-indigo-700' :
-                              p.businessSubCategory === 'MARKETPLACE' ? 'bg-amber-100 text-amber-700' :
-                              'bg-emerald-100 text-emerald-700'
-                            }`}>
-                              {p.businessSubCategory === 'MERCHAN' ? 'Merchant' : p.businessSubCategory === 'GATEWAY' ? 'Gateway' : 'Marketplace'}
-                            </Badge>
-                          ) : <span className="text-xs text-slate-400">—</span>}
+                          <div className="flex items-center gap-1">
+                            {p._entityType === 'PixProposal' && (
+                              <Badge className="text-[9px] border-0 bg-cyan-100 text-cyan-700">PIX</Badge>
+                            )}
+                            {p.businessSubCategory ? (
+                              <Badge className={`text-[10px] border-0 ${
+                                p.businessSubCategory === 'GATEWAY' || p.businessSubCategory === 'gateway' ? 'bg-indigo-100 text-indigo-700' :
+                                p.businessSubCategory === 'MARKETPLACE' || p.businessSubCategory === 'marketplace' ? 'bg-amber-100 text-amber-700' :
+                                'bg-emerald-100 text-emerald-700'
+                              }`}>
+                                {['MERCHAN','merchan','ecommerce','educacao','infoprodutos','saas','mpe','dropshipping','plataformas_verticais','link_pagamento'].includes(p.businessSubCategory) ? (p.businessSubCategory.charAt(0).toUpperCase() + p.businessSubCategory.slice(1)) : p.businessSubCategory === 'GATEWAY' || p.businessSubCategory === 'gateway' ? 'Gateway' : 'Marketplace'}
+                              </Badge>
+                            ) : <span className="text-xs text-slate-400">—</span>}
+                          </div>
                         </TableCell>
                         <TableCell className="text-sm text-[var(--pagsmile-blue)]/60">{p.clienteCnpj || '-'}</TableCell>
                         <TableCell><Badge className={sCfg.color}>{sCfg.label}</Badge></TableCell>
@@ -347,7 +371,13 @@ export default function GestaoPropostas() {
                             <Button variant="ghost" size="sm" onClick={() => setRentabilidadeProposal(p)} title="Simular Rentabilidade" className="text-[#2bc196] hover:text-[#2bc196] hover:bg-[#2bc196]/10">
                               <DollarSign className="w-4 h-4" />
                             </Button>
-                            <Button variant="ghost" size="sm" onClick={() => navigate(createPageUrl('PropostaDetalhes') + `?id=${p.id}`)} title="Ver detalhes">
+                            <Button variant="ghost" size="sm" onClick={() => {
+                              if (p._entityType === 'PixProposal') {
+                                navigate('/PropostaPixDetalhes?id=' + p.id);
+                              } else {
+                                navigate(createPageUrl('PropostaDetalhes') + `?id=${p.id}`);
+                              }
+                            }} title="Ver detalhes">
                               <Eye className="w-4 h-4" />
                             </Button>
                             {p.status === 'rascunho' && (
@@ -376,7 +406,7 @@ export default function GestaoPropostas() {
                             <Button variant="ghost" size="sm" onClick={() => setHistoryProposalId(p.id)} title="Histórico">
                               <History className="w-4 h-4" />
                             </Button>
-                            <Button variant="ghost" size="sm" onClick={() => setDeleteId(p.id)} className="text-red-500 hover:text-red-700">
+                            <Button variant="ghost" size="sm" onClick={() => setDeleteTarget({ id: p.id, entityType: p._entityType })} className="text-red-500 hover:text-red-700">
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
@@ -418,7 +448,7 @@ export default function GestaoPropostas() {
       />
 
       {/* Delete dialog */}
-      <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
+      <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>{t('gestao_propostas.delete_title')}</AlertDialogTitle>
@@ -426,7 +456,7 @@ export default function GestaoPropostas() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={() => deleteMutation.mutate(deleteId)} className="bg-red-500 hover:bg-red-600">
+            <AlertDialogAction onClick={() => deleteMutation.mutate(deleteTarget)} className="bg-red-500 hover:bg-red-600">
               {deleteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : t('common.delete')}
             </AlertDialogAction>
           </AlertDialogFooter>

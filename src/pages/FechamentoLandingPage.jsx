@@ -158,11 +158,32 @@ export default function FechamentoLandingPage() {
 
       const createdLead = await base44.entities.Lead.create(leadPayload);
 
-      // 3. Create Proposal
+      // 3. Create Proposal — always in Proposal entity
+      // Map introducer rates format to Proposal rates format if needed
+      let proposalRates = ratesData.rates;
+      if (ratesData.isFromIntroducer) {
+        const r = ratesData.rates;
+        const bandeira = (avista, de2a6x, de7a12x, de13a21x) => ({ avista, de2a6x, de7a12x, de13a21x });
+        const cardRates = bandeira(r.mdrAvista, r.mdr2a6x, r.mdr7a12x, r.mdr13a21x);
+        proposalRates = {
+          cartao: { visa: { ...cardRates }, mastercard: { ...cardRates }, elo: { ...cardRates }, amex: { ...cardRates }, outras: { ...cardRates } },
+          debito: {},
+          pix: r.pixTaxaPercentual ? { tipo: 'percentual', valor: r.pixTaxaPercentual } : r.pixTaxaFixa ? { tipo: 'fixo', valor: r.pixTaxaFixa } : undefined,
+          antifraude: r.antifraude,
+          feeTransacao: r.feeTransacao,
+          taxa3ds: r.taxa3ds,
+          percentualAntecipacao: r.percentualAntecipacao,
+          setup: 0,
+          boleto: undefined,
+          rav: undefined,
+          minimoGarantido: undefined,
+        };
+      }
+
       const proposalPayload = {
         leadId: createdLead.id,
         status: 'rascunho',
-        rates: ratesData.rates,
+        rates: proposalRates,
         clienteNome: createdLead.fullName,
         clienteCnpj: createdLead.cpfCnpj,
         chosenPartnerId: ratesData.partnerId,
@@ -170,8 +191,7 @@ export default function FechamentoLandingPage() {
         sourceFlow: isFromStandardProposal ? 'standard_proposal_link' : 'introducer_landing_page',
       };
 
-      const proposalEntity = ratesData.rates.pix ? 'PixProposal' : 'Proposal';
-      const createdProposal = await base44.entities[proposalEntity].create(proposalPayload);
+      const createdProposal = await base44.entities.Proposal.create(proposalPayload);
 
       // 4. Link everything
       await base44.entities.Lead.update(createdLead.id, { currentProposalId: createdProposal.id });
