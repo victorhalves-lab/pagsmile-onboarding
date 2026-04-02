@@ -87,7 +87,13 @@ function DistributionBar({ dist }) {
 export default function StandardProposalResponsesModal({ open, onClose, record }) {
   const [activeSection, setActiveSection] = useState('empresa');
 
-  if (!record) return null;
+  if (!record) {
+    return (
+      <Dialog open={false} onOpenChange={onClose}>
+        <DialogContent><div /></DialogContent>
+      </Dialog>
+    );
+  }
 
   const addr = record.endereco || {};
 
