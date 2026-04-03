@@ -263,7 +263,7 @@ export default function PropostaPadraoPublica() {
         <div className="absolute -bottom-16 -left-16 w-40 h-40 bg-[#5cf7cf] rounded-full blur-3xl opacity-10 pointer-events-none" />
         <div className="relative z-10">
           <p className="text-xs text-white/50 mb-1 uppercase font-bold tracking-widest">Taxa de Setup</p>
-          <p className="text-3xl font-extrabold text-[#2bc196]">R$ {(parseFloat(rates.setup) || 8000).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+          <p className="text-3xl font-extrabold text-[#2bc196]">R$ 8.000,00</p>
           <p className="text-xs text-white/40 mt-1">Pagamento único</p>
         </div>
       </div>
