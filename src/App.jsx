@@ -37,6 +37,7 @@ import DashboardComercial from './pages/DashboardComercial';
 import DashboardCEO from './pages/DashboardCEO';
 import ProcessosModelo from './pages/ProcessosModelo';
 import GerarKickOff from './pages/GerarKickOff';
+import KickOffPublico from './pages/KickOffPublico';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -60,6 +61,7 @@ const PUBLIC_PATHS = new Set([
   '/QuestionarioLeadsPagsmile',
   '/LeadPixV4',
   '/FechamentoLandingPage',
+  '/KickOffPublico',
 ]);
 
 function isPublicPath(pathname) {
@@ -102,6 +104,7 @@ const PublicRoutes = () => (
     <Route path="/QuestionarioLeadsPagsmile" element={<LayoutWrapper currentPageName="QuestionarioLeadsPagsmile"><QuestionarioLeadsPagsmile /></LayoutWrapper>} />
     <Route path="/LeadPixV4" element={<LayoutWrapper currentPageName="LeadPixV4"><LeadPixV4 /></LayoutWrapper>} />
     <Route path="/FechamentoLandingPage" element={<LayoutWrapper currentPageName="FechamentoLandingPage"><FechamentoLandingPage /></LayoutWrapper>} />
+    <Route path="/KickOffPublico" element={<LayoutWrapper currentPageName="KickOffPublico"><KickOffPublico /></LayoutWrapper>} />
   </Routes>
 );
 

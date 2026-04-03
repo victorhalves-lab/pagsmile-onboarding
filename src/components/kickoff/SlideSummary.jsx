@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import SlideLayout from './SlideLayout';
 import { Building2, CreditCard, QrCode, FileText, DollarSign, Calendar } from 'lucide-react';
 

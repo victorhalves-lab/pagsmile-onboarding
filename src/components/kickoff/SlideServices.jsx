@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import SlideLayout from './SlideLayout';
 import { CreditCard, Wallet, QrCode, Send, FileText, Server, Check } from 'lucide-react';
 
@@ -21,17 +22,17 @@ export default function SlideServices({ modules = {}, slideNumber, totalSlides }
       <p className="text-[10px] text-[#002443]/50 mb-4">Módulos ativados para sua operação</p>
 
       <div className="flex-1 grid grid-cols-3 gap-3">
-        {activeModules.map((mod) => {
+        {activeModules.map((mod, i) => {
           const Icon = mod.icon;
           return (
-            <div key={mod.key} className="bg-[#2bc196]/5 border border-[#2bc196]/20 rounded-xl p-3 relative">
+            <motion.div key={mod.key} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08, duration: 0.4 }} className="bg-[#2bc196]/5 border border-[#2bc196]/20 rounded-2xl p-3.5 relative group hover:shadow-md transition-shadow">
               <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[#2bc196] flex items-center justify-center">
                 <Check className="w-3 h-3 text-white" />
               </div>
               <Icon className="w-6 h-6 text-[#2bc196] mb-2" />
               <h3 className="text-[11px] font-bold text-[#002443] mb-1">{mod.name}</h3>
               <p className="text-[9px] text-[#002443]/50 leading-relaxed">{mod.desc}</p>
-            </div>
+            </motion.div>
           );
         })}
         {inactiveModules.map((mod) => {

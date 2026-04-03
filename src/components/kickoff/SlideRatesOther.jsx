@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import SlideLayout from './SlideLayout';
 
 const fmtBRL = (v) => v != null ? `R$ ${Number(v).toFixed(2)}` : '—';
@@ -26,14 +27,14 @@ export default function SlideRatesOther({ rates = {}, setupFee, slideNumber, tot
 
       <div className="grid grid-cols-4 gap-3 flex-1 content-start">
         {items.map((item, i) => (
-          <div key={i} className={`rounded-xl p-3 flex flex-col justify-center ${
+          <motion.div key={i} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.06, duration: 0.3 }} className={`rounded-2xl p-3.5 flex flex-col justify-center group hover:shadow-md transition-shadow ${
             item.highlight ? 'bg-[#2bc196]/5 border border-[#2bc196]/20' : 'bg-[#f4f4f4] border border-transparent'
           }`}>
             <span className="text-[9px] text-[#002443]/50 mb-1">{item.label}</span>
             <span className={`text-base font-bold font-mono ${item.highlight ? 'text-[#2bc196]' : 'text-[#002443]'}`}>
               {item.value}
             </span>
-          </div>
+          </motion.div>
         ))}
       </div>
     </SlideLayout>

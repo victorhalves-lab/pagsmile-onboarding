@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import SlideLayout from './SlideLayout';
 import { Headphones, MessageSquare, AlertTriangle, Clock, ArrowRight } from 'lucide-react';
 

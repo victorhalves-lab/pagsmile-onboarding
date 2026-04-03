@@ -1,0 +1,64 @@
+{
+  "name": "KickOffPresentation",
+  "type": "object",
+  "properties": {
+    "clientName": {
+      "type": "string",
+      "description": "Nome do cliente"
+    },
+    "clientCnpj": {
+      "type": "string",
+      "description": "CNPJ do cliente"
+    },
+    "proposalId": {
+      "type": "string",
+      "description": "ID da Proposal vinculada"
+    },
+    "proposalCodigo": {
+      "type": "string",
+      "description": "C\u00f3digo da proposta"
+    },
+    "contractId": {
+      "type": "string",
+      "description": "ID do Contract vinculado"
+    },
+    "contractCodigo": {
+      "type": "string",
+      "description": "C\u00f3digo do contrato"
+    },
+    "segment": {
+      "type": "string",
+      "description": "Segmento do cliente"
+    },
+    "publicToken": {
+      "type": "string",
+      "description": "Token p\u00fablico para acesso externo"
+    },
+    "proposalData": {
+      "type": "object",
+      "description": "Snapshot das taxas da proposta"
+    },
+    "contractData": {
+      "type": "object",
+      "description": "Snapshot dos dados do contrato"
+    },
+    "responsavelId": {
+      "type": "string"
+    },
+    "responsavelNome": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "ativa",
+        "arquivada"
+      ],
+      "default": "ativa"
+    }
+  },
+  "required": [
+    "clientName",
+    "publicToken"
+  ]
+}

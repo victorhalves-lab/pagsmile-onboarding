@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import SlideLayout from './SlideLayout';
 
 const BANDEIRAS = ['visa', 'mastercard', 'elo', 'amex', 'outras'];
