@@ -9,6 +9,7 @@ export default function OnboardingCompletion() {
   const navigate = useNavigate();
   const linkCode = localStorage.getItem('onboarding_link_code');
   const flowType = localStorage.getItem('payment_method_type') === 'pix' ? 'pix_only' : 'full_kyc';
+  const cafRedirectUrl = localStorage.getItem('caf_redirect_url') || 'https://cadastro.io/9f7d5853b6dc373b07c2498557ffc410';
   
   const { trackOnboardingComplete } = useOnboardingAnalytics({
     pageName: 'OnboardingCompletion',
@@ -106,7 +107,7 @@ export default function OnboardingCompletion() {
                 Sem o preenchimento deste formulário, seu cadastro <strong className="text-white">não poderá ser finalizado</strong>.
               </p>
               <a
-                href="https://cadastro.io/9f7d5853b6dc373b07c2498557ffc410"
+                href={cafRedirectUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 hover:scale-[1.02] shadow-lg"

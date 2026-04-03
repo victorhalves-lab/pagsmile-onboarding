@@ -859,6 +859,11 @@ export default function DynamicQuestionnaire({
 
     await completeSession();
     setIsCompletingCaf(false);
+    // Persist the segment-specific CAF URL for the completion page
+    const cafUrl = resolvedCafRedirectUrl || cafRedirectUrl;
+    if (cafUrl) {
+      localStorage.setItem('caf_redirect_url', cafUrl);
+    }
     navigate('/OnboardingCompletion');
   }, [formData, complianceAlerts, currentStep, saveProgressNow, completeSession, navigate, createMerchantAndCase, clientInfo]);
 
