@@ -141,7 +141,7 @@ export default function SegmentRatesTable({ segmentRates, segmentName }) {
         <div className="absolute -bottom-16 -left-16 w-40 h-40 bg-[#5cf7cf] rounded-full blur-3xl opacity-10 pointer-events-none" />
         <div className="relative z-10">
           <p className="text-xs uppercase font-bold tracking-widest mb-1" style={{ color: 'rgba(255,255,255,0.5)' }}>Taxa de Setup</p>
-          <p className="text-3xl md:text-4xl font-extrabold" style={{ color: '#2bc196' }}>R$ 8.000,00</p>
+          <p className="text-3xl md:text-4xl font-extrabold" style={{ color: '#2bc196' }}>R$ 6.000,00</p>
           <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>Pagamento único</p>
         </div>
       </div>
