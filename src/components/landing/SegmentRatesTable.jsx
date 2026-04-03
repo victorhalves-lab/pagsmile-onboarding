@@ -120,19 +120,29 @@ export default function SegmentRatesTable({ segmentRates, segmentName }) {
           <h3 className="text-base font-bold text-[#002443]">Taxas Adicionais</h3>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[#002443]/[0.06] rounded-xl overflow-hidden">
+        <div className="grid grid-cols-3 gap-px bg-[#002443]/[0.06] rounded-xl overflow-hidden">
           {[
-            { label: 'Fee por transação', value: fmtBrl(feeTransacao), sub: 'por transação' },
-            { label: 'Antifraude', value: fmtBrl(antifraude), sub: 'por transação' },
-            { label: '3DS (opcional)', value: fmtBrl(taxa3ds), sub: 'por transação' },
-            { label: 'Setup', value: 'R$ 8.000,00', sub: 'único' },
+            { label: 'Fee por transação', value: fmtBrl(feeTransacao) },
+            { label: 'Antifraude', value: fmtBrl(antifraude) },
+            { label: '3DS (opcional)', value: fmtBrl(taxa3ds) },
           ].map((item) => (
             <div key={item.label} className="bg-white p-5 text-center">
               <p className="text-xs font-semibold text-[#002443]/50 mb-2">{item.label}</p>
               <p className="text-lg font-bold text-[#002443]">{item.value}</p>
-              <p className="text-[10px] font-semibold text-[#002443]/40 mt-1">{item.sub}</p>
+              <p className="text-[10px] font-semibold text-[#002443]/40 mt-1">por transação</p>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* ══════════════ BLOCO 4: Setup Fee — Destaque Premium ══════════════ */}
+      <div className="relative overflow-hidden bg-[#002443] rounded-2xl p-6 md:p-8 text-center shadow-lg">
+        <div className="absolute -top-16 -right-16 w-40 h-40 bg-[#2bc196] rounded-full blur-3xl opacity-15 pointer-events-none" />
+        <div className="absolute -bottom-16 -left-16 w-40 h-40 bg-[#5cf7cf] rounded-full blur-3xl opacity-10 pointer-events-none" />
+        <div className="relative z-10">
+          <p className="text-xs uppercase font-bold tracking-widest mb-1" style={{ color: 'rgba(255,255,255,0.5)' }}>Taxa de Setup</p>
+          <p className="text-3xl md:text-4xl font-extrabold" style={{ color: '#2bc196' }}>R$ 8.000,00</p>
+          <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>Pagamento único</p>
         </div>
       </div>
     </div>

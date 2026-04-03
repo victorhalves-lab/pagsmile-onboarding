@@ -255,12 +255,17 @@ export default function PropostaPadraoPublica() {
             <p className="text-lg font-bold text-[#002443]">R$ {(parseFloat(rates.alertaPreChargeback) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="py-4 text-center flex flex-col justify-center h-full">
-            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">SETUP</p>
-            <p className="text-lg font-bold text-[#002443]">R$ {(parseFloat(rates.setup) || 8000).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-          </CardContent>
-        </Card>
+      </div>
+
+      {/* Setup Fee — Destaque */}
+      <div className="mb-6 relative overflow-hidden bg-[#002443] rounded-2xl p-6 text-center shadow-lg">
+        <div className="absolute -top-16 -right-16 w-40 h-40 bg-[#2bc196] rounded-full blur-3xl opacity-15 pointer-events-none" />
+        <div className="absolute -bottom-16 -left-16 w-40 h-40 bg-[#5cf7cf] rounded-full blur-3xl opacity-10 pointer-events-none" />
+        <div className="relative z-10">
+          <p className="text-xs text-white/50 mb-1 uppercase font-bold tracking-widest">Taxa de Setup</p>
+          <p className="text-3xl font-extrabold text-[#2bc196]">R$ {(parseFloat(rates.setup) || 8000).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+          <p className="text-xs text-white/40 mt-1">Pagamento único</p>
+        </div>
       </div>
 
       {/* Prazo e Antecipação */}
