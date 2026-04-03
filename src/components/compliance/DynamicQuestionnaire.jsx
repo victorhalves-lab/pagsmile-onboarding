@@ -189,7 +189,8 @@ export default function DynamicQuestionnaire({
   questionsPerStep = 4,
   cafRedirectUrl,
   cafRedirectUrlMap, // Map of segment value → CAF URL (dynamic per segment)
-  onComplete // Callback opcional quando completa o questionário
+  onComplete, // Callback opcional quando completa o questionário
+  branding // { name, logoUrl, primaryColor, secondaryColor } — white-label opcional
 }) {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
@@ -914,25 +915,45 @@ export default function DynamicQuestionnaire({
     );
   }
 
+  const bPrimary = branding?.primaryColor || '#2bc196';
+  const bSecondary = branding?.secondaryColor || '#002443';
+  const hasBranding = !!branding?.name;
+
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="max-w-3xl mx-auto" style={hasBranding ? { '--brand-primary': bPrimary, '--brand-secondary': bSecondary } : undefined}>
       {/* Header com logo, badge e auto-save */}
       <div className="text-center mb-6">
-        <img 
-          src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/9bd38c4f7_Logo-modo-claro.png" 
-          alt="Pagsmile" 
-          className="h-7 mx-auto mb-4"
-        />
+        {hasBranding ? (
+          <>
+            {branding.logoUrl ? (
+              <img src={branding.logoUrl} alt={branding.name} className="h-9 mx-auto mb-3 object-contain" />
+            ) : (
+              <div className="w-10 h-10 rounded-xl mx-auto mb-3 flex items-center justify-center text-white text-lg font-bold" style={{ backgroundColor: bPrimary }}>
+                {branding.name.charAt(0)}
+              </div>
+            )}
+            <div className="w-16 h-1 rounded-full mx-auto mb-3" style={{ backgroundColor: bPrimary }} />
+          </>
+        ) : (
+          <img 
+            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/9bd38c4f7_Logo-modo-claro.png" 
+            alt="Pagsmile" 
+            className="h-7 mx-auto mb-4"
+          />
+        )}
         <div className="flex items-center justify-center gap-2 mb-1">
-          <div className={`px-2.5 py-1 rounded-lg text-xs font-bold tracking-wide ${badgeColor}`}>
-            {badgeLabel || templateModel?.toUpperCase()}
+          <div
+            className={`px-2.5 py-1 rounded-lg text-xs font-bold tracking-wide ${hasBranding ? '' : badgeColor}`}
+            style={hasBranding ? { backgroundColor: bPrimary + '20', color: bPrimary } : undefined}
+          >
+            {hasBranding ? branding.name : (badgeLabel || templateModel?.toUpperCase())}
           </div>
         </div>
-        <h1 className="text-xl md:text-2xl font-bold text-[#002443] mt-2">
+        <h1 className="text-xl md:text-2xl font-bold mt-2" style={hasBranding ? { color: bSecondary } : { color: '#002443' }}>
           {template.name}
         </h1>
         {template.description && (
-          <p className="text-sm text-[#002443]/60 mt-1 max-w-lg mx-auto">
+          <p className="text-sm mt-1 max-w-lg mx-auto" style={{ color: (hasBranding ? bSecondary : '#002443') + '99' }}>
             {template.description}
           </p>
         )}
@@ -1009,7 +1030,8 @@ export default function DynamicQuestionnaire({
             
             <Button
               onClick={isLastStep ? handleSubmit : handleNext}
-              className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white px-8 h-12 rounded-xl shadow-lg shadow-green-500/20 transition-all hover:scale-[1.02]"
+              className={`${hasBranding ? '' : 'bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90'} text-white px-8 h-12 rounded-xl shadow-lg transition-all hover:scale-[1.02]`}
+              style={hasBranding ? { backgroundColor: bPrimary, boxShadow: `0 10px 15px -3px ${bPrimary}33` } : undefined}
             >
               {isLastStep ? (
                 <>
@@ -1028,10 +1050,15 @@ export default function DynamicQuestionnaire({
 
       {/* Footer de segurança */}
       <div className="text-center mt-6">
-        <p className="text-xs text-[#002443]/40 flex items-center justify-center gap-1">
+        <p className="text-xs flex items-center justify-center gap-1" style={{ color: (hasBranding ? bSecondary : '#002443') + '66' }}>
           <ShieldCheck className="w-3 h-3" />
           Seus dados estão protegidos e serão tratados com confidencialidade.
         </p>
+        {hasBranding && (
+          <p className="text-[10px] mt-2 opacity-30" style={{ color: bSecondary }}>
+            Powered by PagSmile
+          </p>
+        )}
       </div>
     </div>
   );

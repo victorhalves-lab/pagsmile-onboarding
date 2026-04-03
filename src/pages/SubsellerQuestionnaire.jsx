@@ -58,6 +58,14 @@ export default function SubsellerQuestionnaire() {
     );
   }
 
+  // Extract branding from link
+  const branding = onboardingLink?.brandName ? {
+    name: onboardingLink.brandName,
+    logoUrl: onboardingLink.brandLogoUrl,
+    primaryColor: onboardingLink.brandPrimaryColor,
+    secondaryColor: onboardingLink.brandSecondaryColor,
+  } : null;
+
   return (
     <DynamicQuestionnaire
       templateModel="subseller_v2"
@@ -68,6 +76,7 @@ export default function SubsellerQuestionnaire() {
       badgeColor="bg-indigo-100 text-indigo-700"
       questionsPerStep={4}
       cafRedirectUrlMap={SUBSELLER_CAF_URLS}
+      branding={branding}
     />
   );
 }

@@ -1,0 +1,115 @@
+{
+  "name": "OnboardingLink",
+  "type": "object",
+  "properties": {
+    "linkType": {
+      "type": "string",
+      "enum": [
+        "LEAD_QUESTIONNAIRE",
+        "LEAD_SIMPLIFICADO",
+        "KYC_AVULSO",
+        "PROPOSAL",
+        "SUBSELLER_COMPLIANCE"
+      ],
+      "default": "LEAD_QUESTIONNAIRE",
+      "description": "Tipo de link"
+    },
+    "questionnaireTemplateId": {
+      "type": "string",
+      "description": "ID do template de question\u00e1rio associado"
+    },
+    "uniqueCode": {
+      "type": "string",
+      "description": "C\u00f3digo \u00fanico do link"
+    },
+    "commercialAgentId": {
+      "type": "string",
+      "description": "ID do agente comercial"
+    },
+    "commercialAgentName": {
+      "type": "string",
+      "description": "Nome do agente comercial"
+    },
+    "introducerId": {
+      "type": "string",
+      "description": "ID do Introducer associado a este link"
+    },
+    "introducerReferralCode": {
+      "type": "string",
+      "description": "C\u00f3digo de refer\u00eancia do Introducer para rastreamento"
+    },
+    "parentMerchantId": {
+      "type": "string",
+      "description": "ID do Merchant principal (seller) ao qual este link de subseller est\u00e1 vinculado"
+    },
+    "parentMerchantName": {
+      "type": "string",
+      "description": "Nome do Merchant principal para exibi\u00e7\u00e3o r\u00e1pida"
+    },
+    "utmSource": {
+      "type": "string"
+    },
+    "utmMedium": {
+      "type": "string"
+    },
+    "utmCampaign": {
+      "type": "string"
+    },
+    "utmContent": {
+      "type": "string"
+    },
+    "expiresAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data de expira\u00e7\u00e3o"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "clickCount": {
+      "type": "number",
+      "default": 0
+    },
+    "submissionCount": {
+      "type": "number",
+      "default": 0
+    },
+    "completedCount": {
+      "type": "number",
+      "default": 0
+    },
+    "complianceType": {
+      "type": "string",
+      "enum": [
+        "PIX",
+        "FULL",
+        "LITE",
+        "ECOMMERCE",
+        "SAAS",
+        "GENERIC"
+      ],
+      "default": "GENERIC"
+    },
+    "brandName": {
+      "type": "string",
+      "description": "Nome de exibi\u00e7\u00e3o do cliente para white-label (ex: Loja XYZ)"
+    },
+    "brandLogoUrl": {
+      "type": "string",
+      "description": "URL do logo do cliente para white-label"
+    },
+    "brandPrimaryColor": {
+      "type": "string",
+      "description": "Cor prim\u00e1ria hex do cliente (ex: #FF6600)"
+    },
+    "brandSecondaryColor": {
+      "type": "string",
+      "description": "Cor secund\u00e1ria hex do cliente (ex: #1A1A1A)"
+    }
+  },
+  "required": [
+    "uniqueCode",
+    "linkType"
+  ]
+}

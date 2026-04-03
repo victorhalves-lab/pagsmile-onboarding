@@ -7,11 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
   Link as LinkIcon, Copy, Check, Search, Loader2, 
-  Building2, Users, Plus, ExternalLink, ToggleLeft, ToggleRight, Calendar
+  Building2, Users, Plus, ExternalLink, ToggleLeft, ToggleRight, Calendar,
+  Paintbrush, ChevronDown, ChevronRight
 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
+import BrandingEditor from '@/components/subseller/BrandingEditor';
 
 export default function GerenciarSubsellerLinks() {
   const { t } = useTranslation();
@@ -19,6 +21,7 @@ export default function GerenciarSubsellerLinks() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMerchant, setSelectedMerchant] = useState(null);
   const [copiedCode, setCopiedCode] = useState(null);
+  const [expandedBranding, setExpandedBranding] = useState(null);
 
   // Buscar merchants aprovados (sellers)
   const { data: merchants = [], isLoading: loadingMerchants } = useQuery({
@@ -221,6 +224,11 @@ export default function GerenciarSubsellerLinks() {
                                   ) : (
                                     <Badge className="bg-red-100 text-red-700 text-[10px]">{t('sl.inactive')}</Badge>
                                   )}
+                                  {link.brandName && (
+                                    <Badge className="bg-purple-100 text-purple-700 text-[10px] gap-1">
+                                      <Paintbrush className="w-2.5 h-2.5" /> White-Label
+                                    </Badge>
+                                  )}
                                 </div>
                                 <p className="text-xs text-slate-400 mt-1 truncate">{url}</p>
                                 {link.expiresAt && (
@@ -263,6 +271,23 @@ export default function GerenciarSubsellerLinks() {
                                 </Button>
                               </div>
                             </div>
+                            {/* Branding toggle */}
+                            <button
+                              onClick={() => setExpandedBranding(expandedBranding === link.id ? null : link.id)}
+                              className="mt-3 flex items-center gap-1.5 text-xs font-semibold text-purple-600 hover:text-purple-700 transition-colors"
+                            >
+                              {expandedBranding === link.id ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+                              <Paintbrush className="w-3 h-3" />
+                              Personalizar Identidade Visual (White-Label)
+                            </button>
+                            {expandedBranding === link.id && (
+                              <div className="mt-3 pt-3 border-t border-slate-100">
+                                <BrandingEditor
+                                  link={link}
+                                  onUpdate={() => queryClient.invalidateQueries({ queryKey: ['subsellerLinks'] })}
+                                />
+                              </div>
+                            )}
                           </div>
                         );
                       })}
