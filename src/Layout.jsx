@@ -29,7 +29,8 @@ import {
   Wrench,
   BookOpen,
   Handshake,
-  BarChart3
+  BarChart3,
+  Presentation
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -132,7 +133,6 @@ export default function Layout({ children, currentPageName }) {
       items: [
         { label: t('menu.contract_management'), path: 'GestaoContratos', icon: FileText },
         { label: t('menu.create_contract'), path: 'CriarContrato', icon: FileCheck },
-        { label: 'Kick-Off de Implementação', path: 'GerarKickOff', icon: FileText },
       ]
     },
     {
@@ -462,6 +462,15 @@ export default function Layout({ children, currentPageName }) {
 
               <SectionDivider isCollapsed={collapsed} />
 
+              {/* Kick-Off */}
+              <div className="mt-1">
+                <NavItem 
+                  item={{ label: 'Kick-Off', path: 'GerarKickOff', icon: Presentation }} 
+                  isActive={currentPageName === 'GerarKickOff'}
+                  isCollapsed={collapsed}
+                />
+              </div>
+
               {/* Processos Modelo */}
               <div className="mt-1">
                 <NavItem 
@@ -615,6 +624,16 @@ export default function Layout({ children, currentPageName }) {
                 </div>
 
                 <SectionDivider isCollapsed={false} />
+
+                {/* Kick-Off mobile */}
+                <div className="mt-1">
+                  <NavItem 
+                    item={{ label: 'Kick-Off', path: 'GerarKickOff', icon: Presentation }} 
+                    isActive={currentPageName === 'GerarKickOff'}
+                    onClick={() => setMobileMenuOpen(false)}
+                    isCollapsed={false}
+                  />
+                </div>
 
                 {/* Processos Modelo mobile */}
                 <div className="mt-1">
