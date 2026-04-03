@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { 
   Link as LinkIcon, Copy, Check, Search, Loader2, 
   Building2, Users, Plus, ExternalLink, ToggleLeft, ToggleRight, Calendar,
-  Paintbrush, ChevronDown, ChevronRight
+  Paintbrush, ChevronDown, ChevronRight, Pencil
 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
@@ -260,6 +260,15 @@ export default function GerenciarSubsellerLinks() {
                                   />
                                   <span className="text-[9px] text-slate-400">{link.isActive ? t('sl.active') : t('sl.inactive')}</span>
                                 </div>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setExpandedBranding(expandedBranding === link.id ? null : link.id)}
+                                  title="Editar identidade visual"
+                                  className={link.brandName ? 'border-purple-300 text-purple-600 hover:bg-purple-50' : ''}
+                                >
+                                  <Pencil className="w-4 h-4" />
+                                </Button>
                                 <Button 
                                   variant="outline" 
                                   size="sm"
@@ -280,7 +289,7 @@ export default function GerenciarSubsellerLinks() {
                             >
                               {expandedBranding === link.id ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
                               <Paintbrush className="w-3 h-3" />
-                              Personalizar Identidade Visual (White-Label)
+                              {link.brandName ? `Editar Identidade Visual — ${link.brandName}` : 'Personalizar Identidade Visual (White-Label)'}
                             </button>
                             {expandedBranding === link.id && (
                               <div className="mt-3 pt-3 border-t border-slate-100">
