@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Lock, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import RatesSourceSelector from './RatesSourceSelector';
 
 const BANDEIRAS = ['visa', 'mastercard', 'elo', 'amex', 'outras'];
 const FAIXAS = ['avista', 'de2a6x', 'de7a12x', 'de13a21x'];
@@ -54,6 +55,9 @@ export default function PrecosForm({ contract, onChange, preFilledFields = [] })
 
   return (
     <div className="space-y-6">
+      {/* Seletor de Fonte de Taxas (Proposta Padrão / Landing Page) */}
+      <RatesSourceSelector contract={contract} onChange={onChange} />
+
       {locked && (
         <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-xl">
           <Lock className="w-4 h-4 text-amber-600" />

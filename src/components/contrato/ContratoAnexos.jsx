@@ -40,6 +40,14 @@ export default function ContratoAnexos({ contract }) {
       <SectionHeading>ANEXO II – REMUNERAÇÃO</SectionHeading>
 
       <ClauseTitle>ANEXO II-A – REMUNERAÇÃO MÓDULO SUBADQUIRÊNCIA</ClauseTitle>
+      {c.ratesSourceName && (
+        <P style={{ fontSize: '9.5px', color: '#002443', opacity: 0.5, fontStyle: 'italic', marginBottom: '8px' }}>
+          Referência de taxas: {c.ratesSourceName}
+          {c.ratesSourceType === 'standard_proposal' && ' (Proposta Padrão)'}
+          {c.ratesSourceType === 'segment_default_rates' && ' (Taxas Padrão por Segmento)'}
+          {c.ratesSourceType === 'proposal' && ' (Proposta Aceita)'}
+        </P>
+      )}
       <SubClauseTitle>1. TABELA DE PREÇOS</SubClauseTitle>
       <KVTable items={[
         ['Setup', <Num value={c.setupFee ?? 6000} />],
