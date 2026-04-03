@@ -13,7 +13,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
     }
 
-    const { parentMerchantId, parentMerchantName, expiresInDays, complianceType } = await req.json();
+    const { parentMerchantId, parentMerchantName, expiresInDays, complianceType, branding } = await req.json();
 
     if (!parentMerchantId) {
       return Response.json({ error: 'parentMerchantId is required' }, { status: 400 });
@@ -59,7 +59,7 @@ Deno.serve(async (req) => {
     }
 
     // Criar OnboardingLink
-    const link = await base44.asServiceRole.entities.OnboardingLink.create({
+    const linkData = {
       linkType: 'SUBSELLER_COMPLIANCE',
       uniqueCode,
       parentMerchantId,
@@ -71,7 +71,17 @@ Deno.serve(async (req) => {
       completedCount: 0,
       complianceType: complianceType || 'GENERIC',
       expiresAt,
-    });
+    };
+
+    // Adicionar branding se fornecido
+    if (branding) {
+      if (branding.brandName) linkData.brandName = branding.brandName;
+      if (branding.brandLogoUrl) linkData.brandLogoUrl = branding.brandLogoUrl;
+      if (branding.brandPrimaryColor) linkData.brandPrimaryColor = branding.brandPrimaryColor;
+      if (branding.brandSecondaryColor) linkData.brandSecondaryColor = branding.brandSecondaryColor;
+    }
+
+    const link = await base44.asServiceRole.entities.OnboardingLink.create(linkData);
 
     // Criar audit log
     await base44.asServiceRole.entities.AuditLog.create({

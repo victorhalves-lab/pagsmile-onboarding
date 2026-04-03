@@ -14,6 +14,7 @@ import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 import BrandingEditor from '@/components/subseller/BrandingEditor';
+import GenerateLinkModal from '@/components/subseller/GenerateLinkModal';
 
 export default function GerenciarSubsellerLinks() {
   const { t } = useTranslation();
@@ -22,6 +23,7 @@ export default function GerenciarSubsellerLinks() {
   const [selectedMerchant, setSelectedMerchant] = useState(null);
   const [copiedCode, setCopiedCode] = useState(null);
   const [expandedBranding, setExpandedBranding] = useState(null);
+  const [showGenerateModal, setShowGenerateModal] = useState(false);
 
   // Buscar merchants aprovados (sellers)
   const { data: merchants = [], isLoading: loadingMerchants } = useQuery({
@@ -48,17 +50,22 @@ export default function GerenciarSubsellerLinks() {
 
   // Gerar link via backend function
   const createLinkMutation = useMutation({
-    mutationFn: async () => {
-      const response = await base44.functions.invoke('generateSubsellerLink', {
+    mutationFn: async (branding) => {
+      const payload = {
         parentMerchantId: selectedMerchant.id,
         parentMerchantName: selectedMerchant.fullName || selectedMerchant.companyName,
-      });
+      };
+      if (branding) {
+        payload.branding = branding;
+      }
+      const response = await base44.functions.invoke('generateSubsellerLink', payload);
       return response.data;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['subsellerLinks'] });
       toast.success(t('sl.link_generated'));
       copyLink(data.link.uniqueCode);
+      setShowGenerateModal(false);
     },
     onError: (error) => {
       toast.error('Erro ao gerar link: ' + (error.response?.data?.error || error.message));
@@ -175,15 +182,10 @@ export default function GerenciarSubsellerLinks() {
                       </div>
                     </div>
                     <Button 
-                      onClick={() => createLinkMutation.mutate()}
-                      disabled={createLinkMutation.isPending}
+                      onClick={() => setShowGenerateModal(true)}
                       className="bg-[var(--pagsmile-green)] text-white"
                     >
-                      {createLinkMutation.isPending ? (
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      ) : (
-                        <Plus className="w-4 h-4 mr-2" />
-                      )}
+                      <Plus className="w-4 h-4 mr-2" />
                       {t('sl.generate_link')}
                     </Button>
                   </div>
@@ -330,6 +332,16 @@ export default function GerenciarSubsellerLinks() {
           )}
         </div>
       </div>
+
+      {/* Modal para gerar link */}
+      {showGenerateModal && selectedMerchant && (
+        <GenerateLinkModal
+          merchant={selectedMerchant}
+          onGenerate={(branding) => createLinkMutation.mutate(branding)}
+          onClose={() => setShowGenerateModal(false)}
+          isPending={createLinkMutation.isPending}
+        />
+      )}
     </div>
   );
 }
