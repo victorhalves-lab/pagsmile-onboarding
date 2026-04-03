@@ -12,6 +12,7 @@ import { Search, Plus, Eye, Pencil, Trash2, Loader2, X, FileText, Tag, Copy, Lin
 import { toast } from 'sonner';
 import moment from 'moment';
 import SegmentQuickLinks from '@/components/proposals/SegmentQuickLinks';
+import AllLinksPanel from '@/components/proposals/AllLinksPanel';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 const SEGMENTS = ['Educação', 'Infoprodutos', 'E-commerce', 'SaaS', 'Gateway', 'Marketplace', 'Dropshipping', 'MPE', 'Plataformas Verticais', 'Link de Pagamento'];
@@ -86,6 +87,9 @@ export default function GestaoPropostasPadrao() {
 
       {/* Links Rápidos por Segmento */}
       <SegmentQuickLinks proposals={proposals} />
+
+      {/* Painel de todos os links */}
+      <AllLinksPanel proposals={proposals} />
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3 items-center">
