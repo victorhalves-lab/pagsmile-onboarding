@@ -1594,4 +1594,305 @@ export const PROCESSOS = [
       { name: 'Registrar conciliação', values: ['', '', '', '', '', 'R'] },
     ],
   },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 24. GERAÇÃO DE LINKS DE COMPLIANCE DIRETOS
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'PROC-024',
+    nome: 'Geração e Gestão de Links de Compliance Diretos',
+    versao: '2.0.0',
+    data: '03/04/2026',
+    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    area: 'Compliance / Comercial / Admin',
+    objetivo: 'Definir o fluxo de geração de links de compliance diretos (sem passar por proposta), para onboarding avulso:',
+    objetivoItens: [
+      'Links rápidos por tipo de compliance (v4 por segmento, PIX v4, v2, legados).',
+      'Links rastreáveis com uniqueCode, UTMs e métricas.',
+      'Dashboard de analytics por link (clicks, submissions, completions, conversão).',
+      'Gestão de links históricos com ativação/desativação.',
+    ],
+    escopoInclui: [
+      'Página LinksCompliance com links rápidos por segmento v4 (10 segmentos).',
+      'Links PIX v4 (Merchant e Intermediário).',
+      'Links v2 Autocomplete (3 tipos).',
+      'Links legados por tipo de compliance (PIX, Full, Lite, E-commerce, SaaS).',
+      'Histórico de links gerados com métricas e analytics.',
+      'LinkAnalyticsDashboard expandível por link.',
+    ],
+    escopoNaoInclui: [
+      'Links de leads (ver PROC-001).',
+      'Links de subseller (ver PROC-016).',
+    ],
+    steps: [
+      { id: '01', resp: 'Comercial', atividade: 'Acessa LinksCompliance e copia link rápido do segmento/tipo desejado', decisao: 'v4 por segmento, PIX v4, v2 ou legado', gate: '', sla: '', saida: 'Link copiado para clipboard', proximo: '02' },
+      { id: '02', resp: 'Comercial', atividade: 'Envia link ao cliente para iniciar compliance KYC avulso', decisao: '', gate: '', sla: '', saida: 'Link enviado', proximo: '03' },
+      { id: '03', resp: 'Cliente', atividade: 'Acessa link e preenche questionário de compliance', decisao: '', gate: '', sla: '', saida: 'Questionário preenchido + documentos enviados', proximo: '04' },
+      { id: '04', resp: 'Sistema', atividade: 'Caso aparece em QuestionariosRecebidos para análise', decisao: '', gate: '', sla: 'Imediato', saida: 'OnboardingCase criado', proximo: 'FIM' },
+    ],
+    regrasNegocio: [
+      { bold: '10 segmentos v4: ', text: 'Gateway, Marketplace, Plataforma Vertical, E-commerce, Infoprodutos, Educação, SaaS, Merchant Link, MPE, Dropshipping.' },
+      { bold: '2 PIX v4: ', text: 'PIX Merchant e PIX Intermediário com questionários específicos.' },
+      { bold: 'Métricas por link: ', text: 'clickCount, submissionCount, completedCount, conversão (%) rastreados por OnboardingLink.' },
+    ],
+    complianceIntro: 'Controles:',
+    complianceItens: [
+      'Links públicos não exigem autenticação do cliente.',
+      'Analytics permitem medir eficiência de cada canal de distribuição.',
+    ],
+    governanca: [
+      { bold: 'O Comercial ', text: 'distribui links conforme o segmento do cliente.' },
+      { bold: 'O Admin ', text: 'monitora métricas e desativa links obsoletos.' },
+    ],
+    raciRoles: ['Comercial', 'Admin', 'Cliente', 'Sistema'],
+    raciActivities: [
+      { name: 'Copiar/enviar link', values: ['R', '', '', ''] },
+      { name: 'Preencher compliance', values: ['', '', 'R', ''] },
+      { name: 'Monitorar métricas', values: ['', 'R', '', 'C'] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 25. ANÁLISE E TRIAGEM DE CASOS DE COMPLIANCE
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'PROC-025',
+    nome: 'Análise e Triagem de Casos de Compliance (Questionários Recebidos)',
+    versao: '2.0.0',
+    data: '03/04/2026',
+    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    area: 'Compliance / Admin',
+    objetivo: 'Definir o fluxo de análise e triagem dos questionários de compliance recebidos, incluindo:',
+    objetivoItens: [
+      'Dashboard de casos com filtros multi-dimensionais (status, modelo, score, analista, prioridade, data).',
+      'Três abas: Recebidos (casos normais), Rascunhos (sessões em andamento), Subsellers.',
+      'Atribuição de analista responsável e prioridade.',
+      'Expansão inline para detalhes rápidos (CaseExpandedDetail).',
+      'Exportação CSV dos casos filtrados.',
+      'Métricas em tempo real: pendentes, em processamento, manual, aprovados, recusados, SLA em risco.',
+    ],
+    escopoInclui: [
+      'Visualização em QuestionariosRecebidos com ComplianceCasesTable.',
+      'Filtros avançados: modelo v4, tipo PF/PJ, score, período, analista, prioridade.',
+      'ComplianceStatsCards com métricas em tempo real.',
+      'DraftsTab para sessões de compliance incompletas (ComplianceSession).',
+      'SubsellerCasesTab para casos de subsellers vinculados a merchants.',
+      'Exportação CSV com dados do merchant, score, status, data.',
+    ],
+    escopoNaoInclui: [
+      'Análise detalhada do caso (ver PROC-005 ou AnaliseDeCasos).',
+      'Risk Scoring v4 (ver PROC-019).',
+    ],
+    steps: [
+      { id: '01', resp: 'Sistema', atividade: 'Caso de compliance chega em QuestionariosRecebidos (aba Recebidos)', decisao: '', gate: '', sla: '', saida: 'OnboardingCase visível na tabela', proximo: '02' },
+      { id: '02', resp: 'Analista/Admin', atividade: 'Aplica filtros para triagem (status, prioridade, modelo, score)', decisao: '', gate: '', sla: '', saida: 'Lista filtrada de casos', proximo: '03' },
+      { id: '03', resp: 'Analista', atividade: 'Expande caso inline para ver detalhes rápidos (CaseExpandedDetail)', decisao: 'Caso urgente? Score alto? Red flags?', gate: 'G1', sla: '', saida: 'Triagem inicial feita', proximo: '04' },
+      { id: '04', resp: 'Analista', atividade: 'Atribui a si mesmo ou a outro analista + define prioridade', decisao: '', gate: '', sla: '', saida: 'assignedAnalystName e priority atualizados', proximo: '05' },
+      { id: '05', resp: 'Analista', atividade: 'Abre AnaliseDeCasos para revisão detalhada', decisao: '', gate: '', sla: '', saida: 'Caso em análise detalhada', proximo: 'FIM (ver PROC-005)' },
+    ],
+    regrasNegocio: [
+      { bold: 'SLA em risco: ', text: 'Casos com slaDeadline ultrapassada e status ∉ {Aprovado, Recusado} aparecem como "SLA em risco".' },
+      { bold: 'Aba Subsellers: ', text: 'Exibe apenas OnboardingCases com isSubsellerCase=true, agrupados por merchant principal.' },
+      { bold: 'Aba Rascunhos: ', text: 'Mostra ComplianceSessions ativas (preenchimento em andamento) para follow-up.' },
+    ],
+    complianceIntro: 'Controles de triagem:',
+    complianceItens: [
+      'Atribuição de analista registrada no OnboardingCase.',
+      'Exportação CSV para auditoria e reporting.',
+    ],
+    governanca: [
+      { bold: 'O Analista ', text: 'é responsável pela triagem e atribuição dos casos.' },
+      { bold: 'O Admin ', text: 'monitora SLAs e redistribui casos se necessário.' },
+    ],
+    raciRoles: ['Analista', 'Admin', 'Sistema'],
+    raciActivities: [
+      { name: 'Triar casos', values: ['R', 'I', ''] },
+      { name: 'Atribuir analista', values: ['R', 'A', ''] },
+      { name: 'Monitorar SLA', values: ['I', 'R', 'C'] },
+      { name: 'Exportar CSV', values: ['R', 'R', ''] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 26. GESTÃO DE TEMPLATES DE QUESTIONÁRIO
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'PROC-026',
+    nome: 'Gestão de Templates de Questionário (Editor de Perguntas)',
+    versao: '2.0.0',
+    data: '03/04/2026',
+    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    area: 'Admin / Compliance / Sistema',
+    objetivo: 'Definir o fluxo de criação e manutenção de templates de questionário usados em compliance e captação:',
+    objetivoItens: [
+      'CRUD de QuestionnaireTemplate com nome, categoria, modelo, tipo (PF/PJ).',
+      'Editor de perguntas com drag-and-drop para ordenação.',
+      'Biblioteca de perguntas reutilizáveis (isLibraryQuestion).',
+      'Lógica condicional configurável (dependsOn, operator, value).',
+      'Pesos de risco por pergunta (riskWeight, riskValues).',
+      'Versionamento de templates (version, previousVersionId, isArchived).',
+      'Documentos obrigatórios vinculados ao template.',
+      'Sugestão de perguntas por IA (suggestQuestionsAI).',
+    ],
+    escopoInclui: [
+      'TemplatesQuestionarios: lista todos os templates com filtros.',
+      'EditorQuestionario: editor visual de perguntas com reordenação.',
+      'QuestionFormDialog: formulário para criar/editar pergunta.',
+      'QuestionLibraryModal: busca e importa perguntas da biblioteca.',
+      'DocumentFormDialog: vincular documentos obrigatórios.',
+      'AISuggestionsModal: sugestão de perguntas via InvokeLLM.',
+      'TemplateVersionHistory: visualizar histórico de versões.',
+      'QuestionnairePreview: preview do questionário como o cliente vê.',
+    ],
+    escopoNaoInclui: [
+      'Preenchimento do questionário pelo cliente (processos 001, 005, 011).',
+      'Compliance scoring (ver PROC-019).',
+    ],
+    steps: [
+      { id: '01', resp: 'Admin', atividade: 'Acessa TemplatesQuestionarios e clica "Novo Template"', decisao: 'Categoria: LEAD_GENERATION ou COMPLIANCE', gate: '', sla: '', saida: 'QuestionnaireTemplate criado', proximo: '02' },
+      { id: '02', resp: 'Admin', atividade: 'Abre EditorQuestionario e adiciona perguntas', decisao: 'Manual ou via IA (suggestQuestionsAI)?', gate: '', sla: '', saida: 'Perguntas adicionadas com tipo, opções, peso de risco', proximo: '03' },
+      { id: '03', resp: 'Admin', atividade: 'Configura lógica condicional entre perguntas', decisao: '', gate: '', sla: '', saida: 'conditionalLogic preenchido (dependsOn, operator, value)', proximo: '04' },
+      { id: '04', resp: 'Admin', atividade: 'Vincula documentos obrigatórios ao template', decisao: '', gate: '', sla: '', saida: 'requiredDocuments[] preenchido', proximo: '05' },
+      { id: '05', resp: 'Admin', atividade: 'Preview do questionário → Ativa template (isActive=true)', decisao: '', gate: '', sla: '', saida: 'Template ativo e pronto para uso', proximo: 'FIM' },
+    ],
+    regrasNegocio: [
+      { bold: '10 tipos de pergunta: ', text: 'TEXT, NUMBER, DATE, SELECT, MULTI_SELECT, FILE_UPLOAD, BOOLEAN, EMAIL, PHONE, CPF_CNPJ.' },
+      { bold: 'Lógica condicional: ', text: 'Suporta operadores: equals, not_equals, contains, greater_than, less_than, in.' },
+      { bold: 'Biblioteca reutilizável: ', text: 'Perguntas marcadas com isLibraryQuestion=true podem ser importadas em qualquer template.' },
+      { bold: 'Versionamento: ', text: 'Ao editar um template ativo, cria nova versão e arquiva a anterior.' },
+      { bold: 'IA assistente: ', text: 'suggestQuestionsAI gera perguntas relevantes baseado no segmento e tipo de compliance.' },
+    ],
+    complianceIntro: 'Controles de templates:',
+    complianceItens: [
+      'Apenas Admin pode criar e editar templates.',
+      'Versionamento garante rastreabilidade de mudanças.',
+      'Templates arquivados são preservados para casos existentes.',
+    ],
+    governanca: [
+      { bold: 'O Admin ', text: 'é o único responsável por templates de questionário.' },
+      { bold: 'O Compliance ', text: 'define requisitos de perguntas e documentos por segmento.' },
+    ],
+    raciRoles: ['Admin', 'Compliance', 'Sistema'],
+    raciActivities: [
+      { name: 'Criar template', values: ['R', 'C', ''] },
+      { name: 'Adicionar perguntas', values: ['R', 'C', ''] },
+      { name: 'Configurar condicionais', values: ['R', '', ''] },
+      { name: 'Vincular documentos', values: ['R', 'C', ''] },
+      { name: 'Ativar/Desativar', values: ['R', '', ''] },
+      { name: 'Sugestão IA', values: ['R', '', 'C'] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 27. QUESTIONÁRIOS DE LEADS RECEBIDOS (TRIAGEM COMERCIAL)
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'PROC-027',
+    nome: 'Triagem de Leads Recebidos (QuestionariosLeads)',
+    versao: '2.0.0',
+    data: '03/04/2026',
+    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    area: 'Comercial / Sistema',
+    objetivo: 'Definir o fluxo de triagem dos leads recebidos via diferentes canais, centralizados na página QuestionariosLeads:',
+    objetivoItens: [
+      'Centralização de todos os leads em abas por origem (Completo, PIX, Simplificado, Reunião, Robô IA, Introducer, Landing Page, Proposta Padrão, Pagsmile v5).',
+      'Visualização de scores (PRISCILA, Lead Qualifier, Risco IA) e SLA.',
+      'Ações rápidas: Iniciar contato, Gerar proposta, Ver detalhes do questionário.',
+      'Expandir respostas completas do questionário (QuestionnaireResponsesModal, PagsmileV5ResponsesModal).',
+    ],
+    escopoInclui: [
+      'QuestionariosLeads com abas por origem.',
+      'LeadQuickActions: botões de ação rápida por lead.',
+      'Modals de visualização de respostas completas.',
+      'Badge de SLA (LeadSLAIndicator).',
+      'Badge de qualificação (LeadQualifierBadge).',
+    ],
+    escopoNaoInclui: [
+      'Pipeline Kanban (ver PROC-007).',
+      'Criação de propostas (ver PROC-003).',
+    ],
+    steps: [
+      { id: '01', resp: 'Sistema', atividade: 'Lead chega na aba correspondente à sua origem', decisao: '', gate: '', sla: '', saida: 'Lead visível com scores e SLA', proximo: '02' },
+      { id: '02', resp: 'Comercial', atividade: 'Filtra e ordena por score, data, segmento ou status', decisao: '', gate: '', sla: '', saida: 'Lista priorizada de leads', proximo: '03' },
+      { id: '03', resp: 'Comercial', atividade: 'Expande respostas completas do questionário para entender o lead', decisao: '', gate: '', sla: '', saida: 'Visão completa das respostas', proximo: '04' },
+      { id: '04', resp: 'Comercial', atividade: 'Clica "Iniciar Contato" (muda status para em_contato_comercial) ou "Gerar Proposta"', decisao: 'Lead qualificado?', gate: 'G1', sla: '', saida: 'Lead movido para próxima etapa do funil', proximo: 'FIM' },
+    ],
+    regrasNegocio: [
+      { bold: '9+ abas: ', text: 'Completo, PIX, Simplificado, Reunião, Robô IA, Introducer, Landing Page, Proposta Padrão, Pagsmile v5 — cada aba filtra por origem.' },
+      { bold: 'SLA: ', text: 'Indicador visual de tempo sem contato. Vermelho se ultrapassou limite.' },
+      { bold: 'Quick Actions: ', text: 'Iniciar Contato, Gerar Proposta, Ver Detalhes — ações rápidas sem sair da tabela.' },
+    ],
+    complianceIntro: 'Controles comerciais:',
+    complianceItens: [
+      'Cada ação gera LeadActivity para rastreabilidade.',
+      'Scores de IA são read-only (não editáveis pelo comercial).',
+    ],
+    governanca: [
+      { bold: 'O Comercial ', text: 'é responsável pela triagem e primeiro contato.' },
+      { bold: 'O Gestor ', text: 'monitora SLAs e redistribui leads se necessário.' },
+    ],
+    raciRoles: ['Comercial', 'Gestor', 'Sistema'],
+    raciActivities: [
+      { name: 'Triar leads', values: ['R', 'I', ''] },
+      { name: 'Iniciar contato', values: ['R', 'I', ''] },
+      { name: 'Gerar proposta', values: ['R', '', 'C'] },
+      { name: 'Monitorar SLA', values: ['I', 'R', 'C'] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 28. PORTAL DO INTRODUCER (DASHBOARD)
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'PROC-028',
+    nome: 'Portal do Introducer (Dashboard de Performance)',
+    versao: '2.0.0',
+    data: '03/04/2026',
+    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    area: 'Parcerias / Introducer',
+    objetivo: 'Definir o acesso e funcionalidades do portal do Introducer para acompanhamento de indicações:',
+    objetivoItens: [
+      'Dashboard de KPIs: leads indicados, conversão, receita estimada.',
+      'Tabela de leads indicados com status e score.',
+      'Gráficos de performance ao longo do tempo.',
+      'Link de compartilhamento da landing page.',
+      'Acesso restrito por role=introducer.',
+    ],
+    escopoInclui: [
+      'IntroducerDashboard com KPIs (IntroducerPortalKPIs).',
+      'Tabela de leads (IntroducerPortalLeadsTable).',
+      'Gráficos (IntroducerPortalCharts).',
+      'Link de compartilhamento (IntroducerShareLink).',
+    ],
+    escopoNaoInclui: [
+      'Cadastro do Introducer (ver PROC-010).',
+      'Gestão de taxas da landing page (Admin only).',
+    ],
+    steps: [
+      { id: '01', resp: 'Introducer', atividade: 'Acessa /IntroducerDashboard com credenciais (role=introducer)', decisao: '', gate: '', sla: '', saida: 'Dashboard carregado com dados filtrados pelo introducerId', proximo: '02' },
+      { id: '02', resp: 'Introducer', atividade: 'Visualiza KPIs: total leads, conversão, receita estimada', decisao: '', gate: '', sla: '', saida: 'Visão panorâmica de performance', proximo: '03' },
+      { id: '03', resp: 'Introducer', atividade: 'Navega tabela de leads para ver status de cada indicação', decisao: '', gate: '', sla: '', saida: 'Detalhe por lead indicado', proximo: '04' },
+      { id: '04', resp: 'Introducer', atividade: 'Copia link da landing page para compartilhar com novos clientes', decisao: '', gate: '', sla: '', saida: 'Link copiado', proximo: 'FIM' },
+    ],
+    regrasNegocio: [
+      { bold: 'Acesso restrito: ', text: 'Apenas usuários com role=introducer podem acessar IntroducerDashboard.' },
+      { bold: 'Dados filtrados: ', text: 'O Introducer vê SOMENTE leads vinculados ao seu introducerId.' },
+      { bold: 'Sem acesso a taxas reais: ', text: 'O Introducer não vê taxas finais negociadas, apenas status.' },
+    ],
+    complianceIntro: 'Controles de acesso:',
+    complianceItens: [
+      'RBAC: role=introducer restringe acesso ao portal.',
+      'Redirect automático: se usuário com role=introducer tenta acessar outra página, redireciona para portal.',
+    ],
+    governanca: [
+      { bold: 'O Introducer ', text: 'tem acesso somente de leitura aos seus leads indicados.' },
+      { bold: 'O Admin ', text: 'convida e gerencia acessos do Introducer.' },
+    ],
+    raciRoles: ['Introducer', 'Admin'],
+    raciActivities: [
+      { name: 'Acessar dashboard', values: ['R', ''] },
+      { name: 'Compartilhar link', values: ['R', ''] },
+      { name: 'Convidar/revogar acesso', values: ['', 'R'] },
+    ],
+  },
 ];
