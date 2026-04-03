@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import SlideLayout from './SlideLayout';
 import { Building2, CreditCard, QrCode, DollarSign, Calendar, TrendingUp } from 'lucide-react';
 
-const fmtBRL = (v) => v != null ? `R$ ${Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : '—';
+const fmtBRL = (v) => v != null ? `R$ ${Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '—';
 const fmtPct = (v) => v != null ? `${Number(v).toFixed(2)}%` : '—';
 
 const SEGMENT_LABELS = {
