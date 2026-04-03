@@ -30,7 +30,7 @@ export default function KickOffPresentation({ proposal, contract }) {
       <SlideRatesCard rates={rates} slideNumber={5} totalSlides={TOTAL_SLIDES} />
       <SlideRatesOther rates={rates} setupFee={setupFee} slideNumber={6} totalSlides={TOTAL_SLIDES} />
       <SlideCommercial contract={contract || {}} rates={rates} slideNumber={7} totalSlides={TOTAL_SLIDES} />
-      <SlideSLA contract={contract || {}} slideNumber={8} totalSlides={TOTAL_SLIDES} />
+      <SlideSLA slideNumber={8} totalSlides={TOTAL_SLIDES} />
       <SlideRoadmap slideNumber={9} totalSlides={TOTAL_SLIDES} />
       <SlideSupport slideNumber={10} totalSlides={TOTAL_SLIDES} />
       <SlideFollowUp slideNumber={11} totalSlides={TOTAL_SLIDES} />
