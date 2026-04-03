@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Info, X } from 'lucide-react';
+import { Info, X, TrendingUp } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { getMinRevenueLabel } from '@/lib/segmentConfig';
 
 const SEGMENT_DESCRIPTIONS = {
   'Educação': {
@@ -90,15 +91,21 @@ export default function SegmentSelector({ segments, activeSegment, onSelect, onI
                   </span>
                 )}
               </button>
-              {desc && (
-                <button
-                  onClick={(e) => { e.stopPropagation(); openModal(seg.segmentName); }}
-                  className="flex items-center gap-1 text-[10px] font-semibold text-[#2bc196] hover:text-[#002443] transition-colors"
-                >
-                  <Info className="w-3 h-3" />
-                  Saiba mais
-                </button>
-              )}
+              <div className="flex flex-col items-center gap-1">
+                <span className="flex items-center gap-1 text-[9px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200/60">
+                  <TrendingUp className="w-2.5 h-2.5" />
+                  {getMinRevenueLabel(seg.segmentName)}
+                </span>
+                {desc && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); openModal(seg.segmentName); }}
+                    className="flex items-center gap-1 text-[10px] font-semibold text-[#2bc196] hover:text-[#002443] transition-colors"
+                  >
+                    <Info className="w-3 h-3" />
+                    Saiba mais
+                  </button>
+                )}
+              </div>
             </div>
           );
         })}

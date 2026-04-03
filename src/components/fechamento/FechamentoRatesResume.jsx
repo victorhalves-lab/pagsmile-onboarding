@@ -1,5 +1,6 @@
 import React from 'react';
-import { CreditCard, Smartphone, Repeat } from 'lucide-react';
+import { CreditCard, Smartphone, Repeat, TrendingUp } from 'lucide-react';
+import { getMinRevenueLabel } from '@/lib/segmentConfig';
 
 const fmtPct = (v) => v != null ? `${v.toFixed(2)}%` : '—';
 const fmtBrl = (v) => v != null ? `R$ ${v.toFixed(2).replace('.', ',')}` : '—';
@@ -16,7 +17,13 @@ export default function FechamentoRatesResume({ segmentRates, segmentName, partn
         <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
           {partnerName ? `Parceiro ${partnerName} •` : ''} Segmento
         </p>
-        <h3 className="text-xl font-extrabold mb-5" style={{ color: '#2bc196' }}>{segmentName}</h3>
+        <h3 className="text-xl font-extrabold mb-3" style={{ color: '#2bc196' }}>{segmentName}</h3>
+        {segmentName && (
+          <div className="flex items-center gap-2 bg-amber-500/15 border border-amber-400/30 rounded-lg px-3 py-2 mb-5">
+            <TrendingUp className="w-4 h-4 text-amber-400 flex-shrink-0" />
+            <p className="text-xs font-bold text-amber-300">{getMinRevenueLabel(segmentName)}</p>
+          </div>
+        )}
 
         {/* MDR */}
         <div className="flex items-center gap-2 mb-3">

@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AlertTriangle, CreditCard, Shield, Clock, Info, FileText, ExternalLink, Rocket, ArrowRight } from 'lucide-react';
+import { AlertTriangle, CreditCard, Shield, Clock, Info, FileText, ExternalLink, Rocket, ArrowRight, TrendingUp } from 'lucide-react';
+import { getMinRevenueLabel } from '@/lib/segmentConfig';
 import moment from 'moment';
 import TaxasPorBandeiraPublic from '@/components/proposals/TaxasPorBandeiraPublic';
 import ParcelasTableDetalhada from '@/components/proposals/ParcelasTableDetalhada';
@@ -96,7 +97,11 @@ export default function PropostaPadraoPublica() {
           <p className="text-white/80 text-base md:text-lg max-w-lg mx-auto">
             {t('spp.standard_rates_for')} <span className="font-bold text-white">{proposta.segment}</span>
           </p>
-          <p className="text-white/40 text-xs mt-8">
+          <div className="mt-6 inline-flex items-center gap-2 bg-amber-500/20 border border-amber-400/30 rounded-full px-5 py-2">
+            <TrendingUp className="w-4 h-4 text-amber-300" />
+            <p className="text-sm font-bold text-amber-200">{getMinRevenueLabel(proposta.segment)}</p>
+          </div>
+          <p className="text-white/40 text-xs mt-4">
             {proposta.templateName} — {proposta.codigo}
           </p>
         </div>

@@ -1,8 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { CreditCard, Smartphone, ReceiptText, Repeat } from 'lucide-react';
+import { CreditCard, Smartphone, ReceiptText, Repeat, TrendingUp } from 'lucide-react';
+import { getMinRevenueLabel } from '@/lib/segmentConfig';
 
-export default function SegmentRatesTable({ segmentRates }) {
+export default function SegmentRatesTable({ segmentRates, segmentName }) {
   if (!segmentRates) return null;
 
   const {
@@ -16,6 +17,16 @@ export default function SegmentRatesTable({ segmentRates }) {
 
   return (
     <div className="space-y-10">
+
+      {/* ══════════════ TAG DE FATURAMENTO MÍNIMO ══════════════ */}
+      {segmentName && (
+        <div className="flex items-center justify-center gap-2 bg-amber-50 border-2 border-amber-300 rounded-xl px-5 py-3">
+          <TrendingUp className="w-5 h-5 text-amber-600 flex-shrink-0" />
+          <p className="text-sm font-bold text-amber-800">
+            Taxas válidas para {getMinRevenueLabel(segmentName).toLowerCase()}
+          </p>
+        </div>
+      )}
 
       {/* ══════════════ BLOCO 1: MDR + Antecipação (destaque principal) ══════════════ */}
       <div className="bg-[#002443] rounded-2xl p-6 md:p-8 relative overflow-hidden">

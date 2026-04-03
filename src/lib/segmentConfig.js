@@ -71,6 +71,32 @@ export function normalizeSegment(value) {
 }
 
 /**
+ * Faturamento mínimo mensal por segmento para exibição em propostas e landing pages.
+ * MPE e Link de Pagamento: R$ 50.000 | Todos os outros: R$ 100.000
+ */
+export const SEGMENT_MIN_REVENUE = {
+  'MPE': 50000,
+  'Link de Pagamento': 50000,
+  'Educação': 100000,
+  'Infoprodutos': 100000,
+  'E-commerce': 100000,
+  'SaaS': 100000,
+  'Gateway': 100000,
+  'Marketplace': 100000,
+  'Dropshipping': 100000,
+  'Plataformas Verticais': 100000,
+};
+
+export function getMinRevenueLabel(segmentName) {
+  const value = SEGMENT_MIN_REVENUE[segmentName] || 100000;
+  return `Faturamento acima de R$ ${value.toLocaleString('pt-BR')}/mês`;
+}
+
+export function getMinRevenueValue(segmentName) {
+  return SEGMENT_MIN_REVENUE[segmentName] || 100000;
+}
+
+/**
  * Retorna o label legível de um segmento a partir de qualquer formato.
  */
 export function getSegmentLabel(value) {
