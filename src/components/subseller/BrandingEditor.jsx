@@ -79,11 +79,14 @@ export default function BrandingEditor({ link, onUpdate }) {
               </button>
             </div>
           ) : (
-            <label className="cursor-pointer flex items-center gap-2 px-3 py-2 border border-dashed border-slate-300 rounded-lg hover:border-[#2bc196] transition-all text-sm text-[#002443]/60">
-              {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-              {uploading ? 'Enviando...' : 'Upload do logo'}
-              <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} disabled={uploading} />
-            </label>
+            <>
+              <label className="cursor-pointer flex items-center gap-2 px-3 py-2 border border-dashed border-slate-300 rounded-lg hover:border-[#2bc196] transition-all text-sm text-[#002443]/60">
+                {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                {uploading ? 'Enviando...' : 'Upload do logo'}
+                <input type="file" accept="image/png,image/jpeg,image/jpg,image/svg+xml,image/webp,application/pdf,.png,.jpg,.jpeg,.svg,.webp,.pdf" className="hidden" onChange={handleLogoUpload} disabled={uploading} />
+              </label>
+              <span className="text-[9px] text-[#002443]/30">PNG, SVG, JPG, WEBP ou PDF</span>
+            </>
           )}
         </div>
       </div>

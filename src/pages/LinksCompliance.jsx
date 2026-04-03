@@ -5,19 +5,21 @@ import {
   Link as LinkIcon, Copy, Check, ExternalLink, RefreshCw,
   Shield, Zap, ShoppingCart, Cloud, CreditCard, Globe, Briefcase, BookOpen, Store,
   TrendingUp, MousePointer, FileCheck, Loader2, Trash2,
-  BarChart3, ChevronDown, ChevronUp, Plus
+  BarChart3, ChevronDown, ChevronUp, Plus, Paintbrush, Pencil, Users
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import LinkAnalyticsDashboard from '../components/analytics/LinkAnalyticsDashboard';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
+import BrandingEditor from '@/components/subseller/BrandingEditor';
 
 export default function LinksCompliance() {
   const { t } = useTranslation();
   const [copiedKey, setCopiedKey] = useState(null);
   const [expandedLinkId, setExpandedLinkId] = useState(null);
   const [activeTab, setActiveTab] = useState('links');
+  const [editingBrandingId, setEditingBrandingId] = useState(null);
   const queryClient = useQueryClient();
   const base = window.location.origin;
 
@@ -283,6 +285,17 @@ export default function LinksCompliance() {
                       <div className="flex items-center gap-3 flex-wrap">
                         <Badge variant="outline" className="font-mono text-sm border-[#002443]/10">{link.uniqueCode}</Badge>
                         <Badge className="bg-[#002443]/10 text-[#002443] text-xs border-0">{getLinkLabel(link)}</Badge>
+                        {link.linkType === 'SUBSELLER_COMPLIANCE' && (
+                          <Badge className="bg-indigo-100 text-indigo-700 text-[10px] border-0 gap-1">
+                            <Users className="w-2.5 h-2.5" /> Subseller
+                          </Badge>
+                        )}
+                        {link.brandName && (
+                          <Badge className="bg-purple-100 text-purple-700 text-[10px] border-0 gap-1">
+                            <Paintbrush className="w-2.5 h-2.5" /> {link.brandName}
+                          </Badge>
+                        )}
+                        {link.parentMerchantName && <span className="text-xs text-[#002443]/40">{link.parentMerchantName}</span>}
                         {link.commercialAgentName && <span className="text-xs text-[#002443]/40">{link.commercialAgentName}</span>}
                         <span className="text-[10px] text-[#002443]/20">{link.created_date ? new Date(link.created_date).toLocaleDateString('pt-BR') : ''}</span>
                       </div>
@@ -299,6 +312,15 @@ export default function LinksCompliance() {
                           <button onClick={() => window.open(generateLinkUrl(link), '_blank')} className="p-1.5 rounded-lg hover:bg-[#f4f4f4] transition-colors">
                             <ExternalLink className="w-4 h-4 text-[#002443]/30" />
                           </button>
+                          {link.linkType === 'SUBSELLER_COMPLIANCE' && (
+                            <button
+                              onClick={() => { setExpandedLinkId(link.id); setEditingBrandingId(link.id); }}
+                              className="p-1.5 rounded-lg hover:bg-purple-50 transition-colors"
+                              title="Personalizar identidade visual"
+                            >
+                              <Pencil className="w-4 h-4 text-purple-400" />
+                            </button>
+                          )}
                           <button onClick={() => deleteLinkMutation.mutate(link.id)} className="p-1.5 rounded-lg hover:bg-red-50 transition-colors">
                             <Trash2 className="w-4 h-4 text-red-300" />
                           </button>
@@ -308,9 +330,29 @@ export default function LinksCompliance() {
                     </div>
                   </div>
                   {isExpanded && (
-                    <div className="border-t border-[#002443]/5 bg-[#f4f4f4] p-4">
-                      <h4 className="text-xs font-bold text-[#002443]/50 mb-3 flex items-center gap-2"><BarChart3 className="w-4 h-4 text-[#2bc196]" /> Analytics</h4>
-                      <LinkAnalyticsDashboard linkId={link.id} linkCode={link.uniqueCode} />
+                    <div className="border-t border-[#002443]/5 bg-[#f4f4f4] p-4 space-y-4">
+                      {/* Branding section for subseller links */}
+                      {link.linkType === 'SUBSELLER_COMPLIANCE' && (
+                        <div>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setEditingBrandingId(editingBrandingId === link.id ? null : link.id); }}
+                            className="flex items-center gap-2 text-xs font-bold text-purple-600 hover:text-purple-700 mb-2"
+                          >
+                            <Paintbrush className="w-3.5 h-3.5" />
+                            {link.brandName ? 'Editar Identidade Visual (White-Label)' : 'Personalizar Identidade Visual (White-Label)'}
+                            {link.brandName && <Badge className="bg-purple-100 text-purple-700 text-[9px] border-0">Configurado</Badge>}
+                          </button>
+                          {editingBrandingId === link.id && (
+                            <div className="bg-white rounded-xl p-4 border border-purple-100">
+                              <BrandingEditor link={link} onUpdate={() => queryClient.invalidateQueries({ queryKey: ['complianceLinks'] })} />
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      <div>
+                        <h4 className="text-xs font-bold text-[#002443]/50 mb-3 flex items-center gap-2"><BarChart3 className="w-4 h-4 text-[#2bc196]" /> Analytics</h4>
+                        <LinkAnalyticsDashboard linkId={link.id} linkCode={link.uniqueCode} />
+                      </div>
                     </div>
                   )}
                 </div>
