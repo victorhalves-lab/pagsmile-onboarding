@@ -7,64 +7,69 @@
 export const PROCESSOS = [
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // 1. CAPTAÇÃO DE LEAD VIA QUESTIONÁRIO
+  // 1. CAPTAÇÃO DE LEAD VIA QUESTIONÁRIO V5 PAGSMILE
   // ═══════════════════════════════════════════════════════════════════════════
   {
     id: 'PROC-001',
-    nome: 'Captação de Lead via Questionário Público',
+    nome: 'Captação de Lead via Questionário Pagsmile v5 (Questionário Principal)',
     versao: '2.0.0',
     data: '02/04/2026',
     elaboradoPor: 'Pagsmile — Compliance & Operações',
     area: 'Comercial / Marketing / Sistema / IA',
-    objetivo: 'Definir o fluxo completo de captação de leads através de questionários públicos (v2 Autocomplete, Completo v1, Simplificado e PIX), garantindo:',
+    objetivo: 'Definir o fluxo completo de captação de leads através do Questionário Pagsmile v5 (11 etapas, 10 segmentos, 45+ perguntas, flags silenciosas e lead score), garantindo:',
     objetivoItens: [
-      'Rastreabilidade ponta a ponta do lead desde o primeiro clique.',
-      'Enriquecimento automático de dados via BrasilAPI (autocomplete CNPJ).',
-      'Análise automática de qualidade e risco por 3 motores de IA (PRISCILA, Lead Qualifier, Análise de Risco Avançada).',
-      'Atribuição imediata ao pipeline comercial com scores e classificações.',
-      'Registro completo de atividades (LeadActivity) para auditoria.',
+      'Questionário completo em 11 steps: Segmento, Dados Empresa, Endereço, Contato, Modelo Negócio, Distribuição TPV, Volumetria, Processador Atual, Taxas Atuais, Compliance/Risco e Fechamento.',
+      'Segmentação automática (10 segmentos) que determina perguntas condicionais dinâmicas.',
+      'Autocomplete CNPJ via BrasilAPI (14+ campos preenchidos automaticamente).',
+      'Slider interativo para distribuição de TPV (Cartão × PIX × Boleto = 100%).',
+      'Captura de taxas do concorrente para benchmarking na proposta.',
+      '16 flags silenciosas de risco + Lead Score automático 0-100.',
+      'Análise automática por 3 motores de IA (PRISCILA, Lead Qualifier, Risco Avançado).',
+      'Redirect para compliance do segmento correto após fechamento.',
     ],
     escopoInclui: [
-      'Geração de links rastreáveis (OnboardingLink) com UTMs e referralCode.',
-      'Preenchimento do questionário público pelo cliente potencial.',
-      'Autocomplete de CNPJ via BrasilAPI (14+ campos preenchidos automaticamente).',
-      'Criação automática de Lead no banco de dados.',
-      'Disparo automático de PRISCILA (score 0-100, risco, decisão).',
-      'Disparo automático de Lead Qualifier (nível EXCELENTE→INSUFICIENTE).',
-      'Disparo automático de Análise de Risco Avançada (iaRiskScore, iaDecision).',
+      'Geração de links rastreáveis (OnboardingLink) com UTMs e referralCode na página LinksQuestionariosLeads.',
+      'Acesso do cliente ao questionário /QuestionarioLeadsPagsmile?ref=xxx.',
+      '11 steps com componentes especializados (SegmentCards, ButtonSelector, SliderDistribution, CurrencyNumberInput).',
+      'Autocomplete CNPJ com enriquecimento via 3 APIs cascata.',
+      'Validação de e-mail (MX check), telefone (DDD) e site (HTTP check).',
+      'Criação automática de Lead com protocolo LEAD-YYYY-NNNNN.',
+      'Disparo automático de PRISCILA, Lead Qualifier e Risco Avançado em paralelo.',
       'Notificação Slack (notifyNewLead) com dados do lead.',
-      'Incremento de métricas no OnboardingLink (clicks, submissions, completions).',
+      'Redirect automático para ComplianceDinamico com model do segmento (via segmentToComplianceV4Map).',
     ],
     escopoNaoInclui: [
-      'Preenchimento manual pelo comercial (ver Processo Questionário de Reunião).',
-      'Processamento por IA de notas de reunião (ver Processo Robô IA).',
-      'Captação via Landing Page de Introducer (ver Processo Landing Page).',
-      'Criação de proposta (processo subsequente).',
+      'Questionário PIX v4 (ver PROC-011).',
+      'Questionário simplificado (ver PROC-017).',
+      'Preenchimento manual pelo comercial (ver PROC-008).',
+      'Processamento por IA de notas de reunião (ver PROC-009).',
+      'Captação via Landing Page de Introducer (ver PROC-002).',
     ],
     steps: [
-      { id: '01', resp: 'Comercial', atividade: 'Gera link rastreável na página LinksQuestionariosLeads', decisao: 'Escolhe tipo: v2 Autocomplete, Completo, Simplificado ou PIX', gate: '', sla: '', saida: 'OnboardingLink criado com uniqueCode, commercialAgentName, UTMs', proximo: '02' },
-      { id: '02', resp: 'Comercial', atividade: 'Envia link ao cliente potencial via WhatsApp, e-mail ou outro canal', decisao: '', gate: '', sla: '', saida: 'Link enviado + registro de envio (interno)', proximo: '03' },
-      { id: '03', resp: 'Cliente', atividade: 'Acessa link público e inicia questionário', decisao: '', gate: '', sla: '', saida: 'OnboardingLink.clickCount++ registrado', proximo: '04' },
-      { id: '04', resp: 'Cliente', atividade: 'Preenche CNPJ → autocomplete BrasilAPI preenche 14+ campos', decisao: 'CNPJ válido? Situação cadastral ativa?', gate: 'G1', sla: '', saida: 'Dados da empresa preenchidos automaticamente (Razão Social, Nome Fantasia, CNAE, endereço, sócios, capital social)', proximo: '05' },
-      { id: '05', resp: 'Cliente', atividade: 'Preenche etapas restantes do questionário (tipo negócio, volume, taxas, contato)', decisao: 'Todos os campos obrigatórios preenchidos?', gate: 'G2', sla: '', saida: 'Formulário completo com todas as respostas', proximo: '06' },
-      { id: '06', resp: 'Cliente', atividade: 'Submete questionário', decisao: '', gate: '', sla: '', saida: 'Submissão confirmada', proximo: '07' },
-      { id: '07', resp: 'Sistema', atividade: 'Cria entidade Lead com todos os dados coletados + protocolo único', decisao: '', gate: '', sla: 'Imediato', saida: 'Lead criado (status=questionario_preenchido, protocolo=LEAD-YYYY-NNNNN)', proximo: '08' },
-      { id: '08', resp: 'Sistema', atividade: 'Atualiza métricas do OnboardingLink (submissionCount++)', decisao: '', gate: '', sla: 'Imediato', saida: 'OnboardingLink.submissionCount incrementado', proximo: '09' },
-      { id: '09', resp: 'IA (PRISCILA)', atividade: 'Executa análise PRISCILA: score de qualidade 0-100, nível de risco, decisão', decisao: 'Score ≥ 70 → alta qualidade; < 40 → baixa qualidade', gate: '', sla: '< 30s', saida: 'Lead atualizado: priscilaQualityScore, priscilaRiskLevel, priscilaDecisionPath', proximo: '10' },
-      { id: '10', resp: 'IA (Lead Qualifier)', atividade: 'Executa Lead Qualifier: classifica maturidade do lead', decisao: 'EXCELENTE / BOM / REGULAR / FRACO / INSUFICIENTE', gate: '', sla: '< 30s', saida: 'Lead atualizado: leadQualifierScore, leadQualifierLevel, leadQualifierReport', proximo: '11' },
-      { id: '11', resp: 'IA (Risco)', atividade: 'Executa Análise de Risco Avançada: iaRiskScore 0-100, decisão, sugestões', decisao: 'AUTO_APROVAR / REVISAO_MANUAL / REJEITAR', gate: '', sla: '< 60s', saida: 'Lead atualizado: iaRiskScore, iaDecision, iaSuggestions, iaAnalysisReport', proximo: '12' },
-      { id: '12', resp: 'Sistema', atividade: 'Notifica Slack com dados do novo lead (notifyNewLead)', decisao: '', gate: '', sla: 'Imediato', saida: 'Mensagem Slack enviada com nome, TPV, score, segmento', proximo: '13' },
-      { id: '13', resp: 'Sistema', atividade: 'Cria LeadActivity (tipo: questionário_preenchido)', decisao: '', gate: '', sla: 'Imediato', saida: 'LeadActivity registrada com timestamp e detalhes', proximo: 'FIM' },
+      { id: '01', resp: 'Comercial', atividade: 'Gera link rastreável na página LinksQuestionariosLeads (tipo: Pagsmile v5)', decisao: 'Informa nome do vendedor para rastreamento', gate: '', sla: '', saida: 'OnboardingLink criado com uniqueCode, commercialAgentName, UTMs', proximo: '02' },
+      { id: '02', resp: 'Comercial', atividade: 'Envia link ao cliente potencial via WhatsApp, e-mail ou outro canal', decisao: '', gate: '', sla: '', saida: 'Link /QuestionarioLeadsPagsmile?ref=xxx enviado', proximo: '03' },
+      { id: '03', resp: 'Cliente', atividade: 'Acessa link e seleciona segmento de negócio (10 cards visuais: Gateway, Marketplace, E-commerce, SaaS, Educação, etc)', decisao: 'Segmento determina perguntas condicionais e compliance model', gate: '', sla: '', saida: 'StepSegmento: segmento selecionado (educacao, ecommerce, saas, gateway, etc)', proximo: '04' },
+      { id: '04', resp: 'Cliente', atividade: 'Preenche CNPJ → autocomplete BrasilAPI (3 APIs cascata) preenche 14+ campos', decisao: 'CNPJ válido? Situação cadastral ativa? Flags silenciosas calculadas.', gate: 'G1', sla: '', saida: 'StepDadosEmpresa: Razão Social, Nome Fantasia, CNAE, Porte, Capital Social + flags (YOUNG_COMPANY, SPECIAL_SITUATION, etc)', proximo: '05' },
+      { id: '05', resp: 'Cliente', atividade: 'Preenche endereço (auto-preenchido via CEP/ViaCEP)', decisao: '', gate: '', sla: '', saida: 'StepEndereco: CEP, logradouro, bairro, cidade, UF', proximo: '06' },
+      { id: '06', resp: 'Cliente', atividade: 'Preenche dados de contato (nome, cargo, e-mail com MX check, telefone com DDD check)', decisao: 'Flags: PERSONAL_EMAIL se domínio pessoal', gate: '', sla: '', saida: 'StepContato: contato validado', proximo: '07' },
+      { id: '07', resp: 'Cliente', atividade: 'Descreve modelo de negócio (condicionais por segmento: Gateway→qty merchants; Marketplace→sellers/split; SaaS→churn/ARPU)', decisao: '', gate: '', sla: '', saida: 'StepModeloNegocio: dados do modelo', proximo: '08' },
+      { id: '08', resp: 'Cliente', atividade: 'Define distribuição TPV via slider interativo (Cartão × PIX × Boleto = 100%)', decisao: 'Soma deve = 100%', gate: '', sla: '', saida: 'StepDistribuicao: percentuais por método de pagamento', proximo: '09' },
+      { id: '09', resp: 'Cliente', atividade: 'Informa volumetria (TPV mensal, ticket médio, crescimento esperado) e processador atual + taxas praticadas', decisao: '', gate: '', sla: '', saida: 'StepVolumetria + StepProcessadorAtual + StepTaxasAtuais: benchmark para proposta', proximo: '10' },
+      { id: '10', resp: 'Cliente', atividade: 'Responde perguntas de compliance/risco e confirma dados no StepFechamento', decisao: 'Todos os campos obrigatórios preenchidos?', gate: 'G2', sla: '', saida: 'Submissão completa com questionnaireData', proximo: '11' },
+      { id: '11', resp: 'Sistema', atividade: 'Cria Lead com protocolo LEAD-YYYY-NNNNN + businessSubCategory + questionnaireData completo', decisao: '', gate: '', sla: 'Imediato', saida: 'Lead criado (status=questionario_preenchido)', proximo: '12' },
+      { id: '12', resp: 'IA', atividade: 'PRISCILA + Lead Qualifier + Risco Avançado executam em paralelo', decisao: 'Scores e classificações gerados', gate: '', sla: '< 60s', saida: 'Lead atualizado com priscilaQualityScore, leadQualifierLevel, iaRiskScore, iaSuggestions', proximo: '13' },
+      { id: '13', resp: 'Sistema', atividade: 'Notifica Slack + cria LeadActivity + redireciona para ComplianceDinamico do segmento', decisao: '', gate: '', sla: 'Imediato', saida: 'Redirect para /ComplianceDinamico?model=Compliance{Segmento}V4', proximo: 'FIM' },
     ],
     regrasNegocio: [
-      { bold: 'Unicidade de CNPJ: ', text: 'O sistema não bloqueia CNPJ duplicado, mas exibe alertas visuais no pipeline se já existe lead com mesmo CNPJ.' },
-      { bold: 'Protocolo único: ', text: 'Cada Lead recebe protocolo no formato LEAD-YYYY-NNNNN, gerado automaticamente, irrevogável.' },
-      { bold: 'Autocomplete obrigatório (v2): ', text: 'No questionário v2 Autocomplete, o CNPJ deve ser preenchido primeiro para liberar os demais campos.' },
-      { bold: 'Situação cadastral: ', text: 'Se CNPJ retorna situação cadastral ≠ "Ativa", é registrada flag silenciosa SPECIAL_SITUATION no lead.' },
+      { bold: '10 segmentos: ', text: 'Educação, Infoprodutos, E-commerce, SaaS, Gateway, Marketplace, MPE, Dropshipping, Plataformas Verticais, Link de Pagamento.' },
+      { bold: 'Perguntas condicionais: ', text: 'Cada segmento ativa/desativa perguntas específicas em StepModeloNegocio e StepComplianceRisco.' },
+      { bold: 'Slider de distribuição: ', text: 'Cartão + PIX + Boleto devem somar 100%. Slider interativo com feedback visual.' },
+      { bold: '16 flags silenciosas: ', text: 'YOUNG_COMPANY, PERSONAL_EMAIL, SPECIAL_SITUATION, REGULATED_SECTOR, CNAE_SEGMENT_MISMATCH, SITE_NOT_FOUND, etc. Calculadas sem conhecimento do cliente.' },
+      { bold: 'Lead Score 0-100: ', text: 'Base 40 + bônus (cargo executivo, TPV alto, múltiplos serviços) - penalidades (flags ativas).' },
+      { bold: 'Taxas do concorrente: ', text: 'Captura MDR 1x, 2-6x, 7-12x, antecipação, fee, antifraude, PIX — permite benchmarking na proposta.' },
+      { bold: 'Redirect automático: ', text: 'O mapeamento segmento → compliance model é feito via segmentToComplianceV4Map. O cliente vai direto para o compliance correto.' },
       { bold: 'Score IA paralelo: ', text: 'Os 3 motores de IA executam em paralelo após criação do Lead, sem depender um do outro.' },
-      { bold: 'Slack obrigatório: ', text: 'Toda criação de Lead gera notificação Slack via automação notifyNewLead.' },
-      { bold: 'OnboardingLink rastreável: ', text: 'Cada link gerado pelo comercial incrementa métricas de click, submission e completion para analytics.' },
-      { bold: 'Lead sem questionário: ', text: 'Não é possível criar Lead diretamente pela UI sem passar por um questionário ou formulário interno.' },
+      { bold: 'Protocolo único: ', text: 'Cada Lead recebe protocolo no formato LEAD-YYYY-NNNNN, gerado automaticamente.' },
     ],
     complianceIntro: 'Segregação de funções garantida:',
     complianceItens: [
@@ -812,10 +817,697 @@ export const PROCESSOS = [
   },
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // 12. ALTERAÇÃO DE TARIFAS (DO PDF ORIGINAL)
+  // 12. EDIÇÃO, DUPLICAÇÃO E VERSIONAMENTO DE PROPOSTAS
   // ═══════════════════════════════════════════════════════════════════════════
   {
     id: 'PROC-012',
+    nome: 'Edição, Duplicação e Versionamento de Propostas Comerciais',
+    versao: '2.0.0',
+    data: '03/04/2026',
+    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    area: 'Comercial / Sistema',
+    objetivo: 'Definir os fluxos de modificação de propostas já criadas, cobrindo todas as ações possíveis:',
+    objetivoItens: [
+      'Editar rascunho: modificar taxas, dados do cliente e parceiro em propostas não enviadas.',
+      'Duplicar proposta: copiar todos os dados para uma nova proposta independente.',
+      'Criar nova versão: criar V2, V3... com lineage preservada (rootProposalId, previousVersionId).',
+      'Copiar taxas de outra proposta: importar taxas de qualquer proposta existente para a atual.',
+      'Nova proposta a partir de taxas existentes: criar nova proposta usando taxas de outra como template.',
+      'Marcar aceite manual: registrar aceite de proposta diretamente pelo comercial (sem acesso do cliente).',
+      'Atribuir vendedor responsável: vincular ou trocar o responsável comercial da proposta.',
+      'Simular rentabilidade: calcular receita × custo = margem antes do envio.',
+    ],
+    escopoInclui: [
+      'Edição de rascunho via CriarProposta?edit={id}.',
+      'Duplicação via botão "Duplicar" na GestaoPropostas (cria nova com código e token novos).',
+      'Versionamento via botão "Nova Versão" (marca anterior como isCurrentVersion=false).',
+      'Cópia de taxas via CopyRatesModal (busca em propostas existentes e importa rates).',
+      'Template via CriarProposta?templateFromId={id} (nova proposta com taxas copiadas).',
+      'Aceite manual via botão "Marcar como Aceita" no PropostaDetalhes.',
+      'Atribuição de vendedor via AssignSellerModal.',
+      'Simulação de rentabilidade via RentabilidadeDrawer.',
+      'Visualização do histórico de versões no PropostaDetalhes.',
+    ],
+    escopoNaoInclui: [
+      'Criação de proposta nova do zero (ver PROC-003).',
+      'Aceite pelo cliente na proposta pública (ver PROC-004).',
+    ],
+    steps: [
+      { id: '01A', resp: 'Comercial', atividade: 'EDITAR RASCUNHO: Clica "Editar" em proposta com status=rascunho', decisao: 'Apenas rascunhos podem ser editados diretamente', gate: 'G1', sla: '', saida: 'CriarProposta abre com dados pré-preenchidos (?edit=id)', proximo: '02' },
+      { id: '01B', resp: 'Comercial', atividade: 'DUPLICAR: Clica "Duplicar" em qualquer proposta', decisao: '', gate: '', sla: '', saida: 'Nova Proposal com código PROP-YYYY-NNNNN novo, token novo, status=rascunho, sem vínculo de versão', proximo: '02' },
+      { id: '01C', resp: 'Comercial', atividade: 'NOVA VERSÃO: Clica "Nova Versão" em proposta finalizada', decisao: 'Marca proposta anterior como isCurrentVersion=false', gate: '', sla: '', saida: 'Nova Proposal V{n+1} com previousVersionId e rootProposalId, sourceFlow=proposal_versioning', proximo: '02' },
+      { id: '01D', resp: 'Comercial', atividade: 'COPIAR TAXAS: Abre CopyRatesModal e seleciona proposta fonte', decisao: 'Importa rates completo (cartão, PIX, boleto, fees, antecipação)', gate: '', sla: '', saida: 'Taxas copiadas para o formulário atual', proximo: '02' },
+      { id: '01E', resp: 'Comercial', atividade: 'TEMPLATE: Clica "Nova proposta com estas taxas" (FilePlus2)', decisao: '', gate: '', sla: '', saida: 'CriarProposta abre com taxas pré-preenchidas (?templateFromId=id)', proximo: '02' },
+      { id: '02', resp: 'Comercial', atividade: 'Modifica taxas, dados do cliente, parceiro conforme necessidade', decisao: '', gate: '', sla: '', saida: 'Formulário atualizado', proximo: '03' },
+      { id: '03', resp: 'Comercial', atividade: 'Salva como rascunho ou gera proposta (status=enviada)', decisao: 'Validação obrigatória para gerar', gate: 'G2', sla: '', saida: 'Proposal atualizada/criada', proximo: 'FIM' },
+      { id: '04A', resp: 'Comercial', atividade: 'ACEITE MANUAL: No PropostaDetalhes, clica "Marcar como Aceita"', decisao: 'Gera AuditLog com acaoManual=true', gate: '', sla: '', saida: 'status=aceita, acceptedDate, Lead.status=proposta_aceita', proximo: 'FIM' },
+      { id: '04B', resp: 'Comercial', atividade: 'ATRIBUIR VENDEDOR: Clica no nome do responsável na GestaoPropostas', decisao: '', gate: '', sla: '', saida: 'responsavelId e responsavelNome atualizados via AssignSellerModal', proximo: 'FIM' },
+      { id: '04C', resp: 'Comercial', atividade: 'SIMULAR RENTABILIDADE: Clica "$ Rentabilidade" na tabela ou detalhes', decisao: '', gate: '', sla: '', saida: 'RentabilidadeDrawer exibe receita MDR, antecipação, fees vs. custos parceiro = margem', proximo: 'FIM' },
+    ],
+    regrasNegocio: [
+      { bold: 'Edição restrita: ', text: 'Apenas propostas com status=rascunho podem ser editadas diretamente. Propostas enviadas/aceitas exigem "Nova Versão".' },
+      { bold: 'Duplicação independente: ', text: 'A proposta duplicada não tem vínculo de versão com a original. É uma cópia limpa.' },
+      { bold: 'Versionamento controlado: ', text: 'Criar nova versão incrementa version, marca anterior como isCurrentVersion=false, preserva rootProposalId.' },
+      { bold: 'CopyRates vs Template: ', text: 'CopyRates importa só as taxas; Template cria nova proposta completa com taxas + dados do cliente opcionais.' },
+      { bold: 'Aceite manual: ', text: 'Gera AuditLog com flag acaoManual=true para diferenciar de aceite pelo cliente.' },
+      { bold: 'Histórico visual: ', text: 'PropostaDetalhes exibe todas as versões (V1, V2, V3...) com status e data de cada uma.' },
+    ],
+    complianceIntro: 'Controles de integridade:',
+    complianceItens: [
+      'AuditLog registra cada ação (duplicação, versionamento, aceite manual) com responsável e timestamp.',
+      'Aceite manual claramente distinguido do aceite do cliente na trilha de auditoria.',
+      'Propostas enviadas não podem ser editadas — apenas versionadas (integridade do que o cliente recebeu).',
+    ],
+    governanca: [
+      { bold: 'O Comercial ', text: 'executa todas as ações de modificação de propostas.' },
+      { bold: 'O Sistema ', text: 'garante integridade do versionamento e registro de auditoria.' },
+    ],
+    raciRoles: ['Comercial', 'Sistema'],
+    raciActivities: [
+      { name: 'Editar rascunho', values: ['R', ''] },
+      { name: 'Duplicar proposta', values: ['R', 'C'] },
+      { name: 'Criar nova versão', values: ['R', 'C'] },
+      { name: 'Copiar taxas', values: ['R', ''] },
+      { name: 'Aceite manual', values: ['R', 'C'] },
+      { name: 'Atribuir vendedor', values: ['R', ''] },
+      { name: 'Simular rentabilidade', values: ['R', 'C'] },
+      { name: 'Registrar auditoria', values: ['', 'R'] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 13. CAPTAÇÃO VIA PROPOSTA PADRÃO (LINK RÁPIDO)
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'PROC-013',
+    nome: 'Captação via Proposta Padrão por Segmento (Link Rápido)',
+    versao: '2.0.0',
+    data: '03/04/2026',
+    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    area: 'Comercial / Admin / Sistema',
+    objetivo: 'Definir o fluxo de captação de leads através de links de propostas padrão por segmento, assegurando:',
+    objetivoItens: [
+      'Criação e gestão de templates de proposta padrão por segmento.',
+      'Geração de links públicos rápidos por segmento (isDefaultForSegment).',
+      'Visualização de taxas completas pelo cliente sem necessidade de cadastro.',
+      'Captura de lead interessado via formulário da proposta padrão (StandardProposalLead).',
+      'Criação automática de Lead e Proposal a partir dos dados coletados.',
+    ],
+    escopoInclui: [
+      'CRUD de StandardProposal (GestaoPropostasPadrao, CriarPropostaPadrao).',
+      'Geração de links rápidos por segmento com token público.',
+      'Página pública PropostaPadraoPublica com taxas detalhadas.',
+      'Formulário de fechamento para captura de dados do cliente.',
+      'Criação de StandardProposalLead e vinculação com Lead/Proposal.',
+    ],
+    escopoNaoInclui: [
+      'Propostas personalizadas (ver PROC-003).',
+      'Propostas PIX (ver PROC-014).',
+    ],
+    steps: [
+      { id: '01', resp: 'Admin', atividade: 'Cria StandardProposal com taxas por segmento (GestaoPropostasPadrao)', decisao: 'Segmento, taxas por bandeira, PIX, fees, antecipação, mínimo garantido', gate: '', sla: '', saida: 'StandardProposal (status=ativa, tokenPublico gerado)', proximo: '02' },
+      { id: '02', resp: 'Admin', atividade: 'Marca como "default para segmento" (isDefaultForSegment=true)', decisao: 'Apenas 1 por segmento pode ser default', gate: '', sla: '', saida: 'Link rápido disponível na tabela de segmentos', proximo: '03' },
+      { id: '03', resp: 'Comercial', atividade: 'Copia link rápido e envia ao cliente', decisao: '', gate: '', sla: '', saida: 'Link /PropostaPadraoPublica?token=xxx enviado', proximo: '04' },
+      { id: '04', resp: 'Cliente', atividade: 'Acessa proposta pública e visualiza taxas completas', decisao: '', gate: '', sla: '', saida: 'Taxas por bandeira, PIX, boleto, antecipação, parcelas 1x-21x', proximo: '05' },
+      { id: '05', resp: 'Cliente', atividade: 'Clica "Quero Contratar" e preenche formulário de fechamento', decisao: 'CNPJ, Razão Social, contato, volume, modelo negócio', gate: 'G1', sla: '', saida: 'StandardProposalLead criado', proximo: '06' },
+      { id: '06', resp: 'Sistema', atividade: 'Cria Lead + Proposal com taxas do template + redirect compliance', decisao: '', gate: '', sla: 'Imediato', saida: 'Lead (sourceFlow=standard_proposal_link) + Proposal vinculada', proximo: 'FIM' },
+    ],
+    regrasNegocio: [
+      { bold: 'Token único: ', text: 'Cada StandardProposal gera tokenPublico de 64 chars para acesso público.' },
+      { bold: '1 default por segmento: ', text: 'Apenas uma proposta padrão pode ser marcada como default para cada segmento.' },
+      { bold: 'Taxas de vitrine: ', text: 'As taxas exibidas são as do template — proposta personalizada pode ter taxas diferentes.' },
+      { bold: 'Formulário obrigatório: ', text: 'O cliente precisa preencher dados para que Lead seja criado.' },
+    ],
+    complianceIntro: 'Controles de gestão de propostas padrão:',
+    complianceItens: [
+      'Apenas Admin pode criar e editar StandardProposal.',
+      'Token público não expõe dados internos.',
+      'StandardProposalLead registra origem para rastreabilidade.',
+    ],
+    governanca: [
+      { bold: 'O Admin ', text: 'define taxas padrão por segmento e gerencia templates.' },
+      { bold: 'O Comercial ', text: 'distribui links rápidos sem poder alterar taxas do template.' },
+      { bold: 'O Cliente ', text: 'visualiza taxas e decide se quer prosseguir.' },
+    ],
+    raciRoles: ['Admin', 'Comercial', 'Cliente', 'Sistema'],
+    raciActivities: [
+      { name: 'Criar template', values: ['R', '', '', ''] },
+      { name: 'Distribuir link', values: ['', 'R', '', ''] },
+      { name: 'Preencher formulário', values: ['', '', 'R', ''] },
+      { name: 'Criar Lead + Proposal', values: ['', '', '', 'R'] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 14. PROPOSTAS PIX (GESTÃO E ENVIO)
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'PROC-014',
+    nome: 'Criação e Gestão de Propostas PIX',
+    versao: '2.0.0',
+    data: '03/04/2026',
+    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    area: 'Comercial / Sistema',
+    objetivo: 'Definir o fluxo de criação, envio e gestão de propostas PIX Only, assegurando:',
+    objetivoItens: [
+      'Proposta simplificada focada exclusivamente em PIX (taxa % ou fixa).',
+      'TPV mínimo garantido configurável (3 meses).',
+      'Versionamento e link público para aceite.',
+      'Integração com compliance PIX pós-aceite.',
+    ],
+    escopoInclui: [
+      'CRUD de PixProposal (GestaoPropostasPix, CriarPropostaPix).',
+      'Página pública PropostaPixPublica com taxa PIX e TPV mínimo.',
+      'Aceite/Recusa/Contraproposta pelo cliente.',
+      'Redirect para compliance PIX após aceite.',
+    ],
+    escopoNaoInclui: [
+      'Propostas com cartão (ver PROC-003).',
+      'Captação do Lead PIX (ver PROC-011).',
+    ],
+    steps: [
+      { id: '01', resp: 'Comercial', atividade: 'Acessa CriarPropostaPix ou cria via pipeline do lead', decisao: '', gate: '', sla: '', saida: 'Formulário PixProposal aberto', proximo: '02' },
+      { id: '02', resp: 'Comercial', atividade: 'Preenche: cliente, taxa PIX (% ou fixo), TPV mínimo garantido (3 meses)', decisao: '', gate: '', sla: '', saida: 'PixProposal preenchida', proximo: '03' },
+      { id: '03', resp: 'Comercial', atividade: 'Gera proposta (código PIX-YYYY-NNNNN + token público)', decisao: '', gate: 'G1', sla: '', saida: 'PixProposal (status=enviada)', proximo: '04' },
+      { id: '04', resp: 'Comercial', atividade: 'Envia link público ao cliente', decisao: '', gate: '', sla: '', saida: 'Link /PropostaPixPublica?token=xxx enviado', proximo: '05' },
+      { id: '05', resp: 'Cliente', atividade: 'Visualiza e decide (aceitar/recusar/contrapropor)', decisao: '', gate: 'G2', sla: '', saida: 'Decisão registrada', proximo: '06' },
+      { id: '06', resp: 'Sistema', atividade: 'Se aceita: redirect para ComplianceDinamico (PIX)', decisao: '', gate: '', sla: 'Imediato', saida: 'Compliance PIX iniciado', proximo: 'FIM' },
+    ],
+    regrasNegocio: [
+      { bold: 'Taxa PIX flexível: ', text: 'Pode ser percentual (ex: 0.99%) ou valor fixo (ex: R$ 1,50).' },
+      { bold: 'TPV mínimo 3 meses: ', text: 'Três valores distintos para ramp-up progressivo.' },
+      { bold: 'Versionamento: ', text: 'Mesma lógica de versioning da Proposal padrão (version, previousVersionId, rootProposalId).' },
+    ],
+    complianceIntro: 'Controles PIX:',
+    complianceItens: [
+      'Proposta PIX segue mesmas regras de aceite formal da proposta padrão.',
+      'AuditLog registra criação e envio.',
+    ],
+    governanca: [
+      { bold: 'O Comercial ', text: 'cria e envia proposta PIX.' },
+      { bold: 'O Cliente ', text: 'decide aceitar ou não.' },
+    ],
+    raciRoles: ['Comercial', 'Cliente', 'Sistema'],
+    raciActivities: [
+      { name: 'Criar proposta PIX', values: ['R', '', ''] },
+      { name: 'Enviar link', values: ['R', '', ''] },
+      { name: 'Aceitar/Recusar', values: ['', 'R', ''] },
+      { name: 'Redirect compliance', values: ['', '', 'R'] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 15. CAPTAÇÃO VIA LANDING PAGE PAGSMILE (FECHAMENTO)
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'PROC-015',
+    nome: 'Captação via Formulário de Fechamento Landing Page (FechamentoLandingPage)',
+    versao: '2.0.0',
+    data: '03/04/2026',
+    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    area: 'Comercial / Marketing / Sistema',
+    objetivo: 'Definir o fluxo de captação de leads via formulário de fechamento da landing page PagSmile ou de Introducer, assegurando:',
+    objetivoItens: [
+      'Formulário multi-step para captura de dados da empresa (CNPJ, volumetria, modelo negócio).',
+      'Criação automática de LandingPageLead com dados completos.',
+      'Vinculação a Introducer (se aplicável) e agente comercial.',
+      'Criação automática de Lead e Proposal com taxas do segmento.',
+      'Redirect para compliance após submissão.',
+    ],
+    escopoInclui: [
+      'Formulário FechamentoLandingPage com 3 steps: CompanyForm, Volumetria, ModeloNegocio.',
+      'Criação de LandingPageLead.',
+      'Criação de Lead + Proposal automaticamente.',
+      'Notificação Slack (notifyLandingPageLead).',
+    ],
+    escopoNaoInclui: [
+      'Configuração da landing page do Introducer (ver PROC-010).',
+      'Questionário completo v5 (ver PROC-012).',
+    ],
+    steps: [
+      { id: '01', resp: 'Cliente', atividade: 'Acessa FechamentoLandingPage (via CTA da landing page)', decisao: '', gate: '', sla: '', saida: 'Formulário carregado com segmento pré-selecionado', proximo: '02' },
+      { id: '02', resp: 'Cliente', atividade: 'Step 1: Preenche dados da empresa (CNPJ autocomplete, contato)', decisao: 'CNPJ válido?', gate: 'G1', sla: '', saida: 'FechamentoStep1CompanyForm preenchido', proximo: '03' },
+      { id: '03', resp: 'Cliente', atividade: 'Step 2: Informa volumetria (TPV, distribuição cartão/PIX/boleto)', decisao: '', gate: '', sla: '', saida: 'FechamentoStep2Volumetria preenchido', proximo: '04' },
+      { id: '04', resp: 'Cliente', atividade: 'Step 3: Descreve modelo de negócio e sellers (se marketplace)', decisao: '', gate: '', sla: '', saida: 'FechamentoStep3ModeloNegocio preenchido', proximo: '05' },
+      { id: '05', resp: 'Sistema', atividade: 'Cria LandingPageLead + Lead + Proposal com taxas do segmento', decisao: '', gate: '', sla: 'Imediato', saida: 'Entidades criadas com introducerId (se aplicável)', proximo: '06' },
+      { id: '06', resp: 'Sistema', atividade: 'Notifica Slack + redirect para compliance', decisao: '', gate: '', sla: 'Imediato', saida: 'Notificação + redirect ComplianceDinamico', proximo: 'FIM' },
+    ],
+    regrasNegocio: [
+      { bold: 'Segmento pré-selecionado: ', text: 'O segmento vem da URL (seleção na landing page) e determina as taxas da proposta automática.' },
+      { bold: 'Introducer vinculado: ', text: 'Se acessado via landing page de Introducer, o introducerId é propagado automaticamente.' },
+      { bold: 'Proposta automática: ', text: 'A Proposal é criada com taxas de SegmentDefaultRates, sourceFlow=introducer_landing_page.' },
+    ],
+    complianceIntro: 'Controles de captura:',
+    complianceItens: [
+      'LandingPageLead registra origem completa (slug, Introducer, segmento).',
+      'Notificação Slack garante visibilidade imediata.',
+    ],
+    governanca: [
+      { bold: 'O Cliente ', text: 'preenche dados no formulário de fechamento.' },
+      { bold: 'O Sistema ', text: 'cria Lead + Proposal automaticamente sem intervenção humana.' },
+    ],
+    raciRoles: ['Cliente', 'Sistema', 'Comercial'],
+    raciActivities: [
+      { name: 'Preencher formulário', values: ['R', '', ''] },
+      { name: 'Criar Lead + Proposal', values: ['', 'R', 'I'] },
+      { name: 'Notificar Slack', values: ['', 'R', 'I'] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 16. GERAÇÃO E GESTÃO DE LINKS DE SUBCONTAS (SUBSELLER)
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'PROC-016',
+    nome: 'Geração e Gestão de Links de Subcontas (Subseller)',
+    versao: '2.0.0',
+    data: '03/04/2026',
+    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    area: 'Compliance / Comercial / Admin / Sistema',
+    objetivo: 'Definir o fluxo de geração de links de onboarding para subsellers vinculados a merchants principais, assegurando:',
+    objetivoItens: [
+      'Geração de links white-label personalizados por merchant (branding customizado).',
+      'Configuração de logo, cores primária/secundária, nome de exibição.',
+      'Slugs curtos para URLs amigáveis (/s/{slug}).',
+      'Rastreabilidade de qual merchant gerou cada link.',
+      'Métricas de uso (clicks, submissions, completions).',
+    ],
+    escopoInclui: [
+      'Dashboard GerenciarSubsellerLinks com lista de merchants aprovados.',
+      'Modal de geração de link (GenerateLinkModal) com opções PagSmile ou White-Label.',
+      'Editor de branding (BrandingEditor) para customização visual.',
+      'Backend generateSubsellerLink para criação do OnboardingLink.',
+      'Ativação/desativação de links.',
+    ],
+    escopoNaoInclui: [
+      'Preenchimento do questionário pelo subseller (ver PROC-018).',
+      'Risk Scoring do subseller (ver PROC-019).',
+    ],
+    steps: [
+      { id: '01', resp: 'Admin/Comercial', atividade: 'Acessa GerenciarSubsellerLinks e seleciona merchant aprovado', decisao: 'Merchant deve ter status "Aprovado"', gate: 'G1', sla: '', saida: 'Merchant selecionado', proximo: '02' },
+      { id: '02', resp: 'Admin/Comercial', atividade: 'Clica "Gerar Novo Link" e escolhe modo (PagSmile ou White-Label)', decisao: 'White-Label: configura logo, cores, nome', gate: '', sla: '', saida: 'GenerateLinkModal com configurações', proximo: '03' },
+      { id: '03', resp: 'Admin/Comercial', atividade: 'Configura branding (se white-label): logo, cores, nome, slug opcional', decisao: '', gate: '', sla: '', saida: 'Configurações de branding definidas', proximo: '04' },
+      { id: '04', resp: 'Sistema', atividade: 'generateSubsellerLink cria OnboardingLink (tipo=SUBSELLER_COMPLIANCE)', decisao: '', gate: '', sla: 'Imediato', saida: 'OnboardingLink com uniqueCode, brandName, brandLogoUrl, brandPrimaryColor, brandSecondaryColor, customSlug', proximo: '05' },
+      { id: '05', resp: 'Sistema', atividade: 'Cria AuditLog da geração do link', decisao: '', gate: '', sla: 'Imediato', saida: 'AuditLog registrado', proximo: '06' },
+      { id: '06', resp: 'Admin/Comercial', atividade: 'Copia link e envia ao merchant para distribuir aos subsellers', decisao: '', gate: '', sla: '', saida: 'Link /SubsellerQuestionnaire?ref=xxx ou /s/{slug} enviado', proximo: 'FIM' },
+    ],
+    regrasNegocio: [
+      { bold: 'Merchant aprovado: ', text: 'Apenas merchants com onboardingStatus="Aprovado" podem ter links de subseller gerados.' },
+      { bold: 'Branding white-label: ', text: 'Logo, cor primária, cor secundária e nome são persistidos no OnboardingLink e aplicados via CSS dinâmico.' },
+      { bold: 'Slug único: ', text: 'O customSlug permite URL curta (/s/{slug}) além do link padrão (?ref=xxx).' },
+      { bold: 'Expiração: ', text: 'Links têm expiresAt configurável (default: 90 dias).' },
+      { bold: 'Métricas: ', text: 'clickCount, submissionCount, completedCount rastreados automaticamente.' },
+    ],
+    complianceIntro: 'Controles de gestão de links:',
+    complianceItens: [
+      'Apenas Admin pode gerar links de subseller.',
+      'AuditLog registra cada geração com parentMerchantId e responsável.',
+      'Links podem ser desativados a qualquer momento (isActive=false).',
+      'Branding personalizado não altera dados internos, apenas visual.',
+    ],
+    governanca: [
+      { bold: 'O Admin ', text: 'gera e gerencia links, define branding.' },
+      { bold: 'O Merchant ', text: 'distribui links aos seus subsellers, sem acesso ao backoffice.' },
+      { bold: 'O Sistema ', text: 'cria OnboardingLink e registra métricas automaticamente.' },
+    ],
+    raciRoles: ['Admin', 'Comercial', 'Merchant', 'Sistema'],
+    raciActivities: [
+      { name: 'Gerar link subseller', values: ['R', 'C', '', ''] },
+      { name: 'Configurar branding', values: ['R', '', '', ''] },
+      { name: 'Distribuir link', values: ['', 'I', 'R', ''] },
+      { name: 'Criar OnboardingLink', values: ['', '', '', 'R'] },
+      { name: 'Rastrear métricas', values: ['', '', '', 'R'] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 17. CAPTAÇÃO VIA QUESTIONÁRIO SIMPLIFICADO
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'PROC-017',
+    nome: 'Captação via Questionário Simplificado (Reunião + Link Rápido)',
+    versao: '2.0.0',
+    data: '03/04/2026',
+    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    area: 'Comercial / Sistema',
+    objetivo: 'Definir o fluxo de captação rápida de leads via questionário simplificado, usado após reuniões para captura mínima de dados:',
+    objetivoItens: [
+      'Formulário público com campos mínimos (empresa, CNPJ, contato, cargo).',
+      'Ideal para pós-reunião: comercial envia link rápido ao cliente para formalizar interesse.',
+      'Criação de SimplifiedLead que pode ser vinculado a Lead completo posteriormente.',
+    ],
+    escopoInclui: [
+      'Link de questionário simplificado (tipo LEAD_SIMPLIFICADO).',
+      'Página pública QuestionarioSimplificadoPublico.',
+      'Criação de SimplifiedLead (QuestionarioSimplificado).',
+      'Visualização na aba "Simplificado" de QuestionariosLeads.',
+    ],
+    escopoNaoInclui: [
+      'Questionário completo v5 (ver PROC-012).',
+      'Questionário de reunião interno (ver PROC-008).',
+    ],
+    steps: [
+      { id: '01', resp: 'Comercial', atividade: 'Gera link simplificado em LinksQuestionariosLeads', decisao: 'Tipo: LEAD_SIMPLIFICADO', gate: '', sla: '', saida: 'OnboardingLink criado', proximo: '02' },
+      { id: '02', resp: 'Comercial', atividade: 'Envia link ao cliente (pós-reunião)', decisao: '', gate: '', sla: '', saida: 'Link enviado via WhatsApp/e-mail', proximo: '03' },
+      { id: '03', resp: 'Cliente', atividade: 'Preenche formulário simplificado (nome empresa, CNPJ, contato, e-mail, telefone, cargo)', decisao: '', gate: 'G1', sla: '', saida: 'Formulário submetido', proximo: '04' },
+      { id: '04', resp: 'Sistema', atividade: 'Cria SimplifiedLead (QuestionarioSimplificado)', decisao: '', gate: '', sla: 'Imediato', saida: 'SimplifiedLead criado (status=novo)', proximo: '05' },
+      { id: '05', resp: 'Comercial', atividade: 'Visualiza em QuestionariosLeads (aba Simplificado) e vincula a Lead se desejar', decisao: 'Vincular ao lead existente?', gate: '', sla: '', saida: 'SimplifiedLead vinculado ou aguardando', proximo: 'FIM' },
+    ],
+    regrasNegocio: [
+      { bold: 'Dados mínimos: ', text: 'Apenas nome empresa, CNPJ, nome contato, e-mail e telefone são obrigatórios.' },
+      { bold: 'Vinculação posterior: ', text: 'O SimplifiedLead pode ser vinculado a um Lead completo pelo comercial.' },
+      { bold: 'Uso pós-reunião: ', text: 'Ideal para formalizar interesse rapidamente após uma reunião informal.' },
+    ],
+    complianceIntro: 'Controles simplificados:',
+    complianceItens: [
+      'Formulário público sem dados sensíveis.',
+      'Vinculação a Lead é manual, garantindo controle do comercial.',
+    ],
+    governanca: [
+      { bold: 'O Comercial ', text: 'gera link e decide se vincula a um lead completo.' },
+      { bold: 'O Cliente ', text: 'preenche dados mínimos de contato.' },
+    ],
+    raciRoles: ['Comercial', 'Cliente', 'Sistema'],
+    raciActivities: [
+      { name: 'Gerar link simplificado', values: ['R', '', ''] },
+      { name: 'Preencher formulário', values: ['', 'R', ''] },
+      { name: 'Criar SimplifiedLead', values: ['', '', 'R'] },
+      { name: 'Vincular a Lead', values: ['R', '', ''] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 18. ONBOARDING DE SUBSELLER VIA LINK
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'PROC-018',
+    nome: 'Onboarding de Subseller via Link de Subconta',
+    versao: '2.0.0',
+    data: '03/04/2026',
+    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    area: 'Compliance / Sistema / Merchant / Subseller',
+    objetivo: 'Definir o fluxo completo de onboarding de subsellers que acessam links de subconta gerados por merchants, assegurando:',
+    objetivoItens: [
+      'Questionário de compliance dinâmico (template subseller_v2) com 4 perguntas por step.',
+      'White-label completo: cores, logo e nome do merchant aplicados via CSS dinâmico.',
+      'Ocultação de dados internos (enriquecimento, análise CNPJ) para o subseller.',
+      'Biometria via CAF com redirect por segmento.',
+      'Vinculação automática ao merchant principal (parentMerchantId).',
+    ],
+    escopoInclui: [
+      'Acesso via SubsellerQuestionnaire com ref=xxx.',
+      'DynamicQuestionnaire com branding white-label e isPublicView=true.',
+      'Preenchimento de compliance + upload de documentos.',
+      'Redirect para CAF (biometria) com URL por segmento.',
+      'Criação de Merchant (isSubseller=true) + OnboardingCase (isSubsellerCase=true).',
+    ],
+    escopoNaoInclui: [
+      'Geração do link de subconta (ver PROC-016).',
+      'Risk Scoring do subseller (ver PROC-019).',
+    ],
+    steps: [
+      { id: '01', resp: 'Subseller', atividade: 'Acessa link /SubsellerQuestionnaire?ref=xxx ou /s/{slug}', decisao: 'Link válido, ativo e não expirado?', gate: 'G1', sla: '', saida: 'Questionário carregado com branding do merchant', proximo: '02' },
+      { id: '02', resp: 'Sistema', atividade: 'Aplica branding white-label (CSS dinâmico: cores, logo, nome)', decisao: '', gate: '', sla: 'Imediato', saida: 'UI customizada com cores e logo do merchant', proximo: '03' },
+      { id: '03', resp: 'Subseller', atividade: 'Preenche CNPJ → autocomplete (dados básicos visíveis, enriquecimento oculto)', decisao: 'CNPJ ativo?', gate: 'G2', sla: '', saida: 'Dados cadastrais preenchidos (painel de enriquecimento oculto)', proximo: '04' },
+      { id: '04', resp: 'Subseller', atividade: 'Preenche perguntas de compliance em steps de 4 perguntas', decisao: 'Auto-save ativo (ComplianceSession)', gate: '', sla: '', saida: 'Respostas salvas progressivamente', proximo: '05' },
+      { id: '05', resp: 'Sistema', atividade: 'Ao finalizar questionário: cria Merchant + OnboardingCase', decisao: '', gate: '', sla: 'Imediato', saida: 'Merchant (isSubseller=true, parentMerchantId) + OnboardingCase', proximo: '06' },
+      { id: '06', resp: 'Sistema', atividade: 'Redirect para CAF (biometria) com URL por segmento', decisao: '', gate: '', sla: 'Imediato', saida: 'Redirect para cadastro.io com URL do segmento correto', proximo: '07' },
+      { id: '07', resp: 'Subseller', atividade: 'Completa biometria na CAF (Liveness + Facematch)', decisao: 'Biometria aprovada?', gate: 'G3', sla: '< 5 min', saida: 'Resultado biometria registrado', proximo: '08' },
+      { id: '08', resp: 'Subseller', atividade: 'Confirma conclusão → redirect para OnboardingCompletion', decisao: '', gate: '', sla: '', saida: 'ComplianceSession.status=completed', proximo: 'FIM' },
+    ],
+    regrasNegocio: [
+      { bold: 'White-label: ', text: 'brandPrimaryColor e brandSecondaryColor do OnboardingLink substituem todas as cores PagSmile (botões, progress bar, steps, badges, ícones).' },
+      { bold: 'Enriquecimento oculto: ', text: 'O painel CnpjEnrichmentPanel é completamente oculto para o subseller (isPublicView=true).' },
+      { bold: 'CAF por segmento: ', text: '10 URLs de CAF diferentes por segmento (Gateway, Dropshipping, E-commerce, etc).' },
+      { bold: 'parentMerchantId: ', text: 'O merchant principal é vinculado automaticamente pelo OnboardingLink.' },
+      { bold: 'Auto-save: ', text: 'Progresso salvo em ComplianceSession (banco) + localStorage para retomada.' },
+    ],
+    complianceIntro: 'Controles de onboarding de subseller:',
+    complianceItens: [
+      'Dados internos (enriquecimento, flags, scoring) ocultos para o subseller.',
+      'Branding customizado não altera lógica de compliance.',
+      'ComplianceSession permite retomada de preenchimento.',
+      'Biometria obrigatória via CAF.',
+    ],
+    governanca: [
+      { bold: 'O Subseller ', text: 'preenche dados e completa biometria.' },
+      { bold: 'O Merchant ', text: 'distribui link sem acesso aos dados do subseller.' },
+      { bold: 'O Sistema ', text: 'aplica branding, oculta dados internos e cria OnboardingCase.' },
+    ],
+    raciRoles: ['Subseller', 'Merchant', 'Sistema', 'Analista Compliance'],
+    raciActivities: [
+      { name: 'Preencher compliance', values: ['R', '', '', ''] },
+      { name: 'Biometria CAF', values: ['R', '', '', ''] },
+      { name: 'Aplicar branding', values: ['', '', 'R', ''] },
+      { name: 'Criar Merchant + Case', values: ['', '', 'R', 'I'] },
+      { name: 'Analisar caso', values: ['', '', '', 'R'] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 19. RISK SCORING V4 (MOTOR DE 3 CAMADAS)
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'PROC-019',
+    nome: 'Risk Scoring v4 — Motor de 3 Camadas (Score 0-1000)',
+    versao: '2.0.0',
+    data: '03/04/2026',
+    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    area: 'Compliance / IA / Sistema',
+    objetivo: 'Definir o funcionamento do motor Risk Scoring v4 que calcula score de risco 0-1000 em 3 camadas, assegurando:',
+    objetivoItens: [
+      'Camada 1 (C1): Score base por segmento (13 segmentos × scores fixos).',
+      'Camada 2 (C2): Variáveis V01-V53 (positivas reduzem, negativas aumentam score).',
+      'Camada 3 (C3): Enriquecimento E01-E11 (dados externos BDC/CAF).',
+      'Bloqueios B01-B10 que forçam score=1000 (subfaixa 5).',
+      'Mapeamento para subfaixa (1A-5), Rolling Reserve (0-20%) e nível de monitoramento.',
+    ],
+    escopoInclui: [
+      'Cálculo do score via backend (scoreSubseller ou analyzeOnboarding).',
+      'Configuração de pesos por segmento no admin (RiskScoringV4).',
+      'Visualização detalhada do score no RiskScoringV4 e RiskScoringSubcontas.',
+      'ComplianceScore com detalhamento completo de cada camada.',
+    ],
+    escopoNaoInclui: [
+      'Preenchimento do questionário (ver PROC-005 ou PROC-018).',
+      'Análise qualitativa SENTINEL (processo complementar, não substituído).',
+    ],
+    steps: [
+      { id: '01', resp: 'Sistema', atividade: 'Recebe OnboardingCase + QuestionnaireResponses', decisao: '', gate: '', sla: '', saida: 'Dados de entrada para scoring', proximo: '02' },
+      { id: '02', resp: 'Motor v4', atividade: 'C1: Determina segmento e atribui score base (ex: Gateway=175, MPE=35, PIX Intermediário=205)', decisao: 'Se PIX: score_base += 30', gate: '', sla: '', saida: 'score_base_segmento', proximo: '03' },
+      { id: '03', resp: 'Motor v4', atividade: 'C2: Avalia variáveis V01-V53 conforme respostas do questionário', decisao: 'V positivas reduzem score, V negativas aumentam', gate: '', sla: '', saida: 'score_variaveis (soma das V ativas)', proximo: '04' },
+      { id: '04', resp: 'Motor v4', atividade: 'C3: Avalia enriquecimento E01-E11 (idade CNPJ, capital social, QSA, CEIS/CNEP)', decisao: 'Dados BDC/CAF disponíveis?', gate: '', sla: '', saida: 'score_enriquecimento', proximo: '05' },
+      { id: '05', resp: 'Motor v4', atividade: 'Verifica bloqueios B01-B10 (CNPJ inativo, sanção OFAC, fraude confirmada)', decisao: 'Algum bloqueio ativo?', gate: 'G1', sla: '', saida: 'Se sim → score=1000, subfaixa=5. Se não → score=max(0,min(849,C1+C2+C3))', proximo: '06' },
+      { id: '06', resp: 'Motor v4', atividade: 'Mapeia score para subfaixa + Rolling Reserve + Monitoramento', decisao: '1A (0-149) → 0% RR, PADRÃO. ... 4 (650-849) → 20% RR, MÁXIMO.', gate: '', sla: '', saida: 'subfaixa, rolling_reserve_percent, monitoramento_nivel', proximo: '07' },
+      { id: '07', resp: 'Sistema', atividade: 'Persiste ComplianceScore com detalhamento de cada camada', decisao: '', gate: '', sla: 'Imediato', saida: 'ComplianceScore criado com todas as variáveis, pontos e condições', proximo: '08' },
+      { id: '08', resp: 'Sistema', atividade: 'Atualiza OnboardingCase (riskScoreV4, subfaixa, rolling_reserve, monitoramento)', decisao: '', gate: '', sla: 'Imediato', saida: 'OnboardingCase atualizado com dados do motor v4', proximo: 'FIM' },
+    ],
+    regrasNegocio: [
+      { bold: 'Score 0-1000: ', text: 'max(0, min(849, C1+C2+C3)). Apenas bloqueios podem gerar ≥850.' },
+      { bold: '13 segmentos: ', text: 'gateway, marketplace, plataforma_vertical, dropshipping, infoprodutos, ecommerce, link_pagamento, foodtech, saas, educacao, mpe, pix_merchant, pix_intermediario.' },
+      { bold: 'Subfaixas: ', text: '1A=Verde Express(0-149), 1B=Verde(150-249), 2A=Azul Leve(250-349), 2B=Azul(350-449), 3A=Amarelo(450-549), 3B=Laranja(550-649), 4=Vermelho Manual(650-849), 5=Bloqueio(850+).' },
+      { bold: 'Rolling Reserve: ', text: '1A-1B=0%, 2A=5%, 2B=10%, 3A=15%, 3B-4=20%.' },
+      { bold: 'Decisão automática: ', text: '1A-3B → Aprovado automático. 4 → Revisão manual obrigatória. 5 → Bloqueio automático.' },
+    ],
+    complianceIntro: 'Controles do motor de risco:',
+    complianceItens: [
+      'Score calculado por algoritmo sem interferência humana.',
+      'Cada variável e enriquecimento documentado com descrição e pontos.',
+      'Bloqueios B01-B10 são determinísticos (não há discricionariedade).',
+      'ComplianceScore armazena detalhamento completo para auditoria.',
+    ],
+    governanca: [
+      { bold: 'O Motor v4 ', text: 'é o único responsável pelo cálculo, sem intervenção humana.' },
+      { bold: 'O Admin ', text: 'pode configurar pesos e thresholds via interface RiskScoringV4.' },
+      { bold: 'O Analista ', text: 'atua apenas em subfaixa 4 (revisão manual), com acesso ao score detalhado.' },
+    ],
+    raciRoles: ['Motor v4', 'Sistema', 'Admin', 'Analista'],
+    raciActivities: [
+      { name: 'Calcular C1+C2+C3', values: ['R', '', '', ''] },
+      { name: 'Verificar bloqueios', values: ['R', '', '', ''] },
+      { name: 'Persistir ComplianceScore', values: ['', 'R', '', 'I'] },
+      { name: 'Configurar pesos', values: ['', '', 'R', ''] },
+      { name: 'Revisão manual (subfaixa 4)', values: ['', '', '', 'R'] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 20. GESTÃO DE PARCEIROS ADQUIRENTES E CUSTOS
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'PROC-020',
+    nome: 'Gestão de Parceiros Adquirentes e Custos (PartnerCost)',
+    versao: '2.0.0',
+    data: '03/04/2026',
+    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    area: 'Admin / Financeiro / Comercial',
+    objetivo: 'Definir o fluxo de cadastro e manutenção de parceiros adquirentes e seus custos operacionais, que servem como base para validação de propostas:',
+    objetivoItens: [
+      'Cadastro de parceiros adquirentes (Partner) com MCCs atendidos.',
+      'Configuração de custos por bandeira × faixa de parcelamento (PartnerCost).',
+      'Configuração de custos de PIX, boleto, antifraude, 3DS.',
+      'Validação visual em CriarProposta: taxa do cliente vs. custo do parceiro.',
+      'Cálculo automático de rentabilidade por proposta (ProfitabilityPanel).',
+    ],
+    escopoInclui: [
+      'CRUD de Partner em ConfiguracaoParceiros.',
+      'Edição de custos MDR por bandeira (PartnerMDRTable).',
+      'Edição de custos por MCC (MCCRatesEditor).',
+      'Associação de MCCs atendidos ao parceiro.',
+    ],
+    escopoNaoInclui: [
+      'Criação de propostas (ver PROC-003).',
+      'Negociação de custos com adquirentes (processo externo).',
+    ],
+    steps: [
+      { id: '01', resp: 'Admin', atividade: 'Acessa ConfiguracaoParceiros e clica "Novo Parceiro"', decisao: '', gate: '', sla: '', saida: 'PartnerFormModal aberto', proximo: '02' },
+      { id: '02', resp: 'Admin', atividade: 'Preenche dados: nome, tipo, MCCs atendidos, status ativo', decisao: '', gate: '', sla: '', saida: 'Partner criado', proximo: '03' },
+      { id: '03', resp: 'Admin', atividade: 'Configura custos MDR por bandeira × 4 faixas de parcelamento', decisao: '', gate: '', sla: '', saida: 'PartnerCost com taxas Visa, Master, Elo, Amex, Outras × 1x, 2-6x, 7-12x, 13-21x', proximo: '04' },
+      { id: '04', resp: 'Admin', atividade: 'Configura custos complementares (PIX, boleto, antifraude, 3DS, antecipação)', decisao: '', gate: '', sla: '', saida: 'Custos completos do parceiro', proximo: '05' },
+      { id: '05', resp: 'Comercial', atividade: 'Ao criar proposta, seleciona parceiro em PartnerSelector', decisao: '', gate: '', sla: '', saida: 'Validação visual: taxas vermelhas se abaixo do custo', proximo: '06' },
+      { id: '06', resp: 'Sistema', atividade: 'ProfitabilityPanel calcula: receita MDR + antecipação + fees - custos = margem', decisao: '', gate: '', sla: 'Imediato', saida: 'Simulação de rentabilidade por proposta', proximo: 'FIM' },
+    ],
+    regrasNegocio: [
+      { bold: 'Custos por MCC: ', text: 'Parceiros podem ter custos diferenciados por MCC (MCCRatesEditor).' },
+      { bold: 'Validação visual: ', text: 'Em CriarProposta, taxas abaixo do custo do parceiro ficam em vermelho, mas NÃO bloqueiam.' },
+      { bold: 'Parceiro obrigatório: ', text: 'A seleção de parceiro é recomendada para cálculo de rentabilidade, mas não é obrigatória para gerar proposta.' },
+    ],
+    complianceIntro: 'Controles de custos:',
+    complianceItens: [
+      'Apenas Admin pode cadastrar e editar parceiros e custos.',
+      'Custos são a base de verdade para cálculo de margem.',
+    ],
+    governanca: [
+      { bold: 'O Admin ', text: 'define parceiros e custos — é a fonte de verdade.' },
+      { bold: 'O Comercial ', text: 'usa os custos como referência para precificação.' },
+    ],
+    raciRoles: ['Admin', 'Comercial', 'Sistema'],
+    raciActivities: [
+      { name: 'Cadastrar parceiro', values: ['R', '', ''] },
+      { name: 'Configurar custos', values: ['R', '', ''] },
+      { name: 'Selecionar em proposta', values: ['', 'R', ''] },
+      { name: 'Calcular rentabilidade', values: ['', '', 'R'] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 21. REVALIDAÇÃO PERIÓDICA DE COMPLIANCE
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'PROC-021',
+    nome: 'Revalidação Periódica de Compliance',
+    versao: '2.0.0',
+    data: '03/04/2026',
+    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    area: 'Compliance / Sistema',
+    objetivo: 'Definir o fluxo de revalidação periódica de compliance para clientes já aprovados, assegurando:',
+    objetivoItens: [
+      'Agendamento automático de revalidação baseado na subfaixa do Risk Scoring v4.',
+      'Frequência diferenciada por nível de risco (3 meses para alto risco, 12 meses para baixo).',
+      'Re-execução do motor de scoring com dados atualizados.',
+      'Gestão visual de revalidações pendentes (GestaoRevalidacao).',
+    ],
+    escopoInclui: [
+      'RevalidationSchedule com data agendada e status.',
+      'Automação de verificação de revalidações vencidas (revalidateRiskScoring).',
+      'Dashboard GestaoRevalidacao para gestão das revalidações.',
+      'Re-scoring com dados atualizados de BDC/CAF.',
+    ],
+    escopoNaoInclui: [
+      'Compliance inicial (ver PROC-005).',
+      'Alteração de tarifas (ver PROC-023).',
+    ],
+    steps: [
+      { id: '01', resp: 'Sistema', atividade: 'Após aprovação, agenda RevalidationSchedule baseado na subfaixa', decisao: '1A-1B: 12 meses, 2A-2B: 9 meses, 3A-3B: 6 meses, 4: 3 meses', gate: '', sla: '', saida: 'RevalidationSchedule criado com scheduledDate', proximo: '02' },
+      { id: '02', resp: 'Automação', atividade: 'Verifica diariamente revalidações vencidas (revalidateRiskScoring)', decisao: 'scheduledDate ≤ hoje?', gate: 'G1', sla: 'Diário', saida: 'Lista de revalidações pendentes', proximo: '03' },
+      { id: '03', resp: 'Sistema', atividade: 'Re-executa motor Risk Scoring v4 com dados atualizados', decisao: 'Novo score mudou de subfaixa?', gate: 'G2', sla: '< 5 min', saida: 'Novo ComplianceScore', proximo: '04' },
+      { id: '04', resp: 'Analista', atividade: 'Revisa revalidação em GestaoRevalidacao', decisao: 'Manter, promover ou rebaixar subfaixa?', gate: '', sla: '2 DU', saida: 'Decisão de revalidação registrada', proximo: 'FIM' },
+    ],
+    regrasNegocio: [
+      { bold: 'Frequência por subfaixa: ', text: '1A-1B: 12 meses, 2A-2B: 9 meses, 3A-3B: 6 meses, 4: 3 meses.' },
+      { bold: 'Re-scoring automático: ', text: 'O motor v4 roda novamente com dados externos atualizados (CEIS/CNEP/Receita).' },
+      { bold: 'Promoção de subfaixa: ', text: 'Se sem incidentes e score melhorou, pode subir de subfaixa (reduz Rolling Reserve).' },
+    ],
+    complianceIntro: 'Controles de revalidação:',
+    complianceItens: [
+      'Agendamento automático garante que nenhum cliente escape da revalidação.',
+      'Re-scoring é independente e objetivo (motor v4, sem discricionariedade).',
+      'Analista revisa apenas exceções e mudanças de subfaixa.',
+    ],
+    governanca: [
+      { bold: 'O Sistema ', text: 'agenda e executa revalidações automaticamente.' },
+      { bold: 'O Analista ', text: 'revisa e decide sobre promoção/rebaixamento de subfaixa.' },
+    ],
+    raciRoles: ['Sistema', 'Motor v4', 'Analista', 'Admin'],
+    raciActivities: [
+      { name: 'Agendar revalidação', values: ['R', '', '', ''] },
+      { name: 'Re-executar scoring', values: ['', 'R', 'I', ''] },
+      { name: 'Revisar resultado', values: ['', '', 'R', 'I'] },
+      { name: 'Decidir promoção/rebaixamento', values: ['', '', 'R', 'A'] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 22. KICK-OFF PRESENTATION
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'PROC-022',
+    nome: 'Geração de Apresentação Kick-Off',
+    versao: '2.0.0',
+    data: '03/04/2026',
+    elaboradoPor: 'Pagsmile — Compliance & Operações',
+    area: 'Comercial / Sistema',
+    objetivo: 'Definir o fluxo de geração de apresentações de kick-off para clientes com contrato assinado:',
+    objetivoItens: [
+      'Geração automática a partir de dados da Proposal + Contract.',
+      'Slides profissionais: Capa, Sobre, Taxas, Serviços, SLAs, Suporte, Roadmap, Follow-Up.',
+      'Link público para compartilhamento com o cliente.',
+      'Exportação para PDF.',
+    ],
+    escopoInclui: [
+      'Seleção de cliente (propostas aceitas) em ClientSelector.',
+      'Geração de KickOffPresentation com slides dinâmicos.',
+      'Link público KickOffPublico com token.',
+      'Exportação PDF via browser print.',
+    ],
+    escopoNaoInclui: [
+      'Assinatura do contrato (ver PROC-006).',
+      'Ativação técnica do merchant (processo externo).',
+    ],
+    steps: [
+      { id: '01', resp: 'Comercial', atividade: 'Acessa GerarKickOff e seleciona cliente (proposta aceita)', decisao: '', gate: '', sla: '', saida: 'ClientSelector com proposta/contrato do cliente', proximo: '02' },
+      { id: '02', resp: 'Sistema', atividade: 'Gera slides automaticamente com dados da Proposal + Contract', decisao: '', gate: '', sla: 'Imediato', saida: 'KickOffPresentation com 8+ slides', proximo: '03' },
+      { id: '03', resp: 'Comercial', atividade: 'Preview dos slides e salva apresentação', decisao: '', gate: '', sla: '', saida: 'KickOffPresentation persistida com publicToken', proximo: '04' },
+      { id: '04', resp: 'Comercial', atividade: 'Compartilha link público ou exporta PDF', decisao: '', gate: '', sla: '', saida: 'Link /KickOffPublico?token=xxx ou PDF gerado', proximo: 'FIM' },
+    ],
+    regrasNegocio: [
+      { bold: 'Dados dinâmicos: ', text: 'Slides usam dados reais da proposta (taxas, módulos) e contrato (SLAs, datas).' },
+      { bold: 'Token público: ', text: 'Token de 24 chars para acesso público sem autenticação.' },
+      { bold: 'PDF via print: ', text: 'Usa window.print() com CSS @media print para formatação correta.' },
+    ],
+    complianceIntro: 'Controles de kick-off:',
+    complianceItens: [
+      'Apresentação gerada apenas para propostas aceitas.',
+      'Dados financeiros reais do contrato (não editáveis na apresentação).',
+    ],
+    governanca: [
+      { bold: 'O Comercial ', text: 'seleciona cliente e compartilha apresentação.' },
+      { bold: 'O Sistema ', text: 'gera slides com dados reais automaticamente.' },
+    ],
+    raciRoles: ['Comercial', 'Sistema', 'Cliente'],
+    raciActivities: [
+      { name: 'Selecionar cliente', values: ['R', '', ''] },
+      { name: 'Gerar slides', values: ['', 'R', ''] },
+      { name: 'Compartilhar link', values: ['R', '', ''] },
+      { name: 'Visualizar kick-off', values: ['', '', 'R'] },
+    ],
+  },
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // 23. ALTERAÇÃO DE TARIFAS (DO PDF ORIGINAL)
+  // ═══════════════════════════════════════════════════════════════════════════
+  {
+    id: 'PROC-023',
     nome: 'Alteração de Tarifas',
     versao: '2.0.0',
     data: '30/12/2025',
