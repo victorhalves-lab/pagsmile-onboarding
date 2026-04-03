@@ -190,7 +190,8 @@ export default function DynamicQuestionnaire({
   cafRedirectUrl,
   cafRedirectUrlMap, // Map of segment value → CAF URL (dynamic per segment)
   onComplete, // Callback opcional quando completa o questionário
-  branding // { name, logoUrl, primaryColor, secondaryColor } — white-label opcional
+  branding, // { name, logoUrl, primaryColor, secondaryColor } — white-label opcional
+  isPublicView = false // true = esconde dados internos (enriquecimento, flags) do cliente
 }) {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
@@ -919,8 +920,45 @@ export default function DynamicQuestionnaire({
   const bSecondary = branding?.secondaryColor || '#002443';
   const hasBranding = !!branding?.name;
 
+  // Generate lighter variant of primary color for backgrounds
+  const brandStyles = hasBranding ? `
+    .custom-branded .brand-progress-bar { background: linear-gradient(to right, ${bSecondary}, ${bPrimary}) !important; }
+    .custom-branded .brand-step-current { background-color: ${bSecondary} !important; color: white !important; box-shadow: 0 0 0 3px ${bSecondary}33 !important; }
+    .custom-branded .brand-step-completed { background-color: ${bPrimary} !important; color: white !important; }
+    .custom-branded .brand-step-icon-bg { background: linear-gradient(to bottom right, ${bSecondary}0D, ${bPrimary}1A) !important; }
+    .custom-branded .brand-step-icon { color: ${bSecondary}B3 !important; }
+    .custom-branded .brand-prefill-bg { background-color: ${bPrimary}12 !important; border-color: ${bPrimary}40 !important; }
+    .custom-branded .brand-prefill-icon-bg { background-color: ${bPrimary}20 !important; }
+    .custom-branded .brand-prefill-icon { color: ${bPrimary} !important; }
+    .custom-branded .brand-prefill-title { color: ${bSecondary} !important; }
+    .custom-branded .brand-prefill-desc { color: ${bPrimary} !important; }
+    .custom-branded .brand-btn-back { color: ${bSecondary}99 !important; border-color: ${bSecondary}20 !important; }
+    .custom-branded .brand-btn-back:hover { color: ${bSecondary} !important; border-color: ${bSecondary}40 !important; }
+    .custom-branded .brand-btn-next { background-color: ${bPrimary} !important; box-shadow: 0 10px 15px -3px ${bPrimary}33 !important; }
+    .custom-branded .brand-btn-next:hover { background-color: ${bPrimary}E6 !important; }
+    .custom-branded .brand-text-primary { color: ${bSecondary} !important; }
+    .custom-branded .brand-text-muted { color: ${bSecondary}80 !important; }
+    .custom-branded .brand-security-text { color: ${bSecondary}66 !important; }
+    .custom-branded .brand-select-active { background-color: ${bPrimary} !important; color: white !important; border-color: ${bPrimary} !important; }
+    .custom-branded .brand-select-hover:not(.brand-select-active) { border-color: ${bPrimary} !important; color: ${bPrimary} !important; }
+    .custom-branded .brand-autosave-text { color: ${bPrimary} !important; }
+    .custom-branded .brand-badge-receita { background-color: ${bPrimary}12 !important; color: ${bPrimary} !important; border-color: ${bPrimary}40 !important; }
+    .custom-branded .brand-input-valid { border-color: ${bPrimary} !important; box-shadow: 0 0 0 1px ${bPrimary}40 !important; }
+    .custom-branded .brand-icon-valid { color: ${bPrimary} !important; }
+    .custom-branded .brand-cnpj-summary { background-color: ${bPrimary}08 !important; border-color: ${bPrimary}20 !important; }
+    .custom-branded .brand-cnpj-summary-title { color: ${bSecondary} !important; }
+    .custom-branded .brand-cnpj-summary-desc { color: ${bPrimary} !important; }
+    .custom-branded .brand-autofill-bg { background-color: ${bPrimary}08 !important; border-color: ${bPrimary}30 !important; }
+    .custom-branded .brand-autofill-text { color: ${bPrimary} !important; }
+    .custom-branded .brand-autofill-icon { color: ${bPrimary}99 !important; }
+    .custom-branded .brand-loading-spinner { color: ${bPrimary} !important; }
+    .custom-branded .brand-top-bar { background: linear-gradient(to right, ${bSecondary}, ${bPrimary}, ${bPrimary}99) !important; }
+    .custom-branded .brand-left-bar { background: linear-gradient(to bottom, ${bSecondary}, ${bPrimary}, ${bPrimary}99) !important; }
+  ` : '';
+
   return (
-    <div className="max-w-3xl mx-auto" style={hasBranding ? { '--brand-primary': bPrimary, '--brand-secondary': bSecondary } : undefined}>
+    <div className={`max-w-3xl mx-auto ${hasBranding ? 'custom-branded' : ''}`} style={hasBranding ? { '--brand-primary': bPrimary, '--brand-secondary': bSecondary } : undefined}>
+      {hasBranding && <style>{brandStyles}</style>}
       {/* Header com logo, badge e auto-save */}
       <div className="text-center mb-6">
         {hasBranding ? (
@@ -973,29 +1011,30 @@ export default function DynamicQuestionnaire({
         currentStep={currentStep}
         onStepClick={setCurrentStep}
         className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 mb-6"
+        hasBranding={hasBranding}
       />
 
       <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-slate-100 modern-shadow">
           {/* Step title com ícone */}
           <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
-            <div className="p-2.5 rounded-xl bg-gradient-to-br from-[#002443]/5 to-[#2bc196]/10">
-              <StepIcon className="w-5 h-5 text-[#002443]/70" />
+            <div className="p-2.5 rounded-xl brand-step-icon-bg bg-gradient-to-br from-[#002443]/5 to-[#2bc196]/10">
+              <StepIcon className="w-5 h-5 brand-step-icon text-[#002443]/70" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-[#002443]">{currentStepData.title}</h2>
-              <p className="text-xs text-[#002443]/50">Etapa {currentStep} de {steps.length}</p>
+              <h2 className="text-lg font-bold brand-text-primary text-[#002443]">{currentStepData.title}</h2>
+              <p className="text-xs brand-text-muted text-[#002443]/50">Etapa {currentStep} de {steps.length}</p>
             </div>
           </div>
 
           {/* Banner de pré-preenchimento */}
           {hasPrefill && currentStep === 1 && (
-            <div className="mb-6 p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-3">
-              <div className="p-2 bg-emerald-100 rounded-lg">
-                <Check className="w-4 h-4 text-emerald-600" />
+            <div className="mb-6 p-3.5 brand-prefill-bg bg-emerald-50 border border-emerald-200 rounded-xl flex items-center gap-3">
+              <div className="p-2 brand-prefill-icon-bg bg-emerald-100 rounded-lg">
+                <Check className="w-4 h-4 brand-prefill-icon text-emerald-600" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-emerald-800">Dados pré-preenchidos do questionário comercial</p>
-                <p className="text-xs text-emerald-600 mt-0.5">
+                <p className="text-sm font-semibold brand-prefill-title text-emerald-800">Dados pré-preenchidos do questionário comercial</p>
+                <p className="text-xs brand-prefill-desc text-emerald-600 mt-0.5">
                   {Object.keys(prefillSources).length} campos foram preenchidos automaticamente. Verifique e ajuste se necessário.
                 </p>
               </div>
@@ -1015,6 +1054,8 @@ export default function DynamicQuestionnaire({
             onCepData={handleCepData}
             complianceAlerts={complianceAlerts}
             hideAlerts={true}
+            isPublicView={isPublicView}
+            hasBranding={hasBranding}
           />
 
           {/* Botões de Ação */}
@@ -1022,7 +1063,7 @@ export default function DynamicQuestionnaire({
             <Button
               variant="outline"
               onClick={currentStep === 1 ? () => navigate('/ComplianceOnboardingStart') : handlePrevious}
-              className="text-[#002443]/60 hover:text-[#002443] border-slate-200 hover:border-slate-300 hover:bg-slate-50 h-11 px-5 rounded-xl"
+              className="brand-btn-back text-[#002443]/60 hover:text-[#002443] border-slate-200 hover:border-slate-300 hover:bg-slate-50 h-11 px-5 rounded-xl"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               {currentStep === 1 ? 'Início' : 'Voltar'}
@@ -1030,7 +1071,7 @@ export default function DynamicQuestionnaire({
             
             <Button
               onClick={isLastStep ? handleSubmit : handleNext}
-              className={`${hasBranding ? '' : 'bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90'} text-white px-8 h-12 rounded-xl shadow-lg transition-all hover:scale-[1.02]`}
+              className={`brand-btn-next ${hasBranding ? '' : 'bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90'} text-white px-8 h-12 rounded-xl shadow-lg transition-all hover:scale-[1.02]`}
               style={hasBranding ? { backgroundColor: bPrimary, boxShadow: `0 10px 15px -3px ${bPrimary}33` } : undefined}
             >
               {isLastStep ? (
@@ -1050,7 +1091,7 @@ export default function DynamicQuestionnaire({
 
       {/* Footer de segurança */}
       <div className="text-center mt-6">
-        <p className="text-xs flex items-center justify-center gap-1" style={{ color: (hasBranding ? bSecondary : '#002443') + '66' }}>
+        <p className="text-xs brand-security-text flex items-center justify-center gap-1" style={{ color: (hasBranding ? bSecondary : '#002443') + '66' }}>
           <ShieldCheck className="w-3 h-3" />
           Seus dados estão protegidos e serão tratados com confidencialidade.
         </p>

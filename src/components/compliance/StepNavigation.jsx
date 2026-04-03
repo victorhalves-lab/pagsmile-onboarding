@@ -7,7 +7,8 @@ export default function StepNavigation({
   currentStep, 
   onStepClick,
   totalSteps,
-  className 
+  className,
+  hasBranding = false
 }) {
   const count = totalSteps || steps?.length || 0;
 
@@ -24,7 +25,7 @@ export default function StepNavigation({
       </div>
       <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden mb-3">
         <div 
-          className="h-full bg-gradient-to-r from-[#002443] to-[#2bc196] rounded-full transition-all duration-500"
+          className="h-full brand-progress-bar bg-gradient-to-r from-[#002443] to-[#2bc196] rounded-full transition-all duration-500"
           style={{ width: `${(currentStep / count) * 100}%` }}
         />
       </div>
@@ -44,8 +45,8 @@ export default function StepNavigation({
               disabled={!isClickable}
               className={cn(
                 "w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition-all duration-200",
-                isCurrent && "bg-[#002443] text-white ring-3 ring-[#002443]/20 scale-110",
-                isCompleted && "bg-[#2bc196] text-white cursor-pointer hover:scale-110",
+                isCurrent && "brand-step-current bg-[#002443] text-white ring-3 ring-[#002443]/20 scale-110",
+                isCompleted && "brand-step-completed bg-[#2bc196] text-white cursor-pointer hover:scale-110",
                 !isCurrent && !isCompleted && "bg-slate-200 text-slate-400 cursor-not-allowed"
               )}
             >

@@ -77,6 +77,7 @@ export default function SubsellerQuestionnaire() {
       questionsPerStep={4}
       cafRedirectUrlMap={SUBSELLER_CAF_URLS}
       branding={branding}
+      isPublicView={true}
     />
   );
 }

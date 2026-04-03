@@ -15,7 +15,9 @@ export default function CnpjAutocompleteField({
   isRequired = true,
   blockOnInactive = true, // true para compliance, false para lead
   label = 'CNPJ',
-  helpText
+  helpText,
+  isPublicView = false, // true = esconde painel de enriquecimento para o cliente
+  hasBranding = false
 }) {
   const { data, isLoading, error, validationError, consultarCnpj, reset } = useCnpjAutocomplete();
   const [displayValue, setDisplayValue] = useState('');
@@ -88,7 +90,7 @@ export default function CnpjAutocompleteField({
           {isRequired && <span className="text-red-500 ml-1">*</span>}
         </Label>
         {data && isActive && (
-          <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] gap-1">
+          <Badge className="brand-badge-receita bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px] gap-1">
             <CheckCircle className="w-3 h-3" />
             Receita Federal
           </Badge>
@@ -113,16 +115,16 @@ export default function CnpjAutocompleteField({
           placeholder="XX.XXX.XXX/XXXX-XX"
           className={`h-12 rounded-xl pl-10 pr-10 font-mono text-base tracking-wide ${
             validationError || error ? 'border-red-400 ring-1 ring-red-300' : 
-            isActive ? 'border-emerald-400 ring-1 ring-emerald-200' : 
+            isActive ? 'brand-input-valid border-emerald-400 ring-1 ring-emerald-200' : 
             showBlock ? 'border-red-400 ring-1 ring-red-300' : ''
           }`}
           maxLength={18}
         />
         {isLoading && (
-          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-[#2bc196]" />
+          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin brand-loading-spinner text-[#2bc196]" />
         )}
         {data && isActive && !isLoading && (
-          <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-500" />
+          <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 brand-icon-valid text-emerald-500" />
         )}
         {(isInactive || error) && !isLoading && (
           <AlertTriangle className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-red-500" />
@@ -155,28 +157,30 @@ export default function CnpjAutocompleteField({
         </div>
       )}
 
-      {/* Dados de enriquecimento exibidos brevemente */}
+      {/* Dados básicos do CNPJ (sempre visível — autocomplete) */}
       {data && isActive && (
-        <div className="p-3 bg-emerald-50/50 border border-emerald-100 rounded-xl space-y-1">
-          <p className="text-xs font-semibold text-emerald-800">
+        <div className="p-3 brand-cnpj-summary bg-emerald-50/50 border border-emerald-100 rounded-xl space-y-1">
+          <p className="text-xs font-semibold brand-cnpj-summary-title text-emerald-800">
             {data.razao_social}
           </p>
           {data.nome_fantasia && (
-            <p className="text-xs text-emerald-700">
+            <p className="text-xs brand-cnpj-summary-desc text-emerald-700">
               Fantasia: {data.nome_fantasia}
             </p>
           )}
-          <p className="text-xs text-emerald-600">
+          <p className="text-xs brand-cnpj-summary-desc text-emerald-600">
             {data.cnae_fiscal_descricao} • {data.porte === 'ME' ? 'Microempresa' : data.porte === 'EPP' ? 'Pequeno Porte' : 'Demais'}
           </p>
         </div>
       )}
 
-      {/* Painel de análise de enriquecimento */}
-      <CnpjEnrichmentPanel 
-        enrichmentResult={enrichmentResult} 
-        isLoading={enrichmentLoading} 
-      />
+      {/* Painel de análise de enriquecimento — SOMENTE para uso interno (escondido para clientes) */}
+      {!isPublicView && (
+        <CnpjEnrichmentPanel 
+          enrichmentResult={enrichmentResult} 
+          isLoading={enrichmentLoading} 
+        />
+      )}
     </div>
   );
 }

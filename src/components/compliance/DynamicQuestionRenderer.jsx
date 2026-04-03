@@ -19,7 +19,7 @@ import SiteValidationBadge from '../leads/SiteValidationBadge';
 import CurrencyInput from '../leads/CurrencyInput';
 
 // Componente que renderiza UMA pergunta com base no tipo
-function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpjAutocomplete, onCepData, fieldAlerts, hideAlerts }) {
+function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpjAutocomplete, onCepData, fieldAlerts, hideAlerts, isPublicView, hasBranding }) {
   const { type, text, options = [], placeholder, helpText, isRequired } = question;
   const textLower = (text || '').toLowerCase();
 
@@ -39,6 +39,8 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
         isRequired={isRequired}
         blockOnInactive={true}
         helpText={helpText}
+        isPublicView={isPublicView}
+        hasBranding={hasBranding}
       />
     );
   }
@@ -250,7 +252,7 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
                   variant={value === opt ? 'default' : 'outline'}
                   size="sm"
                   onClick={() => handleChange(opt)}
-                  className={`h-10 px-4 text-sm font-medium rounded-lg ${value === opt ? 'bg-[#2bc196] hover:bg-[#2bc196]/90 text-white border-[#2bc196]' : 'hover:border-[#2bc196] hover:text-[#2bc196]'}`}
+                  className={`h-10 px-4 text-sm font-medium rounded-lg ${value === opt ? 'brand-select-active bg-[#2bc196] hover:bg-[#2bc196]/90 text-white border-[#2bc196]' : 'brand-select-hover hover:border-[#2bc196] hover:text-[#2bc196]'}`}
                 >
                   {opt}
                 </Button>
@@ -296,7 +298,7 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
                     handleChange([...selectedValues, opt]);
                   }
                 }}
-                className={`h-9 px-4 text-sm font-medium rounded-lg ${isSelected ? 'bg-[#2bc196] hover:bg-[#2bc196]/90 text-white border-[#2bc196]' : 'hover:border-[#2bc196] hover:text-[#2bc196]'}`}
+                className={`h-9 px-4 text-sm font-medium rounded-lg ${isSelected ? 'brand-select-active bg-[#2bc196] hover:bg-[#2bc196]/90 text-white border-[#2bc196]' : 'brand-select-hover hover:border-[#2bc196] hover:text-[#2bc196]'}`}
               >
                 {opt}
               </Button>
@@ -336,7 +338,7 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
               type="button"
               variant={value === true ? 'default' : 'outline'}
               onClick={() => handleChange(true)}
-              className={`flex-1 h-11 font-semibold ${value === true ? 'bg-[#2bc196] hover:bg-[#2bc196]/90 text-white border-[#2bc196]' : 'hover:border-[#2bc196] hover:text-[#2bc196]'}`}
+              className={`flex-1 h-11 font-semibold ${value === true ? 'brand-select-active bg-[#2bc196] hover:bg-[#2bc196]/90 text-white border-[#2bc196]' : 'brand-select-hover hover:border-[#2bc196] hover:text-[#2bc196]'}`}
             >
               Sim
             </Button>
@@ -379,7 +381,7 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
 }
 
 // Componente que renderiza UMA pergunta completa com label
-function QuestionItem({ question, value, onChange, prefillSource, cnpjAutocompleteData, onCnpjAutocomplete, onCepData, fieldAlerts, hideAlerts }) {
+function QuestionItem({ question, value, onChange, prefillSource, cnpjAutocompleteData, onCnpjAutocomplete, onCepData, fieldAlerts, hideAlerts, isPublicView, hasBranding }) {
   const textLower = (question.text || '').toLowerCase();
   const isCnpjTrigger = question.type === 'CPF_CNPJ' && textLower === 'cnpj';
   const isAutoSource = cnpjAutocompleteData && value && (
@@ -426,8 +428,8 @@ function QuestionItem({ question, value, onChange, prefillSource, cnpjAutocomple
         </div>
       )}
       {prefillSource && (
-        <div className="flex items-center gap-1.5 text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md w-fit">
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <div className="flex items-center gap-1.5 text-xs brand-autofill-text text-emerald-600 brand-autofill-bg bg-emerald-50 px-2 py-1 rounded-md w-fit">
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 brand-autofill-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
           Preenchido automaticamente com dados do questionário de leads
         </div>
       )}
@@ -440,6 +442,8 @@ function QuestionItem({ question, value, onChange, prefillSource, cnpjAutocomple
         onCepData={onCepData}
         fieldAlerts={fieldAlerts}
         hideAlerts={hideAlerts}
+        isPublicView={isPublicView}
+        hasBranding={hasBranding}
       />
     </div>
   );
@@ -498,7 +502,9 @@ export default function DynamicQuestionRenderer({
   onCnpjAutocomplete,
   onCepData,
   complianceAlerts = {},
-  hideAlerts = false
+  hideAlerts = false,
+  isPublicView = false,
+  hasBranding = false
 }) {
   // Se currentStep for definido, filtramos as perguntas para aquele step
   const displayQuestions = currentStep !== undefined
@@ -547,6 +553,8 @@ export default function DynamicQuestionRenderer({
               onCepData={onCepData}
               fieldAlerts={complianceAlerts[question.id]}
               hideAlerts={hideAlerts}
+              isPublicView={isPublicView}
+              hasBranding={hasBranding}
             />
             {idx < visibleQuestions.length - 1 && (
               <div className="mt-6 border-b border-slate-100" />
