@@ -255,14 +255,12 @@ export default function PropostaPadraoPublica() {
             <p className="text-lg font-bold text-[#002443]">R$ {(parseFloat(rates.alertaPreChargeback) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
           </CardContent>
         </Card>
-        {(parseFloat(rates.setup) || 0) > 0 && (
-          <Card>
-            <CardContent className="py-4 text-center flex flex-col justify-center h-full">
-              <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">SETUP</p>
-              <p className="text-lg font-bold text-[#002443]">R$ {(parseFloat(rates.setup) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-            </CardContent>
-          </Card>
-        )}
+        <Card>
+          <CardContent className="py-4 text-center flex flex-col justify-center h-full">
+            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">SETUP</p>
+            <p className="text-lg font-bold text-[#002443]">R$ {(parseFloat(rates.setup) || 8000).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Prazo e Antecipação */}

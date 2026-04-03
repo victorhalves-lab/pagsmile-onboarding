@@ -120,16 +120,17 @@ export default function SegmentRatesTable({ segmentRates, segmentName }) {
           <h3 className="text-base font-bold text-[#002443]">Taxas Adicionais</h3>
         </div>
 
-        <div className="grid grid-cols-3 gap-px bg-[#002443]/[0.06] rounded-xl overflow-hidden">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-[#002443]/[0.06] rounded-xl overflow-hidden">
           {[
-            { label: 'Fee por transação', value: fmtBrl(feeTransacao) },
-            { label: 'Antifraude', value: fmtBrl(antifraude) },
-            { label: '3DS (opcional)', value: fmtBrl(taxa3ds) },
+            { label: 'Fee por transação', value: fmtBrl(feeTransacao), sub: 'por transação' },
+            { label: 'Antifraude', value: fmtBrl(antifraude), sub: 'por transação' },
+            { label: '3DS (opcional)', value: fmtBrl(taxa3ds), sub: 'por transação' },
+            { label: 'Setup', value: 'R$ 8.000,00', sub: 'único' },
           ].map((item) => (
             <div key={item.label} className="bg-white p-5 text-center">
               <p className="text-xs font-semibold text-[#002443]/50 mb-2">{item.label}</p>
               <p className="text-lg font-bold text-[#002443]">{item.value}</p>
-              <p className="text-[10px] font-semibold text-[#002443]/40 mt-1">por transação</p>
+              <p className="text-[10px] font-semibold text-[#002443]/40 mt-1">{item.sub}</p>
             </div>
           ))}
         </div>
