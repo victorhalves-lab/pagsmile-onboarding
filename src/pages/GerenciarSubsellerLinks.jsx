@@ -64,7 +64,7 @@ export default function GerenciarSubsellerLinks() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['subsellerLinks'] });
       toast.success(t('sl.link_generated'));
-      copyLink(data.link.uniqueCode);
+      copyLink(data.link);
       setShowGenerateModal(false);
     },
     onError: (error) => {
@@ -83,10 +83,17 @@ export default function GerenciarSubsellerLinks() {
     }
   });
 
-  const copyLink = (code) => {
-    const url = `${window.location.origin}/SubsellerQuestionnaire?ref=${code}`;
+  const getLinkUrl = (link) => {
+    if (link.customSlug) {
+      return `${window.location.origin}/s/${link.customSlug}`;
+    }
+    return `${window.location.origin}/SubsellerQuestionnaire?ref=${link.uniqueCode}`;
+  };
+
+  const copyLink = (link) => {
+    const url = getLinkUrl(link);
     navigator.clipboard.writeText(url);
-    setCopiedCode(code);
+    setCopiedCode(link.uniqueCode);
     toast.success(t('sl.link_copied'));
     setTimeout(() => setCopiedCode(null), 3000);
   };
@@ -209,7 +216,7 @@ export default function GerenciarSubsellerLinks() {
                   ) : (
                     <div className="space-y-3">
                       {subsellerLinks.map(link => {
-                        const url = `${window.location.origin}/SubsellerQuestionnaire?ref=${link.uniqueCode}`;
+                        const url = getLinkUrl(link);
                         const isExpired = link.expiresAt && new Date(link.expiresAt) < new Date();
                         return (
                           <div key={link.id} className={`border rounded-xl p-4 ${!link.isActive || isExpired ? 'border-red-200 bg-red-50/30' : 'border-slate-200'}`}>
@@ -229,6 +236,11 @@ export default function GerenciarSubsellerLinks() {
                                   {link.brandName && (
                                     <Badge className="bg-purple-100 text-purple-700 text-[10px] gap-1">
                                       <Paintbrush className="w-2.5 h-2.5" /> White-Label
+                                    </Badge>
+                                  )}
+                                  {link.customSlug && (
+                                    <Badge className="bg-blue-100 text-blue-700 text-[10px] gap-1">
+                                      <LinkIcon className="w-2.5 h-2.5" /> /s/{link.customSlug}
                                     </Badge>
                                   )}
                                 </div>
@@ -272,7 +284,7 @@ export default function GerenciarSubsellerLinks() {
                                 <Button 
                                   variant="outline" 
                                   size="sm"
-                                  onClick={() => copyLink(link.uniqueCode)}
+                                  onClick={() => copyLink(link)}
                                 >
                                   {copiedCode === link.uniqueCode ? (
                                     <Check className="w-4 h-4 text-[var(--pagsmile-green)]" />

@@ -22,6 +22,10 @@
       "type": "string",
       "description": "C\u00f3digo \u00fanico do link"
     },
+    "customSlug": {
+      "type": "string",
+      "description": "Slug personalizado amig\u00e1vel para URL curta (ex: loja-xyz)"
+    },
     "commercialAgentId": {
       "type": "string",
       "description": "ID do agente comercial"

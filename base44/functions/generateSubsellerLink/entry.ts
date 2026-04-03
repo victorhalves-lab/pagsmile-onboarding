@@ -79,6 +79,7 @@ Deno.serve(async (req) => {
       if (branding.brandLogoUrl) linkData.brandLogoUrl = branding.brandLogoUrl;
       if (branding.brandPrimaryColor) linkData.brandPrimaryColor = branding.brandPrimaryColor;
       if (branding.brandSecondaryColor) linkData.brandSecondaryColor = branding.brandSecondaryColor;
+      if (branding.customSlug) linkData.customSlug = branding.customSlug;
     }
 
     const link = await base44.asServiceRole.entities.OnboardingLink.create(linkData);
@@ -104,6 +105,7 @@ Deno.serve(async (req) => {
       link: {
         id: link.id,
         uniqueCode,
+        customSlug: linkData.customSlug || null,
         parentMerchantId,
         parentMerchantName: parentMerchantName || merchant.fullName,
         questionnaireTemplateId: template.id,

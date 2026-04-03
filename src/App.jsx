@@ -38,6 +38,7 @@ import DashboardCEO from './pages/DashboardCEO';
 import ProcessosModelo from './pages/ProcessosModelo';
 import GerarKickOff from './pages/GerarKickOff';
 import KickOffPublico from './pages/KickOffPublico';
+import SlugRedirect from './pages/SlugRedirect';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -64,9 +65,13 @@ const PUBLIC_PATHS = new Set([
   '/KickOffPublico',
 ]);
 
+// Also treat /s/:slug as public
+
+
 function isPublicPath(pathname) {
   if (PUBLIC_PATHS.has(pathname)) return true;
   if (pathname.startsWith('/parceiro/')) return true;
+  if (pathname.startsWith('/s/')) return true;
   return false;
 }
 
@@ -105,6 +110,9 @@ const PublicRoutes = () => (
     <Route path="/LeadPixV4" element={<LayoutWrapper currentPageName="LeadPixV4"><LeadPixV4 /></LayoutWrapper>} />
     <Route path="/FechamentoLandingPage" element={<LayoutWrapper currentPageName="FechamentoLandingPage"><FechamentoLandingPage /></LayoutWrapper>} />
     <Route path="/KickOffPublico" element={<LayoutWrapper currentPageName="KickOffPublico"><KickOffPublico /></LayoutWrapper>} />
+
+    {/* Slug redirect — short URLs */}
+    <Route path="/s/:slug" element={<LayoutWrapper currentPageName="SlugRedirect"><SlugRedirect /></LayoutWrapper>} />
   </Routes>
 );
 

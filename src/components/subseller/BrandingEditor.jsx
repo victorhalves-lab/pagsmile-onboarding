@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Paintbrush, Upload, Loader2, Eye, X } from 'lucide-react';
+import { Paintbrush, Upload, Loader2, Eye, X, Link as LinkIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function BrandingEditor({ link, onUpdate }) {
@@ -11,9 +11,12 @@ export default function BrandingEditor({ link, onUpdate }) {
   const [brandLogoUrl, setBrandLogoUrl] = useState(link.brandLogoUrl || '');
   const [brandPrimaryColor, setBrandPrimaryColor] = useState(link.brandPrimaryColor || '#2bc196');
   const [brandSecondaryColor, setBrandSecondaryColor] = useState(link.brandSecondaryColor || '#002443');
+  const [customSlug, setCustomSlug] = useState(link.customSlug || '');
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+
+  const slugValue = customSlug.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
 
   const handleLogoUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -31,9 +34,10 @@ export default function BrandingEditor({ link, onUpdate }) {
       brandLogoUrl,
       brandPrimaryColor,
       brandSecondaryColor,
+      customSlug: slugValue || '',
     });
     setSaving(false);
-    toast.success('Identidade visual salva com sucesso!');
+    toast.success('Personalização salva com sucesso!');
     if (onUpdate) onUpdate();
   };
 
@@ -44,18 +48,43 @@ export default function BrandingEditor({ link, onUpdate }) {
       brandLogoUrl: '',
       brandPrimaryColor: '',
       brandSecondaryColor: '',
+      customSlug: '',
     });
     setBrandName('');
     setBrandLogoUrl('');
     setBrandPrimaryColor('#2bc196');
     setBrandSecondaryColor('#002443');
+    setCustomSlug('');
     setSaving(false);
-    toast.success('Identidade visual removida — voltará ao padrão PagSmile.');
+    toast.success('Personalização removida — voltará ao padrão PagSmile.');
     if (onUpdate) onUpdate();
   };
 
   return (
     <div className="space-y-4">
+      {/* URL curta personalizada */}
+      <div>
+        <Label className="text-xs font-semibold text-[#002443]/70 flex items-center gap-1.5">
+          <LinkIcon className="w-3 h-3" /> URL curta personalizada
+        </Label>
+        <div className="flex items-center gap-0 mt-1">
+          <span className="text-xs text-[#002443]/40 bg-slate-50 border border-r-0 border-slate-200 rounded-l-lg px-2 py-2 whitespace-nowrap">
+            {window.location.origin}/s/
+          </span>
+          <Input
+            value={customSlug}
+            onChange={e => setCustomSlug(e.target.value)}
+            placeholder="nome-do-cliente"
+            className="rounded-l-none text-xs font-mono"
+          />
+        </div>
+        {slugValue && (
+          <p className="text-[10px] text-emerald-600 mt-1">
+            URL: {window.location.origin}/s/{slugValue}
+          </p>
+        )}
+      </div>
+
       {/* Nome */}
       <div>
         <Label className="text-xs font-semibold text-[#002443]/70">Nome do Cliente (exibido no questionário)</Label>

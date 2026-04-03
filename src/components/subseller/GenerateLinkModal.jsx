@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { 
-  X, Plus, Loader2, Upload, Eye, Paintbrush, Shield
+  X, Plus, Loader2, Upload, Eye, Paintbrush, Shield, Link as LinkIcon
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
@@ -16,8 +16,11 @@ export default function GenerateLinkModal({ merchant, onGenerate, onClose, isPen
   const [brandLogoUrl, setBrandLogoUrl] = useState('');
   const [brandPrimaryColor, setBrandPrimaryColor] = useState(PAGSMILE_GREEN);
   const [brandSecondaryColor, setBrandSecondaryColor] = useState(PAGSMILE_BLUE);
+  const [customSlug, setCustomSlug] = useState('');
   const [uploading, setUploading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+
+  const slugValue = customSlug.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
 
   const handleLogoUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -30,9 +33,9 @@ export default function GenerateLinkModal({ merchant, onGenerate, onClose, isPen
 
   const handleGenerate = () => {
     if (mode === 'custom') {
-      onGenerate({ brandName, brandLogoUrl, brandPrimaryColor, brandSecondaryColor });
+      onGenerate({ brandName, brandLogoUrl, brandPrimaryColor, brandSecondaryColor, customSlug: slugValue || undefined });
     } else {
-      onGenerate(null); // padrão PagSmile
+      onGenerate(customSlug ? { customSlug: slugValue } : null);
     }
   };
 
@@ -107,6 +110,30 @@ export default function GenerateLinkModal({ merchant, onGenerate, onClose, isPen
                   </div>
                 </div>
               </div>
+
+              {/* Slug personalizado */}
+              <div>
+                <Label className="text-xs font-semibold text-[#002443]/70 flex items-center gap-1.5">
+                  <LinkIcon className="w-3 h-3" /> URL curta personalizada (opcional)
+                </Label>
+                <div className="flex items-center gap-0 mt-1">
+                  <span className="text-xs text-[#002443]/40 bg-slate-50 border border-r-0 border-slate-200 rounded-l-lg px-2 py-2 whitespace-nowrap">
+                    {window.location.origin}/s/
+                  </span>
+                  <Input
+                    value={customSlug}
+                    onChange={e => setCustomSlug(e.target.value)}
+                    placeholder="nome-do-cliente"
+                    className="rounded-l-none text-xs font-mono"
+                  />
+                </div>
+                {slugValue && (
+                  <p className="text-[10px] text-emerald-600 mt-1">
+                    URL: {window.location.origin}/s/{slugValue}
+                  </p>
+                )}
+              </div>
+
               <div className="flex gap-2">
                 <Button variant="outline" onClick={() => setMode(null)} className="flex-1">Voltar</Button>
                 <Button onClick={handleGenerate} disabled={isPending} className="flex-1 bg-[#2bc196] text-white">
@@ -178,6 +205,29 @@ export default function GenerateLinkModal({ merchant, onGenerate, onClose, isPen
                     <Input value={brandSecondaryColor} onChange={e => setBrandSecondaryColor(e.target.value)} className="font-mono text-xs" />
                   </div>
                 </div>
+              </div>
+
+              {/* Slug personalizado */}
+              <div>
+                <Label className="text-xs font-semibold text-[#002443]/70 flex items-center gap-1.5">
+                  <LinkIcon className="w-3 h-3" /> URL curta personalizada (opcional)
+                </Label>
+                <div className="flex items-center gap-0 mt-1">
+                  <span className="text-xs text-[#002443]/40 bg-slate-50 border border-r-0 border-slate-200 rounded-l-lg px-2 py-2 whitespace-nowrap">
+                    {window.location.origin}/s/
+                  </span>
+                  <Input
+                    value={customSlug}
+                    onChange={e => setCustomSlug(e.target.value)}
+                    placeholder="nome-do-cliente"
+                    className="rounded-l-none text-xs font-mono"
+                  />
+                </div>
+                {slugValue && (
+                  <p className="text-[10px] text-purple-600 mt-1">
+                    URL: {window.location.origin}/s/{slugValue}
+                  </p>
+                )}
               </div>
 
               {/* Preview */}
