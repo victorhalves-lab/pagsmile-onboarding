@@ -36,6 +36,7 @@ import FechamentoLandingPage from './pages/FechamentoLandingPage';
 import DashboardComercial from './pages/DashboardComercial';
 import DashboardCEO from './pages/DashboardCEO';
 import ProcessosModelo from './pages/ProcessosModelo';
+import GerarKickOff from './pages/GerarKickOff';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -161,6 +162,7 @@ const AuthenticatedApp = () => {
       <Route path="/DashboardComercial" element={<LayoutWrapper currentPageName="DashboardComercial"><DashboardComercial /></LayoutWrapper>} />
       <Route path="/DashboardCEO" element={<LayoutWrapper currentPageName="DashboardCEO"><DashboardCEO /></LayoutWrapper>} />
       <Route path="/ProcessosModelo" element={<LayoutWrapper currentPageName="ProcessosModelo"><ProcessosModelo /></LayoutWrapper>} />
+      <Route path="/GerarKickOff" element={<LayoutWrapper currentPageName="GerarKickOff"><GerarKickOff /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

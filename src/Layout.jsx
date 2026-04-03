@@ -132,6 +132,7 @@ export default function Layout({ children, currentPageName }) {
       items: [
         { label: t('menu.contract_management'), path: 'GestaoContratos', icon: FileText },
         { label: t('menu.create_contract'), path: 'CriarContrato', icon: FileCheck },
+        { label: 'Kick-Off de Implementação', path: 'GerarKickOff', icon: FileText },
       ]
     },
     {
