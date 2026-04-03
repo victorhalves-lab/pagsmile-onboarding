@@ -33,7 +33,7 @@ export default function CriarContrato() {
     modules: {}, otherModules: '',
     rates: { cartao: {}, debito: {}, pix: { tipo: 'percentual', valor: null }, boleto: null, antifraude: null, feeTransacao: null, rav: { taxa: null, prazo: '' }, percentualAntecipacao: null, alertaPreChargeback: null },
     projectedTpvMonth1: null, projectedTpvMonth2: null, projectedTpvMonth3: null,
-    setupFee: null, paymentTerm: '', bankInstitution: '', bankAgency: '', bankAccountNumber: '',
+    setupFee: 6000, paymentTerm: '', bankInstitution: '', bankAgency: '', bankAccountNumber: '',
     accountMaintenanceFee: null, cardWithdrawalFee: null, tedDocTransferFee: null, physicalCardIssuanceFee: null, physicalCard2ndCopyFee: null,
     slaUptime: '', slaResponseTime: '', supportCriticalSLA: '', supportHighSLA: '', supportMediumSLA: '', supportLowSLA: '',
     pixRiskReservePercentage: null, pixRiskReserveDays: null, cardRiskReservePercentage: null, cardRiskReserveDays: null, cardRiskReservePartialReleaseDays: null,

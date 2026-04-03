@@ -42,7 +42,7 @@ export default function ContratoAnexos({ contract }) {
       <ClauseTitle>ANEXO II-A – REMUNERAÇÃO MÓDULO SUBADQUIRÊNCIA</ClauseTitle>
       <SubClauseTitle>1. TABELA DE PREÇOS</SubClauseTitle>
       <KVTable items={[
-        ['Setup', <Num value={c.setupFee} />],
+        ['Setup', <Num value={c.setupFee ?? 6000} />],
         ['Fee por Transação (Gateway)', <Num value={rates.feeTransacao} />],
         ['Taxa de Antifraude', <Num value={rates.antifraude} />],
         ['Taxa de Pré-Chargeback e/ou Chargeback', 'R$ 65,00 (sessenta e cinco reais)'],
