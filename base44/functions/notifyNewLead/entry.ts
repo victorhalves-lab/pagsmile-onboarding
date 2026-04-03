@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
 
 const SLACK_CHANNEL = '#comercial-sub';
 const SLACK_BOT_NAME = 'Pagsmile Bot';
@@ -88,7 +88,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const slackToken = await base44.asServiceRole.connectors.getAccessToken('slackbot');
+    const { accessToken: slackToken } = await base44.asServiceRole.connectors.getConnection('slackbot');
     const result = await sendSlackMessage(
       slackToken,
       SLACK_CHANNEL,
