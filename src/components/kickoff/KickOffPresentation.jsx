@@ -7,12 +7,16 @@ import SlideRatesCard from './SlideRatesCard';
 import SlideRatesOther from './SlideRatesOther';
 import SlideCommercial from './SlideCommercial';
 import SlideSLA from './SlideSLA';
+import SlideSubsellerLinks from './SlideSubsellerLinks';
+import SlideSplitPayment from './SlideSplitPayment';
+import SlideSecurity from './SlideSecurity';
+import SlideProhibitedActivities from './SlideProhibitedActivities';
 import SlideRoadmap from './SlideRoadmap';
 import SlideSupport from './SlideSupport';
 import SlideFollowUp from './SlideFollowUp';
 import SlideNextSteps from './SlideNextSteps';
 
-const TOTAL_SLIDES = 12;
+const TOTAL_SLIDES = 16;
 
 export default function KickOffPresentation({ proposal, contract }) {
   const rates = proposal?.rates || contract?.rates || {};
@@ -31,10 +35,14 @@ export default function KickOffPresentation({ proposal, contract }) {
       <SlideRatesOther rates={rates} setupFee={setupFee} slideNumber={6} totalSlides={TOTAL_SLIDES} />
       <SlideCommercial contract={contract || {}} rates={rates} slideNumber={7} totalSlides={TOTAL_SLIDES} />
       <SlideSLA slideNumber={8} totalSlides={TOTAL_SLIDES} />
-      <SlideRoadmap slideNumber={9} totalSlides={TOTAL_SLIDES} />
-      <SlideSupport slideNumber={10} totalSlides={TOTAL_SLIDES} />
-      <SlideFollowUp slideNumber={11} totalSlides={TOTAL_SLIDES} />
-      <SlideNextSteps clientName={clientName} responsavelNome={responsavelNome} slideNumber={12} totalSlides={TOTAL_SLIDES} />
+      <SlideSubsellerLinks slideNumber={9} totalSlides={TOTAL_SLIDES} />
+      <SlideSplitPayment clientName={clientName} slideNumber={10} totalSlides={TOTAL_SLIDES} />
+      <SlideSecurity slideNumber={11} totalSlides={TOTAL_SLIDES} />
+      <SlideProhibitedActivities slideNumber={12} totalSlides={TOTAL_SLIDES} />
+      <SlideRoadmap slideNumber={13} totalSlides={TOTAL_SLIDES} />
+      <SlideSupport slideNumber={14} totalSlides={TOTAL_SLIDES} />
+      <SlideFollowUp slideNumber={15} totalSlides={TOTAL_SLIDES} />
+      <SlideNextSteps clientName={clientName} responsavelNome={responsavelNome} slideNumber={16} totalSlides={TOTAL_SLIDES} />
     </div>
   );
 }
