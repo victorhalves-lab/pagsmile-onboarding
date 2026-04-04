@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronRight, FileDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { generateProcessosPdf } from './ProcessosPdfGenerator';
 
 function Section({ title, number, children, defaultOpen = false }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -103,8 +105,21 @@ export default function ProcessoDocumento({ processo }) {
     <div className="space-y-3">
       {/* Header */}
       <div className="bg-gradient-to-r from-[#002443] to-[#003a66] rounded-2xl p-5 text-white">
-        <h2 className="text-xl font-extrabold mb-1">{p.nome}</h2>
-        <p className="text-white/60 text-xs">v{p.versao} • {p.data} • {p.area}</p>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h2 className="text-xl font-extrabold mb-1">{p.nome}</h2>
+            <p className="text-white/60 text-xs">v{p.versao} • {p.data} • {p.area}</p>
+          </div>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => generateProcessosPdf('single', p.id)}
+            className="text-white/70 hover:text-white hover:bg-white/10 text-xs gap-1.5 shrink-0"
+          >
+            <FileDown className="w-3.5 h-3.5" />
+            PDF
+          </Button>
+        </div>
       </div>
 
       {/* 1. Identificação */}

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Search, BookOpen, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Search, BookOpen, ChevronRight, Download, FileDown } from 'lucide-react';
 import ProcessoDocumento from '@/components/processos-modelo/ProcessoDocumento';
 import { PROCESSOS } from '@/components/processos-modelo/processosData';
+import { generateProcessosPdf } from '@/components/processos-modelo/ProcessosPdfGenerator';
 
 export default function ProcessosModelo() {
   const [selectedId, setSelectedId] = useState(null);
@@ -30,9 +32,19 @@ export default function ProcessosModelo() {
             <p className="text-white/60 text-xs">Documentação formal de todos os processos da plataforma — formato padrão v2.0</p>
           </div>
         </div>
-        <div className="flex flex-wrap gap-2 mt-4">
+        <div className="flex flex-wrap items-center gap-2 mt-4">
           <Badge className="bg-[#2bc196]/20 text-[#5cf7cf] border-0">{PROCESSOS.length} Processos</Badge>
           <Badge className="bg-white/10 text-white/80 border-0">Identificação • Objetivo • Escopo • Passo a Passo • Regras • Compliance • Governança • RACI</Badge>
+          <div className="ml-auto">
+            <Button
+              size="sm"
+              onClick={() => generateProcessosPdf('all')}
+              className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white text-xs gap-1.5"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Baixar Todos (PDF)
+            </Button>
+          </div>
         </div>
       </div>
 
