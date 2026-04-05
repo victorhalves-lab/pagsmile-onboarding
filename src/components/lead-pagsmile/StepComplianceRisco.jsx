@@ -24,7 +24,7 @@ export default function StepComplianceRisco({ form, updateField }) {
       {/* P35 — Chargeback (condicional: já processa + cartão > 0%) */}
       {jaProcessa && temCartao && (
         <div className="space-y-2">
-          <label className="text-sm font-semibold text-[#002443]">Taxa de chargeback atual (%)</label>
+          <label className="text-sm font-semibold text-[#002443]">Taxa de chargeback atual (%) *</label>
           <ButtonSelector options={CHARGEBACK_OPTIONS} value={form.chargeback} onChange={(v) => updateField('chargeback', v)} columns={5} />
         </div>
       )}
@@ -32,7 +32,7 @@ export default function StepComplianceRisco({ form, updateField }) {
       {/* P35.1 — MED PIX (NOVO v5.0 — condicional: PIX > 0%) */}
       {temPix && (
         <div className="space-y-2">
-          <label className="text-sm font-semibold text-[#002443]">Taxa de MED PIX (%)</label>
+          <label className="text-sm font-semibold text-[#002443]">Taxa de MED PIX (%) *</label>
           <p className="text-xs text-[#002443]/50">MED = Mecanismo Especial de Devolução do Banco Central</p>
           <ButtonSelector options={MED_PIX_OPTIONS} value={form.medPix} onChange={(v) => updateField('medPix', v)} columns={5} />
         </div>

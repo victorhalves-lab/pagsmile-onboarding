@@ -116,6 +116,24 @@ export const PCT_AFILIADOS_OPTIONS = ['0% (sem afiliados)', '<20%', '20-50%', '>
 // Condicionais Plataforma Vertical
 export const VERTICAL_OPTIONS = ['Foodtech/Delivery', 'PDV/Loja', 'Agendamento/Booking', 'Ticketing/Eventos', 'Fitness/Wellness'];
 
+// Condicionais E-commerce
+export const TIPO_PRODUTO_ECOMMERCE_OPTIONS = ['Moda', 'Eletrônicos', 'Cosméticos', 'Alimentos', 'Casa/Decoração'];
+export const ENTREGA_OPTIONS = ['Própria', 'Correios', 'Transportadora', 'Fulfillment'];
+export const POLITICA_DEVOLUCAO_OPTIONS = ['7 dias (CDC)', '15 dias', '30 dias', 'Troca apenas'];
+
+// Condicionais Dropshipping
+export const TIPO_PRODUTO_DROP_OPTIONS = ['Moda', 'Eletrônicos', 'Cosméticos', 'Alimentos', 'Casa/Decoração'];
+export const ORIGEM_FORNECEDORES_OPTIONS = ['Nacional', 'China/AliExpress', 'EUA', 'Misto'];
+export const PRAZO_ENTREGA_OPTIONS = ['Até 7 dias', '7-15 dias', '15-30 dias', '30+ dias'];
+
+// Condicionais Link de Pagamento
+export const TIPO_PRODUTO_LINK_OPTIONS = ['Produto Físico', 'Produto Digital', 'Serviço', 'Alimentação', 'Consultoria'];
+export const CANAIS_LINK_OPTIONS = ['WhatsApp', 'E-mail', 'Instagram', 'Facebook', 'TikTok'];
+
+// Condicionais MPE
+export const TIPO_MPE_OPTIONS = ['Loja Física', 'Prestador de Serviço', 'Alimentação', 'Autônomo'];
+export const MODALIDADE_CARTAO_OPTIONS = ['Só presencial', 'Só online', 'Ambos (presencial + online)'];
+
 // Faturamento
 export const FATURAMENTO_ANUAL_OPTIONS = [
   'Até R$81k (MEI)', 'Até R$360k (ME)', 'Até R$4,8M (EPP)', 

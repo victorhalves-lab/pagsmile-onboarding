@@ -25,6 +25,7 @@ import { toast } from 'sonner';
 import moment from 'moment';
 import LeadQualifierBadge from './LeadQualifierBadge';
 import ReassignComplianceModal from './ReassignComplianceModal';
+import PagsmileV5ResponsesModal from './PagsmileV5ResponsesModal';
 
 const SUB_CAT = { MERCHAN: { label: 'Merchan', icon: ShoppingCart }, GATEWAY: { label: 'Gateway', icon: Network }, MARKETPLACE: { label: 'Marketplace', icon: Building2 } };
 
@@ -43,6 +44,7 @@ export default function IntroducerLeadsTab() {
   const [introducerFilter, setIntroducerFilter] = useState('all');
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [reassignTarget, setReassignTarget] = useState(null);
+  const [responsesRecord, setResponsesRecord] = useState(null);
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -181,6 +183,11 @@ export default function IntroducerLeadsTab() {
                     <TableCell><span className="text-xs text-[#002443]/60">{record.created_date ? moment(record.created_date).format('DD/MM/YY HH:mm') : '-'}</span></TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
+                        {record.questionnaireData && (
+                          <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => setResponsesRecord(record)}>
+                            <MessageSquareText className="w-3 h-3 mr-1" /> Respostas
+                          </Button>
+                        )}
                         <Button variant="outline" size="sm" className="h-7 text-xs text-teal-700 border-teal-300 hover:bg-teal-50" onClick={() => setReassignTarget(record)}>
                           <RefreshCw className="w-3 h-3 mr-1" /> Compliance
                         </Button>
@@ -233,6 +240,11 @@ export default function IntroducerLeadsTab() {
         lead={reassignTarget}
         entityName="IntroducerLead"
         invalidateKeys={[['introducer-leads']]}
+      />
+      <PagsmileV5ResponsesModal
+        open={!!responsesRecord}
+        onClose={() => setResponsesRecord(null)}
+        lead={responsesRecord}
       />
     </div>
   );

@@ -114,7 +114,15 @@ export default function QuestionarioLeadsPagsmile() {
       if (!form.custoAntifraude) { errs.custoAntifraude = true; errorMessages.push('Custo antifraude é obrigatório'); }
       if (!form.taxa3ds) { errs.taxa3ds = true; errorMessages.push('Taxa 3DS é obrigatória'); }
     }
-    if (step === 9 && !form.encerrado) { errs.encerrado = true; errorMessages.push('Informe se já foi encerrado'); }
+    if (step === 9) {
+      if (!form.encerrado) { errs.encerrado = true; errorMessages.push('Informe se já foi encerrado'); }
+      const jaProcessa9 = form.jaProcessa === 'Sim, já processo';
+      const dist9 = form.distribuicao || {};
+      const temCartao9 = (dist9.credito || 0) > 0;
+      const temPix9 = (dist9.pix || 0) > 0;
+      if (jaProcessa9 && temCartao9 && !form.chargeback) { errs.chargeback = true; errorMessages.push('Taxa de chargeback é obrigatória'); }
+      if (temPix9 && !form.medPix) { errs.medPix = true; errorMessages.push('Taxa de MED PIX é obrigatória'); }
+    }
     if (step === 10) {
       if (!form.urgencia) { errs.urgencia = true; errorMessages.push('Informe quando quer começar'); }
       if (!form.crescimento) { errs.crescimento = true; errorMessages.push('Informe a expectativa de crescimento'); }

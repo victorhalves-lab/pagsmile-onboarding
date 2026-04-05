@@ -153,6 +153,25 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
       // Condicionais Plataforma Vertical
       { label: 'Vertical Principal', value: qd.verticalPrincipal || qd.vertical },
       { label: 'Vertical (Outro)', value: qd.verticalOutro },
+      // Condicionais E-commerce
+      { label: 'Tipo de Produto (E-commerce)', value: qd.tipoProdutoEcommerce },
+      { label: 'Tipo de Produto (Outro)', value: qd.tipoProdutoEcommerceOutro },
+      { label: 'Modelo de Entrega', value: qd.modeloEntrega },
+      { label: 'Política de Devolução', value: qd.politicaDevolucao },
+      // Condicionais Dropshipping
+      { label: 'Tipo de Produto (Drop)', value: qd.tipoProdutoDrop },
+      { label: 'Tipo de Produto (Outro)', value: qd.tipoProdutoDropOutro },
+      { label: 'Origem Fornecedores', value: qd.origemFornecedores },
+      { label: 'Prazo Médio Entrega', value: qd.prazoEntrega },
+      // Condicionais Link de Pagamento
+      { label: 'Tipo Produto/Serviço (Link)', value: qd.tipoProdutoLink },
+      { label: 'Tipo Produto (Outro)', value: qd.tipoProdutoLinkOutro },
+      { label: 'Canais de Envio', value: Array.isArray(qd.canaisLink) ? qd.canaisLink.join(', ') : qd.canaisLink },
+      { label: 'Canais (Outro)', value: qd.canaisLinkOutro },
+      // Condicionais MPE
+      { label: 'Tipo de Negócio (MPE)', value: qd.tipoMpe },
+      { label: 'O que Vende (MPE)', value: qd.oQueVendeMpe },
+      { label: 'Modalidade Cartão', value: qd.modalidadeCartao },
     ],
     financeiro: [
       { label: 'Faturamento Anual', value: qd.faturamentoAnual },
