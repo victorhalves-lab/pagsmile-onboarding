@@ -1440,6 +1440,7 @@ export const zh = {
   'pp.proposal_accepted_success': '报价接受成功！',
   'pp.counter_sent_success': '反报价已发送！',
   'pp.proposal_rejected': '报价已拒绝',
+  'pp.forex_rate': '外汇费率',
 
   // ═══ ANÁLISE DE CASOS ═══
   'ac.not_found': '未找到案例',

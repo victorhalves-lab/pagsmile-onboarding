@@ -53,7 +53,7 @@ export default function CriarProposta() {
   const [rates, setRates] = useState({
     cartao: {},
     pix: { tipo: 'percentual', valor: '' },
-    boleto: '', feeTransacao: '', antifraude: '', alertaPreChargeback: '', taxa3ds: '', setup: '',
+    boleto: '', feeTransacao: '', antifraude: '', alertaPreChargeback: '', taxa3ds: '', setup: '', forex: '',
     minimoGarantido: { mes1: '', mes2: '', mes3: '' },
   });
 
@@ -84,6 +84,7 @@ export default function CriarProposta() {
       alertaPreChargeback: r.alertaPreChargeback ?? '',
       taxa3ds: r.taxa3ds ?? '',
       setup: r.setup ?? '',
+      forex: r.forex ?? '',
       minimoGarantido: typeof r.minimoGarantido === 'object' ? r.minimoGarantido : { mes1: r.minimoGarantido ?? '', mes2: r.minimoGarantido ?? '', mes3: r.minimoGarantido ?? '' },
     });
     toast.success(t('criar_prop.rates_copied'));
@@ -130,7 +131,7 @@ export default function CriarProposta() {
         cartao: r.cartao || {}, pix: r.pix || { tipo: 'percentual', valor: '' },
         boleto: r.boleto || '', feeTransacao: r.feeTransacao || '',
         antifraude: r.antifraude || '', alertaPreChargeback: r.alertaPreChargeback || '',
-        taxa3ds: r.taxa3ds || '', setup: r.setup || '',
+        taxa3ds: r.taxa3ds || '', setup: r.setup || '', forex: r.forex || '',
         minimoGarantido: typeof r.minimoGarantido === 'object' ? r.minimoGarantido : { mes1: r.minimoGarantido || '', mes2: r.minimoGarantido || '', mes3: r.minimoGarantido || '' },
       });
       if (existingProposal.chosenPartnerId) {
@@ -219,7 +220,7 @@ export default function CriarProposta() {
         pix: { tipo: rates.pix?.tipo || 'percentual', valor: parseTaxa(rates.pix?.valor) },
         boleto: parseTaxa(rates.boleto), antifraude: parseTaxa(rates.antifraude),
         feeTransacao: parseTaxa(rates.feeTransacao), alertaPreChargeback: parseTaxa(rates.alertaPreChargeback),
-        taxa3ds: parseTaxa(rates.taxa3ds), setup: parseTaxa(rates.setup),
+        taxa3ds: parseTaxa(rates.taxa3ds), setup: parseTaxa(rates.setup), forex: parseTaxa(rates.forex),
         minimoGarantido: { mes1: parseTaxa(rates.minimoGarantido?.mes1), mes2: parseTaxa(rates.minimoGarantido?.mes2), mes3: parseTaxa(rates.minimoGarantido?.mes3) },
         rav: { taxa: parseTaxa(form.taxaAntecipacao), prazo: form.prazoRecebimento },
         percentualAntecipacao: parseTaxa(form.percentualAntecipacao),

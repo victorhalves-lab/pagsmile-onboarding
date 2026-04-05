@@ -1669,6 +1669,7 @@ export const en = {
   'pp.proposal_accepted_success': 'Proposal accepted successfully!',
   'pp.counter_sent_success': 'Counter-proposal sent!',
   'pp.proposal_rejected': 'Proposal rejected',
+  'pp.forex_rate': 'FOREX RATE',
 
   // ═══ ANÁLISE DE CASOS ═══
   'ac.not_found': 'Case not found',

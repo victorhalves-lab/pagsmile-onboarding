@@ -49,6 +49,7 @@ export default function CardOutrasTaxas({ rates, onUpdateRates, partner, readOnl
           { label: 'Alerta Pré-Chargeback', key: 'alertaPreChargeback', limitKey: null },
           { label: 'Custo 3DS', key: 'taxa3ds', limitKey: 'taxa3ds' },
           { label: 'Valor de Setup', key: 'setup', limitKey: null },
+          { label: 'Taxa Forex (%)', key: 'forex', limitKey: null, isPercent: true },
         ].map(field => {
           const limits = field.limitKey && partner ? getFeeLimits(partner, field.limitKey) : null;
           const currentVal = parseFloat(String(rates?.[field.key] || '0').replace(/\./g, '').replace(',', '.')) || 0;
@@ -59,8 +60,12 @@ export default function CardOutrasTaxas({ rates, onUpdateRates, partner, readOnl
               <TaxaInput
                 value={rates?.[field.key] || ''}
                 onChange={(val) => !readOnly && updateField(field.key, val)}
-                placeholder="0,00" prefix="R$" isCurrency disabled={readOnly}
-                className={`${inputCls} text-right pl-10 ${hasViolation ? 'border-red-400/50 ring-1 ring-red-400/30' : ''} ${readOnly ? 'opacity-60 cursor-not-allowed' : ''}`}
+                placeholder="0,00"
+                prefix={field.isPercent ? undefined : "R$"}
+                suffix={field.isPercent ? "%" : undefined}
+                isCurrency={!field.isPercent}
+                disabled={readOnly}
+                className={`${inputCls} text-right ${field.isPercent ? 'pr-10' : 'pl-10'} ${hasViolation ? 'border-red-400/50 ring-1 ring-red-400/30' : ''} ${readOnly ? 'opacity-60 cursor-not-allowed' : ''}`}
               />
               {limits && (
                 <div className="space-y-0.5">

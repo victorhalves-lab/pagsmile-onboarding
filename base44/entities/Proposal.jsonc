@@ -222,6 +222,10 @@
           "type": "number",
           "description": "Valor de setup em R$"
         },
+        "forex": {
+          "type": "number",
+          "description": "Taxa de Forex em percentual (%)"
+        },
         "rav": {
           "type": "object",
           "properties": {

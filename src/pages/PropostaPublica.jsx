@@ -502,6 +502,16 @@ export default function PropostaPublica() {
             </CardContent>
           </Card>
         )}
+        {(parseFloat(rates.forex) || 0) > 0 && (
+          <Card className="border-amber-200 bg-amber-50/50">
+            <CardContent className="py-4 text-center flex flex-col justify-center h-full">
+              <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">{t('pp.forex_rate')}</p>
+              <p className="text-lg font-bold text-amber-600">
+                {(parseFloat(rates.forex) || 0).toFixed(2).replace('.', ',')}%
+              </p>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Prazo e Antecipação */}

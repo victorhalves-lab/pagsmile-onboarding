@@ -1657,6 +1657,7 @@ export const pt = {
   'pp.proposal_accepted_success': 'Proposta aceita com sucesso!',
   'pp.counter_sent_success': 'Contraproposta enviada!',
   'pp.proposal_rejected': 'Proposta recusada',
+  'pp.forex_rate': 'TAXA FOREX',
 
   // ═══ ANÁLISE DE CASOS ═══
   'ac.not_found': 'Caso não encontrado',
