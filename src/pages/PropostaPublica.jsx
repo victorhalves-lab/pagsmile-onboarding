@@ -39,7 +39,37 @@ export default function PropostaPublica() {
     queryFn: async () => {
       if (!token) return null;
       const results = await base44.entities.Proposal.filter({ tokenPublico: token });
-      return results[0] || null;
+      if (!results.length) return null;
+      
+      // If multiple versions share the same token, pick the current version
+      if (results.length > 1) {
+        const current = results.find(r => r.isCurrentVersion === true);
+        if (current) return current;
+        // Fallback: pick the one with highest version number
+        return results.sort((a, b) => (b.version || 1) - (a.version || 1))[0];
+      }
+      
+      const proposal = results[0];
+      
+      // If this proposal is NOT the current version, find the current one via rootProposalId
+      if (proposal.isCurrentVersion === false && proposal.rootProposalId) {
+        const currentVersions = await base44.entities.Proposal.filter({ 
+          rootProposalId: proposal.rootProposalId, 
+          isCurrentVersion: true 
+        });
+        if (currentVersions.length > 0) return currentVersions[0];
+      }
+      
+      // If this is the root and not current, find the latest version pointing to it
+      if (proposal.isCurrentVersion === false) {
+        const childVersions = await base44.entities.Proposal.filter({ 
+          rootProposalId: proposal.id, 
+          isCurrentVersion: true 
+        });
+        if (childVersions.length > 0) return childVersions[0];
+      }
+      
+      return proposal;
     },
     enabled: !!token
   });

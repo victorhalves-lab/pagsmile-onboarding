@@ -89,14 +89,23 @@ export default function PropostaDetalhes() {
   const criarNovaVersao = async () => {
     const year = new Date().getFullYear();
     const seq = String(Math.floor(Math.random() * 99999)).padStart(5, '0');
-    const { id, created_date, updated_date, created_by, publicLinkCode, tokenPublico, sentDate, acceptedDate, rejectedDate, rejectedReason, counterProposalDetails, ...dataToCopy } = proposta;
+    const { id, created_date, updated_date, created_by, publicLinkCode, sentDate, acceptedDate, rejectedDate, rejectedReason, counterProposalDetails, ...dataToCopy } = proposta;
     const newVersion = (proposta.version || 1) + 1;
+
+    // Resolve the stable token: use the root proposal's token so the public link never changes
+    let stableToken = proposta.tokenPublico;
+    if (rootId && rootId !== proposta.id) {
+      const rootProposals = await base44.entities.Proposal.filter({ id: rootId });
+      if (rootProposals[0]?.tokenPublico) {
+        stableToken = rootProposals[0].tokenPublico;
+      }
+    }
 
     const newProposta = {
       ...dataToCopy,
       codigo: `PROP-${year}-${seq}`,
       status: 'rascunho',
-      tokenPublico: Array.from({ length: 64 }, () => 'abcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random() * 36))).join(''),
+      tokenPublico: stableToken,
       version: newVersion,
       previousVersionId: proposta.id,
       rootProposalId: rootId,
@@ -131,8 +140,15 @@ export default function PropostaDetalhes() {
   }
 
   const sCfg = STATUS_CONFIG[proposta.status] || STATUS_CONFIG.rascunho;
-  const publicLink = proposta.tokenPublico
-    ? `${window.location.origin}${createPageUrl('PropostaPublica')}?token=${proposta.tokenPublico}`
+  
+  // Use the root proposal's token for a stable public link
+  const stableToken = (() => {
+    if (!proposta.rootProposalId || !versionHistory.length) return proposta.tokenPublico;
+    const root = versionHistory.find(v => v.id === proposta.rootProposalId);
+    return root?.tokenPublico || proposta.tokenPublico;
+  })();
+  const publicLink = stableToken
+    ? `${window.location.origin}${createPageUrl('PropostaPublica')}?token=${stableToken}`
     : null;
 
   return (
