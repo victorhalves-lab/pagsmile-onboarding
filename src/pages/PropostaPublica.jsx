@@ -549,9 +549,9 @@ export default function PropostaPublica() {
         <InternationalPaymentsBanner />
       </div>
 
-      {/* Floating Action Bar */}
+      {/* Action Buttons */}
       {['enviada', 'visualizada'].includes(proposta.status) && !isAlreadyResponded && !isExpired && (
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-md border-t border-slate-200 z-50 md:relative md:bg-transparent md:backdrop-blur-none md:border-none md:p-0 flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4 md:mb-8 shadow-[0_-10px_40px_rgba(0,36,67,0.08)] md:shadow-none pb-safe">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4 mb-8">
           <Button
             onClick={() => setShowAceiteModal(true)}
             className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-10 h-14 rounded-2xl text-lg font-bold w-full md:w-auto shadow-lg shadow-[#2bc196]/20 transition-transform hover:scale-105"
@@ -590,31 +590,10 @@ export default function PropostaPublica() {
         </div>
       )}
 
-      {/* Footer — extra bottom padding for sticky bar */}
-      <div className="text-center text-xs text-[#002443]/30 py-4 pb-28 border-t border-slate-200">
+      {/* Footer */}
+      <div className="text-center text-xs text-[#002443]/30 py-4 border-t border-slate-200">
         <p>&copy; {new Date().getFullYear()} Pagsmile. Proposta {proposta.codigo}</p>
       </div>
-
-      {/* Sticky Bottom Bar — Desktop only */}
-      {['enviada', 'visualizada'].includes(proposta.status) && !isAlreadyResponded && !isExpired && (
-        <div className="hidden md:block fixed bottom-0 left-0 right-0 z-50">
-          <div className="bg-[#002443] border-t border-[#2bc196]/30 shadow-[0_-4px_20px_rgba(0,36,67,0.3)]">
-            <div className="max-w-4xl mx-auto px-4 py-2.5 flex items-center justify-between gap-4">
-              <div className="hidden sm:block flex-1 min-w-0">
-                <p className="text-white font-bold text-sm truncate">Proposta para {proposta.clienteNome}</p>
-                <p className="text-white/50 text-xs">Processo rápido e 100% digital</p>
-              </div>
-              <Button
-                onClick={() => setShowAceiteModal(true)}
-                className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white font-bold rounded-xl text-sm px-6 h-10 shadow-lg shadow-[#2bc196]/20 hover:scale-[1.02] transition-all gap-2 flex-shrink-0"
-              >
-                <Shield className="w-4 h-4" />
-                {t('pp.accept_proposal')}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Modals */}
       <AceiteModal
