@@ -17,6 +17,7 @@ const SECTIONS = [
   { id: 'financeiro', label: 'Volume & Financeiro', icon: DollarSign, accent: 'bg-cyan-500' },
   { id: 'distribuicao', label: 'Distribuição TPV', icon: TrendingUp, accent: 'bg-indigo-500' },
   { id: 'processador', label: 'Processador Atual', icon: CreditCard, accent: 'bg-rose-500' },
+  { id: 'taxas_atuais', label: 'Taxas Atuais', icon: DollarSign, accent: 'bg-pink-500' },
   { id: 'compliance', label: 'Compliance & Risco', icon: Shield, accent: 'bg-orange-500' },
   { id: 'fechamento', label: 'Fechamento', icon: Zap, accent: 'bg-teal-500' },
 ];
@@ -133,18 +134,25 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
       { label: 'Modelo de Cobrança', value: qd.modeloCobranca },
       { label: 'Descrição do Negócio', value: qd.descricaoNegocio },
       { label: 'Plataforma', value: qd.plataforma },
-      { label: 'Antifraude', value: qd.antifraude },
+      { label: 'Antifraude / 3DS', value: qd.antifraude },
+      // Condicionais Intermediários
       { label: 'Qtd Sub-Sellers', value: qd.qtdSubSellers },
-      { label: 'Licença BCB', value: qd.licencaBcb },
+      // Condicionais Gateway
+      { label: 'Licença BCB', value: qd.licencaBCB || qd.licencaBcb },
       { label: 'Split Pagamento', value: qd.splitPagamento },
+      // Condicionais Marketplace
       { label: 'Take Rate', value: qd.takeRate },
       { label: 'KYC Sub-Sellers', value: qd.kycSubSellers },
-      { label: 'Churn', value: qd.churn },
+      // Condicionais SaaS
+      { label: 'Churn Mensal', value: qd.churn },
       { label: 'Pricing SaaS', value: qd.pricingSaas },
-      { label: 'Afiliados', value: qd.afiliados },
-      { label: 'Garantia', value: qd.garantia },
+      // Condicionais Infoprodutos
+      { label: 'Modelo de Afiliados', value: qd.modeloAfiliados || qd.afiliados },
+      { label: 'Garantia / Reembolso', value: qd.garantia },
       { label: '% Afiliados', value: qd.pctAfiliados },
-      { label: 'Vertical', value: qd.vertical },
+      // Condicionais Plataforma Vertical
+      { label: 'Vertical Principal', value: qd.verticalPrincipal || qd.vertical },
+      { label: 'Vertical (Outro)', value: qd.verticalOutro },
     ],
     financeiro: [
       { label: 'Faturamento Anual', value: qd.faturamentoAnual },
@@ -156,10 +164,25 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
     processador: [
       { label: 'Já Processa?', value: qd.jaProcessa },
       { label: 'Processador Atual', value: qd.processador },
+      { label: 'Processador (Outro)', value: qd.processadorOutro },
       { label: 'Satisfação', value: qd.satisfacao },
       { label: 'Dor Atual', value: qd.dorAtual },
-      { label: 'Antecipação', value: qd.antecipacao },
+      { label: 'Dor (Outro)', value: qd.dorOutro },
+      { label: 'Usa Antecipação?', value: qd.antecipacao },
       { label: 'Sabe as Taxas?', value: qd.sabeTaxas },
+    ],
+    taxas_atuais: [
+      { label: 'MDR Crédito à Vista (1x)', value: qd.mdrAvista, isPercent: !!qd.mdrAvista },
+      { label: 'MDR Crédito 2-6x', value: qd.mdr2a6x, isPercent: !!qd.mdr2a6x },
+      { label: 'MDR Crédito 7-12x', value: qd.mdr7a12x, isPercent: !!qd.mdr7a12x },
+      { label: 'MDR Crédito 13-21x', value: qd.mdr13a21x, isPercent: !!qd.mdr13a21x },
+      { label: 'MDR Débito', value: qd.mdrDebito, isPercent: !!qd.mdrDebito },
+      { label: 'Taxa PIX', value: qd.taxaPix, isPercent: !!qd.taxaPix },
+      { label: 'Taxa Boleto', value: qd.taxaBoleto, isMoney: !!qd.taxaBoleto },
+      { label: 'Taxa Antecipação (% a.m.)', value: qd.taxaAntecipacao, isPercent: !!qd.taxaAntecipacao },
+      { label: 'Custo Antifraude', value: qd.custoAntifraude, isMoney: !!qd.custoAntifraude },
+      { label: 'Fee por Transação', value: qd.feeTransacao, isMoney: !!qd.feeTransacao },
+      { label: 'Taxa 3DS', value: qd.taxa3ds, isMoney: !!qd.taxa3ds },
     ],
     compliance: [
       { label: 'Já foi encerrado?', value: qd.encerrado },
@@ -170,6 +193,8 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
       { label: 'Urgência', value: qd.urgencia },
       { label: 'Crescimento Esperado', value: qd.crescimento },
       { label: 'Como Conheceu', value: qd.comoConheceu },
+      { label: 'Como Conheceu (Outro)', value: qd.comoConheceuOutro },
+      { label: 'Observações', value: qd.observacoes },
     ],
   };
 
