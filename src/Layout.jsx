@@ -143,6 +143,7 @@ export default function Layout({ children, currentPageName }) {
         { label: t('menu.generate_link'), path: 'GerarLinkOnboarding', icon: LinkIcon },
         { label: t('menu.templates'), path: 'TemplatesQuestionarios', icon: FileText },
         { label: t('menu.message_templates'), path: 'MessageTemplates', icon: FileText },
+        { label: 'Taxas Padrão Segmento', path: 'GerenciarTaxasPadrao', icon: Settings },
         { label: t('menu.rules_workflows'), path: 'RegrasDeCompliance', icon: Settings },
       ]
     },
