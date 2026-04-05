@@ -230,7 +230,7 @@ export default function IntroducerLandingPage() {
             <p className="text-base max-w-md mx-auto mb-8" style={{ color: 'rgba(255,255,255,0.5)' }}>
               Preencha nosso questionário rápido e receba taxas personalizadas para o seu negócio.
             </p>
-            <Link to={`/QuestionarioLeadsPagsmile?ref=${introducer.referralCode}`} onClick={handleCtaProposta}>
+            <a href={`https://pagsmilecompliance.base44.app/QuestionarioLeadsPagsmile?ref=${introducer.referralCode}`} onClick={handleCtaProposta}>
               <Button
                 size="lg"
                 className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl text-base px-10 py-6 shadow-lg shadow-[#2bc196]/20 hover:scale-[1.02] transition-all"
@@ -238,7 +238,7 @@ export default function IntroducerLandingPage() {
                 Solicitar Proposta
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
-            </Link>
+            </a>
           </div>
         </motion.div>
 

@@ -15,7 +15,7 @@ import { useTranslation } from '@/lib/i18n/LanguageContext';
 import SEGMENT_TO_COMPLIANCE from '@/components/fechamento/segmentComplianceMap';
 import InternationalPaymentsBanner from '@/components/landing/InternationalPaymentsBanner';
 
-const QUESTIONNAIRE_URL = '/QuestionarioLeadsPagsmile';
+const QUESTIONNAIRE_URL = 'https://pagsmilecompliance.base44.app/QuestionarioLeadsPagsmile';
 
 export default function PropostaPadraoPublica() {
   const { t } = useTranslation();
