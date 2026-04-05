@@ -549,36 +549,9 @@ export default function PropostaPublica() {
         <InternationalPaymentsBanner />
       </div>
 
-      {/* Action Buttons */}
+      {/* Spacer for fixed bottom bar */}
       {['enviada', 'visualizada'].includes(proposta.status) && !isAlreadyResponded && !isExpired && (
-        <div className="flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4 mb-8">
-          <Button
-            onClick={() => setShowAceiteModal(true)}
-            className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-10 h-14 rounded-2xl text-lg font-bold w-full md:w-auto shadow-lg shadow-[#2bc196]/20 transition-transform hover:scale-105"
-          >
-            <Shield className="w-5 h-5 mr-2" />
-            {t('pp.accept_proposal')}
-          </Button>
-          
-          <div className="flex w-full md:w-auto gap-3">
-            <Button
-              onClick={() => setShowContrapropostaModal(true)}
-              variant="outline"
-              className="flex-1 md:flex-none border-[#002443]/20 text-[#002443] hover:bg-[#002443]/5 h-14 rounded-2xl font-semibold"
-            >
-              <MessageSquare className="w-4 h-4 mr-2" />
-              {t('pp.negotiate')}
-            </Button>
-            <Button
-              onClick={() => setShowRecusaModal(true)}
-              variant="outline"
-              className="flex-1 md:flex-none border-red-200 text-red-600 hover:bg-red-50 h-14 rounded-2xl font-semibold"
-            >
-              <XCircle className="w-4 h-4 mr-2" />
-              {t('pp.reject')}
-            </Button>
-          </div>
-        </div>
+        <div className="h-28" />
       )}
 
       {/* Contraproposta status */}
@@ -594,6 +567,39 @@ export default function PropostaPublica() {
       <div className="text-center text-xs text-[#002443]/30 py-4 border-t border-slate-200">
         <p>&copy; {new Date().getFullYear()} Pagsmile. Proposta {proposta.codigo}</p>
       </div>
+
+      {/* Fixed Bottom Action Bar */}
+      {['enviada', 'visualizada'].includes(proposta.status) && !isAlreadyResponded && !isExpired && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,36,67,0.1)]">
+          <div className="max-w-4xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4">
+            <Button
+              onClick={() => setShowAceiteModal(true)}
+              className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-10 h-12 rounded-2xl text-base font-bold w-full md:w-auto shadow-lg shadow-[#2bc196]/20 transition-transform hover:scale-105"
+            >
+              <Shield className="w-5 h-5 mr-2" />
+              {t('pp.accept_proposal')}
+            </Button>
+            <div className="flex w-full md:w-auto gap-3">
+              <Button
+                onClick={() => setShowContrapropostaModal(true)}
+                variant="outline"
+                className="flex-1 md:flex-none border-[#002443]/20 text-[#002443] hover:bg-[#002443]/5 h-12 rounded-2xl font-semibold"
+              >
+                <MessageSquare className="w-4 h-4 mr-2" />
+                {t('pp.negotiate')}
+              </Button>
+              <Button
+                onClick={() => setShowRecusaModal(true)}
+                variant="outline"
+                className="flex-1 md:flex-none border-red-200 text-red-600 hover:bg-red-50 h-12 rounded-2xl font-semibold"
+              >
+                <XCircle className="w-4 h-4 mr-2" />
+                {t('pp.reject')}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modals */}
       <AceiteModal
