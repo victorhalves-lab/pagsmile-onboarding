@@ -595,9 +595,9 @@ export default function PropostaPublica() {
         <p>&copy; {new Date().getFullYear()} Pagsmile. Proposta {proposta.codigo}</p>
       </div>
 
-      {/* Sticky Bottom Bar — Sempre fixo */}
+      {/* Sticky Bottom Bar — Desktop only */}
       {['enviada', 'visualizada'].includes(proposta.status) && !isAlreadyResponded && !isExpired && (
-        <div className="fixed bottom-0 left-0 right-0 z-50">
+        <div className="hidden md:block fixed bottom-0 left-0 right-0 z-50">
           <div className="bg-[#002443] border-t border-[#2bc196]/30 shadow-[0_-4px_20px_rgba(0,36,67,0.3)]">
             <div className="max-w-4xl mx-auto px-4 py-2.5 flex items-center justify-between gap-4">
               <div className="hidden sm:block flex-1 min-w-0">
