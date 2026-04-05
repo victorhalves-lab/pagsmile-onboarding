@@ -314,12 +314,55 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
 
                 {/* Distribution section */}
                 {activeSection === 'distribuicao' ? (
-                  <div className="space-y-3">
-                    <DistributionBar label="Crédito" value={dist.credito} />
-                    <DistributionBar label="Débito" value={dist.debito} />
-                    <DistributionBar label="PIX" value={dist.pix} />
-                    <DistributionBar label="Boleto" value={dist.boleto} />
-                    {Object.values(dist).every(v => !v && v !== 0) && (
+                  <div className="space-y-6">
+                    {/* Distribuição por Meio de Pagamento */}
+                    <div>
+                      <p className="text-xs font-bold text-[#002443]/55 uppercase tracking-wider mb-3">Meio de Pagamento</p>
+                      <div className="space-y-3">
+                        <DistributionBar label="Crédito" value={dist.credito} />
+                        <DistributionBar label="Débito" value={dist.debito} />
+                        <DistributionBar label="PIX" value={dist.pix} />
+                        <DistributionBar label="Boleto" value={dist.boleto} />
+                      </div>
+                    </div>
+
+                    {/* Distribuição por Parcelamento */}
+                    {(() => {
+                      const distParc = qd.distribuicaoParcelamento || {};
+                      const hasData = Object.values(distParc).some(v => v > 0);
+                      if (!hasData) return null;
+                      return (
+                        <div className="pt-4 border-t border-[#e2e8f0]">
+                          <p className="text-xs font-bold text-[#002443]/55 uppercase tracking-wider mb-3">Parcelamento (Cartão Crédito)</p>
+                          <div className="space-y-3">
+                            <DistributionBar label="À Vista (1x)" value={distParc.avista} />
+                            <DistributionBar label="2 a 6x" value={distParc.de2a6x} />
+                            <DistributionBar label="7 a 12x" value={distParc.de7a12x} />
+                            <DistributionBar label="13 a 21x" value={distParc.de13a21x} />
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                    {/* Distribuição desejada (quem está começando) */}
+                    {(() => {
+                      const distDes = qd.distribuicaoDesejada || {};
+                      const hasDesejada = Object.values(distDes).some(v => v > 0);
+                      if (!hasDesejada) return null;
+                      return (
+                        <div className="pt-4 border-t border-[#e2e8f0]">
+                          <p className="text-xs font-bold text-[#002443]/55 uppercase tracking-wider mb-3">Distribuição Desejada</p>
+                          <div className="space-y-3">
+                            <DistributionBar label="Crédito" value={distDes.credito} />
+                            <DistributionBar label="Débito" value={distDes.debito} />
+                            <DistributionBar label="PIX" value={distDes.pix} />
+                            <DistributionBar label="Boleto" value={distDes.boleto} />
+                          </div>
+                        </div>
+                      );
+                    })()}
+
+                    {Object.values(dist).every(v => !v && v !== 0) && !qd.distribuicaoParcelamento && !qd.distribuicaoDesejada && (
                       <p className="text-sm text-[#002443]/40 italic text-center py-8">Nenhuma distribuição informada</p>
                     )}
                   </div>

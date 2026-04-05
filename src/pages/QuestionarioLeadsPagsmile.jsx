@@ -88,7 +88,14 @@ export default function QuestionarioLeadsPagsmile() {
       if (!form.faturamentoAnual) { errs.faturamentoAnual = true; errorMessages.push('Faturamento anual é obrigatório'); }
       if (!form.funcionarios) { errs.funcionarios = true; errorMessages.push('Número de funcionários é obrigatório'); }
     }
-    if (step === 6 && !form.jaProcessa) { errs.jaProcessa = true; errorMessages.push('Informe se já processa pagamentos'); }
+    if (step === 6) {
+      if (!form.jaProcessa) { errs.jaProcessa = true; errorMessages.push('Informe se já processa pagamentos'); }
+      if (form.jaProcessa) {
+        const distParc = form.distribuicaoParcelamento || {};
+        const totalParc = Object.values(distParc).reduce((s, v) => s + (v || 0), 0);
+        if (totalParc !== 100) { errs.distribuicaoParcelamento = true; errorMessages.push('Distribuição por parcelamento deve somar 100%'); }
+      }
+    }
     if (step === 7 && form.jaProcessa === 'Sim, já processo') {
       const dist = form.distribuicao || {};
       const temPix = (dist.pix || 0) > 0;
