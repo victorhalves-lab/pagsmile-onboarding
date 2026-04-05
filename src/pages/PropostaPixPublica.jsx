@@ -235,11 +235,11 @@ export default function PropostaPixPublica() {
         </CardContent>
       </Card>
 
-      {/* TPV Mínimo */}
+      {/* TPV Mínimo — na proposta PIX, o mínimo garantido não é de cartão, é geral */}
       {rates.minimoGarantido && (parseFloat(rates.minimoGarantido.mes1) > 0 || parseFloat(rates.minimoGarantido.mes2) > 0 || parseFloat(rates.minimoGarantido.mes3) > 0) && (
         <Card className="mb-6 bg-slate-50 border-slate-200">
           <CardContent className="py-4">
-            <div className="flex items-center gap-2 mb-4"><Shield className="w-5 h-5 text-slate-500" /><h2 className="font-bold text-base text-[#002443]">{t('pp.min_tpv')}</h2></div>
+            <div className="flex items-center gap-2 mb-4"><Banknote className="w-5 h-5 text-[#002443]/60" /><h2 className="font-bold text-base text-[#002443]">TPV Mínimo Garantido Mensal</h2></div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="bg-white p-3 rounded-lg border border-slate-200 text-center">
                 <p className="text-xs text-[#002443]/50 uppercase font-semibold mb-1">{t('pp.month1')}</p>

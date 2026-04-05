@@ -387,14 +387,15 @@ export default function PropostaPublica() {
         </Card>
       </div>
 
-      {/* TPV Mínimo Garantido */}
+      {/* TPV Mínimo Garantido em Cartão */}
       {rates.minimoGarantido && (parseFloat(rates.minimoGarantido.mes1) > 0 || parseFloat(rates.minimoGarantido.mes2) > 0 || parseFloat(rates.minimoGarantido.mes3) > 0) && (
         <Card className="mb-6 bg-slate-50 border-slate-200">
           <CardContent className="py-4">
-            <div className="flex items-center gap-2 mb-4">
-              <Shield className="w-5 h-5 text-slate-500" />
+            <div className="flex items-center gap-2 mb-1">
+              <CreditCard className="w-5 h-5 text-[#002443]/60" />
               <h2 className="font-bold text-base text-[#002443]">{t('pp.min_tpv')}</h2>
             </div>
+            <p className="text-[11px] text-[#002443]/40 mb-4 ml-7">Volume mínimo mensal em cartão de crédito/débito</p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="bg-white p-3 rounded-lg border border-slate-200 text-center">
                 <p className="text-xs text-[#002443]/50 uppercase font-semibold mb-1">{t('pp.month1')}</p>
@@ -419,6 +420,11 @@ export default function PropostaPublica() {
             <p className="text-xs text-[#002443]/50 mt-3 text-center">
               {t('pp.min_tpv_note')}
             </p>
+            <div className="mt-3 bg-[#2bc196]/5 border border-[#2bc196]/20 rounded-xl px-4 py-3">
+              <p className="text-xs text-[#002443]/70 text-center leading-relaxed">
+                {t('pp.min_tpv_pix_incentive')}
+              </p>
+            </div>
           </CardContent>
         </Card>
       )}
