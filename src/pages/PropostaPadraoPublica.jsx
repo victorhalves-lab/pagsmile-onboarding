@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
@@ -22,20 +22,8 @@ export default function PropostaPadraoPublica() {
   const urlParams = new URLSearchParams(window.location.search);
   const token = urlParams.get('token');
   const propostaContentRef = useRef(null);
-  const ratesEndRef = useRef(null);
-  const [showStickyBar, setShowStickyBar] = useState(false);
 
-  // Show sticky bar once user scrolls past the rates sentinel
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!ratesEndRef.current) return;
-      const rect = ratesEndRef.current.getBoundingClientRect();
-      setShowStickyBar(rect.top < window.innerHeight * 0.5);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // check on mount
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+
 
   const { data: proposta, isLoading } = useQuery({
     queryKey: ['std_proposta_publica', token],
@@ -322,8 +310,7 @@ export default function PropostaPadraoPublica() {
         <InternationalPaymentsBanner />
       </div>
 
-      {/* Sentinel — sticky bar appears after this point */}
-      <div ref={ratesEndRef} />
+
 
       {/* CTA - Proposta Personalizada */}
       <div className="relative overflow-hidden bg-gradient-to-r from-[#002443] to-[#36706c] rounded-3xl p-8 md:p-10 mb-8 text-center shadow-xl">
@@ -352,21 +339,17 @@ export default function PropostaPadraoPublica() {
         <p>{t('spp.footer_note')}</p>
       </div>
 
-      {/* Sticky Bottom Bar — Quero Contratar */}
-      <div
-        className={`fixed bottom-0 left-0 right-0 z-50 transition-all duration-500 ${
-          showStickyBar ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
-        }`}
-      >
+      {/* Sticky Bottom Bar — Sempre fixo */}
+      <div className="fixed bottom-0 left-0 right-0 z-50">
         <div className="bg-[#002443] border-t border-[#2bc196]/30 shadow-[0_-4px_20px_rgba(0,36,67,0.3)]">
-          <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+          <div className="max-w-4xl mx-auto px-4 py-2.5 flex items-center justify-between gap-4">
             <div className="hidden sm:block flex-1 min-w-0">
               <p className="text-white font-bold text-sm truncate">Quero essas taxas — {proposta.segment}</p>
               <p className="text-white/50 text-xs">Processo rápido e 100% digital</p>
             </div>
             <a href={`/FechamentoLandingPage?segmento=${encodeURIComponent(proposta.segment)}&fromStandardProposal=${token}`} className="flex-shrink-0">
-              <Button className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white font-bold rounded-xl text-sm sm:text-base px-6 sm:px-10 h-12 shadow-lg shadow-[#2bc196]/20 hover:scale-[1.02] transition-all gap-2">
-                <Rocket className="w-5 h-5" />
+              <Button className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white font-bold rounded-xl text-sm px-6 h-10 shadow-lg shadow-[#2bc196]/20 hover:scale-[1.02] transition-all gap-2">
+                <Rocket className="w-4 h-4" />
                 Contratar agora
               </Button>
             </a>
