@@ -544,8 +544,8 @@ export default function PropostaPublica() {
         )}
       </div>
 
-      {/* Prazo e Antecipação */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
+      {/* Prazo, Antecipação e Volume */}
+      <div className="grid grid-cols-3 gap-4 mb-6">
         <Card>
           <CardContent className="py-4 text-center flex flex-col justify-center h-full">
             <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">{t('pp.receiving_term')}</p>
@@ -556,12 +556,16 @@ export default function PropostaPublica() {
           <CardContent className="py-4 text-center flex flex-col justify-center h-full">
             <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">{t('pp.anticipation_rate')}</p>
             <p className="text-lg font-bold text-amber-600">{taxaRAV}% a.m.</p>
-            {(parseFloat(rates.percentualAntecipacao) || 0) > 0 && (
-              <p className="text-xs text-[#002443]/60 mt-1.5">
-                Volume antecipável: <span className="font-bold text-[#002443]">até {parseFloat(rates.percentualAntecipacao)}%</span>
-              </p>
-            )}
-            <p className="text-[10px] text-amber-600/80 mt-1">* Percentual sujeito à aprovação de Compliance</p>
+            <p className="text-[10px] text-amber-600/80 mt-1">* Sujeito à aprovação de Compliance</p>
+          </CardContent>
+        </Card>
+        <Card className="border-[#2bc196]/30 bg-[#2bc196]/5">
+          <CardContent className="py-4 text-center flex flex-col justify-center h-full">
+            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">Volume Antecipado</p>
+            <p className="text-lg font-bold text-[#2bc196]">
+              {parseFloat(rates.percentualAntecipacao) > 0 ? `${parseFloat(rates.percentualAntecipacao)}%` : '—'}
+            </p>
+            <p className="text-[10px] text-[#002443]/40 mt-1">do TPV processado</p>
           </CardContent>
         </Card>
       </div>
