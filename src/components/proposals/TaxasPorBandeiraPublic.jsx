@@ -9,11 +9,14 @@ const BANDEIRAS = [
 ];
 
 const FAIXAS = [
-  { label: 'À Vista (1x)', key: '1x' },
-  { label: '2x a 6x', key: '2_6x' },
-  { label: '7x a 12x', key: '7_12x' },
-  { label: '13x a 21x', key: '13_21x' },
+  { label: 'À Vista (1x)', key: '1x', representativeParcela: 1 },
+  { label: '2x a 6x', key: '2_6x', representativeParcela: 2 },
+  { label: '7x a 12x', key: '7_12x', representativeParcela: 7 },
+  { label: '13x a 21x', key: '13_21x', representativeParcela: 13 },
 ];
+
+// Bandeiras que recebem override de taxa final
+const OVERRIDE_BANDEIRAS = new Set(['visa', 'mastercard']);
 
 function getTaxa(taxas, bandeira, faixa) {
   if (!taxas) return null;
@@ -39,7 +42,32 @@ function formatVal(val) {
   return `${num.toFixed(2)}%`;
 }
 
-export default function TaxasPorBandeiraPublic({ taxas }) {
+export default function TaxasPorBandeiraPublic({ taxas, taxaFinalOverrides = {}, taxaRAV = 0, prazo = 'D+1' }) {
+  // Calcula taxa final (base + antecipação) para uma parcela representativa
+  const calcFinalRate = (baseRate, parcela) => {
+    if (baseRate === null || baseRate === undefined) return null;
+    const base = typeof baseRate === 'string' ? parseFloat(baseRate) : baseRate;
+    if (isNaN(base)) return null;
+
+    // Se há um override para esta parcela, usá-lo diretamente
+    const override = taxaFinalOverrides[String(parcela)];
+    if (override != null) return override;
+
+    // Caso contrário, calcular base + antecipação
+    const prazoDias = prazo === 'FLUXO' ? 0 : (parseInt(String(prazo).replace('D+', '')) || 1);
+    let taxaAntecipacao = 0;
+    if (prazo !== 'FLUXO' && taxaRAV > 0) {
+      let soma = 0;
+      for (let i = 1; i <= parcela; i++) {
+        const diasVenc = i * 30;
+        const diasAntecip = diasVenc - prazoDias;
+        if (diasAntecip > 0) soma += (diasAntecip / 30) * taxaRAV;
+      }
+      taxaAntecipacao = soma / parcela;
+    }
+    return base + taxaAntecipacao;
+  };
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
@@ -55,11 +83,23 @@ export default function TaxasPorBandeiraPublic({ taxas }) {
           {FAIXAS.map(f => (
             <tr key={f.key} className="border-b border-slate-100 hover:bg-slate-50/50">
               <td className="py-3 px-4 font-medium text-[#002443]/80">{f.label}</td>
-              {BANDEIRAS.map(b => (
-                <td key={b.id} className="py-3 px-4 text-center font-bold text-[#2bc196]">
-                  {formatVal(getTaxa(taxas, b.id, f.key))}
-                </td>
-              ))}
+              {BANDEIRAS.map(b => {
+                const baseRate = getTaxa(taxas, b.id, f.key);
+                const isOverrideBandeira = OVERRIDE_BANDEIRAS.has(b.id);
+                const hasOverride = isOverrideBandeira && taxaFinalOverrides[String(f.representativeParcela)] != null;
+
+                // Para Visa e Mastercard: mostrar taxa final (com override ou base+antecipação)
+                // Para demais bandeiras: mostrar apenas a taxa base (sem antecipação)
+                const displayValue = isOverrideBandeira
+                  ? calcFinalRate(baseRate, f.representativeParcela)
+                  : baseRate;
+
+                return (
+                  <td key={b.id} className={`py-3 px-4 text-center font-bold ${hasOverride ? 'text-amber-600' : 'text-[#2bc196]'}`}>
+                    {formatVal(displayValue)}
+                  </td>
+                );
+              })}
             </tr>
           ))}
         </tbody>

@@ -206,7 +206,7 @@ export default function PropostaPadraoPublica() {
             <CreditCard className="w-5 h-5 text-[#2bc196]" />
             {t('pp.credit_card_rates')}
           </h2>
-          <TaxasPorBandeiraPublic taxas={rates} />
+          <TaxasPorBandeiraPublic taxas={rates} taxaRAV={taxaRAV} prazo={prazo} />
         </CardContent>
       </Card>
 
