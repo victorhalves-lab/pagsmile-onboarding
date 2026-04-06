@@ -544,8 +544,8 @@ export default function PropostaPublica() {
         )}
       </div>
 
-      {/* Prazo, Antecipação e Volume */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      {/* Prazo, Antecipação e Volume — 3 cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <Card>
           <CardContent className="py-4 text-center flex flex-col justify-center h-full">
             <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">{t('pp.receiving_term')}</p>
