@@ -80,7 +80,7 @@ export default function EndToEndFlowsSection() {
       <div className="bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl p-6 text-white">
         <h3 className="text-xl font-bold mb-2">Jornadas Completas de Ponta a Ponta</h3>
         <p className="text-white/80 text-sm leading-relaxed">
-          Cada tipo de entrada de cliente gera uma jornada diferente. Abaixo, os 6 caminhos possíveis — do primeiro contato até o contrato assinado — mostrando cada passo, quem faz, onde faz, e o que acontece automaticamente.
+          Cada tipo de entrada de cliente gera uma jornada diferente. Abaixo, os 7 caminhos possíveis — do primeiro contato até a conclusão do onboarding — mostrando cada passo, quem faz, onde faz, e o que acontece automaticamente.
         </p>
         <div className="flex flex-wrap gap-2 mt-4">
           <Badge className="bg-[#2bc196]/20 text-[#5cf7cf] border-0">Jornada 1: Via Introducer (Landing Page)</Badge>
@@ -89,6 +89,7 @@ export default function EndToEndFlowsSection() {
           <Badge className="bg-pink-500/20 text-pink-300 border-0">Jornada 4: Via Robô IA (Notas)</Badge>
           <Badge className="bg-amber-500/20 text-amber-300 border-0">Jornada 5: Via Proposta Padrão (Link Rápido)</Badge>
           <Badge className="bg-emerald-500/20 text-emerald-300 border-0">Jornada 6: Via Lead PIX v4 (Merchant/Intermediário)</Badge>
+          <Badge className="bg-pink-500/20 text-pink-300 border-0">Jornada 7: Subseller PF (Pessoa Física — sem CAF)</Badge>
         </div>
       </div>
 
@@ -242,6 +243,40 @@ export default function EndToEndFlowsSection() {
         ]}
       />
 
+      {/* JORNADA 7 — SUBSELLER PF (PESSOA FÍSICA) */}
+      <FlowJourney
+        title="Jornada 7 — Subseller Pessoa Física (PF) via Link de Subconta"
+        subtitle="Link subseller → Seleção PF → Questionário 33 perguntas → Upload documentos na plataforma (sem CAF) → Análise"
+        color="bg-gradient-to-r from-pink-700 to-rose-600"
+        badge="Subseller PF → Onboarding"
+        steps={[
+          { title: 'Admin gera link de subconta para merchant aprovado', actor: 'Admin', page: 'GerenciarSubsellerLinks', desc: 'Seleciona merchant principal, configura branding (PagSmile ou white-label: logo, cores, nome), gera OnboardingLink tipo SUBSELLER_COMPLIANCE com parentMerchantId.', details: ['Slug curto opcional para URL amigável /s/{slug}', 'Métricas rastreadas: clicks, submissions, completions'] },
+          { title: 'Merchant distribui link aos seus subsellers PF', actor: 'Merchant', desc: 'Envia link /SubsellerQuestionnaire?ref=xxx ou /s/{slug} via WhatsApp, e-mail ou sistema interno.' },
+          { title: 'Subseller PF acessa link e vê MerchantTypeSelector', actor: 'Subseller PF', page: 'SubsellerQuestionnaire', desc: 'Página carrega branding do merchant. MerchantTypeSelector exibe 2 cards: "Pessoa Física (CPF)" e "Pessoa Jurídica (CNPJ)". Subseller seleciona PF.', details: ['Branding: logo, cores primária/secundária, nome do merchant', 'Se link inválido/expirado/inativo → mensagem de erro'] },
+          { title: 'Sistema carrega template subseller_pf (33 perguntas)', actor: 'Sistema', desc: 'DynamicQuestionnaire renderiza com template PF (merchantType=PF). Perguntas agrupadas em steps de 4. Branding white-label aplicado em progress bar, botões, steps, badges.', details: ['Template subseller_pf: 33 perguntas obrigatórias', 'Campo "Complemento" configurado como opcional (isRequired=false)', 'Auto-save ativo: localStorage + ComplianceSession no backend'] },
+          { title: 'Subseller PF preenche dados pessoais e compliance', actor: 'Subseller PF', desc: 'CPF, Nome Completo, Data de Nascimento, Nacionalidade, Nome da Mãe, E-mail, Telefone, Endereço (CEP autocomplete via ViaCEP), atividade econômica, renda, PEP/sanções, fonte de renda, confirmação.', details: ['Dados PF exclusivos: dateOfBirth, nationality, motherName', 'Painel de enriquecimento CNPJ oculto (isPublicView=true)', 'ComplianceFieldAlerts ativo para respostas de risco'] },
+          { title: 'Ao finalizar questionário → cria Merchant PF + OnboardingCase', actor: 'Sistema', desc: 'createMerchantAndCase() cria: Merchant (type=PF, dateOfBirth, nationality, motherName, isSubseller=true, parentMerchantId) + OnboardingCase (isSubsellerCase=true) + QuestionnaireResponse[]. IDs salvos em localStorage (created_merchant_id, created_onboarding_case_id).', details: ['Merchant.type = "PF"', 'Merchant.isSubseller = true', 'Merchant.parentMerchantId = ID do seller principal', 'OnboardingCase.isSubsellerCase = true', 'Sem redirect para CAF — fluxo PF vai direto para upload'] },
+          { title: 'Redirect para DocumentUploadFull (upload direto, SEM CAF)', actor: 'Subseller PF', page: 'DocumentUploadFull', desc: 'DynamicDocumentUploadPage detecta IDs existentes via localStorage (created_onboarding_case_id). NÃO cria novo Merchant/Case (evita duplicação). Exibe 4 documentos obrigatórios para upload.', details: ['Documento 1: Selfie com Documento de Identificação', 'Documento 2: RG ou CNH (Frente)', 'Documento 3: RG ou CNH (Verso)', 'Documento 4: Comprovante de Endereço', 'Formatos aceitos: PDF, JPG, PNG. Max: 10MB por arquivo', 'Progress bar: X de 4 documentos obrigatórios enviados'] },
+          { title: 'Subseller PF faz upload dos 4 documentos', actor: 'Subseller PF', desc: 'Seleciona arquivo para cada documento. Upload via base44.integrations.Core.UploadFile. Barra de progresso atualiza em tempo real. Ao concluir todos os obrigatórios, botão "Concluir Submissão" habilita.' },
+          { title: 'Concluir → DocumentUpload[] criados + redirect OnboardingCompletion', actor: 'Sistema', desc: 'DocumentUpload[] criados vinculados ao OnboardingCase existente (documentName, fileUrl, fileName, fileSize, fileType, uploadDate, validationStatus=Pendente). localStorage limpo (created_merchant_id, created_onboarding_case_id, current_template_id, etc.).', details: ['Redirect: /OnboardingCompletion?caseId=xxx', 'ComplianceSession.status = completed', 'Analytics tracked: compliance_stage_completed (stage=documents)'] },
+          { title: 'Caso aparece na aba Subsellers (sub-aba PF)', actor: 'Sistema', page: 'QuestionariosRecebidos → SubsellerCasesTab', desc: 'SubsellerCasesTab exibe sub-abas PF e PJ. Caso PF aparece com badge 🟣 "PF" e informações: nome, CPF, status, data de submissão. Agrupado por merchant principal.', details: ['Busca por nome ou CPF disponível', 'Ícone de olho → SubsellerPFResponsesModal', 'Botão "Analisar" → AnaliseDeCasos'] },
+          { title: 'Admin visualiza respostas PF e documentos', actor: 'Admin', page: 'AnaliseDeCasos', desc: 'SubsellerPFResponsesModal: respostas organizadas em 6 categorias (Identificação, Contato, Endereço, Atividade, Compliance, Confirmação). Aba "Documentos" do caso: CaseDocumentsTab exibe todos os uploads com documentName, fileType, fileSize, uploadDate, validationStatus (Pendente/Validado/Rejeitado), botão "Ver" (abre URL) e "Baixar Todos (ZIP)".', details: ['Analista pode aprovar, enviar para revisão manual ou recusar', 'Cada ação registrada em AuditLog', 'Merchant e OnboardingCase atualizados com decisão'] },
+        ]}
+        entitiesCreated={[
+          'OnboardingLink (tipo SUBSELLER_COMPLIANCE, parentMerchantId, branding)',
+          'Merchant (type=PF, isSubseller=true, parentMerchantId, dateOfBirth, nationality, motherName)',
+          'OnboardingCase (isSubsellerCase=true, questionnaireTemplateId)',
+          'QuestionnaireResponse[] (33 respostas do template PF)',
+          'DocumentUpload[] (4 docs: selfie, RG frente, RG verso, comprovante endereço)',
+          'ComplianceSession (sessão retomável)',
+          'AuditLog (cada ação do analista)',
+        ]}
+        notificacoes={[
+          'Nenhuma automática por padrão (subseller é processo B2B interno)',
+          'Caso visível imediatamente em QuestionariosRecebidos → Subsellers → PF',
+        ]}
+      />
+
       {/* Tabela Comparativa */}
       <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
         <h4 className="font-bold text-[#002443] text-sm mb-4">Comparativo: Etapas por Tipo de Entrada</h4>
@@ -256,20 +291,24 @@ export default function EndToEndFlowsSection() {
                 <th className="text-center py-2 text-pink-600 font-bold">Robô IA</th>
                 <th className="text-center py-2 text-[#2bc196] font-bold">Link Padrão</th>
                 <th className="text-center py-2 text-emerald-600 font-bold">Lead PIX v4</th>
+                <th className="text-center py-2 text-rose-600 font-bold">Subseller PF</th>
               </tr>
             </thead>
             <tbody>
               {[
-                { etapa: 'Quem inicia', vals: ['Introducer', 'Comercial', 'Comercial', 'Comercial', 'Comercial', 'Comercial/Lead'] },
-                { etapa: 'Primeiro contato', vals: ['Landing Page', 'Link questionário', 'Reunião', 'Notas de reunião', 'Link proposta padrão', 'Link PIX v4'] },
-                { etapa: 'Quem preenche dados', vals: ['Cliente', 'Cliente', 'Comercial', 'IA + Comercial', 'Cliente (depois)', 'Cliente'] },
-                { etapa: 'IA automática', vals: ['✅ PRISCILA', '✅ PRISCILA', '❌ Manual', '✅ LLM + PRISCILA', '❌ Só após quest.', '✅ 11 flags + Score'] },
-                { etapa: 'Introducer vinculado', vals: ['✅ Automático', '❌', '❌', '❌', '❌', '✅ Se URL params'] },
-                { etapa: 'Lead criado por', vals: ['Sistema', 'Sistema', 'Comercial', 'Comercial', 'Sistema', 'Sistema'] },
-                { etapa: 'Proposta', vals: ['Personalizada', '3 tipos', '3 tipos', '3 tipos', 'Personalizada', 'PIX'] },
-                { etapa: 'Risk Scoring', vals: ['Legado', 'Legado', 'Legado', 'Legado', 'Legado', '✅ v4.0 Motor'] },
-                { etapa: 'Compliance', vals: ['✅', '✅', '✅', '✅', '✅', '✅ PIX v4'] },
-                { etapa: 'Contrato', vals: ['✅ IA', '✅ IA', '✅ IA', '✅ IA', '✅ IA', '✅ IA + RR v4'] },
+                { etapa: 'Quem inicia', vals: ['Introducer', 'Comercial', 'Comercial', 'Comercial', 'Comercial', 'Comercial/Lead', 'Merchant/Admin'] },
+                { etapa: 'Primeiro contato', vals: ['Landing Page', 'Link questionário', 'Reunião', 'Notas de reunião', 'Link proposta padrão', 'Link PIX v4', 'Link subconta'] },
+                { etapa: 'Quem preenche dados', vals: ['Cliente', 'Cliente', 'Comercial', 'IA + Comercial', 'Cliente (depois)', 'Cliente', 'Subseller PF'] },
+                { etapa: 'Seleção PF/PJ', vals: ['❌', '❌', '❌', '❌', '❌', '❌', '✅ MerchantTypeSelector'] },
+                { etapa: 'IA automática', vals: ['✅ PRISCILA', '✅ PRISCILA', '❌ Manual', '✅ LLM + PRISCILA', '❌ Só após quest.', '✅ 11 flags + Score', '❌ Scoring pós'] },
+                { etapa: 'Introducer vinculado', vals: ['✅ Automático', '❌', '❌', '❌', '❌', '✅ Se URL params', '❌'] },
+                { etapa: 'Lead criado por', vals: ['Sistema', 'Sistema', 'Comercial', 'Comercial', 'Sistema', 'Sistema', 'N/A (direto)'] },
+                { etapa: 'Proposta', vals: ['Personalizada', '3 tipos', '3 tipos', '3 tipos', 'Personalizada', 'PIX', 'N/A'] },
+                { etapa: 'Biometria CAF', vals: ['✅ PJ', '✅ PJ', '✅ PJ', '✅ PJ', '✅ PJ', '✅ PJ', '❌ Upload direto'] },
+                { etapa: 'Upload docs plataforma', vals: ['✅', '✅', '✅', '✅', '✅', '✅', '✅ 4 docs obrigatórios'] },
+                { etapa: 'Risk Scoring', vals: ['Legado', 'Legado', 'Legado', 'Legado', 'Legado', '✅ v4.0 Motor', '✅ v4.0 Motor'] },
+                { etapa: 'Compliance', vals: ['✅', '✅', '✅', '✅', '✅', '✅ PIX v4', '✅ PF (33 perguntas)'] },
+                { etapa: 'Contrato', vals: ['✅ IA', '✅ IA', '✅ IA', '✅ IA', '✅ IA', '✅ IA + RR v4', 'N/A (subseller)'] },
               ].map((row, i) => (
                 <tr key={i} className="border-b border-slate-100">
                   <td className="py-2 font-semibold text-[#002443]">{row.etapa}</td>

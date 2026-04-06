@@ -26,10 +26,14 @@ export default function ComplianceV4Section() {
           <code className="bg-white/10 px-1 rounded">?model=ComplianceXxxV4</code>. As perguntas vêm da entidade Question vinculada ao
           QuestionnaireTemplate correspondente, agrupadas semanticamente em steps de 4 perguntas pelo DynamicQuestionnaire.
         </p>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-2">
           <div className="bg-white/15 rounded-xl p-2.5 text-center">
             <p className="text-xl font-extrabold">10</p>
-            <p className="text-[10px] text-white/70">Templates v4</p>
+            <p className="text-[10px] text-white/70">Templates v4 (PJ)</p>
+          </div>
+          <div className="bg-white/15 rounded-xl p-2.5 text-center">
+            <p className="text-xl font-extrabold">+2</p>
+            <p className="text-[10px] text-white/70">Templates Subseller (PF+PJ)</p>
           </div>
           <div className="bg-white/15 rounded-xl p-2.5 text-center">
             <p className="text-xl font-extrabold">1:1</p>
@@ -40,12 +44,12 @@ export default function ComplianceV4Section() {
             <p className="text-[10px] text-white/70">Prefill via useLeadPrefill</p>
           </div>
           <div className="bg-white/15 rounded-xl p-2.5 text-center">
-            <p className="text-xl font-extrabold">CNPJ</p>
-            <p className="text-[10px] text-white/70">Autocomplete + CEP</p>
+            <p className="text-xl font-extrabold">PF</p>
+            <p className="text-[10px] text-white/70">Upload direto (sem CAF)</p>
           </div>
           <div className="bg-white/15 rounded-xl p-2.5 text-center">
-            <p className="text-xl font-extrabold">CAF</p>
-            <p className="text-[10px] text-white/70">Redirect biometria</p>
+            <p className="text-xl font-extrabold">PJ</p>
+            <p className="text-[10px] text-white/70">CAF (Liveness+Facematch)</p>
           </div>
         </div>
       </div>
@@ -91,7 +95,10 @@ export default function ComplianceV4Section() {
             'ComplianceResume: retomar sessão de onde parou',
             'Lógica condicional: conditionalLogic (dependsOn, operator, value) em cada Question',
             'riskWeight e riskValues por pergunta (para scoring SENTINEL)',
-            'Redirect para CAF (biometria) ao finalizar questionário',
+            'Redirect para CAF (biometria) ao finalizar questionário PJ — PF vai direto para upload de documentos',
+            'MerchantTypeSelector: seleção PF/PJ no fluxo de subseller antes do questionário',
+            'Detecção automática de tipo PF: cria Merchant com dateOfBirth, nationality, motherName',
+            'Upload de documentos na plataforma: DocumentUploadFull reutiliza IDs do Merchant/Case já criados (sem duplicação)',
             'Bloqueio de segurança: CNPJ com situação cadastral ≠ Ativa é bloqueado',
             'StepNavigation visual: indicadores de progresso com ícones semânticos',
             'ComplianceFieldAlerts: alertas visuais para respostas de risco',
@@ -105,10 +112,10 @@ export default function ComplianceV4Section() {
         </div>
       </div>
 
-      {/* Fluxo */}
+      {/* Fluxo PJ (Pessoa Jurídica) */}
       <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
         <h4 className="text-xs font-bold text-blue-800 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-          <Shield className="w-3.5 h-3.5" />Fluxo: Lead v5 → Compliance v4 → Documentos → Biometria
+          <Shield className="w-3.5 h-3.5" />Fluxo PJ: Lead v5 → Compliance v4 → Documentos → Biometria CAF
         </h4>
         <div className="space-y-2">
           {[
@@ -130,6 +137,80 @@ export default function ComplianceV4Section() {
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Fluxo PF (Pessoa Física) — Subseller PF */}
+      <div className="bg-pink-50 rounded-xl p-4 border border-pink-100">
+        <h4 className="text-xs font-bold text-pink-800 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+          <Shield className="w-3.5 h-3.5" />Fluxo PF (Subseller Pessoa Física): Seleção Tipo → Questionário 33 perguntas → Upload Documentos na Plataforma (sem CAF)
+        </h4>
+        <p className="text-[10px] text-pink-700/60 mb-3">
+          A Pessoa Física (PF) segue um fluxo diferente da PJ: não há redirecionamento para biometria CAF. Os documentos são enviados diretamente na plataforma via upload. O Merchant é criado com type="PF" e campos exclusivos (data de nascimento, nacionalidade, nome da mãe). O template usado é <code className="bg-pink-100 px-1 rounded">subseller_pf</code> com 33 perguntas obrigatórias.
+        </p>
+        <div className="space-y-2">
+          {[
+            { step: '1', text: 'Subseller PF acessa SubsellerQuestionnaire?ref=xxx (link gerado pelo merchant/admin)', actor: 'Subseller PF' },
+            { step: '2', text: 'MerchantTypeSelector exibe 2 cards: "Pessoa Física (CPF)" vs "Pessoa Jurídica (CNPJ)". Subseller seleciona PF.', actor: 'Subseller PF' },
+            { step: '3', text: 'Sistema carrega template subseller_pf (merchantType=PF) com 33 perguntas agrupadas em steps de 4', actor: 'Sistema' },
+            { step: '4', text: 'DynamicQuestionnaire renderiza com branding white-label do merchant (se configurado no OnboardingLink)', actor: 'Sistema' },
+            { step: '5', text: 'Subseller PF preenche dados pessoais: CPF, Nome Completo, Data de Nascimento, Nacionalidade, Nome da Mãe, E-mail, Telefone, Endereço completo (CEP autocomplete)', actor: 'Subseller PF' },
+            { step: '6', text: 'Preenche perguntas de compliance PF: atividade, renda, PEP, sanções, fonte de renda, etc. (Complemento é campo opcional)', actor: 'Subseller PF' },
+            { step: '7', text: 'Ao finalizar questionário → DynamicQuestionnaire.createMerchantAndCase() cria Merchant (type=PF, dateOfBirth, nationality, motherName) + OnboardingCase + QuestionnaireResponses. IDs salvos em localStorage.', actor: 'Sistema' },
+            { step: '8', text: 'Redirect para DocumentUploadFull (SEM redirect para CAF — fluxo PF não usa biometria externa)', actor: 'Sistema' },
+            { step: '9', text: 'DynamicDocumentUploadPage detecta IDs do Merchant/Case já criados via localStorage (created_merchant_id, created_onboarding_case_id). NÃO duplica registros.', actor: 'Sistema' },
+            { step: '10', text: 'Subseller PF faz upload dos 4 documentos obrigatórios: Selfie com Documento, RG ou CNH (Frente), RG ou CNH (Verso), Comprovante de Endereço. Formatos: PDF/JPG/PNG, max 10MB.', actor: 'Subseller PF' },
+            { step: '11', text: 'Ao clicar "Concluir Submissão" → DocumentUpload[] criados vinculados ao OnboardingCase existente. localStorage limpo.', actor: 'Sistema' },
+            { step: '12', text: 'Redirect para OnboardingCompletion?caseId=xxx. Caso aparece em QuestionariosRecebidos → aba Subsellers → sub-aba PF com badge "PF".', actor: 'Sistema' },
+            { step: '13', text: 'Admin visualiza caso na aba Subsellers (SubsellerCasesTab). Clica no ícone de olho para abrir SubsellerPFResponsesModal com respostas categorizadas. Aba "Documentos" do caso mostra todos os uploads com visualização e download ZIP.', actor: 'Admin' },
+          ].map((s, i) => (
+            <div key={i} className="flex items-start gap-2 p-2 bg-white rounded-lg">
+              <Badge className="bg-pink-200 text-pink-800 border-0 text-[10px] shrink-0 w-6 justify-center">{s.step}</Badge>
+              <div className="flex-1">
+                <p className="text-[11px] text-[#002443]/80">{s.text}</p>
+                <Badge className="text-[8px] bg-slate-100 text-slate-500 border-0 mt-0.5">{s.actor}</Badge>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Diferenças PF vs PJ */}
+      <div className="bg-amber-50 rounded-xl p-4 border border-amber-100">
+        <h4 className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-2">Comparativo: Fluxo PF vs PJ (Subseller Compliance)</h4>
+        <div className="overflow-x-auto">
+          <table className="w-full text-[10px]">
+            <thead>
+              <tr className="border-b border-amber-200">
+                <th className="text-left py-1.5 text-amber-900 font-bold">Aspecto</th>
+                <th className="text-center py-1.5 text-pink-700 font-bold">Pessoa Física (PF)</th>
+                <th className="text-center py-1.5 text-blue-700 font-bold">Pessoa Jurídica (PJ)</th>
+              </tr>
+            </thead>
+            <tbody className="text-[#002443]/70">
+              {[
+                ['Template', 'subseller_pf (33 perguntas)', 'subseller_v2 (template PJ dinâmico)'],
+                ['Documento identificador', 'CPF', 'CNPJ'],
+                ['Campos exclusivos', 'Data nascimento, Nacionalidade, Nome da mãe', 'Razão Social, Nome Fantasia, CNAE'],
+                ['Seleção de tipo', 'MerchantTypeSelector → card "Pessoa Física"', 'MerchantTypeSelector → card "Pessoa Jurídica"'],
+                ['Biometria CAF', '❌ Não — upload direto na plataforma', '✅ Sim — redirect para CAF (Liveness + Facematch)'],
+                ['Upload de documentos', '✅ Na plataforma (DocumentUploadFull)', '✅ Na plataforma (DocumentUploadFull) + CAF'],
+                ['Documentos obrigatórios', 'Selfie, RG/CNH Frente, RG/CNH Verso, Comprovante Endereço', 'Contrato Social, Comprovante CNPJ, etc.'],
+                ['Merchant.type', 'PF', 'PJ'],
+                ['Criação de Merchant', 'createMerchantAndCase com dateOfBirth, nationality, motherName', 'createMerchantAndCase com companyName, CNAE'],
+                ['Duplicação evitada', '✅ IDs salvos em localStorage (created_merchant_id, created_onboarding_case_id)', '✅ Mesma lógica'],
+                ['Admin: visualização respostas', 'SubsellerPFResponsesModal (6 categorias)', 'ComplianceResponsesPanel (padrão)'],
+                ['Admin: aba na tabela', 'Sub-aba "PF" em SubsellerCasesTab', 'Sub-aba "PJ" em SubsellerCasesTab'],
+                ['Badge visual', '🟣 PF (roxo)', '🔵 PJ (azul)'],
+              ].map((row, i) => (
+                <tr key={i} className="border-b border-amber-100">
+                  <td className="py-1.5 font-semibold text-[#002443]">{row[0]}</td>
+                  <td className="text-center py-1.5">{row[1]}</td>
+                  <td className="text-center py-1.5">{row[2]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 

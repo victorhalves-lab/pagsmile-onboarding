@@ -63,10 +63,10 @@ export default function HowItWorks() {
           <Badge className="bg-blue-50 text-blue-700 border-0">55+ Páginas</Badge>
           <Badge className="bg-purple-50 text-purple-700 border-0">27+ Entidades</Badge>
           <Badge className="bg-orange-50 text-orange-700 border-0">10 Fluxogramas Microscópicos</Badge>
-          <Badge className="bg-pink-50 text-pink-700 border-0">6 Jornadas End-to-End</Badge>
+          <Badge className="bg-pink-50 text-pink-700 border-0">7 Jornadas End-to-End</Badge>
           <Badge className="bg-red-50 text-red-700 border-0">3 IAs (SENTINEL, PRISCILA, Lead Qualifier) + Motor v4</Badge>
           <Badge className="bg-cyan-50 text-cyan-700 border-0">21 Abas de Analytics</Badge>
-          <Badge className="bg-amber-50 text-amber-700 border-0">6 Templates Lead + 10 Templates Compliance v4</Badge>
+          <Badge className="bg-amber-50 text-amber-700 border-0">6 Templates Lead + 10 Templates Compliance v4 + 2 Subseller (PF/PJ)</Badge>
           <Badge className="bg-emerald-50 text-emerald-700 border-0">35+ Backend Functions</Badge>
           <Badge className="bg-violet-50 text-violet-700 border-0">3 Tipos de Proposta + Versionamento</Badge>
           <Badge className="bg-rose-50 text-rose-700 border-0">13 Segmentos + 27 Flags Silenciosas</Badge>
@@ -121,7 +121,7 @@ export default function HowItWorks() {
       {/* ═══════════════════════════════════════════════════════ */}
       {/* 2. JORNADAS END-TO-END POR TIPO DE ENTRADA */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="jornadas-e2e" title="2. Jornadas End-to-End — 6 Caminhos do Primeiro Contato ao Contrato" icon={GitBranch} badge="6 Jornadas Completas" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="jornadas-e2e" title="2. Jornadas End-to-End — 7 Caminhos do Primeiro Contato ao Contrato" icon={GitBranch} badge="7 Jornadas Completas" expandedSections={expandedSections} toggleSection={toggleSection}>
         <EndToEndFlowsSection />
       </Section>
 
@@ -200,7 +200,7 @@ export default function HowItWorks() {
       {/* ═══════════════════════════════════════════════════════ */}
       {/* 6. COMPLIANCE v4 — 10 TEMPLATES POR SEGMENTO */}
       {/* ═══════════════════════════════════════════════════════ */}
-      <Section id="compliance-v4" title="6. Compliance v4 — 10 Templates por Segmento (Mapeamento Lead v5)" icon={Shield} badge="10 Templates v4" expandedSections={expandedSections} toggleSection={toggleSection}>
+      <Section id="compliance-v4" title="6. Compliance v4 — 10 Templates PJ + 2 Subseller (PF/PJ)" icon={Shield} badge="12 Templates (10 v4 + subseller_pf + subseller_v2)" expandedSections={expandedSections} toggleSection={toggleSection}>
         <ComplianceV4Section />
       </Section>
 
@@ -497,7 +497,7 @@ export default function HowItWorks() {
           Documentação Completa e Microscópica — Pagsmile v8.0 • {new Date().toLocaleDateString()}
         </p>
         <p className="text-xs text-white/40 mt-1">
-          20 Seções • 55+ Páginas • 27+ Entidades • 10 Fluxogramas • 6 Jornadas E2E • 3 IAs + Motor v4 • 21 Abas Analytics • 6 Templates Lead (incl. Pagsmile v5 + PIX v4) • 10 Templates Compliance v4 + 3 Legados • 35+ Backend Functions • 27 Flags Silenciosas (16 Lead + 11 PIX) • Risk Scoring v4: 60 Variáveis + 8 Subfaixas + 10 Bloqueios
+          20 Seções • 55+ Páginas • 27+ Entidades • 10 Fluxogramas • 7 Jornadas E2E • 3 IAs + Motor v4 • 21 Abas Analytics • 6 Templates Lead (incl. Pagsmile v5 + PIX v4) • 10 Templates Compliance v4 + 2 Subseller (PF/PJ) + 3 Legados • 35+ Backend Functions • 27 Flags Silenciosas (16 Lead + 11 PIX) • Risk Scoring v4: 60 Variáveis + 8 Subfaixas + 10 Bloqueios • Subseller PF: Upload direto sem CAF
         </p>
       </div>
     </div>
