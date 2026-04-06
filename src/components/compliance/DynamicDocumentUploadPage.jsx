@@ -152,56 +152,67 @@ export default function DynamicDocumentUploadPage({
       const formData = JSON.parse(localStorage.getItem(formDataStorageKey) || '{}');
       const linkCode = localStorage.getItem('onboarding_link_code');
 
-      const findValue = (keywords) => {
-        for (const q of questions) {
-          const key = q.id;
-          const text = q.text?.toLowerCase() || '';
-          if (keywords.some(kw => text.includes(kw)) && formData[key]) {
-            return formData[key];
+      // Check if Merchant + OnboardingCase were already created by DynamicQuestionnaire
+      const existingCaseId = localStorage.getItem('created_onboarding_case_id');
+      const existingMerchantId = localStorage.getItem('created_merchant_id');
+
+      let onboardingCaseId;
+
+      if (existingCaseId) {
+        // Reuse existing case — no need to create Merchant/Case/Responses again
+        onboardingCaseId = existingCaseId;
+      } else {
+        // Fallback: create everything (for older flows without pre-creation)
+        const findValue = (keywords) => {
+          for (const q of questions) {
+            const key = q.id;
+            const text = q.text?.toLowerCase() || '';
+            if (keywords.some(kw => text.includes(kw)) && formData[key]) {
+              return formData[key];
+            }
           }
+          return '';
+        };
+
+        const merchantData = {
+          type: 'PJ',
+          cpfCnpj: findValue(['cnpj']) || '',
+          fullName: findValue(['razão social', 'razao social']) || '',
+          companyName: findValue(['fantasia', 'nome fantasia']) || '',
+          email: findValue(['e-mail', 'email']) || '',
+          onboardingStatus: 'Pendente',
+          paymentServices: flowType === 'pix' ? ['Pix'] : ['Pix', 'Cartão']
+        };
+
+        const merchant = await base44.entities.Merchant.create(merchantData);
+
+        const onboardingCase = await base44.entities.OnboardingCase.create({
+          merchantId: merchant.id,
+          questionnaireTemplateId: template?.id,
+          status: 'Pendente',
+          onboardingLinkCode: linkCode,
+          priority: 'medium'
+        });
+        onboardingCaseId = onboardingCase.id;
+
+        // Criar respostas do questionário
+        const responsesToCreate = questions
+          .filter(q => formData[q.id] !== undefined && formData[q.id] !== '')
+          .map(q => ({
+            onboardingCaseId: onboardingCaseId,
+            questionId: q.id,
+            questionText: q.text,
+            questionType: q.type,
+            valueText: typeof formData[q.id] === 'string' ? formData[q.id] : 
+                       Array.isArray(formData[q.id]) ? formData[q.id].join(', ') : undefined,
+            valueBoolean: typeof formData[q.id] === 'boolean' ? formData[q.id] : undefined,
+            valueNumber: typeof formData[q.id] === 'number' ? formData[q.id] : undefined,
+            valueArray: Array.isArray(formData[q.id]) ? formData[q.id] : undefined
+          }));
+
+        if (responsesToCreate.length > 0) {
+          await base44.entities.QuestionnaireResponse.bulkCreate(responsesToCreate);
         }
-        return '';
-      };
-
-      // Criar Merchant
-      const merchantData = {
-        type: 'PJ',
-        cpfCnpj: findValue(['cnpj']) || '',
-        fullName: findValue(['razão social', 'razao social']) || '',
-        companyName: findValue(['fantasia', 'nome fantasia']) || '',
-        email: findValue(['e-mail', 'email']) || '',
-        onboardingStatus: 'Pendente',
-        paymentServices: flowType === 'pix' ? ['Pix'] : ['Pix', 'Cartão']
-      };
-
-      const merchant = await base44.entities.Merchant.create(merchantData);
-
-      // Criar OnboardingCase
-      const onboardingCase = await base44.entities.OnboardingCase.create({
-        merchantId: merchant.id,
-        questionnaireTemplateId: template?.id,
-        status: 'Pendente',
-        onboardingLinkCode: linkCode,
-        priority: 'medium'
-      });
-
-      // Criar respostas do questionário
-      const responsesToCreate = questions
-        .filter(q => formData[q.id] !== undefined && formData[q.id] !== '')
-        .map(q => ({
-          onboardingCaseId: onboardingCase.id,
-          questionId: q.id,
-          questionText: q.text,
-          questionType: q.type,
-          valueText: typeof formData[q.id] === 'string' ? formData[q.id] : 
-                     Array.isArray(formData[q.id]) ? formData[q.id].join(', ') : undefined,
-          valueBoolean: typeof formData[q.id] === 'boolean' ? formData[q.id] : undefined,
-          valueNumber: typeof formData[q.id] === 'number' ? formData[q.id] : undefined,
-          valueArray: Array.isArray(formData[q.id]) ? formData[q.id] : undefined
-        }));
-
-      if (responsesToCreate.length > 0) {
-        await base44.entities.QuestionnaireResponse.bulkCreate(responsesToCreate);
       }
 
       // Criar uploads de documentos (incluindo selfie)
@@ -212,7 +223,7 @@ export default function DynamicDocumentUploadPage({
       const documentUploads = Object.entries(documents).map(([docId, docData]) => {
         const docDef = allTemplateDocs.find(d => d._docKey === docId);
         return {
-          onboardingCaseId: onboardingCase.id,
+          onboardingCaseId: onboardingCaseId,
           documentTypeId: docId,
           documentName: docDef?.label || docDef?.name || docId,
           fileUrl: docData.url,
@@ -233,6 +244,8 @@ export default function DynamicDocumentUploadPage({
       localStorage.removeItem(documentsStorageKey);
       localStorage.removeItem('current_template_id');
       localStorage.removeItem('current_compliance_model');
+      localStorage.removeItem('created_merchant_id');
+      localStorage.removeItem('created_onboarding_case_id');
 
       base44.analytics.track({
         eventName: 'compliance_stage_completed',
@@ -250,7 +263,7 @@ export default function DynamicDocumentUploadPage({
       await completeSession();
 
       // Ir direto para tela de conclusão
-      navigate(`/OnboardingCompletion?caseId=${onboardingCase.id}`);
+      navigate(`/OnboardingCompletion?caseId=${onboardingCaseId}`);
 
     } catch (error) {
       console.error('Erro ao submeter:', error);

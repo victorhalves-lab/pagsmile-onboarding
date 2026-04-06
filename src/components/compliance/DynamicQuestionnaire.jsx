@@ -853,6 +853,10 @@ export default function DynamicQuestionnaire({
       await base44.entities.QuestionnaireResponse.bulkCreate(responsesToCreate);
     }
 
+    // Persist IDs so the document upload page can reuse them
+    localStorage.setItem('created_merchant_id', merchant.id);
+    localStorage.setItem('created_onboarding_case_id', onboardingCase.id);
+
     return { merchant, onboardingCase };
   }, [questions, lead, template, linkCode]);
 
