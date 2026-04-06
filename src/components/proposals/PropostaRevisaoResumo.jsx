@@ -147,7 +147,7 @@ export default function PropostaRevisaoResumo({ proposta }) {
       {/* Tabela de Parcelas com Antecipação */}
       {rates.rav?.taxa && parseFloat(rates.rav.taxa) > 0 && rates.rav?.prazo !== 'FLUXO' && (
         <Section icon={TrendingUp} title="Tabela de Parcelas — CET com Antecipação">
-          <ParcelasTableDetalhada taxas={rates} taxaRAV={parseFloat(rates.rav.taxa) || 0} prazo={rates.rav.prazo || 'D+1'} taxaFinalOverrides={proposta.taxaFinalOverrides || {}} />
+          <ParcelasTableDetalhada taxas={rates} taxaRAV={parseFloat(rates.rav.taxa) || 0} prazo={rates.rav.prazo || 'D+1'} taxaFinalOverrides={proposta.taxaFinalOverrides || {}} hideCalculationColumns={proposta.hideCalculationColumns || false} />
         </Section>
       )}
 

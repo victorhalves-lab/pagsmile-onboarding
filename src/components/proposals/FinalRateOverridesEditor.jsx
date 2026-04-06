@@ -3,7 +3,7 @@ import { Pencil, X, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
-export default function FinalRateOverridesEditor({ overrides = {}, onChange }) {
+export default function FinalRateOverridesEditor({ overrides = {}, onChange, hideCalculationColumns = false, onToggleHideColumns }) {
   const [editingParcela, setEditingParcela] = useState(null);
   const [editValue, setEditValue] = useState('');
 
@@ -60,6 +60,22 @@ export default function FinalRateOverridesEditor({ overrides = {}, onChange }) {
             </div>
           ))}
         </div>
+      )}
+
+      {/* Opção de ocultar colunas de cálculo */}
+      {overrideKeys.length > 0 && onToggleHideColumns && (
+        <label className="flex items-center gap-2.5 bg-white/[0.03] border border-white/10 rounded-lg px-3 py-2.5 cursor-pointer hover:bg-white/[0.05] transition-colors">
+          <input
+            type="checkbox"
+            checked={hideCalculationColumns}
+            onChange={(e) => onToggleHideColumns(e.target.checked)}
+            className="w-4 h-4 rounded border-white/20 text-[#2bc196] focus:ring-[#2bc196] bg-white/5"
+          />
+          <div>
+            <span className="text-xs font-medium text-white">Ocultar cálculo na proposta</span>
+            <p className="text-[10px] text-white/30">Esconde as colunas Base e Antecipação, mostrando apenas a taxa final</p>
+          </div>
+        </label>
       )}
 
       {/* Add/Edit override */}

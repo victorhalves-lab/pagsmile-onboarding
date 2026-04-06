@@ -26,7 +26,7 @@ function getTaxasForBandeira(taxas, bandeira) {
   return {};
 }
 
-export default function ParcelasTableDetalhada({ taxas, taxaRAV = 0, prazo = 'D+1', showSimulator = false, taxaFinalOverrides = {} }) {
+export default function ParcelasTableDetalhada({ taxas, taxaRAV = 0, prazo = 'D+1', showSimulator = false, taxaFinalOverrides = {}, hideCalculationColumns = false }) {
   const [activeBandeira, setActiveBandeira] = useState('mastercard');
   const [simulatedPrazo, setSimulatedPrazo] = useState(prazo);
   
@@ -59,21 +59,25 @@ export default function ParcelasTableDetalhada({ taxas, taxaRAV = 0, prazo = 'D+
                 <thead>
                   <tr className="border-b-2 border-[#2bc196]/20">
                     <th className="text-left py-2 px-3 font-semibold text-[#002443]/70">Parcelas</th>
-                    <th className="text-right py-2 px-3 font-semibold text-[#002443]/70">Base</th>
-                    {taxaRAV > 0 && activePrazo !== 'FLUXO' && (
+                    {!hideCalculationColumns && (
+                      <th className="text-right py-2 px-3 font-semibold text-[#002443]/70">Base</th>
+                    )}
+                    {!hideCalculationColumns && taxaRAV > 0 && activePrazo !== 'FLUXO' && (
                       <th className="text-right py-2 px-3 font-semibold text-amber-600">
                         Antecipação{isSimulating ? ` (${simulatedPrazo})` : ''}
                       </th>
                     )}
-                    <th className="text-right py-2 px-3 font-semibold text-[#2bc196]">Final</th>
+                    <th className="text-right py-2 px-3 font-semibold text-[#2bc196]">Taxa</th>
                   </tr>
                 </thead>
                 <tbody>
                   {rows.map(r => (
                     <tr key={r.parcela} className="border-b border-[#002443]/5 hover:bg-[#2bc196]/5">
                       <td className="py-2 px-3 font-medium">{r.parcela}x</td>
-                      <td className="py-2 px-3 text-right">{r.taxaBase.toFixed(2)}%</td>
-                      {taxaRAV > 0 && activePrazo !== 'FLUXO' && (
+                      {!hideCalculationColumns && (
+                        <td className="py-2 px-3 text-right">{r.taxaBase.toFixed(2)}%</td>
+                      )}
+                      {!hideCalculationColumns && taxaRAV > 0 && activePrazo !== 'FLUXO' && (
                         <td className="py-2 px-3 text-right text-amber-600">
                           {r.taxaAntecipacao > 0 ? `+${r.taxaAntecipacao.toFixed(2)}%` : '-'}
                         </td>

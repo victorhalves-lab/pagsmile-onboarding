@@ -48,6 +48,7 @@ export default function CriarProposta() {
     taxaAntecipacao: '',
     dataValidade: new Date(new Date().setDate(new Date().getDate() + 15)),
     taxaFinalOverrides: {},
+    hideCalculationColumns: false,
   });
 
   const [rates, setRates] = useState({
@@ -125,6 +126,7 @@ export default function CriarProposta() {
         taxaAntecipacao: existingProposal.rates?.rav?.taxa || '',
         dataValidade: existingProposal.validUntil ? new Date(existingProposal.validUntil) : new Date(),
         taxaFinalOverrides: existingProposal.taxaFinalOverrides || {},
+        hideCalculationColumns: existingProposal.hideCalculationColumns || false,
       });
       const r = existingProposal.rates || {};
       setRates({
@@ -226,6 +228,7 @@ export default function CriarProposta() {
         percentualAntecipacao: parseTaxa(form.percentualAntecipacao),
       },
       taxaFinalOverrides: form.taxaFinalOverrides || {},
+      hideCalculationColumns: form.hideCalculationColumns || false,
       validUntil: form.dataValidade.toISOString(),
       tokenPublico: existingProposal?.tokenPublico || gerarToken(),
       responsavelId: criadoPorId || criadoPor, responsavelNome: criadoPorNome,
@@ -308,7 +311,12 @@ export default function CriarProposta() {
           />
           <CardTaxasCartao rates={rates} onUpdateRates={updateRates} selectedBrand={selectedBrand} setSelectedBrand={setSelectedBrand} partner={selectedPartner} clientMcc={form.clienteMcc} />
           <CardAntecipacao form={form} onUpdate={updateForm} />
-          <FinalRateOverridesEditor overrides={form.taxaFinalOverrides || {}} onChange={(v) => updateForm('taxaFinalOverrides', v)} />
+          <FinalRateOverridesEditor
+            overrides={form.taxaFinalOverrides || {}}
+            onChange={(v) => updateForm('taxaFinalOverrides', v)}
+            hideCalculationColumns={form.hideCalculationColumns || false}
+            onToggleHideColumns={(v) => updateForm('hideCalculationColumns', v)}
+          />
           <CardOutrasTaxas rates={rates} onUpdateRates={updateRates} partner={selectedPartner} />
         </div>
 

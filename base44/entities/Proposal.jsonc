@@ -263,6 +263,11 @@
       "type": "object",
       "description": "Sobrescritas manuais da taxa final por parcela. Chaves s\u00e3o n\u00fameros de parcela (1-21), valores s\u00e3o a taxa final em %. Ex: {\"1\": 1.99, \"5\": 2.50}"
     },
+    "hideCalculationColumns": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se true, oculta as colunas de c\u00e1lculo (Base, Antecipa\u00e7\u00e3o) na tabela de parcelas da proposta p\u00fablica, mostrando apenas Parcela e Taxa Final"
+    },
     "clienteNome": {
       "type": "string",
       "description": "Nome da empresa do cliente"
