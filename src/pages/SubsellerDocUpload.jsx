@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Loader2, AlertTriangle, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { Loader2, AlertTriangle, ShieldCheck, CheckCircle2, Building2 } from 'lucide-react';
 import DynamicDocumentUploader from '@/components/compliance/DynamicDocumentUploader';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 
 export default function SubsellerDocUpload() {
@@ -12,7 +13,7 @@ export default function SubsellerDocUpload() {
 
   const [uploading, setUploading] = useState(false);
   const [completed, setCompleted] = useState(false);
-  const [documentsData, setDocumentsData] = useState({});
+  const [documents, setDocuments] = useState({});
 
   // Fetch case
   const { data: onboardingCase, isLoading: caseLoading } = useQuery({
@@ -44,25 +45,25 @@ export default function SubsellerDocUpload() {
     enabled: !!onboardingCase?.questionnaireTemplateId,
   });
 
-  // Fetch existing documents
+  // Fetch existing documents already uploaded for this case
   const { data: existingDocs = [] } = useQuery({
     queryKey: ['doc-upload-existing', caseId],
     queryFn: () => base44.entities.DocumentUpload.filter({ onboardingCaseId: caseId }),
     enabled: !!caseId,
   });
 
-  // Fetch questionnaire responses to apply conditional logic
+  // Fetch questionnaire responses — needed to resolve conditional document logic (e.g. segment)
   const { data: responses = [] } = useQuery({
     queryKey: ['doc-upload-responses', caseId],
     queryFn: () => base44.entities.QuestionnaireResponse.filter({ onboardingCaseId: caseId }),
     enabled: !!caseId,
   });
 
-  // Build formData from responses to drive conditional logic in document uploader
+  // Build formData from responses — the DynamicDocumentUploader uses this to filter docs by segment
   const formData = useMemo(() => {
     const data = {};
     responses.forEach(r => {
-      const val = r.valueText || r.valueNumber || r.valueBoolean || r.valueArray;
+      const val = r.valueText ?? r.valueNumber ?? r.valueBoolean ?? (r.valueArray?.length > 0 ? r.valueArray : null);
       if (val !== undefined && val !== null) {
         data[r.questionId] = val;
       }
@@ -70,63 +71,74 @@ export default function SubsellerDocUpload() {
     return data;
   }, [responses]);
 
-  // Restore existing docs into documentsData
+  // Detect segment from responses for display
+  const segmentResponse = useMemo(() => {
+    return responses.find(r => 
+      r.questionText?.toLowerCase().includes('segmento') && r.valueText
+    );
+  }, [responses]);
+
+  // Restore existing docs into local state
   useEffect(() => {
     if (existingDocs.length > 0) {
       const restored = {};
       existingDocs.forEach(d => {
         restored[d.documentTypeId] = {
-          fileUrl: d.fileUrl,
-          fileName: d.fileName,
-          fileSize: d.fileSize,
-          fileType: d.fileType,
-          uploaded: true,
+          url: d.fileUrl,
+          name: d.fileName,
+          size: d.fileSize,
+          type: d.fileType,
+          uploadedAt: d.uploadDate,
         };
       });
-      setDocumentsData(restored);
+      setDocuments(prev => {
+        // Only restore if we don't already have local uploads
+        if (Object.keys(prev).length === 0) return restored;
+        return prev;
+      });
     }
   }, [existingDocs]);
 
-  const requiredDocuments = template?.requiredDocuments || [];
-
   const handleSubmit = async () => {
-    // Check all required docs are uploaded
-    const applicableDocs = requiredDocuments.filter(doc => {
-      if (!doc.conditionalLogic) return doc.required;
-      const depVal = formData[doc.conditionalLogic.dependsOn];
-      if (doc.conditionalLogic.operator === 'equals') {
-        return String(depVal) === String(doc.conditionalLogic.value);
-      }
-      return doc.required;
+    // Determine which docs are applicable based on conditional logic
+    const allDocs = template?.requiredDocuments || [];
+    const applicableDocs = allDocs.filter(doc => {
+      if (!doc.conditionalLogic) return true;
+      const { dependsOn, value, operator } = doc.conditionalLogic;
+      if (!dependsOn) return true;
+      const fieldValue = formData[dependsOn];
+      if (operator === 'equals') return String(fieldValue) === String(value);
+      return true;
     });
 
     const requiredMissing = applicableDocs.filter(doc => {
       if (!doc.required) return false;
-      const uploaded = documentsData[doc.documentTypeId];
-      return !uploaded || !uploaded.fileUrl;
+      const docKey = doc.documentTypeId || doc.id;
+      const uploaded = documents[docKey];
+      return !uploaded || !uploaded.url;
     });
 
     if (requiredMissing.length > 0) {
-      toast.error(`Faltam ${requiredMissing.length} documento(s) obrigatório(s).`);
+      toast.error(`Faltam ${requiredMissing.length} documento(s) obrigatório(s): ${requiredMissing.map(d => d.label).join(', ')}`);
       return;
     }
 
     setUploading(true);
 
-    // Create DocumentUpload records for new uploads (skip already existing)
+    // Create DocumentUpload records (skip already persisted)
     const existingDocTypeIds = new Set(existingDocs.map(d => d.documentTypeId));
-    const newDocs = Object.entries(documentsData)
-      .filter(([typeId, data]) => data.fileUrl && !existingDocTypeIds.has(typeId))
+    const newDocs = Object.entries(documents)
+      .filter(([typeId, data]) => data.url && !existingDocTypeIds.has(typeId))
       .map(([typeId, data]) => {
-        const docDef = requiredDocuments.find(d => d.documentTypeId === typeId);
+        const docDef = allDocs.find(d => (d.documentTypeId || d.id) === typeId);
         return {
           onboardingCaseId: caseId,
           documentTypeId: typeId,
           documentName: docDef?.label || typeId,
-          fileUrl: data.fileUrl,
-          fileName: data.fileName || '',
-          fileSize: data.fileSize || 0,
-          fileType: data.fileType || '',
+          fileUrl: data.url,
+          fileName: data.name || '',
+          fileSize: data.size || 0,
+          fileType: data.type || '',
           uploadDate: new Date().toISOString(),
           validationStatus: 'Pendente',
         };
@@ -136,13 +148,14 @@ export default function SubsellerDocUpload() {
       await base44.entities.DocumentUpload.bulkCreate(newDocs);
     }
 
-    // Update case
     await base44.entities.OnboardingCase.update(caseId, { docCompleted: true });
 
     setUploading(false);
     setCompleted(true);
     toast.success('Documentos enviados com sucesso!');
   };
+
+  // --- Render states ---
 
   if (!caseId) {
     return (
@@ -170,7 +183,7 @@ export default function SubsellerDocUpload() {
         <div className="text-center">
           <AlertTriangle className="w-12 h-12 mx-auto text-red-500 mb-4" />
           <h2 className="text-xl font-bold text-[#002443] mb-2">Caso não encontrado</h2>
-          <p className="text-[#002443]/70">O caso de onboarding informado não existe.</p>
+          <p className="text-[#002443]/70">O caso de onboarding informado não existe ou foi removido.</p>
         </div>
       </div>
     );
@@ -206,27 +219,39 @@ export default function SubsellerDocUpload() {
             className="h-7 mx-auto mb-4"
           />
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-100 text-indigo-700 text-xs font-bold mb-3">
-            ENVIO DE DOCUMENTOS
+            ENVIO DE DOCUMENTOS — SUBSELLER
           </div>
           <h1 className="text-xl md:text-2xl font-bold text-[#002443]">
-            Upload de Documentos — Compliance
+            Upload de Documentos
           </h1>
-          <p className="text-sm text-[#002443]/60 mt-2 max-w-lg mx-auto">
-            Empresa: <strong>{merchant?.fullName || merchant?.companyName || 'Carregando...'}</strong>
-          </p>
-          {merchant?.cpfCnpj && (
-            <p className="text-xs text-[#002443]/40 mt-1">CNPJ/CPF: {merchant.cpfCnpj}</p>
-          )}
+
+          {/* Client info card */}
+          <div className="mt-4 inline-flex flex-col items-center gap-2 bg-white rounded-xl px-6 py-4 shadow-sm border border-[#002443]/5">
+            <div className="flex items-center gap-2">
+              <Building2 className="w-4 h-4 text-indigo-600" />
+              <span className="font-semibold text-[#002443]">
+                {merchant?.fullName || merchant?.companyName || 'Carregando...'}
+              </span>
+            </div>
+            {merchant?.cpfCnpj && (
+              <span className="text-xs text-[#002443]/50">CNPJ/CPF: {merchant.cpfCnpj}</span>
+            )}
+            {segmentResponse && (
+              <Badge className="bg-indigo-100 text-indigo-700 border-0 text-xs">
+                Segmento: {segmentResponse.valueText}
+              </Badge>
+            )}
+          </div>
         </div>
 
         {/* Document Uploader */}
         {template ? (
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#002443]/5">
             <DynamicDocumentUploader
-              requiredDocuments={requiredDocuments}
+              template={template}
+              documents={documents}
+              setDocuments={setDocuments}
               formData={formData}
-              documentsData={documentsData}
-              setDocumentsData={setDocumentsData}
             />
 
             <div className="mt-8 pt-6 border-t border-[#002443]/5 flex justify-end">
