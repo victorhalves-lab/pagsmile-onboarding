@@ -312,15 +312,13 @@ export default function CriarProposta() {
             leadBusinessType={form.businessSubCategory}
             leadTpv={lead?.tpvMensal}
           />
-          <CardTaxasCartao rates={rates} onUpdateRates={updateRates} selectedBrand={selectedBrand} setSelectedBrand={setSelectedBrand} partner={selectedPartner} clientMcc={form.clienteMcc} />
+          <CardTaxasCartao rates={rates} onUpdateRates={updateRates} selectedBrand={selectedBrand} setSelectedBrand={setSelectedBrand} partner={selectedPartner} clientMcc={form.clienteMcc} hideRange13a21={form.hideRange13a21 || false} onToggleHideRange13a21={(v) => updateForm('hideRange13a21', v)} />
           <CardAntecipacao form={form} onUpdate={updateForm} />
           <FinalRateOverridesEditor
             overrides={form.taxaFinalOverrides || {}}
             onChange={(v) => updateForm('taxaFinalOverrides', v)}
             hideCalculationColumns={form.hideCalculationColumns || false}
             onToggleHideColumns={(v) => updateForm('hideCalculationColumns', v)}
-            hideRange13a21={form.hideRange13a21 || false}
-            onToggleHideRange13a21={(v) => updateForm('hideRange13a21', v)}
           />
           <CardOutrasTaxas rates={rates} onUpdateRates={updateRates} partner={selectedPartner} />
         </div>

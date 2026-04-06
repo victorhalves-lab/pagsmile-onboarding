@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
 import { Copy, CreditCard, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import TaxaInput from './TaxaInput';
@@ -32,7 +33,7 @@ function BrandLogo({ brand, isActive }) {
   );
 }
 
-export default function CardTaxasCartao({ rates, onUpdateRates, selectedBrand, setSelectedBrand, partner, clientMcc, readOnly = false }) {
+export default function CardTaxasCartao({ rates, onUpdateRates, selectedBrand, setSelectedBrand, partner, clientMcc, readOnly = false, hideRange13a21 = false, onToggleHideRange13a21 }) {
   const [syncAll, setSyncAll] = useState(false);
   const taxas = rates.cartao || {};
 
@@ -77,9 +78,23 @@ export default function CardTaxasCartao({ rates, onUpdateRates, selectedBrand, s
         ))}
       </div>
 
+      {/* Toggle 13x-21x */}
+      {onToggleHideRange13a21 && !readOnly && (
+        <div className="flex items-center justify-between bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3">
+          <div>
+            <p className="text-xs font-medium text-white">Oferecer 13x a 21x?</p>
+            <p className="text-[10px] text-white/30">Ative para incluir a faixa de 13 a 21 parcelas</p>
+          </div>
+          <Switch
+            checked={!hideRange13a21}
+            onCheckedChange={(checked) => onToggleHideRange13a21(!checked)}
+          />
+        </div>
+      )}
+
       {/* Rate Inputs */}
-      <div className="grid grid-cols-4 gap-3">
-        {FAIXAS_SPEC.map(f => {
+      <div className={`grid gap-3 ${hideRange13a21 ? 'grid-cols-3' : 'grid-cols-4'}`}>
+        {FAIXAS_SPEC.filter(f => !(hideRange13a21 && f.id === 'de13a21x')).map(f => {
           const limits = partner ? getMDRLimits(partner, clientMcc, selectedBrand, f.id) : null;
           const currentVal = parseFloat(String(taxas[selectedBrand]?.[f.id] || '0').replace(',', '.')) || 0;
           const hasViolation = limits && currentVal > 0 && (currentVal < limits.taxaMin || currentVal > limits.taxaMax);
