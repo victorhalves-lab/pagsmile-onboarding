@@ -12,7 +12,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow
 } from '@/components/ui/table';
 import {
-  Search, Building2, Users, Eye, Loader2, ChevronDown, ChevronRight, FileText, User
+  Search, Building2, Users, Eye, Loader2, ChevronDown, ChevronRight, FileText, User, Paperclip, Copy, Check
 } from 'lucide-react';
 import SubsellerPFResponsesModal from '@/components/subseller/SubsellerPFResponsesModal';
 
@@ -29,6 +29,14 @@ export default function SubsellerCasesTab() {
   const [expandedSeller, setExpandedSeller] = useState(null);
   const [subTab, setSubTab] = useState('pj');
   const [pfModalCase, setPfModalCase] = useState(null);
+  const [copiedCaseId, setCopiedCaseId] = useState(null);
+
+  const handleCopyDocLink = (caseId) => {
+    const url = `${window.location.origin}/SubsellerDocUpload?caseId=${caseId}`;
+    navigator.clipboard.writeText(url);
+    setCopiedCaseId(caseId);
+    setTimeout(() => setCopiedCaseId(null), 2000);
+  };
 
   const { data: cases = [], isLoading } = useQuery({
     queryKey: ['subseller-cases-tab'],
@@ -253,17 +261,33 @@ export default function SubsellerCasesTab() {
                                   {c.created_date ? new Date(c.created_date).toLocaleDateString('pt-BR') : '-'}
                                 </span>
                               </TableCell>
-                              <TableCell className="text-right flex items-center justify-end gap-1">
-                                {m?.type === 'PF' && (
-                                  <Button variant="ghost" size="sm" className="text-purple-600" onClick={() => setPfModalCase(c)}>
-                                    <Eye className="w-4 h-4 mr-1" /> Respostas
-                                  </Button>
-                                )}
-                                <Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`}>
-                                  <Button variant="ghost" size="sm" className="text-[var(--pagsmile-green)]">
-                                    <Eye className="w-4 h-4 mr-1" /> Analisar
-                                  </Button>
-                                </Link>
+                              <TableCell className="text-right">
+                                <div className="flex items-center justify-end gap-1">
+                                  {!c.docCompleted && (
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                                      onClick={() => handleCopyDocLink(c.id)}
+                                    >
+                                      {copiedCaseId === c.id ? (
+                                        <><Check className="w-4 h-4 mr-1" /> Copiado!</>
+                                      ) : (
+                                        <><Paperclip className="w-4 h-4 mr-1" /> Link Docs</>
+                                      )}
+                                    </Button>
+                                  )}
+                                  {m?.type === 'PF' && (
+                                    <Button variant="ghost" size="sm" className="text-purple-600" onClick={() => setPfModalCase(c)}>
+                                      <Eye className="w-4 h-4 mr-1" /> Respostas
+                                    </Button>
+                                  )}
+                                  <Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`}>
+                                    <Button variant="ghost" size="sm" className="text-[var(--pagsmile-green)]">
+                                      <Eye className="w-4 h-4 mr-1" /> Analisar
+                                    </Button>
+                                  </Link>
+                                </div>
                               </TableCell>
                             </TableRow>
                           );

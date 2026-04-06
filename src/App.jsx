@@ -40,6 +40,7 @@ import GerarKickOff from './pages/GerarKickOff';
 import KickOffPublico from './pages/KickOffPublico';
 import SlugRedirect from './pages/SlugRedirect';
 import GerenciarTaxasPadrao from './pages/GerenciarTaxasPadrao';
+import SubsellerDocUpload from './pages/SubsellerDocUpload';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -59,6 +60,7 @@ const PUBLIC_PATHS = new Set([
   '/ComplianceResume',
   '/OnboardingCompletion',
   '/SubsellerQuestionnaire',
+  '/SubsellerDocUpload',
   '/QuestionarioSimplificadoPublico',
   '/QuestionarioLeadsPagsmile',
   '/LeadPixV4',
@@ -102,6 +104,7 @@ const PublicRoutes = () => (
 
     {/* Subseller */}
     <Route path="/SubsellerQuestionnaire" element={<LayoutWrapper currentPageName="SubsellerQuestionnaire"><SubsellerQuestionnaire /></LayoutWrapper>} />
+    <Route path="/SubsellerDocUpload" element={<LayoutWrapper currentPageName="SubsellerDocUpload"><SubsellerDocUpload /></LayoutWrapper>} />
 
     {/* Questionário Simplificado */}
     {Pages['QuestionarioSimplificadoPublico'] && <Route path="/QuestionarioSimplificadoPublico" element={<LayoutWrapper currentPageName="QuestionarioSimplificadoPublico"><Pages.QuestionarioSimplificadoPublico /></LayoutWrapper>} />}
