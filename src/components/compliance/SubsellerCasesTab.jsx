@@ -7,12 +7,14 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow
 } from '@/components/ui/table';
 import {
-  Search, Building2, Users, Eye, Loader2, ChevronDown, ChevronRight, FileText
+  Search, Building2, Users, Eye, Loader2, ChevronDown, ChevronRight, FileText, User
 } from 'lucide-react';
+import SubsellerPFResponsesModal from '@/components/subseller/SubsellerPFResponsesModal';
 
 const STATUS_COLORS = {
   'Pendente': 'bg-yellow-100 text-yellow-800',
@@ -25,6 +27,8 @@ const STATUS_COLORS = {
 export default function SubsellerCasesTab() {
   const [search, setSearch] = useState('');
   const [expandedSeller, setExpandedSeller] = useState(null);
+  const [subTab, setSubTab] = useState('pj');
+  const [pfModalCase, setPfModalCase] = useState(null);
 
   const { data: cases = [], isLoading } = useQuery({
     queryKey: ['subseller-cases-tab'],
@@ -78,10 +82,24 @@ export default function SubsellerCasesTab() {
     return m;
   }, [documents]);
 
+  // Split cases into PJ and PF
+  const { pjCases, pfCases } = useMemo(() => {
+    const pj = [];
+    const pf = [];
+    cases.forEach(c => {
+      const m = merchantMap[c.merchantId];
+      if (m?.type === 'PF') pf.push(c);
+      else pj.push(c);
+    });
+    return { pjCases: pj, pfCases: pf };
+  }, [cases, merchantMap]);
+
+  const activeCases = subTab === 'pf' ? pfCases : pjCases;
+
   // Group by seller (parentMerchantId)
   const sellerGroups = useMemo(() => {
     const groups = {};
-    cases.forEach(c => {
+    activeCases.forEach(c => {
       const sellerId = c.parentMerchantId || 'unknown';
       if (!groups[sellerId]) groups[sellerId] = [];
       groups[sellerId].push(c);
@@ -110,7 +128,7 @@ export default function SubsellerCasesTab() {
           });
       })
       .sort((a, b) => b.subsellers.length - a.subsellers.length);
-  }, [cases, merchantMap, search]);
+  }, [activeCases, merchantMap, search]);
 
   if (isLoading) {
     return <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" /></div>;
@@ -118,13 +136,26 @@ export default function SubsellerCasesTab() {
 
   return (
     <div className="space-y-4">
+      <Tabs value={subTab} onValueChange={setSubTab}>
+        <TabsList className="bg-white border border-[#002443]/10 p-1 rounded-xl mb-4">
+          <TabsTrigger value="pj" className="rounded-lg data-[state=active]:bg-[#002443] data-[state=active]:text-white gap-2 px-4">
+            <Building2 className="w-4 h-4" /> Pessoa Jurídica
+            <Badge className="bg-[#2bc196]/20 text-[#002443] text-xs ml-1 border-0">{pjCases.length}</Badge>
+          </TabsTrigger>
+          <TabsTrigger value="pf" className="rounded-lg data-[state=active]:bg-[#002443] data-[state=active]:text-white gap-2 px-4">
+            <User className="w-4 h-4" /> Pessoa Física
+            <Badge className="bg-purple-100 text-purple-700 text-xs ml-1 border-0">{pfCases.length}</Badge>
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/40" />
         <Input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar seller ou subseller..." className="pl-10" />
       </div>
 
       <div className="text-sm text-[var(--pagsmile-blue)]/50 mb-2">
-        {sellerGroups.length} seller{sellerGroups.length !== 1 ? 's' : ''} • {cases.length} subconta{cases.length !== 1 ? 's' : ''} total
+        {sellerGroups.length} seller{sellerGroups.length !== 1 ? 's' : ''} • {activeCases.length} subconta{activeCases.length !== 1 ? 's' : ''} ({subTab === 'pf' ? 'PF' : 'PJ'})
       </div>
 
       {sellerGroups.length === 0 ? (
@@ -188,9 +219,12 @@ export default function SubsellerCasesTab() {
                           return (
                             <TableRow key={c.id} className="hover:bg-[#f4f4f4]/50">
                               <TableCell>
-                                <div>
-                                  <p className="font-medium text-[var(--pagsmile-blue)]">{m?.fullName || 'N/A'}</p>
-                                  <p className="text-xs text-[var(--pagsmile-blue)]/50">{m?.cpfCnpj || '-'}</p>
+                                <div className="flex items-center gap-2">
+                                  <div>
+                                    <p className="font-medium text-[var(--pagsmile-blue)]">{m?.fullName || 'N/A'}</p>
+                                    <p className="text-xs text-[var(--pagsmile-blue)]/50">{m?.cpfCnpj || '-'}</p>
+                                  </div>
+                                  {m?.type === 'PF' && <Badge className="bg-purple-100 text-purple-700 border-0 text-[10px]">PF</Badge>}
                                 </div>
                               </TableCell>
                               <TableCell>
@@ -219,7 +253,12 @@ export default function SubsellerCasesTab() {
                                   {c.created_date ? new Date(c.created_date).toLocaleDateString('pt-BR') : '-'}
                                 </span>
                               </TableCell>
-                              <TableCell className="text-right">
+                              <TableCell className="text-right flex items-center justify-end gap-1">
+                                {m?.type === 'PF' && (
+                                  <Button variant="ghost" size="sm" className="text-purple-600" onClick={() => setPfModalCase(c)}>
+                                    <Eye className="w-4 h-4 mr-1" /> Respostas
+                                  </Button>
+                                )}
                                 <Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`}>
                                   <Button variant="ghost" size="sm" className="text-[var(--pagsmile-green)]">
                                     <Eye className="w-4 h-4 mr-1" /> Analisar
@@ -238,6 +277,12 @@ export default function SubsellerCasesTab() {
           })}
         </div>
       )}
+      <SubsellerPFResponsesModal
+        open={!!pfModalCase}
+        onClose={() => setPfModalCase(null)}
+        caseId={pfModalCase?.id}
+        merchantName={pfModalCase ? merchantMap[pfModalCase.merchantId]?.fullName : ''}
+      />
     </div>
   );
 }

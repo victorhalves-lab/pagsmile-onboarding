@@ -761,18 +761,24 @@ export default function DynamicQuestionnaire({
     if (merchantCreatedRef.current) return null;
     merchantCreatedRef.current = true;
 
-    // Extract CNPJ, name, email from formData using questions
+    // Extract CNPJ/CPF, name, email from formData using questions
     let cnpj = '', fullName = '', companyName = '', email = '', phone = '';
-    let merchantType = 'PJ';
+    let dateOfBirth = '', nationality = '', motherName = '';
+    // Detect PF if template is PF type
+    const isPF = template?.merchantType === 'PF';
+    let merchantType = isPF ? 'PF' : 'PJ';
     questions.forEach(q => {
       const t = (q.text || '').toLowerCase().trim();
       const val = finalFormData[q.id];
       if (!val) return;
-      if (q.type === 'CPF_CNPJ' || t === 'cnpj') cnpj = val;
-      if (t === 'razão social') fullName = val;
+      if (q.type === 'CPF_CNPJ' || t === 'cnpj' || t === 'cpf') cnpj = val;
+      if (t === 'razão social' || t === 'nome completo') fullName = val;
       if (t === 'nome fantasia') companyName = val;
       if (q.type === 'EMAIL' || t === 'e-mail' || t === 'email') email = val;
       if (q.type === 'PHONE' || t === 'telefone') phone = val;
+      if (t === 'data de nascimento') dateOfBirth = val;
+      if (t === 'nacionalidade') nationality = val;
+      if (t === 'nome da mãe') motherName = val;
     });
     // Fallback from lead
     if (lead) {
@@ -789,7 +795,7 @@ export default function DynamicQuestionnaire({
     if (leadId && lead?.onboardingCaseId) { return null; }
 
     // Create Merchant
-    const merchant = await base44.entities.Merchant.create({
+    const merchantData = {
       type: merchantType,
       cpfCnpj: cnpj,
       fullName: fullName || companyName || 'N/A',
@@ -797,7 +803,14 @@ export default function DynamicQuestionnaire({
       email: email || 'nao-informado@placeholder.com',
       phone: phone || '',
       onboardingStatus: 'Em Análise',
-    });
+    };
+    // Add PF-specific fields
+    if (isPF) {
+      if (dateOfBirth) merchantData.dateOfBirth = dateOfBirth;
+      if (nationality) merchantData.nationality = nationality;
+      if (motherName) merchantData.motherName = motherName;
+    }
+    const merchant = await base44.entities.Merchant.create(merchantData);
 
     // Create OnboardingCase
     const onboardingCase = await base44.entities.OnboardingCase.create({

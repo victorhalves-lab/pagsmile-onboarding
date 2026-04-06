@@ -45,6 +45,12 @@ const MODEL_CONFIG = {
     badgeLabel: 'SUBSELLER',
     badgeColor: 'bg-indigo-100 text-indigo-700',
   },
+  subseller_pf: {
+    formDataStorageKey: 'compliance_data_subseller_pf',
+    documentsStorageKey: 'documents_subseller_pf',
+    badgeLabel: 'SUBSELLER PF',
+    badgeColor: 'bg-purple-100 text-purple-700',
+  },
   // V4 models
   ComplianceGatewayV4: { formDataStorageKey: 'compliance_data_gateway_v4', documentsStorageKey: 'documents_gateway_v4', badgeLabel: 'GATEWAY v4', badgeColor: 'bg-indigo-100 text-indigo-700' },
   ComplianceMarketplaceV4: { formDataStorageKey: 'compliance_data_marketplace_v4', documentsStorageKey: 'documents_marketplace_v4', badgeLabel: 'MARKETPLACE v4', badgeColor: 'bg-amber-100 text-amber-700' },

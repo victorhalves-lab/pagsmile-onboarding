@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import DynamicQuestionnaire from '../components/compliance/DynamicQuestionnaire';
+import MerchantTypeSelector from '../components/subseller/MerchantTypeSelector';
 
 const SUBSELLER_CAF_URLS = {
   'Gateway': 'https://cadastro.io/9b998e4d45055dac959680cf3dcfc1c9',
@@ -18,6 +19,7 @@ const SUBSELLER_CAF_URLS = {
 };
 
 export default function SubsellerQuestionnaire() {
+  const [merchantType, setMerchantType] = useState(null); // null = show selector, 'PF' or 'PJ'
   const urlParams = new URLSearchParams(window.location.search);
   const linkCode = urlParams.get('ref');
 
@@ -31,7 +33,7 @@ export default function SubsellerQuestionnaire() {
     enabled: !!linkCode
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (linkCode) {
       localStorage.setItem('onboarding_link_code', linkCode);
     }
@@ -66,6 +68,34 @@ export default function SubsellerQuestionnaire() {
     secondaryColor: onboardingLink.brandSecondaryColor,
   } : null;
 
+  // Step 1: Show PF/PJ selector
+  if (!merchantType) {
+    return (
+      <MerchantTypeSelector
+        onSelect={setMerchantType}
+        branding={branding}
+      />
+    );
+  }
+
+  // Step 2a: PF flow — uses subseller_pf template, uploads docs in-platform
+  if (merchantType === 'PF') {
+    return (
+      <DynamicQuestionnaire
+        templateModel="subseller_pf"
+        storageKey="compliance_data_subseller_pf"
+        documentUploadPage="DocumentUploadFull"
+        flowType="subseller_pf"
+        badgeLabel="SUBSELLER PF"
+        badgeColor="bg-purple-100 text-purple-700"
+        questionsPerStep={4}
+        branding={branding}
+        isPublicView={true}
+      />
+    );
+  }
+
+  // Step 2b: PJ flow — unchanged, uses subseller_v2 template + CAF redirect
   return (
     <DynamicQuestionnaire
       templateModel="subseller_v2"
