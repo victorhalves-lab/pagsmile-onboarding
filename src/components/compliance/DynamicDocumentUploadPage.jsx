@@ -174,6 +174,18 @@ export default function DynamicDocumentUploadPage({
           return '';
         };
 
+        // Detect subseller link
+        let parentMerchantId = null;
+        let isSubsellerLink = false;
+        if (linkCode) {
+          const links = await base44.entities.OnboardingLink.filter({ uniqueCode: linkCode });
+          const lnk = links[0];
+          if (lnk?.linkType === 'SUBSELLER_COMPLIANCE' && lnk.parentMerchantId) {
+            parentMerchantId = lnk.parentMerchantId;
+            isSubsellerLink = true;
+          }
+        }
+
         const merchantData = {
           type: 'PJ',
           cpfCnpj: findValue(['cnpj']) || '',
@@ -181,18 +193,23 @@ export default function DynamicDocumentUploadPage({
           companyName: findValue(['fantasia', 'nome fantasia']) || '',
           email: findValue(['e-mail', 'email']) || '',
           onboardingStatus: 'Pendente',
-          paymentServices: flowType === 'pix' ? ['Pix'] : ['Pix', 'Cartão']
+          paymentServices: flowType === 'pix' ? ['Pix'] : ['Pix', 'Cartão'],
+          isSubseller: isSubsellerLink,
         };
+        if (parentMerchantId) merchantData.parentMerchantId = parentMerchantId;
 
         const merchant = await base44.entities.Merchant.create(merchantData);
 
-        const onboardingCase = await base44.entities.OnboardingCase.create({
+        const onboardingCaseData = {
           merchantId: merchant.id,
           questionnaireTemplateId: template?.id,
           status: 'Pendente',
           onboardingLinkCode: linkCode,
-          priority: 'medium'
-        });
+          priority: 'medium',
+          isSubsellerCase: isSubsellerLink,
+        };
+        if (parentMerchantId) onboardingCaseData.parentMerchantId = parentMerchantId;
+        const onboardingCase = await base44.entities.OnboardingCase.create(onboardingCaseData);
         onboardingCaseId = onboardingCase.id;
 
         // Criar respostas do questionário

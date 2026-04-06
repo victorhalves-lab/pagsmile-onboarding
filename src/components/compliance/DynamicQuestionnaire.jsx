@@ -794,6 +794,18 @@ export default function DynamicQuestionnaire({
     const leadId = localStorage.getItem('lead_id_for_compliance') || localStorage.getItem('fechamento_lead_id');
     if (leadId && lead?.onboardingCaseId) { return null; }
 
+    // Detect subseller link to propagate parentMerchantId
+    let parentMerchantId = null;
+    let isSubsellerLink = false;
+    if (linkCode) {
+      const links = await base44.entities.OnboardingLink.filter({ uniqueCode: linkCode });
+      const link = links[0];
+      if (link?.linkType === 'SUBSELLER_COMPLIANCE' && link.parentMerchantId) {
+        parentMerchantId = link.parentMerchantId;
+        isSubsellerLink = true;
+      }
+    }
+
     // Create Merchant
     const merchantData = {
       type: merchantType,
@@ -803,7 +815,9 @@ export default function DynamicQuestionnaire({
       email: email || 'nao-informado@placeholder.com',
       phone: phone || '',
       onboardingStatus: 'Em Análise',
+      isSubseller: isSubsellerLink,
     };
+    if (parentMerchantId) merchantData.parentMerchantId = parentMerchantId;
     // Add PF-specific fields
     if (isPF) {
       if (dateOfBirth) merchantData.dateOfBirth = dateOfBirth;
@@ -813,7 +827,7 @@ export default function DynamicQuestionnaire({
     const merchant = await base44.entities.Merchant.create(merchantData);
 
     // Create OnboardingCase
-    const onboardingCase = await base44.entities.OnboardingCase.create({
+    const onboardingCaseData = {
       merchantId: merchant.id,
       questionnaireTemplateId: template?.id || '',
       submissionDate: new Date().toISOString(),
@@ -822,7 +836,10 @@ export default function DynamicQuestionnaire({
       onboardingLinkCode: linkCode || '',
       commercialAgentId: lead?.commercialAgentId || '',
       commercialAgentName: lead?.commercialAgentName || '',
-    });
+      isSubsellerCase: isSubsellerLink,
+    };
+    if (parentMerchantId) onboardingCaseData.parentMerchantId = parentMerchantId;
+    const onboardingCase = await base44.entities.OnboardingCase.create(onboardingCaseData);
 
     // Update lead with onboardingCaseId + status if lead exists
     if (leadId) {

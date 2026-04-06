@@ -33,7 +33,11 @@ export default function QuestionariosRecebidos() {
   // ── Data Fetching ──
   const { data: onboardingCases = [], isLoading: casesLoading, refetch: refetchCases } = useQuery({
     queryKey: ['onboardingCases'],
-    queryFn: () => base44.entities.OnboardingCase.list('-created_date', 500)
+    queryFn: async () => {
+      const all = await base44.entities.OnboardingCase.list('-created_date', 500);
+      // Excluir casos de subseller — esses aparecem apenas na aba Subsellers
+      return all.filter(c => !c.isSubsellerCase);
+    }
   });
 
   const { data: complianceScores = [] } = useQuery({
