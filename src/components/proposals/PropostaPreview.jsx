@@ -8,7 +8,7 @@ const BANDEIRAS = [
   { id: 'outras', label: 'Outras' },
 ];
 
-export default function PropostaPreview({ form, rates, selectedBrand, onBandeiraChange, taxaFinalOverrides = {} }) {
+export default function PropostaPreview({ form, rates, selectedBrand, onBandeiraChange, taxaFinalOverrides = {}, hideRange13a21 = false }) {
   const parseVal = (val) => { if (!val && val !== 0) return 0; if (typeof val === 'number') return isNaN(val) ? 0 : val; const cleaned = String(val).replace(/\./g, '').replace(',', '.'); const num = parseFloat(cleaned); return isNaN(num) ? 0 : num; };
   const fmtPct = (val) => { const num = typeof val === 'number' ? val : parseVal(val); return isNaN(num) ? '0.00%' : `${num.toFixed(2)}%`; };
 
@@ -40,6 +40,7 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
     const taxaFinal = overrideVal != null ? overrideVal : taxaBase + taxaAntecipacao;
     rows.push({ parcela, faixaLabel, taxaBase, taxaAntecipacao, taxaFinal, hasOverride: overrideVal != null });
   }
+  const visibleRows = hideRange13a21 ? rows.filter(r => r.parcela <= 12) : rows;
 
   return (
     <div>
@@ -66,7 +67,7 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
         <div className="grid grid-cols-5 text-[8px] text-white font-bold uppercase tracking-wider py-1.5 px-2 bg-white/[0.02]">
           <div>Parc.</div><div>Faixa</div><div className="text-right">Base</div><div className="text-right">Antecip.</div><div className="text-right">Final</div>
         </div>
-        {rows.map(row => (
+        {visibleRows.map(row => (
           <div key={row.parcela} className="grid grid-cols-5 items-center px-2 py-[5px] border-t border-white/[0.03]">
             <div className="text-[11px] font-bold text-white">{row.parcela}x</div>
             <div><span className="text-[8px] px-1 py-0.5 rounded bg-white/5 text-white/70 font-semibold">{row.faixaLabel}</span></div>

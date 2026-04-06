@@ -49,6 +49,7 @@ export default function CriarProposta() {
     dataValidade: new Date(new Date().setDate(new Date().getDate() + 15)),
     taxaFinalOverrides: {},
     hideCalculationColumns: false,
+    hideRange13a21: false,
   });
 
   const [rates, setRates] = useState({
@@ -127,6 +128,7 @@ export default function CriarProposta() {
         dataValidade: existingProposal.validUntil ? new Date(existingProposal.validUntil) : new Date(),
         taxaFinalOverrides: existingProposal.taxaFinalOverrides || {},
         hideCalculationColumns: existingProposal.hideCalculationColumns || false,
+        hideRange13a21: existingProposal.hideRange13a21 || false,
       });
       const r = existingProposal.rates || {};
       setRates({
@@ -229,6 +231,7 @@ export default function CriarProposta() {
       },
       taxaFinalOverrides: form.taxaFinalOverrides || {},
       hideCalculationColumns: form.hideCalculationColumns || false,
+      hideRange13a21: form.hideRange13a21 || false,
       validUntil: form.dataValidade.toISOString(),
       tokenPublico: existingProposal?.tokenPublico || gerarToken(),
       responsavelId: criadoPorId || criadoPor, responsavelNome: criadoPorNome,
@@ -316,6 +319,8 @@ export default function CriarProposta() {
             onChange={(v) => updateForm('taxaFinalOverrides', v)}
             hideCalculationColumns={form.hideCalculationColumns || false}
             onToggleHideColumns={(v) => updateForm('hideCalculationColumns', v)}
+            hideRange13a21={form.hideRange13a21 || false}
+            onToggleHideRange13a21={(v) => updateForm('hideRange13a21', v)}
           />
           <CardOutrasTaxas rates={rates} onUpdateRates={updateRates} partner={selectedPartner} />
         </div>
@@ -331,7 +336,7 @@ export default function CriarProposta() {
               leadTransacoes={lead?.transacoesMes}
               selectedMccCode={selectedMccCode}
             />
-            <PropostaPreview form={form} rates={rates} selectedBrand={selectedBrand} onBandeiraChange={setSelectedBrand} taxaFinalOverrides={form.taxaFinalOverrides} />
+            <PropostaPreview form={form} rates={rates} selectedBrand={selectedBrand} onBandeiraChange={setSelectedBrand} taxaFinalOverrides={form.taxaFinalOverrides} hideRange13a21={form.hideRange13a21} />
           </div>
         </div>
       </div>

@@ -268,6 +268,11 @@
       "default": false,
       "description": "Se true, oculta as colunas de c\u00e1lculo (Base, Antecipa\u00e7\u00e3o) na tabela de parcelas da proposta p\u00fablica, mostrando apenas Parcela e Taxa Final"
     },
+    "hideRange13a21": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se true, oculta as parcelas de 13x a 21x na proposta p\u00fablica e na tabela de parcelas"
+    },
     "clienteNome": {
       "type": "string",
       "description": "Nome da empresa do cliente"

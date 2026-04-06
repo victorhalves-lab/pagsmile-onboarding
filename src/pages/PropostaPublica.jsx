@@ -466,7 +466,7 @@ export default function PropostaPublica() {
             <CreditCard className="w-5 h-5 text-[#2bc196]" />
             {t('pp.credit_card_rates')}
           </h2>
-          <TaxasPorBandeiraPublic taxas={rates} />
+          <TaxasPorBandeiraPublic taxas={rates} hideRange13a21={proposta.hideRange13a21 || false} />
         </CardContent>
       </Card>
 
@@ -570,7 +570,7 @@ export default function PropostaPublica() {
           <h2 className="font-bold text-base text-[#002443] mb-4">
             {t('pp.installment_table')}
           </h2>
-          <ParcelasTableDetalhada taxas={rates} taxaRAV={taxaRAV} prazo={prazo} showSimulator={!proposta.hideCalculationColumns} taxaFinalOverrides={proposta.taxaFinalOverrides || {}} hideCalculationColumns={proposta.hideCalculationColumns || false} />
+          <ParcelasTableDetalhada taxas={rates} taxaRAV={taxaRAV} prazo={prazo} showSimulator={!proposta.hideCalculationColumns} taxaFinalOverrides={proposta.taxaFinalOverrides || {}} hideCalculationColumns={proposta.hideCalculationColumns || false} hideRange13a21={proposta.hideRange13a21 || false} />
         </CardContent>
       </Card>
 

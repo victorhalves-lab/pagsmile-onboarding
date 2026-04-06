@@ -39,7 +39,8 @@ function formatVal(val) {
   return `${num.toFixed(2)}%`;
 }
 
-export default function TaxasPorBandeiraPublic({ taxas }) {
+export default function TaxasPorBandeiraPublic({ taxas, hideRange13a21 = false }) {
+  const visibleFaixas = hideRange13a21 ? FAIXAS.filter(f => f.key !== '13_21x') : FAIXAS;
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
@@ -52,7 +53,7 @@ export default function TaxasPorBandeiraPublic({ taxas }) {
           </tr>
         </thead>
         <tbody>
-          {FAIXAS.map(f => (
+          {visibleFaixas.map(f => (
             <tr key={f.key} className="border-b border-slate-100 hover:bg-slate-50/50">
               <td className="py-3 px-4 font-medium text-[#002443]/80">{f.label}</td>
               {BANDEIRAS.map(b => {

@@ -26,13 +26,14 @@ function getTaxasForBandeira(taxas, bandeira) {
   return {};
 }
 
-export default function ParcelasTableDetalhada({ taxas, taxaRAV = 0, prazo = 'D+1', showSimulator = false, taxaFinalOverrides = {}, hideCalculationColumns = false }) {
+export default function ParcelasTableDetalhada({ taxas, taxaRAV = 0, prazo = 'D+1', showSimulator = false, taxaFinalOverrides = {}, hideCalculationColumns = false, hideRange13a21 = false }) {
   const [activeBandeira, setActiveBandeira] = useState('mastercard');
   const [simulatedPrazo, setSimulatedPrazo] = useState(prazo);
   
   const activePrazo = showSimulator ? simulatedPrazo : prazo;
   const currentTaxas = getTaxasForBandeira(taxas, activeBandeira);
-  const rows = calcularTabelaParcelas(currentTaxas, taxaRAV, activePrazo);
+  const allRows = calcularTabelaParcelas(currentTaxas, taxaRAV, activePrazo);
+  const rows = hideRange13a21 ? allRows.filter(r => r.parcela <= 12) : allRows;
   const isSimulating = showSimulator && simulatedPrazo !== prazo;
 
   return (
