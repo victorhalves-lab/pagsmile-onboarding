@@ -87,9 +87,10 @@ export default function ParcelasTableDetalhada({ taxas, taxaRAV = 0, prazo = 'D+
                       )}
                       {(() => {
                         const applyOverride = (b.id === 'mastercard' || b.id === 'visa') && taxaFinalOverrides[String(r.parcela)] != null;
+                        const val = applyOverride ? taxaFinalOverrides[String(r.parcela)] : r.taxaFinal;
                         return (
-                          <td className={`py-2 px-3 text-right font-bold ${applyOverride ? 'text-amber-600' : 'text-[#2bc196]'}`}>
-                            {(applyOverride ? taxaFinalOverrides[String(r.parcela)] : r.taxaFinal).toFixed(2)}%
+                          <td className="py-2 px-3 text-right font-bold text-[#2bc196]">
+                            {val.toFixed(2)}%
                           </td>
                         );
                       })()}
