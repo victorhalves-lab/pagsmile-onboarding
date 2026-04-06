@@ -544,28 +544,28 @@ export default function PropostaPublica() {
         )}
       </div>
 
-      {/* Prazo, Antecipação e Volume — 3 cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+      {/* Seção: Prazo + Antecipação + Volume — sempre 3 cards lado a lado */}
+      <div className="grid gap-4 mb-6" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
         <Card>
-          <CardContent className="py-4 text-center flex flex-col justify-center h-full">
-            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">{t('pp.receiving_term')}</p>
-            <p className="text-lg font-bold text-[#002443]">{prazo}</p>
+          <CardContent className="py-5 text-center">
+            <p className="text-xs text-[#002443]/50 mb-2 uppercase font-semibold tracking-wide">{t('pp.receiving_term')}</p>
+            <p className="text-xl font-bold text-[#002443]">{prazo}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardContent className="py-4 text-center flex flex-col justify-center h-full">
-            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">{t('pp.anticipation_rate')}</p>
-            <p className="text-lg font-bold text-amber-600">{taxaRAV}% a.m.</p>
-            <p className="text-[10px] text-amber-600/80 mt-1">* Sujeito à aprovação de Compliance</p>
+          <CardContent className="py-5 text-center">
+            <p className="text-xs text-[#002443]/50 mb-2 uppercase font-semibold tracking-wide">{t('pp.anticipation_rate')}</p>
+            <p className="text-xl font-bold text-amber-600">{taxaRAV}% a.m.</p>
+            <p className="text-[10px] text-amber-600/80 mt-2">* Sujeito à aprovação de Compliance</p>
           </CardContent>
         </Card>
         <Card className="border-[#2bc196]/30 bg-[#2bc196]/5">
-          <CardContent className="py-4 text-center flex flex-col justify-center h-full">
-            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">Volume Antecipado</p>
-            <p className="text-lg font-bold text-[#2bc196]">
+          <CardContent className="py-5 text-center">
+            <p className="text-xs text-[#002443]/50 mb-2 uppercase font-semibold tracking-wide">Volume Antecipado</p>
+            <p className="text-xl font-bold text-[#2bc196]">
               {parseFloat(rates.percentualAntecipacao) > 0 ? `${parseFloat(rates.percentualAntecipacao)}%` : '—'}
             </p>
-            <p className="text-[10px] text-[#002443]/40 mt-1">do TPV processado</p>
+            <p className="text-[10px] text-[#002443]/40 mt-2">do TPV processado</p>
           </CardContent>
         </Card>
       </div>
