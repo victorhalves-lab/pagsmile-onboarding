@@ -54,15 +54,18 @@ export default function ParcelasTableDetalhada({ taxas, taxaRAV = 0, prazo = 'D+
 
         {BANDEIRAS.map(b => (
           <TabsContent key={b.id} value={b.id}>
+            {(() => {
+              const hideCols = hideCalculationColumns && (b.id === 'mastercard' || b.id === 'visa');
+              return (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b-2 border-[#2bc196]/20">
                     <th className="text-left py-2 px-3 font-semibold text-[#002443]/70">Parcelas</th>
-                    {!hideCalculationColumns && (
+                    {!hideCols && (
                       <th className="text-right py-2 px-3 font-semibold text-[#002443]/70">Base</th>
                     )}
-                    {!hideCalculationColumns && taxaRAV > 0 && activePrazo !== 'FLUXO' && (
+                    {!hideCols && taxaRAV > 0 && activePrazo !== 'FLUXO' && (
                       <th className="text-right py-2 px-3 font-semibold text-amber-600">
                         Antecipação{isSimulating ? ` (${simulatedPrazo})` : ''}
                       </th>
@@ -74,22 +77,29 @@ export default function ParcelasTableDetalhada({ taxas, taxaRAV = 0, prazo = 'D+
                   {rows.map(r => (
                     <tr key={r.parcela} className="border-b border-[#002443]/5 hover:bg-[#2bc196]/5">
                       <td className="py-2 px-3 font-medium">{r.parcela}x</td>
-                      {!hideCalculationColumns && (
+                      {!hideCols && (
                         <td className="py-2 px-3 text-right">{r.taxaBase.toFixed(2)}%</td>
                       )}
-                      {!hideCalculationColumns && taxaRAV > 0 && activePrazo !== 'FLUXO' && (
+                      {!hideCols && taxaRAV > 0 && activePrazo !== 'FLUXO' && (
                         <td className="py-2 px-3 text-right text-amber-600">
                           {r.taxaAntecipacao > 0 ? `+${r.taxaAntecipacao.toFixed(2)}%` : '-'}
                         </td>
                       )}
-                      <td className={`py-2 px-3 text-right font-bold ${taxaFinalOverrides[String(r.parcela)] != null ? 'text-amber-600' : 'text-[#2bc196]'}`}>
-                        {(taxaFinalOverrides[String(r.parcela)] != null ? taxaFinalOverrides[String(r.parcela)] : r.taxaFinal).toFixed(2)}%
-                      </td>
+                      {(() => {
+                        const applyOverride = (b.id === 'mastercard' || b.id === 'visa') && taxaFinalOverrides[String(r.parcela)] != null;
+                        return (
+                          <td className={`py-2 px-3 text-right font-bold ${applyOverride ? 'text-amber-600' : 'text-[#2bc196]'}`}>
+                            {(applyOverride ? taxaFinalOverrides[String(r.parcela)] : r.taxaFinal).toFixed(2)}%
+                          </td>
+                        );
+                      })()}
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
+              );
+            })()}
           </TabsContent>
         ))}
       </Tabs>

@@ -43,7 +43,7 @@ export default function FinalRateOverridesEditor({ overrides = {}, onChange, hid
         </div>
         <div>
           <h2 className="text-sm font-bold text-white">Sobrescrever Taxa Final</h2>
-          <p className="text-[10px] text-white/30">Forçar um valor visual de taxa final para parcelas específicas</p>
+          <p className="text-[10px] text-white/30">Aplica-se apenas às bandeiras <span className="text-amber-400/70 font-semibold">Mastercard</span> e <span className="text-amber-400/70 font-semibold">Visa</span></p>
         </div>
       </div>
 
