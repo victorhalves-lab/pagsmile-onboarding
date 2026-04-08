@@ -55,13 +55,28 @@ export default function CadastroDetalhe() {
     return cases.sort((a, b) => new Date(b.created_date) - new Date(a.created_date))[0];
   }, [cases]);
 
-  const { data: leads = [] } = useQuery({
-    queryKey: ['cadastro-leads-merchant', merchant?.cpfCnpj],
+  // Fetch leads by cpfCnpj
+  const { data: leadsByCnpj = [] } = useQuery({
+    queryKey: ['cadastro-leads-cnpj', merchant?.cpfCnpj],
     queryFn: () => base44.entities.Lead.filter({ cpfCnpj: merchant.cpfCnpj }),
     enabled: !!merchant?.cpfCnpj,
   });
 
-  const lead = leads[0] || null;
+  // Fetch leads by email
+  const { data: leadsByEmail = [] } = useQuery({
+    queryKey: ['cadastro-leads-email', merchant?.email],
+    queryFn: () => base44.entities.Lead.filter({ email: merchant.email }),
+    enabled: !!merchant?.email,
+  });
+
+  // Merge leads (dedupe by id)
+  const allLeads = useMemo(() => {
+    const map = new Map();
+    [...leadsByCnpj, ...leadsByEmail].forEach(l => map.set(l.id, l));
+    return Array.from(map.values());
+  }, [leadsByCnpj, leadsByEmail]);
+
+  const lead = allLeads[0] || null;
 
   const { data: subsellers = [] } = useQuery({
     queryKey: ['cadastro-subsellers', merchantId],
@@ -69,42 +84,88 @@ export default function CadastroDetalhe() {
     enabled: !!merchantId && !merchant?.isSubseller,
   });
 
+  // Fetch responses from ALL cases
+  const allCaseIds = useMemo(() => cases.map(c => c.id), [cases]);
+  
   const { data: responses = [] } = useQuery({
-    queryKey: ['cadastro-responses', latestCase?.id],
-    queryFn: () => base44.entities.QuestionnaireResponse.filter({ onboardingCaseId: latestCase.id }),
-    enabled: !!latestCase?.id,
+    queryKey: ['cadastro-responses', allCaseIds],
+    queryFn: async () => {
+      const results = await Promise.all(allCaseIds.map(id => base44.entities.QuestionnaireResponse.filter({ onboardingCaseId: id })));
+      return results.flat();
+    },
+    enabled: allCaseIds.length > 0,
   });
 
+  // Fetch documents from ALL cases
   const { data: documents = [] } = useQuery({
-    queryKey: ['cadastro-docs', latestCase?.id],
-    queryFn: () => base44.entities.DocumentUpload.filter({ onboardingCaseId: latestCase.id }),
-    enabled: !!latestCase?.id,
+    queryKey: ['cadastro-docs', allCaseIds],
+    queryFn: async () => {
+      const results = await Promise.all(allCaseIds.map(id => base44.entities.DocumentUpload.filter({ onboardingCaseId: id })));
+      return results.flat();
+    },
+    enabled: allCaseIds.length > 0,
   });
 
-  const { data: proposals = [] } = useQuery({
-    queryKey: ['cadastro-proposals', lead?.id],
-    queryFn: () => base44.entities.Proposal.filter({ leadId: lead.id }),
-    enabled: !!lead?.id,
+  // Fetch proposals from ALL leads + also by merchant cpfCnpj/email
+  const allLeadIds = useMemo(() => allLeads.map(l => l.id), [allLeads]);
+
+  const { data: proposalsByLeads = [] } = useQuery({
+    queryKey: ['cadastro-proposals-leads', allLeadIds],
+    queryFn: async () => {
+      const results = await Promise.all(allLeadIds.map(id => base44.entities.Proposal.filter({ leadId: id })));
+      return results.flat();
+    },
+    enabled: allLeadIds.length > 0,
   });
+
+  const { data: proposalsByCnpj = [] } = useQuery({
+    queryKey: ['cadastro-proposals-cnpj', merchant?.cpfCnpj],
+    queryFn: () => base44.entities.Proposal.filter({ clienteCnpj: merchant.cpfCnpj }),
+    enabled: !!merchant?.cpfCnpj,
+  });
+
+  // Merge all proposals (dedupe by id)
+  const allProposals = useMemo(() => {
+    const map = new Map();
+    [...proposalsByLeads, ...proposalsByCnpj].forEach(p => map.set(p.id, p));
+    return Array.from(map.values()).sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+  }, [proposalsByLeads, proposalsByCnpj]);
 
   const latestProposal = useMemo(() => {
-    if (!proposals.length) return null;
-    const current = proposals.find(p => p.isCurrentVersion);
-    return current || proposals.sort((a, b) => new Date(b.created_date) - new Date(a.created_date))[0];
-  }, [proposals]);
+    if (!allProposals.length) return null;
+    const current = allProposals.find(p => p.isCurrentVersion);
+    return current || allProposals[0];
+  }, [allProposals]);
 
-  const { data: contracts = [] } = useQuery({
-    queryKey: ['cadastro-contracts', merchant?.cpfCnpj],
+  // Fetch ALL contracts (by cnpj, leadId, merchantId)
+  const { data: contractsByCnpj = [] } = useQuery({
+    queryKey: ['cadastro-contracts-cnpj', merchant?.cpfCnpj],
     queryFn: () => base44.entities.Contract.filter({ clientCnpj: merchant.cpfCnpj }),
     enabled: !!merchant?.cpfCnpj,
   });
 
-  const latestContract = contracts[0] || null;
+  const { data: contractsByMerchant = [] } = useQuery({
+    queryKey: ['cadastro-contracts-merchant', merchantId],
+    queryFn: () => base44.entities.Contract.filter({ merchantId }),
+    enabled: !!merchantId,
+  });
 
+  const allContracts = useMemo(() => {
+    const map = new Map();
+    [...contractsByCnpj, ...contractsByMerchant].forEach(c => map.set(c.id, c));
+    return Array.from(map.values()).sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+  }, [contractsByCnpj, contractsByMerchant]);
+
+  const latestContract = allContracts[0] || null;
+
+  // Fetch compliance scores from ALL cases
   const { data: scores = [] } = useQuery({
-    queryKey: ['cadastro-scores', latestCase?.id],
-    queryFn: () => base44.entities.ComplianceScore.filter({ onboarding_case_id: latestCase.id }),
-    enabled: !!latestCase?.id,
+    queryKey: ['cadastro-scores', allCaseIds],
+    queryFn: async () => {
+      const results = await Promise.all(allCaseIds.map(id => base44.entities.ComplianceScore.filter({ onboarding_case_id: id })));
+      return results.flat();
+    },
+    enabled: allCaseIds.length > 0,
   });
 
   const latestScore = useMemo(() => {
@@ -187,8 +248,8 @@ export default function CadastroDetalhe() {
           <TabsTrigger value="overview" className="text-xs gap-1"><BarChart3 className="w-3 h-3" />Visão Geral</TabsTrigger>
           <TabsTrigger value="dados" className="text-xs gap-1"><FileText className="w-3 h-3" />Dados Cadastrais</TabsTrigger>
           <TabsTrigger value="documentos" className="text-xs gap-1"><FileCheck className="w-3 h-3" />Documentos</TabsTrigger>
-          <TabsTrigger value="proposta" className="text-xs gap-1"><FileText className="w-3 h-3" />Proposta</TabsTrigger>
-          <TabsTrigger value="contrato" className="text-xs gap-1"><Stamp className="w-3 h-3" />Contrato</TabsTrigger>
+          <TabsTrigger value="proposta" className="text-xs gap-1"><FileText className="w-3 h-3" />Propostas{allProposals.length > 0 ? ` (${allProposals.length})` : ''}</TabsTrigger>
+          <TabsTrigger value="contrato" className="text-xs gap-1"><Stamp className="w-3 h-3" />Contratos{allContracts.length > 0 ? ` (${allContracts.length})` : ''}</TabsTrigger>
           <TabsTrigger value="compliance" className="text-xs gap-1"><Shield className="w-3 h-3" />Compliance</TabsTrigger>
           {!merchant.isSubseller && (
             <TabsTrigger value="subsellers" className="text-xs gap-1"><Users className="w-3 h-3" />Subsellers ({subsellers.length})</TabsTrigger>
@@ -196,7 +257,7 @@ export default function CadastroDetalhe() {
         </TabsList>
 
         <TabsContent value="overview">
-          <CadastroOverviewTab merchant={merchant} latestCase={latestCase} lead={lead} latestProposal={latestProposal} latestContract={latestContract} latestScore={latestScore} documents={documents} subsellers={subsellers} />
+          <CadastroOverviewTab merchant={merchant} latestCase={latestCase} lead={lead} latestProposal={latestProposal} latestContract={latestContract} latestScore={latestScore} documents={documents} subsellers={subsellers} allProposals={allProposals} allContracts={allContracts} allLeads={allLeads} allCases={cases} />
         </TabsContent>
         <TabsContent value="dados">
           <CadastroDadosTab merchant={merchant} lead={lead} responses={responses} latestCase={latestCase} />
@@ -205,13 +266,13 @@ export default function CadastroDetalhe() {
           <CadastroDocumentosTab documents={documents} />
         </TabsContent>
         <TabsContent value="proposta">
-          <CadastroPropostaTab proposal={latestProposal} lead={lead} />
+          <CadastroPropostaTab proposals={allProposals} lead={lead} />
         </TabsContent>
         <TabsContent value="contrato">
-          <CadastroContratoTab contract={latestContract} />
+          <CadastroContratoTab contracts={allContracts} />
         </TabsContent>
         <TabsContent value="compliance">
-          <CadastroComplianceTab score={latestScore} latestCase={latestCase} />
+          <CadastroComplianceTab score={latestScore} latestCase={latestCase} allScores={scores} allCases={cases} />
         </TabsContent>
         {!merchant.isSubseller && (
           <TabsContent value="subsellers">

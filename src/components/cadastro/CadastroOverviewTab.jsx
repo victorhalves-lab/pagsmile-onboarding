@@ -19,7 +19,7 @@ function InfoCard({ icon: Icon, title, value, sub, color = 'text-blue-600', bg =
   );
 }
 
-export default function CadastroOverviewTab({ merchant, latestCase, lead, latestProposal, latestContract, latestScore, documents, subsellers }) {
+export default function CadastroOverviewTab({ merchant, latestCase, lead, latestProposal, latestContract, latestScore, documents, subsellers, allProposals = [], allContracts = [], allLeads = [], allCases = [] }) {
   const statusIcon = {
     'Aprovado': <CheckCircle2 className="w-4 h-4 text-green-600" />,
     'Recusado': <XCircle className="w-4 h-4 text-red-600" />,
@@ -41,7 +41,7 @@ export default function CadastroOverviewTab({ merchant, latestCase, lead, latest
         />
         <InfoCard
           icon={FileText}
-          title="Proposta"
+          title={`Propostas (${allProposals.length})`}
           value={latestProposal ? latestProposal.status : 'Sem proposta'}
           sub={latestProposal?.codigo}
           color="text-emerald-600"
@@ -49,7 +49,7 @@ export default function CadastroOverviewTab({ merchant, latestCase, lead, latest
         />
         <InfoCard
           icon={Stamp}
-          title="Contrato"
+          title={`Contratos (${allContracts.length})`}
           value={latestContract ? latestContract.status : 'Sem contrato'}
           sub={latestContract?.codigo}
           color="text-indigo-600"
