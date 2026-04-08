@@ -69,7 +69,11 @@
         "mpe",
         "dropshipping",
         "plataformas_verticais",
-        "link_pagamento"
+        "link_pagamento",
+        "MERCHAN",
+        "GATEWAY",
+        "MARKETPLACE",
+        "GENERAL"
       ],
       "description": "Segmento de neg\u00f3cio do lead"
     },

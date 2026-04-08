@@ -179,10 +179,11 @@ export default function QuestionarioLeadsPagsmile() {
     const proto = `PSM-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 99999)).padStart(5, '0')}`;
 
     const segmentLabel = SEGMENTS.find(s => s.id === form.segmento)?.label || form.segmento;
+    // Map V5 segments to businessSubCategory — use real segment ID for the 10 segments
     const bizMap = {
-      gateway: 'GATEWAY', marketplace: 'MARKETPLACE', plataforma_vertical: 'GATEWAY',
-      ecommerce: 'MERCHAN', dropshipping: 'MERCHAN', infoprodutos: 'MERCHAN',
-      saas: 'MERCHAN', educacao: 'MERCHAN', link_pagamento: 'MERCHAN', mpe: 'MERCHAN'
+      gateway: 'gateway', marketplace: 'marketplace', plataforma_vertical: 'plataformas_verticais',
+      ecommerce: 'ecommerce', dropshipping: 'dropshipping', infoprodutos: 'infoprodutos',
+      saas: 'saas', educacao: 'educacao', link_pagamento: 'link_pagamento', mpe: 'mpe'
     };
 
     // Buscar Introducer se existir

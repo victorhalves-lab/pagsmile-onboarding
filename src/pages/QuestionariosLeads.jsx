@@ -58,7 +58,23 @@ const getActionButtons = (lead, navigate, t) => {
   return actions;
 };
 
-const SUB_CAT = { MERCHAN: { label: 'Merchant', icon: ShoppingCart }, GATEWAY: { label: 'Gateway', icon: Network }, MARKETPLACE: { label: 'Marketplace', icon: Building2 } };
+const SUB_CAT = {
+  // Legacy 3 categories
+  MERCHAN: { label: 'Merchant', icon: ShoppingCart },
+  GATEWAY: { label: 'Gateway', icon: Network },
+  MARKETPLACE: { label: 'Marketplace', icon: Building2 },
+  // V5 10 real segments
+  gateway: { label: 'Gateway / PSP', icon: Network },
+  marketplace: { label: 'Marketplace', icon: Building2 },
+  plataformas_verticais: { label: 'Plataforma Vertical', icon: Building2 },
+  ecommerce: { label: 'E-commerce', icon: ShoppingCart },
+  dropshipping: { label: 'Dropshipping', icon: ShoppingCart },
+  infoprodutos: { label: 'Infoprodutos', icon: ShoppingCart },
+  saas: { label: 'SaaS', icon: Globe },
+  educacao: { label: 'Educação', icon: ShoppingCart },
+  link_pagamento: { label: 'Link de Pagamento', icon: ShoppingCart },
+  mpe: { label: 'MPE', icon: ShoppingCart },
+};
 
 export default function QuestionariosLeads() {
   const { t } = useTranslation();

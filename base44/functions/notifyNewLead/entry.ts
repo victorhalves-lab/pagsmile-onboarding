@@ -66,11 +66,13 @@ Deno.serve(async (req) => {
       });
     }
 
-    if (lead.businessSubCategory) {
+    // Show real segment label from questionnaireData if available, fallback to businessSubCategory
+    const segmentoLabel = lead.questionnaireData?.segmentoLabel || lead.questionnaireData?.segmento || lead.businessSubCategory || '';
+    if (segmentoLabel) {
       blocks.push({
         type: 'context',
         elements: [
-          { type: 'mrkdwn', text: `Tipo: ${lead.businessSubCategory} • Origem: ${lead.origemLead || 'Direto'} • Protocolo: ${lead.protocolo || '-'}` }
+          { type: 'mrkdwn', text: `Segmento: ${segmentoLabel} • Origem: ${lead.origemLead || 'Direto'} • Protocolo: ${lead.protocolo || '-'}` }
         ]
       });
     }
