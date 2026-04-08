@@ -2,7 +2,9 @@ import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, User, MapPin, Briefcase, Shield, FileCheck, CheckCircle2, Phone, Globe } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Loader2, User, MapPin, Briefcase, Shield, FileCheck, CheckCircle2, Phone, Globe, FileText } from 'lucide-react';
+import { toast } from 'sonner';
 
 const SECTIONS = [
   { key: 'identificacao', label: 'Identificação Pessoal', icon: User, orders: [1, 2, 3, 4, 5] },
@@ -29,6 +31,34 @@ function getDisplayValue(r) {
 
 export default function SubsellerPFResponsesInline({ caseId, merchantName }) {
   const [activeSection, setActiveSection] = useState('identificacao');
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
+
+  const handleExportPdf = async () => {
+    setDownloadingPdf(true);
+    try {
+      const response = await base44.functions.fetch('generateCompliancePdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ onboardingCaseId: caseId })
+      });
+      if (!response.ok) throw new Error('Erro ao gerar PDF');
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `compliance_pf_${merchantName || caseId}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success('PDF gerado com sucesso!');
+    } catch (err) {
+      console.error('PDF export error:', err);
+      toast.error('Erro ao gerar PDF.');
+    } finally {
+      setDownloadingPdf(false);
+    }
+  };
 
   const { data: responses = [], isLoading } = useQuery({
     queryKey: ['pf-responses-inline', caseId],
@@ -98,19 +128,31 @@ export default function SubsellerPFResponsesInline({ caseId, merchantName }) {
   return (
     <div>
       {/* PF Header badge */}
-      <div className="flex items-center gap-3 mb-6 pb-4 border-b border-[var(--pagsmile-blue)]/5">
-        <div className="p-2 rounded-xl bg-purple-100">
-          <User className="w-5 h-5 text-purple-600" />
-        </div>
-        <div>
-          <p className="text-sm font-bold text-[var(--pagsmile-blue)]">{merchantName || 'Subseller PF'}</p>
-          <div className="flex items-center gap-2 mt-1">
-            <Badge className="bg-purple-100 text-purple-700 border-0 text-xs">PESSOA FÍSICA</Badge>
-            <span className="text-xs text-[var(--pagsmile-blue)]/50">
-              {totalAnswered} respostas
-            </span>
+      <div className="flex items-center justify-between mb-6 pb-4 border-b border-[var(--pagsmile-blue)]/5">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-xl bg-purple-100">
+            <User className="w-5 h-5 text-purple-600" />
+          </div>
+          <div>
+            <p className="text-sm font-bold text-[var(--pagsmile-blue)]">{merchantName || 'Subseller PF'}</p>
+            <div className="flex items-center gap-2 mt-1">
+              <Badge className="bg-purple-100 text-purple-700 border-0 text-xs">PESSOA FÍSICA</Badge>
+              <span className="text-xs text-[var(--pagsmile-blue)]/50">
+                {totalAnswered} respostas
+              </span>
+            </div>
           </div>
         </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleExportPdf}
+          disabled={downloadingPdf}
+          className="text-[#002443]/70 border-[#002443]/10 hover:bg-[#2bc196]/5 hover:border-[#2bc196]/30 hover:text-[#2bc196] text-xs rounded-lg"
+        >
+          {downloadingPdf ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <FileText className="w-3.5 h-3.5 mr-1.5" />}
+          Exportar PDF
+        </Button>
       </div>
 
       <div className="flex gap-4 min-h-[400px]">

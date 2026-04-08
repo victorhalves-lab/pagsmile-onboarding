@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '../../utils';
+import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   ArrowLeft, User, Building2, Clock, Loader2,
-  CheckCircle2, AlertTriangle, XCircle, RefreshCw, Mail
+  CheckCircle2, AlertTriangle, XCircle, RefreshCw, Mail, FileDown
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 const getStatusBadge = (status) => {
   const config = {
@@ -22,6 +24,34 @@ const getStatusBadge = (status) => {
 
 export default function CaseHeader({ onboardingCase, merchant, onRefetch }) {
   const navigate = useNavigate();
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
+
+  const handleExportPdf = async () => {
+    setDownloadingPdf(true);
+    try {
+      const response = await base44.functions.fetch('generateCompliancePdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ onboardingCaseId: onboardingCase.id })
+      });
+      if (!response.ok) throw new Error('Erro ao gerar PDF');
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `compliance_${(merchant?.fullName || 'case').replace(/[^a-zA-Z0-9]/g, '_')}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success('PDF completo gerado com sucesso!');
+    } catch (err) {
+      console.error('PDF export error:', err);
+      toast.error('Erro ao gerar PDF.');
+    } finally {
+      setDownloadingPdf(false);
+    }
+  };
 
   return (
     <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
@@ -47,6 +77,10 @@ export default function CaseHeader({ onboardingCase, merchant, onRefetch }) {
       <div className="flex flex-col items-end gap-3">
         {getStatusBadge(onboardingCase.status)}
         <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={handleExportPdf} disabled={downloadingPdf}>
+            {downloadingPdf ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <FileDown className="w-4 h-4 mr-1" />}
+            PDF Completo
+          </Button>
           <Button variant="outline" size="sm" onClick={onRefetch}>
             <RefreshCw className="w-4 h-4 mr-1" /> Atualizar
           </Button>
