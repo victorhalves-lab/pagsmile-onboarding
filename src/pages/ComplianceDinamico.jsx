@@ -157,6 +157,14 @@ const MODEL_CONFIG = {
     badgeColor: 'bg-indigo-100 text-indigo-700',
     // Sem cafRedirectUrl — subsellers fazem upload de documentos direto na plataforma
   },
+  subseller_pf: {
+    storageKey: 'compliance_data_subseller_pf',
+    documentUploadPage: 'SubsellerDocUpload',
+    flowType: 'subseller_pf',
+    badgeLabel: 'SUBSELLER PF',
+    badgeColor: 'bg-purple-100 text-purple-700',
+    // Sem cafRedirectUrl — PF faz upload nativo na plataforma
+  },
 };
 
 // Mapa de redirecionamento: modelos legados → V4

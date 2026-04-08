@@ -193,6 +193,11 @@ export default function AnaliseDeCasos() {
               <ComplianceResponsesPanel caseId={caseId} questionnaireTemplateId={onboardingCase?.questionnaireTemplateId} />
             )}
           </div>
+          {merchant?.type === 'PF' && documents.length > 0 && (
+            <div className="mt-4">
+              <CaseDocumentsTab documents={documents} caseId={caseId} merchantName={merchant?.fullName} />
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="documents">

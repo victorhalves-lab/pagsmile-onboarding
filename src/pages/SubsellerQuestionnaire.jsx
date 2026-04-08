@@ -71,7 +71,7 @@ export default function SubsellerQuestionnaire() {
       <DynamicQuestionnaire
         templateModel="subseller_pf"
         storageKey="compliance_data_subseller_pf"
-        documentUploadPage="DocumentUploadFull"
+        documentUploadPage="SubsellerDocUpload"
         flowType="subseller_pf"
         badgeLabel="SUBSELLER PF"
         badgeColor="bg-purple-100 text-purple-700"
