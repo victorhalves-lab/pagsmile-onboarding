@@ -155,7 +155,7 @@ const MODEL_CONFIG = {
     flowType: 'subseller',
     badgeLabel: 'SUBSELLER',
     badgeColor: 'bg-indigo-100 text-indigo-700',
-    cafRedirectUrl: 'https://cadastro.io/c584e022b7936e44b8bc5acdd3a7945e',
+    // Sem cafRedirectUrl — subsellers fazem upload de documentos direto na plataforma
   },
 };
 
