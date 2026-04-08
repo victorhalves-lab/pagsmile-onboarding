@@ -41,6 +41,8 @@ import KickOffPublico from './pages/KickOffPublico';
 import SlugRedirect from './pages/SlugRedirect';
 import GerenciarTaxasPadrao from './pages/GerenciarTaxasPadrao';
 import SubsellerDocUpload from './pages/SubsellerDocUpload';
+import Cadastro from './pages/Cadastro';
+import CadastroDetalhe from './pages/CadastroDetalhe';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -179,6 +181,8 @@ const AuthenticatedApp = () => {
       <Route path="/ProcessosModelo" element={<LayoutWrapper currentPageName="ProcessosModelo"><ProcessosModelo /></LayoutWrapper>} />
       <Route path="/GerarKickOff" element={<LayoutWrapper currentPageName="GerarKickOff"><GerarKickOff /></LayoutWrapper>} />
       <Route path="/GerenciarTaxasPadrao" element={<LayoutWrapper currentPageName="GerenciarTaxasPadrao"><GerenciarTaxasPadrao /></LayoutWrapper>} />
+      <Route path="/Cadastro" element={<LayoutWrapper currentPageName="Cadastro"><Cadastro /></LayoutWrapper>} />
+      <Route path="/CadastroDetalhe" element={<LayoutWrapper currentPageName="CadastroDetalhe"><CadastroDetalhe /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

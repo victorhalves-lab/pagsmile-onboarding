@@ -30,7 +30,8 @@ import {
   BookOpen,
   Handshake,
   BarChart3,
-  Presentation
+  Presentation,
+  Database
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -116,6 +117,7 @@ export default function Layout({ children, currentPageName }) {
       label: t('menu.compliance'),
       icon: Shield,
       items: [
+        { label: 'Cadastro', path: 'Cadastro', icon: Database },
         { label: t('menu.dashboard'), path: 'AdminDashboard', icon: LayoutDashboard },
         { label: t('menu.compliance_links'), path: 'LinksCompliance', icon: LinkIcon },
         { label: t('menu.received_questionnaires'), path: 'QuestionariosRecebidos', icon: FileCheck },
