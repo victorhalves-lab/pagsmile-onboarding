@@ -117,7 +117,6 @@ export default function Layout({ children, currentPageName }) {
       label: t('menu.compliance'),
       icon: Shield,
       items: [
-        { label: 'Cadastro', path: 'Cadastro', icon: Database },
         { label: t('menu.dashboard'), path: 'AdminDashboard', icon: LayoutDashboard },
         { label: t('menu.compliance_links'), path: 'LinksCompliance', icon: LinkIcon },
         { label: t('menu.received_questionnaires'), path: 'QuestionariosRecebidos', icon: FileCheck },
@@ -369,6 +368,7 @@ export default function Layout({ children, currentPageName }) {
   // Group sections for dividers: primary [leads, compliance, contratos] | secondary [tools, integrations] | admin
   const primarySections = menuStructure.filter(s => ['leads', 'compliance', 'contratos'].includes(s.id));
   const secondarySections = menuStructure.filter(s => ['tools', 'integrations'].includes(s.id));
+  const cadastroItem = { label: 'Cadastro', path: 'Cadastro', icon: Database };
   const adminSections = menuStructure.filter(s => s.id === 'admin');
 
   const renderSections = (sections, isMobile = false) => (
@@ -434,6 +434,15 @@ export default function Layout({ children, currentPageName }) {
               {/* Primary: Leads, Compliance, Contratos */}
               {!collapsed && <div className="px-3 mb-1"><span className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/20">{t('sidebar.operations')}</span></div>}
               {renderSections(primarySections)}
+
+              {/* Cadastro - standalone */}
+              <div className="mt-1">
+                <NavItem 
+                  item={cadastroItem} 
+                  isActive={currentPageName === 'Cadastro' || currentPageName === 'CadastroDetalhe'}
+                  isCollapsed={collapsed}
+                />
+              </div>
 
               <SectionDivider isCollapsed={collapsed} />
 
@@ -590,6 +599,16 @@ export default function Layout({ children, currentPageName }) {
                   {primarySections.map(section => (
                     <NavSection key={section.id} section={section} isMobile isCollapsed={false} />
                   ))}
+                </div>
+
+                {/* Cadastro - standalone mobile */}
+                <div className="mt-1">
+                  <NavItem 
+                    item={cadastroItem} 
+                    isActive={currentPageName === 'Cadastro' || currentPageName === 'CadastroDetalhe'}
+                    onClick={() => setMobileMenuOpen(false)}
+                    isCollapsed={false}
+                  />
                 </div>
 
                 <SectionDivider isCollapsed={false} />
