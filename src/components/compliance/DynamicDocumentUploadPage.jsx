@@ -186,16 +186,22 @@ export default function DynamicDocumentUploadPage({
           }
         }
 
+        const isPF = template?.merchantType === 'PF';
         const merchantData = {
-          type: 'PJ',
-          cpfCnpj: findValue(['cnpj']) || '',
-          fullName: findValue(['razão social', 'razao social']) || '',
-          companyName: findValue(['fantasia', 'nome fantasia']) || '',
+          type: isPF ? 'PF' : 'PJ',
+          cpfCnpj: isPF ? findValue(['cpf']) || '' : findValue(['cnpj']) || '',
+          fullName: isPF ? findValue(['nome completo']) || '' : findValue(['razão social', 'razao social']) || '',
+          companyName: isPF ? '' : findValue(['fantasia', 'nome fantasia']) || '',
           email: findValue(['e-mail', 'email']) || '',
           onboardingStatus: 'Pendente',
           paymentServices: flowType === 'pix' ? ['Pix'] : ['Pix', 'Cartão'],
           isSubseller: isSubsellerLink,
         };
+        if (isPF) {
+          merchantData.dateOfBirth = findValue(['data de nascimento']) || '';
+          merchantData.nationality = findValue(['nacionalidade']) || '';
+          merchantData.motherName = findValue(['nome da mãe', 'nome da mae']) || '';
+        }
         if (parentMerchantId) merchantData.parentMerchantId = parentMerchantId;
 
         const merchant = await base44.entities.Merchant.create(merchantData);

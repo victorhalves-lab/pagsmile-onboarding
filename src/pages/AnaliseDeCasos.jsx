@@ -9,6 +9,7 @@ import { Loader2, User, FileCheck, FileText, Shield, History, UserCheck, Brain, 
 import { toast } from 'sonner';
 import IAAnalysisPanel from '../components/compliance/IAAnalysisPanel';
 import ComplianceResponsesPanel from '../components/compliance/ComplianceResponsesPanel';
+import SubsellerPFResponsesInline from '../components/subseller/SubsellerPFResponsesInline';
 import CaseHeader from '../components/case-analysis/CaseHeader';
 import CaseSummaryCards from '../components/case-analysis/CaseSummaryCards';
 import CaseMerchantTab from '../components/case-analysis/CaseMerchantTab';
@@ -186,7 +187,11 @@ export default function AnaliseDeCasos() {
         <TabsContent value="responses">
           <div className="bg-white rounded-xl border border-slate-200 p-6">
             <h3 className="text-lg font-bold text-[var(--pagsmile-blue)] mb-6">{t('ac.questionnaire_responses')}</h3>
-            <ComplianceResponsesPanel caseId={caseId} questionnaireTemplateId={onboardingCase?.questionnaireTemplateId} />
+            {merchant?.type === 'PF' ? (
+              <SubsellerPFResponsesInline caseId={caseId} merchantName={merchant?.fullName} />
+            ) : (
+              <ComplianceResponsesPanel caseId={caseId} questionnaireTemplateId={onboardingCase?.questionnaireTemplateId} />
+            )}
           </div>
         </TabsContent>
 
