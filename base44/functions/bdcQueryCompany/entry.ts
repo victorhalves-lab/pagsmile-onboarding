@@ -2,6 +2,38 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
 
 const BDC_BASE_URL = 'https://plataforma.bigdatacorp.com.br';
 
+// Mapeamento de nomes amigáveis → nomes reais dos datasets da API de Empresas BDC
+// IMPORTANTE: Para empresas, vários datasets usam nomes diferentes de pessoas
+// Ex: "phones" (pessoas) → "phones_extended" (empresas)
+const COMPANY_DATASET_ALIASES = {
+  'phones': 'phones_extended',
+  'addresses': 'addresses_extended',
+  'emails': 'emails_extended',
+  'collections': 'collections',
+  'processes': 'processes',
+  'basic_data': 'basic_data',
+  'owners': 'owners',
+  'relationships': 'relationships',
+  'domain_data': 'domain_data',
+  'merchant_category_data': 'merchant_category_data',
+  'online_presence': 'online_presence',
+  'media_profile_and_exposure': 'media_profile_and_exposure',
+  'lawsuits_distribution': 'lawsuits_distribution',
+  'sanctions_and_fines': 'sanctions_and_fines',
+  'political_involvement': 'political_involvement',
+  'economic_group_relationships': 'economic_group_relationships',
+  'owner_processes': 'owner_processes',
+  'unified_modeling_data_x1_0': 'unified_modeling_data_x1_0',
+};
+
+// Converte nomes de datasets garantindo compatibilidade com a API de empresas
+function normalizeCompanyDatasets(datasetsStr) {
+  return datasetsStr.split(',').map(d => {
+    const trimmed = d.trim();
+    return COMPANY_DATASET_ALIASES[trimmed] || trimmed;
+  }).join(',');
+}
+
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -17,7 +49,9 @@ Deno.serve(async (req) => {
     }
 
     const cleanCnpj = cnpj.replace(/[^\d]/g, '');
-    const requestedDatasets = datasets || 'basic_data';
+    // Normaliza nomes dos datasets para a API de empresas
+    const rawDatasets = datasets || 'basic_data';
+    const requestedDatasets = normalizeCompanyDatasets(rawDatasets);
 
     const accessToken = Deno.env.get('BDC_ACCESS_TOKEN');
     const tokenId = Deno.env.get('BDC_TOKEN_ID');
@@ -31,7 +65,8 @@ Deno.serve(async (req) => {
       q: `doc{${cleanCnpj}}`,
       Limit: 1,
     };
-    console.log('BDC Request:', JSON.stringify(requestBody));
+    console.log('BDC Company Request:', JSON.stringify(requestBody));
+    console.log('BDC Dataset mapping:', rawDatasets, '->', requestedDatasets);
 
     const response = await fetch(`${BDC_BASE_URL}/empresas`, {
       method: 'POST',

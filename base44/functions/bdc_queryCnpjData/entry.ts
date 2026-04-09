@@ -12,10 +12,9 @@ Deno.serve(async (req) => {
 
         console.log(`[BDC] Querying Data for CNPJ ${cnpj}`);
 
-        // Endpoints reais: 
-        // /empresas/basic_data
-        // /empresas/addresses_extended
-        // /empresas/merchant_category_data
+        // Endpoints reais (nomes corretos dos datasets para API de empresas):
+        // Datasets: basic_data, phones_extended, addresses_extended, emails_extended
+        // Datasets: owners, relationships, merchant_category_data, domain_data
         
         await new Promise(resolve => setTimeout(resolve, 2000));
 
