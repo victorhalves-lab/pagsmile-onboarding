@@ -1,51 +1,39 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.18';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
+
+// DEPRECATED: Document upload is now handled natively via the CAF SDK flow.
+// This function is kept for backward compatibility.
 
 Deno.serve(async (req) => {
     try {
         const base44 = createClientFromRequest(req);
-        
-        // Em um cenário real, validaríamos o usuário aqui
-        // const user = await base44.auth.me();
-        
         const payload = await req.json();
-        const { file, documentType, onboardingCaseId } = payload;
+        const { documentType, onboardingCaseId } = payload;
 
-        if (!file || !documentType || !onboardingCaseId) {
+        if (!documentType || !onboardingCaseId) {
             return Response.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
-        console.log(`[CAF] Starting document upload for Case ${onboardingCaseId}, DocType: ${documentType}`);
+        console.log(`[CAF] Legacy document upload for Case ${onboardingCaseId}, DocType: ${documentType}`);
 
-        // Simulação de chamada à API da CAF
-        // Endpoint real seria algo como: POST https://api.combateafraude.com/v1/documents
-        
-        // Simulando delay de rede
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
-        const mockResponse = {
-            id: `caf_doc_${Date.now()}`,
-            status: "PROCESSING",
-            message: "Document received successfully and is being analyzed.",
-            trackingId: crypto.randomUUID()
-        };
-
-        // Log da integração
-        await base44.asServiceRole.entities.IntegrationLog.create({
+        // Log the integration call
+        const logEntry = {
             onboarding_case_id: onboardingCaseId,
             provider: "CAF",
             service_type: "document_ocr",
-            request_id: mockResponse.id,
-            status: "success", // Status da CHAMADA, não da análise
+            request_id: `legacy_${Date.now()}`,
+            status: "success",
             result_status: "PENDING_REVIEW",
-            duration_ms: 1500,
+            duration_ms: 0,
             request_payload: { documentType },
-            response_payload: mockResponse
+        };
+
+        await base44.asServiceRole.entities.IntegrationLog.create(logEntry);
+
+        return Response.json({
+            id: logEntry.request_id,
+            status: "PROCESSING",
+            message: "Document received. Use the new CAF native flow for better results.",
         });
-
-        // Atualizar status do documento no banco
-        // await base44.asServiceRole.entities.DocumentUpload.update(...)
-
-        return Response.json(mockResponse);
 
     } catch (error) {
         console.error("[CAF] Error uploading document:", error);

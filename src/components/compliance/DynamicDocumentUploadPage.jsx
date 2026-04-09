@@ -4,10 +4,11 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { 
-  ArrowLeft, FileUp, Loader2, CheckCircle2, AlertTriangle 
+  ArrowLeft, FileUp, Loader2, CheckCircle2, AlertTriangle, ScanFace 
 } from 'lucide-react';
 import { toast } from 'sonner';
 import DynamicDocumentUploader from './DynamicDocumentUploader';
+import CafVerificationStep from './CafVerificationStep';
 import { useComplianceSession } from '../../hooks/useComplianceSession';
 import AutoSaveIndicator from './AutoSaveIndicator';
 
@@ -27,6 +28,8 @@ export default function DynamicDocumentUploadPage({
   const [documents, setDocuments] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [allRequiredUploaded, setAllRequiredUploaded] = useState(false);
+  const [cafPhase, setCafPhase] = useState('pending'); // 'pending' | 'verifying' | 'done' | 'skipped'
+  const [cafResult, setCafResult] = useState(null);
 
   // Session for save & resume
   const {
@@ -95,6 +98,24 @@ export default function DynamicDocumentUploadPage({
     }
   }, [documents, saveProgress]);
 
+  // Check if template has CAF verification docs
+  const hasCafDocs = (tmpl) => {
+    if (!tmpl?.requiredDocuments) return false;
+    return tmpl.requiredDocuments.some(d => d.cafSdk);
+  };
+
+  // Get person data from saved form for CAF
+  const getPersonData = () => {
+    const fd = JSON.parse(localStorage.getItem(formDataStorageKey) || '{}');
+    let name = '', cpf = '';
+    Object.values(fd).forEach(val => {
+      if (typeof val !== 'string') return;
+      const digits = val.replace(/\D/g, '');
+      if (digits.length === 11) cpf = val;
+    });
+    return { name, cpf };
+  };
+
   // Buscar template
   const { data: template, isLoading: loadingTemplate } = useQuery({
     queryKey: ['template', templateId, templateModel],
@@ -104,7 +125,6 @@ export default function DynamicDocumentUploadPage({
         const templates = await base44.entities.QuestionnaireTemplate.filter({ id: savedTemplateId });
         if (templates[0]) return templates[0];
       }
-      
       if (templateId) {
         const templates = await base44.entities.QuestionnaireTemplate.filter({ id: templateId });
         return templates[0] || null;
@@ -127,12 +147,15 @@ export default function DynamicDocumentUploadPage({
   });
 
   const handleSubmit = async () => {
-    // Verificar documentos obrigatórios
+    // Verificar documentos obrigatórios (excluir CAF docs se verificação foi feita)
     const requiredDocs = (template?.requiredDocuments || []).map((doc, index) => ({
       ...doc,
       _docKey: doc.documentTypeId || doc.id || `doc_${index}_${(doc.label || '').replace(/\s+/g, '_').toLowerCase().slice(0, 30)}`
     }));
-    const mandatoryDocs = requiredDocs.filter(d => d.required);
+    const mandatoryDocs = requiredDocs.filter(d => {
+      if (d.cafSdk && (cafPhase === 'done')) return false; // Already verified
+      return d.required;
+    });
     const missingDocs = mandatoryDocs.filter(d => !documents[d._docKey]?.url);
     
     if (missingDocs.length > 0) {
@@ -315,18 +338,28 @@ export default function DynamicDocumentUploadPage({
     );
   }
 
+  const templateHasCaf = hasCafDocs(template);
+  const showCafStep = templateHasCaf && cafPhase !== 'done' && cafPhase !== 'skipped';
+
   return (
     <div className="max-w-4xl mx-auto">
       {/* Header */}
       <div className="text-center mb-8">
         <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-[var(--pagsmile-green)]/10 mb-4">
-          <FileUp className="w-8 h-8 text-[var(--pagsmile-green)]" />
+          {showCafStep ? (
+            <ScanFace className="w-8 h-8 text-purple-600" />
+          ) : (
+            <FileUp className="w-8 h-8 text-[var(--pagsmile-green)]" />
+          )}
         </div>
         <h1 className="text-2xl md:text-3xl font-bold text-[var(--pagsmile-blue)] mb-2">
-          Envio de Documentos
+          {showCafStep ? 'Verificação de Identidade & Documentos' : 'Envio de Documentos'}
         </h1>
         <p className="text-[var(--pagsmile-blue)]/70 max-w-lg mx-auto">
-          Envie os documentos solicitados para concluir sua solicitação de onboarding.
+          {showCafStep
+            ? 'Primeiro, verifique sua identidade. Depois, envie os documentos complementares.'
+            : 'Envie os documentos solicitados para concluir sua solicitação de onboarding.'
+          }
         </p>
         <div className="flex items-center justify-center gap-2 mt-4">
           <div className={`px-3 py-1 rounded-full text-sm font-semibold ${badgeColor}`}>
@@ -342,15 +375,54 @@ export default function DynamicDocumentUploadPage({
         </div>
       </div>
 
-      {/* Upload de Documentos */}
-      <DynamicDocumentUploader
-        template={template}
-        documents={documents}
-        setDocuments={setDocuments}
-        storageKey={documentsStorageKey}
-        onAllRequiredUploaded={setAllRequiredUploaded}
-        formData={JSON.parse(localStorage.getItem(formDataStorageKey) || '{}')}
-      />
+      {/* CAF Verification Step */}
+      {showCafStep && (
+        <div className="mb-8">
+          <CafVerificationStep
+            personName={getPersonData().name}
+            personCpf={getPersonData().cpf}
+            onboardingCaseId={localStorage.getItem('created_onboarding_case_id') || ''}
+            onComplete={(result) => {
+              setCafResult(result);
+              setCafPhase('done');
+              // Auto-mark CAF docs as completed in documents state
+              const cafDocs = (template?.requiredDocuments || []).filter(d => d.cafSdk);
+              const newDocs = { ...documents };
+              cafDocs.forEach(doc => {
+                const key = doc.documentTypeId || doc.id;
+                newDocs[key] = {
+                  url: `caf://verified/${result.transactionId}`,
+                  name: `CAF Verificado - ${doc.label}`,
+                  size: 0,
+                  type: 'caf/verification',
+                  uploadedAt: new Date().toISOString(),
+                  cafTransactionId: result.transactionId,
+                };
+              });
+              setDocuments(newDocs);
+            }}
+            onSkip={() => setCafPhase('skipped')}
+          />
+        </div>
+      )}
+
+      {/* Upload de Documentos (non-CAF docs) */}
+      {!showCafStep && (
+        <DynamicDocumentUploader
+          template={{
+            ...template,
+            requiredDocuments: (template?.requiredDocuments || []).filter(d => {
+              if (d.cafSdk && (cafPhase === 'done' || cafPhase === 'skipped')) return false;
+              return true;
+            }),
+          }}
+          documents={documents}
+          setDocuments={setDocuments}
+          storageKey={documentsStorageKey}
+          onAllRequiredUploaded={setAllRequiredUploaded}
+          formData={JSON.parse(localStorage.getItem(formDataStorageKey) || '{}')}
+        />
+      )}
 
       {/* Botões de Ação */}
       <div className="flex justify-between items-center mt-8 pt-6 border-t border-slate-200">
