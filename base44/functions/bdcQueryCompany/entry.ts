@@ -136,7 +136,9 @@ const DATASET_GROUPS = {
 };
 
 // Converte nomes de datasets garantindo compatibilidade com a API de empresas
-function normalizeCompanyDatasets(datasetsStr) {
+function normalizeCompanyDatasets(rawInput) {
+  // Se vier como array, converte para string separada por vírgula
+  const datasetsStr = Array.isArray(rawInput) ? rawInput.join(',') : String(rawInput || 'basic_data');
   // Se é um grupo pré-definido, expande
   if (DATASET_GROUPS[datasetsStr]) {
     return DATASET_GROUPS[datasetsStr];
