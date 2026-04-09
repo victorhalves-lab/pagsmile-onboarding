@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, User, FileCheck, FileText, Shield, History, UserCheck, Brain, Users } from 'lucide-react';
+import { Loader2, User, FileCheck, FileText, Shield, History, UserCheck, Brain, Users, Database } from 'lucide-react';
 import { toast } from 'sonner';
 import IAAnalysisPanel from '../components/compliance/IAAnalysisPanel';
 import ComplianceResponsesPanel from '../components/compliance/ComplianceResponsesPanel';
@@ -20,6 +20,7 @@ import CaseReviewTab from '../components/case-analysis/CaseReviewTab';
 import CaseReviewDialogs from '../components/case-analysis/CaseReviewDialogs';
 import CaseSubsellersTab from '../components/case-analysis/CaseSubsellersTab';
 import CnpjEnrichmentSummaryCard from '../components/case-analysis/CnpjEnrichmentSummaryCard';
+import BDCEnrichmentPanel from '../components/bdc-enrichment/BDCEnrichmentPanel';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function AnaliseDeCasos() {
@@ -165,6 +166,7 @@ export default function AnaliseDeCasos() {
           <TabsTrigger value="history" className="gap-1"><History className="w-4 h-4" /> {t('ac.tab_history')}</TabsTrigger>
           <TabsTrigger value="review" className="gap-1"><UserCheck className="w-4 h-4" /> {t('ac.tab_review')}</TabsTrigger>
           <TabsTrigger value="subsellers" className="gap-1"><Users className="w-4 h-4" /> {t('ac.tab_subaccounts')}</TabsTrigger>
+          <TabsTrigger value="bdc-enrichment" className="gap-1"><Database className="w-4 h-4" /> Enriquecimento BDC</TabsTrigger>
         </TabsList>
 
         <TabsContent value="ia-analysis">
@@ -231,6 +233,18 @@ export default function AnaliseDeCasos() {
             onShowApprove={() => setShowApproveDialog(true)}
             onShowReject={() => setShowRejectDialog(true)}
             onShowRequestInfo={() => setShowRequestInfoDialog(true)}
+          />
+        </TabsContent>
+
+        <TabsContent value="bdc-enrichment">
+          <BDCEnrichmentPanel
+            onboardingCaseId={caseId}
+            merchant={merchant}
+            complianceScore={complianceScore}
+            onComplete={() => {
+              queryClient.invalidateQueries({ queryKey: ['complianceScore', caseId] });
+              queryClient.invalidateQueries({ queryKey: ['onboardingCase', caseId] });
+            }}
           />
         </TabsContent>
       </Tabs>
