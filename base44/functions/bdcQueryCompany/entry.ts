@@ -16,11 +16,8 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'CNPJ é obrigatório' }, { status: 400 });
     }
 
-    // Clean CNPJ - remove formatting
     const cleanCnpj = cnpj.replace(/[^\d]/g, '');
-
-    // Default datasets for a comprehensive company query
-    const requestedDatasets = datasets || 'registration_data';
+    const requestedDatasets = datasets || 'basic_data';
 
     const accessToken = Deno.env.get('BDC_ACCESS_TOKEN');
     const tokenId = Deno.env.get('BDC_TOKEN_ID');
@@ -29,42 +26,38 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'BDC tokens not configured' }, { status: 500 });
     }
 
-    // Log the request for debugging
     const requestBody = {
       Datasets: requestedDatasets,
       q: `doc{${cleanCnpj}}`,
       Limit: 1,
     };
     console.log('BDC Request:', JSON.stringify(requestBody));
-    console.log('BDC Headers - TokenId:', tokenId);
-    console.log('BDC Headers - AccessToken (first 50 chars):', accessToken.substring(0, 50));
 
     const response = await fetch(`${BDC_BASE_URL}/empresas`, {
       method: 'POST',
       headers: {
         'AccessToken': accessToken,
         'TokenId': tokenId,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
+        'accept': 'application/json',
+        'content-type': 'application/json',
       },
       body: JSON.stringify(requestBody),
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('BDC API Error:', response.status, errorText);
-      return Response.json({ 
-        error: `BDC API returned ${response.status}`, 
-        details: errorText 
-      }, { status: response.status });
+    const rawText = await response.text();
+    console.log('BDC HTTP Status:', response.status);
+    console.log('BDC Raw Response (first 2000):', rawText.substring(0, 2000));
+
+    let data;
+    try {
+      data = JSON.parse(rawText);
+    } catch (e) {
+      return Response.json({ error: 'Failed to parse BDC response', raw: rawText.substring(0, 500) }, { status: 500 });
     }
 
-    const data = await response.json();
-
-    // Check for API-level errors in Status
+    // Check for API-level errors
     if (data.Status) {
-      const datasetStatuses = Object.entries(data.Status);
-      const errors = datasetStatuses.filter(([_, statuses]) => 
+      const errors = Object.entries(data.Status).filter(([_, statuses]) =>
         Array.isArray(statuses) && statuses.some(s => s.Code !== 0)
       );
       if (errors.length > 0) {
