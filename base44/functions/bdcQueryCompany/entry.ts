@@ -29,6 +29,16 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'BDC tokens not configured' }, { status: 500 });
     }
 
+    // Log the request for debugging
+    const requestBody = {
+      Datasets: requestedDatasets,
+      q: `doc{${cleanCnpj}}`,
+      Limit: 1,
+    };
+    console.log('BDC Request:', JSON.stringify(requestBody));
+    console.log('BDC Headers - TokenId:', tokenId);
+    console.log('BDC Headers - AccessToken (first 50 chars):', accessToken.substring(0, 50));
+
     const response = await fetch(`${BDC_BASE_URL}/empresas`, {
       method: 'POST',
       headers: {
@@ -37,11 +47,7 @@ Deno.serve(async (req) => {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        Datasets: requestedDatasets,
-        q: `doc{${cleanCnpj}}`,
-        Limit: 1,
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {
