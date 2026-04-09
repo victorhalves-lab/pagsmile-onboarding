@@ -68,14 +68,23 @@ Deno.serve(async (req) => {
     console.log('BDC Company Request:', JSON.stringify(requestBody));
     console.log('BDC Dataset mapping:', rawDatasets, '->', requestedDatasets);
 
+    // Log tokens parciais para debug (primeiros/últimos 4 chars)
+    const tokenPreview = accessToken ? `${accessToken.substring(0,4)}...${accessToken.slice(-4)}` : 'NULL';
+    const tokenIdPreview = tokenId ? `${tokenId.substring(0,4)}...${tokenId.slice(-4)}` : 'NULL';
+    console.log('BDC Credentials:', { tokenPreview, tokenIdPreview });
+    console.log('BDC URL:', `${BDC_BASE_URL}/empresas`);
+
+    const headers = {
+      'AccessToken': accessToken,
+      'TokenId': tokenId,
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+    console.log('BDC Headers keys:', Object.keys(headers));
+
     const response = await fetch(`${BDC_BASE_URL}/empresas`, {
       method: 'POST',
-      headers: {
-        'AccessToken': accessToken,
-        'TokenId': tokenId,
-        'accept': 'application/json',
-        'content-type': 'application/json',
-      },
+      headers,
       body: JSON.stringify(requestBody),
     });
 
