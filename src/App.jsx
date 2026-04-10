@@ -221,6 +221,17 @@ const AuthenticatedApp = () => {
       {Object.entries(Pages).map(([path, Page]) => {
         // Skip pages that are handled by PublicRoutes
         if (PUBLIC_PATHS.has(`/${path}`)) return null;
+        // Skip pages that have explicit routes below
+        const explicitRoutes = new Set([
+          'GestaoIntroducers','QuestionarioReuniao','ProcessMeetingNotes','IntroducerDashboard',
+          'QuestionarioReuniaoPix','GerenciarSubsellerLinks','ConfiguracaoParceiros',
+          'GestaoPropostasPadrao','CriarPropostaPadrao','PropostaPadraoDetalhes',
+          'GestaoPropostasPix','CriarPropostaPix','PropostaPixDetalhes',
+          'GestaoLandingPages','DadosInsights','RiskScoringV4','RiskScoringSubcontas',
+          'DashboardComercial','DashboardCEO','ProcessosModelo','GerarKickOff',
+          'GerenciarTaxasPadrao','Cadastro','CadastroDetalhe'
+        ]);
+        if (explicitRoutes.has(path)) return null;
         return (
           <Route key={path} path={`/${path}`} element={<LayoutWrapper currentPageName={path}><Page /></LayoutWrapper>} />
         );
