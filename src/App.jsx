@@ -39,6 +39,7 @@ import ProcessosModelo from './pages/ProcessosModelo';
 import GerarKickOff from './pages/GerarKickOff';
 import KickOffPublico from './pages/KickOffPublico';
 import SlugRedirect from './pages/SlugRedirect';
+import AccessDenied from './components/AccessDenied';
 import GerenciarTaxasPadrao from './pages/GerenciarTaxasPadrao';
 import SubsellerDocUpload from './pages/SubsellerDocUpload';
 import Cadastro from './pages/Cadastro';
@@ -123,8 +124,12 @@ const PublicRoutes = () => (
 );
 
 // --- Admin pages require authentication ---
+// ALLOWED ROLES: only users explicitly invited with these roles can access admin pages.
+// Users who self-register via Gmail on a public app get role 'user' and are BLOCKED.
+const ALLOWED_ADMIN_ROLES = new Set(['admin', 'introducer']);
+
 const AuthenticatedApp = () => {
-  const { isLoadingAuth, isLoadingPublicSettings, authError, isAuthenticated, navigateToLogin } = useAuth();
+  const { isLoadingAuth, isLoadingPublicSettings, authError, isAuthenticated, user, navigateToLogin } = useAuth();
 
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
@@ -143,10 +148,16 @@ const AuthenticatedApp = () => {
     }
   }
 
-  // If app is public but user is not logged in, redirect to login
+  // If user is not logged in, redirect to login
   if (!isAuthenticated) {
     navigateToLogin();
     return null;
+  }
+
+  // SECURITY: Block users who self-registered (role 'user') from accessing admin pages.
+  // Only explicitly invited users (admin, introducer) can access.
+  if (user && !ALLOWED_ADMIN_ROLES.has(user.role)) {
+    return <AccessDenied />;
   }
 
   return (
