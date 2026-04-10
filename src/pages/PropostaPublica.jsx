@@ -22,6 +22,7 @@ import RecusaModal from '@/components/proposals/RecusaModal';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 import InternationalPaymentsBanner from '@/components/landing/InternationalPaymentsBanner';
 import { resolveComplianceModel } from '@/components/compliance/segmentToComplianceV4Map';
+import { getOverridesForPrazo } from '@/lib/overridesUtils';
 
 export default function PropostaPublica() {
   const { t } = useTranslation();

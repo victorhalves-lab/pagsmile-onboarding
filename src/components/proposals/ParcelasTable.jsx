@@ -1,4 +1,5 @@
 import React from 'react';
+import { getOverridesForPrazo } from '@/lib/overridesUtils';
 
 const FAIXAS_LABELS = { 1: 'Cash', 2: '2x-6x', 3: '2x-6x', 4: '2x-6x', 5: '2x-6x', 6: '2x-6x', 7: '7x-12x', 8: '7x-12x', 9: '7x-12x', 10: '7x-12x', 11: '7x-12x', 12: '7x-12x', 13: '13x-21x', 14: '13x-21x', 15: '13x-21x', 16: '13x-21x', 17: '13x-21x', 18: '13x-21x', 19: '13x-21x', 20: '13x-21x', 21: '13x-21x' };
 
@@ -48,6 +49,7 @@ export function calcularTabelaParcelas(taxas, taxaRAV, prazo) {
 
 export default function ParcelasTable({ taxas, taxaRAV = 0, prazo = 'D+1', compact = false, taxaFinalOverrides = {} }) {
   const rows = calcularTabelaParcelas(taxas, taxaRAV, prazo);
+  const prazoOverrides = getOverridesForPrazo(taxaFinalOverrides, prazo);
 
   if (!taxas || (!taxas.avista && !taxas.vista && !taxas.de2a6x && !taxas.parcelado_2_6)) {
     return <p className="text-xs text-[var(--pagsmile-blue)]/40 text-center py-2">Preencha as taxas de cartão</p>;
@@ -78,8 +80,8 @@ export default function ParcelasTable({ taxas, taxaRAV = 0, prazo = 'D+1', compa
                   {r.taxaAntecipacao > 0 ? `+${r.taxaAntecipacao.toFixed(2)}%` : '-'}
                 </td>
               )}
-              <td className={`py-1.5 px-2 text-right font-bold ${taxaFinalOverrides[String(r.parcela)] != null ? 'text-amber-600' : 'text-[var(--pagsmile-green)]'}`}>
-                {(taxaFinalOverrides[String(r.parcela)] != null ? taxaFinalOverrides[String(r.parcela)] : r.taxaFinal).toFixed(2)}%
+              <td className={`py-1.5 px-2 text-right font-bold ${prazoOverrides[String(r.parcela)] != null ? 'text-amber-600' : 'text-[var(--pagsmile-green)]'}`}>
+                {(prazoOverrides[String(r.parcela)] != null ? prazoOverrides[String(r.parcela)] : r.taxaFinal).toFixed(2)}%
               </td>
             </tr>
           ))}

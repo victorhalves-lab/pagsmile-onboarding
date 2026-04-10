@@ -1,4 +1,5 @@
 import React from 'react';
+import { getOverridesForPrazo } from '@/lib/overridesUtils';
 
 const BANDEIRAS = [
   { id: 'mastercard', label: 'Master' },
@@ -9,6 +10,7 @@ const BANDEIRAS = [
 ];
 
 export default function PropostaPreview({ form, rates, selectedBrand, onBandeiraChange, taxaFinalOverrides = {}, hideRange13a21 = false }) {
+  const prazoOverrides = getOverridesForPrazo(taxaFinalOverrides, form.prazoRecebimento || 'D+1');
   const parseVal = (val) => { if (!val && val !== 0) return 0; if (typeof val === 'number') return isNaN(val) ? 0 : val; const cleaned = String(val).replace(/\./g, '').replace(',', '.'); const num = parseFloat(cleaned); return isNaN(num) ? 0 : num; };
   const fmtPct = (val) => { const num = typeof val === 'number' ? val : parseVal(val); return isNaN(num) ? '0.00%' : `${num.toFixed(2)}%`; };
 
@@ -36,7 +38,7 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
       }
       taxaAntecipacao = somaAntecip / parcela;
     }
-    const overrideVal = taxaFinalOverrides[String(parcela)];
+    const overrideVal = prazoOverrides[String(parcela)];
     const taxaFinal = overrideVal != null ? overrideVal : taxaBase + taxaAntecipacao;
     rows.push({ parcela, faixaLabel, taxaBase, taxaAntecipacao, taxaFinal, hasOverride: overrideVal != null });
   }

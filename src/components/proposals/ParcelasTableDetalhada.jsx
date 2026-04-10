@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { calcularTabelaParcelas } from './ParcelasTable';
 import AnticipationSimulator from './AnticipationSimulator';
+import { getOverridesForPrazo } from '@/lib/overridesUtils';
 
 const BANDEIRAS = [
   { id: 'mastercard', label: 'Mastercard' },
@@ -31,6 +32,7 @@ export default function ParcelasTableDetalhada({ taxas, taxaRAV = 0, prazo = 'D+
   const [simulatedPrazo, setSimulatedPrazo] = useState(prazo);
   
   const activePrazo = showSimulator ? simulatedPrazo : prazo;
+  const prazoOverrides = getOverridesForPrazo(taxaFinalOverrides, activePrazo);
   const currentTaxas = getTaxasForBandeira(taxas, activeBandeira);
   const allRows = calcularTabelaParcelas(currentTaxas, taxaRAV, activePrazo);
   const rows = hideRange13a21 ? allRows.filter(r => r.parcela <= 12) : allRows;
@@ -87,10 +89,10 @@ export default function ParcelasTableDetalhada({ taxas, taxaRAV = 0, prazo = 'D+
                         </td>
                       )}
                       {(() => {
-                        const applyOverride = (b.id === 'mastercard' || b.id === 'visa') && taxaFinalOverrides[String(r.parcela)] != null;
-                        const val = applyOverride ? taxaFinalOverrides[String(r.parcela)] : r.taxaFinal;
+                        const applyOverride = (b.id === 'mastercard' || b.id === 'visa') && prazoOverrides[String(r.parcela)] != null;
+                        const val = applyOverride ? prazoOverrides[String(r.parcela)] : r.taxaFinal;
                         return (
-                          <td className="py-2 px-3 text-right font-bold text-[#2bc196]">
+                          <td className={`py-2 px-3 text-right font-bold ${applyOverride ? 'text-amber-500' : 'text-[#2bc196]'}`}>
                             {val.toFixed(2)}%
                           </td>
                         );

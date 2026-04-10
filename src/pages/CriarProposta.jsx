@@ -319,6 +319,7 @@ export default function CriarProposta() {
             onChange={(v) => updateForm('taxaFinalOverrides', v)}
             hideCalculationColumns={form.hideCalculationColumns || false}
             onToggleHideColumns={(v) => updateForm('hideCalculationColumns', v)}
+            defaultPrazo={form.prazoRecebimento || 'D+1'}
           />
           <CardOutrasTaxas rates={rates} onUpdateRates={updateRates} partner={selectedPartner} />
         </div>
