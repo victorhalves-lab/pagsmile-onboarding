@@ -40,6 +40,7 @@ import GerarKickOff from './pages/GerarKickOff';
 import KickOffPublico from './pages/KickOffPublico';
 import SlugRedirect from './pages/SlugRedirect';
 import AccessDenied from './components/AccessDenied';
+import AdminLoginScreen from './components/admin/AdminLoginScreen';
 import GerenciarTaxasPadrao from './pages/GerenciarTaxasPadrao';
 import SubsellerDocUpload from './pages/SubsellerDocUpload';
 import Cadastro from './pages/Cadastro';
@@ -130,6 +131,7 @@ const ALLOWED_ADMIN_ROLES = new Set(['admin', 'introducer']);
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, isAuthenticated, user, navigateToLogin } = useAuth();
+  const [adminVerified, setAdminVerified] = React.useState(() => sessionStorage.getItem('admin_verified') === 'true');
 
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
@@ -158,6 +160,12 @@ const AuthenticatedApp = () => {
   // Only explicitly invited users (admin, introducer) can access.
   if (user && !ALLOWED_ADMIN_ROLES.has(user.role)) {
     return <AccessDenied />;
+  }
+
+  // SECURITY LAYER 2: Require admin access code even for invited users.
+  // Code is verified server-side and cached in sessionStorage for the browser session.
+  if (!adminVerified) {
+    return <AdminLoginScreen onSuccess={() => setAdminVerified(true)} />;  
   }
 
   return (
