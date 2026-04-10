@@ -270,35 +270,64 @@ function analyzeIdentity(result) {
   const items = [];
   let score = 0;
 
+  // Official name
+  const officialName = safeGet(bd, 'OfficialName') || safeGet(bd, 'CompanyName');
+  if (officialName) items.push({ label: 'Razão social', value: String(officialName), risk: 'INFO', points: 0 });
+
+  // Trade name
+  const tradeName = safeGet(bd, 'TradeName') || safeGet(bd, 'FantasyName');
+  if (tradeName) items.push({ label: 'Nome fantasia', value: String(tradeName), risk: 'INFO', points: 0 });
+
+  // Tax ID
+  const taxId = safeGet(bd, 'TaxIdNumber') || safeGet(bd, 'CNPJ');
+  if (taxId) items.push({ label: 'CNPJ', value: String(taxId), risk: 'INFO', points: 0 });
+
   // Company age
   const founded = safeGet(bd, 'FoundedDate') || safeGet(bd, 'Age.FoundedDate');
   if (founded) {
     const years = (Date.now() - new Date(founded).getTime()) / (365.25 * 24 * 3600 * 1000);
     const y = Math.floor(years);
-    if (y < 1) { score += 25; items.push({ label: 'Idade da empresa', value: '< 1 ano', risk: 'ALTO', points: 25 }); }
-    else if (y < 2) { score += 15; items.push({ label: 'Idade da empresa', value: `${y} ano(s)`, risk: 'MEDIO', points: 15 }); }
-    else if (y < 5) { score += 5; items.push({ label: 'Idade da empresa', value: `${y} anos`, risk: 'BAIXO', points: 5 }); }
-    else { items.push({ label: 'Idade da empresa', value: `${y} anos`, risk: 'OK', points: 0 }); }
+    const foundedFormatted = new Date(founded).toLocaleDateString('pt-BR');
+    if (y < 1) { score += 25; items.push({ label: 'Idade da empresa', value: `< 1 ano (fundada em ${foundedFormatted})`, risk: 'ALTO', points: 25 }); }
+    else if (y < 2) { score += 15; items.push({ label: 'Idade da empresa', value: `${y} ano(s) (fundada em ${foundedFormatted})`, risk: 'MEDIO', points: 15 }); }
+    else if (y < 5) { score += 5; items.push({ label: 'Idade da empresa', value: `${y} anos (fundada em ${foundedFormatted})`, risk: 'BAIXO', points: 5 }); }
+    else { items.push({ label: 'Idade da empresa', value: `${y} anos (fundada em ${foundedFormatted})`, risk: 'OK', points: 0 }); }
   }
 
   // Tax status
   const status = safeGet(bd, 'TaxIdStatus') || safeGet(bd, 'TaxIdStatusDescription') || '';
-  items.push({ label: 'Situação cadastral', value: String(status), risk: String(status).toUpperCase().includes('ATIV') ? 'OK' : 'CRITICO', points: 0 });
+  const statusDate = safeGet(bd, 'TaxIdStatusDate');
+  const statusReason = safeGet(bd, 'TaxIdStatusReason') || safeGet(bd, 'SpecialSituationDescription') || '';
+  const statusLabel = statusDate ? `${status} (desde ${new Date(statusDate).toLocaleDateString('pt-BR')})` : String(status);
+  const statusFull = statusReason ? `${statusLabel} — Motivo: ${statusReason}` : statusLabel;
+  items.push({ label: 'Situação cadastral', value: statusFull, risk: String(status).toUpperCase().includes('ATIV') ? 'OK' : 'CRITICO', points: 0 });
+
+  // Situação especial
+  const specialSituation = safeGet(bd, 'SpecialSituation') || safeGet(bd, 'SpecialSituationDescription');
+  if (specialSituation && String(specialSituation).trim()) {
+    items.push({ label: 'Situação especial', value: String(specialSituation), risk: 'ALTO', points: 10 });
+    score += 10;
+  }
 
   // Company size
   const size = safeGet(bd, 'CompanySize') || safeGet(bd, 'Size') || safeGet(bd, 'CompanyType_ReceitaFederal');
   if (size) items.push({ label: 'Porte', value: String(size), risk: 'INFO', points: 0 });
 
   // Tax regime
-  const taxRegime = safeGet(bd, 'TaxRegime');
-  const simples = safeGet(bd, 'TaxRegimes.Simples');
-  if (taxRegime) items.push({ label: 'Regime tributário', value: `${taxRegime}${simples ? ' (Simples)' : ''}`, risk: 'INFO', points: 0 });
+  const taxRegime = safeGet(bd, 'TaxRegime') || safeGet(bd, 'TaxRegimes.TaxRegime');
+  const simples = safeGet(bd, 'TaxRegimes.Simples') || safeGet(bd, 'IsSimples');
+  const simplesDate = safeGet(bd, 'TaxRegimes.SimplesDate') || safeGet(bd, 'SimplesStartDate');
+  const mei = safeGet(bd, 'TaxRegimes.Mei') || safeGet(bd, 'IsMEI');
+  let taxDesc = taxRegime ? String(taxRegime) : '';
+  if (simples) taxDesc += ` (Simples Nacional${simplesDate ? ` desde ${new Date(simplesDate).toLocaleDateString('pt-BR')}` : ''})`;
+  if (mei) taxDesc += ' | MEI';
+  if (taxDesc.trim()) items.push({ label: 'Regime tributário', value: taxDesc.trim(), risk: 'INFO', points: 0 });
 
   // Capital
   const capital = safeGet(bd, 'ShareCapital') || safeGet(bd, 'Capital');
   if (capital != null) {
     const val = Number(capital);
-    items.push({ label: 'Capital social', value: `R$ ${val.toLocaleString('pt-BR')}`, risk: val < 1000 ? 'ALTO' : val < 10000 ? 'MEDIO' : 'OK', points: val < 1000 ? 15 : val < 10000 ? 5 : 0 });
+    items.push({ label: 'Capital social', value: `R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, risk: val < 1000 ? 'ALTO' : val < 10000 ? 'MEDIO' : 'OK', points: val < 1000 ? 15 : val < 10000 ? 5 : 0 });
     if (val < 1000) score += 15; else if (val < 10000) score += 5;
   }
 
@@ -306,9 +335,10 @@ function analyzeIdentity(result) {
   let nature = safeGet(bd, 'LegalNature');
   if (nature && typeof nature === 'object') nature = nature.Activity || nature.Description || nature.Code || JSON.stringify(nature);
   const natureDesc = safeGet(bd, 'LegalNatureDescription');
-  if (nature || natureDesc) items.push({ label: 'Natureza jurídica', value: String(natureDesc || nature), risk: 'INFO', points: 0 });
+  const natureCode = safeGet(bd, 'LegalNatureCode');
+  if (nature || natureDesc) items.push({ label: 'Natureza jurídica', value: `${natureCode ? natureCode + ' — ' : ''}${natureDesc || nature}`, risk: 'INFO', points: 0 });
 
-  // CNAE
+  // CNAE principal
   const cnae = safeGet(bd, 'MainEconomicActivity') || safeGet(bd, 'MainActivityCode');
   const cnaeDesc = safeGet(bd, 'MainEconomicActivityDescription') || safeGet(bd, 'MainActivityDescription') || '';
   if (cnae) {
@@ -317,13 +347,54 @@ function analyzeIdentity(result) {
     if (isHighRisk) score += 30;
   }
 
-  // Trade name
-  const tradeName = safeGet(bd, 'TradeName') || safeGet(bd, 'FantasyName');
-  if (tradeName) items.push({ label: 'Nome fantasia', value: String(tradeName), risk: 'INFO', points: 0 });
+  // CNAEs secundários
+  const secondaryActivities = safeGet(bd, 'SecondaryActivities') || safeGet(bd, 'SideActivities') || safeGet(bd, 'OtherEconomicActivities') || [];
+  if (Array.isArray(secondaryActivities) && secondaryActivities.length > 0) {
+    const cnaeList = secondaryActivities.map(a => {
+      const code = a?.Code || a?.ActivityCode || a?.CNAE || '';
+      const desc = a?.Description || a?.ActivityDescription || '';
+      return code ? `${code} — ${desc}` : desc;
+    }).filter(Boolean).slice(0, 15);
+    if (cnaeList.length > 0) {
+      const hasHighRisk = secondaryActivities.some(a => HIGH_RISK_CNAES.includes(String(a?.Code || a?.ActivityCode || '')));
+      items.push({ label: `CNAEs secundários (${cnaeList.length})`, value: cnaeList.join(' | '), risk: hasHighRisk ? 'ALTO' : 'INFO', points: hasHighRisk ? 15 : 0 });
+      if (hasHighRisk) score += 15;
+    }
+  }
 
-  // Official name
-  const officialName = safeGet(bd, 'OfficialName') || safeGet(bd, 'CompanyName');
-  if (officialName) items.push({ label: 'Razão social', value: String(officialName), risk: 'INFO', points: 0 });
+  // Endereço
+  const addr = safeGet(bd, 'Address') || safeGet(bd, 'MainAddress');
+  if (addr && typeof addr === 'object') {
+    const parts = [addr.Street || addr.Logradouro, addr.Number || addr.Numero, addr.Complement || addr.Complemento, addr.Neighborhood || addr.Bairro, addr.City || addr.Cidade, addr.State || addr.UF, addr.ZipCode || addr.CEP].filter(Boolean);
+    if (parts.length > 0) items.push({ label: 'Endereço sede', value: parts.join(', '), risk: 'INFO', points: 0 });
+  } else if (typeof addr === 'string' && addr) {
+    items.push({ label: 'Endereço sede', value: addr, risk: 'INFO', points: 0 });
+  }
+
+  // Telefone principal
+  const mainPhone = safeGet(bd, 'Phone') || safeGet(bd, 'MainPhone') || safeGet(bd, 'Phones[0]');
+  if (mainPhone) items.push({ label: 'Telefone principal', value: String(typeof mainPhone === 'object' ? (mainPhone.Number || mainPhone.PhoneNumber || JSON.stringify(mainPhone)) : mainPhone), risk: 'INFO', points: 0 });
+
+  // Email principal
+  const mainEmail = safeGet(bd, 'Email') || safeGet(bd, 'MainEmail');
+  if (mainEmail) items.push({ label: 'E-mail principal', value: String(mainEmail), risk: 'INFO', points: 0 });
+
+  // Registration data
+  const regData = result?.RegistrationData || result?.registration_data;
+  if (regData) {
+    const rItems = flattenBDCArray(regData);
+    const first = rItems[0] || {};
+    const inscEstadual = first?.StateRegistration || first?.InscricaoEstadual;
+    const inscMunicipal = first?.MunicipalRegistration || first?.InscricaoMunicipal;
+    const nire = first?.NIRE || first?.Nire;
+    if (inscEstadual) items.push({ label: 'Inscrição estadual', value: String(inscEstadual), risk: 'INFO', points: 0 });
+    if (inscMunicipal) items.push({ label: 'Inscrição municipal', value: String(inscMunicipal), risk: 'INFO', points: 0 });
+    if (nire) items.push({ label: 'NIRE', value: String(nire), risk: 'INFO', points: 0 });
+  }
+
+  // Employees from BasicData
+  const employees = safeGet(bd, 'NumberOfEmployees') || safeGet(bd, 'EmployeesRange');
+  if (employees) items.push({ label: 'Funcionários', value: String(employees), risk: 'INFO', points: 0 });
 
   return { score, items };
 }
@@ -429,13 +500,45 @@ function analyzeOwners(result) {
     }
   }
 
-  // Owners influence
+  // Owners influence — detalhado
   const influence = result?.OwnersInfluence || result?.owners_influence;
   if (influence) {
     const iItems = flattenBDCArray(influence);
     for (const item of iItems) {
       const level = item?.InfluenceLevel || item?.Level;
-      if (level) items.push({ label: 'Influência do QSA', value: String(level), risk: 'INFO', points: 0 });
+      const name = item?.Name || item?.RelatedPersonName || '';
+      const companies = item?.Companies || item?.RelatedCompanies || item?.NumberOfCompanies || '';
+      const states = item?.States || item?.ActiveStates || '';
+      const desc = [name, level ? `Nível: ${level}` : '', companies ? `Empresas: ${typeof companies === 'number' ? companies : JSON.stringify(companies)}` : '', states ? `Estados: ${String(states)}` : ''].filter(Boolean).join(' | ');
+      if (desc) items.push({ label: 'Influência do QSA', value: desc, risk: 'INFO', points: 0 });
+    }
+  }
+
+  // Owners KYC — detalhamento adicional por sócio
+  if (ownersKyc) {
+    const kycItems = flattenBDCArray(ownersKyc);
+    for (const item of kycItems) {
+      const name = item?.Name || item?.RelatedPersonName || 'N/I';
+      const doc = item?.TaxIdNumber || item?.Document || '';
+      const pepLevel = item?.PEPLevel || item?.PepLevel || '';
+      const pepRelation = item?.PEPRelation || item?.PepRelation || '';
+      const sanctionsList = item?.Sanctions || [];
+      const sanctionsDetail = Array.isArray(sanctionsList) ? sanctionsList.map(s => `${s.Source || s.ListName || 'N/I'} (${s.MatchType || s.Type || ''})`.trim()).join('; ') : '';
+      const kycScore = item?.Score || item?.KycScore || item?.IdentityScore;
+      const birthDate = item?.BirthDate || item?.DateOfBirth;
+      const details = [
+        doc ? `Doc: ${doc}` : '',
+        pepLevel ? `PEP Nível: ${pepLevel}` : '',
+        pepRelation ? `Relação PEP: ${pepRelation}` : '',
+        sanctionsDetail ? `Sanções: ${sanctionsDetail}` : '',
+        kycScore != null ? `KYC Score: ${kycScore}` : '',
+        birthDate ? `Nasc: ${new Date(birthDate).toLocaleDateString('pt-BR')}` : '',
+      ].filter(Boolean).join(' | ');
+      if (details) {
+        const hasSanctions = Array.isArray(sanctionsList) && sanctionsList.length > 0;
+        const isPep = item?.IsPEP || item?.IsPep;
+        items.push({ label: `KYC Sócio: ${name}`, value: details, risk: hasSanctions ? 'CRITICO' : isPep ? 'ALTO' : 'INFO', points: 0 });
+      }
     }
   }
 
@@ -585,21 +688,39 @@ function analyzeCompliance(result) {
     if (isPep) score += 40;
   }
 
-  // Government debtors
+  // Government debtors — detalhamento completo
   const debtors = result?.GovernmentDebtors || result?.government_debtors;
   if (debtors) {
     const dItems = flattenBDCArray(debtors);
     let totalDebt = 0;
     const sources = [];
+    const debtEntries = [];
     for (const item of dItems) {
-      totalDebt += Number(item?.TotalValue || item?.Value || 0);
+      const val = Number(item?.TotalValue || item?.Value || 0);
+      totalDebt += val;
       const source = item?.Source || item?.Origin || '';
       if (source && !sources.includes(source)) sources.push(source);
+      const inscNum = item?.InscriptionNumber || item?.Number || '';
+      const inscDate = item?.InscriptionDate || item?.Date || '';
+      const debtType = item?.DebtType || item?.Type || '';
+      const entity = item?.Entity || item?.CreditEntity || '';
+      if (val > 0 || inscNum) {
+        debtEntries.push(`${entity || source}${inscNum ? ` #${inscNum}` : ''}${debtType ? ` (${debtType})` : ''}: R$ ${val.toLocaleString('pt-BR', {minimumFractionDigits:2})}${inscDate ? ` em ${new Date(inscDate).toLocaleDateString('pt-BR')}` : ''}`);
+      }
     }
     if (totalDebt > 0) {
       const pts = totalDebt > 500000 ? 80 : totalDebt > 100000 ? 40 : 20;
       score += pts;
-      items.push({ label: 'Dívida ativa', value: `R$ ${totalDebt.toLocaleString('pt-BR',{minimumFractionDigits:2})}`, risk: totalDebt > 500000 ? 'CRITICO' : 'ALTO', points: pts, details: { sources: sources.join(', ') || 'N/D' } });
+      items.push({ 
+        label: 'Dívida ativa', 
+        value: `R$ ${totalDebt.toLocaleString('pt-BR',{minimumFractionDigits:2})} — ${dItems.length} inscriçã(ões)`, 
+        risk: totalDebt > 500000 ? 'CRITICO' : 'ALTO', 
+        points: pts, 
+        details: { 
+          fontes: sources.join(', ') || 'N/D',
+          detalhamento: debtEntries.length > 0 ? debtEntries.slice(0, 20).join(' | ') : 'N/D',
+        } 
+      });
     } else {
       items.push({ label: 'Dívida ativa', value: 'Nenhuma', risk: 'OK', points: 0 });
     }
@@ -683,19 +804,32 @@ function analyzeCompliance(result) {
     }
   }
 
-  // Collections
+  // Collections — detalhamento completo
   const collections = result?.Collections || result?.collections;
   if (collections) {
     const cItems = flattenBDCArray(collections);
     let hasCollections = false;
+    const collectionDetails = [];
     for (const item of cItems) {
       if (item?.HasCollectionRecords || item?.TotalRecords > 0) hasCollections = true;
+      const total = item?.TotalRecords || item?.Count || 0;
+      const value = item?.TotalValue || item?.Value;
+      const source = item?.Source || item?.Origin || '';
+      const lastDate = item?.LastOccurrence || item?.LastDate || '';
+      if (total > 0 || value) {
+        collectionDetails.push(`${source ? source + ': ' : ''}${total} registro(s)${value ? ` — R$ ${Number(value).toLocaleString('pt-BR', {minimumFractionDigits:2})}` : ''}${lastDate ? ` (último: ${new Date(lastDate).toLocaleDateString('pt-BR')})` : ''}`);
+      }
     }
     if (hasCollections) {
       score += 30;
-      items.push({ label: 'Em cobrança', value: 'SIM', risk: 'ALTO', points: 30 });
+      items.push({ 
+        label: 'Em cobrança / Negativação', 
+        value: `SIM — ${collectionDetails.join(' | ') || 'Registros encontrados'}`, 
+        risk: 'ALTO', 
+        points: 30 
+      });
     } else {
-      items.push({ label: 'Em cobrança', value: 'Não', risk: 'OK', points: 0 });
+      items.push({ label: 'Em cobrança / Negativação', value: 'Não', risk: 'OK', points: 0 });
     }
   }
 
@@ -720,26 +854,33 @@ function analyzeReputation(result) {
   const items = [];
   let score = 0;
 
-  // Media profile (adverse media)
+  // Media profile (adverse media) — detalhamento completo
   const media = result?.MediaProfileAndExposure || result?.media_profile_and_exposure;
   if (media) {
     const mItems = flattenBDCArray(media);
     let positive = 0, negative = 0, veryNeg = 0, neutral = 0;
-    const headlines = [];
+    const negHeadlines = [];
+    const veryNegHeadlines = [];
     for (const item of mItems) {
       const sentiment = String(item?.Sentiment || item?.OverallSentiment || '').toUpperCase();
-      if (sentiment.includes('VERY_NEGATIVE')) { veryNeg++; headlines.push(item?.Title || item?.Headline || 'N/I'); }
-      else if (sentiment.includes('NEGATIVE')) { negative++; headlines.push(item?.Title || item?.Headline || 'N/I'); }
+      const title = item?.Title || item?.Headline || item?.Description || '';
+      const url = item?.URL || item?.Link || item?.SourceUrl || '';
+      const date = item?.Date || item?.PublishDate || '';
+      const source = item?.Source || item?.SourceName || '';
+      const topics = item?.Topics || item?.MainTopics || item?.Categories || [];
+      const entry = [title, source ? `Fonte: ${source}` : '', date ? `Data: ${new Date(date).toLocaleDateString('pt-BR')}` : '', url ? `URL: ${url}` : '', Array.isArray(topics) && topics.length > 0 ? `Tópicos: ${topics.join(', ')}` : ''].filter(Boolean).join(' | ');
+      if (sentiment.includes('VERY_NEGATIVE')) { veryNeg++; veryNegHeadlines.push(entry || 'N/I'); }
+      else if (sentiment.includes('NEGATIVE')) { negative++; negHeadlines.push(entry || 'N/I'); }
       else if (sentiment.includes('POSITIVE')) positive++;
       else neutral++;
     }
     if (veryNeg > 0) {
       score += 80;
-      items.push({ label: 'Mídia muito negativa', value: `${veryNeg} menção(ões)`, risk: 'CRITICO', points: 80, details: { headlines: headlines.slice(0, 5) } });
+      items.push({ label: 'Mídia muito negativa', value: `${veryNeg} menção(ões)`, risk: 'CRITICO', points: 80, details: { manchetes: veryNegHeadlines.slice(0, 10) } });
     }
     if (negative > 0) {
       score += 30;
-      items.push({ label: 'Mídia negativa', value: `${negative} menção(ões)`, risk: 'ALTO', points: 30, details: { headlines: headlines.slice(0, 5) } });
+      items.push({ label: 'Mídia negativa', value: `${negative} menção(ões)`, risk: 'ALTO', points: 30, details: { manchetes: negHeadlines.slice(0, 10) } });
     }
     if (positive > 0 || neutral > 0) {
       items.push({ label: 'Mídia neutra/positiva', value: `${positive} positiva(s), ${neutral} neutra(s)`, risk: 'OK', points: 0 });
@@ -749,7 +890,7 @@ function analyzeReputation(result) {
     }
   }
 
-  // Reputations (Reclame Aqui etc)
+  // Reputations (Reclame Aqui etc) — detalhamento completo
   const rep = result?.ReputationsAndReviews || result?.reputations_and_reviews;
   if (rep) {
     const rItems = flattenBDCArray(rep);
@@ -758,12 +899,27 @@ function analyzeReputation(result) {
       const rating = item?.Rating || item?.Score || item?.GeneralScore;
       const complaints = item?.TotalComplaints || item?.ComplaintsCount || 0;
       const resolved = item?.ResolvedPercentage || item?.ResolutionRate || 0;
+      const notResolved = item?.NotResolvedPercentage || item?.UnresolvedRate || '';
+      const avgResponse = item?.AverageResponseTime || item?.ResponseTime || '';
+      const status = item?.ReputationStatus || item?.Status || '';
+      const lastUpdate = item?.LastUpdate || item?.EvaluationDate || '';
+      const mainComplaints = item?.MainComplaints || item?.TopCategories || [];
       if (rating != null) {
         const r = Number(rating);
         const risk = r >= 7 ? 'OK' : r >= 5 ? 'MEDIO' : 'ALTO';
         const pts = r < 5 ? 20 : r < 7 ? 10 : -10;
         score += pts;
-        items.push({ label: platform, value: `Nota ${r}/10 — ${complaints} reclamações — ${resolved}% resolvidas`, risk, points: pts });
+        const desc = [
+          `Nota ${r}/10`,
+          `${complaints} reclamações`,
+          `${resolved}% resolvidas`,
+          notResolved ? `${notResolved}% não resolvidas` : '',
+          avgResponse ? `Tempo médio: ${avgResponse}` : '',
+          status ? `Status: ${status}` : '',
+          lastUpdate ? `Atualizado: ${new Date(lastUpdate).toLocaleDateString('pt-BR')}` : '',
+          Array.isArray(mainComplaints) && mainComplaints.length > 0 ? `Principais: ${mainComplaints.slice(0,5).join(', ')}` : '',
+        ].filter(Boolean).join(' — ');
+        items.push({ label: platform, value: desc, risk, points: pts });
       }
     }
   }
@@ -864,40 +1020,107 @@ function analyzePersonData(result) {
   const bd = result?.BasicData || result?.basic_data;
   if (bd) {
     const first = (typeof bd === 'object' && !Array.isArray(bd)) ? bd : (flattenBDCArray(bd)[0] || {});
-    sections.identity.items.push({ label: 'Nome', value: first?.Name || first?.PersonalName || first?.FullName || 'N/D', risk: 'INFO', points: 0 });
-    sections.identity.items.push({ label: 'Situação CPF', value: first?.TaxIdStatus || 'N/D', risk: String(first?.TaxIdStatus || '').toUpperCase().includes('REGULAR') ? 'OK' : 'ALTO', points: 0 });
+    sections.identity.items.push({ label: 'Nome completo', value: first?.Name || first?.PersonalName || first?.FullName || 'N/D', risk: 'INFO', points: 0 });
+    const taxId = first?.TaxIdNumber || first?.CPF;
+    if (taxId) sections.identity.items.push({ label: 'CPF', value: String(taxId), risk: 'INFO', points: 0 });
+    const statusPF = first?.TaxIdStatus || first?.TaxIdStatusDescription || '';
+    sections.identity.items.push({ label: 'Situação CPF', value: String(statusPF) || 'N/D', risk: String(statusPF).toUpperCase().includes('REGULAR') ? 'OK' : 'ALTO', points: 0 });
     if (first?.BirthDate) {
       const age = Math.floor((Date.now() - new Date(first.BirthDate).getTime()) / (365.25 * 24 * 3600 * 1000));
-      sections.identity.items.push({ label: 'Idade', value: `${age} anos`, risk: age < 18 ? 'CRITICO' : 'OK', points: 0 });
+      sections.identity.items.push({ label: 'Data de nascimento', value: `${new Date(first.BirthDate).toLocaleDateString('pt-BR')} (${age} anos)`, risk: age < 18 ? 'CRITICO' : 'OK', points: 0 });
     }
     if (first?.MotherName) sections.identity.items.push({ label: 'Nome da mãe', value: first.MotherName, risk: 'INFO', points: 0 });
+    if (first?.Gender || first?.Sex) sections.identity.items.push({ label: 'Gênero', value: String(first.Gender || first.Sex), risk: 'INFO', points: 0 });
+    if (first?.Nationality) sections.identity.items.push({ label: 'Nacionalidade', value: String(first.Nationality), risk: 'INFO', points: 0 });
+    const addrPF = first?.Address || first?.MainAddress;
+    if (addrPF && typeof addrPF === 'object') {
+      const parts = [addrPF.Street, addrPF.Number, addrPF.Complement, addrPF.Neighborhood, addrPF.City, addrPF.State, addrPF.ZipCode].filter(Boolean);
+      if (parts.length > 0) sections.identity.items.push({ label: 'Endereço', value: parts.join(', '), risk: 'INFO', points: 0 });
+    }
+    if (first?.Phone || first?.MainPhone) sections.identity.items.push({ label: 'Telefone', value: String(first.Phone || first.MainPhone), risk: 'INFO', points: 0 });
+    if (first?.Email || first?.MainEmail) sections.identity.items.push({ label: 'E-mail', value: String(first.Email || first.MainEmail), risk: 'INFO', points: 0 });
+    if (first?.DeathDate) {
+      sections.identity.items.push({ label: 'Óbito registrado', value: new Date(first.DeathDate).toLocaleDateString('pt-BR'), risk: 'CRITICO', points: 100 });
+      sections.identity.score += 100;
+    }
   }
 
   const pKyc = result?.Kyc || result?.kyc;
   if (pKyc) {
     const kItems = flattenBDCArray(pKyc);
     let isPep = false;
+    let pepLevel = '';
+    let hasSanctions = false;
+    const sanctionDetails = [];
     for (const item of kItems) {
-      if (item?.IsPEP || item?.IsPep) isPep = true;
+      if (item?.IsPEP || item?.IsPep) { isPep = true; pepLevel = item?.PEPLevel || item?.PepLevel || ''; }
+      const sanctions = item?.Sanctions || [];
+      if (Array.isArray(sanctions) && sanctions.length > 0) {
+        hasSanctions = true;
+        sanctions.forEach(s => sanctionDetails.push(`${s.Source || s.ListName || 'N/I'} (${s.MatchType || s.Type || ''})`));
+      }
     }
-    sections.compliance.items.push({ label: 'PEP', value: isPep ? 'SIM' : 'Não', risk: isPep ? 'ALTO' : 'OK', points: isPep ? 40 : 0 });
+    sections.compliance.items.push({ label: 'PEP', value: isPep ? `SIM${pepLevel ? ` — Nível: ${pepLevel}` : ''}` : 'Não', risk: isPep ? 'ALTO' : 'OK', points: isPep ? 40 : 0 });
     if (isPep) sections.compliance.score += 40;
+    if (hasSanctions) {
+      sections.compliance.items.push({ label: 'Sanções', value: `${sanctionDetails.length} sanção(ões): ${sanctionDetails.join('; ')}`, risk: 'CRITICO', points: 80 });
+      sections.compliance.score += 80;
+    }
   }
 
+  // Processos PF — com detalhamento completo
   const pProcesses = result?.Processes || result?.processes;
   if (pProcesses) {
     const pItems = flattenBDCArray(pProcesses);
     let total = 0;
-    for (const item of pItems) { total += Number(item?.TotalLawsuits || 0); }
-    sections.compliance.items.push({ label: 'Processos', value: total > 0 ? `${total} processo(s)` : 'Nenhum', risk: total > 5 ? 'ALTO' : total > 0 ? 'MEDIO' : 'OK', points: total > 5 ? 30 : total > 0 ? 10 : 0 });
-    if (total > 0) sections.compliance.score += total > 5 ? 30 : 10;
+    let hasCriminal = false;
+    const allLawsuits = [];
+    for (const item of pItems) {
+      total += Number(item?.TotalLawsuits || 0);
+      const types = item?.LawsuitTypes || item?.Categories || [];
+      if (Array.isArray(types) && types.some(t => /criminal|penal|crime/i.test(String(t)))) hasCriminal = true;
+      const lawsuitList = item?.Lawsuits || item?.LawsuitDetails || item?.Items || [];
+      if (Array.isArray(lawsuitList)) {
+        for (const lw of lawsuitList) {
+          allLawsuits.push({
+            number: lw?.LawsuitNumber || lw?.Number || lw?.ProcessNumber || lw?.CnjNumber || 'N/I',
+            court: lw?.Court || lw?.CourtName || lw?.JudicialBody || '',
+            type: lw?.LawsuitType || lw?.Type || lw?.Category || '',
+            subject: lw?.Subject || lw?.MainSubject || lw?.Description || '',
+            status: lw?.Status || lw?.CurrentStatus || '',
+            value: lw?.Value || lw?.CauseValue || lw?.Amount || null,
+            startDate: lw?.StartDate || lw?.FilingDate || lw?.DistributionDate || '',
+            lastUpdate: lw?.LastUpdate || lw?.LastMovementDate || lw?.UpdateDate || '',
+            parties: lw?.Parties || lw?.Participants || lw?.InvolvedParties || [],
+            pole: lw?.Pole || lw?.PartyRole || lw?.Side || '',
+            jurisdiction: lw?.Jurisdiction || lw?.Instance || '',
+            area: lw?.Area || lw?.LawArea || '',
+            lastMovement: lw?.LastMovement || lw?.LastMovementDescription || '',
+          });
+        }
+      }
+    }
+    const displayCount = Math.max(total, allLawsuits.length);
+    if (displayCount > 0) {
+      const pts = hasCriminal ? 50 : (displayCount > 5 ? 30 : 10);
+      sections.compliance.items.push({ label: 'Processos judiciais', value: `${displayCount} processo(s)${hasCriminal ? ' — INCLUI CRIMINAL' : ''}`, risk: hasCriminal ? 'CRITICO' : displayCount > 5 ? 'ALTO' : 'MEDIO', points: pts, lawsuits: allLawsuits });
+      sections.compliance.score += pts;
+    } else {
+      sections.compliance.items.push({ label: 'Processos judiciais', value: 'Nenhum encontrado', risk: 'OK', points: 0 });
+    }
   }
 
   const pCollections = result?.Collections || result?.collections;
   if (pCollections) {
     const cItems = flattenBDCArray(pCollections);
     const has = cItems.some(i => i?.HasCollectionRecords || i?.TotalRecords > 0);
-    sections.compliance.items.push({ label: 'Negativação', value: has ? 'SIM' : 'Não', risk: has ? 'ALTO' : 'OK', points: has ? 30 : 0 });
+    let collectDetails = '';
+    for (const item of cItems) {
+      const total = item?.TotalRecords || item?.TotalValue || '';
+      const src = item?.Source || item?.Origin || '';
+      if (total || src) collectDetails += `${src ? src + ': ' : ''}${total}; `;
+    }
+    sections.compliance.items.push({ label: 'Negativação / Cobranças', value: has ? `SIM${collectDetails ? ' — ' + collectDetails.trim() : ''}` : 'Não', risk: has ? 'ALTO' : 'OK', points: has ? 30 : 0 });
     if (has) sections.compliance.score += 30;
   }
 
@@ -905,11 +1128,30 @@ function analyzePersonData(result) {
   if (pMedia) {
     const mItems = flattenBDCArray(pMedia);
     let neg = 0;
+    const headlines = [];
     for (const item of mItems) {
-      if (String(item?.Sentiment || '').toUpperCase().includes('NEGATIVE')) neg++;
+      const sentiment = String(item?.Sentiment || item?.OverallSentiment || '').toUpperCase();
+      if (sentiment.includes('NEGATIVE')) { neg++; headlines.push(item?.Title || item?.Headline || item?.URL || 'N/I'); }
     }
-    sections.reputation.items.push({ label: 'Adverse media', value: neg > 0 ? `${neg} menção(ões) negativa(s)` : 'Nenhuma', risk: neg > 0 ? 'ALTO' : 'OK', points: neg > 0 ? 30 : 0 });
+    sections.reputation.items.push({ 
+      label: 'Adverse media', 
+      value: neg > 0 ? `${neg} menção(ões) negativa(s)` : 'Nenhuma', 
+      risk: neg > 0 ? 'ALTO' : 'OK', 
+      points: neg > 0 ? 30 : 0,
+      details: headlines.length > 0 ? { headlines: headlines.slice(0, 10) } : undefined,
+    });
     if (neg > 0) sections.reputation.score += 30;
+  }
+
+  // Online presence PF
+  const onlinePresence = result?.OnlinePresence || result?.online_presence;
+  if (onlinePresence) {
+    const opItems = flattenBDCArray(onlinePresence);
+    for (const item of opItems) {
+      const platform = item?.Platform || item?.Source || item?.Network || '';
+      const url = item?.URL || item?.ProfileUrl || item?.Link || '';
+      if (platform || url) sections.reputation.items.push({ label: `Presença online: ${platform}`, value: url || 'Detectado', risk: 'INFO', points: 0 });
+    }
   }
 
   return sections;

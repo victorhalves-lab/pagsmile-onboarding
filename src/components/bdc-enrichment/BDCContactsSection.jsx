@@ -4,6 +4,55 @@ import {
   ChevronDown, ChevronUp, Phone, Mail, MapPin, Users, Building2, Clock
 } from 'lucide-react';
 
+function renderValue(val, depth = 0) {
+  if (val == null || val === '') return null;
+  if (typeof val === 'boolean') return val ? 'Sim' : 'Não';
+  if (typeof val === 'number') return String(val);
+  if (typeof val === 'string') return val;
+  if (Array.isArray(val)) {
+    if (val.length === 0) return null;
+    if (val.every(v => typeof v === 'string' || typeof v === 'number')) return val.join(', ');
+    return val.map((v, i) => (
+      <div key={i} className="ml-2 pl-2 border-l border-slate-200 mt-1">
+        {typeof v === 'object' && v !== null ? (
+          Object.entries(v).filter(([k]) => !k.startsWith('_') && k !== 'MatchKeys').map(([k2, v2]) => {
+            const rendered = renderValue(v2, depth + 1);
+            if (!rendered) return null;
+            return (
+              <div key={k2} className="flex items-start gap-1.5 py-0.5">
+                <span className="text-[10px] font-semibold text-[#002443]/35 min-w-[100px] shrink-0">{formatKey(k2)}</span>
+                <span className="text-[11px] text-[#002443]/80 break-all">{rendered}</span>
+              </div>
+            );
+          })
+        ) : (
+          <span className="text-[11px] text-[#002443]/80">{String(v)}</span>
+        )}
+      </div>
+    ));
+  }
+  if (typeof val === 'object') {
+    const entries = Object.entries(val).filter(([k]) => !k.startsWith('_') && k !== 'MatchKeys');
+    if (entries.length === 0) return null;
+    if (depth > 1) return entries.map(([k, v]) => `${formatKey(k)}: ${typeof v === 'object' ? JSON.stringify(v) : v}`).join(', ');
+    return (
+      <div className="ml-2 pl-2 border-l border-slate-200">
+        {entries.map(([k, v]) => {
+          const rendered = renderValue(v, depth + 1);
+          if (!rendered) return null;
+          return (
+            <div key={k} className="flex items-start gap-1.5 py-0.5">
+              <span className="text-[10px] font-semibold text-[#002443]/35 min-w-[100px] shrink-0">{formatKey(k)}</span>
+              <span className="text-[11px] text-[#002443]/80 break-all">{typeof rendered === 'string' ? rendered : rendered}</span>
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+  return String(val);
+}
+
 function ContactCard({ icon: Icon, label, items, accentColor = 'blue' }) {
   const [open, setOpen] = useState(items.length > 0);
   
@@ -39,15 +88,16 @@ function ContactCard({ icon: Icon, label, items, accentColor = 'blue' }) {
           {items.map((item, i) => (
             <div key={i} className="px-4 py-3 text-xs space-y-1">
               {Object.entries(item).filter(([k]) => !k.startsWith('_') && k !== 'MatchKeys').map(([key, val]) => {
-                if (val == null || val === '' || (typeof val === 'object' && Object.keys(val).length === 0)) return null;
+                const rendered = renderValue(val);
+                if (!rendered) return null;
                 return (
                   <div key={key} className="flex items-start gap-2">
                     <span className="text-[10px] font-semibold text-[#002443]/40 min-w-[120px] shrink-0">
                       {formatKey(key)}
                     </span>
-                    <span className="text-[#002443]/80 break-all">
-                      {typeof val === 'object' ? JSON.stringify(val) : String(val)}
-                    </span>
+                    <div className="text-[#002443]/80 break-all flex-1">
+                      {typeof rendered === 'string' ? <span>{rendered}</span> : rendered}
+                    </div>
                   </div>
                 );
               })}

@@ -26,6 +26,11 @@ function LawsuitCard({ lawsuit, index }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs font-bold text-[#002443] font-mono">{lawsuit.number}</span>
+            {lawsuit.ownerName && (
+              <Badge className="bg-violet-100 text-violet-700 border border-violet-200 text-[9px]">
+                <Users className="w-3 h-3 mr-0.5" /> {lawsuit.ownerName}
+              </Badge>
+            )}
             {isCriminal && (
               <Badge className="bg-red-100 text-red-700 border border-red-200 text-[9px]">
                 <AlertTriangle className="w-3 h-3 mr-0.5" /> CRIMINAL
