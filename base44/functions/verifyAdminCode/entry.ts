@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
 
 Deno.serve(async (req) => {
   try {
@@ -11,17 +11,21 @@ Deno.serve(async (req) => {
 
     const body = await req.json();
     const code = body.code || '';
-    const adminCode = Deno.env.get("ADMIN_ACCESS_CODE") || '';
+    const code2 = body.code2 || '';
 
-    if (!adminCode) {
-      return Response.json({ error: 'Admin code not configured' }, { status: 500 });
+    const adminCode = Deno.env.get("ADMIN_ACCESS_CODE") || '';
+    const adminCode2 = Deno.env.get("ADMIN_ACCESS_CODE_2") || '';
+
+    if (!adminCode || !adminCode2) {
+      return Response.json({ error: 'Admin codes not configured' }, { status: 500 });
     }
 
-    if (code === adminCode) {
+    // Both codes must match
+    if (code === adminCode && code2 === adminCode2) {
       return Response.json({ success: true });
     }
 
-    return Response.json({ success: false, error: 'Código inválido' }, { status: 403 });
+    return Response.json({ success: false, error: 'Códigos inválidos' }, { status: 403 });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }

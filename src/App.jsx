@@ -71,6 +71,28 @@ const PUBLIC_PATHS = new Set([
   '/LeadPixV4',
   '/FechamentoLandingPage',
   '/KickOffPublico',
+  // Legacy compliance flows (public, client-facing)
+  '/ComplianceOnboardingStart',
+  '/ComplianceEcommerce',
+  '/ComplianceFullKYC',
+  '/ComplianceGateway',
+  '/ComplianceLite',
+  '/ComplianceMarketplace',
+  '/ComplianceMerchant',
+  '/CompliancePixOnly',
+  '/ComplianceSaaS',
+  // Document upload flows (public, client-facing)
+  '/DocumentUploadEcommerce',
+  '/DocumentUploadFull',
+  '/DocumentUploadLite',
+  '/DocumentUploadPix',
+  '/DocumentUploadSaaS',
+  // Lead questionnaire flows (public, client-facing)
+  '/LeadQuestionnaire',
+  '/LeadSuccess',
+  // Liveness/verification flows (public, client-facing)
+  '/LivenessFacematchStep',
+  '/LivenessSimulation',
 ]);
 
 // Also treat /s/:slug as public
@@ -106,6 +128,30 @@ const PublicRoutes = () => (
       return Page ? <Route key={name} path={`/${name}`} element={<LayoutWrapper currentPageName={name}><Page /></LayoutWrapper>} /> : null;
     })}
     <Route path="/ComplianceResume" element={<LayoutWrapper currentPageName="ComplianceResume"><ComplianceResume /></LayoutWrapper>} />
+
+    {/* Legacy compliance flows (public, client-facing) */}
+    {['ComplianceOnboardingStart','ComplianceEcommerce','ComplianceFullKYC','ComplianceGateway','ComplianceLite','ComplianceMarketplace','ComplianceMerchant','CompliancePixOnly','ComplianceSaaS'].map(name => {
+      const Page = Pages[name];
+      return Page ? <Route key={name} path={`/${name}`} element={<LayoutWrapper currentPageName={name}><Page /></LayoutWrapper>} /> : null;
+    })}
+
+    {/* Document upload flows (public, client-facing) */}
+    {['DocumentUploadEcommerce','DocumentUploadFull','DocumentUploadLite','DocumentUploadPix','DocumentUploadSaaS'].map(name => {
+      const Page = Pages[name];
+      return Page ? <Route key={name} path={`/${name}`} element={<LayoutWrapper currentPageName={name}><Page /></LayoutWrapper>} /> : null;
+    })}
+
+    {/* Lead questionnaire flows (public, client-facing) */}
+    {['LeadQuestionnaire','LeadSuccess'].map(name => {
+      const Page = Pages[name];
+      return Page ? <Route key={name} path={`/${name}`} element={<LayoutWrapper currentPageName={name}><Page /></LayoutWrapper>} /> : null;
+    })}
+
+    {/* Liveness/verification flows (public, client-facing) */}
+    {['LivenessFacematchStep','LivenessSimulation'].map(name => {
+      const Page = Pages[name];
+      return Page ? <Route key={name} path={`/${name}`} element={<LayoutWrapper currentPageName={name}><Page /></LayoutWrapper>} /> : null;
+    })}
 
     {/* Subseller */}
     <Route path="/SubsellerQuestionnaire" element={<LayoutWrapper currentPageName="SubsellerQuestionnaire"><SubsellerQuestionnaire /></LayoutWrapper>} />
