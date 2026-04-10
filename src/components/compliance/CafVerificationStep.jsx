@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { 
   ScanFace, FileCheck, CheckCircle2, Loader2, AlertCircle,
-  Camera, Shield, ArrowRight, RefreshCw
+  Camera, Shield, ArrowRight, RefreshCw, XCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -13,13 +13,17 @@ import { toast } from 'sonner';
  * Flow:
  * 1. Backend generates sessionToken (Mobile Token) via cafGenerateToken
  * 2. Load CAF Web SDK scripts (UMD) dynamically
- * 3. Step 1: DocumentDetector captures front + back of document
- * 4. Step 2: FaceLiveness performs liveness check
- * 5. Each step returns a signedResponse → sent to cafVerifyResult for validation
+ * 3. Step 1: DocumentDetector captures front of document (RG/CNH)
+ * 4. Step 2: DocumentDetector captures back of document
+ * 5. Step 3: FaceLiveness performs liveness + facematch check
+ * 6. Each step returns a signedResponse → sent to cafVerifyResult for validation
+ * 
+ * SDK URLs (latest stable per CAF docs):
+ * - DocumentDetector 6.13.0: UMD + WASM
+ * - FaceLiveness 0.16.0: UMD
  */
 
 const CAF_DD_SDK_URL = 'https://repo.combateafraude.com/javascript/release/document-detector/6.13.0/document-detector-6.13.0.umd.js';
-const CAF_DD_WASM_URL = 'https://repo.combateafraude.com/javascript/release/document-detector/6.13.0/dd-validator.wasm';
 const CAF_FL_SDK_URL = 'https://repo.combateafraude.com/javascript/release/caf-face-liveness/0.16.0/caf-face-liveness_0.16.0.umd.js';
 
 function loadScript(src) {
@@ -30,16 +34,16 @@ function loadScript(src) {
     script.src = src;
     script.async = true;
     script.onload = resolve;
-    script.onerror = () => reject(new Error(`Failed to load: ${src}`));
+    script.onerror = () => reject(new Error(`Falha ao carregar SDK: ${src}`));
     document.body.appendChild(script);
   });
 }
 
 const STEPS = [
-  { id: 'init', label: 'Preparação', icon: Shield, color: 'blue' },
-  { id: 'document_front', label: 'Doc. Frente', icon: FileCheck, color: 'blue' },
-  { id: 'document_back', label: 'Doc. Verso', icon: FileCheck, color: 'blue' },
-  { id: 'liveness', label: 'Prova de Vida', icon: ScanFace, color: 'purple' },
+  { id: 'init', label: 'Preparação', icon: Shield },
+  { id: 'document_front', label: 'Doc. Frente', icon: FileCheck },
+  { id: 'document_back', label: 'Doc. Verso', icon: FileCheck },
+  { id: 'liveness', label: 'Prova de Vida', icon: ScanFace },
 ];
 
 export default function CafVerificationStep({ 
@@ -52,23 +56,21 @@ export default function CafVerificationStep({
   const [personId, setPersonId] = useState(null);
   const [docResults, setDocResults] = useState({ front: null, back: null });
   const [livenessResult, setLivenessResult] = useState(null);
-  const ddRef = useRef(null);
-  const containerRef = useRef(null);
+  const [retryCount, setRetryCount] = useState(0);
   const flContainerRef = useRef(null);
 
-  // Get current step index for indicator
+  // Step index for progress indicator
   const stepIndex = phase === 'ready' || phase === 'loading' ? 0 
     : phase === 'doc_front' ? 1 
     : phase === 'doc_back' ? 2 
     : phase === 'liveness' ? 3 : 4;
 
-  // Step 1: Get token from backend + load SDKs
+  // ── Step 1: Get token from backend + load SDKs ──
   const startVerification = useCallback(async () => {
     setLoading(true);
     setError(null);
     setPhase('loading');
     try {
-      // Get token from backend
       const response = await base44.functions.invoke('cafGenerateToken', {
         personCpf: personCpf || '',
         onboardingCaseId: onboardingCaseId || '',
@@ -80,11 +82,21 @@ export default function CafVerificationStep({
       setSdkToken(data.sdkToken);
       setPersonId(data.personId);
 
-      // Load SDK scripts in parallel
+      // Load both SDK scripts in parallel
       await Promise.all([
         loadScript(CAF_DD_SDK_URL),
         loadScript(CAF_FL_SDK_URL),
       ]);
+
+      // Verify SDKs loaded correctly
+      const ddModule = window['@combateafraude/document-detector'];
+      const flModule = window['CafFaceLiveness'];
+      if (!ddModule?.DocumentDetector) {
+        throw new Error('DocumentDetector SDK não carregou corretamente. Verifique sua conexão e tente novamente.');
+      }
+      if (!flModule) {
+        throw new Error('FaceLiveness SDK não carregou corretamente. Verifique sua conexão e tente novamente.');
+      }
 
       toast.success('SDK carregado! Iniciando captura do documento...');
       setPhase('doc_front');
@@ -92,13 +104,13 @@ export default function CafVerificationStep({
       console.error('[CAF] Init error:', err);
       setError(err.message);
       setPhase('error');
-      toast.error('Erro ao iniciar verificação');
+      toast.error('Erro ao iniciar verificação: ' + err.message);
     } finally {
       setLoading(false);
     }
   }, [personCpf, onboardingCaseId]);
 
-  // Step 2: Run DocumentDetector for front capture
+  // ── Step 2: DocumentDetector — FRONT capture ──
   useEffect(() => {
     if (phase !== 'doc_front' || !sdkToken) return;
     let dd = null;
@@ -116,21 +128,25 @@ export default function CafVerificationStep({
             general: { fontFamily: 'Plus Jakarta Sans, sans-serif' },
           },
         });
-        ddRef.current = dd;
 
+        // Pre-load AI model for better UX, then initialize
+        if (dd.loadAiModel) {
+          await dd.loadAiModel();
+        }
         await dd.initialize();
+
         const result = await dd.capture({
-          expectedDocument: 'rg_front',
+          expectedDocument: 'any',
           mode: 'automatic',
-          automaticCaptureMaxDuration: 60,
+          automaticCaptureMaxDuration: 90,
           personID: personId,
         });
 
         if (cancelled) return;
-        console.log('[CAF] Doc front captured:', result);
+        console.log('[CAF] Doc front captured successfully');
         setDocResults(prev => ({ ...prev, front: result }));
 
-        // Verify on backend
+        // Log result on backend (fire-and-forget)
         if (result?.signedResponse) {
           base44.functions.invoke('cafVerifyResult', {
             signedResponse: result.signedResponse,
@@ -140,13 +156,20 @@ export default function CafVerificationStep({
         }
 
         await dd.close();
+        await dd.dispose();
         toast.success('Frente do documento capturada!');
         setPhase('doc_back');
       } catch (err) {
         if (cancelled) return;
         console.error('[CAF] Doc front error:', err);
         if (dd) { try { await dd.close(); await dd.dispose(); } catch {} }
-        setError('Erro na captura do documento (frente): ' + (err.message || err));
+        
+        // User cancelled the capture
+        if (err?.name === 'CafSdkCancelledError' || err?.message?.includes('cancelled')) {
+          setError('Captura cancelada pelo usuário. Clique em "Tentar Novamente" para reiniciar.');
+        } else {
+          setError('Erro na captura do documento (frente): ' + (err.message || err));
+        }
         setPhase('error');
       }
     };
@@ -154,7 +177,7 @@ export default function CafVerificationStep({
     return () => { cancelled = true; };
   }, [phase, sdkToken, personId, onboardingCaseId]);
 
-  // Step 3: Run DocumentDetector for back capture
+  // ── Step 3: DocumentDetector — BACK capture ──
   useEffect(() => {
     if (phase !== 'doc_back' || !sdkToken) return;
     let dd = null;
@@ -170,16 +193,20 @@ export default function CafVerificationStep({
           enableFramingAnalyzer: true,
         });
 
+        if (dd.loadAiModel) {
+          await dd.loadAiModel();
+        }
         await dd.initialize();
+
         const result = await dd.capture({
-          expectedDocument: 'rg_back',
+          expectedDocument: 'any',
           mode: 'automatic',
-          automaticCaptureMaxDuration: 60,
+          automaticCaptureMaxDuration: 90,
           personID: personId,
         });
 
         if (cancelled) return;
-        console.log('[CAF] Doc back captured:', result);
+        console.log('[CAF] Doc back captured successfully');
         setDocResults(prev => ({ ...prev, back: result }));
 
         if (result?.signedResponse) {
@@ -198,7 +225,12 @@ export default function CafVerificationStep({
         if (cancelled) return;
         console.error('[CAF] Doc back error:', err);
         if (dd) { try { await dd.close(); await dd.dispose(); } catch {} }
-        setError('Erro na captura do documento (verso): ' + (err.message || err));
+        
+        if (err?.name === 'CafSdkCancelledError' || err?.message?.includes('cancelled')) {
+          setError('Captura cancelada pelo usuário. Clique em "Tentar Novamente" para reiniciar.');
+        } else {
+          setError('Erro na captura do documento (verso): ' + (err.message || err));
+        }
         setPhase('error');
       }
     };
@@ -206,7 +238,7 @@ export default function CafVerificationStep({
     return () => { cancelled = true; };
   }, [phase, sdkToken, personId, onboardingCaseId]);
 
-  // Step 4: Run FaceLiveness
+  // ── Step 4: FaceLiveness ──
   useEffect(() => {
     if (phase !== 'liveness' || !sdkToken) return;
     let cancelled = false;
@@ -214,19 +246,27 @@ export default function CafVerificationStep({
     const runLiveness = async () => {
       try {
         const CafFaceLivenessSdk = window['CafFaceLiveness'];
-        if (!CafFaceLivenessSdk) throw new Error('FaceLiveness SDK not loaded');
+        if (!CafFaceLivenessSdk) throw new Error('FaceLiveness SDK não disponível');
 
+        // Init with container for iProov provider compatibility
         await CafFaceLivenessSdk.init(sdkToken, personId, {
           htmlContainerId: 'caf-fl-container',
+          language: 'pt_BR',
+        }, {
+          startButton: {
+            label: 'Iniciar Verificação Facial',
+            backgroundColor: '#2bc196',
+            color: '#ffffff',
+          },
         });
 
         const result = await CafFaceLivenessSdk.run();
         if (cancelled) return;
 
-        console.log('[CAF] Liveness result:', result);
+        console.log('[CAF] Liveness completed successfully');
         setLivenessResult(result);
 
-        // Verify on backend
+        // Verify on backend (fire-and-forget)
         if (result?.signedResponse) {
           base44.functions.invoke('cafVerifyResult', {
             signedResponse: result.signedResponse,
@@ -242,7 +282,12 @@ export default function CafVerificationStep({
         if (cancelled) return;
         console.error('[CAF] Liveness error:', err);
         try { window['CafFaceLiveness']?.dispose(); } catch {}
-        setError('Erro na prova de vida: ' + (err.message || err));
+        
+        if (err?.name === 'CafSdkCancelledError' || err?.message?.includes('cancelled')) {
+          setError('Verificação facial cancelada pelo usuário.');
+        } else {
+          setError('Erro na prova de vida: ' + (err.message || err));
+        }
         setPhase('error');
       }
     };
@@ -250,7 +295,7 @@ export default function CafVerificationStep({
     return () => { cancelled = true; };
   }, [phase, sdkToken, personId, onboardingCaseId]);
 
-  // When all done, notify parent
+  // ── When all done, notify parent ──
   useEffect(() => {
     if (phase === 'done') {
       onComplete?.({
@@ -263,6 +308,17 @@ export default function CafVerificationStep({
     }
   }, [phase]);
 
+  // ── Retry handler ──
+  const handleRetry = () => {
+    setPhase('ready');
+    setError(null);
+    setDocResults({ front: null, back: null });
+    setLivenessResult(null);
+    setSdkToken(null);
+    setPersonId(null);
+    setRetryCount(prev => prev + 1);
+  };
+
   // === RENDER ===
 
   if (phase === 'done') {
@@ -272,9 +328,20 @@ export default function CafVerificationStep({
           <CheckCircle2 className="w-8 h-8 text-green-600" />
         </div>
         <h3 className="text-lg font-bold text-[#002443] mb-2">Verificação Concluída!</h3>
-        <p className="text-sm text-[#002443]/60 mb-6">
+        <p className="text-sm text-[#002443]/60 mb-2">
           Documento e prova de vida verificados com sucesso.
         </p>
+        <div className="flex flex-col items-center gap-1 mb-6">
+          <div className="flex items-center gap-2 text-xs text-green-600">
+            <CheckCircle2 className="w-3.5 h-3.5" /> Documento frente capturado
+          </div>
+          <div className="flex items-center gap-2 text-xs text-green-600">
+            <CheckCircle2 className="w-3.5 h-3.5" /> Documento verso capturado
+          </div>
+          <div className="flex items-center gap-2 text-xs text-green-600">
+            <CheckCircle2 className="w-3.5 h-3.5" /> Prova de vida aprovada
+          </div>
+        </div>
         <Button
           onClick={() => onComplete?.({ status: 'approved' })}
           className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-8 h-12 rounded-xl"
@@ -292,7 +359,7 @@ export default function CafVerificationStep({
         <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-purple-50 mb-4">
           <ScanFace className="w-8 h-8 text-purple-600" />
         </div>
-        <h2 className="text-xl font-bold text-[#002443] mb-2">Verificação de Identidade</h2>
+        <h2 className="text-xl font-bold text-[#002443] mb-2">Verificação de Identidade (CAF)</h2>
         <p className="text-sm text-[#002443]/60 max-w-md mx-auto">
           Capture seu documento de identidade e realize a prova de vida para verificar sua identidade.
         </p>
@@ -309,11 +376,12 @@ export default function CafVerificationStep({
               {idx > 0 && <div className={`w-6 h-0.5 ${isDone ? 'bg-green-400' : 'bg-slate-200'}`} />}
               <div className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all ${
                 isDone ? 'bg-green-50 border-green-200 text-green-700' :
-                isActive ? 'bg-purple-50 border-purple-200 text-purple-700' :
+                isActive ? 'bg-purple-50 border-purple-200 text-purple-700 ring-1 ring-purple-300' :
                 'bg-slate-50 border-slate-200 text-slate-500'
               }`}>
                 {isDone ? <CheckCircle2 className="w-3.5 h-3.5 text-green-600" /> : 
-                  <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-purple-600' : 'text-slate-400'}`} />}
+                  isActive ? <Loader2 className="w-3.5 h-3.5 text-purple-600 animate-spin" /> :
+                  <Icon className="w-3.5 h-3.5 text-slate-400" />}
                 <span className="hidden sm:inline">{step.label}</span>
               </div>
             </div>
@@ -321,7 +389,7 @@ export default function CafVerificationStep({
         })}
       </div>
 
-      {/* Ready state — show instructions and start button */}
+      {/* ── Ready state ── */}
       {phase === 'ready' && (
         <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
           <div className="flex items-start gap-3 p-3 rounded-xl bg-blue-50 border border-blue-100">
@@ -342,6 +410,18 @@ export default function CafVerificationStep({
               </p>
             </div>
           </div>
+
+          {personCpf && (
+            <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200">
+              <Shield className="w-5 h-5 text-[#002443]/50 shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-[#002443]">CPF identificado: {personCpf}</p>
+                <p className="text-xs text-[#002443]/50 mt-0.5">
+                  A verificação será vinculada a este documento.
+                </p>
+              </div>
+            </div>
+          )}
 
           <div className="flex gap-3 mt-6">
             <Button
@@ -364,7 +444,7 @@ export default function CafVerificationStep({
         </div>
       )}
 
-      {/* Loading state */}
+      {/* ── Loading state ── */}
       {phase === 'loading' && (
         <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center">
           <Loader2 className="w-10 h-10 animate-spin text-purple-500 mx-auto mb-4" />
@@ -373,58 +453,85 @@ export default function CafVerificationStep({
         </div>
       )}
 
-      {/* Active capture phases (doc_front, doc_back, liveness) — SDKs render their own UI as modals/overlays */}
+      {/* ── Active capture (doc_front / doc_back) — SDK renders its own modal overlay ── */}
       {(phase === 'doc_front' || phase === 'doc_back') && (
-        <div className="bg-white rounded-2xl border border-purple-200 p-6 text-center">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-50 mb-3">
-            <FileCheck className="w-6 h-6 text-blue-600 animate-pulse" />
+        <div className="bg-white rounded-2xl border-2 border-purple-200 p-6 text-center">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-blue-50 mb-4">
+            <FileCheck className="w-7 h-7 text-blue-600 animate-pulse" />
           </div>
           <h3 className="text-lg font-bold text-[#002443] mb-2">
             {phase === 'doc_front' ? 'Capture a Frente do Documento' : 'Capture o Verso do Documento'}
           </h3>
-          <p className="text-sm text-[#002443]/60">
+          <p className="text-sm text-[#002443]/60 max-w-sm mx-auto">
             {phase === 'doc_front' 
               ? 'Posicione a frente do seu RG ou CNH na câmera. O SDK fará a captura automaticamente.'
               : 'Agora posicione o verso do documento. A captura será automática.'}
           </p>
-          <div className="mt-4 flex items-center justify-center gap-2 text-xs text-purple-600 font-medium">
+          <div className="mt-4 flex items-center justify-center gap-2 text-xs text-purple-600 font-medium bg-purple-50 rounded-lg py-2 px-4 inline-flex">
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            Aguardando captura...
+            Aguardando captura do SDK...
           </div>
+          <p className="text-[10px] text-[#002443]/30 mt-3">
+            O SDK da CAF abrirá a câmera do dispositivo em uma sobreposição.
+          </p>
         </div>
       )}
 
+      {/* ── FaceLiveness — SDK renders inside our container ── */}
       {phase === 'liveness' && (
-        <div className="bg-white rounded-2xl border border-purple-200 p-6">
+        <div className="bg-white rounded-2xl border-2 border-purple-200 p-6">
           <div className="text-center mb-4">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-purple-50 mb-3">
-              <ScanFace className="w-6 h-6 text-purple-600 animate-pulse" />
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-purple-50 mb-3">
+              <ScanFace className="w-7 h-7 text-purple-600 animate-pulse" />
             </div>
             <h3 className="text-lg font-bold text-[#002443] mb-2">Prova de Vida</h3>
             <p className="text-sm text-[#002443]/60">
               Siga as instruções na tela para completar a verificação facial.
             </p>
           </div>
-          {/* Container where FaceLiveness SDK renders */}
-          <div id="caf-fl-container" ref={flContainerRef} className="min-h-[300px]" />
+          {/* Container where FaceLiveness SDK renders its UI */}
+          <div 
+            id="caf-fl-container" 
+            ref={flContainerRef} 
+            className="min-h-[350px] rounded-xl overflow-hidden border border-slate-200 bg-slate-50" 
+          />
+          <p className="text-[10px] text-[#002443]/30 mt-3 text-center">
+            Tecnologia CAF — Detecção de vivacidade em tempo real
+          </p>
         </div>
       )}
 
-      {/* Error state */}
+      {/* ── Error state ── */}
       {phase === 'error' && (
         <div className="bg-white rounded-2xl border border-red-200 p-6 text-center space-y-4">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-50 mb-2">
-            <AlertCircle className="w-6 h-6 text-red-600" />
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-red-50 mb-2">
+            <XCircle className="w-7 h-7 text-red-500" />
           </div>
           <h3 className="text-lg font-bold text-[#002443]">Erro na Verificação</h3>
-          <p className="text-sm text-red-600 bg-red-50 rounded-lg p-3">{error}</p>
+          <p className="text-sm text-red-600 bg-red-50 rounded-lg p-3 text-left">{error}</p>
+          
+          {retryCount < 3 && (
+            <p className="text-xs text-[#002443]/40">
+              Tentativa {retryCount + 1} de 3
+            </p>
+          )}
+          
           <div className="flex gap-3 justify-center">
-            <Button
-              onClick={() => { setPhase('ready'); setError(null); setDocResults({ front: null, back: null }); }}
-              className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-6 h-11 rounded-xl"
-            >
-              <RefreshCw className="w-4 h-4 mr-2" /> Tentar Novamente
-            </Button>
+            {retryCount < 3 ? (
+              <Button
+                onClick={handleRetry}
+                className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-6 h-11 rounded-xl"
+              >
+                <RefreshCw className="w-4 h-4 mr-2" /> Tentar Novamente
+              </Button>
+            ) : (
+              <div className="text-center">
+                <p className="text-sm text-red-600 mb-3">Limite de tentativas atingido.</p>
+                <p className="text-xs text-[#002443]/50 mb-4">
+                  Se o problema persistir, entre em contato com o suporte enviando print desta tela.
+                </p>
+              </div>
+            )}
             {onSkip && (
               <Button variant="outline" onClick={onSkip} className="border-slate-200 text-slate-500 h-11 rounded-xl">
                 Pular Verificação
@@ -441,6 +548,7 @@ export default function CafVerificationStep({
           <p className="text-sm font-medium text-[#002443]">Verificação segura</p>
           <p className="text-xs text-[#002443]/50 mt-1">
             Tecnologia certificada pela CAF (Combate à Fraude) com detecção de documentos e prova de vida em tempo real.
+            Seus dados são criptografados e processados de forma segura.
           </p>
         </div>
       </div>
