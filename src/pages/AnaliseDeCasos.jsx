@@ -21,6 +21,8 @@ import CaseReviewDialogs from '../components/case-analysis/CaseReviewDialogs';
 import CaseSubsellersTab from '../components/case-analysis/CaseSubsellersTab';
 import CnpjEnrichmentSummaryCard from '../components/case-analysis/CnpjEnrichmentSummaryCard';
 import BDCEnrichmentPanel from '../components/bdc-enrichment/BDCEnrichmentPanel';
+import BDCRawDataTab from '../components/bdc-enrichment/BDCRawDataTab';
+import CaseScoreHeader from '../components/case-analysis/CaseScoreHeader';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function AnaliseDeCasos() {
@@ -148,6 +150,12 @@ export default function AnaliseDeCasos() {
     <div className="space-y-6">
       <CaseHeader onboardingCase={onboardingCase} merchant={merchant} onRefetch={refetchCase} />
 
+      <CaseScoreHeader
+        onboardingCase={onboardingCase}
+        complianceScore={complianceScore}
+        validations={validations}
+      />
+
       <CaseSummaryCards
         complianceScore={complianceScore}
         onboardingCase={onboardingCase}
@@ -167,6 +175,7 @@ export default function AnaliseDeCasos() {
           <TabsTrigger value="review" className="gap-1"><UserCheck className="w-4 h-4" /> {t('ac.tab_review')}</TabsTrigger>
           <TabsTrigger value="subsellers" className="gap-1"><Users className="w-4 h-4" /> {t('ac.tab_subaccounts')}</TabsTrigger>
           <TabsTrigger value="bdc-enrichment" className="gap-1"><Database className="w-4 h-4" /> Enriquecimento BDC</TabsTrigger>
+          <TabsTrigger value="bdc-dados" className="gap-1"><Database className="w-4 h-4" /> Dados BDC</TabsTrigger>
         </TabsList>
 
         <TabsContent value="ia-analysis">
@@ -244,8 +253,13 @@ export default function AnaliseDeCasos() {
             onComplete={() => {
               queryClient.invalidateQueries({ queryKey: ['complianceScore', caseId] });
               queryClient.invalidateQueries({ queryKey: ['onboardingCase', caseId] });
+              queryClient.invalidateQueries({ queryKey: ['validations', caseId] });
             }}
           />
+        </TabsContent>
+
+        <TabsContent value="bdc-dados">
+          <BDCRawDataTab validations={validations} merchant={merchant} />
         </TabsContent>
       </Tabs>
 
