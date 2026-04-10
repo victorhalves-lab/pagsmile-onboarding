@@ -52,13 +52,26 @@ function AnalysisItem({ item }) {
         )}
       </div>
       {showDetails && hasDetails && (
-        <div className="mt-2 ml-4 pl-3 border-l-2 border-slate-200 space-y-1">
+        <div className="mt-2 ml-4 pl-3 border-l-2 border-slate-200 space-y-1.5">
           {Object.entries(item.details).map(([key, val]) => (
             <div key={key} className="flex items-start gap-2">
-              <span className="text-[10px] text-[#002443]/40 font-medium min-w-[80px]">{key}:</span>
-              <span className="text-[10px] text-[#002443]/70">
-                {Array.isArray(val) ? val.join(' • ') : String(val)}
-              </span>
+              <span className="text-[10px] font-semibold text-[#002443]/40 min-w-[90px] shrink-0">{key}:</span>
+              <div className="text-[11px] text-[#002443]/70 leading-relaxed">
+                {Array.isArray(val) ? (
+                  <div className="space-y-0.5">
+                    {val.map((v, vi) => (
+                      <div key={vi} className="flex items-start gap-1">
+                        <span className="text-[#002443]/25 mt-0.5">•</span>
+                        <span>{typeof v === 'object' ? JSON.stringify(v) : String(v)}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : typeof val === 'object' ? (
+                  <pre className="text-[10px] bg-slate-50 p-1.5 rounded whitespace-pre-wrap">{JSON.stringify(val, null, 2)}</pre>
+                ) : (
+                  <span>{String(val)}</span>
+                )}
+              </div>
             </div>
           ))}
         </div>
