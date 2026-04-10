@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { ChevronDown, ChevronUp, AlertTriangle, CheckCircle2, Info, AlertOctagon, Minus } from 'lucide-react';
+import { ChevronDown, ChevronUp, AlertTriangle, CheckCircle2, Info, AlertOctagon } from 'lucide-react';
+import BDCLawsuitsViewer from './BDCLawsuitsViewer';
 
 const RISK_CONFIG = {
   'CRITICO': { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200', icon: AlertOctagon, badgeBg: 'bg-red-100' },
@@ -27,6 +28,7 @@ function AnalysisItem({ item }) {
   const c = RISK_CONFIG[item.risk] || RISK_CONFIG.INFO;
   const hasDetails = item.details && Object.keys(item.details).length > 0;
   const hasOwners = item.owners && item.owners.length > 0;
+  const hasLawsuits = item.lawsuits && item.lawsuits.length > 0;
 
   return (
     <div className={`px-4 py-3 border-b border-slate-100 last:border-0 hover:bg-slate-50/50 transition-colors ${item.risk === 'CRITICO' ? 'bg-red-50/30' : item.risk === 'ALTO' ? 'bg-orange-50/20' : ''}`}>
@@ -43,7 +45,7 @@ function AnalysisItem({ item }) {
           </div>
           <p className={`text-[12px] mt-0.5 ${c.text} leading-relaxed`}>{item.value}</p>
         </div>
-        {(hasDetails || hasOwners) && (
+        {(hasDetails || hasOwners || hasLawsuits) && (
           <button onClick={() => setShowDetails(!showDetails)} className="text-[#002443]/30 hover:text-[#002443]/60 p-1">
             {showDetails ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
@@ -83,6 +85,11 @@ function AnalysisItem({ item }) {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+      {showDetails && hasLawsuits && (
+        <div className="mt-2 ml-4">
+          <BDCLawsuitsViewer lawsuits={item.lawsuits} />
         </div>
       )}
     </div>

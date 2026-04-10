@@ -250,6 +250,10 @@ export default function AnaliseDeCasos() {
             onboardingCaseId={caseId}
             merchant={merchant}
             complianceScore={complianceScore}
+            rawBdcResult={validations
+              .filter(v => v.provider === 'BigDataCorp' && v.resultData)
+              .sort((a, b) => new Date(b.created_date) - new Date(a.created_date))[0]?.resultData || null
+            }
             onComplete={() => {
               queryClient.invalidateQueries({ queryKey: ['complianceScore', caseId] });
               queryClient.invalidateQueries({ queryKey: ['onboardingCase', caseId] });

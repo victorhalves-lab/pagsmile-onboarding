@@ -22,46 +22,58 @@ const DATASET_GROUPS = {
   ],
   // Standard — E-commerce, SaaS, Infoprodutos, Dropshipping, Educação, Link Pgto
   STANDARD: [
-    'basic_data','registration_data','kyc','owners_kyc',
+    'basic_data','registration_data','history_basic_data','company_evolution',
+    'kyc','owners_kyc',
     'political_involvement','government_debtors','processes',
     'owners_lawsuits','media_profile_and_exposure',
     'relationships','owners_influence',
     'domains','passages','reputations_and_reviews',
     'awards_and_certifications','activity_indicators','marketplace_data',
     'collections','merchant_category_data',
-    'emails_extended','addresses_extended',
+    'phones_extended','emails_extended','addresses_extended',
+    'related_people_phones','related_people_emails','related_people_addresses',
     'owners_electoral_donors',
   ],
   // Lite — MPE
   LITE: [
-    'basic_data','registration_data','kyc','owners_kyc',
+    'basic_data','registration_data','history_basic_data','company_evolution',
+    'kyc','owners_kyc',
     'activity_indicators','domains','passages',
     'collections','government_debtors','processes',
     'merchant_category_data','relationships',
-    'emails_extended','addresses_extended',
+    'phones_extended','emails_extended','addresses_extended',
+    'related_people_phones','related_people_emails','related_people_addresses',
   ],
   // PIX Merchant
   PIX_MERCHANT: [
-    'basic_data','registration_data','kyc','owners_kyc',
+    'basic_data','registration_data','history_basic_data','company_evolution',
+    'kyc','owners_kyc',
     'activity_indicators','government_debtors','processes',
     'collections','domains','passages','merchant_category_data',
+    'phones_extended','emails_extended','addresses_extended',
+    'related_people_phones','related_people_emails','related_people_addresses',
   ],
   // PIX Intermediário
   PIX_INTERMEDIARIO: [
-    'basic_data','registration_data','kyc','owners_kyc',
+    'basic_data','registration_data','history_basic_data','company_evolution',
+    'kyc','owners_kyc',
     'activity_indicators','government_debtors','processes',
     'collections','domains','passages','merchant_category_data',
     'financial_market','economic_group','relationships',
     'owners_lawsuits','owners_influence','media_profile_and_exposure',
-    'emails_extended','addresses_extended','political_involvement',
+    'phones_extended','emails_extended','addresses_extended',
+    'related_people_phones','related_people_emails','related_people_addresses',
+    'political_involvement',
   ],
   // Subseller PJ
   SUBSELLER_PJ: [
-    'basic_data','registration_data','kyc','owners_kyc',
+    'basic_data','registration_data','history_basic_data','company_evolution',
+    'kyc','owners_kyc',
     'activity_indicators','domains','passages',
     'collections','government_debtors','processes',
     'merchant_category_data','relationships',
-    'emails_extended','addresses_extended',
+    'phones_extended','emails_extended','addresses_extended',
+    'related_people_phones','related_people_emails','related_people_addresses',
     'reputations_and_reviews','media_profile_and_exposure',
   ],
   // Subseller PF (endpoint /pessoas)
@@ -69,6 +81,7 @@ const DATASET_GROUPS = {
     'basic_data','kyc','processes','collections',
     'emails_extended','phones_extended','addresses_extended',
     'media_profile_and_exposure','online_presence',
+    'related_people_phones','related_people_emails','related_people_addresses',
   ],
 };
 
@@ -365,22 +378,52 @@ function analyzeOwners(result) {
     items.push({ label: 'Sócios em sanções', value: sanctionedFound.join(', '), risk: 'CRITICO', points: 80 });
   }
 
-  // Owners lawsuits
+  // Owners lawsuits — DETALHAMENTO COMPLETO
   const lawsuits = result?.OwnersLawsuits || result?.owners_lawsuits;
   if (lawsuits) {
     const lItems = flattenBDCArray(lawsuits);
     let totalLawsuits = 0;
     let criminalFound = false;
+    const allOwnerLawsuits = [];
     for (const item of lItems) {
       const count = item?.TotalLawsuits || item?.LawsuitsCount || 0;
       totalLawsuits += Number(count) || 0;
       const types = item?.LawsuitTypes || item?.Categories || [];
       if (Array.isArray(types) && types.some(t => /criminal|penal|crime/i.test(String(t)))) criminalFound = true;
+      // Extrai processos individuais
+      const lawsuitList = item?.Lawsuits || item?.LawsuitDetails || item?.Items || [];
+      if (Array.isArray(lawsuitList)) {
+        for (const lw of lawsuitList) {
+          allOwnerLawsuits.push({
+            number: lw?.LawsuitNumber || lw?.Number || lw?.ProcessNumber || lw?.CnjNumber || 'N/I',
+            court: lw?.Court || lw?.CourtName || lw?.JudicialBody || '',
+            type: lw?.LawsuitType || lw?.Type || lw?.Category || '',
+            subject: lw?.Subject || lw?.MainSubject || lw?.Description || '',
+            status: lw?.Status || lw?.CurrentStatus || '',
+            value: lw?.Value || lw?.CauseValue || lw?.Amount || null,
+            startDate: lw?.StartDate || lw?.FilingDate || lw?.DistributionDate || '',
+            lastUpdate: lw?.LastUpdate || lw?.LastMovementDate || lw?.UpdateDate || '',
+            parties: lw?.Parties || lw?.Participants || lw?.InvolvedParties || [],
+            pole: lw?.Pole || lw?.PartyRole || lw?.Side || '',
+            jurisdiction: lw?.Jurisdiction || lw?.Instance || '',
+            area: lw?.Area || lw?.LawArea || '',
+            lastMovement: lw?.LastMovement || lw?.LastMovementDescription || '',
+            ownerName: item?.Name || item?.RelatedPersonName || '',
+          });
+        }
+      }
     }
-    if (totalLawsuits > 0) {
-      const pts = criminalFound ? 50 : (totalLawsuits > 10 ? 20 : 10);
+    if (totalLawsuits > 0 || allOwnerLawsuits.length > 0) {
+      const displayCount = Math.max(totalLawsuits, allOwnerLawsuits.length);
+      const pts = criminalFound ? 50 : (displayCount > 10 ? 20 : 10);
       score += pts;
-      items.push({ label: 'Processos dos sócios', value: `${totalLawsuits} processo(s)${criminalFound ? ' — INCLUI CRIMINAL' : ''}`, risk: criminalFound ? 'CRITICO' : 'ALTO', points: pts });
+      items.push({ 
+        label: 'Processos dos sócios', 
+        value: `${displayCount} processo(s)${criminalFound ? ' — INCLUI CRIMINAL' : ''}`, 
+        risk: criminalFound ? 'CRITICO' : 'ALTO', 
+        points: pts,
+        lawsuits: allOwnerLawsuits,
+      });
     } else {
       items.push({ label: 'Processos dos sócios', value: 'Nenhum encontrado', risk: 'OK', points: 0 });
     }
@@ -562,21 +605,79 @@ function analyzeCompliance(result) {
     }
   }
 
-  // Processes (company)
-  const processes = result?.Processes || result?.processes;
+  // Processes (company) — DETALHAMENTO COMPLETO
+  const processes = result?.Processes || result?.processes || result?.Lawsuits || result?.lawsuits;
   if (processes) {
     const pItems = flattenBDCArray(processes);
     let totalProcesses = 0;
     let hasCriminal = false;
+    const allLawsuits = [];
     for (const item of pItems) {
-      totalProcesses += Number(item?.TotalLawsuits || item?.NumberOfLawsuits || 0);
+      // Conta total
+      const count = Number(item?.TotalLawsuits || item?.NumberOfLawsuits || 0);
+      totalProcesses += count;
       const types = item?.LawsuitTypes || item?.Categories || [];
       if (Array.isArray(types) && types.some(t => /criminal|penal|crime/i.test(String(t)))) hasCriminal = true;
+      // Extrai processos individuais da BDC
+      const lawsuitList = item?.Lawsuits || item?.LawsuitDetails || item?.Items || [];
+      if (Array.isArray(lawsuitList)) {
+        for (const lw of lawsuitList) {
+          allLawsuits.push({
+            number: lw?.LawsuitNumber || lw?.Number || lw?.ProcessNumber || lw?.CnjNumber || 'N/I',
+            court: lw?.Court || lw?.CourtName || lw?.JudicialBody || '',
+            type: lw?.LawsuitType || lw?.Type || lw?.Category || '',
+            subject: lw?.Subject || lw?.MainSubject || lw?.Description || '',
+            status: lw?.Status || lw?.CurrentStatus || '',
+            value: lw?.Value || lw?.CauseValue || lw?.Amount || null,
+            startDate: lw?.StartDate || lw?.FilingDate || lw?.DistributionDate || '',
+            lastUpdate: lw?.LastUpdate || lw?.LastMovementDate || lw?.UpdateDate || '',
+            parties: lw?.Parties || lw?.Participants || lw?.InvolvedParties || [],
+            pole: lw?.Pole || lw?.PartyRole || lw?.Side || '',
+            jurisdiction: lw?.Jurisdiction || lw?.Instance || '',
+            area: lw?.Area || lw?.LawArea || '',
+            lastMovement: lw?.LastMovement || lw?.LastMovementDescription || '',
+          });
+        }
+      }
+      // Também tenta extrair de LawsuitsByType
+      const byType = item?.LawsuitsByType || item?.ByType || {};
+      if (typeof byType === 'object' && !Array.isArray(byType)) {
+        for (const [typeName, typeItems] of Object.entries(byType)) {
+          if (Array.isArray(typeItems)) {
+            for (const lw of typeItems) {
+              if (!allLawsuits.some(e => e.number === (lw?.LawsuitNumber || lw?.Number))) {
+                allLawsuits.push({
+                  number: lw?.LawsuitNumber || lw?.Number || 'N/I',
+                  court: lw?.Court || lw?.CourtName || '',
+                  type: typeName,
+                  subject: lw?.Subject || lw?.Description || '',
+                  status: lw?.Status || '',
+                  value: lw?.Value || lw?.CauseValue || null,
+                  startDate: lw?.StartDate || lw?.FilingDate || '',
+                  lastUpdate: lw?.LastUpdate || '',
+                  parties: lw?.Parties || [],
+                  pole: lw?.Pole || '',
+                  jurisdiction: lw?.Jurisdiction || '',
+                  area: lw?.Area || typeName,
+                  lastMovement: lw?.LastMovement || '',
+                });
+              }
+            }
+          }
+        }
+      }
     }
-    if (totalProcesses > 0) {
-      const pts = hasCriminal ? 50 : (totalProcesses > 20 ? 25 : 10);
+    if (totalProcesses > 0 || allLawsuits.length > 0) {
+      const displayCount = Math.max(totalProcesses, allLawsuits.length);
+      const pts = hasCriminal ? 50 : (displayCount > 20 ? 25 : 10);
       score += pts;
-      items.push({ label: 'Processos judiciais', value: `${totalProcesses} processo(s)${hasCriminal ? ' — INCLUI CRIMINAL' : ''}`, risk: hasCriminal ? 'CRITICO' : 'ALTO', points: pts });
+      items.push({ 
+        label: 'Processos judiciais', 
+        value: `${displayCount} processo(s)${hasCriminal ? ' — INCLUI CRIMINAL' : ''}`, 
+        risk: hasCriminal ? 'CRITICO' : 'ALTO', 
+        points: pts,
+        lawsuits: allLawsuits,
+      });
     } else {
       items.push({ label: 'Processos judiciais', value: 'Nenhum', risk: 'OK', points: 0 });
     }
@@ -1020,6 +1121,25 @@ Deno.serve(async (req) => {
         });
       } catch (e) {
         console.warn('Error saving results:', e.message);
+      }
+    }
+
+    // Save RAW BDC data to ExternalValidationResult for microscopic review
+    if (onboardingCaseId) {
+      try {
+        await base44.asServiceRole.entities.ExternalValidationResult.create({
+          onboardingCaseId,
+          provider: 'BigDataCorp',
+          validationType: `Enriquecimento ${isPF ? 'PF' : 'PJ'} — ${groupKey}`,
+          endpoint: endpoint,
+          resultData: result,
+          score: analysis.scoring.finalScore,
+          status: 'Sucesso',
+          timestamp: new Date().toISOString(),
+          responseTime: bdcData.ElapsedMilliseconds || 0,
+        });
+      } catch (e) {
+        console.warn('Error saving ExternalValidationResult:', e.message);
       }
     }
 

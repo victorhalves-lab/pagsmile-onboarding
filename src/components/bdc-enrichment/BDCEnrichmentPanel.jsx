@@ -3,16 +3,18 @@ import { Button } from '@/components/ui/button';
 import { base44 } from '@/api/base44Client';
 import { 
   Loader2, RefreshCw, Building2, Users, Globe, Shield, 
-  TrendingUp, Newspaper, Landmark, Database, User,
-  AlertOctagon
+  TrendingUp, Newspaper, Database, User,
+  AlertOctagon, Phone
 } from 'lucide-react';
 import BDCScoreHeader from './BDCScoreHeader';
 import BDCAnalysisSection from './BDCAnalysisSection';
+import BDCContactsSection from './BDCContactsSection';
 
-export default function BDCEnrichmentPanel({ onboardingCaseId, merchant, complianceScore, onComplete }) {
+export default function BDCEnrichmentPanel({ onboardingCaseId, merchant, complianceScore, onComplete, rawBdcResult }) {
   const [isRunning, setIsRunning] = useState(false);
   const [analysis, setAnalysis] = useState(null);
   const [error, setError] = useState(null);
+  const [latestRawResult, setLatestRawResult] = useState(rawBdcResult || null);
 
   // Check if we have cached analysis in complianceScore
   const hasCachedAnalysis = complianceScore?.variaveis_aplicadas && complianceScore?.framework_version === 'v4.0' && complianceScore?.fase_2_completa;
@@ -24,6 +26,13 @@ export default function BDCEnrichmentPanel({ onboardingCaseId, merchant, complia
       const res = await base44.functions.invoke('bdcEnrichCase', { onboardingCaseId });
       if (res.data?.error) throw new Error(res.data.error);
       setAnalysis(res.data.analysis);
+      // Fetch fresh raw data after enrichment
+      try {
+        const validations = await base44.entities.ExternalValidationResult.filter(
+          { onboardingCaseId, provider: 'BigDataCorp' }, '-created_date', 1
+        );
+        if (validations[0]?.resultData) setLatestRawResult(validations[0].resultData);
+      } catch (_e) { /* ok */ }
       if (onComplete) onComplete();
     } catch (e) {
       console.error('BDC Enrichment error:', e);
@@ -176,6 +185,11 @@ export default function BDCEnrichmentPanel({ onboardingCaseId, merchant, complia
             defaultOpen={false}
           />
         </>
+      )}
+
+      {/* Contacts, Addresses, History — from raw BDC data */}
+      {latestRawResult && (
+        <BDCContactsSection rawResult={latestRawResult} />
       )}
     </div>
   );
