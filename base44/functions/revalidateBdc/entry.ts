@@ -215,7 +215,7 @@ async function revalidateSingleCase(base44, caseId, dryRun) {
   // Determine datasets
   const datasets = isPF 
     ? 'basic_data,kyc,processes,collections,media_profile_and_exposure,online_presence'
-    : 'basic_data,registration_data,kyc,owners_kyc,political_involvement,government_debtors,processes,owners_lawsuits,media_profile_and_exposure,relationships,owners_influence,domains,passages,reputations_and_reviews,activity_indicators,marketplace_data,collections,merchant_category_data';
+    : 'basic_data,registration_data,history_basic_data,company_evolution,phones_extended,emails_extended,addresses_extended,kyc,owners_kyc,political_involvement,government_debtors,processes,owners_lawsuits,media_profile_and_exposure,relationships,owners_influence,related_people_phones,related_people_emails,related_people_addresses,domains,passages,reputations_and_reviews,activity_indicators,marketplace_data,collections,merchant_category_data';
 
   console.log(`[RevalidateBDC] Querying ${doc} (${isPF ? 'PF' : 'PJ'}) for case ${caseId}`);
 
