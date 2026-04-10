@@ -47,7 +47,7 @@ const STEPS = [
 ];
 
 export default function CafVerificationStep({ 
-  personName, personCpf, onComplete, onSkip, onboardingCaseId 
+  personName, personCpf, onComplete, onboardingCaseId 
 }) {
   const [phase, setPhase] = useState('ready'); // ready | loading | doc_front | doc_back | liveness | done | error
   const [loading, setLoading] = useState(false);
@@ -435,11 +435,7 @@ export default function CafVerificationStep({
                 <><ScanFace className="w-4 h-4 mr-2" /> Iniciar Verificação</>
               )}
             </Button>
-            {onSkip && (
-              <Button variant="outline" onClick={onSkip} className="text-slate-500 border-slate-200 h-12 rounded-xl">
-                Pular
-              </Button>
-            )}
+
           </div>
         </div>
       )}
@@ -532,11 +528,7 @@ export default function CafVerificationStep({
                 </p>
               </div>
             )}
-            {onSkip && (
-              <Button variant="outline" onClick={onSkip} className="border-slate-200 text-slate-500 h-11 rounded-xl">
-                Pular Verificação
-              </Button>
-            )}
+
           </div>
         </div>
       )}

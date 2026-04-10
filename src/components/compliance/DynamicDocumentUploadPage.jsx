@@ -18,17 +18,20 @@ export default function DynamicDocumentUploadPage({
   formDataStorageKey,
   documentsStorageKey,
   questionnairePageName,
-  nextPageName = 'LivenessFacematchStep',
+  nextPageName,
   flowType,
   badgeLabel,
   badgeColor = 'bg-blue-100 text-blue-700',
-  onSubmit
+  onSubmit,
+  skipCaf = false
 }) {
   const navigate = useNavigate();
   const [documents, setDocuments] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [allRequiredUploaded, setAllRequiredUploaded] = useState(false);
-  const [cafPhase, setCafPhase] = useState('pending'); // 'pending' | 'verifying' | 'done' | 'skipped'
+  // CAF verification is ALWAYS required (unless explicitly skipped)
+  // Phase: 'docs_upload' = uploading docs, 'caf_verification' = running CAF SDK, 'done' = all complete
+  const [currentStep, setCurrentStep] = useState('docs_upload');
   const [cafResult, setCafResult] = useState(null);
 
   // Session for save & resume
@@ -98,20 +101,15 @@ export default function DynamicDocumentUploadPage({
     }
   }, [documents, saveProgress]);
 
-  // Check if template has CAF verification docs
-  const hasCafDocs = (tmpl) => {
-    if (!tmpl?.requiredDocuments) return false;
-    return tmpl.requiredDocuments.some(d => d.cafSdk);
-  };
-
   // Get person data from saved form for CAF
   const getPersonData = () => {
     const fd = JSON.parse(localStorage.getItem(formDataStorageKey) || '{}');
     let name = '', cpf = '';
     Object.values(fd).forEach(val => {
       if (typeof val !== 'string') return;
-      const digits = val.replace(/\D/g, '');
-      if (digits.length === 11) cpf = val;
+      const clean = val.replace(/\D/g, '');
+      if (clean.length === 11 && !cpf) cpf = val;
+      if (val.length > 3 && val.includes(' ') && !name) name = val;
     });
     return { name, cpf };
   };
@@ -146,16 +144,34 @@ export default function DynamicDocumentUploadPage({
     enabled: !!template?.id
   });
 
-  const handleSubmit = async () => {
-    // Verificar documentos obrigatórios (excluir CAF docs se verificação foi feita)
+  // Called when user finishes doc uploads and clicks "Próximo" → go to CAF step
+  const handleProceedToCaf = () => {
+    // Validate required docs first
     const requiredDocs = (template?.requiredDocuments || []).map((doc, index) => ({
       ...doc,
       _docKey: doc.documentTypeId || doc.id || `doc_${index}_${(doc.label || '').replace(/\s+/g, '_').toLowerCase().slice(0, 30)}`
     }));
-    const mandatoryDocs = requiredDocs.filter(d => {
-      if (d.cafSdk && (cafPhase === 'done')) return false; // Already verified
-      return d.required;
-    });
+    const mandatoryDocs = requiredDocs.filter(d => d.required);
+    const missingDocs = mandatoryDocs.filter(d => !documents[d._docKey]?.url);
+    if (missingDocs.length > 0) {
+      toast.error(`Envie todos os documentos obrigatórios. Faltam ${missingDocs.length}: ${missingDocs.map(d => d.label || d.name).join(', ')}`);
+      return;
+    }
+    // Go to CAF verification
+    if (!skipCaf) {
+      setCurrentStep('caf_verification');
+    } else {
+      // Skip CAF, submit directly
+      handleFinalSubmit();
+    }
+  };
+
+  const handleFinalSubmit = async () => {
+    const requiredDocs = (template?.requiredDocuments || []).map((doc, index) => ({
+      ...doc,
+      _docKey: doc.documentTypeId || doc.id || `doc_${index}_${(doc.label || '').replace(/\s+/g, '_').toLowerCase().slice(0, 30)}`
+    }));
+    const mandatoryDocs = requiredDocs.filter(d => d.required);
     const missingDocs = mandatoryDocs.filter(d => !documents[d._docKey]?.url);
     
     if (missingDocs.length > 0) {
@@ -167,7 +183,7 @@ export default function DynamicDocumentUploadPage({
 
     try {
       if (onSubmit) {
-        await onSubmit({ template, documents, formDataStorageKey, questions });
+        await onSubmit({ template, documents, formDataStorageKey, questions, cafResult });
         return;
       }
 
@@ -296,14 +312,15 @@ export default function DynamicDocumentUploadPage({
       base44.analytics.track({
         eventName: 'compliance_stage_completed',
         properties: {
-          stage: 'documents',
+          stage: 'documents_and_caf',
           flow_type: flowType || templateModel || '',
           template_model: templateModel || '',
           docs_uploaded: Object.keys(documents).length,
+          caf_completed: !!cafResult,
         }
       });
 
-      toast.success('Documentos enviados com sucesso!');
+      toast.success('Documentos e verificação enviados com sucesso!');
 
       // Mark session as completed
       await completeSession();
@@ -338,26 +355,55 @@ export default function DynamicDocumentUploadPage({
     );
   }
 
-  const templateHasCaf = hasCafDocs(template);
-  const showCafStep = templateHasCaf && cafPhase !== 'done' && cafPhase !== 'skipped';
-
   return (
     <div className="max-w-4xl mx-auto">
       {/* Header */}
       <div className="text-center mb-8">
         <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-[var(--pagsmile-green)]/10 mb-4">
-          {showCafStep ? (
+          {currentStep === 'caf_verification' ? (
             <ScanFace className="w-8 h-8 text-purple-600" />
           ) : (
             <FileUp className="w-8 h-8 text-[var(--pagsmile-green)]" />
           )}
         </div>
+
+        {/* Step indicator */}
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+            currentStep === 'docs_upload' ? 'bg-blue-100 text-blue-700 ring-2 ring-blue-300' :
+            'bg-green-100 text-green-700'
+          }`}>
+            {currentStep !== 'docs_upload' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <span className="w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center">1</span>}
+            Documentos
+          </div>
+          <div className="w-8 h-0.5 bg-slate-200" />
+          {!skipCaf && (
+            <>
+              <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                currentStep === 'caf_verification' ? 'bg-purple-100 text-purple-700 ring-2 ring-purple-300' :
+                currentStep === 'done' ? 'bg-green-100 text-green-700' :
+                'bg-slate-100 text-slate-400'
+              }`}>
+                {currentStep === 'done' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <span className="w-5 h-5 rounded-full bg-slate-300 text-white text-[10px] flex items-center justify-center">2</span>}
+                Verificação CAF
+              </div>
+              <div className="w-8 h-0.5 bg-slate-200" />
+            </>
+          )}
+          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold ${
+            currentStep === 'done' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'
+          }`}>
+            <span className="w-5 h-5 rounded-full bg-slate-300 text-white text-[10px] flex items-center justify-center">{skipCaf ? '2' : '3'}</span>
+            Conclusão
+          </div>
+        </div>
+
         <h1 className="text-2xl md:text-3xl font-bold text-[var(--pagsmile-blue)] mb-2">
-          {showCafStep ? 'Verificação de Identidade & Documentos' : 'Envio de Documentos'}
+          {currentStep === 'caf_verification' ? 'Verificação de Identidade (CAF)' : 'Envio de Documentos'}
         </h1>
         <p className="text-[var(--pagsmile-blue)]/70 max-w-lg mx-auto">
-          {showCafStep
-            ? 'Primeiro, verifique sua identidade. Depois, envie os documentos complementares.'
+          {currentStep === 'caf_verification'
+            ? 'Capture seu documento e realize a prova de vida para verificar sua identidade.'
             : 'Envie os documentos solicitados para concluir sua solicitação de onboarding.'
           }
         </p>
@@ -375,47 +421,10 @@ export default function DynamicDocumentUploadPage({
         </div>
       </div>
 
-      {/* CAF Verification Step */}
-      {showCafStep && (
-        <div className="mb-8">
-          <CafVerificationStep
-            personName={getPersonData().name}
-            personCpf={getPersonData().cpf}
-            onboardingCaseId={localStorage.getItem('created_onboarding_case_id') || ''}
-            onComplete={(result) => {
-              setCafResult(result);
-              setCafPhase('done');
-              // Auto-mark CAF docs as completed in documents state
-              const cafDocs = (template?.requiredDocuments || []).filter(d => d.cafSdk);
-              const newDocs = { ...documents };
-              cafDocs.forEach(doc => {
-                const key = doc.documentTypeId || doc.id;
-                newDocs[key] = {
-                  url: `caf://verified/${result.transactionId}`,
-                  name: `CAF Verificado - ${doc.label}`,
-                  size: 0,
-                  type: 'caf/verification',
-                  uploadedAt: new Date().toISOString(),
-                  cafTransactionId: result.transactionId,
-                };
-              });
-              setDocuments(newDocs);
-            }}
-            onSkip={() => setCafPhase('skipped')}
-          />
-        </div>
-      )}
-
-      {/* Upload de Documentos (non-CAF docs) */}
-      {!showCafStep && (
+      {/* Step 1: Upload de Documentos */}
+      {currentStep === 'docs_upload' && (
         <DynamicDocumentUploader
-          template={{
-            ...template,
-            requiredDocuments: (template?.requiredDocuments || []).filter(d => {
-              if (d.cafSdk && (cafPhase === 'done' || cafPhase === 'skipped')) return false;
-              return true;
-            }),
-          }}
+          template={template}
           documents={documents}
           setDocuments={setDocuments}
           storageKey={documentsStorageKey}
@@ -424,37 +433,72 @@ export default function DynamicDocumentUploadPage({
         />
       )}
 
+      {/* Step 2: CAF Verification (DocumentDetector + FaceLiveness) */}
+      {currentStep === 'caf_verification' && (
+        <div className="mb-8">
+          <CafVerificationStep
+            personName={getPersonData().name}
+            personCpf={getPersonData().cpf}
+            onboardingCaseId={localStorage.getItem('created_onboarding_case_id') || ''}
+            onComplete={(result) => {
+              setCafResult(result);
+              setCurrentStep('done');
+              // Auto-submit after CAF completes
+              handleFinalSubmit();
+            }}
+          />
+        </div>
+      )}
+
       {/* Botões de Ação */}
-      <div className="flex justify-between items-center mt-8 pt-6 border-t border-slate-200">
-        <Button
-          variant="ghost"
-          onClick={() => navigate(`/${questionnairePageName}`)}
-          className="text-slate-500 hover:text-[var(--pagsmile-blue)]"
-        >
-          <ArrowLeft className="w-4 h-4 mr-2" />
-          Voltar ao Questionário
-        </Button>
+      {currentStep === 'docs_upload' && (
+        <div className="flex justify-between items-center mt-8 pt-6 border-t border-slate-200">
+          <Button
+            variant="ghost"
+            onClick={() => navigate(`/${questionnairePageName}`)}
+            className="text-slate-500 hover:text-[var(--pagsmile-blue)]"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Voltar ao Questionário
+          </Button>
 
-        <Button
-          onClick={handleSubmit}
-          disabled={isSubmitting}
-          className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white px-8 h-12 rounded-xl shadow-lg shadow-green-500/20 disabled:opacity-50"
-        >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Enviando...
-            </>
-          ) : (
-            <>
-              Concluir Submissão
-              <CheckCircle2 className="w-4 h-4 ml-2" />
-            </>
-          )}
-        </Button>
-      </div>
+          <Button
+            onClick={handleProceedToCaf}
+            disabled={isSubmitting}
+            className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white px-8 h-12 rounded-xl shadow-lg shadow-green-500/20 disabled:opacity-50"
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Enviando...
+              </>
+            ) : skipCaf ? (
+              <>
+                Concluir Submissão
+                <CheckCircle2 className="w-4 h-4 ml-2" />
+              </>
+            ) : (
+              <>
+                Próximo: Verificação de Identidade
+                <ScanFace className="w-4 h-4 ml-2" />
+              </>
+            )}
+          </Button>
+        </div>
+      )}
 
-      {/* Selfie e documentos são enviados juntos — sem modal de verificação */}
+      {currentStep === 'caf_verification' && (
+        <div className="flex justify-center mt-6">
+          <Button
+            variant="ghost"
+            onClick={() => setCurrentStep('docs_upload')}
+            className="text-slate-500"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Voltar aos Documentos
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
