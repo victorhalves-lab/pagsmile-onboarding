@@ -10,7 +10,7 @@ import { encodeBase64 } from 'https://deno.land/std@0.220.0/encoding/base64.ts';
  *   - Re-autenticação em operações sensíveis
  *
  * Ações:
- *   - register: Registra face (POST /v1/faces)
+ *   - register: Registra face (POST /v1/faces) — aceita cpf como alias de personId
  *   - authenticate: Tenta autenticação (POST /v1/faces/{personId}/attempts)
  *   - getAttempt: Consulta resultado (GET /v1/faces/{personId}/attempts/{attemptId})
  */
@@ -48,7 +48,9 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json();
-    const { action, personId, imageUrl, attemptId, onboardingCaseId } = body;
+    const { action, imageUrl, attemptId, onboardingCaseId } = body;
+    // Accept cpf as alias for personId
+    const personId = body.personId || body.cpf;
 
     if (!action) return Response.json({ error: 'action é obrigatório (register|authenticate|getAttempt)' }, { status: 400 });
 
