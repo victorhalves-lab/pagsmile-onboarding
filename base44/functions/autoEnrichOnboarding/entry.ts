@@ -4,10 +4,13 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
  * autoEnrichOnboarding — Orquestra AUTOMATICAMENTE todo o pipeline de risco
  * quando um OnboardingCase é criado ou muda para "Em Processamento".
  *
- * Pipeline:
- * 1. BDC Enrichment (bdcEnrichCase) → Score V4 + dados brutos
- * 2. SENTINEL IA Analysis (analyzeOnboarding) → Análise qualitativa profunda
- * 3. Risk Scoring V4 individual (inline) → Recalcula com dados BDC+CAF reais
+ * Pipeline COMPLETO (atualizado com Fases CAF):
+ *
+ * Step 0: cafPostCaptureAnalysis → OCR + Documentoscopy + Doc Liveness + Deepfake + Biometria + Facesets
+ * Step 1: bdcEnrichCase (já existe) → Score V4 + dados brutos BDC
+ * Step 2: cafScreeningInternacional → PEPs + Sanctions + Interpol (por sócio, usando nomes do BDC)
+ * Step 2.5: cafCpfValidation → Cross-check CPF CAF vs BDC
+ * Step 3: analyzeOnboarding / SENTINEL → IA análise qualitativa com TODOS os dados
  *
  * Triggado por automação entity em OnboardingCase [create].
  * O cliente NÃO vê nada — apenas o time interno recebe os resultados.
@@ -56,6 +59,23 @@ Deno.serve(async (req) => {
       status: 'Em Processamento'
     });
 
+    // ═══ STEP 0: CAF Post-Capture Analysis (OCR + Documentoscopy + Deepfake + Biometria) ═══
+    let cafPostCaptureSuccess = false;
+    if (onboardingCase.cafCompleted) {
+      try {
+        console.log(`[AutoEnrich] Step 0: Running CAF post-capture analysis...`);
+        const cafRes = await base44.asServiceRole.functions.invoke('cafPostCaptureAnalysis', {
+          onboardingCaseId: caseId
+        });
+        cafPostCaptureSuccess = cafRes?.data?.success === true;
+        console.log(`[AutoEnrich] CAF post-capture: success=${cafPostCaptureSuccess}`);
+      } catch (cafErr) {
+        console.warn(`[AutoEnrich] CAF post-capture failed (non-blocking): ${cafErr.message}`);
+      }
+    } else {
+      console.log(`[AutoEnrich] Step 0: Skipped (cafCompleted=${onboardingCase.cafCompleted})`);
+    }
+
     // ═══ STEP 1: BDC Enrichment ═══
     let bdcSuccess = false;
     try {
@@ -69,10 +89,43 @@ Deno.serve(async (req) => {
       console.warn(`[AutoEnrich] BDC enrichment failed (non-blocking): ${bdcErr.message}`);
     }
 
-    // ═══ STEP 2: SENTINEL IA Analysis ═══
+    // ═══ STEP 2: CAF Screening Internacional (PEPs + Sanctions + Interpol) ═══
+    let screeningSuccess = false;
+    try {
+      console.log(`[AutoEnrich] Step 2: Running CAF international screening...`);
+      const screenRes = await base44.asServiceRole.functions.invoke('cafScreeningInternacional', {
+        onboardingCaseId: caseId
+      });
+      screeningSuccess = screenRes?.data?.success === true;
+      console.log(`[AutoEnrich] Screening: success=${screeningSuccess}, risk=${screenRes?.data?.overallRisk}, persons=${screenRes?.data?.personsScreened}`);
+    } catch (screenErr) {
+      console.warn(`[AutoEnrich] Screening failed (non-blocking): ${screenErr.message}`);
+    }
+
+    // ═══ STEP 2.5: CAF CPF Cross-Validation ═══
+    let cpfValidationSuccess = false;
+    const [merchant] = await base44.asServiceRole.entities.Merchant.filter({ id: onboardingCase.merchantId });
+    const merchantCpf = merchant?.cpfCnpj?.replace(/\D/g, '');
+    if (merchantCpf && (merchant?.type === 'PF' || merchantCpf.length === 11)) {
+      try {
+        console.log(`[AutoEnrich] Step 2.5: Running CPF cross-validation...`);
+        const cpfRes = await base44.asServiceRole.functions.invoke('cafCpfValidation', {
+          cpf: merchantCpf,
+          onboardingCaseId: caseId
+        });
+        cpfValidationSuccess = cpfRes?.data?.success === true;
+        console.log(`[AutoEnrich] CPF validation: success=${cpfValidationSuccess}, risk=${cpfRes?.data?.riskLevel}`);
+      } catch (cpfErr) {
+        console.warn(`[AutoEnrich] CPF validation failed (non-blocking): ${cpfErr.message}`);
+      }
+    } else {
+      console.log(`[AutoEnrich] Step 2.5: Skipped (PJ or no CPF)`);
+    }
+
+    // ═══ STEP 3: SENTINEL IA Analysis ═══
     let sentinelSuccess = false;
     try {
-      console.log(`[AutoEnrich] Step 2: Running SENTINEL analysis...`);
+      console.log(`[AutoEnrich] Step 3: Running SENTINEL analysis...`);
       const sentinelRes = await base44.asServiceRole.functions.invoke('analyzeOnboarding', {
         onboardingCaseId: caseId
       });
@@ -83,12 +136,15 @@ Deno.serve(async (req) => {
     }
 
     const duration = Date.now() - startTime;
-    console.log(`[AutoEnrich] Pipeline completed in ${duration}ms. BDC=${bdcSuccess}, SENTINEL=${sentinelSuccess}`);
+    console.log(`[AutoEnrich] Pipeline completed in ${duration}ms. CAF=${cafPostCaptureSuccess}, BDC=${bdcSuccess}, Screening=${screeningSuccess}, CPF=${cpfValidationSuccess}, SENTINEL=${sentinelSuccess}`);
 
     return Response.json({
       success: true,
       caseId,
+      cafPostCaptureSuccess,
       bdcSuccess,
+      screeningSuccess,
+      cpfValidationSuccess,
       sentinelSuccess,
       duration_ms: duration
     });
