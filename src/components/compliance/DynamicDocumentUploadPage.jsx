@@ -105,12 +105,29 @@ export default function DynamicDocumentUploadPage({
   const getPersonData = () => {
     const fd = JSON.parse(localStorage.getItem(formDataStorageKey) || '{}');
     let name = '', cpf = '';
-    Object.values(fd).forEach(val => {
-      if (typeof val !== 'string') return;
-      const clean = val.replace(/\D/g, '');
-      if (clean.length === 11 && !cpf) cpf = val;
-      if (val.length > 3 && val.includes(' ') && !name) name = val;
-    });
+    // Strategy 1: Use questions metadata to find CPF and name fields by question text
+    if (questions.length > 0) {
+      for (const q of questions) {
+        const t = (q.text || '').toLowerCase().trim();
+        const val = fd[q.id];
+        if (!val || typeof val !== 'string') continue;
+        // CPF fields: look for CPF-type questions or text matching CPF
+        if (!cpf && (q.type === 'CPF_CNPJ' && val.replace(/\D/g, '').length === 11)) cpf = val;
+        if (!cpf && (t === 'cpf' || t === 'cpf do responsável' || t === 'cpf do representante' || t === 'cpf do sócio')) cpf = val;
+        // Name fields: representante legal, responsável, nome completo
+        if (!name && (t === 'nome completo' || t === 'nome do responsável' || t === 'nome do representante' || t.includes('representante legal'))) name = val;
+        if (!name && t === 'razão social') name = val;
+      }
+    }
+    // Strategy 2: Fallback — scan all values for 11-digit patterns (CPF) and multi-word strings (name)
+    if (!cpf || !name) {
+      Object.values(fd).forEach(val => {
+        if (typeof val !== 'string') return;
+        const clean = val.replace(/\D/g, '');
+        if (!cpf && clean.length === 11) cpf = val;
+        if (!name && val.length > 3 && val.includes(' ') && !/^\d/.test(val)) name = val;
+      });
+    }
     return { name, cpf };
   };
 

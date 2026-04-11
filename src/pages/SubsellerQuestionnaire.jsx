@@ -65,7 +65,7 @@ export default function SubsellerQuestionnaire() {
     );
   }
 
-  // Step 2a: PF flow — uses subseller_pf template, uploads docs in-platform
+  // Step 2a: PF flow — uses subseller_pf template, uploads docs via SubsellerDocUpload (with CAF SDK)
   if (merchantType === 'PF') {
     return (
       <DynamicQuestionnaire
@@ -82,12 +82,12 @@ export default function SubsellerQuestionnaire() {
     );
   }
 
-  // Step 2b: PJ flow — uses subseller_v2 template + document upload in-platform
+  // Step 2b: PJ flow — uses subseller_v2 template + document upload via SubsellerDocUpload (with CAF SDK)
   return (
     <DynamicQuestionnaire
       templateModel="subseller_v2"
       storageKey="compliance_data_subseller_v2"
-      documentUploadPage="DocumentUploadFull"
+      documentUploadPage="SubsellerDocUpload"
       flowType="subseller"
       badgeLabel="SUBSELLER"
       badgeColor="bg-indigo-100 text-indigo-700"
