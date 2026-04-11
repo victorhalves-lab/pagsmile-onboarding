@@ -131,6 +131,14 @@ const MODEL_CONFIG = {
     badgeLabel: 'PIX MERCHANT v4',
     badgeColor: 'bg-emerald-100 text-emerald-700',
   },
+  CompliancePixIntermediarioV4: {
+    storageKey: 'compliance_data_pix_intermediario_v4',
+    documentUploadPage: 'DocumentUploadPix',
+    flowType: 'pix',
+    badgeLabel: 'PIX INTERMEDIÁRIO v4',
+    badgeColor: 'bg-indigo-100 text-indigo-700',
+  },
+  // Alias for legacy lowercase key
   pix_intermediario_v4: {
     storageKey: 'compliance_data_pix_intermediario_v4',
     documentUploadPage: 'DocumentUploadPix',
