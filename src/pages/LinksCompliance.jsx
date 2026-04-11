@@ -3,9 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   Link as LinkIcon, Copy, Check, ExternalLink, RefreshCw,
-  Shield, Zap, ShoppingCart, Cloud, CreditCard, Globe, Briefcase, BookOpen, Store,
+  Shield, ShoppingCart, Cloud, CreditCard, Globe, Briefcase, BookOpen, Store,
   TrendingUp, MousePointer, FileCheck, Loader2, Trash2,
-  BarChart3, ChevronDown, ChevronUp, Plus, Paintbrush, Users
+  BarChart3, ChevronDown, ChevronUp
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -41,17 +41,7 @@ export default function LinksCompliance() {
     toast.success(t('lc.copied'));
   };
 
-  const quickLinksByBusiness = [
-    { key: 'MERCHANT', label: 'Merchant', desc: t('lc.merchant_desc'), icon: CreditCard, color: '#2bc196', url: `${base}/ComplianceDinamico?model=merchant` },
-    { key: 'GATEWAY', label: 'Gateway', desc: t('lc.gateway_desc'), icon: Globe, color: '#002443', url: `${base}/ComplianceDinamico?model=gateway` },
-    { key: 'MARKETPLACE', label: 'Marketplace', desc: t('lc.marketplace_desc'), icon: ShoppingCart, color: '#36706c', url: `${base}/ComplianceDinamico?model=marketplace` },
-  ];
 
-  const quickLinksV2 = [
-    { key: 'MERCHANT_V2', label: 'Merchant v2.0', desc: t('lc.merchant_v2_desc'), icon: CreditCard, color: '#2bc196', url: `${base}/ComplianceDinamico?model=ComplianceMerchantAutocomplete` },
-    { key: 'GATEWAY_V2', label: 'Gateway v2.0', desc: t('lc.gateway_v2_desc'), icon: Globe, color: '#002443', url: `${base}/ComplianceDinamico?model=ComplianceGatewayAutocomplete` },
-    { key: 'MARKETPLACE_V2', label: 'Marketplace v2.0', desc: t('lc.marketplace_v2_desc'), icon: ShoppingCart, color: '#36706c', url: `${base}/ComplianceDinamico?model=ComplianceMarketplaceAutocomplete` },
-  ];
 
   const quickLinksPixV4 = [
     { key: 'PIX_MERCHANT_V4', label: 'PIX Merchant v4', desc: '40 perguntas em 8 blocos. Compliance PIX + Conta para merchants. Foco em volume, natureza, PLD/FT e UBOs. Pré-preenchimento Lead.', icon: CreditCard, color: '#2bc196', url: `${base}/ComplianceDinamico?model=CompliancePixMerchantV4` },
@@ -71,14 +61,7 @@ export default function LinksCompliance() {
     { key: 'DROPSHIPPING_V4', label: 'Dropshipping v4', desc: '52 perguntas em 11 blocos. Foco em fornecedor/logística, prazo de entrega, rastreamento, afiliados e risco de chargeback. Pré-preenchimento Lead v5.', icon: ShoppingCart, color: '#ea580c', url: `${base}/ComplianceDinamico?model=ComplianceDropshippingV4` },
   ];
 
-  const quickLinksByType = [
-    { key: 'GENERIC', label: 'Genérico', desc: t('lc.generic_desc'), icon: Globe, color: '#002443', url: `${base}/ComplianceDinamico?model=ComplianceEcommerceV4` },
-    { key: 'PIX', label: 'Pix', desc: t('lc.pix_desc'), icon: CreditCard, color: '#2bc196', url: `${base}/ComplianceDinamico?model=CompliancePixMerchantV4` },
-    { key: 'FULL', label: 'Full KYC', desc: t('lc.full_desc'), icon: Shield, color: '#002443', url: `${base}/ComplianceDinamico?model=ComplianceEcommerceV4` },
-    { key: 'LITE', label: 'Lite', desc: t('lc.lite_desc'), icon: Zap, color: '#36706c', url: `${base}/ComplianceDinamico?model=ComplianceSaaSV4` },
-    { key: 'ECOMMERCE', label: 'E-commerce', desc: t('lc.ecommerce_desc'), icon: ShoppingCart, color: '#002443', url: `${base}/ComplianceDinamico?model=ComplianceEcommerceV4` },
-    { key: 'SAAS', label: 'SaaS', desc: t('lc.saas_desc'), icon: Cloud, color: '#36706c', url: `${base}/ComplianceDinamico?model=ComplianceSaaSV4` },
-  ];
+
 
   const stats = React.useMemo(() => {
     const tc = links.reduce((s, l) => s + (l.clickCount || 0), 0);
@@ -219,48 +202,7 @@ export default function LinksCompliance() {
             </div>
           </div>
 
-          {/* v2.0 Autocomplete */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-[#2bc196]/10 flex items-center justify-center"><Briefcase className="w-4 h-4 text-[#2bc196]" /></div>
-              <div>
-                <h2 className="text-base font-bold text-[#002443]">{t('lc.v2_title')}</h2>
-                <p className="text-xs text-[#002443]/40">{t('lc.v2_desc')}</p>
-              </div>
-              <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0 text-[10px] ml-2">{t('lc.new')}</Badge>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {quickLinksV2.map(item => <QuickLinkCard key={item.key} item={item} />)}
-            </div>
-          </div>
 
-          {/* Por Tipo de Negócio (v1) */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-[#002443]/5 flex items-center justify-center"><Briefcase className="w-4 h-4 text-[#002443]/60" /></div>
-              <div>
-                <h2 className="text-base font-bold text-[#002443]">{t('lc.by_business')}</h2>
-                <p className="text-xs text-[#002443]/40">{t('lc.by_business_desc')}</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {quickLinksByBusiness.map(item => <QuickLinkCard key={item.key} item={item} />)}
-            </div>
-          </div>
-
-          {/* Por Tipo de Compliance */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-[#002443]/5 flex items-center justify-center"><Shield className="w-4 h-4 text-[#002443]" /></div>
-              <div>
-                <h2 className="text-base font-bold text-[#002443]">{t('lc.by_compliance')}</h2>
-                <p className="text-xs text-[#002443]/40">{t('lc.by_compliance_desc')}</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {quickLinksByType.map(item => <QuickLinkCard key={item.key} item={item} />)}
-            </div>
-          </div>
         </div>
       )}
 
