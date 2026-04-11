@@ -767,18 +767,22 @@ export default function DynamicQuestionnaire({
     // Detect PF if template is PF type
     const isPF = template?.merchantType === 'PF';
     let merchantType = isPF ? 'PF' : 'PJ';
-    questions.forEach(q => {
+
+    // Sort questions by order to ensure the first CNPJ/email/phone field wins
+    const sortedQuestions = [...questions].sort((a, b) => (a.order || 0) - (b.order || 0));
+    sortedQuestions.forEach(q => {
       const t = (q.text || '').toLowerCase().trim();
       const val = finalFormData[q.id];
       if (!val) return;
-      if (q.type === 'CPF_CNPJ' || t === 'cnpj' || t === 'cpf') cnpj = val;
-      if (t === 'razão social' || t === 'nome completo') fullName = val;
-      if (t === 'nome fantasia') companyName = val;
-      if (q.type === 'EMAIL' || t === 'e-mail' || t === 'email') email = val;
-      if (q.type === 'PHONE' || t === 'telefone') phone = val;
-      if (t === 'data de nascimento') dateOfBirth = val;
-      if (t === 'nacionalidade') nationality = val;
-      if (t === 'nome da mãe') motherName = val;
+      // Only take the FIRST matching CNPJ/CPF field (by order), not subsequent ones
+      if (!cnpj && (q.type === 'CPF_CNPJ' || t === 'cnpj' || t === 'cpf')) cnpj = val;
+      if (!fullName && (t === 'razão social' || t === 'nome completo')) fullName = val;
+      if (!companyName && t === 'nome fantasia') companyName = val;
+      if (!email && (q.type === 'EMAIL' || t === 'e-mail' || t === 'email')) email = val;
+      if (!phone && (q.type === 'PHONE' || t === 'telefone')) phone = val;
+      if (!dateOfBirth && t === 'data de nascimento') dateOfBirth = val;
+      if (!nationality && t === 'nacionalidade') nationality = val;
+      if (!motherName && (t === 'nome da mãe' || t === 'nome da mae')) motherName = val;
     });
     // Fallback from lead
     if (lead) {
