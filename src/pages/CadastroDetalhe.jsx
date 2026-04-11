@@ -17,6 +17,7 @@ import CadastroContratoTab from '@/components/cadastro/CadastroContratoTab';
 import CadastroHistoricoTab from '@/components/cadastro/CadastroHistoricoTab';
 import CadastroEnrichmentTab from '@/components/cadastro/CadastroEnrichmentTab';
 import CadastroRegulatoryPanel from '@/components/cadastro/CadastroRegulatoryPanel';
+import DownloadDossieButton from '@/components/cadastro/DownloadDossieButton';
 
 const STATUS_CONFIG = {
   'Pendente': { color: 'bg-gray-100 text-gray-700' },
@@ -284,6 +285,8 @@ export default function CadastroDetalhe() {
               <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />Desde {new Date(merchant.created_date).toLocaleDateString('pt-BR')}</span>
             </div>
           </div>
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <DownloadDossieButton merchantId={merchantId} merchantName={merchant.companyName || merchant.fullName} />
           {(latestCase?.riskScoreV4 != null || latestCase?.riskScore != null || latestScore?.score_final != null) && (() => {
             const scoreV4 = latestCase?.riskScoreV4 ?? latestScore?.score_final;
             const subfaixa = latestCase?.subfaixaNome || latestScore?.subfaixa_nome || '';
@@ -299,6 +302,7 @@ export default function CadastroDetalhe() {
               </div>
             );
           })()}
+          </div>
         </div>
       </div>
 

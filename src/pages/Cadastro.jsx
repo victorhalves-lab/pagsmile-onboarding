@@ -2,12 +2,15 @@ import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { Search, Building2, User, ChevronRight, Filter, Users, Shield, FileCheck, AlertTriangle } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Search, Building2, User, ChevronRight, Filter, Users, Shield, FileCheck, AlertTriangle, Download, BarChart3, List } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
+import CadastroDashboard from '@/components/cadastro/CadastroDashboard';
+import ExportReportModal from '@/components/cadastro/ExportReportModal';
 
 const STATUS_CONFIG = {
   'Pendente': { color: 'bg-gray-100 text-gray-700', label: 'Pendente' },
@@ -28,6 +31,8 @@ export default function Cadastro() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
+  const [viewMode, setViewMode] = useState('list');
+  const [exportOpen, setExportOpen] = useState(false);
 
   const { data: merchants = [], isLoading: loadingMerchants } = useQuery({
     queryKey: ['cadastro-merchants'],
@@ -113,10 +118,28 @@ export default function Cadastro() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Cadastro de Clientes</h1>
-        <p className="text-sm text-[var(--pagsmile-blue)]/60 mt-1">Visão unificada de todos os sellers e subsellers</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Cadastro de Clientes</h1>
+          <p className="text-sm text-[var(--pagsmile-blue)]/60 mt-1">Visão unificada de todos os sellers e subsellers</p>
+        </div>
+        <Button onClick={() => setExportOpen(true)} variant="outline" className="gap-2 border-[var(--pagsmile-green)]/30 text-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/5 self-start">
+          <Download className="w-4 h-4" /> Exportar CSV
+        </Button>
       </div>
+
+      {/* View Tabs */}
+      <Tabs value={viewMode} onValueChange={setViewMode}>
+        <TabsList className="bg-white border border-[var(--pagsmile-blue)]/8">
+          <TabsTrigger value="list" className="gap-1.5 text-xs"><List className="w-3.5 h-3.5" />Lista</TabsTrigger>
+          <TabsTrigger value="dashboard" className="gap-1.5 text-xs"><BarChart3 className="w-3.5 h-3.5" />Dashboard</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="dashboard">
+          <CadastroDashboard merchants={merchants} cases={cases} leads={leads} />
+        </TabsContent>
+
+        <TabsContent value="list">
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -219,6 +242,10 @@ export default function Cadastro() {
           );
         })}
       </div>
+        </TabsContent>
+      </Tabs>
+
+      <ExportReportModal open={exportOpen} onOpenChange={setExportOpen} />
     </div>
   );
 }
