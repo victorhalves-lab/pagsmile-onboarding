@@ -158,7 +158,7 @@ const PublicRoutes = () => (
     {/* Subseller */}
     <Route path="/SubsellerQuestionnaire" element={<LayoutWrapper currentPageName="SubsellerQuestionnaire"><SubsellerQuestionnaire /></LayoutWrapper>} />
     <Route path="/SubsellerDocUpload" element={<LayoutWrapper currentPageName="SubsellerDocUpload"><SubsellerDocUpload /></LayoutWrapper>} />
-    <Route path="/ComplianceDocOnly" element={<LayoutWrapper currentPageName="ComplianceDocOnly"><ComplianceDocOnly /></LayoutWrapper>} />
+    <Route path="/ComplianceDocOnly" element={<ComplianceDocOnly />} />
 
     {/* Questionário Simplificado */}
     {Pages['QuestionarioSimplificadoPublico'] && <Route path="/QuestionarioSimplificadoPublico" element={<LayoutWrapper currentPageName="QuestionarioSimplificadoPublico"><Pages.QuestionarioSimplificadoPublico /></LayoutWrapper>} />}
