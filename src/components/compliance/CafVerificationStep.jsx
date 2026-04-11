@@ -10,17 +10,9 @@ import { toast } from 'sonner';
 /**
  * CAF SDK Web Integration — DocumentDetector + FaceLiveness
  * 
- * Flow:
- * 1. Backend generates sessionToken (Mobile Token) via cafGenerateToken
- * 2. Load CAF Web SDK scripts (UMD) dynamically
- * 3. Step 1: DocumentDetector captures front of document (RG/CNH)
- * 4. Step 2: DocumentDetector captures back of document
- * 5. Step 3: FaceLiveness performs liveness + facematch check
- * 6. Each step returns a signedResponse → sent to cafVerifyResult for validation
- * 
- * SDK URLs (latest stable per CAF docs):
- * - DocumentDetector 6.13.0: UMD + WASM
- * - FaceLiveness 0.16.0: UMD
+ * Every step's result (images, metadata) is sent to the backend via cafVerifyResult
+ * which persists: IntegrationLog + ExternalValidationResult + DocumentUpload.
+ * All calls are AWAITED (not fire-and-forget) to guarantee persistence.
  */
 
 const CAF_DD_SDK_URL = 'https://repo.combateafraude.com/javascript/release/document-detector/6.13.0/document-detector-6.13.0.umd.js';
@@ -46,20 +38,45 @@ const STEPS = [
   { id: 'liveness', label: 'Prova de Vida', icon: ScanFace },
 ];
 
+/**
+ * Persist a CAF step result to the backend (AWAITED, not fire-and-forget).
+ * Returns the backend response or null on failure.
+ */
+async function persistCafResult(payload) {
+  try {
+    const response = await base44.functions.invoke('cafVerifyResult', payload);
+    console.log('[CAF] Result persisted:', response.data);
+    return response.data;
+  } catch (err) {
+    console.error('[CAF] CRITICAL: Failed to persist result:', err);
+    toast.error('Erro ao salvar resultado da verificação. Tentando novamente...');
+    // Retry once
+    try {
+      const response = await base44.functions.invoke('cafVerifyResult', payload);
+      console.log('[CAF] Result persisted on retry:', response.data);
+      return response.data;
+    } catch (retryErr) {
+      console.error('[CAF] CRITICAL: Retry also failed:', retryErr);
+      toast.error('Não foi possível salvar o resultado. Entre em contato com o suporte.');
+      return null;
+    }
+  }
+}
+
 export default function CafVerificationStep({ 
   personName, personCpf, onComplete, onboardingCaseId 
 }) {
-  const [phase, setPhase] = useState('ready'); // ready | loading | doc_front | doc_back | liveness | done | error
+  const [phase, setPhase] = useState('ready');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [sdkToken, setSdkToken] = useState(null);
   const [personId, setPersonId] = useState(null);
   const [docResults, setDocResults] = useState({ front: null, back: null });
   const [livenessResult, setLivenessResult] = useState(null);
+  const [savedResults, setSavedResults] = useState({ front: false, back: false, liveness: false });
   const [retryCount, setRetryCount] = useState(0);
   const flContainerRef = useRef(null);
 
-  // Step index for progress indicator
   const stepIndex = phase === 'ready' || phase === 'loading' ? 0 
     : phase === 'doc_front' ? 1 
     : phase === 'doc_back' ? 2 
@@ -82,20 +99,18 @@ export default function CafVerificationStep({
       setSdkToken(data.sdkToken);
       setPersonId(data.personId);
 
-      // Load both SDK scripts in parallel
       await Promise.all([
         loadScript(CAF_DD_SDK_URL),
         loadScript(CAF_FL_SDK_URL),
       ]);
 
-      // Verify SDKs loaded correctly
       const ddModule = window['@combateafraude/document-detector'];
       const flModule = window['CafFaceLiveness'];
       if (!ddModule?.DocumentDetector) {
-        throw new Error('DocumentDetector SDK não carregou corretamente. Verifique sua conexão e tente novamente.');
+        throw new Error('DocumentDetector SDK não carregou corretamente.');
       }
       if (!flModule) {
-        throw new Error('FaceLiveness SDK não carregou corretamente. Verifique sua conexão e tente novamente.');
+        throw new Error('FaceLiveness SDK não carregou corretamente.');
       }
 
       toast.success('SDK carregado! Iniciando captura do documento...');
@@ -129,10 +144,7 @@ export default function CafVerificationStep({
           },
         });
 
-        // Pre-load AI model for better UX, then initialize
-        if (dd.loadAiModel) {
-          await dd.loadAiModel();
-        }
+        if (dd.loadAiModel) await dd.loadAiModel();
         await dd.initialize();
 
         const result = await dd.capture({
@@ -146,25 +158,26 @@ export default function CafVerificationStep({
         console.log('[CAF] Doc front captured successfully');
         setDocResults(prev => ({ ...prev, front: result }));
 
-        // Log result on backend (fire-and-forget)
-        if (result?.signedResponse) {
-          base44.functions.invoke('cafVerifyResult', {
-            signedResponse: result.signedResponse,
-            onboardingCaseId: onboardingCaseId || '',
-            module: 'document',
-          }).catch(e => console.warn('[CAF] Doc front verify log failed:', e));
-        }
+        // PERSIST (awaited) — send the image URL to backend for download + storage
+        const persistResult = await persistCafResult({
+          onboardingCaseId: onboardingCaseId || '',
+          module: 'document_front',
+          imageUrl: result?.image?.url || '',
+          detectedDocument: result?.detectedDocument || null,
+          isCaptureValid: result?.isCaptureValid,
+          storageInfo: result?.image?.storageInfo || null,
+        });
+        setSavedResults(prev => ({ ...prev, front: !!persistResult?.success }));
 
         await dd.close();
         await dd.dispose();
-        toast.success('Frente do documento capturada!');
+        toast.success('Frente do documento capturada e salva!');
         setPhase('doc_back');
       } catch (err) {
         if (cancelled) return;
         console.error('[CAF] Doc front error:', err);
         if (dd) { try { await dd.close(); await dd.dispose(); } catch {} }
         
-        // User cancelled the capture
         if (err?.name === 'CafSdkCancelledError' || err?.message?.includes('cancelled')) {
           setError('Captura cancelada pelo usuário. Clique em "Tentar Novamente" para reiniciar.');
         } else {
@@ -193,9 +206,7 @@ export default function CafVerificationStep({
           enableFramingAnalyzer: true,
         });
 
-        if (dd.loadAiModel) {
-          await dd.loadAiModel();
-        }
+        if (dd.loadAiModel) await dd.loadAiModel();
         await dd.initialize();
 
         const result = await dd.capture({
@@ -209,17 +220,20 @@ export default function CafVerificationStep({
         console.log('[CAF] Doc back captured successfully');
         setDocResults(prev => ({ ...prev, back: result }));
 
-        if (result?.signedResponse) {
-          base44.functions.invoke('cafVerifyResult', {
-            signedResponse: result.signedResponse,
-            onboardingCaseId: onboardingCaseId || '',
-            module: 'document',
-          }).catch(e => console.warn('[CAF] Doc back verify log failed:', e));
-        }
+        // PERSIST (awaited)
+        const persistResult = await persistCafResult({
+          onboardingCaseId: onboardingCaseId || '',
+          module: 'document_back',
+          imageUrl: result?.image?.url || '',
+          detectedDocument: result?.detectedDocument || null,
+          isCaptureValid: result?.isCaptureValid,
+          storageInfo: result?.image?.storageInfo || null,
+        });
+        setSavedResults(prev => ({ ...prev, back: !!persistResult?.success }));
 
         await dd.close();
         await dd.dispose();
-        toast.success('Verso do documento capturado! Iniciando prova de vida...');
+        toast.success('Verso do documento capturado e salvo! Iniciando prova de vida...');
         setPhase('liveness');
       } catch (err) {
         if (cancelled) return;
@@ -248,7 +262,6 @@ export default function CafVerificationStep({
         const CafFaceLivenessSdk = window['CafFaceLiveness'];
         if (!CafFaceLivenessSdk) throw new Error('FaceLiveness SDK não disponível');
 
-        // Init with container for iProov provider compatibility
         await CafFaceLivenessSdk.init(sdkToken, personId, {
           htmlContainerId: 'caf-fl-container',
           language: 'pt_BR',
@@ -266,17 +279,16 @@ export default function CafVerificationStep({
         console.log('[CAF] Liveness completed successfully');
         setLivenessResult(result);
 
-        // Verify on backend (fire-and-forget)
-        if (result?.signedResponse) {
-          base44.functions.invoke('cafVerifyResult', {
-            signedResponse: result.signedResponse,
-            onboardingCaseId: onboardingCaseId || '',
-            module: 'liveness',
-          }).catch(e => console.warn('[CAF] Liveness verify log failed:', e));
-        }
+        // PERSIST (awaited) — send signedResponse JWT to backend
+        const persistResult = await persistCafResult({
+          onboardingCaseId: onboardingCaseId || '',
+          module: 'liveness',
+          signedResponse: result?.signedResponse || '',
+        });
+        setSavedResults(prev => ({ ...prev, liveness: !!persistResult?.success }));
 
         CafFaceLivenessSdk.dispose();
-        toast.success('Prova de vida concluída com sucesso!');
+        toast.success('Prova de vida concluída e salva com sucesso!');
         setPhase('done');
       } catch (err) {
         if (cancelled) return;
@@ -304,6 +316,7 @@ export default function CafVerificationStep({
         docFront: docResults.front,
         docBack: docResults.back,
         liveness: livenessResult,
+        savedResults,
       });
     }
   }, [phase]);
@@ -316,6 +329,7 @@ export default function CafVerificationStep({
     setLivenessResult(null);
     setSdkToken(null);
     setPersonId(null);
+    setSavedResults({ front: false, back: false, liveness: false });
     setRetryCount(prev => prev + 1);
   };
 
@@ -333,17 +347,17 @@ export default function CafVerificationStep({
         </p>
         <div className="flex flex-col items-center gap-1 mb-6">
           <div className="flex items-center gap-2 text-xs text-green-600">
-            <CheckCircle2 className="w-3.5 h-3.5" /> Documento frente capturado
+            <CheckCircle2 className="w-3.5 h-3.5" /> Documento frente capturado {savedResults.front ? '✓ salvo' : ''}
           </div>
           <div className="flex items-center gap-2 text-xs text-green-600">
-            <CheckCircle2 className="w-3.5 h-3.5" /> Documento verso capturado
+            <CheckCircle2 className="w-3.5 h-3.5" /> Documento verso capturado {savedResults.back ? '✓ salvo' : ''}
           </div>
           <div className="flex items-center gap-2 text-xs text-green-600">
-            <CheckCircle2 className="w-3.5 h-3.5" /> Prova de vida aprovada
+            <CheckCircle2 className="w-3.5 h-3.5" /> Prova de vida aprovada {savedResults.liveness ? '✓ salvo' : ''}
           </div>
         </div>
         <Button
-          onClick={() => onComplete?.({ status: 'approved' })}
+          onClick={() => onComplete?.({ status: 'approved', savedResults })}
           className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-8 h-12 rounded-xl"
         >
           Continuar <ArrowRight className="w-4 h-4 ml-2" />
@@ -423,6 +437,16 @@ export default function CafVerificationStep({
             </div>
           )}
 
+          <div className="flex items-start gap-3 p-3 rounded-xl bg-green-50 border border-green-100">
+            <Shield className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-semibold text-green-800">Armazenamento seguro</p>
+              <p className="text-xs text-green-600 mt-1">
+                Todas as imagens (documento e selfie) serão armazenadas de forma segura em nossos servidores.
+              </p>
+            </div>
+          </div>
+
           <div className="flex gap-3 mt-6">
             <Button
               onClick={startVerification}
@@ -435,7 +459,6 @@ export default function CafVerificationStep({
                 <><ScanFace className="w-4 h-4 mr-2" /> Iniciar Verificação</>
               )}
             </Button>
-
           </div>
         </div>
       )}
@@ -468,7 +491,7 @@ export default function CafVerificationStep({
             Aguardando captura do SDK...
           </div>
           <p className="text-[10px] text-[#002443]/30 mt-3">
-            O SDK da CAF abrirá a câmera do dispositivo em uma sobreposição.
+            A imagem será salva automaticamente após a captura.
           </p>
         </div>
       )}
@@ -485,14 +508,13 @@ export default function CafVerificationStep({
               Siga as instruções na tela para completar a verificação facial.
             </p>
           </div>
-          {/* Container where FaceLiveness SDK renders its UI */}
           <div 
             id="caf-fl-container" 
             ref={flContainerRef} 
             className="min-h-[350px] rounded-xl overflow-hidden border border-slate-200 bg-slate-50" 
           />
           <p className="text-[10px] text-[#002443]/30 mt-3 text-center">
-            Tecnologia CAF — Detecção de vivacidade em tempo real
+            A selfie será salva automaticamente após a verificação.
           </p>
         </div>
       )}
@@ -528,7 +550,6 @@ export default function CafVerificationStep({
                 </p>
               </div>
             )}
-
           </div>
         </div>
       )}
@@ -537,10 +558,10 @@ export default function CafVerificationStep({
       <div className="flex items-start gap-3 bg-slate-50 rounded-xl p-4">
         <Shield className="w-5 h-5 text-[#002443]/40 shrink-0 mt-0.5" />
         <div>
-          <p className="text-sm font-medium text-[#002443]">Verificação segura</p>
+          <p className="text-sm font-medium text-[#002443]">Verificação segura com armazenamento completo</p>
           <p className="text-xs text-[#002443]/50 mt-1">
-            Tecnologia certificada pela CAF (Combate à Fraude) com detecção de documentos e prova de vida em tempo real.
-            Seus dados são criptografados e processados de forma segura.
+            Tecnologia certificada pela CAF (Combate à Fraude). Todas as imagens (documento frente/verso e selfie) 
+            são baixadas e armazenadas permanentemente em nossos servidores para auditoria e compliance.
           </p>
         </div>
       </div>

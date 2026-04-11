@@ -1,0 +1,150 @@
+{
+  "name": "IntegrationLog",
+  "type": "object",
+  "properties": {
+    "onboarding_case_id": {
+      "type": "string",
+      "description": "ID do OnboardingCase relacionado"
+    },
+    "merchant_id": {
+      "type": "string",
+      "description": "ID do Merchant relacionado"
+    },
+    "provider": {
+      "type": "string",
+      "enum": [
+        "CAF",
+        "BigDataCorp"
+      ],
+      "description": "Provedor da integra\u00e7\u00e3o"
+    },
+    "service_type": {
+      "type": "string",
+      "enum": [
+        "liveness",
+        "facematch",
+        "face_authentication",
+        "face_liveness",
+        "document_ocr",
+        "document_detector",
+        "document_detector_front",
+        "document_detector_back",
+        "documentscopy",
+        "onboarding_web",
+        "transaction",
+        "sdk_token_generation",
+        "empresas_basic_data",
+        "empresas_kyc",
+        "empresas_owners_kyc",
+        "empresas_relationships",
+        "empresas_phones",
+        "empresas_emails",
+        "empresas_addresses",
+        "empresas_activity_indicators",
+        "empresas_domains",
+        "empresas_mcc",
+        "pessoas_kyc",
+        "biometria_facial",
+        "prova_de_vida"
+      ],
+      "description": "Tipo de servi\u00e7o chamado"
+    },
+    "request_id": {
+      "type": "string",
+      "description": "ID da requisi\u00e7\u00e3o no provedor"
+    },
+    "transaction_id": {
+      "type": "string",
+      "description": "ID da transa\u00e7\u00e3o no provedor"
+    },
+    "onboarding_id": {
+      "type": "string",
+      "description": "ID do onboarding no provedor (BigDataCorp/CAF)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "processing",
+        "success",
+        "failed",
+        "timeout",
+        "cancelled"
+      ],
+      "default": "pending"
+    },
+    "result_status": {
+      "type": "string",
+      "enum": [
+        "APPROVED",
+        "REPROVED",
+        "PENDING_REVIEW",
+        "NOT_APPLICABLE"
+      ],
+      "description": "Status do resultado da valida\u00e7\u00e3o"
+    },
+    "request_payload": {
+      "type": "object",
+      "description": "Payload enviado na requisi\u00e7\u00e3o"
+    },
+    "response_payload": {
+      "type": "object",
+      "description": "Payload recebido na resposta"
+    },
+    "score": {
+      "type": "number",
+      "description": "Score retornado (se aplic\u00e1vel)"
+    },
+    "similarity": {
+      "type": "number",
+      "description": "Similaridade facial (facematch)"
+    },
+    "is_alive": {
+      "type": "boolean",
+      "description": "Resultado do liveness"
+    },
+    "probability": {
+      "type": "number",
+      "description": "Probabilidade do liveness"
+    },
+    "red_flags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Red flags identificados"
+    },
+    "error_message": {
+      "type": "string",
+      "description": "Mensagem de erro se houver"
+    },
+    "error_code": {
+      "type": "string",
+      "description": "C\u00f3digo de erro"
+    },
+    "duration_ms": {
+      "type": "number",
+      "description": "Dura\u00e7\u00e3o da chamada em ms"
+    },
+    "image_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "URLs das imagens salvas (documento frente, verso, selfie)"
+    },
+    "callback_received_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Quando o callback/webhook foi recebido"
+    },
+    "callback_payload": {
+      "type": "object",
+      "description": "Payload do callback recebido"
+    }
+  },
+  "required": [
+    "provider",
+    "service_type"
+  ]
+}
