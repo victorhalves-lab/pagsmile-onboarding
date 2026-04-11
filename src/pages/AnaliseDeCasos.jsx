@@ -5,9 +5,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, User, FileCheck, FileText, Shield, History, UserCheck, Brain, Users, Database, ScanFace } from 'lucide-react';
+import { Loader2, User, FileCheck, FileText, Shield, History, UserCheck, Users, Database } from 'lucide-react';
 import { toast } from 'sonner';
-import IAAnalysisPanel from '../components/compliance/IAAnalysisPanel';
 import ComplianceResponsesPanel from '../components/compliance/ComplianceResponsesPanel';
 import SubsellerPFResponsesInline from '../components/subseller/SubsellerPFResponsesInline';
 import CaseHeader from '../components/case-analysis/CaseHeader';
@@ -19,11 +18,9 @@ import CaseHistoryTab from '../components/case-analysis/CaseHistoryTab';
 import CaseReviewTab from '../components/case-analysis/CaseReviewTab';
 import CaseReviewDialogs from '../components/case-analysis/CaseReviewDialogs';
 import CaseSubsellersTab from '../components/case-analysis/CaseSubsellersTab';
-import CnpjEnrichmentSummaryCard from '../components/case-analysis/CnpjEnrichmentSummaryCard';
 import BDCEnrichmentPanel from '../components/bdc-enrichment/BDCEnrichmentPanel';
 import BDCRawDataTab from '../components/bdc-enrichment/BDCRawDataTab';
-import CaseScoreHeader from '../components/case-analysis/CaseScoreHeader';
-import CafResultsPanel from '../components/case-analysis/CafResultsPanel';
+import UnifiedRiskAnalysis from '../components/case-analysis/UnifiedRiskAnalysis';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function AnaliseDeCasos() {
@@ -157,12 +154,6 @@ export default function AnaliseDeCasos() {
     <div className="space-y-6">
       <CaseHeader onboardingCase={onboardingCase} merchant={merchant} onRefetch={refetchCase} />
 
-      <CaseScoreHeader
-        onboardingCase={onboardingCase}
-        complianceScore={complianceScore}
-        validations={validations}
-      />
-
       <CaseSummaryCards
         complianceScore={complianceScore}
         onboardingCase={onboardingCase}
@@ -171,9 +162,9 @@ export default function AnaliseDeCasos() {
         responses={responses}
       />
 
-      <Tabs defaultValue="ia-analysis" className="space-y-6">
+      <Tabs defaultValue="risk-analysis" className="space-y-6">
         <TabsList className="bg-white border border-slate-200 flex-wrap h-auto p-1">
-          <TabsTrigger value="ia-analysis" className="gap-1"><Brain className="w-4 h-4" /> {t('ac.tab_ia')}</TabsTrigger>
+          <TabsTrigger value="risk-analysis" className="gap-1"><Shield className="w-4 h-4" /> Análise de Risco</TabsTrigger>
           <TabsTrigger value="info" className="gap-1"><User className="w-4 h-4" /> {t('ac.tab_merchant')}</TabsTrigger>
           <TabsTrigger value="responses" className="gap-1"><FileCheck className="w-4 h-4" /> {t('ac.tab_responses')} ({responses.length})</TabsTrigger>
           <TabsTrigger value="documents" className="gap-1"><FileText className="w-4 h-4" /> {t('ac.tab_documents')} ({documents.length})</TabsTrigger>
@@ -182,21 +173,18 @@ export default function AnaliseDeCasos() {
           <TabsTrigger value="review" className="gap-1"><UserCheck className="w-4 h-4" /> {t('ac.tab_review')}</TabsTrigger>
           <TabsTrigger value="subsellers" className="gap-1"><Users className="w-4 h-4" /> {t('ac.tab_subaccounts')}</TabsTrigger>
           <TabsTrigger value="bdc-enrichment" className="gap-1"><Database className="w-4 h-4" /> Enriquecimento BDC</TabsTrigger>
-          <TabsTrigger value="caf-results" className="gap-1"><ScanFace className="w-4 h-4" /> Resultados CAF</TabsTrigger>
           <TabsTrigger value="bdc-dados" className="gap-1"><Database className="w-4 h-4" /> Dados BDC</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="ia-analysis">
-          <div className="space-y-4">
-            <CnpjEnrichmentSummaryCard 
-              complianceScore={complianceScore}
-              onboardingCaseId={caseId}
-              merchant={merchant}
-            />
-            <div className="bg-white rounded-xl border border-slate-200 p-6">
-              <IAAnalysisPanel complianceScore={complianceScore} onboardingCase={onboardingCase} />
-            </div>
-          </div>
+        <TabsContent value="risk-analysis">
+          <UnifiedRiskAnalysis
+            onboardingCase={onboardingCase}
+            complianceScore={complianceScore}
+            validations={validations}
+            integrationLogs={integrationLogs}
+            merchant={merchant}
+            onboardingCaseId={caseId}
+          />
         </TabsContent>
 
         <TabsContent value="info">
@@ -224,14 +212,7 @@ export default function AnaliseDeCasos() {
         </TabsContent>
 
         <TabsContent value="validations">
-          <div className="space-y-4">
-            <CnpjEnrichmentSummaryCard 
-              complianceScore={complianceScore}
-              onboardingCaseId={caseId}
-              merchant={merchant}
-            />
-            <CaseValidationsTab validations={validations} />
-          </div>
+          <CaseValidationsTab validations={validations} />
         </TabsContent>
 
         <TabsContent value="history">
@@ -251,10 +232,6 @@ export default function AnaliseDeCasos() {
             onShowReject={() => setShowRejectDialog(true)}
             onShowRequestInfo={() => setShowRequestInfoDialog(true)}
           />
-        </TabsContent>
-
-        <TabsContent value="caf-results">
-          <CafResultsPanel validations={validations} integrationLogs={integrationLogs} />
         </TabsContent>
 
         <TabsContent value="bdc-enrichment">
