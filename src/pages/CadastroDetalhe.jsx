@@ -16,6 +16,7 @@ import CadastroSubsellersTab from '@/components/cadastro/CadastroSubsellersTab';
 import CadastroContratoTab from '@/components/cadastro/CadastroContratoTab';
 import CadastroHistoricoTab from '@/components/cadastro/CadastroHistoricoTab';
 import CadastroEnrichmentTab from '@/components/cadastro/CadastroEnrichmentTab';
+import CadastroRegulatoryPanel from '@/components/cadastro/CadastroRegulatoryPanel';
 
 const STATUS_CONFIG = {
   'Pendente': { color: 'bg-gray-100 text-gray-700' },
@@ -310,6 +311,7 @@ export default function CadastroDetalhe() {
           <TabsTrigger value="proposta" className="text-xs gap-1"><FileText className="w-3 h-3" />Propostas{allProposals.length > 0 ? ` (${allProposals.length})` : ''}</TabsTrigger>
           <TabsTrigger value="contrato" className="text-xs gap-1"><Stamp className="w-3 h-3" />Contratos{allContracts.length > 0 ? ` (${allContracts.length})` : ''}</TabsTrigger>
           <TabsTrigger value="compliance" className="text-xs gap-1"><Shield className="w-3 h-3" />Compliance</TabsTrigger>
+          <TabsTrigger value="regulatory" className="text-xs gap-1"><Shield className="w-3 h-3" />Regulatório</TabsTrigger>
           <TabsTrigger value="enrichment" className="text-xs gap-1"><Database className="w-3 h-3" />BDC / CAF{(validations.length + integrationLogs.length) > 0 ? ` (${validations.length + integrationLogs.length})` : ''}</TabsTrigger>
           <TabsTrigger value="historico" className="text-xs gap-1"><History className="w-3 h-3" />Histórico{auditLogs.length > 0 ? ` (${auditLogs.length})` : ''}</TabsTrigger>
           {!merchant.isSubseller && (
@@ -334,6 +336,9 @@ export default function CadastroDetalhe() {
         </TabsContent>
         <TabsContent value="compliance">
           <CadastroComplianceTab score={latestScore} latestCase={latestCase} allScores={scores} allCases={cases} />
+        </TabsContent>
+        <TabsContent value="regulatory">
+          <CadastroRegulatoryPanel merchant={merchant} latestCase={latestCase} validations={validations} integrationLogs={integrationLogs} score={latestScore} />
         </TabsContent>
         <TabsContent value="enrichment">
           <CadastroEnrichmentTab validations={validations} integrationLogs={integrationLogs} />

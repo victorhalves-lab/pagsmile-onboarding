@@ -1,0 +1,49 @@
+{
+  "name": "ComplianceConfig",
+  "type": "object",
+  "properties": {
+    "configKey": {
+      "type": "string",
+      "description": "Chave \u00fanica da configura\u00e7\u00e3o (ex: face_match_threshold, rejection_reasons_visible)"
+    },
+    "configValue": {
+      "type": "string",
+      "description": "Valor da configura\u00e7\u00e3o (string, ser\u00e1 parseado conforme o tipo)"
+    },
+    "configType": {
+      "type": "string",
+      "enum": [
+        "number",
+        "boolean",
+        "string",
+        "json"
+      ],
+      "default": "string",
+      "description": "Tipo do valor para parsing"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "CAF",
+        "BDC",
+        "RISK_SCORING",
+        "REGULATORY",
+        "GENERAL"
+      ],
+      "description": "Categoria da configura\u00e7\u00e3o"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o leg\u00edvel da configura\u00e7\u00e3o"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "configKey",
+    "configValue",
+    "category"
+  ]
+}

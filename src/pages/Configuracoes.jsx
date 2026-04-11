@@ -27,6 +27,49 @@ import {
 import { toast } from 'sonner';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
+function ComplianceConfigRow({ config, onUpdate }) {
+  const [value, setValue] = React.useState(config.configValue);
+  const [editing, setEditing] = React.useState(false);
+  const changed = value !== config.configValue;
+
+  return (
+    <div className="p-4 rounded-xl border border-[#002443]/5 hover:border-[#2bc196]/30 transition-colors">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <Label className="text-sm font-semibold text-[#002443]">{config.configKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</Label>
+            <Badge variant="outline" className="text-[10px] border-[#002443]/10">{config.category}</Badge>
+          </div>
+          <p className="text-xs text-[#002443]/40 mt-0.5">{config.description}</p>
+        </div>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {config.configType === 'boolean' ? (
+            <Switch
+              checked={value === 'true'}
+              onCheckedChange={(checked) => { setValue(String(checked)); onUpdate(String(checked)); }}
+              className="data-[state=checked]:bg-[#2bc196]"
+            />
+          ) : (
+            <>
+              <Input
+                type={config.configType === 'number' ? 'number' : 'text'}
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                className="w-24 border-[#002443]/10 text-right font-bold"
+              />
+              {changed && (
+                <Button size="sm" onClick={() => onUpdate(value)} className="bg-[#2bc196] text-white rounded-lg h-8 px-3">
+                  <Save className="w-3 h-3" />
+                </Button>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Configuracoes() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -43,6 +86,17 @@ export default function Configuracoes() {
   const { data: documentTypes = [], isLoading: loadingDocTypes } = useQuery({
     queryKey: ['documentTypes'],
     queryFn: () => base44.entities.DocumentType.list()
+  });
+
+  const { data: complianceConfigs = [], isLoading: loadingConfigs } = useQuery({
+    queryKey: ['complianceConfigs'],
+    queryFn: () => base44.entities.ComplianceConfig.list('-created_date', 50)
+  });
+
+  const updateConfigMutation = useMutation({
+    mutationFn: async ({ id, value }) => base44.entities.ComplianceConfig.update(id, { configValue: value }),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['complianceConfigs'] }); toast.success('Configuração atualizada!'); },
+    onError: (err) => toast.error('Erro: ' + err.message),
   });
 
   const [showDocTypeDialog, setShowDocTypeDialog] = useState(false);
@@ -241,6 +295,28 @@ export default function Configuracoes() {
               </div>
             </div>
             <Button onClick={() => handleSaveSettings('risco')} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl"><Save className="w-4 h-4 mr-2" /> {t('cfg.save')}</Button>
+          </div>
+
+          {/* Compliance Configs */}
+          <div className="bg-white rounded-2xl border border-[#002443]/5 p-6 space-y-5 mt-6">
+            <div>
+              <h2 className="text-base font-bold text-[#002443] flex items-center gap-2">
+                <Shield className="w-4 h-4 text-[#2bc196]" />
+                Parâmetros Regulatórios & Compliance
+              </h2>
+              <p className="text-xs text-[#002443]/40">Configurações ajustáveis do motor de risco e validações de identidade</p>
+            </div>
+            {loadingConfigs ? (
+              <div className="flex justify-center py-8"><Loader2 className="w-6 h-6 animate-spin text-[#2bc196]" /></div>
+            ) : complianceConfigs.length === 0 ? (
+              <p className="text-sm text-[#002443]/40 text-center py-8">Nenhuma configuração de compliance cadastrada</p>
+            ) : (
+              <div className="space-y-3">
+                {complianceConfigs.map(cfg => (
+                  <ComplianceConfigRow key={cfg.id} config={cfg} onUpdate={(value) => updateConfigMutation.mutate({ id: cfg.id, value })} />
+                ))}
+              </div>
+            )}
           </div>
         </TabsContent>
 

@@ -68,12 +68,32 @@ Deno.serve(async (req) => {
       subtitle: 'Agradecemos seu interesse na Pagsmile.',
       greeting: `Olá, ${merchantName}!`,
       body: [
-        `Após uma análise cuidadosa e detalhada dos dados fornecidos, identificamos alguns pontos que, neste momento, não nos permitem seguir com a ativação.`,
-        `Sabemos que essa não é a notícia que você esperava, e queremos ser transparentes: em muitos casos, pendências podem ser resolvidas. Nossa equipe comercial está à disposição para orientar sobre os próximos passos.`,
+        `Após uma análise cuidadosa e detalhada dos dados fornecidos, identificamos pontos que, neste momento, não nos permitem seguir com a ativação.`,
+        // BC 3978: explicitar os motivos da decisão ao titular
+        ...(caseData.bloqueiosAtivos?.length > 0 ? [
+          `<strong>Motivos identificados na análise:</strong><ul style="color:#475569;line-height:2;margin:8px 0">${caseData.bloqueiosAtivos.map(b => {
+            const reasons = {
+              'B01_CNPJ_INATIVO': 'Situação cadastral do CNPJ não está ativa na Receita Federal',
+              'B02_SITUACAO_ESPECIAL': 'Empresa em situação especial (recuperação judicial ou similar)',
+              'B03_ATIVIDADE_PROIBIDA': 'Atividade econômica não permitida para operação de pagamentos',
+              'B04_SANCAO_OFAC': 'Presença em listas de sanções internacionais',
+              'B05_CPF_OBITO': 'CPF do responsável com registro de óbito',
+              'B06_DEEPFAKE': 'Verificação biométrica não aprovada (prova de vida)',
+              'B07_DOC_FALSIFICADO': 'Documento apresentado não passou na validação de autenticidade',
+              'B08_FACEMATCH_LOW': 'Similaridade facial entre documento e selfie abaixo do mínimo',
+              'B09_MEI_INTERMEDIARIO': 'MEI não pode operar como intermediário de pagamentos',
+              'B10_RJ_PIX_INTERMEDIARIO': 'Empresa em recuperação judicial não pode operar como intermediário PIX',
+            };
+            return `<li>${reasons[b] || b.replace(/_/g, ' ')}</li>`;
+          }).join('')}</ul>`,
+        ] : [
+          `Os motivos estão relacionados a pendências regulatórias e/ou documentais identificadas durante o processo de compliance.`,
+        ]),
+        `Sabemos que essa não é a notícia que você esperava. Em muitos casos, essas pendências podem ser resolvidas. Nossa equipe comercial está à disposição para orientar sobre os próximos passos e auxiliar na regularização.`,
         `Valorizamos muito o seu interesse na Pagsmile e esperamos poder atendê-lo(a) no futuro. As portas estão sempre abertas! 🤝`,
       ],
       accent: '#f59e0b',
-      footerNote: 'Dúvidas? Entre em contato com seu consultor comercial.',
+      footerNote: 'Conforme regulamentação do Banco Central (BC 3978), os motivos da decisão são comunicados ao titular.',
     });
 
     await base44.asServiceRole.integrations.Core.SendEmail({

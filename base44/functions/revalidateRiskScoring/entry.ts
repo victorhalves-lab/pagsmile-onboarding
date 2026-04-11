@@ -494,8 +494,10 @@ function calculateFullScore(segmento, responses, existingScore, enrichData) {
   // B07: CAF Doc falsificado (E10 → bloqueio)
   if (enrichData.docAutentico === false) bloqueios.push('B07_DOC_FALSIFICADO');
 
-  // B08: CAF Face Match <50% (E09 → bloqueio)
-  if (enrichData.faceMatchScore != null && enrichData.faceMatchScore < 50) bloqueios.push('B08_FACEMATCH_LOW');
+  // B08: CAF Face Match below threshold (E09 → bloqueio)
+  // Threshold is configurable via ComplianceConfig entity (face_match_threshold)
+  const faceMatchThreshold = enrichData._faceMatchThreshold ?? 50;
+  if (enrichData.faceMatchScore != null && enrichData.faceMatchScore < faceMatchThreshold) bloqueios.push('B08_FACEMATCH_LOW');
 
   // B09: MEI como intermediário
   if (isMEI && isIntermed) bloqueios.push('B09_MEI_INTERMEDIARIO');
@@ -733,13 +735,18 @@ Deno.serve(async (req) => {
     const dryRun = body.dryRun === true;
 
     // Load all data in parallel
-    const [cases, allScores, allResponses, allValidations, allMerchants] = await Promise.all([
+    const [cases, allScores, allResponses, allValidations, allMerchants, complianceConfigs] = await Promise.all([
       base44.asServiceRole.entities.OnboardingCase.list('-created_date', 1000),
       base44.asServiceRole.entities.ComplianceScore.list('-created_date', 1000),
       base44.asServiceRole.entities.QuestionnaireResponse.list('-created_date', 5000),
       base44.asServiceRole.entities.ExternalValidationResult.list('-created_date', 2000),
       base44.asServiceRole.entities.Merchant.list('-created_date', 1000),
+      base44.asServiceRole.entities.ComplianceConfig.filter({ isActive: true }).catch(() => []),
     ]);
+
+    // Read configurable face match threshold
+    const fmtConfig = complianceConfigs.find(c => c.configKey === 'face_match_threshold');
+    const faceMatchThreshold = fmtConfig ? Number(fmtConfig.configValue) : 50;
 
     // Index by case
     const scoresByCase = {};
@@ -799,6 +806,7 @@ Deno.serve(async (req) => {
 
         // Extract real enrichment data from BDC/CAF
         const enrichData = extractEnrichmentData(existingScore, caseValidations, merchant);
+        enrichData._faceMatchThreshold = faceMatchThreshold;
 
         const result = calculateFullScore(segmento, caseResponses, existingScore, enrichData);
 
