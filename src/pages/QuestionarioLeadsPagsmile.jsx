@@ -111,8 +111,12 @@ export default function QuestionarioLeadsPagsmile() {
       if (temBoleto && !form.taxaBoleto) { errs.taxaBoleto = true; errorMessages.push('Taxa Boleto é obrigatória'); }
       if (!form.taxaAntecipacao) { errs.taxaAntecipacao = true; errorMessages.push('Taxa Antecipação é obrigatória'); }
       if (!form.feeTransacao) { errs.feeTransacao = true; errorMessages.push('Fee por transação é obrigatório'); }
-      if (!form.custoAntifraude) { errs.custoAntifraude = true; errorMessages.push('Custo antifraude é obrigatório'); }
-      if (!form.taxa3ds) { errs.taxa3ds = true; errorMessages.push('Taxa 3DS é obrigatória'); }
+      // Antifraude e 3DS só são obrigatórios para segmentos que usam
+      const segmentosComAntifraude = ['gateway', 'marketplace', 'plataforma_vertical', 'ecommerce', 'dropshipping', 'infoprodutos'];
+      if (segmentosComAntifraude.includes(form.segmento)) {
+        if (!form.custoAntifraude) { errs.custoAntifraude = true; errorMessages.push('Custo antifraude é obrigatório'); }
+        if (!form.taxa3ds) { errs.taxa3ds = true; errorMessages.push('Taxa 3DS é obrigatória'); }
+      }
     }
     if (step === 9) {
       if (!form.encerrado) { errs.encerrado = true; errorMessages.push('Informe se já foi encerrado'); }
@@ -174,6 +178,7 @@ export default function QuestionarioLeadsPagsmile() {
     if (!validateStep()) return;
     setSubmitting(true);
 
+    try {
     const silentFlags = calculateSilentFlags(form, cnpjData);
     const leadScore = calculateLeadScore(form, silentFlags);
     const proto = `PSM-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 99999)).padStart(5, '0')}`;
@@ -294,8 +299,13 @@ export default function QuestionarioLeadsPagsmile() {
     });
 
     setProtocolo(proto);
-    setSubmitting(false);
     setSubmitted(true);
+    } catch (err) {
+      toast.error('Erro ao enviar questionário. Tente novamente.');
+      console.error('Submit error:', err);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   // SUCCESS SCREEN

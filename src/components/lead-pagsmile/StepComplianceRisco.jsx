@@ -5,7 +5,7 @@ import { ENCERRADO_OPTIONS, CHARGEBACK_OPTIONS, MED_PIX_OPTIONS } from './pagsmi
 /** ETAPA 9 — Compliance e Risco (P34-P35.1) */
 export default function StepComplianceRisco({ form, updateField }) {
   const jaProcessa = form.jaProcessa === 'Sim, já processo';
-  const dist = form.distribuicao || {};
+  const dist = jaProcessa ? (form.distribuicao || {}) : (form.distribuicaoDesejada || {});
   const temCartao = (dist.credito || 0) > 0;
   const temPix = (dist.pix || 0) > 0;
 

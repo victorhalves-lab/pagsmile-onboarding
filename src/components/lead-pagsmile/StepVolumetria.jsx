@@ -1,12 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import CurrencyNumberInput from './CurrencyNumberInput';
 import ButtonSelector from './ButtonSelector';
 import { FATURAMENTO_ANUAL_OPTIONS, FUNCIONARIOS_OPTIONS } from './pagsmileQuestionnaireData';
 
 /** ETAPA 5 — Volumetria e Faturamento (P15-P17 + P15.1, P15.2) */
 export default function StepVolumetria({ form, updateField, errors }) {
-  // P17 — Auto-calc transações
+  // P17 — Auto-calc transações (use ref to avoid infinite loop)
+  const prevTpv = useRef(form.tpvMensal);
+  const prevTicket = useRef(form.ticketMedio);
+
   useEffect(() => {
+    if (prevTpv.current === form.tpvMensal && prevTicket.current === form.ticketMedio) return;
+    prevTpv.current = form.tpvMensal;
+    prevTicket.current = form.ticketMedio;
+
     const tpv = parseFloat(form.tpvMensal) || 0;
     const ticket = parseFloat(form.ticketMedio) || 0;
     if (tpv > 0 && ticket > 0) {
