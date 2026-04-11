@@ -5,13 +5,12 @@ const LOGO = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/
 function buildEmail({ title, subtitle, greeting, body: ps, ctaText, ctaUrl, infoBox, footerNote, accent = '#2bc196' }) {
   const cta = ctaText && ctaUrl ? `<div style="text-align:center;margin:30px 0"><a href="${ctaUrl}" style="display:inline-block;background:${accent};color:#fff;text-decoration:none;padding:14px 36px;border-radius:10px;font-weight:700;font-size:15px">${ctaText}</a></div>` : '';
   const info = infoBox ? `<div style="margin:24px 0;padding:18px;background:#f0fdf4;border-radius:10px;border-left:4px solid ${accent}">${infoBox}</div>` : '';
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head><body style="margin:0;padding:0;background:#f4f4f4;font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif"><div style="max-width:600px;margin:0 auto;padding:20px"><div style="background:linear-gradient(135deg,#002443,#003366,#004080);padding:36px 30px 28px;border-radius:16px 16px 0 0;text-align:center"><img src="${LOGO}" alt="Pagsmile" style="height:32px;margin-bottom:20px"/><h1 style="color:${accent};margin:0;font-size:22px;font-weight:700">${title}</h1>${subtitle?`<p style="color:rgba(255,255,255,0.75);margin:10px 0 0;font-size:14px">${subtitle}</p>`:''}</div><div style="background:#fff;padding:32px 30px;border:1px solid #e2e8f0;border-top:none">${greeting?`<p style="color:#002443;font-size:16px;font-weight:600;margin:0 0 16px">${greeting}</p>`:''}${ps.map(p=>`<p style="color:#475569;font-size:14px;line-height:1.7;margin:0 0 14px">${p}</p>`).join('')}${info}${cta}</div><div style="background:#f8fafc;padding:24px 30px;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 16px 16px;text-align:center">${footerNote?`<p style="color:#64748b;font-size:12px;margin:0 0 8px">${footerNote}</p>`:''}<p style="color:#94a3b8;font-size:11px;margin:0">Pagsmile — Soluções de Pagamento Inteligentes<br>Este é um e-mail automático. Para dúvidas, entre em contato pelo seu canal comercial.</p></div></div></body></html>`;
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head><body style="margin:0;padding:0;background:#f4f4f4;font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif"><div style="max-width:600px;margin:0 auto;padding:20px"><div style="background:linear-gradient(135deg,#002443,#003366,#004080);padding:36px 30px 28px;border-radius:16px 16px 0 0;text-align:center"><img src="${LOGO}" alt="Pagsmile" style="height:32px;margin-bottom:20px"/><h1 style="color:${accent};margin:0;font-size:22px;font-weight:700">${title}</h1>${subtitle?`<p style="color:rgba(255,255,255,0.75);margin:10px 0 0;font-size:14px">${subtitle}</p>`:''}</div><div style="background:#fff;padding:32px 30px;border:1px solid #e2e8f0;border-top:none">${greeting?`<p style="color:#002443;font-size:16px;font-weight:600;margin:0 0 16px">${greeting}</p>`:''}${ps.map(p=>`<p style="color:#475569;font-size:14px;line-height:1.7;margin:0 0 14px">${p}</p>`).join('')}${info}</div><div style="background:#f8fafc;padding:24px 30px;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 16px 16px;text-align:center">${footerNote?`<p style="color:#64748b;font-size:12px;margin:0 0 8px">${footerNote}</p>`:''}<p style="color:#94a3b8;font-size:11px;margin:0">Pagsmile — Notificação interna automática</p></div></div></body></html>`;
 }
 
 /**
- * RÉGUA #2 — E-mail: Lead Pré-Qualificado pela IA
+ * RÉGUA #2 — E-mail: Lead Pré-Qualificado pela IA (INTERNO — para o time comercial, NÃO para o cliente)
  * Trigger: Lead [update] quando leadQualifierScore muda
- * Envia notificação INTERNA ao time comercial (não ao lead)
  */
 Deno.serve(async (req) => {
   try {
@@ -22,7 +21,6 @@ Deno.serve(async (req) => {
     const oldData = body.old_data;
     if (!lead || !oldData) return Response.json({ skipped: true, reason: 'no_data' });
 
-    // Only proceed if qualifier score actually changed
     const changedFields = body.changed_fields || [];
     if (!changedFields.includes('leadQualifierScore')) return Response.json({ skipped: true, reason: 'score_not_changed' });
 
@@ -31,21 +29,13 @@ Deno.serve(async (req) => {
     if (!score || level === 'PENDENTE') return Response.json({ skipped: true, reason: 'no_score' });
 
     const name = lead.fullName || lead.contactName || 'Lead';
-    const agentEmail = lead.commercialAgentId; // may be an email
+    const agentEmail = lead.commercialAgentId;
     
-    // Send internal notification to commercial agent or admin
     const recipients = [];
-    if (agentEmail && agentEmail.includes('@')) {
-      recipients.push(agentEmail);
-    }
-    // Always notify created_by (the system or agent that captured the lead)
-    if (lead.created_by && lead.created_by.includes('@') && !recipients.includes(lead.created_by)) {
-      recipients.push(lead.created_by);
-    }
+    if (agentEmail && agentEmail.includes('@')) recipients.push(agentEmail);
+    if (lead.created_by && lead.created_by.includes('@') && !recipients.includes(lead.created_by)) recipients.push(lead.created_by);
 
-    if (recipients.length === 0) {
-      return Response.json({ skipped: true, reason: 'no_recipients' });
-    }
+    if (recipients.length === 0) return Response.json({ skipped: true, reason: 'no_recipients' });
 
     const levelConfig = {
       'EXCELENTE': { emoji: '🌟', color: '#16a34a', label: 'Excelente — Lead Prioritário' },
