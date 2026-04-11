@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Building2, User, Mail, Phone, MapPin, Globe, Calendar, Shield, FileText, Users, FileCheck, Stamp, BarChart3 } from 'lucide-react';
+import { ArrowLeft, Building2, User, Mail, Phone, MapPin, Globe, Calendar, Shield, FileText, Users, FileCheck, Stamp, BarChart3, History, Database } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -14,6 +14,8 @@ import CadastroPropostaTab from '@/components/cadastro/CadastroPropostaTab';
 import CadastroComplianceTab from '@/components/cadastro/CadastroComplianceTab';
 import CadastroSubsellersTab from '@/components/cadastro/CadastroSubsellersTab';
 import CadastroContratoTab from '@/components/cadastro/CadastroContratoTab';
+import CadastroHistoricoTab from '@/components/cadastro/CadastroHistoricoTab';
+import CadastroEnrichmentTab from '@/components/cadastro/CadastroEnrichmentTab';
 
 const STATUS_CONFIG = {
   'Pendente': { color: 'bg-gray-100 text-gray-700' },
@@ -34,6 +36,7 @@ export default function CadastroDetalhe() {
   const urlParams = new URLSearchParams(window.location.search);
   const merchantId = urlParams.get('id');
   const [activeTab, setActiveTab] = useState('overview');
+  const queryClient = useQueryClient();
 
   const { data: merchant, isLoading } = useQuery({
     queryKey: ['cadastro-merchant', merchantId],
@@ -124,12 +127,20 @@ export default function CadastroDetalhe() {
     enabled: !!merchant?.cpfCnpj,
   });
 
+  // Also search proposals by clienteNome (for cases where CNPJ/lead aren't linked)
+  const merchantDisplayName = merchant?.companyName || merchant?.fullName || '';
+  const { data: proposalsByName = [] } = useQuery({
+    queryKey: ['cadastro-proposals-name', merchantDisplayName],
+    queryFn: () => base44.entities.Proposal.filter({ clienteNome: merchantDisplayName }),
+    enabled: !!merchantDisplayName && merchantDisplayName.length > 2,
+  });
+
   // Merge all proposals (dedupe by id)
   const allProposals = useMemo(() => {
     const map = new Map();
-    [...proposalsByLeads, ...proposalsByCnpj].forEach(p => map.set(p.id, p));
+    [...proposalsByLeads, ...proposalsByCnpj, ...proposalsByName].forEach(p => map.set(p.id, p));
     return Array.from(map.values()).sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
-  }, [proposalsByLeads, proposalsByCnpj]);
+  }, [proposalsByLeads, proposalsByCnpj, proposalsByName]);
 
   const latestProposal = useMemo(() => {
     if (!allProposals.length) return null;
@@ -172,6 +183,49 @@ export default function CadastroDetalhe() {
     if (!scores.length) return null;
     return scores.sort((a, b) => new Date(b.created_date) - new Date(a.created_date))[0];
   }, [scores]);
+
+  // Fetch ExternalValidationResult for all cases
+  const { data: validations = [] } = useQuery({
+    queryKey: ['cadastro-validations', allCaseIds],
+    queryFn: async () => {
+      const results = await Promise.all(allCaseIds.map(id => base44.entities.ExternalValidationResult.filter({ onboardingCaseId: id })));
+      return results.flat();
+    },
+    enabled: allCaseIds.length > 0,
+  });
+
+  // Fetch IntegrationLog for all cases
+  const { data: integrationLogs = [] } = useQuery({
+    queryKey: ['cadastro-intlogs', allCaseIds],
+    queryFn: async () => {
+      const results = await Promise.all(allCaseIds.map(id => base44.entities.IntegrationLog.filter({ onboarding_case_id: id })));
+      return results.flat();
+    },
+    enabled: allCaseIds.length > 0,
+  });
+
+  // Fetch AuditLogs for merchant + all cases + all proposals
+  const auditEntityIds = useMemo(() => {
+    const ids = [merchantId];
+    allCaseIds.forEach(id => ids.push(id));
+    allProposals.forEach(p => ids.push(p.id));
+    allContracts.forEach(c => ids.push(c.id));
+    return ids.filter(Boolean);
+  }, [merchantId, allCaseIds, allProposals, allContracts]);
+
+  const { data: auditLogs = [] } = useQuery({
+    queryKey: ['cadastro-audit', auditEntityIds],
+    queryFn: async () => {
+      const results = await Promise.all(auditEntityIds.map(id => base44.entities.AuditLog.filter({ entityId: id })));
+      return results.flat();
+    },
+    enabled: auditEntityIds.length > 0,
+  });
+
+  const handleMerchantUpdated = () => {
+    queryClient.invalidateQueries({ queryKey: ['cadastro-merchant', merchantId] });
+    queryClient.invalidateQueries({ queryKey: ['cadastro-audit'] });
+  };
 
   if (isLoading) {
     return (
@@ -229,16 +283,21 @@ export default function CadastroDetalhe() {
               <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />Desde {new Date(merchant.created_date).toLocaleDateString('pt-BR')}</span>
             </div>
           </div>
-          {latestCase?.riskScore != null && (
-            <div className={`text-center px-4 py-2 rounded-xl flex-shrink-0 ${
-              latestCase.riskScore <= 40 ? 'bg-green-50' : latestCase.riskScore <= 70 ? 'bg-amber-50' : 'bg-red-50'
-            }`}>
-              <p className={`text-2xl font-bold ${
-                latestCase.riskScore <= 40 ? 'text-green-700' : latestCase.riskScore <= 70 ? 'text-amber-700' : 'text-red-700'
-              }`}>{latestCase.riskScore}</p>
-              <p className="text-[10px] text-[var(--pagsmile-blue)]/50">Risk Score</p>
-            </div>
-          )}
+          {(latestCase?.riskScoreV4 != null || latestCase?.riskScore != null || latestScore?.score_final != null) && (() => {
+            const scoreV4 = latestCase?.riskScoreV4 ?? latestScore?.score_final;
+            const subfaixa = latestCase?.subfaixaNome || latestScore?.subfaixa_nome || '';
+            const displayScore = scoreV4 ?? latestCase?.riskScore;
+            const isV4 = scoreV4 != null;
+            const color = isV4 
+              ? (scoreV4 <= 200 ? 'bg-green-50 text-green-700' : scoreV4 <= 500 ? 'bg-amber-50 text-amber-700' : 'bg-red-50 text-red-700')
+              : (latestCase.riskScore <= 40 ? 'bg-green-50 text-green-700' : latestCase.riskScore <= 70 ? 'bg-amber-50 text-amber-700' : 'bg-red-50 text-red-700');
+            return (
+              <div className={`text-center px-4 py-2 rounded-xl flex-shrink-0 ${color.split(' ')[0]}`}>
+                <p className={`text-2xl font-bold ${color.split(' ').slice(1).join(' ')}`}>{displayScore}</p>
+                <p className="text-[10px] text-[var(--pagsmile-blue)]/50">{isV4 ? `V4 — ${subfaixa}` : 'Risk Score'}</p>
+              </div>
+            );
+          })()}
         </div>
       </div>
 
@@ -251,6 +310,8 @@ export default function CadastroDetalhe() {
           <TabsTrigger value="proposta" className="text-xs gap-1"><FileText className="w-3 h-3" />Propostas{allProposals.length > 0 ? ` (${allProposals.length})` : ''}</TabsTrigger>
           <TabsTrigger value="contrato" className="text-xs gap-1"><Stamp className="w-3 h-3" />Contratos{allContracts.length > 0 ? ` (${allContracts.length})` : ''}</TabsTrigger>
           <TabsTrigger value="compliance" className="text-xs gap-1"><Shield className="w-3 h-3" />Compliance</TabsTrigger>
+          <TabsTrigger value="enrichment" className="text-xs gap-1"><Database className="w-3 h-3" />BDC / CAF{(validations.length + integrationLogs.length) > 0 ? ` (${validations.length + integrationLogs.length})` : ''}</TabsTrigger>
+          <TabsTrigger value="historico" className="text-xs gap-1"><History className="w-3 h-3" />Histórico{auditLogs.length > 0 ? ` (${auditLogs.length})` : ''}</TabsTrigger>
           {!merchant.isSubseller && (
             <TabsTrigger value="subsellers" className="text-xs gap-1"><Users className="w-3 h-3" />Subsellers ({subsellers.length})</TabsTrigger>
           )}
@@ -260,7 +321,7 @@ export default function CadastroDetalhe() {
           <CadastroOverviewTab merchant={merchant} latestCase={latestCase} lead={lead} latestProposal={latestProposal} latestContract={latestContract} latestScore={latestScore} documents={documents} subsellers={subsellers} allProposals={allProposals} allContracts={allContracts} allLeads={allLeads} allCases={cases} />
         </TabsContent>
         <TabsContent value="dados">
-          <CadastroDadosTab merchant={merchant} lead={lead} responses={responses} latestCase={latestCase} />
+          <CadastroDadosTab merchant={merchant} lead={lead} responses={responses} latestCase={latestCase} onMerchantUpdated={handleMerchantUpdated} />
         </TabsContent>
         <TabsContent value="documentos">
           <CadastroDocumentosTab documents={documents} />
@@ -273,6 +334,12 @@ export default function CadastroDetalhe() {
         </TabsContent>
         <TabsContent value="compliance">
           <CadastroComplianceTab score={latestScore} latestCase={latestCase} allScores={scores} allCases={cases} />
+        </TabsContent>
+        <TabsContent value="enrichment">
+          <CadastroEnrichmentTab validations={validations} integrationLogs={integrationLogs} />
+        </TabsContent>
+        <TabsContent value="historico">
+          <CadastroHistoricoTab auditLogs={auditLogs} />
         </TabsContent>
         {!merchant.isSubseller && (
           <TabsContent value="subsellers">

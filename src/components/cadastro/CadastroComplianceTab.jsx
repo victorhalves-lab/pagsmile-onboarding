@@ -19,7 +19,7 @@ function ScoreBlock({ label, value, max = 1000 }) {
   );
 }
 
-export default function CadastroComplianceTab({ score, latestCase }) {
+export default function CadastroComplianceTab({ score, latestCase, allScores = [], allCases = [] }) {
   if (!score && !latestCase) {
     return (
       <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-10 text-center mt-4">
@@ -140,6 +140,81 @@ export default function CadastroComplianceTab({ score, latestCase }) {
               <li key={i} className="text-xs text-amber-700/80">{p}</li>
             ))}
           </ul>
+        </div>
+      )}
+
+      {/* Parecer Final / Sumário Executivo */}
+      {score?.sumario_executivo && (
+        <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-5">
+          <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)] mb-2 flex items-center gap-2">
+            <Info className="w-4 h-4 text-blue-600" />Sumário Executivo
+          </h3>
+          <p className="text-sm text-[var(--pagsmile-blue)]/70 leading-relaxed whitespace-pre-wrap">{score.sumario_executivo}</p>
+        </div>
+      )}
+
+      {score?.parecer_final && (
+        <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-5">
+          <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)] mb-2">Parecer Final</h3>
+          <p className="text-sm text-[var(--pagsmile-blue)]/70 leading-relaxed whitespace-pre-wrap">{score.parecer_final}</p>
+        </div>
+      )}
+
+      {/* V4 Variables Detail */}
+      {(score?.variaveis_positivas?.length > 0 || score?.variaveis_negativas?.length > 0) && (
+        <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-5">
+          <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)] mb-3">Variáveis V4</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {score.variaveis_positivas?.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold text-green-700 mb-1">Positivas (Redutoras)</p>
+                <ul className="space-y-0.5">
+                  {score.variaveis_positivas.map((v, i) => <li key={i} className="text-[11px] text-green-700/80">+ {v}</li>)}
+                </ul>
+              </div>
+            )}
+            {score.variaveis_negativas?.length > 0 && (
+              <div>
+                <p className="text-xs font-semibold text-red-700 mb-1">Negativas (Penalizadoras)</p>
+                <ul className="space-y-0.5">
+                  {score.variaveis_negativas.map((v, i) => <li key={i} className="text-[11px] text-red-700/80">– {v}</li>)}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Rolling Reserve & Monitoramento */}
+      {(score?.rolling_reserve_percent > 0 || score?.monitoramento_detalhes) && (
+        <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-5">
+          <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)] mb-3">Monitoramento & Reservas</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+            {score.rolling_reserve_percent > 0 && <div><p className="text-[var(--pagsmile-blue)]/50">Rolling Reserve</p><p className="font-bold text-amber-700">{score.rolling_reserve_percent}%</p></div>}
+            {score.monitoramento_nivel && <div><p className="text-[var(--pagsmile-blue)]/50">Nível Monitoramento</p><p className="font-bold">{score.monitoramento_nivel}</p></div>}
+            {score.promocao_proxima_data && <div><p className="text-[var(--pagsmile-blue)]/50">Próxima Promoção</p><p className="font-bold">{new Date(score.promocao_proxima_data).toLocaleDateString('pt-BR')}</p></div>}
+            {score.promocao_destino && <div><p className="text-[var(--pagsmile-blue)]/50">Destino Promoção</p><p className="font-bold">{score.promocao_destino}</p></div>}
+          </div>
+        </div>
+      )}
+
+      {/* All Cases Timeline */}
+      {allCases.length > 1 && (
+        <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-5">
+          <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)] mb-3">Histórico de Casos ({allCases.length})</h3>
+          <div className="space-y-2">
+            {[...allCases].sort((a,b) => new Date(b.created_date) - new Date(a.created_date)).map(c => (
+              <div key={c.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg text-xs">
+                <div className="flex items-center gap-2">
+                  <Shield className="w-3.5 h-3.5 text-[var(--pagsmile-blue)]/30" />
+                  <span className="font-medium">{c.status}</span>
+                  {c.subfaixaNome && <span className="text-[var(--pagsmile-blue)]/40">({c.subfaixaNome})</span>}
+                  {c.riskScoreV4 != null && <span className="text-[var(--pagsmile-blue)]/40">V4: {c.riskScoreV4}</span>}
+                </div>
+                <span className="text-[var(--pagsmile-blue)]/40">{new Date(c.created_date).toLocaleDateString('pt-BR')}</span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>

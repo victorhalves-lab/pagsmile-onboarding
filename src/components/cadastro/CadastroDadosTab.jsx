@@ -1,5 +1,6 @@
 import React from 'react';
 import { FileText } from 'lucide-react';
+import CadastroEditMerchant from './CadastroEditMerchant';
 
 function formatValue(val) {
   if (val === null || val === undefined || val === '') return '—';
@@ -30,7 +31,7 @@ function Section({ title, children }) {
   );
 }
 
-export default function CadastroDadosTab({ merchant, lead, responses, latestCase }) {
+export default function CadastroDadosTab({ merchant, lead, responses, latestCase, onMerchantUpdated }) {
   // Group responses by question text for display
   const questionResponses = responses.map(r => ({
     question: r.questionText || `Pergunta ${r.questionId}`,
@@ -45,6 +46,11 @@ export default function CadastroDadosTab({ merchant, lead, responses, latestCase
 
   return (
     <div className="space-y-4 mt-4">
+      {/* Edit Button */}
+      <div className="flex justify-end">
+        <CadastroEditMerchant merchant={merchant} onSaved={onMerchantUpdated} />
+      </div>
+
       {/* Merchant Basic Data */}
       <Section title="Dados Básicos do Merchant">
         <DataRow label="Nome / Razão Social" value={merchant.fullName} />
