@@ -576,17 +576,15 @@ Seja rigoroso mas justo. Documente cada finding com evidências claras.`;
       
       if (hasV4Data) {
         // V4 engine already ran — only update SENTINEL qualitative fields
+        // CRITICAL (GAP 7): Do NOT overwrite score_questionario, score_geral_composto,
+        // classificacao_questionario, classificacao_geral, bonus_consistencia,
+        // recomendacao_final — these are cleared by V4 to avoid confusion.
+        // SENTINEL qualitative data goes into analise_completa_ia, parecer_final, etc.
         const qualitativeOnly = {
           onboarding_case_id: caseId,
           versao_agente: scoreData.versao_agente,
-          score_questionario: scoreData.score_questionario,
-          classificacao_questionario: scoreData.classificacao_questionario,
-          score_validacao_externa: scoreData.score_validacao_externa,
-          classificacao_validacao_externa: scoreData.classificacao_validacao_externa,
-          bonus_consistencia: scoreData.bonus_consistencia,
-          score_geral_composto: scoreData.score_geral_composto,
-          classificacao_geral: scoreData.classificacao_geral,
-          // DO NOT overwrite: recomendacao_final, score_final, subfaixa, etc.
+          // DO NOT overwrite: score_questionario, score_geral_composto, classificacao_*,
+          // bonus_consistencia, recomendacao_final, score_final, subfaixa, etc.
           sumario_executivo: scoreData.sumario_executivo,
           analise_completa_ia: scoreData.analise_completa_ia,
           parecer_final: scoreData.parecer_final,
@@ -603,10 +601,10 @@ Seja rigoroso mas justo. Documente cada finding com evidências claras.`;
           condicoes_aprovacao: scoreData.condicoes_aprovacao,
           fase_1_completa: scoreData.fase_1_completa,
           data_analise_fase_1: scoreData.data_analise_fase_1,
-          fase_2_completa: scoreData.fase_2_completa,
-          data_analise_fase_2: scoreData.data_analise_fase_2,
-          fase_3_completa: scoreData.fase_3_completa,
-          data_analise_fase_3: scoreData.data_analise_fase_3,
+          fase_2_completa: scoreData.fase_2_completa || existingScore.fase_2_completa,
+          data_analise_fase_2: scoreData.data_analise_fase_2 || existingScore.data_analise_fase_2,
+          fase_3_completa: scoreData.fase_3_completa || existingScore.fase_3_completa,
+          data_analise_fase_3: scoreData.data_analise_fase_3 || existingScore.data_analise_fase_3,
         };
         savedScore = await base44.asServiceRole.entities.ComplianceScore.update(
           existingScore.id, 
