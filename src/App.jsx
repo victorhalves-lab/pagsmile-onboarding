@@ -46,6 +46,7 @@ import GerenciarTaxasPadrao from './pages/GerenciarTaxasPadrao';
 import SubsellerDocUpload from './pages/SubsellerDocUpload';
 import Cadastro from './pages/Cadastro';
 import CadastroDetalhe from './pages/CadastroDetalhe';
+import ComplianceDocOnly from './pages/ComplianceDocOnly';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -57,6 +58,7 @@ const LayoutWrapper = ({ children, currentPageName }) => Layout ?
 
 // --- Public routes: these pages do NOT require authentication ---
 const PUBLIC_PATHS = new Set([
+  '/ComplianceDocOnly',
   '/PropostaPublica',
   '/PropostaPadraoPublica',
   '/PropostaPixPublica',
@@ -156,6 +158,7 @@ const PublicRoutes = () => (
     {/* Subseller */}
     <Route path="/SubsellerQuestionnaire" element={<LayoutWrapper currentPageName="SubsellerQuestionnaire"><SubsellerQuestionnaire /></LayoutWrapper>} />
     <Route path="/SubsellerDocUpload" element={<LayoutWrapper currentPageName="SubsellerDocUpload"><SubsellerDocUpload /></LayoutWrapper>} />
+    <Route path="/ComplianceDocOnly" element={<LayoutWrapper currentPageName="ComplianceDocOnly"><ComplianceDocOnly /></LayoutWrapper>} />
 
     {/* Questionário Simplificado */}
     {Pages['QuestionarioSimplificadoPublico'] && <Route path="/QuestionarioSimplificadoPublico" element={<LayoutWrapper currentPageName="QuestionarioSimplificadoPublico"><Pages.QuestionarioSimplificadoPublico /></LayoutWrapper>} />}

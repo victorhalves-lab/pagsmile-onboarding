@@ -13,8 +13,11 @@ import {
 import {
   Clock, CheckCircle2, AlertTriangle, XCircle, FileCheck,
   Loader2, MoreHorizontal, Mail, Eye, ArrowUpDown, Building2, User,
-  Brain, FileText, ChevronLeft, ChevronRight, ChevronDown, UserPlus
+  Brain, FileText, ChevronLeft, ChevronRight, ChevronDown, UserPlus,
+  Link2, Copy, ScanFace
 } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
+import { toast } from 'sonner';
 import CaseExpandedDetail from '@/components/compliance/CaseExpandedDetail';
 
 // ── Helpers ──
@@ -88,6 +91,45 @@ const getScoreBadge = (score) => {
     </div>
   );
 };
+
+// ── DocLink button: generates a token and copies the doc+CAF link ──
+function DocLinkMenuItem({ caseData }) {
+  const [generating, setGenerating] = React.useState(false);
+
+  const handleGenerate = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setGenerating(true);
+    try {
+      let token = caseData.docLinkToken;
+      if (!token) {
+        // Generate a simple token: base64 of caseId + timestamp
+        const raw = `${caseData.id}_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+        token = btoa(raw).replace(/[=+/]/g, '').slice(0, 24);
+        await base44.entities.OnboardingCase.update(caseData.id, { docLinkToken: token });
+      }
+      const baseUrl = window.location.origin;
+      const link = `${baseUrl}/ComplianceDocOnly?caseId=${caseData.id}&token=${token}`;
+      await navigator.clipboard.writeText(link);
+      toast.success('Link copiado! Envie ao cliente para completar docs + verificação CAF.');
+    } catch (err) {
+      console.error('Erro ao gerar link:', err);
+      toast.error('Erro ao gerar link: ' + err.message);
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  // Don't show if already fully completed
+  if (caseData.docCompleted && caseData.cafCompleted) return null;
+
+  return (
+    <DropdownMenuItem onClick={handleGenerate} disabled={generating}>
+      {generating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <ScanFace className="w-4 h-4 mr-2" />}
+      {caseData.docLinkToken ? 'Copiar Link Docs + CAF' : 'Gerar Link Docs + CAF'}
+    </DropdownMenuItem>
+  );
+}
 
 export default function ComplianceCasesTable({
   paginatedCases, filteredCasesCount, merchantMap, scoresMap, getCaseModel,
@@ -230,6 +272,7 @@ export default function ComplianceCasesTable({
                             <DropdownMenuItem asChild><Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`}><Eye className="w-4 h-4 mr-2" />Ver Detalhes</Link></DropdownMenuItem>
                             <DropdownMenuItem asChild><Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`}><FileText className="w-4 h-4 mr-2" />Ver Respostas</Link></DropdownMenuItem>
                             {merchant?.email && (<DropdownMenuItem asChild><a href={`mailto:${merchant.email}`}><Mail className="w-4 h-4 mr-2" />Enviar E-mail</a></DropdownMenuItem>)}
+                            <DocLinkMenuItem caseData={c} />
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
