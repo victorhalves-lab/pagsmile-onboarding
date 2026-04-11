@@ -141,10 +141,11 @@ export default function ComplianceDocOnly() {
       // Mark case as doc completed
       await base44.entities.OnboardingCase.update(caseId, {
         docCompleted: true,
+        status: 'Em Processamento',
       });
 
       toast.success('Documentos e verificação enviados com sucesso!');
-      navigate(`/OnboardingCompletion?caseId=${caseId}`);
+      setCurrentStep('completed');
     } catch (error) {
       console.error('Erro ao submeter:', error);
       toast.error('Erro ao enviar: ' + error.message);
@@ -230,16 +231,16 @@ export default function ComplianceDocOnly() {
           <div className="w-8 h-0.5 bg-slate-200" />
           <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
             currentStep === 'caf_verification' ? 'bg-purple-100 text-purple-700 ring-2 ring-purple-300' :
-            currentStep === 'done' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'
+            currentStep === 'completed' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'
           }`}>
-            {currentStep === 'done' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <span className="w-5 h-5 rounded-full bg-slate-300 text-white text-[10px] flex items-center justify-center">2</span>}
+            {currentStep === 'completed' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <span className="w-5 h-5 rounded-full bg-slate-300 text-white text-[10px] flex items-center justify-center">2</span>}
             Verificação CAF
           </div>
           <div className="w-8 h-0.5 bg-slate-200" />
           <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold ${
-            currentStep === 'done' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'
+            currentStep === 'completed' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'
           }`}>
-            <span className="w-5 h-5 rounded-full bg-slate-300 text-white text-[10px] flex items-center justify-center">3</span>
+            {currentStep === 'completed' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <span className="w-5 h-5 rounded-full bg-slate-300 text-white text-[10px] flex items-center justify-center">3</span>}
             Conclusão
           </div>
         </div>
@@ -287,10 +288,27 @@ export default function ComplianceDocOnly() {
             onboardingCaseId={caseId}
             onComplete={(result) => {
               setCafResult(result);
-              setCurrentStep('done');
               handleFinalSubmit();
             }}
           />
+        </div>
+      )}
+
+      {/* Step 3: Completed */}
+      {currentStep === 'completed' && (
+        <div className="text-center py-12">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 mb-6">
+            <CheckCircle2 className="w-10 h-10 text-green-600" />
+          </div>
+          <h2 className="text-2xl font-bold text-[#002443] mb-3">Processo concluído com sucesso!</h2>
+          <p className="text-[#002443]/60 max-w-md mx-auto mb-6">
+            Seus documentos e verificação de identidade foram enviados com sucesso.
+            Nossa equipe de compliance irá analisar as informações.
+          </p>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-50 border border-green-200 text-green-700 text-sm font-medium">
+            <CheckCircle2 className="w-4 h-4" />
+            Documentos enviados e verificação CAF concluída
+          </div>
         </div>
       )}
 

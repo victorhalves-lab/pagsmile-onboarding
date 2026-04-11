@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, User, FileCheck, FileText, Shield, History, UserCheck, Brain, Users, Database } from 'lucide-react';
+import { Loader2, User, FileCheck, FileText, Shield, History, UserCheck, Brain, Users, Database, ScanFace } from 'lucide-react';
 import { toast } from 'sonner';
 import IAAnalysisPanel from '../components/compliance/IAAnalysisPanel';
 import ComplianceResponsesPanel from '../components/compliance/ComplianceResponsesPanel';
@@ -23,6 +23,7 @@ import CnpjEnrichmentSummaryCard from '../components/case-analysis/CnpjEnrichmen
 import BDCEnrichmentPanel from '../components/bdc-enrichment/BDCEnrichmentPanel';
 import BDCRawDataTab from '../components/bdc-enrichment/BDCRawDataTab';
 import CaseScoreHeader from '../components/case-analysis/CaseScoreHeader';
+import CafResultsPanel from '../components/case-analysis/CafResultsPanel';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function AnaliseDeCasos() {
@@ -85,6 +86,12 @@ export default function AnaliseDeCasos() {
   const { data: auditLogs = [] } = useQuery({
     queryKey: ['auditLogs', caseId],
     queryFn: () => base44.entities.AuditLog.filter({ entityId: caseId }, '-changeDate', 50),
+    enabled: !!caseId
+  });
+
+  const { data: integrationLogs = [] } = useQuery({
+    queryKey: ['integrationLogs', caseId],
+    queryFn: () => base44.entities.IntegrationLog.filter({ onboarding_case_id: caseId }),
     enabled: !!caseId
   });
 
@@ -175,6 +182,7 @@ export default function AnaliseDeCasos() {
           <TabsTrigger value="review" className="gap-1"><UserCheck className="w-4 h-4" /> {t('ac.tab_review')}</TabsTrigger>
           <TabsTrigger value="subsellers" className="gap-1"><Users className="w-4 h-4" /> {t('ac.tab_subaccounts')}</TabsTrigger>
           <TabsTrigger value="bdc-enrichment" className="gap-1"><Database className="w-4 h-4" /> Enriquecimento BDC</TabsTrigger>
+          <TabsTrigger value="caf-results" className="gap-1"><ScanFace className="w-4 h-4" /> Resultados CAF</TabsTrigger>
           <TabsTrigger value="bdc-dados" className="gap-1"><Database className="w-4 h-4" /> Dados BDC</TabsTrigger>
         </TabsList>
 
@@ -243,6 +251,10 @@ export default function AnaliseDeCasos() {
             onShowReject={() => setShowRejectDialog(true)}
             onShowRequestInfo={() => setShowRequestInfoDialog(true)}
           />
+        </TabsContent>
+
+        <TabsContent value="caf-results">
+          <CafResultsPanel validations={validations} integrationLogs={integrationLogs} />
         </TabsContent>
 
         <TabsContent value="bdc-enrichment">
