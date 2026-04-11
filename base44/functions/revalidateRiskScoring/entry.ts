@@ -165,12 +165,34 @@ function extractEnrichmentData(existingScore, externalValidations, merchant) {
           enrich.cnpjInativo = true;
         }
       }
-      if (data.situacaoEspecial || data.recuperacaoJudicial) enrich.situacaoEspecial = true;
-      if (data.dataAbertura) {
-        const years = (Date.now() - new Date(data.dataAbertura).getTime()) / (1000 * 60 * 60 * 24 * 365.25);
-        enrich.idadeEmpresa = years;
+      // Also check BDC raw structure: BasicData.TaxIdStatus
+      const bdBasic = data.BasicData || data.basic_data;
+      if (bdBasic) {
+        const bdFirst = Array.isArray(bdBasic) ? bdBasic[0] : bdBasic;
+        const txStatus = bdFirst?.TaxIdStatus || bdFirst?.TaxIdStatusDescription || '';
+        if (txStatus && !String(txStatus).toUpperCase().includes('ATIV')) {
+          enrich.cnpjInativo = true;
+        }
+        // Company age from BDC
+        const founded = bdFirst?.FoundedDate || bdFirst?.Age?.FoundedDate;
+        if (founded) {
+          enrich.idadeEmpresa = (Date.now() - new Date(founded).getTime()) / (1000 * 60 * 60 * 24 * 365.25);
+        }
+        // Capital
+        const cap = bdFirst?.ShareCapital || bdFirst?.Capital;
+        if (cap != null) enrich.capitalSocial = Number(cap);
+        // MEI
+        if (bdFirst?.TaxRegimes?.MEI || bdFirst?.IsMEI) enrich.isMEI = true;
+        // Employees
+        const emp = bdFirst?.NumberOfEmployees || bdFirst?.EmployeesCount;
+        if (emp != null) enrich.empregados = Number(emp);
       }
-      if (data.capitalSocial) enrich.capitalSocial = data.capitalSocial;
+      // Shell situations
+      if (data.situacaoEspecial || data.recuperacaoJudicial) enrich.situacaoEspecial = true;
+      if (data.dataAbertura && !enrich.idadeEmpresa) {
+        enrich.idadeEmpresa = (Date.now() - new Date(data.dataAbertura).getTime()) / (1000 * 60 * 60 * 24 * 365.25);
+      }
+      if (data.capitalSocial && !enrich.capitalSocial) enrich.capitalSocial = data.capitalSocial;
       if (data.opcaoPeloMei || data.mei) enrich.isMEI = true;
       if (data.pep) enrich.pepDetectedBDC = true;
       if (data.processos) enrich.processosDetectedBDC = true;
@@ -187,26 +209,117 @@ function extractEnrichmentData(existingScore, externalValidations, merchant) {
       if (data.googleMapsAvaliacoes) enrich.mapsAvaliacoesBDC = data.googleMapsAvaliacoes;
       if (data.googleMapsNota) enrich.mapsNotaBDC = data.googleMapsNota;
       if (data.sedeVerificada) enrich.temSedeBDC = true;
-      if (data.empregados != null) enrich.empregados = data.empregados;
+      if (data.empregados != null && !enrich.empregados) enrich.empregados = data.empregados;
       if (data.volumeNFs != null) enrich.volumeNFs = data.volumeNFs;
+
+      // BDC raw: check KYC for PEP and sanctions
+      const kycData = data.Kyc || data.kyc;
+      if (kycData) {
+        const kycItems = Array.isArray(kycData) ? kycData : [kycData];
+        for (const ki of kycItems) {
+          if (ki?.IsPEP || ki?.IsPep) enrich.pepDetectedBDC = true;
+          const sanctions = ki?.Sanctions || [];
+          if (Array.isArray(sanctions) && sanctions.length > 0) enrich.sancoesOFAC = true;
+        }
+      }
+      // BDC raw: check OwnersKyc for PEP
+      const ownersKyc = data.OwnersKyc || data.owners_kyc;
+      if (ownersKyc) {
+        const okItems = Array.isArray(ownersKyc) ? ownersKyc : [ownersKyc];
+        for (const oki of okItems) {
+          if (oki?.IsPEP || oki?.IsPep) enrich.pepDetectedBDC = true;
+          const sanctions = oki?.Sanctions || [];
+          if (Array.isArray(sanctions) && sanctions.length > 0) enrich.sancoesOFAC = true;
+        }
+      }
+      // BDC raw: check Processes
+      const procs = data.Processes || data.processes || data.Lawsuits || data.lawsuits;
+      if (procs) {
+        const pItems = Array.isArray(procs) ? procs : [procs];
+        for (const pi of pItems) {
+          if ((pi?.TotalLawsuits || pi?.NumberOfLawsuits || 0) > 0) enrich.processosDetectedBDC = true;
+        }
+      }
+      // BDC raw: check Collections
+      const colls = data.Collections || data.collections;
+      if (colls) {
+        const cItems = Array.isArray(colls) ? colls : [colls];
+        for (const ci of cItems) {
+          if (ci?.HasCollectionRecords || (ci?.TotalRecords || 0) > 0) enrich.negativadaBDC = true;
+        }
+      }
+      // BDC raw: check Domains + ActivityIndicators
+      const domains = data.Domains || data.domains;
+      if (domains) {
+        const dItems = Array.isArray(domains) ? domains : [domains];
+        if (dItems.some(d => d?.Domain || d?.DomainName)) enrich.temSiteBDC = true;
+      }
+      const actInd = data.ActivityIndicators || data.activity_indicators;
+      if (actInd) {
+        const aItems = Array.isArray(actInd) ? actInd : [actInd];
+        for (const ai of aItems) {
+          if (ai?.HasActiveDomain === true) enrich.siteOnlineBDC = true;
+        }
+      }
+      // BDC raw: adverse media
+      const media = data.MediaProfileAndExposure || data.media_profile_and_exposure;
+      if (media) {
+        const mItems = Array.isArray(media) ? media : [media];
+        for (const mi of mItems) {
+          const sentiment = String(mi?.Sentiment || mi?.OverallSentiment || '').toUpperCase();
+          if (sentiment.includes('NEGATIVE')) enrich.adverseMediaBDC = true;
+        }
+      }
     }
     
-    if (v.provider === 'CAF' && v.status === 'Sucesso') {
+    // ══ CAF data — FIXED: read ACTUAL field names saved by cafVerifyResult ══
+    if (v.provider === 'CAF') {
       enrich.cafAvailable = true;
       const data = v.resultData || {};
-      if (data.livenessResult) enrich.livenessOK = data.livenessResult === 'alive';
-      if (data.faceMatchScore != null) enrich.faceMatchScore = data.faceMatchScore;
-      if (data.documentAuthenticity) enrich.docAutentico = data.documentAuthenticity !== 'forged';
+      
+      // FaceLiveness results (saved by cafVerifyResult with these exact field names)
+      if (v.validationType === 'FaceLiveness' || v.validationType?.includes('Liveness')) {
+        if (data.isAlive === true) enrich.livenessOK = true;
+        else if (data.isAlive === false) enrich.livenessOK = false;
+        
+        // Face match score: use similarity if available, otherwise derive from isMatch
+        if (data.similarity != null) {
+          enrich.faceMatchScore = Math.round(data.similarity * 100);
+        } else if (data.isMatch === true) {
+          enrich.faceMatchScore = 100;
+        } else if (data.isMatch === false) {
+          enrich.faceMatchScore = 0;
+        }
+        
+        // Legacy field names (from older flows)
+        if (enrich.livenessOK === null && data.livenessResult != null) {
+          enrich.livenessOK = data.livenessResult === 'alive';
+        }
+        if (enrich.faceMatchScore === null && data.faceMatchScore != null) {
+          enrich.faceMatchScore = data.faceMatchScore;
+        }
+      }
+      
+      // DocumentDetector results
+      if (v.validationType?.includes('Document')) {
+        if (data.isCaptureValid === false) {
+          enrich.docAutentico = false;
+        } else if (data.isCaptureValid === true && enrich.docAutentico !== false) {
+          enrich.docAutentico = true;
+        }
+        // Legacy field name
+        if (data.documentAuthenticity) {
+          enrich.docAutentico = data.documentAuthenticity !== 'forged';
+        }
+      }
     }
   }
 
   // From existing ComplianceScore enrichment analysis (SENTINEL may have enriched)
   if (existingScore) {
     const va = existingScore.variaveis_aplicadas || {};
-    // If existing score already detected PEP from BDC, preserve it
     if (va.E01?.ativa) enrich.pepDetectedBDC = true;
     if (va.E02?.ativa) enrich.processosDetectedBDC = true;
-    // Preserve bloqueios from CAF
     if ((existingScore.bloqueios_ativos || []).includes('B04_SANCAO_OFAC')) enrich.sancoesOFAC = true;
     if ((existingScore.bloqueios_ativos || []).includes('B05_CPF_OBITO')) enrich.cpfObitoBDC = true;
     if ((existingScore.bloqueios_ativos || []).includes('B06_DEEPFAKE')) enrich.livenessOK = false;

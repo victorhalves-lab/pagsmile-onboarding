@@ -87,6 +87,7 @@ Deno.serve(async (req) => {
     // Buscar resultado de enriquecimento CNPJ (se já existir no ComplianceScore)
     let cnpjEnrichmentData = null;
     let sanctionsData = null;
+    let bdcRawSummary = null;
     if (merchant?.cpfCnpj && merchant.type === 'PJ') {
       const cnpjClean = (merchant.cpfCnpj || '').replace(/\D/g, '');
       if (cnpjClean.length === 14) {
@@ -129,7 +130,95 @@ Deno.serve(async (req) => {
         }
       }
     }
-    
+
+    // ═══ EXTRACT BDC RAW DATA SUMMARY for SENTINEL context ═══
+    const bdcValidations = externalValidations
+      .filter(v => v.provider === 'BigDataCorp' && v.resultData)
+      .sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+    const latestBdc = bdcValidations[0];
+    if (latestBdc?.resultData) {
+      try {
+        const rd = latestBdc.resultData;
+        const extractArr = (key) => {
+          const val = rd[key];
+          if (!val) return [];
+          return Array.isArray(val) ? val : [val];
+        };
+        // Build concise summary of BDC data for IA context
+        const bdBasic = extractArr('BasicData')[0] || extractArr('basic_data')[0] || {};
+        const bdKyc = extractArr('Kyc')[0] || extractArr('kyc')[0] || {};
+        const bdOwnersKyc = extractArr('OwnersKyc') || extractArr('owners_kyc') || [];
+        const bdProcesses = extractArr('Processes') || extractArr('processes') || [];
+        const bdCollections = extractArr('Collections') || extractArr('collections') || [];
+        const bdMedia = extractArr('MediaProfileAndExposure') || extractArr('media_profile_and_exposure') || [];
+        const bdDomains = extractArr('Domains') || extractArr('domains') || [];
+        const bdActivity = extractArr('ActivityIndicators') || extractArr('activity_indicators') || [];
+        const bdDebtors = extractArr('GovernmentDebtors') || extractArr('government_debtors') || [];
+        const bdFinancial = extractArr('FinancialMarket') || extractArr('financial_market') || [];
+        const bdRels = rd.Relationships?.Relationships || extractArr('relationships') || [];
+
+        bdcRawSummary = {
+          queryDate: latestBdc.created_date,
+          basicData: {
+            officialName: bdBasic.OfficialName || bdBasic.CompanyName || bdBasic.Name || '',
+            tradeName: bdBasic.TradeName || bdBasic.FantasyName || '',
+            status: bdBasic.TaxIdStatus || bdBasic.TaxIdStatusDescription || '',
+            foundedDate: bdBasic.FoundedDate || bdBasic.Age?.FoundedDate || '',
+            capital: bdBasic.ShareCapital || bdBasic.Capital || 0,
+            mainCnae: bdBasic.MainEconomicActivity || '',
+            cnaeDesc: bdBasic.MainEconomicActivityDescription || '',
+            legalNature: bdBasic.LegalNatureDescription || bdBasic.LegalNature || '',
+            companySize: bdBasic.CompanySize || '',
+            employees: bdBasic.NumberOfEmployees || bdBasic.EmployeesCount || 'N/D',
+          },
+          kyc: {
+            isPep: bdKyc.IsPEP || bdKyc.IsPep || false,
+            hasSanctions: (bdKyc.Sanctions || []).length > 0,
+          },
+          ownersCount: bdOwnersKyc.length,
+          ownersPep: bdOwnersKyc.filter(o => o?.IsPEP || o?.IsPep).map(o => o?.Name || 'N/I'),
+          ownersSanctioned: bdOwnersKyc.filter(o => (o?.Sanctions || []).length > 0).map(o => o?.Name || 'N/I'),
+          processesCount: bdProcesses.reduce((s, p) => s + (p?.TotalLawsuits || p?.NumberOfLawsuits || 0), 0),
+          hasCriminalProcesses: bdProcesses.some(p => /criminal|penal|crime/i.test(JSON.stringify(p?.LawsuitTypes || p?.Categories || []))),
+          collectionsCount: bdCollections.reduce((s, c) => s + (c?.TotalRecords || 0), 0),
+          mediaProfileCount: bdMedia.length,
+          mediaNegative: bdMedia.filter(m => /NEGATIVE/i.test(m?.Sentiment || m?.OverallSentiment || '')).length,
+          domainsCount: bdDomains.length,
+          activityLevel: bdActivity[0]?.ActivityLevel ?? bdActivity[0]?.Level ?? 'N/D',
+          shellCompanyScore: bdActivity[0]?.ShellCompanyLikelyhood ?? bdActivity[0]?.ShellCompanyLikelihood ?? 'N/D',
+          governmentDebtTotal: bdDebtors.reduce((s, d) => s + (Number(d?.TotalValue || d?.Value || 0)), 0),
+          financialRegistrations: bdFinancial.map(f => f?.RegistrationType || f?.Entity || '').filter(Boolean),
+          qsaCount: Array.isArray(bdRels) ? bdRels.length : 0,
+        };
+        console.log(`[SENTINEL] BDC raw summary extracted: ${JSON.stringify(bdcRawSummary).length} chars`);
+      } catch (bdcExtractErr) {
+        console.warn(`[SENTINEL] Failed to extract BDC summary: ${bdcExtractErr.message}`);
+      }
+    }
+
+    // ═══ EXTRACT CAF RESULTS SUMMARY ═══
+    const cafValidations = externalValidations.filter(v => v.provider === 'CAF');
+    let cafSummary = null;
+    if (cafValidations.length > 0) {
+      const liveness = cafValidations.find(v => v.validationType?.includes('Liveness'));
+      const docFront = cafValidations.find(v => v.validationType?.includes('Frente'));
+      const docBack = cafValidations.find(v => v.validationType?.includes('Verso'));
+      cafSummary = {
+        totalVerifications: cafValidations.length,
+        allApproved: cafValidations.every(v => v.status === 'Sucesso'),
+        liveness: liveness ? {
+          isAlive: liveness.resultData?.isAlive,
+          isMatch: liveness.resultData?.isMatch,
+          similarity: liveness.resultData?.similarity,
+          probability: liveness.resultData?.probability,
+          decision: liveness.resultData?.cafDecision,
+        } : null,
+        docFront: docFront ? { valid: docFront.resultData?.isCaptureValid, type: docFront.resultData?.documentType } : null,
+        docBack: docBack ? { valid: docBack.resultData?.isCaptureValid } : null,
+      };
+      console.log(`[SENTINEL] CAF summary: ${cafValidations.length} verifications, allApproved=${cafSummary.allApproved}`);
+    }
+
     console.log(`[SENTINEL] Dados carregados: ${responses.length} respostas, ${externalValidations.length} validações, ${documents.length} documentos`);
     
     // ═══════════════════════════════════════════════════════════
@@ -215,6 +304,42 @@ ${cnpjEnrichmentData.results?.[0]?.enrichment ? `
 - E-mail × Site: ${cnpjEnrichmentData.results[0].enrichment.emailDomain?.consistent === true ? 'Consistente' : cnpjEnrichmentData.results[0].enrichment.emailDomain?.consistent === false ? 'INCONSISTENTE' : 'N/A'}
 - UF × DDD: ${cnpjEnrichmentData.results[0].enrichment.geoConsistency?.consistent === true ? 'Consistente' : cnpjEnrichmentData.results[0].enrichment.geoConsistency?.consistent === false ? 'INCONSISTENTE' : 'N/A'}
 - CNAE Risco: ${cnpjEnrichmentData.results[0].enrichment.cnaeRisk?.flag || 'Normal'}` : ''}` : '**Enriquecimento CNPJ:** Não disponível (PF ou CNPJ não encontrado)'}
+
+${bdcRawSummary ? `**Dados Big Data Corp (BDC) — Resumo dos 34 datasets:**
+- Consulta em: ${bdcRawSummary.queryDate || 'N/D'}
+- Razão Social: ${bdcRawSummary.basicData.officialName || 'N/D'}
+- Nome Fantasia: ${bdcRawSummary.basicData.tradeName || 'N/D'}
+- Situação CNPJ: ${bdcRawSummary.basicData.status || 'N/D'}
+- Fundação: ${bdcRawSummary.basicData.foundedDate || 'N/D'}
+- Capital Social: R$ ${Number(bdcRawSummary.basicData.capital || 0).toLocaleString('pt-BR')}
+- CNAE Principal: ${bdcRawSummary.basicData.mainCnae || 'N/D'} — ${bdcRawSummary.basicData.cnaeDesc || ''}
+- Natureza Jurídica: ${bdcRawSummary.basicData.legalNature || 'N/D'}
+- Porte: ${bdcRawSummary.basicData.companySize || 'N/D'}
+- Empregados: ${bdcRawSummary.basicData.employees}
+- PEP Empresa: ${bdcRawSummary.kyc.isPep ? 'SIM — RED FLAG' : 'Não'}
+- Sanções Empresa: ${bdcRawSummary.kyc.hasSanctions ? 'SIM — BLOQUEIO' : 'Não'}
+- QSA: ${bdcRawSummary.qsaCount} sócio(s)
+- Sócios PEP: ${bdcRawSummary.ownersPep.length > 0 ? bdcRawSummary.ownersPep.join(', ') : 'Nenhum'}
+- Sócios Sancionados: ${bdcRawSummary.ownersSanctioned.length > 0 ? bdcRawSummary.ownersSanctioned.join(', ') : 'Nenhum'}
+- Processos Judiciais: ${bdcRawSummary.processesCount}${bdcRawSummary.hasCriminalProcesses ? ' — INCLUI CRIMINAL' : ''}
+- Negativação/Cobrança: ${bdcRawSummary.collectionsCount} registro(s)
+- Dívida Ativa Governo: R$ ${Number(bdcRawSummary.governmentDebtTotal || 0).toLocaleString('pt-BR')}
+- Mídia: ${bdcRawSummary.mediaProfileCount} menção(ões), ${bdcRawSummary.mediaNegative} negativa(s)
+- Domínios: ${bdcRawSummary.domainsCount}
+- Nível Atividade: ${bdcRawSummary.activityLevel}
+- Shell Company Score: ${bdcRawSummary.shellCompanyScore}
+- Registros BCB/CVM/SUSEP: ${bdcRawSummary.financialRegistrations.length > 0 ? bdcRawSummary.financialRegistrations.join(', ') : 'Nenhum'}` : '**Big Data Corp:** Não consultado ainda'}
+
+${cafSummary ? `**Resultados CAF (Verificação de Identidade):**
+- Total de verificações: ${cafSummary.totalVerifications}
+- Todas aprovadas: ${cafSummary.allApproved ? 'SIM' : 'NÃO — ATENÇÃO'}
+${cafSummary.liveness ? `- Prova de Vida: ${cafSummary.liveness.isAlive ? 'APROVADA' : 'REPROVADA'}
+- Face Match: ${cafSummary.liveness.isMatch ? 'CONFIRMADO' : cafSummary.liveness.isMatch === false ? 'NÃO CORRESPONDEU — RED FLAG' : 'N/D'}
+- Similaridade Facial: ${cafSummary.liveness.similarity != null ? (cafSummary.liveness.similarity * 100).toFixed(0) + '%' : 'N/D'}
+- Probabilidade Liveness: ${cafSummary.liveness.probability != null ? (cafSummary.liveness.probability * 100).toFixed(0) + '%' : 'N/D'}
+- Decisão CAF: ${cafSummary.liveness.decision || 'N/D'}` : '- Prova de Vida: Não realizada'}
+${cafSummary.docFront ? `- Documento Frente: ${cafSummary.docFront.valid ? 'Válido' : 'Inválido'}${cafSummary.docFront.type ? ' (' + cafSummary.docFront.type + ')' : ''}` : '- Documento Frente: Não capturado'}
+${cafSummary.docBack ? `- Documento Verso: ${cafSummary.docBack.valid ? 'Válido' : 'Inválido'}` : '- Documento Verso: Não capturado'}` : '**CAF (Identidade):** Não realizado'}
 
 ═══════════════════════════════════════════════════════════
 INSTRUÇÕES DE ANÁLISE

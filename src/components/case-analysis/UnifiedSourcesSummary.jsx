@@ -5,9 +5,10 @@ import {
   ScanFace, Database, CheckCircle2, XCircle, AlertCircle,
   ChevronDown, ChevronUp, Fingerprint, FileCheck, Camera,
   Shield, Clock, Building2, MapPin, Globe, Users, Landmark,
-  AlertTriangle, Loader2, RefreshCw, Eye
+  AlertTriangle, Loader2, RefreshCw, Eye, TrendingUp, Newspaper
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import BDCEnrichmentPanel from '../bdc-enrichment/BDCEnrichmentPanel';
 
 function StatusDot({ success }) {
   return (
@@ -107,41 +108,40 @@ function CafSummarySection({ validations, integrationLogs }) {
   );
 }
 
-function BdcSummarySection({ validations, complianceScore, merchant, onboardingCaseId }) {
+function BdcSummarySection({ validations, complianceScore, merchant, onboardingCaseId, onComplete }) {
   const [expanded, setExpanded] = useState(false);
-  const [isRunning, setIsRunning] = useState(false);
-  const [localResult, setLocalResult] = useState(null);
 
   const bdcValidations = validations.filter(v => v.provider === 'BigDataCorp');
-  const latestBdc = bdcValidations.sort((a, b) => new Date(b.created_date) - new Date(a.created_date))[0];
   const hasBdcData = bdcValidations.length > 0;
+  const hasCachedAnalysis = complianceScore?.variaveis_aplicadas && complianceScore?.framework_version === 'v4.0' && complianceScore?.fase_2_completa;
+  const hasDetailedAnalysis = hasBdcData || hasCachedAnalysis;
 
-  // Enrichment from compliance score
-  const hasEnrichmentData = complianceScore?.fase_1_completa;
-  const positives = complianceScore?.pontos_positivos || [];
-  const flags = complianceScore?.red_flags || [];
-
-  const handleRunEnrichment = async () => {
-    if (!merchant?.cpfCnpj) return;
-    setIsRunning(true);
-    try {
-      const cnpjClean = merchant.cpfCnpj.replace(/\D/g, '');
-      if (cnpjClean.length !== 14) return;
-      const cnpjRes = await base44.functions.invoke('brasilApiCnpj', { cnpj: cnpjClean });
-      if (cnpjRes.data?.error) throw new Error(cnpjRes.data.error);
-      const enrichRes = await base44.functions.invoke('analyzeCnpjEnrichment', {
-        cnpjDataArray: { ...cnpjRes.data, cnpj: cnpjClean },
-        onboardingCaseId
-      });
-      setLocalResult(enrichRes.data);
-    } catch (e) {
-      console.error('Enrichment failed:', e);
-    }
-    setIsRunning(false);
-  };
-
-  const enrichResult = localResult?.results?.[0];
-  const enrichData = enrichResult?.enrichment;
+  // If we have detailed BDC analysis, show the full panel when expanded
+  if (hasDetailedAnalysis && expanded) {
+    return (
+      <div className="rounded-xl border border-slate-200 overflow-hidden">
+        <button onClick={() => setExpanded(false)} className="w-full flex items-center justify-between p-4 bg-white hover:bg-slate-50">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-indigo-50">
+              <Database className="w-4 h-4 text-indigo-600" />
+            </div>
+            <span className="text-sm font-bold text-[#002443]">BigDataCorp — Enriquecimento Completo</span>
+            <Badge className="bg-emerald-100 text-emerald-700 border-0 text-[10px]">{bdcValidations.length} consulta(s)</Badge>
+          </div>
+          <ChevronUp className="w-4 h-4 text-slate-400" />
+        </button>
+        <div className="border-t border-slate-100 p-4">
+          <BDCEnrichmentPanel
+            onboardingCaseId={onboardingCaseId}
+            merchant={merchant}
+            complianceScore={complianceScore}
+            rawBdcResult={bdcValidations.sort((a, b) => new Date(b.created_date) - new Date(a.created_date))[0]?.resultData || null}
+            onComplete={onComplete}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 rounded-xl bg-white border border-slate-200">
@@ -158,67 +158,13 @@ function BdcSummarySection({ validations, complianceScore, merchant, onboardingC
           )}
         </div>
         <div className="flex items-center gap-2">
-          {!hasBdcData && merchant?.cpfCnpj && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={(e) => { e.stopPropagation(); handleRunEnrichment(); }}
-              disabled={isRunning}
-              className="text-[10px] h-7 rounded-lg border-indigo-200 text-indigo-600 hover:bg-indigo-50"
-            >
-              {isRunning ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <RefreshCw className="w-3 h-3 mr-1" />}
-              {isRunning ? 'Analisando...' : 'Analisar CNPJ'}
-            </Button>
-          )}
           {expanded ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
         </div>
       </button>
 
       {expanded && (
-        <div className="mt-4 pt-4 border-t border-slate-100 space-y-3">
-          {hasBdcData && (
-            <div className="space-y-2">
-              {bdcValidations.slice(0, 5).map((v, i) => (
-                <div key={i} className="flex items-center justify-between p-2 bg-slate-50 rounded-lg text-xs">
-                  <div className="flex items-center gap-2">
-                    <StatusDot success={v.status === 'Sucesso'} />
-                    <span className="font-medium text-[#002443]">{v.validationType}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-[#002443]/50">
-                    {v.score != null && <span>Score: <strong>{v.score}</strong></span>}
-                    <span>{v.timestamp ? new Date(v.timestamp).toLocaleDateString('pt-BR') : ''}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {enrichData && (
-            <div className="space-y-1.5 pt-2">
-              <p className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40 mb-2">Dados do CNPJ</p>
-              {[
-                { icon: Clock, label: 'Idade da Empresa', value: enrichData.companyAge?.anos != null ? `${enrichData.companyAge.anos} ano(s)` : 'N/D', flag: enrichData.companyAge?.flag, positive: enrichData.companyAge?.anos >= 5 },
-                { icon: AlertTriangle, label: 'Situação Especial', value: enrichData.situacaoEspecial?.hasSituacao ? 'Sim' : 'Nenhuma', flag: enrichData.situacaoEspecial?.flag, positive: !enrichData.situacaoEspecial?.hasSituacao },
-                { icon: Landmark, label: 'Simples Nacional', value: enrichData.simplesNacional?.info || '—' },
-                { icon: Building2, label: 'MEI', value: enrichData.mei?.optante ? 'Sim' : 'Não', flag: enrichData.mei?.flag },
-                { icon: Users, label: 'QSA', value: `${enrichData.qsaAnalysis?.totalSocios || 0} sócio(s)`, flag: enrichData.qsaAnalysis?.flag, positive: enrichData.qsaAnalysis?.totalSocios > 0 && !enrichData.qsaAnalysis?.flag },
-                { icon: Globe, label: 'Domínio E-mail', value: enrichData.emailDomain?.consistent === true ? 'Consistente' : enrichData.emailDomain?.consistent === false ? 'Inconsistente' : 'N/A', flag: enrichData.emailDomain?.flag, positive: enrichData.emailDomain?.consistent === true },
-                { icon: MapPin, label: 'Geo UF×DDD', value: enrichData.geoConsistency?.consistent === true ? 'Consistente' : enrichData.geoConsistency?.consistent === false ? 'Inconsistente' : 'N/A', flag: enrichData.geoConsistency?.flag, positive: enrichData.geoConsistency?.consistent === true },
-              ].map((row, i) => (
-                <div key={i} className="flex items-center gap-3 py-1.5 text-xs">
-                  <row.icon className={`w-3.5 h-3.5 shrink-0 ${row.flag ? 'text-amber-500' : row.positive ? 'text-emerald-500' : 'text-[#002443]/30'}`} />
-                  <span className="text-[#002443]/50 w-28 shrink-0">{row.label}</span>
-                  <span className={`font-medium ${row.flag ? 'text-amber-700' : 'text-[#002443]'}`}>{row.value}</span>
-                  {row.flag && <Badge className="bg-amber-50 text-amber-600 border-amber-200 border text-[9px]">⚠ {row.flag}</Badge>}
-                  {row.positive && !row.flag && <CheckCircle2 className="w-3 h-3 text-emerald-400" />}
-                </div>
-              ))}
-            </div>
-          )}
-
-          {!hasBdcData && !enrichData && (
-            <p className="text-xs text-[#002443]/40 text-center py-4">Nenhum dado de enriquecimento disponível.</p>
-          )}
+        <div className="mt-4 pt-4 border-t border-slate-100">
+          <p className="text-xs text-[#002443]/40 text-center py-4">Nenhum dado de enriquecimento disponível. O BDC será executado automaticamente após o questionário.</p>
         </div>
       )}
     </div>
@@ -244,6 +190,7 @@ export default function UnifiedSourcesSummary({ validations, integrationLogs, co
         complianceScore={complianceScore}
         merchant={merchant}
         onboardingCaseId={onboardingCaseId}
+        onComplete={() => window.location.reload()}
       />
     </div>
   );
