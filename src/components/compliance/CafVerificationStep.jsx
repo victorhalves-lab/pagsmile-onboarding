@@ -10,12 +10,16 @@ import { toast } from 'sonner';
 /**
  * CAF SDK Web Integration — DocumentDetector + FaceLiveness
  * 
- * Every step's result (images, metadata) is sent to the backend via cafVerifyResult
- * which persists: IntegrationLog + ExternalValidationResult + DocumentUpload.
- * All calls are AWAITED (not fire-and-forget) to guarantee persistence.
+ * CRITICAL FIX NOTES:
+ * - FaceLiveness.run() returns a JWT STRING directly, NOT an object with .signedResponse
+ * - DocumentDetector.capture() returns image.blob — we use it for reliable upload (no temp URL expiry)
+ * - performFaceAuthentication: true — enables face match (selfie vs document)
+ * - All results are AWAITED before advancing to next step
+ * - Full CAF data enrichment: isAlive, isMatch, similarity, sessionId, detectedDocument, storageInfo
  */
 
 const CAF_DD_SDK_URL = 'https://repo.combateafraude.com/javascript/release/document-detector/6.13.0/document-detector-6.13.0.umd.js';
+const CAF_DD_WASM_URL = 'https://repo.combateafraude.com/javascript/release/document-detector/6.13.0/dd-validator.wasm';
 const CAF_FL_SDK_URL = 'https://repo.combateafraude.com/javascript/release/caf-face-liveness/0.16.0/caf-face-liveness_0.16.0.umd.js';
 
 function loadScript(src) {
@@ -37,6 +41,18 @@ const STEPS = [
   { id: 'document_back', label: 'Doc. Verso', icon: FileCheck },
   { id: 'liveness', label: 'Prova de Vida', icon: ScanFace },
 ];
+
+/**
+ * Convert a Blob to base64 data URI for transmission to backend.
+ */
+async function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
 
 /**
  * Persist a CAF step result to the backend (AWAITED, not fire-and-forget).
@@ -139,11 +155,18 @@ export default function CafVerificationStep({
           language: 'pt_BR',
           blockExecutionOnDesktops: false,
           enableFramingAnalyzer: true,
+          enableVisibilityChangeSecurity: true,
           appearance: {
             general: { fontFamily: 'Plus Jakarta Sans, sans-serif' },
+            capture: { captureButtonColor: '#2bc196' },
+            upload: {
+              startScreen: { allowButton: { backgroundColor: '#2bc196' } },
+              successScreen: { icon: { color: '#2bc196' } },
+            },
           },
         });
 
+        // Pre-load AI model for better performance (recommended by CAF docs)
         if (dd.loadAiModel) await dd.loadAiModel();
         await dd.initialize();
 
@@ -152,16 +175,31 @@ export default function CafVerificationStep({
           mode: 'automatic',
           automaticCaptureMaxDuration: 90,
           personID: personId,
+          forceEndWhenInvalid: false,
         });
 
         if (cancelled) return;
-        console.log('[CAF] Doc front captured successfully');
+        console.log('[CAF] Doc front captured:', {
+          type: result?.detectedDocument?.type,
+          side: result?.detectedDocument?.side,
+          valid: result?.isCaptureValid,
+          hasBlob: !!result?.image?.blob,
+          hasUrl: !!result?.image?.url,
+          storageKey: result?.image?.storageInfo?.key,
+        });
         setDocResults(prev => ({ ...prev, front: result }));
 
-        // PERSIST (awaited) — send the image URL to backend for download + storage
+        // Convert blob to base64 for reliable transmission (no temp URL expiry risk)
+        let imageBase64 = null;
+        if (result?.image?.blob) {
+          imageBase64 = await blobToBase64(result.image.blob);
+        }
+
+        // PERSIST (awaited) — send blob + all metadata
         const persistResult = await persistCafResult({
           onboardingCaseId: onboardingCaseId || '',
           module: 'document_front',
+          imageBase64: imageBase64,
           imageUrl: result?.image?.url || '',
           detectedDocument: result?.detectedDocument || null,
           isCaptureValid: result?.isCaptureValid,
@@ -175,13 +213,17 @@ export default function CafVerificationStep({
         setPhase('doc_back');
       } catch (err) {
         if (cancelled) return;
-        console.error('[CAF] Doc front error:', err);
+        console.error('[CAF] Doc front error:', err?.name, err?.message);
         if (dd) { try { await dd.close(); await dd.dispose(); } catch {} }
         
-        if (err?.name === 'CafSdkCancelledError' || err?.message?.includes('cancelled')) {
+        if (err?.name === 'CafSdkCanceledError' || err?.name === 'CafSdkCancelledError') {
           setError('Captura cancelada pelo usuário. Clique em "Tentar Novamente" para reiniciar.');
+        } else if (err?.name === 'CafCameraPermissionDeniedError') {
+          setError('Permissão de câmera negada. Habilite a câmera nas configurações do navegador e tente novamente.');
+        } else if (err?.name === 'CafCameraUnsupportedError') {
+          setError('Câmera não suportada neste dispositivo/navegador.');
         } else {
-          setError('Erro na captura do documento (frente): ' + (err.message || err));
+          setError('Erro na captura do documento (frente): ' + (err?.message || err));
         }
         setPhase('error');
       }
@@ -204,6 +246,11 @@ export default function CafVerificationStep({
           language: 'pt_BR',
           blockExecutionOnDesktops: false,
           enableFramingAnalyzer: true,
+          enableVisibilityChangeSecurity: true,
+          appearance: {
+            general: { fontFamily: 'Plus Jakarta Sans, sans-serif' },
+            capture: { captureButtonColor: '#2bc196' },
+          },
         });
 
         if (dd.loadAiModel) await dd.loadAiModel();
@@ -214,16 +261,29 @@ export default function CafVerificationStep({
           mode: 'automatic',
           automaticCaptureMaxDuration: 90,
           personID: personId,
+          forceEndWhenInvalid: false,
         });
 
         if (cancelled) return;
-        console.log('[CAF] Doc back captured successfully');
+        console.log('[CAF] Doc back captured:', {
+          type: result?.detectedDocument?.type,
+          side: result?.detectedDocument?.side,
+          valid: result?.isCaptureValid,
+          hasBlob: !!result?.image?.blob,
+        });
         setDocResults(prev => ({ ...prev, back: result }));
+
+        // Convert blob to base64 for reliable transmission
+        let imageBase64 = null;
+        if (result?.image?.blob) {
+          imageBase64 = await blobToBase64(result.image.blob);
+        }
 
         // PERSIST (awaited)
         const persistResult = await persistCafResult({
           onboardingCaseId: onboardingCaseId || '',
           module: 'document_back',
+          imageBase64: imageBase64,
           imageUrl: result?.image?.url || '',
           detectedDocument: result?.detectedDocument || null,
           isCaptureValid: result?.isCaptureValid,
@@ -237,13 +297,15 @@ export default function CafVerificationStep({
         setPhase('liveness');
       } catch (err) {
         if (cancelled) return;
-        console.error('[CAF] Doc back error:', err);
+        console.error('[CAF] Doc back error:', err?.name, err?.message);
         if (dd) { try { await dd.close(); await dd.dispose(); } catch {} }
         
-        if (err?.name === 'CafSdkCancelledError' || err?.message?.includes('cancelled')) {
+        if (err?.name === 'CafSdkCanceledError' || err?.name === 'CafSdkCancelledError') {
           setError('Captura cancelada pelo usuário. Clique em "Tentar Novamente" para reiniciar.');
+        } else if (err?.name === 'CafCameraPermissionDeniedError') {
+          setError('Permissão de câmera negada. Habilite a câmera nas configurações do navegador.');
         } else {
-          setError('Erro na captura do documento (verso): ' + (err.message || err));
+          setError('Erro na captura do documento (verso): ' + (err?.message || err));
         }
         setPhase('error');
       }
@@ -252,7 +314,7 @@ export default function CafVerificationStep({
     return () => { cancelled = true; };
   }, [phase, sdkToken, personId, onboardingCaseId]);
 
-  // ── Step 4: FaceLiveness ──
+  // ── Step 4: FaceLiveness (with Face Authentication) ──
   useEffect(() => {
     if (phase !== 'liveness' || !sdkToken) return;
     let cancelled = false;
@@ -265,25 +327,40 @@ export default function CafVerificationStep({
         await CafFaceLivenessSdk.init(sdkToken, personId, {
           htmlContainerId: 'caf-fl-container',
           language: 'pt_BR',
+          performFaceAuthentication: true, // Enable face match: selfie vs document
         }, {
           startButton: {
             label: 'Iniciar Verificação Facial',
             backgroundColor: '#2bc196',
             color: '#ffffff',
+            borderRadius: '12px',
+          },
+          appearance: {
+            fontFamily: 'Plus Jakarta Sans, sans-serif',
           },
         });
 
-        const result = await CafFaceLivenessSdk.run();
+        // FaceLiveness.run() returns a JWT STRING directly (NOT an object)
+        // The JWT payload contains: imageUrl, isAlive, isMatch, sessionId, personId
+        const jwtResult = await CafFaceLivenessSdk.run({
+          onCaptureProcessingStart: () => {
+            console.log('[CAF] Face capture processing started...');
+          },
+          onCaptureProcessingEnd: () => {
+            console.log('[CAF] Face capture processing ended.');
+          },
+        });
+
         if (cancelled) return;
 
-        console.log('[CAF] Liveness completed successfully');
-        setLivenessResult(result);
+        console.log('[CAF] Liveness completed, JWT received (type:', typeof jwtResult, ', length:', jwtResult?.length, ')');
+        setLivenessResult(jwtResult);
 
-        // PERSIST (awaited) — send signedResponse JWT to backend
+        // PERSIST (awaited) — send the FULL JWT string to backend for decoding + validation
         const persistResult = await persistCafResult({
           onboardingCaseId: onboardingCaseId || '',
           module: 'liveness',
-          signedResponse: result?.signedResponse || '',
+          signedResponse: jwtResult, // This IS the JWT string directly from run()
         });
         setSavedResults(prev => ({ ...prev, liveness: !!persistResult?.success }));
 
@@ -292,13 +369,23 @@ export default function CafVerificationStep({
         setPhase('done');
       } catch (err) {
         if (cancelled) return;
-        console.error('[CAF] Liveness error:', err);
+        console.error('[CAF] Liveness error:', err?.name, err?.message);
         try { window['CafFaceLiveness']?.dispose(); } catch {}
         
-        if (err?.name === 'CafSdkCancelledError' || err?.message?.includes('cancelled')) {
+        if (err?.name === 'CafSdkCanceledError' || err?.name === 'CafSdkCancelledError') {
           setError('Verificação facial cancelada pelo usuário.');
+        } else if (err?.name === 'CafCameraPermissionDeniedError') {
+          setError('Permissão de câmera negada. Habilite a câmera nas configurações do navegador.');
+        } else if (err?.name === 'CafFaceLivenessError') {
+          setError('Falha na prova de vida. Procure um ambiente bem iluminado e tente novamente.');
+        } else if (err?.name === 'CafFaceAuthenticationError') {
+          setError('Falha na autenticação facial. Sua face não correspondeu ao documento. Tente novamente.');
+        } else if (err?.name === 'CafUnsupportedError') {
+          setError('Seu dispositivo/navegador não suporta esta verificação.');
+        } else if (err?.name === 'CafDeviceMotionPermissionDeniedError') {
+          setError('Permissão de movimento do dispositivo negada. Permita o acesso e tente novamente.');
         } else {
-          setError('Erro na prova de vida: ' + (err.message || err));
+          setError('Erro na prova de vida: ' + (err?.message || err));
         }
         setPhase('error');
       }
@@ -311,11 +398,11 @@ export default function CafVerificationStep({
   useEffect(() => {
     if (phase === 'done') {
       onComplete?.({
-        transactionId: livenessResult?.signedResponse || 'caf_sdk_completed',
+        transactionId: typeof livenessResult === 'string' ? livenessResult.substring(0, 50) : 'caf_sdk_completed',
         status: 'approved',
         docFront: docResults.front,
         docBack: docResults.back,
-        liveness: livenessResult,
+        livenessJwt: livenessResult,
         savedResults,
       });
     }

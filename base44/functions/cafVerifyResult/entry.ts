@@ -3,11 +3,26 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
 /**
  * Verifies and persists the result of a CAF SDK step (DocumentDetector or FaceLiveness).
  * 
- * For DocumentDetector: receives imageUrl (temporary CAF URL) or imageBase64, downloads/uploads
- * the image to our storage, creates IntegrationLog + ExternalValidationResult + DocumentUpload.
+ * COMPLETE DATA ENRICHMENT:
  * 
- * For FaceLiveness: decodes the signedResponse JWT which contains imageUrl, isAlive, isMatch etc.
- * Downloads the selfie image, uploads to storage, creates IntegrationLog + ExternalValidationResult + DocumentUpload.
+ * For DocumentDetector:
+ *   - Receives imageBase64 (preferred, from blob) OR imageUrl (temporary CAF URL)
+ *   - Uploads image to our permanent storage
+ *   - Persists: detectedDocument (type, side), isCaptureValid, storageInfo (key, bucket)
+ *   - Creates: IntegrationLog + ExternalValidationResult + DocumentUpload
+ * 
+ * For FaceLiveness:
+ *   - Receives signedResponse = JWT STRING directly from CafFaceLivenessSdk.run()
+ *   - Decodes JWT payload: imageUrl, isAlive, isMatch, sessionId, personId
+ *   - Downloads selfie from imageUrl, uploads to our storage
+ *   - Persists ALL fields including face authentication results
+ *   - Creates: IntegrationLog + ExternalValidationResult + DocumentUpload
+ *   - Updates OnboardingCase: cafCompleted=true when liveness approved
+ * 
+ * CAF Decision Mapping:
+ *   isAlive=true + isMatch=true  → APPROVED (face match confirmed)
+ *   isAlive=true + isMatch=false → PENDING_REVIEW (alive but no match)
+ *   isAlive=false                → REPROVED
  */
 
 Deno.serve(async (req) => {
@@ -20,12 +35,13 @@ Deno.serve(async (req) => {
       onboardingCaseId, 
       module,           // 'document_front' | 'document_back' | 'liveness'
       // DocumentDetector fields
-      imageUrl,         // temporary CAF URL for document image
+      imageBase64,      // base64 data URI from blob (preferred — no expiry risk)
+      imageUrl,         // temporary CAF URL for document image (fallback)
       detectedDocument, // { type, side }
       isCaptureValid,
       storageInfo,      // { key, bucket } from CAF S3
       // FaceLiveness fields
-      signedResponse,   // JWT string
+      signedResponse,   // JWT string DIRECTLY from CafFaceLivenessSdk.run()
     } = body;
 
     if (!onboardingCaseId) {
@@ -36,64 +52,128 @@ Deno.serve(async (req) => {
     }
 
     let isApproved = false;
+    let cafDecision = 'PENDING_REVIEW'; // APPROVED | REPROVED | PENDING_REVIEW
     let decodedPayload = null;
     let cafImageUrl = imageUrl || null;
     let uploadedFileUrl = null;
     let similarity = null;
     let isAlive = null;
+    let isMatch = null;
+    let sessionId = null;
+    let livenessPersonId = null;
+    let probability = null;
 
-    // ── For FaceLiveness: decode JWT to extract data ──
+    // ── For FaceLiveness: decode JWT to extract ALL data ──
     if (module === 'liveness' && signedResponse) {
       try {
-        const parts = signedResponse.split('.');
+        // signedResponse IS the JWT string directly from run()
+        const jwtString = typeof signedResponse === 'string' ? signedResponse : '';
+        const parts = jwtString.split('.');
         if (parts.length === 3) {
-          const payloadB64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+          // Decode payload (part 1)
+          let payloadB64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+          // Pad if needed
+          while (payloadB64.length % 4) payloadB64 += '=';
           const payloadStr = atob(payloadB64);
           decodedPayload = JSON.parse(payloadStr);
           
-          isAlive = decodedPayload.isAlive === true;
-          isApproved = isAlive;
-          similarity = decodedPayload.similarity || decodedPayload.isMatch ? 1.0 : null;
+          console.log('[CAF] Decoded JWT payload keys:', Object.keys(decodedPayload));
+          console.log('[CAF] isAlive:', decodedPayload.isAlive, 'isMatch:', decodedPayload.isMatch, 'sessionId:', decodedPayload.sessionId);
           
-          // Extract imageUrl from JWT payload
+          // Extract ALL available fields from JWT
+          isAlive = decodedPayload.isAlive === true;
+          isMatch = decodedPayload.isMatch === true;
+          sessionId = decodedPayload.sessionId || null;
+          livenessPersonId = decodedPayload.personId || null;
+          similarity = decodedPayload.similarity || null;
+          probability = decodedPayload.probability || null;
+          
+          // Determine approval status based on all signals
+          if (isAlive && isMatch) {
+            isApproved = true;
+            cafDecision = 'APPROVED';
+          } else if (isAlive && !isMatch) {
+            // Person is alive but face doesn't match document — needs manual review
+            isApproved = false;
+            cafDecision = 'PENDING_REVIEW';
+          } else {
+            isApproved = false;
+            cafDecision = 'REPROVED';
+          }
+          
+          // Extract imageUrl from JWT payload (selfie URL)
           if (decodedPayload.imageUrl) {
             cafImageUrl = decodedPayload.imageUrl;
           }
+        } else {
+          console.warn('[CAF] signedResponse is not a valid JWT (parts:', parts.length, ')');
         }
       } catch (decodeErr) {
-        console.warn('[CAF] Failed to decode signedResponse JWT:', decodeErr.message);
+        console.error('[CAF] Failed to decode signedResponse JWT:', decodeErr.message);
+        console.error('[CAF] signedResponse type:', typeof signedResponse, 'length:', signedResponse?.length);
       }
     }
 
     // ── For DocumentDetector: use the values passed directly ──
     if (module === 'document_front' || module === 'document_back') {
       isApproved = isCaptureValid !== false; // default true unless explicitly false
+      cafDecision = isApproved ? 'APPROVED' : 'REPROVED';
     }
 
-    // ── Download image from CAF and upload to our storage ──
-    if (cafImageUrl) {
+    // ── Upload image to our permanent storage ──
+    // Priority: imageBase64 (from blob, reliable) > cafImageUrl (temporary, may expire)
+    if (imageBase64 && imageBase64.startsWith('data:')) {
       try {
-        console.log('[CAF] Downloading image from CAF:', cafImageUrl.substring(0, 80) + '...');
+        console.log('[CAF] Uploading image from base64 blob...');
+        // Extract the base64 content and mime type
+        const matches = imageBase64.match(/^data:([^;]+);base64,(.+)$/);
+        if (matches) {
+          const mimeType = matches[1];
+          const b64Data = matches[2];
+          const binaryStr = atob(b64Data);
+          const bytes = new Uint8Array(binaryStr.length);
+          for (let i = 0; i < binaryStr.length; i++) {
+            bytes[i] = binaryStr.charCodeAt(i);
+          }
+          
+          const extension = mimeType.includes('png') ? 'png' : 'jpg';
+          const timestamp = Date.now();
+          const fileName = `caf_${module}_${onboardingCaseId}_${timestamp}.${extension}`;
+          const file = new File([bytes], fileName, { type: mimeType });
+          
+          const uploadResult = await base44.asServiceRole.integrations.Core.UploadFile({ file });
+          uploadedFileUrl = uploadResult.file_url;
+          console.log('[CAF] Image uploaded from base64 successfully:', uploadedFileUrl);
+        }
+      } catch (b64Err) {
+        console.warn('[CAF] Failed to upload from base64:', b64Err.message);
+      }
+    }
+    
+    // Fallback: download from CAF temporary URL if base64 upload failed
+    if (!uploadedFileUrl && cafImageUrl) {
+      try {
+        console.log('[CAF] Fallback: downloading image from CAF URL:', cafImageUrl.substring(0, 80) + '...');
         const imgResponse = await fetch(cafImageUrl);
         if (imgResponse.ok) {
           const imgBlob = await imgResponse.blob();
           const extension = imgBlob.type?.includes('png') ? 'png' : 'jpg';
           const timestamp = Date.now();
           const fileName = `caf_${module}_${onboardingCaseId}_${timestamp}.${extension}`;
-          
-          // Create a File object from the blob
           const file = new File([imgBlob], fileName, { type: imgBlob.type || 'image/jpeg' });
           
           const uploadResult = await base44.asServiceRole.integrations.Core.UploadFile({ file });
           uploadedFileUrl = uploadResult.file_url;
-          console.log('[CAF] Image uploaded successfully:', uploadedFileUrl);
+          console.log('[CAF] Image uploaded from URL successfully:', uploadedFileUrl);
         } else {
-          console.warn('[CAF] Failed to download image from CAF:', imgResponse.status);
+          console.warn('[CAF] Failed to download image from CAF URL:', imgResponse.status);
         }
       } catch (imgErr) {
-        console.warn('[CAF] Error downloading/uploading image:', imgErr.message);
+        console.warn('[CAF] Error downloading/uploading image from URL:', imgErr.message);
       }
     }
+
+    const durationMs = Date.now() - startTime;
 
     // ── Map module to service_type for IntegrationLog ──
     const serviceTypeMap = {
@@ -102,57 +182,100 @@ Deno.serve(async (req) => {
       'liveness': 'face_liveness',
     };
 
-    // ── Create IntegrationLog ──
+    // ── Create IntegrationLog (FULL enrichment) ──
     const integrationLogData = {
       onboarding_case_id: onboardingCaseId,
       provider: 'CAF',
       service_type: serviceTypeMap[module] || 'document_detector',
-      request_id: decodedPayload?.requestId || decodedPayload?.sessionId || storageInfo?.key || '',
+      request_id: sessionId || decodedPayload?.requestId || storageInfo?.key || '',
+      transaction_id: sessionId || null,
       status: isApproved ? 'success' : 'failed',
-      result_status: isApproved ? 'APPROVED' : 'REPROVED',
-      response_payload: decodedPayload || { 
-        imageUrl: cafImageUrl, 
-        detectedDocument, 
+      result_status: cafDecision,
+      response_payload: module === 'liveness' ? {
+        // Full liveness payload
+        isAlive,
+        isMatch,
+        sessionId,
+        personId: livenessPersonId,
+        similarity,
+        probability,
+        imageUrl: cafImageUrl,
+        uploadedImageUrl: uploadedFileUrl,
+        jwtPayload: decodedPayload,
+      } : {
+        // Full document payload
+        imageUrl: cafImageUrl,
+        uploadedImageUrl: uploadedFileUrl,
+        detectedDocument,
         isCaptureValid,
-        storageInfo 
+        storageInfo,
       },
       is_alive: isAlive,
-      similarity: similarity,
-      duration_ms: Date.now() - startTime,
+      similarity: similarity || (isMatch === true ? 1.0 : isMatch === false ? 0.0 : null),
+      probability: probability,
+      duration_ms: durationMs,
       image_urls: uploadedFileUrl ? [uploadedFileUrl] : [],
+      red_flags: module === 'liveness' ? (
+        [
+          ...(isAlive === false ? ['LIVENESS_FAILED'] : []),
+          ...(isMatch === false ? ['FACE_MISMATCH'] : []),
+        ]
+      ) : (
+        isCaptureValid === false ? ['INVALID_CAPTURE'] : []
+      ),
     };
 
     try {
       await base44.asServiceRole.entities.IntegrationLog.create(integrationLogData);
-      console.log('[CAF] IntegrationLog created for', module);
+      console.log('[CAF] IntegrationLog created for', module, '- decision:', cafDecision);
     } catch (logErr) {
       console.error('[CAF] Failed to create IntegrationLog:', logErr.message);
     }
 
-    // ── Create ExternalValidationResult ──
+    // ── Create ExternalValidationResult (FULL enrichment) ──
+    const validationTypeName = module === 'liveness' ? 'FaceLiveness' : 
+                    module === 'document_front' ? 'DocumentDetector Frente' : 'DocumentDetector Verso';
+
     const validationData = {
       onboardingCaseId: onboardingCaseId,
       provider: 'CAF',
-      validationType: module === 'liveness' ? 'FaceLiveness' : 
-                      module === 'document_front' ? 'DocumentDetector Frente' : 'DocumentDetector Verso',
+      validationType: validationTypeName,
       endpoint: module === 'liveness' ? 'caf-sdk/face-liveness' : 'caf-sdk/document-detector',
       resultData: {
-        ...(decodedPayload || {}),
-        detectedDocument: detectedDocument || null,
-        isCaptureValid: isCaptureValid,
+        // Common fields
         uploadedImageUrl: uploadedFileUrl,
         cafOriginalImageUrl: cafImageUrl,
-        storageInfo: storageInfo || null,
+        cafDecision: cafDecision,
+        // Liveness-specific fields
+        ...(module === 'liveness' ? {
+          isAlive,
+          isMatch,
+          sessionId,
+          personId: livenessPersonId,
+          similarity,
+          probability,
+          jwtPayloadFull: decodedPayload,
+        } : {}),
+        // Document-specific fields
+        ...(module !== 'liveness' ? {
+          detectedDocument: detectedDocument || null,
+          isCaptureValid,
+          storageInfo: storageInfo || null,
+          documentType: detectedDocument?.type || null,
+          documentSide: detectedDocument?.side || null,
+        } : {}),
       },
-      status: isApproved ? 'Sucesso' : 'Falha',
-      score: isAlive !== null ? (isAlive ? 100 : 0) : (isCaptureValid ? 100 : 0),
+      status: isApproved ? 'Sucesso' : (cafDecision === 'PENDING_REVIEW' ? 'Pendente' : 'Falha'),
+      score: module === 'liveness' 
+        ? (isAlive && isMatch ? 100 : isAlive ? 50 : 0)
+        : (isCaptureValid ? 100 : 0),
       timestamp: new Date().toISOString(),
-      responseTime: Date.now() - startTime,
+      responseTime: durationMs,
     };
 
     try {
       await base44.asServiceRole.entities.ExternalValidationResult.create(validationData);
-      console.log('[CAF] ExternalValidationResult created for', module);
+      console.log('[CAF] ExternalValidationResult created for', module, '- score:', validationData.score);
     } catch (valErr) {
       console.error('[CAF] Failed to create ExternalValidationResult:', valErr.message);
     }
@@ -166,6 +289,24 @@ Deno.serve(async (req) => {
       };
       const docMeta = docTypeMap[module] || { id: `caf_${module}`, name: `CAF — ${module}` };
 
+      // Build detailed validation notes
+      let validationNotes = '';
+      if (module === 'liveness') {
+        const parts = [];
+        parts.push(`Prova de vida: ${isAlive ? 'APROVADA' : 'REPROVADA'}`);
+        if (isMatch !== null) parts.push(`Face match: ${isMatch ? 'CONFIRMADO' : 'NÃO CORRESPONDEU'}`);
+        if (similarity !== null) parts.push(`Similaridade: ${(similarity * 100).toFixed(1)}%`);
+        if (sessionId) parts.push(`Session: ${sessionId}`);
+        parts.push(`Decisão CAF: ${cafDecision}`);
+        validationNotes = parts.join(' | ');
+      } else {
+        const parts = [];
+        parts.push(`Documento: ${detectedDocument?.type || 'detectado'} (${detectedDocument?.side || module})`);
+        parts.push(`Captura: ${isCaptureValid ? 'válida' : 'inválida'}`);
+        if (storageInfo?.key) parts.push(`S3 key: ${storageInfo.key}`);
+        validationNotes = parts.join(' | ');
+      }
+
       try {
         await base44.asServiceRole.entities.DocumentUpload.create({
           onboardingCaseId: onboardingCaseId,
@@ -175,24 +316,41 @@ Deno.serve(async (req) => {
           fileName: `caf_${module}_${Date.now()}.jpg`,
           fileType: 'image/jpeg',
           uploadDate: new Date().toISOString(),
-          validationStatus: isApproved ? 'Validado' : 'Pendente',
-          validationNotes: module === 'liveness' 
-            ? `Prova de vida: ${isAlive ? 'APROVADA' : 'REPROVADA'}${similarity ? `, similaridade: ${similarity}` : ''}`
-            : `Documento ${detectedDocument?.type || 'detectado'} (${detectedDocument?.side || module}): ${isCaptureValid ? 'captura válida' : 'captura inválida'}`,
+          validationStatus: isApproved ? 'Validado' : (cafDecision === 'PENDING_REVIEW' ? 'Pendente' : 'Rejeitado'),
+          validationNotes,
         });
-        console.log('[CAF] DocumentUpload created for', module, '- URL:', uploadedFileUrl);
+        console.log('[CAF] DocumentUpload created for', module);
       } catch (docErr) {
         console.error('[CAF] Failed to create DocumentUpload:', docErr.message);
       }
     }
 
-    // ── Update OnboardingCase if liveness approved ──
-    if (module === 'liveness' && isApproved) {
+    // ── Update OnboardingCase based on liveness result ──
+    if (module === 'liveness') {
       try {
-        await base44.asServiceRole.entities.OnboardingCase.update(onboardingCaseId, {
-          cafCompleted: true,
-        });
-        console.log('[CAF] OnboardingCase cafCompleted=true');
+        const updateData = { cafCompleted: true };
+        
+        // If liveness failed or face didn't match, flag the case
+        if (!isAlive) {
+          updateData.cafCompleted = false;
+          // Add red flag
+          const existingCase = await base44.asServiceRole.entities.OnboardingCase.filter({ id: onboardingCaseId });
+          const currentFlags = existingCase[0]?.redFlags || [];
+          if (!currentFlags.includes('CAF_LIVENESS_FAILED')) {
+            updateData.redFlags = [...currentFlags, 'CAF_LIVENESS_FAILED'];
+          }
+        } else if (!isMatch) {
+          // Alive but face doesn't match — still flag for review
+          const existingCase = await base44.asServiceRole.entities.OnboardingCase.filter({ id: onboardingCaseId });
+          const currentFlags = existingCase[0]?.redFlags || [];
+          if (!currentFlags.includes('CAF_FACE_MISMATCH')) {
+            updateData.redFlags = [...currentFlags, 'CAF_FACE_MISMATCH'];
+          }
+        }
+        
+        await base44.asServiceRole.entities.OnboardingCase.update(onboardingCaseId, updateData);
+        console.log('[CAF] OnboardingCase updated - cafCompleted:', updateData.cafCompleted, 
+                    'redFlags:', updateData.redFlags ? updateData.redFlags.length : 'unchanged');
       } catch (upErr) {
         console.warn('[CAF] Failed to update case:', upErr.message);
       }
@@ -201,10 +359,14 @@ Deno.serve(async (req) => {
     return Response.json({
       success: true,
       approved: isApproved,
+      cafDecision,
       module,
       uploadedImageUrl: uploadedFileUrl,
       isAlive,
+      isMatch,
       similarity,
+      sessionId,
+      probability,
     });
 
   } catch (error) {

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-  ScanFace, FileCheck, CheckCircle2, XCircle, Eye, ChevronDown, ChevronUp,
+  ScanFace, FileCheck, CheckCircle2, XCircle, AlertCircle, Eye, ChevronDown, ChevronUp,
   Shield, Camera, Image, Clock, Fingerprint
 } from 'lucide-react';
 
@@ -47,6 +47,7 @@ function CafResultCard({ validation, integrationLog }) {
   const iconColor = isLiveness ? 'text-purple-600' : 'text-blue-600';
 
   const isSuccess = validation?.status === 'Sucesso';
+  const isPendingReview = validation?.status === 'Pendente';
 
   return (
     <div className="border border-slate-200 rounded-xl overflow-hidden">
@@ -62,8 +63,12 @@ function CafResultCard({ validation, integrationLog }) {
           <div>
             <div className="flex items-center gap-2">
               <span className="font-semibold text-[#002443]">{validation?.validationType}</span>
-              <Badge className={isSuccess ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
-                {isSuccess ? 'Aprovado' : 'Reprovado'}
+              <Badge className={
+                isSuccess ? 'bg-green-100 text-green-800' : 
+                isPendingReview ? 'bg-orange-100 text-orange-800' : 
+                'bg-red-100 text-red-800'
+              }>
+                {isSuccess ? 'Aprovado' : isPendingReview ? 'Revisão Manual' : 'Reprovado'}
               </Badge>
             </div>
             <p className="text-xs text-[#002443]/50 mt-0.5">
@@ -97,10 +102,26 @@ function CafResultCard({ validation, integrationLog }) {
                 />
                 <MetricCard 
                   icon={ScanFace} 
-                  label="Similaridade" 
-                  value={rd.similarity != null ? `${(rd.similarity * 100).toFixed(0)}%` : rd.isMatch ? 'Match' : '-'}
-                  color={rd.similarity >= 0.7 || rd.isMatch ? 'green' : 'orange'}
+                  label="Face Match" 
+                  value={rd.isMatch === true ? 'CONFIRMADO' : rd.isMatch === false ? 'NÃO CORRESPONDEU' : '-'}
+                  color={rd.isMatch ? 'green' : rd.isMatch === false ? 'red' : 'slate'}
                 />
+                {rd.similarity != null && (
+                  <MetricCard 
+                    icon={ScanFace} 
+                    label="Similaridade" 
+                    value={`${(rd.similarity * 100).toFixed(0)}%`}
+                    color={rd.similarity >= 0.7 ? 'green' : rd.similarity >= 0.4 ? 'orange' : 'red'}
+                  />
+                )}
+                {rd.probability != null && (
+                  <MetricCard 
+                    icon={Fingerprint} 
+                    label="Probabilidade" 
+                    value={`${(rd.probability * 100).toFixed(0)}%`}
+                    color={rd.probability >= 0.8 ? 'green' : 'orange'}
+                  />
+                )}
               </>
             )}
             {(isDocFront || isDocBack) && (
@@ -111,7 +132,15 @@ function CafResultCard({ validation, integrationLog }) {
                   value={rd.isCaptureValid === true ? 'SIM' : rd.isCaptureValid === false ? 'NÃO' : '-'}
                   color={rd.isCaptureValid !== false ? 'green' : 'red'}
                 />
-                {rd.detectedDocument?.type && (
+                {rd.documentType && (
+                  <MetricCard 
+                    icon={Camera} 
+                    label="Tipo Documento" 
+                    value={`${rd.documentType}${rd.documentSide ? ' (' + rd.documentSide + ')' : ''}`}
+                    color="blue"
+                  />
+                )}
+                {!rd.documentType && rd.detectedDocument?.type && (
                   <MetricCard 
                     icon={Camera} 
                     label="Tipo Documento" 
@@ -134,6 +163,27 @@ function CafResultCard({ validation, integrationLog }) {
               color={validation?.score >= 80 ? 'green' : validation?.score >= 50 ? 'orange' : 'red'}
             />
           </div>
+
+          {/* CAF Decision Badge */}
+          {rd.cafDecision && (
+            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold ${
+              rd.cafDecision === 'APPROVED' ? 'bg-green-100 text-green-800 border border-green-200' :
+              rd.cafDecision === 'REPROVED' ? 'bg-red-100 text-red-800 border border-red-200' :
+              'bg-orange-100 text-orange-800 border border-orange-200'
+            }`}>
+              {rd.cafDecision === 'APPROVED' ? <CheckCircle2 className="w-3.5 h-3.5" /> : 
+               rd.cafDecision === 'REPROVED' ? <XCircle className="w-3.5 h-3.5" /> :
+               <AlertCircle className="w-3.5 h-3.5" />}
+              Decisão CAF: {rd.cafDecision === 'APPROVED' ? 'Aprovado' : rd.cafDecision === 'REPROVED' ? 'Reprovado' : 'Revisão Manual'}
+            </div>
+          )}
+
+          {/* Session ID for liveness */}
+          {rd.sessionId && (
+            <div className="text-xs text-[#002443]/40">
+              <span className="font-medium">Session ID:</span> <span className="font-mono">{rd.sessionId}</span>
+            </div>
+          )}
 
           {/* Image preview */}
           {rd.uploadedImageUrl && (
