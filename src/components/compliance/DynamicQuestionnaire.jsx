@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Check, Loader2, ShieldCheck } from 'lucide-react';
+// CafeRedirectMessage kept for v1/v2 models with cafRedirectUrl
 import CafeRedirectMessage from './CafeRedirectMessage';
 import { 
   Building2, FileText, MapPin, Briefcase, TrendingUp, 
@@ -1100,11 +1101,11 @@ export default function DynamicQuestionnaire({
           <div className="flex justify-between items-center mt-10 pt-6 border-t border-slate-100">
             <Button
               variant="outline"
-              onClick={currentStep === 1 ? () => navigate('/ComplianceOnboardingStart') : handlePrevious}
+              onClick={currentStep === 1 ? () => navigate(-1) : handlePrevious}
               className="brand-btn-back text-[#002443]/60 hover:text-[#002443] border-slate-200 hover:border-slate-300 hover:bg-slate-50 h-11 px-5 rounded-xl"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
-              {currentStep === 1 ? 'Início' : 'Voltar'}
+              {currentStep === 1 ? 'Voltar' : 'Voltar'}
             </Button>
             
             <Button

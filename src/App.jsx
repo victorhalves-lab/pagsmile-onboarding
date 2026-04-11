@@ -14,6 +14,7 @@ import IntroducerDashboard from './pages/IntroducerDashboard';
 import QuestionarioReuniao from './pages/QuestionarioReuniao';
 import ProcessMeetingNotes from './pages/ProcessMeetingNotes';
 import ComplianceResume from './pages/ComplianceResume';
+import LegacyComplianceRedirect from './pages/LegacyComplianceRedirect';
 import QuestionarioReuniaoPix from './pages/QuestionarioReuniaoPix';
 import SubsellerQuestionnaire from './pages/SubsellerQuestionnaire';
 import GerenciarSubsellerLinks from './pages/GerenciarSubsellerLinks';
@@ -73,7 +74,7 @@ const PUBLIC_PATHS = new Set([
   '/LeadPixV4',
   '/FechamentoLandingPage',
   '/KickOffPublico',
-  // Legacy compliance flows (public, client-facing)
+  // Legacy compliance flows (redirected to ComplianceDinamico)
   '/ComplianceOnboardingStart',
   '/ComplianceEcommerce',
   '/ComplianceFullKYC',
@@ -92,7 +93,7 @@ const PUBLIC_PATHS = new Set([
   // Lead questionnaire flows (public, client-facing)
   '/LeadQuestionnaire',
   '/LeadSuccess',
-  // Liveness/verification flows (public, client-facing)
+  // Liveness flows (redirected to OnboardingCompletion)
   '/LivenessFacematchStep',
   '/LivenessSimulation',
 ]);
@@ -131,17 +132,20 @@ const PublicRoutes = () => (
     })}
     <Route path="/ComplianceResume" element={<LayoutWrapper currentPageName="ComplianceResume"><ComplianceResume /></LayoutWrapper>} />
 
-    {/* Legacy compliance flows (public, client-facing) */}
-    {['ComplianceOnboardingStart','ComplianceEcommerce','ComplianceFullKYC','ComplianceGateway','ComplianceLite','ComplianceMarketplace','ComplianceMerchant','CompliancePixOnly','ComplianceSaaS'].map(name => {
-      const Page = Pages[name];
-      return Page ? <Route key={name} path={`/${name}`} element={<LayoutWrapper currentPageName={name}><Page /></LayoutWrapper>} /> : null;
-    })}
+    {/* Legacy compliance flows → redirect to ComplianceDinamico */}
+    {['ComplianceOnboardingStart','ComplianceEcommerce','ComplianceFullKYC','ComplianceGateway','ComplianceLite','ComplianceMarketplace','ComplianceMerchant','CompliancePixOnly','ComplianceSaaS'].map(name => (
+      <Route key={name} path={`/${name}`} element={<LayoutWrapper currentPageName={name}><LegacyComplianceRedirect legacyRoute={name} /></LayoutWrapper>} />
+    ))}
 
     {/* Document upload flows (public, client-facing) */}
-    {['DocumentUploadEcommerce','DocumentUploadFull','DocumentUploadLite','DocumentUploadPix','DocumentUploadSaaS'].map(name => {
+    {['DocumentUploadFull','DocumentUploadPix'].map(name => {
       const Page = Pages[name];
       return Page ? <Route key={name} path={`/${name}`} element={<LayoutWrapper currentPageName={name}><Page /></LayoutWrapper>} /> : null;
     })}
+    {/* Legacy document upload redirects */}
+    {['DocumentUploadEcommerce','DocumentUploadLite','DocumentUploadSaaS'].map(name => (
+      <Route key={name} path={`/${name}`} element={<LayoutWrapper currentPageName={name}><LegacyComplianceRedirect legacyRoute={name} /></LayoutWrapper>} />
+    ))}
 
     {/* Lead questionnaire flows (public, client-facing) */}
     {['LeadQuestionnaire','LeadSuccess'].map(name => {
@@ -149,11 +153,9 @@ const PublicRoutes = () => (
       return Page ? <Route key={name} path={`/${name}`} element={<LayoutWrapper currentPageName={name}><Page /></LayoutWrapper>} /> : null;
     })}
 
-    {/* Liveness/verification flows (public, client-facing) */}
-    {['LivenessFacematchStep','LivenessSimulation'].map(name => {
-      const Page = Pages[name];
-      return Page ? <Route key={name} path={`/${name}`} element={<LayoutWrapper currentPageName={name}><Page /></LayoutWrapper>} /> : null;
-    })}
+    {/* Liveness flows removed — redirected to completion */}
+    <Route path="/LivenessFacematchStep" element={<LayoutWrapper currentPageName="OnboardingCompletion">{Pages.OnboardingCompletion ? <Pages.OnboardingCompletion /> : <div />}</LayoutWrapper>} />
+    <Route path="/LivenessSimulation" element={<LayoutWrapper currentPageName="OnboardingCompletion">{Pages.OnboardingCompletion ? <Pages.OnboardingCompletion /> : <div />}</LayoutWrapper>} />
 
     {/* Subseller */}
     <Route path="/SubsellerQuestionnaire" element={<LayoutWrapper currentPageName="SubsellerQuestionnaire"><SubsellerQuestionnaire /></LayoutWrapper>} />

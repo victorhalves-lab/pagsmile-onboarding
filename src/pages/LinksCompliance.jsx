@@ -72,12 +72,12 @@ export default function LinksCompliance() {
   ];
 
   const quickLinksByType = [
-    { key: 'GENERIC', label: 'Genérico', desc: t('lc.generic_desc'), icon: Globe, color: '#002443', url: `${base}/ComplianceOnboardingStart` },
-    { key: 'PIX', label: 'Pix', desc: t('lc.pix_desc'), icon: CreditCard, color: '#2bc196', url: `${base}/CompliancePixOnly` },
-    { key: 'FULL', label: 'Full KYC', desc: t('lc.full_desc'), icon: Shield, color: '#002443', url: `${base}/ComplianceFullKYC` },
-    { key: 'LITE', label: 'Lite', desc: t('lc.lite_desc'), icon: Zap, color: '#36706c', url: `${base}/ComplianceLite` },
-    { key: 'ECOMMERCE', label: 'E-commerce', desc: t('lc.ecommerce_desc'), icon: ShoppingCart, color: '#002443', url: `${base}/ComplianceEcommerce` },
-    { key: 'SAAS', label: 'SaaS', desc: t('lc.saas_desc'), icon: Cloud, color: '#36706c', url: `${base}/ComplianceSaaS` },
+    { key: 'GENERIC', label: 'Genérico', desc: t('lc.generic_desc'), icon: Globe, color: '#002443', url: `${base}/ComplianceDinamico?model=ComplianceEcommerceV4` },
+    { key: 'PIX', label: 'Pix', desc: t('lc.pix_desc'), icon: CreditCard, color: '#2bc196', url: `${base}/ComplianceDinamico?model=CompliancePixMerchantV4` },
+    { key: 'FULL', label: 'Full KYC', desc: t('lc.full_desc'), icon: Shield, color: '#002443', url: `${base}/ComplianceDinamico?model=ComplianceEcommerceV4` },
+    { key: 'LITE', label: 'Lite', desc: t('lc.lite_desc'), icon: Zap, color: '#36706c', url: `${base}/ComplianceDinamico?model=ComplianceSaaSV4` },
+    { key: 'ECOMMERCE', label: 'E-commerce', desc: t('lc.ecommerce_desc'), icon: ShoppingCart, color: '#002443', url: `${base}/ComplianceDinamico?model=ComplianceEcommerceV4` },
+    { key: 'SAAS', label: 'SaaS', desc: t('lc.saas_desc'), icon: Cloud, color: '#36706c', url: `${base}/ComplianceDinamico?model=ComplianceSaaSV4` },
   ];
 
   const stats = React.useMemo(() => {
@@ -94,17 +94,20 @@ export default function LinksCompliance() {
     if (ct === 'SAAS') return '☁️ SaaS'; return '🌐 Genérico';
   };
 
-  const getPageByLink = (link) => {
-    switch (link.complianceType) {
-      case 'PIX': return 'CompliancePixOnly'; case 'FULL': return 'ComplianceFullKYC';
-      case 'LITE': return 'ComplianceLite'; case 'ECOMMERCE': return 'ComplianceEcommerce';
-      case 'SAAS': return 'ComplianceSaaS'; default: return 'ComplianceOnboardingStart';
+  const getV4ModelByComplianceType = (type) => {
+    switch (type) {
+      case 'PIX': return 'CompliancePixMerchantV4';
+      case 'FULL': return 'ComplianceEcommerceV4';
+      case 'LITE': return 'ComplianceSaaSV4';
+      case 'ECOMMERCE': return 'ComplianceEcommerceV4';
+      case 'SAAS': return 'ComplianceSaaSV4';
+      default: return 'ComplianceEcommerceV4';
     }
   };
 
   const generateLinkUrl = (link) => {
-    const page = getPageByLink(link);
-    let url = `${base}/${page}?ref=${link.uniqueCode}`;
+    const model = getV4ModelByComplianceType(link.complianceType);
+    let url = `${base}/ComplianceDinamico?model=${model}&ref=${link.uniqueCode}`;
     if (link.utmSource) url += `&utm_source=${link.utmSource}`;
     return url;
   };

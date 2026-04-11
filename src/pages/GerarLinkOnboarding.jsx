@@ -75,13 +75,14 @@ export default function GerarLinkOnboarding() {
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['onboardingLinks'] }); toast.success(t('gl.link_deleted')); }
   });
 
-  const getPageByLinkType = (link) => {
-    if (link.linkType === 'LEAD_QUESTIONNAIRE') return 'LeadQuestionnaire';
-    if (link.linkType === 'LEAD_SIMPLIFICADO') return 'QuestionarioSimplificadoPublico';
-    switch (link.complianceType) {
-      case 'PIX': return 'CompliancePixOnly'; case 'FULL': return 'ComplianceFullKYC';
-      case 'LITE': return 'ComplianceLite'; case 'ECOMMERCE': return 'ComplianceEcommerce';
-      case 'SAAS': return 'ComplianceSaaS'; default: return 'ComplianceOnboardingStart';
+  const getV4Model = (type) => {
+    switch (type) {
+      case 'PIX': return 'CompliancePixMerchantV4';
+      case 'FULL': return 'ComplianceEcommerceV4';
+      case 'LITE': return 'ComplianceSaaSV4';
+      case 'ECOMMERCE': return 'ComplianceEcommerceV4';
+      case 'SAAS': return 'ComplianceSaaSV4';
+      default: return 'ComplianceEcommerceV4';
     }
   };
 
@@ -92,23 +93,36 @@ export default function GerarLinkOnboarding() {
       { key: 'LEAD_SIMP', label: 'Questionário Simplificado', desc: 'Versão rápida pós-reunião com taxas', icon: Zap, color: '#36706c', url: `${base}/QuestionarioSimplificadoPublico` },
     ],
     compliance_by_type: [
-      { key: 'GENERIC', label: 'Genérico', desc: 'Merchant escolhe o perfil', icon: Globe, color: '#002443', url: `${base}/ComplianceOnboardingStart` },
-      { key: 'PIX', label: 'Pix', desc: 'Compliance simplificado Pix', icon: CreditCard, color: '#2bc196', url: `${base}/CompliancePixOnly` },
-      { key: 'FULL', label: 'Full KYC', desc: 'Compliance completo', icon: Shield, color: '#002443', url: `${base}/ComplianceFullKYC` },
-      { key: 'LITE', label: 'Lite', desc: 'PMEs simplificado', icon: Zap, color: '#36706c', url: `${base}/ComplianceLite` },
-      { key: 'ECOMMERCE', label: 'E-commerce', desc: 'Lojas virtuais', icon: ShoppingCart, color: '#002443', url: `${base}/ComplianceEcommerce` },
-      { key: 'SAAS', label: 'SaaS', desc: 'Recorrência / fast track', icon: Cloud, color: '#36706c', url: `${base}/ComplianceSaaS` },
+      { key: 'GENERIC', label: 'Genérico', desc: 'Merchant escolhe o perfil', icon: Globe, color: '#002443', url: `${base}/ComplianceDinamico?model=ComplianceEcommerceV4` },
+      { key: 'PIX', label: 'Pix', desc: 'Compliance simplificado Pix', icon: CreditCard, color: '#2bc196', url: `${base}/ComplianceDinamico?model=CompliancePixMerchantV4` },
+      { key: 'FULL', label: 'Full KYC', desc: 'Compliance completo', icon: Shield, color: '#002443', url: `${base}/ComplianceDinamico?model=ComplianceEcommerceV4` },
+      { key: 'LITE', label: 'Lite', desc: 'PMEs simplificado', icon: Zap, color: '#36706c', url: `${base}/ComplianceDinamico?model=ComplianceSaaSV4` },
+      { key: 'ECOMMERCE', label: 'E-commerce', desc: 'Lojas virtuais', icon: ShoppingCart, color: '#002443', url: `${base}/ComplianceDinamico?model=ComplianceEcommerceV4` },
+      { key: 'SAAS', label: 'SaaS', desc: 'Recorrência / fast track', icon: Cloud, color: '#36706c', url: `${base}/ComplianceDinamico?model=ComplianceSaaSV4` },
     ],
     compliance_by_business: [
-      { key: 'MERCHANT', label: 'Merchant', desc: 'Estabelecimento comercial padrão', icon: CreditCard, color: '#2bc196', url: `${base}/ComplianceOnboardingStart?businessSubCategory=MERCHAN` },
-      { key: 'GATEWAY', label: 'Gateway', desc: 'Integrador / facilitador de pagamentos', icon: Globe, color: '#002443', url: `${base}/ComplianceOnboardingStart?businessSubCategory=GATEWAY` },
-      { key: 'MARKETPLACE', label: 'Marketplace', desc: 'Plataforma com sellers / sub-merchants', icon: ShoppingCart, color: '#36706c', url: `${base}/ComplianceOnboardingStart?businessSubCategory=MARKETPLACE` },
+      { key: 'MERCHANT', label: 'Merchant', desc: 'Estabelecimento comercial padrão', icon: CreditCard, color: '#2bc196', url: `${base}/ComplianceDinamico?model=ComplianceEcommerceV4` },
+      { key: 'GATEWAY', label: 'Gateway', desc: 'Integrador / facilitador de pagamentos', icon: Globe, color: '#002443', url: `${base}/ComplianceDinamico?model=ComplianceGatewayV4` },
+      { key: 'MARKETPLACE', label: 'Marketplace', desc: 'Plataforma com sellers / sub-merchants', icon: ShoppingCart, color: '#36706c', url: `${base}/ComplianceDinamico?model=ComplianceMarketplaceV4` },
     ]
   };
 
   const generateLinkUrl = (link) => {
-    const page = getPageByLinkType(link);
-    let url = `${base}/${page}?ref=${link.uniqueCode}`;
+    if (link.linkType === 'LEAD_QUESTIONNAIRE') {
+      let url = `${base}/LeadQuestionnaire?ref=${link.uniqueCode}`;
+      if (link.utmSource) url += `&utm_source=${link.utmSource}`;
+      if (link.utmMedium) url += `&utm_medium=${link.utmMedium}`;
+      if (link.utmCampaign) url += `&utm_campaign=${link.utmCampaign}`;
+      return url;
+    }
+    if (link.linkType === 'LEAD_SIMPLIFICADO') {
+      let url = `${base}/QuestionarioSimplificadoPublico?ref=${link.uniqueCode}`;
+      if (link.utmSource) url += `&utm_source=${link.utmSource}`;
+      return url;
+    }
+    // Compliance links → ComplianceDinamico
+    const model = getV4Model(link.complianceType);
+    let url = `${base}/ComplianceDinamico?model=${model}&ref=${link.uniqueCode}`;
     if (link.utmSource) url += `&utm_source=${link.utmSource}`;
     if (link.utmMedium) url += `&utm_medium=${link.utmMedium}`;
     if (link.utmCampaign) url += `&utm_campaign=${link.utmCampaign}`;

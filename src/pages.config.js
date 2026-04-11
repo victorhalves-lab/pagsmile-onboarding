@@ -51,24 +51,12 @@ import AdminDashboard from './pages/AdminDashboard';
 import AnaliseDeCasos from './pages/AnaliseDeCasos';
 import Auditoria from './pages/Auditoria';
 import ComplianceDinamico from './pages/ComplianceDinamico';
-import ComplianceEcommerce from './pages/ComplianceEcommerce';
-import ComplianceFullKYC from './pages/ComplianceFullKYC';
-import ComplianceGateway from './pages/ComplianceGateway';
-import ComplianceLite from './pages/ComplianceLite';
-import ComplianceMarketplace from './pages/ComplianceMarketplace';
-import ComplianceMerchant from './pages/ComplianceMerchant';
-import ComplianceOnboardingStart from './pages/ComplianceOnboardingStart';
-import CompliancePixOnly from './pages/CompliancePixOnly';
-import ComplianceSaaS from './pages/ComplianceSaaS';
 import Configuracoes from './pages/Configuracoes';
 import ContratoPublico from './pages/ContratoPublico';
 import CriarContrato from './pages/CriarContrato';
 import CriarProposta from './pages/CriarProposta';
-import DocumentUploadEcommerce from './pages/DocumentUploadEcommerce';
 import DocumentUploadFull from './pages/DocumentUploadFull';
-import DocumentUploadLite from './pages/DocumentUploadLite';
 import DocumentUploadPix from './pages/DocumentUploadPix';
-import DocumentUploadSaaS from './pages/DocumentUploadSaaS';
 import EditorContrato from './pages/EditorContrato';
 import EditorQuestionario from './pages/EditorQuestionario';
 import GerarLinkOnboarding from './pages/GerarLinkOnboarding';
@@ -86,8 +74,7 @@ import LeadQuestionnaire from './pages/LeadQuestionnaire';
 import LeadSuccess from './pages/LeadSuccess';
 import LinksCompliance from './pages/LinksCompliance';
 import LinksQuestionariosLeads from './pages/LinksQuestionariosLeads';
-import LivenessFacematchStep from './pages/LivenessFacematchStep';
-import LivenessSimulation from './pages/LivenessSimulation';
+
 import MessageTemplates from './pages/MessageTemplates';
 import OnboardingCompletion from './pages/OnboardingCompletion';
 import PipelineComercial from './pages/PipelineComercial';
@@ -107,24 +94,12 @@ export const PAGES = {
     "AnaliseDeCasos": AnaliseDeCasos,
     "Auditoria": Auditoria,
     "ComplianceDinamico": ComplianceDinamico,
-    "ComplianceEcommerce": ComplianceEcommerce,
-    "ComplianceFullKYC": ComplianceFullKYC,
-    "ComplianceGateway": ComplianceGateway,
-    "ComplianceLite": ComplianceLite,
-    "ComplianceMarketplace": ComplianceMarketplace,
-    "ComplianceMerchant": ComplianceMerchant,
-    "ComplianceOnboardingStart": ComplianceOnboardingStart,
-    "CompliancePixOnly": CompliancePixOnly,
-    "ComplianceSaaS": ComplianceSaaS,
     "Configuracoes": Configuracoes,
     "ContratoPublico": ContratoPublico,
     "CriarContrato": CriarContrato,
     "CriarProposta": CriarProposta,
-    "DocumentUploadEcommerce": DocumentUploadEcommerce,
     "DocumentUploadFull": DocumentUploadFull,
-    "DocumentUploadLite": DocumentUploadLite,
     "DocumentUploadPix": DocumentUploadPix,
-    "DocumentUploadSaaS": DocumentUploadSaaS,
     "EditorContrato": EditorContrato,
     "EditorQuestionario": EditorQuestionario,
     "GerarLinkOnboarding": GerarLinkOnboarding,
@@ -142,8 +117,7 @@ export const PAGES = {
     "LeadSuccess": LeadSuccess,
     "LinksCompliance": LinksCompliance,
     "LinksQuestionariosLeads": LinksQuestionariosLeads,
-    "LivenessFacematchStep": LivenessFacematchStep,
-    "LivenessSimulation": LivenessSimulation,
+
     "MessageTemplates": MessageTemplates,
     "OnboardingCompletion": OnboardingCompletion,
     "PipelineComercial": PipelineComercial,
