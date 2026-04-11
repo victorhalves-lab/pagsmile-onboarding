@@ -111,12 +111,8 @@ export default function QuestionarioLeadsPagsmile() {
       if (temBoleto && !form.taxaBoleto) { errs.taxaBoleto = true; errorMessages.push('Taxa Boleto é obrigatória'); }
       if (!form.taxaAntecipacao) { errs.taxaAntecipacao = true; errorMessages.push('Taxa Antecipação é obrigatória'); }
       if (!form.feeTransacao) { errs.feeTransacao = true; errorMessages.push('Fee por transação é obrigatório'); }
-      // Antifraude e 3DS só são obrigatórios para segmentos que usam
-      const segmentosComAntifraude = ['gateway', 'marketplace', 'plataforma_vertical', 'ecommerce', 'dropshipping', 'infoprodutos'];
-      if (segmentosComAntifraude.includes(form.segmento)) {
-        if (!form.custoAntifraude) { errs.custoAntifraude = true; errorMessages.push('Custo antifraude é obrigatório'); }
-        if (!form.taxa3ds) { errs.taxa3ds = true; errorMessages.push('Taxa 3DS é obrigatória'); }
-      }
+      if (!form.custoAntifraude) { errs.custoAntifraude = true; errorMessages.push('Custo antifraude é obrigatório'); }
+      if (!form.taxa3ds) { errs.taxa3ds = true; errorMessages.push('Taxa 3DS é obrigatória'); }
     }
     if (step === 9) {
       if (!form.encerrado) { errs.encerrado = true; errorMessages.push('Informe se já foi encerrado'); }
