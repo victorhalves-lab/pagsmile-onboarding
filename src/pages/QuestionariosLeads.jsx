@@ -176,12 +176,15 @@ export default function QuestionariosLeads() {
     let result = completoLeads;
     if (search) {
       const s = search.toLowerCase();
+      const sDigits = s.replace(/\D/g, ''); // Para busca por CNPJ/CPF com ou sem formatação
       result = result.filter(l =>
         (l.fullName || '').toLowerCase().includes(s) ||
         (l.cpfCnpj || '').includes(s) ||
+        (sDigits.length >= 4 && (l.cpfCnpj || '').includes(sDigits)) ||
         (l.contactName || '').toLowerCase().includes(s) ||
         (l.email || '').toLowerCase().includes(s) ||
-        (l.protocolo || '').toLowerCase().includes(s)
+        (l.protocolo || '').toLowerCase().includes(s) ||
+        (l.companyName || '').toLowerCase().includes(s)
       );
     }
     if (statusFilter !== 'all') result = result.filter(l => l.status === statusFilter);
