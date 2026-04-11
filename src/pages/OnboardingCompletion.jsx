@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,16 @@ export default function OnboardingCompletion() {
   const navigate = useNavigate();
   const linkCode = localStorage.getItem('onboarding_link_code');
   const flowType = localStorage.getItem('payment_method_type') === 'pix' ? 'pix_only' : 'full_kyc';
-  const cafRedirectUrl = localStorage.getItem('caf_redirect_url') || 'https://cadastro.io/9f7d5853b6dc373b07c2498557ffc410';
+  const cafRedirectUrl = localStorage.getItem('caf_redirect_url');
+  
+  // Check if CAF was already completed via SDK (V4 flow)
+  // If caseId is in URL, the client came from the SDK CAF flow and does NOT need the external link
+  const urlParams = new URLSearchParams(window.location.search);
+  const caseIdFromUrl = urlParams.get('caseId');
+  const cafCompletedViaSdk = !!caseIdFromUrl;
+  
+  // Only show external CAF block for legacy flows that have a redirect URL and didn't complete via SDK
+  const showExternalCafBlock = !cafCompletedViaSdk && !!cafRedirectUrl;
   
   const { trackOnboardingComplete } = useOnboardingAnalytics({
     pageName: 'OnboardingCompletion',
@@ -94,30 +103,32 @@ export default function OnboardingCompletion() {
           </div>
         </div>
 
-        {/* Disclaimer CAF - Obrigatório */}
-        <div className="bg-amber-500/20 border border-amber-500/40 rounded-2xl p-6 mb-8 text-left">
-          <div className="flex items-start gap-4">
-            <div className="p-2 rounded-lg bg-amber-500/20 shrink-0">
-              <Shield className="w-6 h-6 text-amber-400" />
-            </div>
-            <div>
-              <h3 className="font-bold text-white text-lg mb-2">⚠️ Etapa Obrigatória - Verificação CAF</h3>
-              <p className="text-slate-300 text-sm mb-4">
-                Para que seu processo de compliance seja aprovado, é <strong className="text-white">obrigatório</strong> preencher o formulário de verificação da CAF. 
-                Sem o preenchimento deste formulário, seu cadastro <strong className="text-white">não poderá ser finalizado</strong>.
-              </p>
-              <a
-                href={cafRedirectUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 hover:scale-[1.02] shadow-lg"
-              >
-                Preencher Formulário CAF
-                <ArrowRight className="w-4 h-4" />
-              </a>
+        {/* Disclaimer CAF - Only for legacy flows that redirect to external CAF */}
+        {showExternalCafBlock && (
+          <div className="bg-amber-500/20 border border-amber-500/40 rounded-2xl p-6 mb-8 text-left">
+            <div className="flex items-start gap-4">
+              <div className="p-2 rounded-lg bg-amber-500/20 shrink-0">
+                <Shield className="w-6 h-6 text-amber-400" />
+              </div>
+              <div>
+                <h3 className="font-bold text-white text-lg mb-2">⚠️ Etapa Obrigatória - Verificação CAF</h3>
+                <p className="text-slate-300 text-sm mb-4">
+                  Para que seu processo de compliance seja aprovado, é <strong className="text-white">obrigatório</strong> preencher o formulário de verificação da CAF. 
+                  Sem o preenchimento deste formulário, seu cadastro <strong className="text-white">não poderá ser finalizado</strong>.
+                </p>
+                <a
+                  href={cafRedirectUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 hover:scale-[1.02] shadow-lg"
+                >
+                  Preencher Formulário CAF
+                  <ArrowRight className="w-4 h-4" />
+                </a>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Botão */}
         <Button
