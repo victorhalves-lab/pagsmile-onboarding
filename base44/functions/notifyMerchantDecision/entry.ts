@@ -1,10 +1,15 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
 
+const LOGO = 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png';
+function buildEmail({ title, subtitle, greeting, body: ps, ctaText, ctaUrl, infoBox, footerNote, accent = '#2bc196' }) {
+  const cta = ctaText && ctaUrl ? `<div style="text-align:center;margin:30px 0"><a href="${ctaUrl}" style="display:inline-block;background:${accent};color:#fff;text-decoration:none;padding:14px 36px;border-radius:10px;font-weight:700;font-size:15px">${ctaText}</a></div>` : '';
+  const info = infoBox ? `<div style="margin:24px 0;padding:18px;background:#f0fdf4;border-radius:10px;border-left:4px solid ${accent}">${infoBox}</div>` : '';
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head><body style="margin:0;padding:0;background:#f4f4f4;font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif"><div style="max-width:600px;margin:0 auto;padding:20px"><div style="background:linear-gradient(135deg,#002443,#003366,#004080);padding:36px 30px 28px;border-radius:16px 16px 0 0;text-align:center"><img src="${LOGO}" alt="Pagsmile" style="height:32px;margin-bottom:20px"/><h1 style="color:${accent};margin:0;font-size:22px;font-weight:700">${title}</h1>${subtitle?`<p style="color:rgba(255,255,255,0.75);margin:10px 0 0;font-size:14px">${subtitle}</p>`:''}</div><div style="background:#fff;padding:32px 30px;border:1px solid #e2e8f0;border-top:none">${greeting?`<p style="color:#002443;font-size:16px;font-weight:600;margin:0 0 16px">${greeting}</p>`:''}${ps.map(p=>`<p style="color:#475569;font-size:14px;line-height:1.7;margin:0 0 14px">${p}</p>`).join('')}${info}${cta}</div><div style="background:#f8fafc;padding:24px 30px;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 16px 16px;text-align:center">${footerNote?`<p style="color:#64748b;font-size:12px;margin:0 0 8px">${footerNote}</p>`:''}<p style="color:#94a3b8;font-size:11px;margin:0">Pagsmile — Soluções de Pagamento Inteligentes<br>Este é um e-mail automático. Para dúvidas, entre em contato pelo seu canal comercial.</p></div></div></body></html>`;
+}
+
 /**
- * notifyMerchantDecision — GAP 6
- * Envia e-mail ao merchant quando a decisão automática V4 é tomada.
- * Trigger: OnboardingCase [update] com changed_fields contendo "status".
- * Só envia se decisão foi automática (subfaixas 1A-3B = Aprovado, ou 5 = Recusado com bloqueio).
+ * FASE 4 — E-mail #20/#23: Decisão Aprovado/Recusado (V4 automático)
+ * Trigger: OnboardingCase [update] com status = Aprovado ou Recusado
  */
 
 Deno.serve(async (req) => {
@@ -19,95 +24,64 @@ Deno.serve(async (req) => {
     const oldData = body.old_data;
     if (!caseData || !oldData) return Response.json({ skipped: true, reason: 'no_data' });
 
-    // Only proceed if status actually changed
     const changedFields = body.changed_fields || [];
-    if (!changedFields.includes('status')) {
-      return Response.json({ skipped: true, reason: 'status_not_changed' });
-    }
+    if (!changedFields.includes('status')) return Response.json({ skipped: true, reason: 'status_not_changed' });
 
-    // Only notify for transitions TO terminal states
     const newStatus = caseData.status;
     const oldStatus = oldData.status;
     if (newStatus === oldStatus) return Response.json({ skipped: true, reason: 'same_status' });
+    if (!['Aprovado', 'Recusado'].includes(newStatus)) return Response.json({ skipped: true, reason: 'not_terminal' });
 
-    // Only notify for automatic decisions (subfaixas 1A-3B = Aprovado, or bloqueio = Recusado)
-    const notifiableStatuses = ['Aprovado', 'Recusado'];
-    if (!notifiableStatuses.includes(newStatus)) {
-      return Response.json({ skipped: true, reason: 'not_terminal_status' });
-    }
-
-    // Get merchant
     const merchantId = caseData.merchantId;
     if (!merchantId) return Response.json({ skipped: true, reason: 'no_merchant' });
 
     const [merchant] = await base44.asServiceRole.entities.Merchant.filter({ id: merchantId });
-    if (!merchant?.email) {
-      console.log(`[NotifyDecision] Merchant ${merchantId} has no email, skipping.`);
-      return Response.json({ skipped: true, reason: 'no_email' });
-    }
+    if (!merchant?.email) return Response.json({ skipped: true, reason: 'no_email' });
 
-    const merchantName = merchant.companyName || merchant.fullName || 'Cliente';
+    const merchantName = merchant.companyName || merchant.fullName || 'Parceiro(a)';
     const isApproved = newStatus === 'Aprovado';
     const subfaixa = caseData.subfaixaNome || caseData.subfaixa || '';
 
-    const subject = isApproved
-      ? `✅ Sua análise de compliance foi aprovada — ${merchantName}`
-      : `⚠️ Atualização sobre sua análise de compliance — ${merchantName}`;
+    const hasConditions = caseData.condicoesAutomaticas?.length > 0;
 
-    const body_html = isApproved
-      ? `
-<div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-  <div style="background: linear-gradient(135deg, #002443, #003366); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
-    <h1 style="color: #2bc196; margin: 0; font-size: 24px;">✅ Aprovado!</h1>
-    <p style="color: rgba(255,255,255,0.8); margin: 10px 0 0;">Sua análise de compliance foi concluída com sucesso.</p>
-  </div>
-  <div style="background: #fff; padding: 30px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 12px 12px;">
-    <p style="color: #002443; font-size: 16px;">Olá <strong>${merchantName}</strong>,</p>
-    <p style="color: #334155; line-height: 1.6;">
-      Temos o prazer de informar que sua análise de compliance foi <strong style="color: #2bc196;">aprovada</strong>.
-      ${caseData.condicoesAutomaticas?.length > 0
-        ? `<br><br>Algumas condições foram aplicadas:<ul style="color: #334155;">${caseData.condicoesAutomaticas.map(c => `<li>${c}</li>`).join('')}</ul>`
-        : ''
-      }
-    </p>
-    <p style="color: #334155; line-height: 1.6;">
-      Nossa equipe entrará em contato com os próximos passos para a ativação dos seus serviços.
-    </p>
-    <div style="margin-top: 20px; padding: 15px; background: #f0fdf4; border-radius: 8px; border: 1px solid #bbf7d0;">
-      <p style="color: #166534; margin: 0; font-size: 13px;">
-        <strong>Classificação:</strong> ${subfaixa}
-        ${caseData.rollingReservePercent > 0 ? `<br><strong>Rolling Reserve:</strong> ${caseData.rollingReservePercent}%` : ''}
-      </p>
-    </div>
-    <p style="color: #94a3b8; font-size: 12px; margin-top: 20px;">
-      Este é um e-mail automático. Não responda diretamente — entre em contato pelo canal comercial.
-    </p>
-  </div>
-</div>`
-      : `
-<div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-  <div style="background: linear-gradient(135deg, #002443, #003366); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
-    <h1 style="color: #f59e0b; margin: 0; font-size: 24px;">⚠️ Análise Concluída</h1>
-    <p style="color: rgba(255,255,255,0.8); margin: 10px 0 0;">Informações sobre sua análise de compliance.</p>
-  </div>
-  <div style="background: #fff; padding: 30px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 12px 12px;">
-    <p style="color: #002443; font-size: 16px;">Olá <strong>${merchantName}</strong>,</p>
-    <p style="color: #334155; line-height: 1.6;">
-      Após análise detalhada dos dados fornecidos, identificamos pendências que impedem a aprovação neste momento.
-    </p>
-    <p style="color: #334155; line-height: 1.6;">
-      Nossa equipe comercial entrará em contato para orientá-lo sobre os próximos passos e eventuais regularizações necessárias.
-    </p>
-    <p style="color: #94a3b8; font-size: 12px; margin-top: 20px;">
-      Este é um e-mail automático. Não responda diretamente — entre em contato pelo canal comercial.
-    </p>
-  </div>
-</div>`;
+    const html = isApproved ? buildEmail({
+      title: hasConditions ? 'Aprovado com Condições! ✅' : 'Parabéns, você foi aprovado! 🎉',
+      subtitle: hasConditions 
+        ? 'Sua análise foi concluída — com algumas observações.'
+        : 'Sua análise de compliance foi concluída com sucesso total.',
+      greeting: `Olá, ${merchantName}!`,
+      body: hasConditions ? [
+        `Temos uma ótima notícia! Sua análise de compliance foi <strong style="color:#2bc196">aprovada</strong>. Estamos muito felizes em ter você como parceiro(a)!`,
+        `Para garantir o melhor para ambos, foram aplicadas algumas condições que precisam ser atendidas:`,
+        `<ul style="color:#475569;line-height:2">${caseData.condicoesAutomaticas.map(c => `<li>${c}</li>`).join('')}</ul>`,
+        `Nosso time vai acompanhar de perto o cumprimento dessas condições e estará disponível para qualquer dúvida. Estamos juntos nessa! 💪`,
+      ] : [
+        `É com enorme satisfação que comunicamos: sua análise de compliance foi <strong style="color:#2bc196">aprovada</strong> sem nenhuma restrição!`,
+        `Isso demonstra a solidez e seriedade do seu negócio. Estamos muito orgulhosos de tê-lo(a) como parceiro(a) da Pagsmile.`,
+        `<strong>Próximos passos:</strong><br>Nossa equipe entrará em contato para iniciar o processo de ativação dos seus serviços de pagamento. Em breve você estará operando com a gente!`,
+        `Obrigado por confiar na Pagsmile. Vamos construir algo incrível juntos! 🚀`,
+      ],
+      infoBox: `<p style="color:#166534;margin:0;font-size:13px"><strong>Classificação:</strong> ${subfaixa}${caseData.rollingReservePercent > 0 ? `<br><strong>Rolling Reserve:</strong> ${caseData.rollingReservePercent}%` : ''}</p>`,
+      footerNote: 'Bem-vindo(a) à Pagsmile! 💚',
+    }) : buildEmail({
+      title: 'Resultado da sua análise ⚠️',
+      subtitle: 'Agradecemos seu interesse na Pagsmile.',
+      greeting: `Olá, ${merchantName}!`,
+      body: [
+        `Após uma análise cuidadosa e detalhada dos dados fornecidos, identificamos alguns pontos que, neste momento, não nos permitem seguir com a ativação.`,
+        `Sabemos que essa não é a notícia que você esperava, e queremos ser transparentes: em muitos casos, pendências podem ser resolvidas. Nossa equipe comercial está à disposição para orientar sobre os próximos passos.`,
+        `Valorizamos muito o seu interesse na Pagsmile e esperamos poder atendê-lo(a) no futuro. As portas estão sempre abertas! 🤝`,
+      ],
+      accent: '#f59e0b',
+      footerNote: 'Dúvidas? Entre em contato com seu consultor comercial.',
+    });
 
     await base44.asServiceRole.integrations.Core.SendEmail({
       to: merchant.email,
-      subject,
-      body: body_html,
+      subject: isApproved 
+        ? (hasConditions ? `✅ ${merchantName}, aprovado com condições!` : `🎉 Parabéns ${merchantName} — aprovado na Pagsmile!`)
+        : `⚠️ ${merchantName}, resultado da sua análise de compliance`,
+      body: html,
       from_name: 'Pagsmile Compliance'
     });
 
