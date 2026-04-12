@@ -107,8 +107,12 @@ export default function PropostaPublica() {
         lead = leads[0];
       }
 
-      // Resolve compliance model V4 based on lead's segment data
-      const model = resolveComplianceModel(lead || { businessSubCategory: proposta.businessSubCategory });
+      // Resolve compliance model V4:
+      // A proposta.businessSubCategory tem PRIORIDADE sobre o lead/questionário,
+      // pois o comercial pode ter ajustado o segmento na geração da proposta.
+      const model = proposta.businessSubCategory
+        ? resolveComplianceModel({ businessSubCategory: proposta.businessSubCategory })
+        : resolveComplianceModel(lead || {});
 
       // Limpar dados residuais antes de redirecionar
       const keysToClean = [
@@ -280,7 +284,10 @@ export default function PropostaPublica() {
   const isAlreadyResponded = ['aceita', 'recusada'].includes(proposta.status);
   const getComplianceUrl = () => {
     if (proposta.status !== 'aceita') return null;
-    const model = resolveComplianceModel({ businessSubCategory: proposta.businessSubCategory });
+    // Usar businessSubCategory da proposta (pode ter sido ajustado pelo comercial)
+    const model = proposta.businessSubCategory
+      ? resolveComplianceModel({ businessSubCategory: proposta.businessSubCategory })
+      : resolveComplianceModel({});
     return `${window.location.origin}/ComplianceDinamico?model=${model}&leadId=${proposta.leadId || ''}`;
   };
   
