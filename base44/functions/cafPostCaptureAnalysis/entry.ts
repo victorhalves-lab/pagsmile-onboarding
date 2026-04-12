@@ -209,22 +209,41 @@ Deno.serve(async (req) => {
       if (personCpf) ocrPayload.parameters.cpf = personCpf;
       if (personName) ocrPayload.parameters.name = personName;
 
-      const ocrResponse = await fetch(`${CAF_API_BASE}/v1/transactions`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${authToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(ocrPayload),
-      });
+      // OCR with automatic retry when result is empty
+      let ocrAttempts = 0;
+      const MAX_OCR_RETRIES = 2;
 
-      const ocrResponseText = await ocrResponse.text();
-      console.log('[CAF-PostCapture] OCR HTTP:', ocrResponse.status);
+      while (ocrAttempts <= MAX_OCR_RETRIES) {
+        ocrAttempts++;
+        console.log(`[CAF-PostCapture] OCR attempt ${ocrAttempts}/${MAX_OCR_RETRIES + 1}...`);
+        const currentAuthToken = await createCafAuthToken();
 
-      try {
-        ocrResult = JSON.parse(ocrResponseText);
-      } catch (e) {
-        console.error('[CAF-PostCapture] OCR parse error:', ocrResponseText.substring(0, 300));
+        const ocrResponse = await fetch(`${CAF_API_BASE}/v1/transactions`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${currentAuthToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(ocrPayload),
+        });
+
+        const ocrResponseText = await ocrResponse.text();
+        console.log('[CAF-PostCapture] OCR HTTP:', ocrResponse.status);
+
+        try {
+          ocrResult = JSON.parse(ocrResponseText);
+        } catch (e) {
+          console.error('[CAF-PostCapture] OCR parse error:', ocrResponseText.substring(0, 300));
+        }
+
+        // Check if OCR returned meaningful data
+        const ocrSection = ocrResult?.sections?.ocr;
+        const hasOcrData = ocrSection && (ocrSection.name || ocrSection.fullName || ocrSection.cpf || ocrSection.documentNumber);
+        if (hasOcrData || ocrAttempts > MAX_OCR_RETRIES) break;
+
+        // Wait before retry
+        console.log(`[CAF-PostCapture] OCR returned empty, retrying in 3s...`);
+        await new Promise(r => setTimeout(r, 3000));
       }
 
       // Cross-validate OCR vs merchant data
@@ -314,6 +333,12 @@ Deno.serve(async (req) => {
         asyncServices.push('officialData');
         asyncServices.push('privateFaceset');
         asyncServices.push('sharedFaceset');
+        // Face Authentication: only on RE-verification (when merchant already has prior liveness)
+        // First-time onboarding skips faceAuthentication to avoid errors when no face is registered yet
+        if (body.isReVerification === true) {
+          asyncServices.push('faceAuthentication');
+          console.log('[CAF-PostCapture] Re-verification: adding faceAuthentication');
+        }
       }
 
       const asyncPayload = {

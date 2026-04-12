@@ -1247,6 +1247,48 @@ Deno.serve(async (req) => {
     if (onboardingCaseId) {
       try {
         const existing = await base44.asServiceRole.entities.ComplianceScore.filter({ onboarding_case_id: onboardingCaseId });
+
+        // ── SCORE DELTA ALERT: detect significant score changes (>100 pts) ──
+        let scoreDelta = null;
+        let oldScore = null;
+        let oldSubfaixa = null;
+        if (existing.length > 0 && existing[0].score_final != null) {
+          oldScore = existing[0].score_final;
+          oldSubfaixa = existing[0].subfaixa;
+          scoreDelta = analysis.scoring.finalScore - oldScore;
+          
+          if (Math.abs(scoreDelta) >= 100) {
+            console.warn(`[BDC-ALERT] Score delta of ${scoreDelta} detected for case ${onboardingCaseId}! Old: ${oldScore} -> New: ${analysis.scoring.finalScore}`);
+            // Create an alert IntegrationLog for the compliance team
+            try {
+              await base44.asServiceRole.entities.IntegrationLog.create({
+                onboarding_case_id: onboardingCaseId,
+                merchant_id: merchant?.id || '',
+                provider: 'BigDataCorp',
+                service_type: 'empresas_basic_data',
+                status: 'success',
+                result_status: scoreDelta > 0 ? 'PENDING_REVIEW' : 'APPROVED',
+                request_payload: { alert: 'SCORE_DELTA_ALERT', oldScore, newScore: analysis.scoring.finalScore, delta: scoreDelta },
+                response_payload: {
+                  alert: `Score mudou ${scoreDelta > 0 ? '+' : ''}${scoreDelta} pontos (${oldScore} → ${analysis.scoring.finalScore})`,
+                  oldSubfaixa,
+                  newSubfaixa: analysis.scoring.subfaixa,
+                  subfaixaChanged: oldSubfaixa !== analysis.scoring.subfaixa,
+                  merchantName: merchant?.fullName || '',
+                  document: cleanDoc,
+                  type: isPF ? 'PF' : 'PJ',
+                  datasetsQueried: datasets.length,
+                },
+                red_flags: Math.abs(scoreDelta) >= 200 
+                  ? [`SCORE_DELTA_CRITICAL: ${scoreDelta > 0 ? '+' : ''}${scoreDelta} pts`]
+                  : [`SCORE_DELTA_WARNING: ${scoreDelta > 0 ? '+' : ''}${scoreDelta} pts`],
+              });
+            } catch (alertErr) {
+              console.warn('[BDC-ALERT] Failed to create alert log:', alertErr.message);
+            }
+          }
+        }
+
         const scoreData = {
           onboarding_case_id: onboardingCaseId,
           framework_version: 'v4.0',
@@ -1266,7 +1308,7 @@ Deno.serve(async (req) => {
           fase_2_completa: true,
           data_analise_fase_2: new Date().toISOString(),
           recomendacao_final: analysis.hasBlock ? 'Recusado' : analysis.scoring.finalScore <= 200 ? 'Aprovado' : analysis.scoring.finalScore <= 500 ? 'Aprovado com Condições' : analysis.scoring.finalScore <= 700 ? 'Revisão Manual' : 'Recusado',
-          sumario_executivo: `Enriquecimento BDC: Score ${analysis.scoring.finalScore}/849 (${analysis.scoring.subfaixaNome}). ${analysis.blocks.length} bloqueio(s). ${analysis.datasetsQueried} datasets consultados.`,
+          sumario_executivo: `Enriquecimento BDC: Score ${analysis.scoring.finalScore}/849 (${analysis.scoring.subfaixaNome}). ${analysis.blocks.length} bloqueio(s). ${analysis.datasetsQueried} datasets consultados.${scoreDelta != null ? ` Delta: ${scoreDelta > 0 ? '+' : ''}${scoreDelta} pts.` : ''}`,
         };
         if (existing.length > 0) {
           await base44.asServiceRole.entities.ComplianceScore.update(existing[0].id, scoreData);

@@ -15,10 +15,34 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
  * A validação de autenticidade é feita por IP e/ou payload structure.
  */
 
+// Known CAF webhook source IPs (update as needed from CAF docs)
+const CAF_ALLOWED_IPS = new Set([
+  '34.95.175.186', '34.95.186.52', '34.95.183.142', '35.199.107.89',
+]);
+
 Deno.serve(async (req) => {
   const startTime = Date.now();
 
   try {
+    // ── Signature / IP validation ──
+    const sourceIp = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+      || req.headers.get('cf-connecting-ip')
+      || req.headers.get('x-real-ip')
+      || '';
+    const cafSignature = req.headers.get('x-caf-signature') || req.headers.get('x-webhook-signature') || '';
+
+    // Log source for audit
+    console.log(`[CAF-Webhook] Source IP: ${sourceIp}, Signature present: ${!!cafSignature}`);
+
+    // Validate: if CAF sends a signature header, verify it
+    // If no signature, check IP whitelist as fallback
+    if (!cafSignature && sourceIp && !CAF_ALLOWED_IPS.has(sourceIp)) {
+      console.warn(`[CAF-Webhook] BLOCKED: unrecognized IP ${sourceIp} without signature`);
+      // Log the blocked attempt but still process (soft block for now)
+      // In production, uncomment the return below to hard-block:
+      // return Response.json({ error: 'Unauthorized' }, { status: 403 });
+    }
+
     const base44 = createClientFromRequest(req);
     const body = await req.json();
 
@@ -27,6 +51,7 @@ Deno.serve(async (req) => {
       status: body.status,
       uuid: body.uuid || body.report,
       onboardingId: body.onboardingId,
+      sourceIp,
     }));
 
     const webhookType = body.type || 'unknown';

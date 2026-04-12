@@ -48,6 +48,7 @@ import SubsellerDocUpload from './pages/SubsellerDocUpload';
 import Cadastro from './pages/Cadastro';
 import CadastroDetalhe from './pages/CadastroDetalhe';
 import ComplianceDocOnly from './pages/ComplianceDocOnly';
+import BDCHealthDashboard from './pages/BDCHealthDashboard';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -265,6 +266,7 @@ const AuthenticatedApp = () => {
       <Route path="/GerenciarTaxasPadrao" element={<LayoutWrapper currentPageName="GerenciarTaxasPadrao"><GerenciarTaxasPadrao /></LayoutWrapper>} />
       <Route path="/Cadastro" element={<LayoutWrapper currentPageName="Cadastro"><Cadastro /></LayoutWrapper>} />
       <Route path="/CadastroDetalhe" element={<LayoutWrapper currentPageName="CadastroDetalhe"><CadastroDetalhe /></LayoutWrapper>} />
+      <Route path="/BDCHealthDashboard" element={<LayoutWrapper currentPageName="BDCHealthDashboard"><BDCHealthDashboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
