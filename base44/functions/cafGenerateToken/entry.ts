@@ -20,7 +20,7 @@ async function createSignedJwt(clientId, clientSecret) {
   const headerB64 = base64UrlEncode(new TextEncoder().encode(JSON.stringify(header)));
 
   const now = Math.floor(Date.now() / 1000);
-  const payload = { iss: clientId, exp: now + 300 };
+  const payload = { iss: clientId, exp: now + 900 }; // FIX C03: 15 min to cover full flow (doc + liveness)
   const payloadB64 = base64UrlEncode(new TextEncoder().encode(JSON.stringify(payload)));
 
   const signingInput = `${headerB64}.${payloadB64}`;

@@ -12,13 +12,23 @@ const RISK_CONFIG = {
   'INFO': { bg: 'bg-slate-50', text: 'text-slate-600', border: 'border-slate-200', icon: Info, badgeBg: 'bg-slate-100' },
 };
 
+// FIX B05: Human-readable risk labels instead of technical codes
+const RISK_LABELS = {
+  'CRITICO': 'Risco Crítico',
+  'ALTO': 'Risco Alto',
+  'MEDIO': 'Atenção',
+  'BAIXO': 'Risco Baixo',
+  'OK': 'Normal',
+  'INFO': 'Informação',
+};
+
 function RiskIndicator({ risk }) {
   const c = RISK_CONFIG[risk] || RISK_CONFIG.INFO;
   const Icon = c.icon;
   return (
     <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full ${c.bg} ${c.border} border`}>
       <Icon className={`w-3 h-3 ${c.text}`} />
-      <span className={`text-[10px] font-semibold ${c.text}`}>{risk}</span>
+      <span className={`text-[10px] font-semibold ${c.text}`}>{RISK_LABELS[risk] || risk}</span>
     </div>
   );
 }
@@ -38,8 +48,11 @@ function AnalysisItem({ item }) {
             <span className="text-xs font-semibold text-[#002443]">{item.label}</span>
             <RiskIndicator risk={item.risk} />
             {item.points !== 0 && (
-              <span className={`text-[10px] font-mono ${item.points > 0 ? 'text-red-600' : 'text-emerald-600'}`}>
-                {item.points > 0 ? '+' : ''}{item.points} pts
+              <span 
+                className={`text-[10px] font-mono ${item.points > 0 ? 'text-red-600' : 'text-emerald-600'} cursor-help`}
+                title={item.points > 0 ? `Adiciona ${item.points} pontos ao score de risco (quanto mais alto, mais arriscado)` : `Reduz ${Math.abs(item.points)} pontos do score de risco (fator positivo)`}
+              >
+                {item.points > 0 ? '↑' : '↓'} {Math.abs(item.points)} pts
               </span>
             )}
           </div>
@@ -110,11 +123,13 @@ function AnalysisItem({ item }) {
 }
 
 export default function BDCAnalysisSection({ title, icon: Icon, items, score, accentColor = 'indigo', defaultOpen = false }) {
-  const [open, setOpen] = useState(defaultOpen);
+  const criticalCount = items?.filter(i => i.risk === 'CRITICO').length || 0;
+  const highCount = items?.filter(i => i.risk === 'ALTO').length || 0;
+  // FIX B04: Auto-open sections that have critical or high-risk items
+  const shouldAutoOpen = defaultOpen || criticalCount > 0 || highCount > 0;
+  const [open, setOpen] = useState(shouldAutoOpen);
   if (!items || items.length === 0) return null;
 
-  const criticalCount = items.filter(i => i.risk === 'CRITICO').length;
-  const highCount = items.filter(i => i.risk === 'ALTO').length;
   const okCount = items.filter(i => i.risk === 'OK').length;
 
   return (

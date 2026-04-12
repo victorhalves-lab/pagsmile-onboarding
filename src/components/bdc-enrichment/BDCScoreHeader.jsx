@@ -123,18 +123,37 @@ export default function BDCScoreHeader({ analysis }) {
           </div>
         )}
 
-        {/* Quick recommendation */}
+        {/* Quick recommendation with explanation */}
         {!hasBlock && (
-          <div className={`p-3 rounded-xl ${config.bgLight} border ${config.border} flex items-center gap-2`}>
-            {scoring.finalScore <= 200 ? (
-              <><CheckCircle2 className="w-4 h-4 text-emerald-600" /><span className="text-xs font-semibold text-emerald-700">Recomendação: APROVAÇÃO AUTOMÁTICA</span></>
-            ) : scoring.finalScore <= 500 ? (
-              <><Zap className="w-4 h-4 text-blue-600" /><span className="text-xs font-semibold text-blue-700">Recomendação: APROVAÇÃO COM CONDIÇÕES</span></>
-            ) : scoring.finalScore <= 700 ? (
-              <><Clock className="w-4 h-4 text-amber-600" /><span className="text-xs font-semibold text-amber-700">Recomendação: REVISÃO MANUAL</span></>
-            ) : (
-              <><AlertOctagon className="w-4 h-4 text-red-600" /><span className="text-xs font-semibold text-red-700">Recomendação: RECUSA</span></>
-            )}
+          <div className={`p-4 rounded-xl ${config.bgLight} border ${config.border}`}>
+            <div className="flex items-center gap-2 mb-2">
+              {scoring.finalScore <= 200 ? (
+                <><CheckCircle2 className="w-4 h-4 text-emerald-600" /><span className="text-xs font-bold text-emerald-700">Recomendação: APROVAÇÃO AUTOMÁTICA</span></>
+              ) : scoring.finalScore <= 500 ? (
+                <><Zap className="w-4 h-4 text-blue-600" /><span className="text-xs font-bold text-blue-700">Recomendação: APROVAÇÃO COM CONDIÇÕES</span></>
+              ) : scoring.finalScore <= 700 ? (
+                <><Clock className="w-4 h-4 text-amber-600" /><span className="text-xs font-bold text-amber-700">Recomendação: REVISÃO MANUAL</span></>
+              ) : (
+                <><AlertOctagon className="w-4 h-4 text-red-600" /><span className="text-xs font-bold text-red-700">Recomendação: RECUSA</span></>
+              )}
+            </div>
+            <p className="text-[11px] text-[#002443]/60 leading-relaxed">
+              {scoring.finalScore <= 200 
+                ? 'O score indica baixo risco. Os dados da Big Data Corp não identificaram bloqueios, sanções críticas ou inconsistências graves. Este caso pode ser aprovado automaticamente.'
+                : scoring.finalScore <= 500 
+                ? 'O score indica risco moderado. Foram encontrados alguns pontos de atenção que devem ser analisados, mas não há bloqueios. Recomenda-se aprovação com condições específicas.'
+                : scoring.finalScore <= 700 
+                ? 'O score indica risco elevado. Vários pontos de atenção foram identificados. Recomenda-se que um analista revise manualmente este caso antes de tomar uma decisão.'
+                : 'O score indica risco muito alto. Foram identificados fatores graves que impedem a aprovação automática. Revisão manual obrigatória.'}
+            </p>
+            {/* Score legend */}
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {[{range:'0-100', label:'Verde Express', color:'bg-emerald-400'}, {range:'101-200', label:'Verde', color:'bg-emerald-300'}, {range:'201-300', label:'Azul', color:'bg-blue-400'}, {range:'301-500', label:'Amarelo', color:'bg-amber-400'}, {range:'501-700', label:'Laranja', color:'bg-orange-400'}, {range:'701-849', label:'Vermelho', color:'bg-red-500'}].map(s => (
+                <span key={s.range} className="flex items-center gap-1 text-[9px] text-[#002443]/50">
+                  <span className={`w-2 h-2 rounded-full ${s.color}`}/> {s.range}
+                </span>
+              ))}
+            </div>
           </div>
         )}
       </div>

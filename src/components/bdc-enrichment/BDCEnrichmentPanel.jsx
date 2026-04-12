@@ -9,6 +9,7 @@ import {
 import BDCScoreHeader from './BDCScoreHeader';
 import BDCAnalysisSection from './BDCAnalysisSection';
 import BDCContactsSection from './BDCContactsSection';
+import BDCNarrativeReport from './BDCNarrativeReport';
 
 export default function BDCEnrichmentPanel({ onboardingCaseId, merchant, complianceScore, onComplete, rawBdcResult }) {
   const [isRunning, setIsRunning] = useState(false);
@@ -88,6 +89,9 @@ export default function BDCEnrichmentPanel({ onboardingCaseId, merchant, complia
     <div className="space-y-4">
       {/* Score Header */}
       <BDCScoreHeader analysis={displayAnalysis} />
+
+      {/* Narrative Report — clear human-readable analysis */}
+      <BDCNarrativeReport analysis={displayAnalysis} complianceScore={complianceScore} />
 
       {/* Re-run button */}
       <div className="flex justify-end">

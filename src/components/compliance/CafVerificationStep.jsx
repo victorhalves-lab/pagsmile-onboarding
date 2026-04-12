@@ -47,6 +47,29 @@ const STEPS = [
   { id: 'liveness', label: 'Prova de Vida', icon: ScanFace },
 ];
 
+// Step-by-step user guidance messages
+const STEP_GUIDANCE = {
+  doc_front: {
+    title: '📄 Captura da Frente do Documento',
+    instructions: [
+      'Pegue seu RG ou CNH e posicione com a FRENTE virada para a câmera',
+      'Apoie o documento sobre uma superfície lisa e com fundo escuro',
+      'Certifique-se de que TODOS os cantos do documento estejam visíveis',
+      'A câmera fará a captura automaticamente quando detectar o documento',
+    ],
+    warnings: ['Evite sombras sobre o documento', 'Não segure com os dedos sobre o texto'],
+  },
+  doc_back: {
+    title: '📄 Captura do Verso do Documento',
+    instructions: [
+      'Agora VIRE o documento e mostre o VERSO para a câmera',
+      'Mantenha na mesma posição estável da etapa anterior',
+      'Aguarde a detecção automática — não mova o documento',
+    ],
+    warnings: ['O verso deve estar completamente legível'],
+  },
+};
+
 /**
  * Convert a Blob to base64 data URI for transmission to backend.
  */
@@ -347,7 +370,8 @@ export default function CafVerificationStep({
         await CafFaceLivenessSdk.init(sdkToken, personId, {
           htmlContainerId: 'caf-fl-container',
           language: 'pt_BR',
-          performFaceAuthentication: true, // Enable face match: selfie vs document
+          performFaceAuthentication: true,
+          cameraPreviewFilter: 'classic', // FIX C01: Remove scary sketch effect, use natural camera view
         }, {
           startButton: {
             label: 'Iniciar Verificação Facial',
@@ -539,25 +563,54 @@ export default function CafVerificationStep({
         })}
       </div>
 
-      {/* ── Ready state ── */}
+      {/* ── Ready state — full step-by-step guide ── */}
       {phase === 'ready' && (
         <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
-          <div className="flex items-start gap-3 p-3 rounded-xl bg-blue-50 border border-blue-100">
-            <Camera className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-semibold text-blue-800">Tenha em mãos seu RG ou CNH</p>
-              <p className="text-xs text-blue-600 mt-1">
-                Você precisará fotografar a frente e o verso do documento usando a câmera do dispositivo.
-              </p>
+          {/* What you will need */}
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-100">
+            <p className="text-sm font-bold text-blue-900 mb-3">📋 O que você vai precisar:</p>
+            <div className="space-y-2">
+              <div className="flex items-start gap-2">
+                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center mt-0.5">1</span>
+                <div>
+                  <p className="text-xs font-semibold text-blue-800">Documento de identidade (RG ou CNH)</p>
+                  <p className="text-[10px] text-blue-600">Físico e original — não vale foto de documento no celular</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center mt-0.5">2</span>
+                <div>
+                  <p className="text-xs font-semibold text-blue-800">Câmera do celular/computador funcionando</p>
+                  <p className="text-[10px] text-blue-600">Quando solicitado, permita o acesso à câmera no navegador</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center mt-0.5">3</span>
+                <div>
+                  <p className="text-xs font-semibold text-blue-800">Ambiente bem iluminado</p>
+                  <p className="text-[10px] text-blue-600">Luz frontal no rosto, evite contraluz (janela atrás de você)</p>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="flex items-start gap-3 p-3 rounded-xl bg-purple-50 border border-purple-100">
-            <ScanFace className="w-5 h-5 text-purple-600 shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-semibold text-purple-800">Prova de Vida</p>
-              <p className="text-xs text-purple-600 mt-1">
-                Após os documentos, uma verificação facial será realizada. Procure um local com boa iluminação.
-              </p>
+
+          {/* Process overview */}
+          <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100">
+            <p className="text-sm font-bold text-purple-900 mb-3">🔄 Como vai funcionar:</p>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-xs text-purple-800">
+                <span className="w-6 h-6 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-[10px]">1°</span>
+                <span>Você fotografa a <strong>FRENTE</strong> do documento</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-purple-800">
+                <span className="w-6 h-6 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-[10px]">2°</span>
+                <span>Você fotografa o <strong>VERSO</strong> do documento</span>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-purple-800">
+                <span className="w-6 h-6 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-[10px]">3°</span>
+                <span>Prova de vida facial — você olha para a câmera</span>
+              </div>
+              <p className="text-[10px] text-purple-600 mt-2 italic">⏱️ O processo completo leva cerca de 2-3 minutos</p>
             </div>
           </div>
 
@@ -566,9 +619,7 @@ export default function CafVerificationStep({
               <Shield className="w-5 h-5 text-[#002443]/50 shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-medium text-[#002443]">CPF identificado: {personCpf}</p>
-                <p className="text-xs text-[#002443]/50 mt-0.5">
-                  A verificação será vinculada a este documento.
-                </p>
+                <p className="text-xs text-[#002443]/50 mt-0.5">A verificação será vinculada a este documento.</p>
               </div>
             </div>
           )}
@@ -576,9 +627,9 @@ export default function CafVerificationStep({
           <div className="flex items-start gap-3 p-3 rounded-xl bg-green-50 border border-green-100">
             <Shield className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-semibold text-green-800">Armazenamento seguro</p>
+              <p className="text-sm font-semibold text-green-800">🔒 Processo 100% seguro</p>
               <p className="text-xs text-green-600 mt-1">
-                Todas as imagens (documento e selfie) serão armazenadas de forma segura em nossos servidores.
+                Certificado pela CAF (Combate à Fraude). Suas imagens são armazenadas com criptografia e nunca compartilhadas.
               </p>
             </div>
           </div>
@@ -608,27 +659,47 @@ export default function CafVerificationStep({
         </div>
       )}
 
-      {/* ── Active capture (doc_front / doc_back) — SDK renders its own modal overlay ── */}
+      {/* ── Active capture (doc_front / doc_back) — with step-by-step guidance ── */}
       {(phase === 'doc_front' || phase === 'doc_back') && (
-        <div className="bg-white rounded-2xl border-2 border-purple-200 p-6 text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-blue-50 mb-4">
-            <FileCheck className="w-7 h-7 text-blue-600 animate-pulse" />
+        <div className="bg-white rounded-2xl border-2 border-purple-200 p-6 space-y-4">
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-blue-50 mb-3">
+              <FileCheck className="w-7 h-7 text-blue-600 animate-pulse" />
+            </div>
+            <h3 className="text-lg font-bold text-[#002443] mb-1">
+              {STEP_GUIDANCE[phase]?.title || 'Captura do Documento'}
+            </h3>
           </div>
-          <h3 className="text-lg font-bold text-[#002443] mb-2">
-            {phase === 'doc_front' ? 'Capture a Frente do Documento' : 'Capture o Verso do Documento'}
-          </h3>
-          <p className="text-sm text-[#002443]/60 max-w-sm mx-auto">
-            {phase === 'doc_front' 
-              ? 'Posicione a frente do seu RG ou CNH na câmera. O SDK fará a captura automaticamente.'
-              : 'Agora posicione o verso do documento. A captura será automática.'}
-          </p>
-          <div className="mt-4 flex items-center justify-center gap-2 text-xs text-purple-600 font-medium bg-purple-50 rounded-lg py-2 px-4 inline-flex">
+
+          {/* Step-by-step numbered instructions */}
+          <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
+            <p className="text-xs font-bold text-blue-800 mb-3">📋 Siga estes passos:</p>
+            <ol className="space-y-2">
+              {(STEP_GUIDANCE[phase]?.instructions || []).map((instruction, idx) => (
+                <li key={idx} className="flex items-start gap-2.5">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] font-bold flex items-center justify-center mt-0.5">
+                    {idx + 1}
+                  </span>
+                  <span className="text-xs text-blue-800 leading-relaxed">{instruction}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+
+          {/* Warnings */}
+          {STEP_GUIDANCE[phase]?.warnings?.length > 0 && (
+            <div className="bg-amber-50 rounded-xl p-3 border border-amber-100">
+              <p className="text-[10px] font-bold text-amber-800 mb-1">⚠️ Atenção:</p>
+              {STEP_GUIDANCE[phase].warnings.map((w, i) => (
+                <p key={i} className="text-[11px] text-amber-700">• {w}</p>
+              ))}
+            </div>
+          )}
+
+          <div className="flex items-center justify-center gap-2 text-xs text-purple-600 font-medium bg-purple-50 rounded-lg py-2.5 px-4">
             <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            Aguardando captura do SDK...
+            A câmera está ativa — posicione o documento conforme as instruções acima
           </div>
-          <p className="text-[10px] text-[#002443]/30 mt-3">
-            A imagem será salva automaticamente após a captura.
-          </p>
         </div>
       )}
 
