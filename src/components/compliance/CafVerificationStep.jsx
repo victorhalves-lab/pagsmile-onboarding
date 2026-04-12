@@ -6,6 +6,10 @@ import {
   Camera, Shield, ArrowRight, RefreshCw, XCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
+import CafLivenessPreparation from './CafLivenessPreparation';
+import CafLivenessOverlay from './CafLivenessOverlay';
+import CafDifficultyModal from './CafDifficultyModal';
+import CafManualSelfieUpload from './CafManualSelfieUpload';
 
 /**
  * CAF SDK Web Integration — DocumentDetector + FaceLiveness
@@ -39,6 +43,7 @@ const STEPS = [
   { id: 'init', label: 'Preparação', icon: Shield },
   { id: 'document_front', label: 'Doc. Frente', icon: FileCheck },
   { id: 'document_back', label: 'Doc. Verso', icon: FileCheck },
+  { id: 'liveness_prep', label: 'Instruções', icon: ScanFace },
   { id: 'liveness', label: 'Prova de Vida', icon: ScanFace },
 ];
 
@@ -91,12 +96,16 @@ export default function CafVerificationStep({
   const [livenessResult, setLivenessResult] = useState(null);
   const [savedResults, setSavedResults] = useState({ front: false, back: false, liveness: false });
   const [retryCount, setRetryCount] = useState(0);
+  const [livenessAttempts, setLivenessAttempts] = useState(0);
+  const [showDifficultyModal, setShowDifficultyModal] = useState(false);
+  const [manualFallback, setManualFallback] = useState(false);
   const flContainerRef = useRef(null);
 
   const stepIndex = phase === 'ready' || phase === 'loading' ? 0 
     : phase === 'doc_front' ? 1 
     : phase === 'doc_back' ? 2 
-    : phase === 'liveness' ? 3 : 4;
+    : phase === 'liveness_prep' ? 3
+    : phase === 'liveness' ? 4 : 5;
 
   // ── Step 1: Get token from backend + load SDKs ──
   const startVerification = useCallback(async () => {
@@ -141,9 +150,14 @@ export default function CafVerificationStep({
     }
   }, [personCpf, onboardingCaseId]);
 
-  // ── Step 2: DocumentDetector — FRONT capture ──
+  // ── Step 2: DocumentDetector — FRONT capture (skip if already saved) ──
   useEffect(() => {
     if (phase !== 'doc_front' || !sdkToken) return;
+    // Smart skip: if front already captured and saved, go to back
+    if (savedResults.front) {
+      setPhase('doc_back');
+      return;
+    }
     let dd = null;
     let cancelled = false;
 
@@ -232,9 +246,14 @@ export default function CafVerificationStep({
     return () => { cancelled = true; };
   }, [phase, sdkToken, personId, onboardingCaseId]);
 
-  // ── Step 3: DocumentDetector — BACK capture ──
+  // ── Step 3: DocumentDetector — BACK capture (skip if already saved) ──
   useEffect(() => {
     if (phase !== 'doc_back' || !sdkToken) return;
+    // Smart skip: if back already captured and saved, go to liveness prep
+    if (savedResults.back) {
+      setPhase('liveness_prep');
+      return;
+    }
     let dd = null;
     let cancelled = false;
 
@@ -293,8 +312,8 @@ export default function CafVerificationStep({
 
         await dd.close();
         await dd.dispose();
-        toast.success('Verso do documento capturado e salvo! Iniciando prova de vida...');
-        setPhase('liveness');
+        toast.success('Verso do documento capturado e salvo! Preparando prova de vida...');
+        setPhase('liveness_prep');
       } catch (err) {
         if (cancelled) return;
         console.error('[CAF] Doc back error:', err?.name, err?.message);
@@ -318,6 +337,7 @@ export default function CafVerificationStep({
   useEffect(() => {
     if (phase !== 'liveness' || !sdkToken) return;
     let cancelled = false;
+    setLivenessAttempts(prev => prev + 1);
 
     const runLiveness = async () => {
       try {
@@ -408,16 +428,45 @@ export default function CafVerificationStep({
     }
   }, [phase]);
 
-  // ── Retry handler ──
+  // ── Smart retry: skip already-completed steps ──
   const handleRetry = () => {
-    setPhase('ready');
     setError(null);
+    setRetryCount(prev => prev + 1);
+
+    // If docs already saved, skip directly to liveness prep
+    if (savedResults.front && savedResults.back && sdkToken) {
+      setPhase('liveness_prep');
+      return;
+    }
+    // Otherwise full restart
+    setPhase('ready');
     setDocResults({ front: null, back: null });
     setLivenessResult(null);
     setSdkToken(null);
     setPersonId(null);
     setSavedResults({ front: false, back: false, liveness: false });
-    setRetryCount(prev => prev + 1);
+  };
+
+  // ── Retry only liveness (from difficulty modal or prep screen) ──
+  const handleRetryLiveness = () => {
+    setShowDifficultyModal(false);
+    setError(null);
+    // Dispose any existing SDK instance
+    try { window['CafFaceLiveness']?.dispose(); } catch {}
+    setPhase('liveness_prep');
+  };
+
+  // ── Manual fallback handler ──
+  const handleManualFallback = () => {
+    setShowDifficultyModal(false);
+    try { window['CafFaceLiveness']?.dispose(); } catch {}
+    setManualFallback(true);
+    setPhase('manual_selfie');
+  };
+
+  // ── Difficulty timeout/click handler ──
+  const handleDifficultyClick = () => {
+    setShowDifficultyModal(true);
   };
 
   // === RENDER ===
@@ -583,18 +632,21 @@ export default function CafVerificationStep({
         </div>
       )}
 
+      {/* ── Liveness Preparation Screen ── */}
+      {phase === 'liveness_prep' && (
+        <CafLivenessPreparation
+          onReady={() => setPhase('liveness')}
+          loading={false}
+        />
+      )}
+
       {/* ── FaceLiveness — SDK renders inside our container ── */}
       {phase === 'liveness' && (
         <div className="bg-white rounded-2xl border-2 border-purple-200 p-6">
-          <div className="text-center mb-4">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-purple-50 mb-3">
-              <ScanFace className="w-7 h-7 text-purple-600 animate-pulse" />
-            </div>
-            <h3 className="text-lg font-bold text-[#002443] mb-2">Prova de Vida</h3>
-            <p className="text-sm text-[#002443]/60">
-              Siga as instruções na tela para completar a verificação facial.
-            </p>
-          </div>
+          <CafLivenessOverlay
+            onDifficultyClick={handleDifficultyClick}
+            timeoutSeconds={90}
+          />
           <div 
             id="caf-fl-container" 
             ref={flContainerRef} 
@@ -606,6 +658,24 @@ export default function CafVerificationStep({
         </div>
       )}
 
+      {/* ── Manual Selfie Fallback ── */}
+      {phase === 'manual_selfie' && (
+        <CafManualSelfieUpload
+          onboardingCaseId={onboardingCaseId}
+          onComplete={onComplete}
+        />
+      )}
+
+      {/* ── Difficulty Modal ── */}
+      {showDifficultyModal && (
+        <CafDifficultyModal
+          attemptCount={livenessAttempts}
+          onRetryLiveness={handleRetryLiveness}
+          onManualFallback={handleManualFallback}
+          onClose={() => setShowDifficultyModal(false)}
+        />
+      )}
+
       {/* ── Error state ── */}
       {phase === 'error' && (
         <div className="bg-white rounded-2xl border border-red-200 p-6 text-center space-y-4">
@@ -615,27 +685,26 @@ export default function CafVerificationStep({
           <h3 className="text-lg font-bold text-[#002443]">Erro na Verificação</h3>
           <p className="text-sm text-red-600 bg-red-50 rounded-lg p-3 text-left">{error}</p>
           
-          {retryCount < 3 && (
-            <p className="text-xs text-[#002443]/40">
-              Tentativa {retryCount + 1} de 3
-            </p>
-          )}
+          <p className="text-xs text-[#002443]/40">
+            Tentativa {retryCount + 1} • Face: {livenessAttempts}x
+          </p>
           
-          <div className="flex gap-3 justify-center">
-            {retryCount < 3 ? (
+          <div className="flex flex-col gap-2 items-center">
+            <Button
+              onClick={handleRetry}
+              className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-6 h-11 rounded-xl"
+            >
+              <RefreshCw className="w-4 h-4 mr-2" /> Tentar Novamente
+            </Button>
+            
+            {livenessAttempts >= 3 && (
               <Button
-                onClick={handleRetry}
-                className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-6 h-11 rounded-xl"
+                onClick={handleManualFallback}
+                variant="outline"
+                className="px-6 h-11 rounded-xl border-purple-200 text-purple-700 hover:bg-purple-50"
               >
-                <RefreshCw className="w-4 h-4 mr-2" /> Tentar Novamente
+                Enviar Selfie Manualmente
               </Button>
-            ) : (
-              <div className="text-center">
-                <p className="text-sm text-red-600 mb-3">Limite de tentativas atingido.</p>
-                <p className="text-xs text-[#002443]/50 mb-4">
-                  Se o problema persistir, entre em contato com o suporte enviando print desta tela.
-                </p>
-              </div>
             )}
           </div>
         </div>

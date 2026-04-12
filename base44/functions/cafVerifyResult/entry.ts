@@ -1,7 +1,7 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
 
 /**
- * Verifies and persists the result of a CAF SDK step (DocumentDetector or FaceLiveness).
+ * Verifies and persists the result of a CAF SDK step (DocumentDetector, FaceLiveness, or Manual Selfie).
  * 
  * COMPLETE DATA ENRICHMENT:
  * 
@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const { 
       onboardingCaseId, 
-      module,           // 'document_front' | 'document_back' | 'liveness'
+      module,           // 'document_front' | 'document_back' | 'liveness' | 'manual_selfie'
       // DocumentDetector fields
       imageBase64,      // base64 data URI from blob (preferred — no expiry risk)
       imageUrl,         // temporary CAF URL for document image (fallback)
@@ -42,6 +42,8 @@ Deno.serve(async (req) => {
       storageInfo,      // { key, bucket } from CAF S3
       // FaceLiveness fields
       signedResponse,   // JWT string DIRECTLY from CafFaceLivenessSdk.run()
+      // Manual selfie fallback
+      manualUpload,     // boolean - if true, this is a manual selfie upload
     } = body;
 
     if (!onboardingCaseId) {
@@ -174,6 +176,73 @@ Deno.serve(async (req) => {
     }
 
     const durationMs = Date.now() - startTime;
+
+    // ── Handle manual selfie upload ──
+    if (module === 'manual_selfie') {
+      const manualImageUrl = imageUrl || null;
+      if (manualImageUrl) {
+        try {
+          await base44.asServiceRole.entities.IntegrationLog.create({
+            onboarding_case_id: onboardingCaseId,
+            provider: 'CAF',
+            service_type: 'face_liveness',
+            status: 'success',
+            result_status: 'PENDING_REVIEW',
+            image_urls: [manualImageUrl],
+            response_payload: { manualUpload: true, imageUrl: manualImageUrl },
+            red_flags: ['MANUAL_SELFIE_UPLOAD'],
+            duration_ms: Date.now() - startTime,
+          });
+          await base44.asServiceRole.entities.DocumentUpload.create({
+            onboardingCaseId,
+            documentTypeId: 'caf_selfie_manual',
+            documentName: 'Selfie Manual (Fallback)',
+            fileUrl: manualImageUrl,
+            fileName: `manual_selfie_${Date.now()}.jpg`,
+            fileType: 'image/jpeg',
+            uploadDate: new Date().toISOString(),
+            validationStatus: 'Pendente',
+            validationNotes: 'Selfie enviada manualmente ap\u00f3s falha no FaceLiveness. Requer revis\u00e3o manual.',
+          });
+          // Update case: mark as needing manual review for face
+          const existingCase = await base44.asServiceRole.entities.OnboardingCase.filter({ id: onboardingCaseId });
+          const currentFlags = existingCase[0]?.redFlags || [];
+          const newFlags = currentFlags.includes('MANUAL_SELFIE') ? currentFlags : [...currentFlags, 'MANUAL_SELFIE'];
+          await base44.asServiceRole.entities.OnboardingCase.update(onboardingCaseId, {
+            cafCompleted: false,
+            redFlags: newFlags,
+          });
+          console.log('[CAF] Manual selfie saved successfully');
+        } catch (manualErr) {
+          console.error('[CAF] Failed to save manual selfie:', manualErr.message);
+        }
+      }
+      return Response.json({ success: true, module: 'manual_selfie', cafDecision: 'PENDING_REVIEW' });
+    }
+
+    // ── Dedup: check if document already exists for this case+module ──
+    if (module === 'document_front' || module === 'document_back') {
+      try {
+        const docTypeId = module === 'document_front' ? 'caf_doc_front' : 'caf_doc_back';
+        const existingDocs = await base44.asServiceRole.entities.DocumentUpload.filter({
+          onboardingCaseId: onboardingCaseId,
+          documentTypeId: docTypeId,
+        });
+        if (existingDocs.length > 0) {
+          console.log(`[CAF] Document ${module} already exists for case ${onboardingCaseId} (${existingDocs.length} records). Skipping duplicate.`);
+          return Response.json({
+            success: true,
+            approved: true,
+            cafDecision: 'APPROVED',
+            module,
+            uploadedImageUrl: existingDocs[0]?.fileUrl,
+            deduplicated: true,
+          });
+        }
+      } catch (dedupErr) {
+        console.warn('[CAF] Dedup check failed, proceeding with save:', dedupErr.message);
+      }
+    }
 
     // ── Map module to service_type for IntegrationLog ──
     const serviceTypeMap = {
