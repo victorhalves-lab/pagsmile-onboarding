@@ -8,27 +8,28 @@ import {
 import ReactMarkdown from 'react-markdown';
 
 /**
- * BDCNarrativeReport — Generates a clear, human-readable narrative from BDC analysis data.
- * Uses InvokeLLM to transform technical data into an executive report.
+ * BDCNarrativeReport — Generates comprehensive, deeply detailed narrative from BDC analysis.
+ * Every section is exhaustive. Every dataset is explained. Every finding has full context.
  */
-
-const RISK_COLORS = {
-  'CRITICO': { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-700', icon: AlertOctagon },
-  'ALTO': { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-700', icon: AlertTriangle },
-  'MEDIO': { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-700', icon: AlertTriangle },
-  'OK': { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-700', icon: CheckCircle2 },
-};
 
 function buildNarrativePrompt(analysis) {
   const isPF = analysis.type === 'PF';
   const sections = analysis.sections || {};
   
-  // Extract all items with risk levels for the LLM
   const allItems = [];
   const extractItems = (sectionName, section) => {
     if (section?.items) {
       for (const item of section.items) {
-        allItems.push({ section: sectionName, label: item.label, value: item.value, risk: item.risk, points: item.points });
+        allItems.push({ 
+          section: sectionName, 
+          label: item.label, 
+          value: item.value, 
+          risk: item.risk, 
+          points: item.points,
+          details: item.details || null,
+          owners: item.owners || null,
+          lawsuits: item.lawsuits || null,
+        });
       }
     }
   };
@@ -47,53 +48,193 @@ function buildNarrativePrompt(analysis) {
   }
 
   const blocksText = (analysis.blocks || []).map(b => `- BLOQUEIO ${b.code}: ${b.label} — ${b.detail}`).join('\n');
-  const itemsText = allItems.map(i => `[${i.section}] ${i.label}: ${i.value} (risco: ${i.risk}, pontos: ${i.points > 0 ? '+' : ''}${i.points})`).join('\n');
+  
+  // Group items by section for richer context
+  const sectionGroups = {};
+  for (const item of allItems) {
+    if (!sectionGroups[item.section]) sectionGroups[item.section] = [];
+    sectionGroups[item.section].push(item);
+  }
+  
+  const detailedItemsText = Object.entries(sectionGroups).map(([section, items]) => {
+    const lines = items.map(i => {
+      let line = `  - ${i.label}: ${i.value} (risco: ${i.risk}, impacto: ${i.points > 0 ? '+' : ''}${i.points} pontos)`;
+      if (i.details) line += `\n    Detalhes: ${JSON.stringify(i.details)}`;
+      if (i.owners && i.owners.length > 0) line += `\n    Sócios: ${i.owners.map(o => `${o.name} (${o.role || 'N/I'}, ${o.participation || '?'}%)`).join('; ')}`;
+      if (i.lawsuits && i.lawsuits.length > 0) line += `\n    Processos: ${i.lawsuits.slice(0, 5).map(l => `${l.number} — ${l.type} — ${l.status} — Valor: ${l.value || 'N/I'}`).join('; ')}${i.lawsuits.length > 5 ? ` ... e mais ${i.lawsuits.length - 5}` : ''}`;
+      return line;
+    }).join('\n');
+    return `[${section}]\n${lines}`;
+  }).join('\n\n');
 
-  return `Você é um analista de compliance sênior que precisa explicar os resultados de uma consulta Big Data Corp para um DIRETOR NÃO-TÉCNICO que precisa tomar uma decisão sobre este caso.
+  return `Você é o analista de compliance MAIS DETALHISTA e MAIS COMPLETO do mercado financeiro brasileiro. Seu trabalho é transformar dados técnicos da Big Data Corp em um relatório EXTREMAMENTE DETALHADO, EXTREMAMENTE PROFUNDO, EXTREMAMENTE BEM EXPLICADO que qualquer pessoa — do estagiário ao diretor — consiga entender perfeitamente.
 
-DADOS DA ANÁLISE BDC:
-- Tipo: ${analysis.type} (${isPF ? 'Pessoa Física' : 'Pessoa Jurídica'})
-- Score Final: ${analysis.scoring?.finalScore}/849
-- Subfaixa: ${analysis.scoring?.subfaixa} — ${analysis.scoring?.subfaixaNome}
-- Composição: Base ${analysis.scoring?.baseScore} + Variáveis ${analysis.scoring?.variablesScore} + Enriquecimento ${analysis.scoring?.enrichmentScore}
-- Datasets consultados: ${analysis.datasetsQueried}
+CONTEXTO: A Big Data Corp (BDC) é uma empresa brasileira que agrega dados de dezenas de fontes públicas e privadas para criar um perfil completo de empresas e pessoas. Consultamos até 34 datasets (bases de dados) diferentes para montar este perfil. Cada dataset traz um tipo específico de informação.
 
-${blocksText ? `BLOQUEIOS ATIVOS:\n${blocksText}\n` : 'BLOQUEIOS: Nenhum'}
+═══════════════════════════════════════════════════
+DADOS COMPLETOS DA ANÁLISE
+═══════════════════════════════════════════════════
 
-ITENS ANALISADOS:
-${itemsText}
+Tipo de consulta: ${analysis.type} (${isPF ? 'Pessoa Física — CPF' : 'Pessoa Jurídica — CNPJ'})
+Score de Risco Final: ${analysis.scoring?.finalScore} de 849 pontos possíveis
+Subfaixa de Decisão: ${analysis.scoring?.subfaixa} — ${analysis.scoring?.subfaixaNome}
+Composição do Score:
+  - Camada 1 (Score Base do Segmento): ${analysis.scoring?.baseScore} pontos — este é o risco inerente ao tipo de negócio
+  - Camada 2 (Variáveis Encontradas): ${analysis.scoring?.variablesScore > 0 ? '+' : ''}${analysis.scoring?.variablesScore} pontos — pontos somados ou subtraídos com base nos dados encontrados
+  - Camada 3 (Enriquecimento Externo): ${analysis.scoring?.enrichmentScore > 0 ? '+' : ''}${analysis.scoring?.enrichmentScore} pontos — pontos de reputação, mídia e mercado
+Datasets Consultados: ${analysis.datasetsQueried} bases de dados
+Grupo de Datasets: ${analysis.datasetGroup || 'N/D'}
+Modelo do Template: ${analysis.templateModel || 'N/D'}
 
-INSTRUÇÕES:
-Escreva um relatório em português brasileiro com estas SEÇÕES OBRIGATÓRIAS:
+${blocksText ? `═══ BLOQUEIOS ATIVOS (IMPEDEM APROVAÇÃO) ═══\n${blocksText}\n` : '═══ BLOQUEIOS: Nenhum bloqueio ativo ═══'}
+
+═══ TODOS OS DADOS ENCONTRADOS POR SEÇÃO ═══
+${detailedItemsText}
+
+═══════════════════════════════════════════════════
+INSTRUÇÕES — LEIA COM ATENÇÃO
+═══════════════════════════════════════════════════
+
+Escreva um relatório EXTREMAMENTE DETALHADO em português brasileiro. NÃO RESUMA. NÃO ABREVIE. Cada seção deve ser PROFUNDA e COMPLETA. O time de compliance precisa entender TUDO sem precisar olhar os dados brutos.
+
+SEÇÕES OBRIGATÓRIAS (cada uma deve ter VÁRIOS parágrafos detalhados):
 
 ## 📊 Resumo Executivo
-Um parágrafo de 3-4 linhas resumindo a situação geral: quem é esta ${isPF ? 'pessoa' : 'empresa'}, seu nível de risco e a recomendação principal.
 
-## 🏢 ${isPF ? 'Perfil da Pessoa' : 'Perfil da Empresa'}
-Descreva de forma narrativa os dados cadastrais. Nome, situação, idade, porte, setor — como se estivesse contando a história desta ${isPF ? 'pessoa' : 'empresa'}.
+Escreva um resumo de pelo menos 8-10 linhas que cubra:
+- Quem é esta ${isPF ? 'pessoa' : 'empresa'} (nome, tipo, setor, idade, porte)
+- Qual o nível de risco geral e o que isso significa na prática
+- Quantos pontos de atenção graves foram encontrados
+- Se há bloqueios que impedem aprovação
+- Qual a recomendação principal (aprovar, aprovar com condições, revisar manualmente, recusar)
+- Qual o grau de confiança nesta análise (baseado na quantidade de dados disponíveis)
+- Quais são os 2-3 fatores de risco MAIS IMPORTANTES que o decisor precisa saber IMEDIATAMENTE
 
-## 👥 ${isPF ? 'Situação Legal' : 'Sócios e Governança'}
-${isPF ? 'Explique a situação legal, processos e negativações.' : 'Explique o quadro societário, se há PEPs, sancionados, processos dos sócios.'}
+## 🏢 ${isPF ? 'Perfil Completo da Pessoa' : 'Perfil Completo da Empresa'}
 
-## ⚠️ Pontos de Atenção
-Liste CADA item com risco ALTO ou CRITICO, explicando:
-1. **O que foi encontrado** (dado objetivo)
-2. **Por que é relevante** (impacto regulatório ou operacional)  
-3. **O que recomenda** (ação sugerida)
+Escreva uma narrativa DETALHADA (mínimo 10-15 linhas) como se estivesse contando a história desta ${isPF ? 'pessoa' : 'empresa'}:
+${isPF ? `
+- Nome completo, CPF (situação junto à Receita Federal), data de nascimento, idade atual
+- Endereço principal, cidade, estado, se há mais endereços cadastrados
+- Telefones e e-mails vinculados
+- Nome da mãe (se disponível — usado para validação de identidade)
+- Gênero, nacionalidade
+- Se há alguma irregularidade no CPF e o que isso implica
+` : `
+- Razão social completa, nome fantasia, CNPJ com situação cadastral junto à Receita Federal
+- Data de fundação e quantos anos tem a empresa — explicar se é nova (menos de 2 anos = risco maior) ou estabelecida
+- Capital social declarado — explicar se é compatível com o volume de transações que pretende processar
+- Porte (MEI, ME, EPP, Demais) e o que isso significa na prática
+- Regime tributário (Simples Nacional, Lucro Presumido, Lucro Real) e o que implica
+- Natureza jurídica completa e o que significa (LTDA, S.A., EIRELI, etc.)
+- CNAE principal e secundários — explicar em linguagem simples qual é a atividade da empresa e se algum CNAE é considerado de risco (jogos, apostas, cripto, armas, etc.)
+- Endereço principal completo
+- Número de empregados (se disponível) — empresa sem funcionários pode ser sinal de empresa de fachada
+- E-mail e telefone principal
+- Se há alguma situação especial (em recuperação judicial, em liquidação, etc.)
+`}
 
-## ✅ Pontos Positivos
-Liste os aspectos favoráveis encontrados.
+## 👥 ${isPF ? 'Situação Legal e Compliance' : 'Quadro Societário — Análise Detalhada de Cada Sócio'}
 
-## 📋 Recomendação Final
-Parecer conclusivo em 2-3 linhas com a decisão sugerida e eventuais condições.
+${isPF ? `Escreva uma análise DETALHADA (mínimo 10 linhas) sobre:
+- Se a pessoa é PEP (Pessoa Politicamente Exposta) — explicar o que é PEP e por que é relevante para compliance
+- Se está em alguma lista de sanções nacional ou internacional (OFAC, EU, UN, COAF, CEIS, CNEP)
+- Todos os processos judiciais encontrados — para CADA processo: tipo (cível, criminal, trabalhista, tributário), tribunal, status, valor da causa, e o que significa
+- Se tem negativação (nome sujo) — Serasa, SPC, protestos — valores e credores
+- Se tem dívida ativa com o governo — valores e órgãos
+- Se já fez doações eleitorais — valores e para quem
+` : `Escreva uma análise DETALHADA (mínimo 15 linhas) sobre CADA sócio encontrado:
+- Liste CADA sócio por nome, CPF/CNPJ, qualificação (administrador, sócio, etc.), percentual de participação
+- Para cada sócio, informe: se é PEP (Pessoa Politicamente Exposta — explicar que PEP é qualquer pessoa que exerce ou exerceu cargo público relevante, como vereador, juiz, diretor de estatal, e seus familiares), se está em lista de sanções
+- Se algum sócio tem processos judiciais — detalhar cada processo: número, tipo, tribunal, status, valor, e explicar o que significa
+- Se algum sócio fez doações eleitorais — valores e para quais partidos/candidatos
+- Se há vínculos com envolvimento político
+- Se o quadro societário é compatível com o tipo de empresa (exemplo: empresa de tecnologia com 0 sócios pode ser empresa de fachada)
+- Se há sócios em comum com outras empresas (grupo econômico)
+`}
 
-REGRAS:
-- Use linguagem CLARA e DIRETA, como se explicasse para alguém que não entende de compliance
-- NÃO use jargão técnico sem explicar o que significa
-- NÃO use siglas sem explicar (PEP = Pessoa Politicamente Exposta, etc.)
-- Cada achado de risco DEVE ter uma explicação de POR QUE é relevante
-- Seja COMPLETO mas LEGÍVEL — cada parágrafo deve ter no máximo 3-4 linhas
-- Use negrito para destacar informações importantes`;
+## 🌐 Presença Digital e Atividade Real
+${isPF ? 'Se houver dados de presença online, descreva.' : `
+Escreva uma análise DETALHADA (mínimo 8-10 linhas) sobre:
+- Domínios registrados da empresa — idade do domínio (domínio recente = risco maior), se tem SSL (cadeado de segurança), plataforma tecnológica
+- Passagens pela web — quantas vezes a empresa apareceu em buscas/sites nos últimos 12 meses. Zero passagens pode indicar empresa fantasma que não opera de verdade
+- Nível de atividade — score calculado pela BDC que indica se a empresa tem sinais reais de operação
+- Score de "Shell Company" (empresa de fachada) — se está acima de 30% é preocupante, acima de 50% é grave, acima de 80% é bloqueio
+- Presença em marketplaces (Mercado Livre, Shopee, Amazon) — se relevante para o tipo de negócio
+- Anúncios online encontrados
+`}
+
+## ⚠️ Pontos de Atenção — Análise Detalhada de Cada Risco
+
+Para CADA item com risco ALTO ou CRÍTICO, escreva um bloco detalhado com:
+
+**1. O que foi encontrado** — Descreva o dado objetivo encontrado, com números e detalhes. Não diga apenas "tem processos", diga "foram encontrados 15 processos judiciais, sendo 3 criminais e 12 cíveis, com valor total de R$ 2.3 milhões".
+
+**2. Por que isso é grave** — Explique em linguagem simples por que este achado é preocupante. Exemplo: "Processos criminais indicam que os sócios podem estar envolvidos em atividades ilegais. Se a empresa for aprovada e houver lavagem de dinheiro, a Pagsmile pode ser responsabilizada como facilitadora."
+
+**3. Qual o impacto regulatório** — Explique quais normas/regulamentos este achado pode violar (Circular BCB 3.978, Resolução 4.893, normas de PLD/FT, etc.) — mas EXPLICANDO o que cada norma exige em linguagem simples.
+
+**4. O que recomendamos fazer** — Ação específica: solicitar documentos, pedir esclarecimentos, monitorar, bloquear, etc. Seja ESPECÍFICO (exemplo: "Solicitar ao merchant uma certidão negativa criminal do sócio João Silva emitida há no máximo 30 dias").
+
+## ✅ Pontos Positivos — O que Favorece este Caso
+
+Liste TODOS os aspectos positivos encontrados, explicando por que cada um é relevante. Exemplos:
+- Empresa ativa há mais de 5 anos sem alterações suspeitas = estabilidade
+- Sem negativação ou dívida ativa = saúde financeira
+- Boa reputação no Reclame Aqui = empresa que se preocupa com clientes
+- Presença em marketplaces reconhecidos = operação legítima verificável
+- Capital social compatível com operação = não é subcapitalizada
+NÃO resuma em uma linha. Explique cada ponto positivo e por que ele importa.
+
+## 📋 Recomendação Final Detalhada
+
+Escreva um parecer conclusivo de pelo menos 8-10 linhas que inclua:
+- Decisão recomendada: Aprovar / Aprovar com Condições / Revisão Manual / Recusar
+- Justificativa detalhada da decisão
+- Se "Aprovado com Condições": liste CADA condição específica (Rolling Reserve de X%, monitoramento mensal, KYC reforçado, etc.)
+- Se "Revisão Manual": liste EXATAMENTE o que o analista deve investigar e quais documentos solicitar
+- Se "Recusar": explique EXATAMENTE quais achados são bloqueantes e por quê
+- Nível de confiança na análise (alto, médio, baixo) e por quê
+- Sugestão de monitoramento pós-aprovação (se aplicável)
+
+## 🗂️ Datasets Consultados — O que Cada Fonte de Dados Revelou
+
+Para CADA dataset consultado que retornou dados, escreva um parágrafo explicando:
+1. **Nome do dataset** e o que ele faz (em linguagem simples)
+2. **O que encontramos** neste dataset específico
+3. **O que isso significa** para a análise de risco
+
+Datasets que devem ser explicados (se consultados):
+- **basic_data**: Dados cadastrais básicos da Receita Federal — CNPJ, razão social, situação, fundação, capital, CNAE
+- **registration_data**: Dados de registro detalhados — QSA completo, inscrição estadual, situação especial
+- **kyc**: Know Your Customer — verifica se a empresa está em listas de sanções (OFAC, EU, UN), se é PEP, doações eleitorais
+- **owners_kyc**: KYC de cada sócio individualmente — PEP, sanções, processos por sócio
+- **relationships**: Vínculos societários — quem são os sócios, qualificação, percentual
+- **owners_lawsuits**: Processos judiciais de cada sócio
+- **owners_influence**: Nível de influência e conexões dos sócios
+- **owners_electoral_donors**: Doações eleitorais feitas pelos sócios
+- **political_involvement**: Envolvimento político do quadro societário
+- **government_debtors**: Dívida ativa com governo federal, estadual, municipal
+- **processes**: Processos judiciais da empresa (não dos sócios)
+- **domains**: Domínios de internet registrados, idade, SSL, plataforma
+- **passages**: Passagens pela web — proxy de atividade real da empresa
+- **activity_indicators**: Indicadores de atividade — nível de operação real, score de empresa de fachada
+- **media_profile_and_exposure**: Notícias na mídia com análise de sentimento — positivo, neutro, negativo
+- **reputations_and_reviews**: Avaliações em plataformas como Reclame Aqui
+- **collections**: Presença em cobrança — Serasa, SPC, protestos
+- **financial_market**: Registros no Banco Central, CVM, SUSEP
+- **marketplace_data**: Presença em marketplaces (Mercado Livre, Shopee, etc.)
+- **merchant_category_data**: MCC (Merchant Category Code) real da empresa
+- **economic_group**: Grupo econômico — empresas relacionadas
+
+REGRAS ABSOLUTAS:
+- NUNCA resuma algo em 1-2 linhas quando pode explicar em 5-8 linhas
+- NUNCA use sigla sem explicar o que significa entre parênteses
+- NUNCA diga apenas "risco alto" sem explicar POR QUE é alto e QUAL O IMPACTO PRÁTICO
+- SEMPRE use exemplos concretos com os dados reais encontrados (números, nomes, datas)
+- SEMPRE explique como se a pessoa lendo NUNCA tivesse trabalhado com compliance
+- Use negrito para destacar informações importantes
+- O relatório deve ter pelo menos 2000 palavras para ser considerado adequadamente detalhado`;
 }
 
 export default function BDCNarrativeReport({ analysis, complianceScore }) {
@@ -102,11 +243,9 @@ export default function BDCNarrativeReport({ analysis, complianceScore }) {
   const [expanded, setExpanded] = useState(true);
   const [error, setError] = useState(null);
 
-  // Auto-generate on mount if analysis available
   useEffect(() => {
     if (analysis && !narrative && !generating) {
-      // Check if we have a cached narrative in complianceScore
-      if (complianceScore?.analise_completa_ia && complianceScore.analise_completa_ia.length > 200) {
+      if (complianceScore?.analise_completa_ia && complianceScore.analise_completa_ia.length > 500) {
         setNarrative(complianceScore.analise_completa_ia);
         return;
       }
@@ -122,7 +261,7 @@ export default function BDCNarrativeReport({ analysis, complianceScore }) {
       const prompt = buildNarrativePrompt(analysis);
       const result = await base44.integrations.Core.InvokeLLM({
         prompt,
-        model: 'gemini_3_flash',
+        model: 'claude_sonnet_4_6',
       });
       setNarrative(result);
     } catch (e) {
@@ -136,18 +275,17 @@ export default function BDCNarrativeReport({ analysis, complianceScore }) {
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
-      {/* Header */}
       <button
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center gap-3 p-4 hover:bg-slate-50/50 transition-colors text-left"
       >
-        <div className="p-2 rounded-lg bg-gradient-to-br from-indigo-50 to-purple-50">
+        <div className="p-2.5 rounded-xl bg-gradient-to-br from-indigo-50 to-purple-50">
           <Sparkles className="w-5 h-5 text-indigo-600" />
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="text-sm font-bold text-[#002443]">📝 Relatório Narrativo — Análise BDC em Linguagem Clara</h4>
+          <h4 className="text-sm font-bold text-[#002443]">📝 Relatório Completo — Análise BDC em Linguagem Clara</h4>
           <p className="text-[10px] text-[#002443]/40">
-            Explicação completa dos dados da Big Data Corp em formato legível
+            Análise profunda e detalhada de todos os datasets da Big Data Corp — cada dado explicado em linguagem natural
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -168,11 +306,12 @@ export default function BDCNarrativeReport({ analysis, complianceScore }) {
       </button>
 
       {expanded && (
-        <div className="border-t border-slate-100 p-5">
+        <div className="border-t border-slate-100 p-6">
           {generating && (
-            <div className="flex items-center justify-center gap-3 py-8">
-              <Loader2 className="w-5 h-5 animate-spin text-indigo-500" />
-              <p className="text-sm text-[#002443]/60">Gerando relatório narrativo com IA...</p>
+            <div className="flex flex-col items-center justify-center gap-3 py-12">
+              <Loader2 className="w-6 h-6 animate-spin text-indigo-500" />
+              <p className="text-sm font-medium text-[#002443]/60">Gerando relatório detalhado com IA...</p>
+              <p className="text-xs text-[#002443]/40">Analisando todos os datasets e gerando explicações completas. Pode levar até 30 segundos.</p>
             </div>
           )}
 
@@ -189,17 +328,49 @@ export default function BDCNarrativeReport({ analysis, complianceScore }) {
             <div className="prose prose-sm max-w-none text-[#002443]">
               <ReactMarkdown
                 components={{
-                  h2: ({ children }) => <h2 className="text-base font-bold text-[#002443] mt-5 mb-2 pb-1 border-b border-slate-100">{children}</h2>,
-                  h3: ({ children }) => <h3 className="text-sm font-bold text-[#002443] mt-4 mb-1.5">{children}</h3>,
-                  p: ({ children }) => <p className="text-[13px] text-[#002443]/80 leading-relaxed my-1.5">{children}</p>,
-                  strong: ({ children }) => <strong className="text-[#002443] font-semibold">{children}</strong>,
-                  li: ({ children }) => <li className="text-[13px] text-[#002443]/80 leading-relaxed my-1">{children}</li>,
-                  ul: ({ children }) => <ul className="list-disc pl-5 my-2">{children}</ul>,
-                  ol: ({ children }) => <ol className="list-decimal pl-5 my-2">{children}</ol>,
+                  h2: ({ children }) => (
+                    <h2 className="text-base font-bold text-[#002443] mt-7 mb-3 pb-2 border-b-2 border-indigo-100">
+                      {children}
+                    </h2>
+                  ),
+                  h3: ({ children }) => (
+                    <h3 className="text-sm font-bold text-[#002443] mt-5 mb-2 pl-3 border-l-3 border-indigo-300">
+                      {children}
+                    </h3>
+                  ),
+                  p: ({ children }) => (
+                    <p className="text-[13px] text-[#002443]/85 leading-[1.8] my-2">{children}</p>
+                  ),
+                  strong: ({ children }) => (
+                    <strong className="text-[#002443] font-bold">{children}</strong>
+                  ),
+                  li: ({ children }) => (
+                    <li className="text-[13px] text-[#002443]/85 leading-[1.8] my-1.5">{children}</li>
+                  ),
+                  ul: ({ children }) => <ul className="list-disc pl-5 my-3 space-y-1">{children}</ul>,
+                  ol: ({ children }) => <ol className="list-decimal pl-5 my-3 space-y-1">{children}</ol>,
                   blockquote: ({ children }) => (
-                    <blockquote className="border-l-3 border-indigo-300 pl-3 my-3 bg-indigo-50/30 py-2 pr-3 rounded-r-lg text-[13px]">
+                    <blockquote className="border-l-4 border-indigo-300 pl-4 my-4 bg-indigo-50/40 py-3 pr-4 rounded-r-xl text-[13px] italic">
                       {children}
                     </blockquote>
+                  ),
+                  hr: () => <hr className="my-6 border-slate-200" />,
+                  table: ({ children }) => (
+                    <div className="overflow-x-auto my-4">
+                      <table className="w-full text-xs border-collapse border border-slate-200 rounded-lg overflow-hidden">
+                        {children}
+                      </table>
+                    </div>
+                  ),
+                  th: ({ children }) => (
+                    <th className="bg-slate-50 px-3 py-2 text-left font-bold text-[#002443] border border-slate-200 text-xs">
+                      {children}
+                    </th>
+                  ),
+                  td: ({ children }) => (
+                    <td className="px-3 py-2 text-[#002443]/80 border border-slate-200 text-xs">
+                      {children}
+                    </td>
                   ),
                 }}
               >
@@ -209,11 +380,15 @@ export default function BDCNarrativeReport({ analysis, complianceScore }) {
           )}
 
           {!narrative && !generating && !error && (
-            <div className="text-center py-6">
-              <FileText className="w-8 h-8 text-[#002443]/20 mx-auto mb-3" />
-              <p className="text-sm text-[#002443]/50 mb-3">Clique para gerar um relatório explicativo dos dados BDC</p>
-              <Button onClick={generateNarrative} className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs h-9 px-4 rounded-lg">
-                <Sparkles className="w-3.5 h-3.5 mr-1.5" /> Gerar Relatório Narrativo
+            <div className="text-center py-8">
+              <FileText className="w-10 h-10 text-[#002443]/15 mx-auto mb-4" />
+              <p className="text-sm font-medium text-[#002443]/50 mb-2">Relatório detalhado ainda não gerado</p>
+              <p className="text-xs text-[#002443]/35 mb-4 max-w-md mx-auto">
+                Clique abaixo para gerar uma análise completa e profunda de todos os dados da Big Data Corp, 
+                com explicação de cada dataset, cada achado de risco, e recomendações detalhadas.
+              </p>
+              <Button onClick={generateNarrative} className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs h-10 px-5 rounded-xl">
+                <Sparkles className="w-4 h-4 mr-2" /> Gerar Relatório Completo Detalhado
               </Button>
             </div>
           )}
