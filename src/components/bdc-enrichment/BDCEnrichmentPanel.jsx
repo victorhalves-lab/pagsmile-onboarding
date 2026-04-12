@@ -10,8 +10,13 @@ import BDCScoreHeader from './BDCScoreHeader';
 import BDCAnalysisSection from './BDCAnalysisSection';
 import BDCContactsSection from './BDCContactsSection';
 import BDCNarrativeReport from './BDCNarrativeReport';
+import BDCSmartAlerts from './BDCSmartAlerts';
+import BDCRiskHeatmap from './BDCRiskHeatmap';
+import BDCDeclaredVsConfirmed from './BDCDeclaredVsConfirmed';
+import BDCDataConfidence from './BDCDataConfidence';
+import BDCGlossary from './BDCGlossary';
 
-export default function BDCEnrichmentPanel({ onboardingCaseId, merchant, complianceScore, onComplete, rawBdcResult }) {
+export default function BDCEnrichmentPanel({ onboardingCaseId, merchant, complianceScore, onComplete, rawBdcResult, questionnaireData }) {
   const [isRunning, setIsRunning] = useState(false);
   const [analysis, setAnalysis] = useState(null);
   const [error, setError] = useState(null);
@@ -90,7 +95,19 @@ export default function BDCEnrichmentPanel({ onboardingCaseId, merchant, complia
       {/* Score Header */}
       <BDCScoreHeader analysis={displayAnalysis} />
 
-      {/* Narrative Report — clear human-readable analysis */}
+      {/* Smart Alerts — top critical findings consolidated */}
+      <BDCSmartAlerts analysis={displayAnalysis} merchant={merchant} />
+
+      {/* Data Confidence — which datasets returned data */}
+      <BDCDataConfidence analysis={displayAnalysis} />
+
+      {/* Risk Heatmap — visual radar */}
+      <BDCRiskHeatmap analysis={displayAnalysis} />
+
+      {/* Declared vs Confirmed — cross-validation */}
+      <BDCDeclaredVsConfirmed analysis={displayAnalysis} merchant={merchant} questionnaireData={questionnaireData} />
+
+      {/* Narrative Report — comprehensive AI analysis */}
       <BDCNarrativeReport analysis={displayAnalysis} complianceScore={complianceScore} />
 
       {/* Re-run button */}
@@ -195,6 +212,9 @@ export default function BDCEnrichmentPanel({ onboardingCaseId, merchant, complia
       {latestRawResult && (
         <BDCContactsSection rawResult={latestRawResult} />
       )}
+
+      {/* Glossary — interactive compliance terms */}
+      <BDCGlossary />
     </div>
   );
 }
