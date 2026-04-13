@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 /**
  * SENTINEL - Agente de Análise de Compliance
@@ -379,6 +379,29 @@ ${hasExternalValidations ? `**FASE 2 - Validações Externas (Peso 35%):**
 **Severidades de Findings:**
 INFO, LOW, MEDIUM, HIGH, CRITICAL, BLOQUEANTE
 
+**ANÁLISE POR DIMENSÃO (obrigatório):**
+Para cada dimensão abaixo, produza uma análise completa com score de confiança:
+
+1. **IDENTIDADE** — Dados cadastrais, situação CNPJ/CPF, idade da empresa, porte, capital social, CNAE
+2. **SÓCIOS/QSA** — Composição societária, PEP, sanções, processos dos sócios, participações cruzadas
+3. **COMPLIANCE/REGULATÓRIO** — Sanções, dívida ativa, processos judiciais, negativação, envolvimento político
+4. **PEGADA DIGITAL** — Domínios, SSL, passages web, atividade, marketplace, shell company score
+5. **REPUTAÇÃO** — Adverse media, Reclame Aqui, prêmios, certificações
+6. **FINANCEIRO** — Grupo econômico, MCC real, licenças, registros BCB/CVM
+7. **BIOMETRIA/IDENTIDADE VISUAL** — CAF liveness, face match, documentoscopy, deepfake, OCR cross-validation
+
+**CROSS-VALIDATION DECLARADO vs CONFIRMADO:**
+Compare CADA campo declarado no questionário com o correspondente confirmado pelo BDC/CAF:
+- Razão Social declarada vs BDC
+- Endereço declarado vs BDC
+- CNAE declarado vs BDC
+- Sócios declarados vs QSA real
+- Faturamento/TPV declarado vs porte BDC (é coerente um MEI declarar R$5M/mês?)
+- E-mail declarado vs domínio do site
+- Telefone DDD vs UF do endereço
+
+Documente CADA divergência como um finding com severidade.
+
 Seja rigoroso mas justo. Documente cada finding com evidências claras.`;
 
     const responseSchema = {
@@ -486,6 +509,94 @@ Seja rigoroso mas justo. Documente cada finding com evidências claras.`;
         condicoes_aprovacao: {
           type: "string",
           description: "Se aprovado com condições, quais são as condições"
+        },
+        
+        // Análise dimensional estruturada
+        analise_dimensional: {
+          type: "object",
+          description: "Análise por dimensão com veredicto e confiança",
+          properties: {
+            identidade: {
+              type: "object",
+              properties: {
+                veredicto: { type: "string", enum: ["APROVADO", "ATENCAO", "REPROVADO"] },
+                confianca: { type: "number", description: "0-100" },
+                resumo: { type: "string", description: "2-3 linhas sobre esta dimensão" },
+                findings: { type: "array", items: { type: "string" } }
+              }
+            },
+            socios: {
+              type: "object",
+              properties: {
+                veredicto: { type: "string", enum: ["APROVADO", "ATENCAO", "REPROVADO"] },
+                confianca: { type: "number" },
+                resumo: { type: "string" },
+                findings: { type: "array", items: { type: "string" } }
+              }
+            },
+            compliance: {
+              type: "object",
+              properties: {
+                veredicto: { type: "string", enum: ["APROVADO", "ATENCAO", "REPROVADO"] },
+                confianca: { type: "number" },
+                resumo: { type: "string" },
+                findings: { type: "array", items: { type: "string" } }
+              }
+            },
+            digital: {
+              type: "object",
+              properties: {
+                veredicto: { type: "string", enum: ["APROVADO", "ATENCAO", "REPROVADO"] },
+                confianca: { type: "number" },
+                resumo: { type: "string" },
+                findings: { type: "array", items: { type: "string" } }
+              }
+            },
+            reputacao: {
+              type: "object",
+              properties: {
+                veredicto: { type: "string", enum: ["APROVADO", "ATENCAO", "REPROVADO"] },
+                confianca: { type: "number" },
+                resumo: { type: "string" },
+                findings: { type: "array", items: { type: "string" } }
+              }
+            },
+            financeiro: {
+              type: "object",
+              properties: {
+                veredicto: { type: "string", enum: ["APROVADO", "ATENCAO", "REPROVADO"] },
+                confianca: { type: "number" },
+                resumo: { type: "string" },
+                findings: { type: "array", items: { type: "string" } }
+              }
+            },
+            biometria: {
+              type: "object",
+              properties: {
+                veredicto: { type: "string", enum: ["APROVADO", "ATENCAO", "REPROVADO", "NAO_DISPONIVEL"] },
+                confianca: { type: "number" },
+                resumo: { type: "string" },
+                findings: { type: "array", items: { type: "string" } }
+              }
+            }
+          }
+        },
+        
+        // Cross-validation declarado vs confirmado
+        cross_validation: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              campo: { type: "string", description: "Nome do campo (ex: Razão Social, Endereço, CNAE)" },
+              valor_declarado: { type: "string" },
+              valor_confirmado: { type: "string" },
+              consistente: { type: "boolean" },
+              severidade: { type: "string", enum: ["INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"] },
+              observacao: { type: "string" }
+            }
+          },
+          description: "Lista de campos comparados entre declarado (questionário) e confirmado (BDC/CAF)"
         }
       },
       required: [
@@ -509,7 +620,8 @@ Seja rigoroso mas justo. Documente cada finding com evidências claras.`;
     
     const llmResponse = await base44.asServiceRole.integrations.Core.InvokeLLM({
       prompt: analysisPrompt,
-      response_json_schema: responseSchema
+      response_json_schema: responseSchema,
+      model: 'claude_sonnet_4_6'
     });
     
     console.log(`[SENTINEL] Resposta da LLM recebida`);
@@ -555,6 +667,8 @@ Seja rigoroso mas justo. Documente cada finding com evidências claras.`;
       findings_por_severidade: llmResponse.findings_por_severidade || {},
       overrides_aplicados: llmResponse.overrides_aplicados || [],
       condicoes_aprovacao: llmResponse.condicoes_aprovacao || "",
+      analise_dimensional: llmResponse.analise_dimensional || null,
+      cross_validation: llmResponse.cross_validation || [],
       
       // Controle de fases
       fase_1_completa: true,
@@ -599,6 +713,8 @@ Seja rigoroso mas justo. Documente cada finding com evidências claras.`;
           findings_por_severidade: scoreData.findings_por_severidade,
           overrides_aplicados: scoreData.overrides_aplicados,
           condicoes_aprovacao: scoreData.condicoes_aprovacao,
+          analise_dimensional: scoreData.analise_dimensional,
+          cross_validation: scoreData.cross_validation,
           fase_1_completa: scoreData.fase_1_completa,
           data_analise_fase_1: scoreData.data_analise_fase_1,
           fase_2_completa: scoreData.fase_2_completa || existingScore.fase_2_completa,

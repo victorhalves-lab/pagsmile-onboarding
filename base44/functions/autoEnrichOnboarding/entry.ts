@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 /**
  * autoEnrichOnboarding — Orquestra AUTOMATICAMENTE todo o pipeline de risco
@@ -60,10 +60,12 @@ Deno.serve(async (req) => {
     });
 
     // ═══ STEP 0: CAF Post-Capture Analysis (OCR + Documentoscopy + Deepfake + Biometria) ═══
+    // FALLBACK: Run even without liveness — documents alone provide OCR + documentoscopy value
     let cafPostCaptureSuccess = false;
-    if (onboardingCase.cafCompleted) {
+    const hasDocuments = onboardingCase.docCompleted || onboardingCase.cafCompleted;
+    if (hasDocuments) {
       try {
-        console.log(`[AutoEnrich] Step 0: Running CAF post-capture analysis...`);
+        console.log(`[AutoEnrich] Step 0: Running CAF post-capture analysis (cafCompleted=${onboardingCase.cafCompleted}, docCompleted=${onboardingCase.docCompleted})...`);
         const cafRes = await base44.asServiceRole.functions.invoke('cafPostCaptureAnalysis', {
           onboardingCaseId: caseId
         });
@@ -73,7 +75,7 @@ Deno.serve(async (req) => {
         console.warn(`[AutoEnrich] CAF post-capture failed (non-blocking): ${cafErr.message}`);
       }
     } else {
-      console.log(`[AutoEnrich] Step 0: Skipped (cafCompleted=${onboardingCase.cafCompleted})`);
+      console.log(`[AutoEnrich] Step 0: Skipped (no documents or CAF data available)`);
     }
 
     // ═══ STEP 1: BDC Enrichment ═══
@@ -135,8 +137,140 @@ Deno.serve(async (req) => {
       console.warn(`[AutoEnrich] SENTINEL analysis failed (non-blocking): ${sentinelErr.message}`);
     }
 
+    // ═══ STEP 4: AUTO-DECISION BY SUBFAIXA ═══
+    let autoDecisionApplied = false;
+    let finalStatus = null;
+    let finalDecision = null;
+    try {
+      // Reload case with fresh BDC results
+      const [freshCase] = await base44.asServiceRole.entities.OnboardingCase.filter({ id: caseId });
+      const subfaixa = freshCase?.subfaixa;
+      const score = freshCase?.riskScoreV4;
+      
+      if (subfaixa && score != null) {
+        // Rolling reserve by subfaixa
+        const rollingReserveMap = { '1A': 0, '1B': 0, '2A': 5, '2B': 10, '3A': 15, '3B': 20, '4': 20, '5': 20 };
+        const monitoringMap = {
+          '1A': 'PADRAO', '1B': 'PADRAO', '2A': 'REFORÇADO_LEVE', '2B': 'REFORÇADO',
+          '3A': 'INTENSO', '3B': 'INTENSO_PLUS', '4': 'MAXIMO', '5': 'MAXIMO'
+        };
+        const conditionsMap = {
+          '2A': ['KYC completo dos merchants em até 60 dias', 'PLD trimestral'],
+          '2B': ['KYC completo em 45 dias', 'PLD mensal', 'Monitoramento de chargeback semanal'],
+          '3A': ['KYC completo em 30 dias', 'PLD quinzenal', 'Limite de TPV de R$500k/mês', 'Revisão a cada 90 dias'],
+          '3B': ['KYC completo em 15 dias', 'PLD semanal', 'Limite de TPV de R$200k/mês', 'Revisão a cada 60 dias', 'Antecipação bloqueada'],
+        };
+
+        // Auto-decision rules
+        if (subfaixa === '1A' || subfaixa === '1B') {
+          finalStatus = 'Aprovado';
+          finalDecision = 'Aprovado';
+          autoDecisionApplied = true;
+        } else if (subfaixa === '2A' || subfaixa === '2B') {
+          finalStatus = 'Aprovado';
+          finalDecision = 'Aprovado com Condições';
+          autoDecisionApplied = true;
+        } else if (subfaixa === '3A' || subfaixa === '3B') {
+          finalStatus = 'Manual';
+          finalDecision = 'Revisão Manual';
+          autoDecisionApplied = true;
+        } else if (subfaixa === '4') {
+          finalStatus = 'Manual';
+          finalDecision = 'Revisão Manual';
+          autoDecisionApplied = true;
+        } else if (subfaixa === '5') {
+          finalStatus = 'Recusado';
+          finalDecision = 'Recusado';
+          autoDecisionApplied = true;
+        }
+
+        if (autoDecisionApplied) {
+          const updateData = {
+            status: finalStatus,
+            iaDecision: finalDecision,
+            rollingReservePercent: rollingReserveMap[subfaixa] || 0,
+            monitoramentoNivel: monitoringMap[subfaixa] || 'PADRAO',
+            condicoesAutomaticas: conditionsMap[subfaixa] || [],
+            finalDecisionDate: new Date().toISOString(),
+          };
+          await base44.asServiceRole.entities.OnboardingCase.update(caseId, updateData);
+          
+          // Also update ComplianceScore with monitoring + decision
+          const scores = await base44.asServiceRole.entities.ComplianceScore.filter({ onboarding_case_id: caseId });
+          if (scores[0]) {
+            await base44.asServiceRole.entities.ComplianceScore.update(scores[0].id, {
+              decisao_automatica: ['1A','1B','2A','2B','3A','3B'].includes(subfaixa),
+              rolling_reserve_percent: rollingReserveMap[subfaixa] || 0,
+              monitoramento_nivel: monitoringMap[subfaixa] || 'PADRAO',
+              condicoes_automaticas: conditionsMap[subfaixa] || [],
+              recomendacao_final: finalDecision,
+            });
+          }
+
+          // Update merchant status
+          if (freshCase.merchantId) {
+            await base44.asServiceRole.entities.Merchant.update(freshCase.merchantId, {
+              onboardingStatus: finalStatus,
+              riskScore: Math.round(score / 10),
+            });
+          }
+
+          console.log(`[AutoEnrich] Step 4: Auto-decision applied: ${finalDecision} (subfaixa=${subfaixa}, score=${score})`);
+        }
+      }
+    } catch (autoErr) {
+      console.warn(`[AutoEnrich] Auto-decision failed (non-blocking): ${autoErr.message}`);
+    }
+
+    // ═══ STEP 5: SLACK NOTIFICATION ═══
+    try {
+      const [notifyCase] = await base44.asServiceRole.entities.OnboardingCase.filter({ id: caseId });
+      const [notifyMerchant] = merchant ? [merchant] : await base44.asServiceRole.entities.Merchant.filter({ id: notifyCase?.merchantId });
+      const scores = await base44.asServiceRole.entities.ComplianceScore.filter({ onboarding_case_id: caseId });
+      const latestScore = scores[0];
+      
+      const statusEmoji = {
+        'Aprovado': '✅', 'Manual': '⚠️', 'Recusado': '🚫', 'Em Processamento': '⏳'
+      };
+      const subfaixaEmoji = {
+        '1A': '🟢', '1B': '🟢', '2A': '🔵', '2B': '🔵',
+        '3A': '🟡', '3B': '🟠', '4': '🔴', '5': '⛔'
+      };
+      
+      const emoji = statusEmoji[notifyCase?.status] || '📋';
+      const sfEmoji = subfaixaEmoji[notifyCase?.subfaixa] || '❓';
+      const topRedFlags = (latestScore?.red_flags || notifyCase?.redFlags || []).slice(0, 3);
+      
+      const slackMessage = [
+        `${emoji} *Compliance Pipeline Concluído*`,
+        ``,
+        `*Empresa:* ${notifyMerchant?.fullName || 'N/D'} (${notifyMerchant?.cpfCnpj || 'N/D'})`,
+        `*Score V4:* ${notifyCase?.riskScoreV4 ?? 'N/D'}/849 ${sfEmoji} Subfaixa ${notifyCase?.subfaixa || 'N/D'} (${notifyCase?.subfaixaNome || ''})`,
+        `*Decisão:* ${notifyCase?.status || 'N/D'}${autoDecisionApplied ? ' ⚡ Automática' : ''}`,
+        latestScore?.monitoramento_nivel ? `*Monitoramento:* ${latestScore.monitoramento_nivel.replace(/_/g, ' ')}` : '',
+        latestScore?.rolling_reserve_percent > 0 ? `*Rolling Reserve:* ${latestScore.rolling_reserve_percent}%` : '',
+        topRedFlags.length > 0 ? `\n🚩 *Top Red Flags:*\n${topRedFlags.map(f => `  • ${f}`).join('\n')}` : '',
+        ``,
+        `📊 <${`https://app.base44.com/CadastroDetalhe?id=${notifyMerchant?.id}`}|Ver Análise Completa>`,
+      ].filter(Boolean).join('\n');
+      
+      const { accessToken } = await base44.asServiceRole.connectors.getConnection('slackbot');
+      await fetch('https://slack.com/api/chat.postMessage', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          channel: '#compliance',
+          text: slackMessage,
+          unfurl_links: false,
+        }),
+      });
+      console.log(`[AutoEnrich] Step 5: Slack notification sent`);
+    } catch (slackErr) {
+      console.warn(`[AutoEnrich] Slack notification failed (non-blocking): ${slackErr.message}`);
+    }
+
     const duration = Date.now() - startTime;
-    console.log(`[AutoEnrich] Pipeline completed in ${duration}ms. CAF=${cafPostCaptureSuccess}, BDC=${bdcSuccess}, Screening=${screeningSuccess}, CPF=${cpfValidationSuccess}, SENTINEL=${sentinelSuccess}`);
+    console.log(`[AutoEnrich] Pipeline completed in ${duration}ms. CAF=${cafPostCaptureSuccess}, BDC=${bdcSuccess}, Screening=${screeningSuccess}, CPF=${cpfValidationSuccess}, SENTINEL=${sentinelSuccess}, AutoDecision=${autoDecisionApplied}`);
 
     return Response.json({
       success: true,
@@ -146,6 +280,9 @@ Deno.serve(async (req) => {
       screeningSuccess,
       cpfValidationSuccess,
       sentinelSuccess,
+      autoDecisionApplied,
+      finalStatus,
+      finalDecision,
       duration_ms: duration
     });
 

@@ -1,0 +1,300 @@
+{
+  "name": "ComplianceScore",
+  "type": "object",
+  "properties": {
+    "onboarding_case_id": {
+      "type": "string",
+      "description": "ID do OnboardingCase"
+    },
+    "versao_agente": {
+      "type": "string",
+      "description": "Vers\u00e3o do agente SENTINEL"
+    },
+    "framework_version": {
+      "type": "string",
+      "default": "v4.0",
+      "description": "Vers\u00e3o do framework de scoring (v4.0 = novo modelo 3 camadas)"
+    },
+    "segmento": {
+      "type": "string",
+      "enum": [
+        "gateway",
+        "marketplace",
+        "plataforma_vertical",
+        "dropshipping",
+        "infoprodutos",
+        "ecommerce",
+        "link_pagamento",
+        "foodtech",
+        "saas",
+        "educacao",
+        "mpe",
+        "pix_merchant",
+        "pix_intermediario"
+      ],
+      "description": "Segmento identificado do question\u00e1rio (Q1-Q12)"
+    },
+    "questionario_id": {
+      "type": "string",
+      "description": "ID do QuestionnaireTemplate usado"
+    },
+    "is_pix": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se o fluxo \u00e9 PIX (adiciona +30 ao score base)"
+    },
+    "score_base_segmento": {
+      "type": "number",
+      "description": "Camada 1: Score base do segmento (ex: Gateway=175, MPE=35)"
+    },
+    "score_variaveis": {
+      "type": "number",
+      "description": "Camada 2: Soma das vari\u00e1veis V01-V60 aplicadas"
+    },
+    "score_enriquecimento": {
+      "type": "number",
+      "description": "Camada 3: Soma dos enriquecimentos E01-E11"
+    },
+    "score_final": {
+      "type": "number",
+      "description": "Score final 0-1000. max(0, min(849, C1+C2+C3)). S\u00f3 850+ por bloqueio B01-B10."
+    },
+    "subfaixa": {
+      "type": "string",
+      "enum": [
+        "1A",
+        "1B",
+        "2A",
+        "2B",
+        "3A",
+        "3B",
+        "4",
+        "5"
+      ],
+      "description": "Subfaixa de decis\u00e3o (1A=Verde Express, 5=Bloqueio)"
+    },
+    "subfaixa_nome": {
+      "type": "string",
+      "description": "Nome da subfaixa (ex: VERDE EXPRESS, AZUL LEVE, AMARELO, LARANJA, VERMELHO)"
+    },
+    "rolling_reserve_percent": {
+      "type": "number",
+      "default": 0,
+      "description": "Rolling Reserve aplicado (0/5/10/15/20%)"
+    },
+    "decisao_automatica": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se a decis\u00e3o foi autom\u00e1tica (subfaixas 1A-3B) ou manual (4)"
+    },
+    "bloqueios_ativos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array de bloqueios B01-B10 ativos"
+    },
+    "variaveis_aplicadas": {
+      "type": "object",
+      "description": "Detalhe de cada vari\u00e1vel aplicada"
+    },
+    "variaveis_positivas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Lista de vari\u00e1veis positivas (redutoras) aplicadas"
+    },
+    "variaveis_negativas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Lista de vari\u00e1veis negativas (penalizadoras) aplicadas"
+    },
+    "condicoes_automaticas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Condi\u00e7\u00f5es autom\u00e1ticas aplicadas"
+    },
+    "monitoramento_nivel": {
+      "type": "string",
+      "enum": [
+        "PADRAO",
+        "REFOR\u00c7ADO_LEVE",
+        "REFOR\u00c7ADO",
+        "INTENSO",
+        "INTENSO_PLUS",
+        "MAXIMO"
+      ],
+      "description": "N\u00edvel de monitoramento aplicado"
+    },
+    "monitoramento_detalhes": {
+      "type": "object",
+      "description": "Detalhes do monitoramento"
+    },
+    "promocao_proxima_data": {
+      "type": "string",
+      "format": "date",
+      "description": "Data esperada para promo\u00e7\u00e3o de subfaixa"
+    },
+    "promocao_destino": {
+      "type": "string",
+      "description": "Subfaixa destino da pr\u00f3xima promo\u00e7\u00e3o"
+    },
+    "score_questionario": {
+      "type": "number",
+      "description": "Score Fase 1 - legado SENTINEL (0-1000)"
+    },
+    "classificacao_questionario": {
+      "type": "string",
+      "description": "Classifica\u00e7\u00e3o Fase 1"
+    },
+    "score_validacao_externa": {
+      "type": "number",
+      "description": "Score Fase 2 (0-1000)"
+    },
+    "classificacao_validacao_externa": {
+      "type": "string",
+      "description": "Classifica\u00e7\u00e3o Fase 2"
+    },
+    "bonus_consistencia": {
+      "type": "number",
+      "description": "B\u00f4nus de consist\u00eancia (0-1000)"
+    },
+    "score_geral_composto": {
+      "type": "number",
+      "description": "Score Geral Final SENTINEL (0-1000)"
+    },
+    "classificacao_geral": {
+      "type": "string",
+      "description": "Classifica\u00e7\u00e3o final de risco"
+    },
+    "recomendacao_final": {
+      "type": "string",
+      "enum": [
+        "Aprovado",
+        "Aprovado com Condi\u00e7\u00f5es",
+        "Revis\u00e3o Manual",
+        "Recusado"
+      ],
+      "description": "Recomenda\u00e7\u00e3o final da IA"
+    },
+    "total_findings": {
+      "type": "number",
+      "default": 0
+    },
+    "findings_por_severidade": {
+      "type": "object",
+      "description": "Contagem de findings por severidade"
+    },
+    "overrides_aplicados": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Lista de overrides aplicados"
+    },
+    "condicoes_aprovacao": {
+      "type": "string",
+      "description": "Condi\u00e7\u00f5es se aprovado com ressalvas"
+    },
+    "parecer_final": {
+      "type": "string",
+      "description": "Parecer conclusivo do agente"
+    },
+    "relatorio_completo": {
+      "type": "string",
+      "description": "Texto completo do relat\u00f3rio gerado"
+    },
+    "analise_completa_ia": {
+      "type": "string",
+      "description": "An\u00e1lise completa e detalhada da IA"
+    },
+    "sumario_executivo": {
+      "type": "string",
+      "description": "Resumo executivo da an\u00e1lise"
+    },
+    "pontos_positivos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Lista de pontos positivos"
+    },
+    "pontos_atencao": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Lista de pontos de aten\u00e7\u00e3o"
+    },
+    "red_flags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Lista de red flags cr\u00edticos"
+    },
+    "recomendacoes_revisao_manual": {
+      "type": "string",
+      "description": "Recomenda\u00e7\u00f5es para analista em revis\u00e3o manual"
+    },
+    "perguntas_sugeridas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "documentos_adicionais_sugeridos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "nivel_confianca_ia": {
+      "type": "number",
+      "description": "N\u00edvel de confian\u00e7a da IA (0-100)"
+    },
+    "analise_dimensional": {
+      "type": "object",
+      "description": "An\u00e1lise estruturada por dimens\u00e3o (identidade, s\u00f3cios, compliance, digital, reputa\u00e7\u00e3o, financeiro, biometria) com veredicto, confian\u00e7a e findings"
+    },
+    "cross_validation": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "Cross-validation declarado vs confirmado \u2014 lista de campos comparados"
+    },
+    "fase_1_completa": {
+      "type": "boolean",
+      "default": false
+    },
+    "fase_2_completa": {
+      "type": "boolean",
+      "default": false
+    },
+    "fase_3_completa": {
+      "type": "boolean",
+      "default": false
+    },
+    "data_analise_fase_1": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "data_analise_fase_2": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "data_analise_fase_3": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "onboarding_case_id"
+  ]
+}
