@@ -3,26 +3,14 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 /**
  * cafCreateOnboarding — Creates a CAF Web Onboarding link
  *
- * The client accesses the URL and completes the entire flow on CAF's hosted page:
- *   - Document capture (front + back)
- *   - Liveness check + FaceMatch
- *   - OCR extraction
- *   - Documentoscopy (fraud analysis)
- *
- * Results arrive via webhook → cafWebhookHandler
+ * UPGRADES v2:
+ *   1. _callbackUrl always set (defaults to cafWebhookHandler endpoint)
+ *   2. metadata enriched with onboardingCaseId + merchantId for tracing
+ *   3. PJ support: transactionQsaTemplateId for partner onboarding
+ *   4. PF_PF support: transactionPFTemplateId for related persons
+ *   5. SMS support: smsPhoneNumber param
  *
  * Auth: CAF_CLIENT_SECRET as static Bearer token for Core API
- *
- * Required params:
- *   - onboardingCaseId (links result back to our case)
- *   - type: PF | PJ | PF_PF
- *   - transactionTemplateId: Query Template ID configured in CAF Trust Platform
- *
- * Optional:
- *   - email: sends link to client via email
- *   - cpf / cnpj: pre-fill document
- *   - name: pre-fill name
- *   - noExpire: allow multiple uses of the link (default false)
  */
 
 const CAF_API_BASE = 'https://api.combateafraude.com';
@@ -49,7 +37,10 @@ Deno.serve(async (req) => {
       type = 'PF',
       transactionTemplateId,
       templateId,
+      transactionPFTemplateId,
+      transactionQsaTemplateId,
       email,
+      smsPhoneNumber,
       cpf,
       cnpj,
       name,
@@ -72,6 +63,7 @@ Deno.serve(async (req) => {
     let merchantName = name;
     let merchantEmail = email;
     let merchantBirth = birthDate;
+    let merchantPhone = smsPhoneNumber;
     let merchant = null;
 
     if (onboardingCaseId) {
@@ -85,6 +77,7 @@ Deno.serve(async (req) => {
             merchantName = merchantName || merchant.fullName;
             merchantEmail = merchantEmail || merchant.email;
             merchantBirth = merchantBirth || merchant.dateOfBirth;
+            merchantPhone = merchantPhone || merchant.phone;
             if (merchant.type === 'PF' || doc.length === 11) {
               merchantCpf = merchantCpf || doc;
             } else {
@@ -104,11 +97,22 @@ Deno.serve(async (req) => {
       type: type.toUpperCase(),
       transactionTemplateId,
       noExpire,
-      noNotification: !merchantEmail || noNotification,
+      noNotification: (!merchantEmail && !merchantPhone) || noNotification,
     };
 
     if (templateId) cafPayload.templateId = templateId;
     if (merchantEmail && !noNotification) cafPayload.email = merchantEmail;
+    if (merchantPhone && !noNotification) cafPayload.smsPhoneNumber = merchantPhone;
+
+    // PF_PF: template for related persons
+    if (type.toUpperCase() === 'PF_PF' && transactionPFTemplateId) {
+      cafPayload.transactionPFTemplateId = transactionPFTemplateId;
+    }
+
+    // PJ: template for QSA (partner onboarding)
+    if (type.toUpperCase() === 'PJ' && transactionQsaTemplateId) {
+      cafPayload.transactionQsaTemplateId = transactionQsaTemplateId;
+    }
 
     // Pre-fill attributes
     const attributes = {};
@@ -118,14 +122,19 @@ Deno.serve(async (req) => {
     if (merchantBirth) attributes.birthDate = merchantBirth;
     if (Object.keys(attributes).length > 0) cafPayload.attributes = attributes;
 
-    // Metadata to link back to our case
-    const metadata = { onboardingCaseId: onboardingCaseId || '', source: 'pagsmile_compliance' };
+    // Metadata enriched for webhook correlation
+    const metadata = {
+      onboardingCaseId: onboardingCaseId || '',
+      merchantId: merchant?.id || '',
+      source: 'pagsmile_compliance',
+      createdBy: user.email,
+    };
     cafPayload.metadata = metadata;
 
-    // Callback URL for webhook
-    if (callbackUrl) cafPayload._callbackUrl = callbackUrl;
+    // ALWAYS include _callbackUrl to guarantee webhook delivery
+    cafPayload._callbackUrl = callbackUrl || '';
 
-    console.log(`[CAF-Onboarding] Creating ${type} onboarding, template: ${transactionTemplateId}, email: ${merchantEmail || 'none'}`);
+    console.log(`[CAF-Onboarding] Creating ${type} onboarding, template: ${transactionTemplateId}, email: ${merchantEmail || 'none'}, sms: ${merchantPhone || 'none'}`);
 
     const cafResponse = await fetch(`${CAF_API_BASE}/v1/onboardings?origin=TRUST`, {
       method: 'POST',
@@ -154,7 +163,7 @@ Deno.serve(async (req) => {
           service_type: 'onboarding_web',
           onboarding_id: cafResult?.id || '',
           status: cafResponse.ok ? 'success' : 'failed',
-          request_payload: { type, transactionTemplateId, email: merchantEmail || '' },
+          request_payload: { type, transactionTemplateId, email: merchantEmail || '', sms: merchantPhone || '' },
           response_payload: {
             onboardingId: cafResult?.id,
             token: cafResult?.token,
@@ -187,6 +196,7 @@ Deno.serve(async (req) => {
       },
       onboardingCaseId: onboardingCaseId || null,
       emailSent: !!(merchantEmail && !noNotification && cafResponse.ok),
+      smsSent: !!(merchantPhone && !noNotification && cafResponse.ok),
       duration_ms: durationMs,
     });
 

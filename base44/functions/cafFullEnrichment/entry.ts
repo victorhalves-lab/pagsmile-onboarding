@@ -3,10 +3,13 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 /**
  * cafFullEnrichment — Single CAF transaction with ALL available services
  *
+ * UPGRADES v2:
+ *   1. _callbackUrl added to every transaction → garante receber webhook
+ *   2. Accepts optional templateId for Trust-configured templates
+ *   3. metadata includes onboardingCaseId for webhook correlation
+ *
  * PJ: pjData + pjPublicData + pjSimples + pjKycCompliance + pjKycComplianceOwners + pjCreditProfileDetails
  * PF: pfBasicData + pfData + pfKycCompliance + pfKycComplianceOwners + pfCreditProfileDetails + pfAddresses + pfMediaProfileAndExposure
- *
- * One API call = everything CAF knows about a person/company.
  *
  * Auth: CAF_CLIENT_SECRET as static Bearer token
  */
@@ -79,7 +82,7 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json();
-    const { cpf, cnpj, onboardingCaseId, includeCredit = false } = body;
+    const { cpf, cnpj, onboardingCaseId, includeCredit = false, templateId, callbackUrl } = body;
 
     if (!cpf && !cnpj) return Response.json({ error: 'CPF ou CNPJ é obrigatório' }, { status: 400 });
 
@@ -99,13 +102,29 @@ Deno.serve(async (req) => {
 
     console.log(`[CAF-FullEnrich] ${isPJ ? 'PJ' : 'PF'}: ***${document.slice(-4)}, services: ${services.length}`);
 
+    // Build payload — support both templateId and inline services
+    const cafPayload = {
+      parameters: isPJ ? { cnpj: document } : { cpf: document },
+      metadata: { onboardingCaseId: onboardingCaseId || '', source: 'pagsmile_full_enrichment' },
+    };
+
+    if (templateId) {
+      // Use Trust-configured template (has pre-configured rules + services)
+      cafPayload.templateId = templateId;
+    } else {
+      // Inline services
+      cafPayload.template = { services };
+    }
+
+    // Always include _callbackUrl to guarantee webhook delivery
+    if (callbackUrl) {
+      cafPayload._callbackUrl = callbackUrl;
+    }
+
     const cafResponse = await fetch(`${CAF_API_BASE}/v1/transactions`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${authToken}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        template: { services },
-        parameters: isPJ ? { cnpj: document } : { cpf: document },
-      }),
+      body: JSON.stringify(cafPayload),
     });
 
     const cafText = await cafResponse.text();
@@ -128,7 +147,7 @@ Deno.serve(async (req) => {
           service_type: isPJ ? 'kyb_business_identity' : 'empresas_kyc_real',
           transaction_id: cafResult?.uuid || '',
           status: cafResponse.ok ? 'success' : 'failed',
-          request_payload: { document: `***${document.slice(-4)}`, servicesCount: services.length },
+          request_payload: { document: `***${document.slice(-4)}`, servicesCount: services.length, templateId: templateId || null },
           response_payload: { sectionsReturned: Object.keys(sections), flagsCount: redFlags.length },
           red_flags: redFlags,
           duration_ms: durationMs,

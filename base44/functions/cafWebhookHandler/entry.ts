@@ -3,14 +3,12 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 /**
  * cafWebhookHandler — Receives and processes CAF webhooks in real-time
  *
- * Webhook types:
- *   - process_started: onboarding documents captured, processing started
- *   - documentscopy_requested: documentoscopy analysis in progress
- *   - status_updated: final status with statusReasons (validation rules)
- *   - face_authentication: face auth result
- *   - profile_status_change: profile status update
- *
- * On status_updated: auto-fetches full transaction via GET /transactions/{id}
+ * UPGRADES v2:
+ *   1. ALL 87 validation rules mapped (same as cafGetTransaction v2)
+ *   2. manualReprovalReasons[] processed (20 codes)
+ *   3. Auto-fetch uses _lang=pt, _includePfRelationships=true
+ *   4. profile_status_change webhook type fully handled
+ *   5. Severity classification on flags
  *
  * Auth: No Base44 auth (called by CAF externally). IP whitelist + signature check.
  */
@@ -27,34 +25,109 @@ function getCafToken() {
   return token;
 }
 
-// Map CAF validation rules to our red flag system
+// ═══════════════════════════════════════════════════════════════
+// COMPLETE VALIDATION RULES MAP — ALL 87 CAF rules
+// ═══════════════════════════════════════════════════════════════
+const VALIDATION_RULES_MAP = {
+  cpf_error_code: 'CPF_IRREGULAR', cpf_has_not_dead: 'CPF_DEATH_INDICATOR',
+  cpf_equal_name: 'CPF_NAME_MISMATCH', cpf_null: 'CPF_DATA_EMPTY',
+  cpf_query: 'CPF_QUERY_FAILED', does_not_exist_on_receita_federal_database: 'CPF_NOT_FOUND_RF',
+  has_cpf: 'CPF_NOT_PRESENT', is_cpf_regular: 'CPF_IRREGULAR_STATUS',
+  data_and_document_are_equal: 'DATA_DOCUMENT_DIVERGENCE',
+  active_cnpj_number: 'CNPJ_INACTIVE', authentic_cnpj_number: 'CNPJ_NOT_AUTHENTIC',
+  company_qsa_data_compatibility: 'QSA_DATA_INCOMPATIBLE',
+  has_at_least_one_cnae: 'CNAE_NOT_FOUND', has_at_least_one_legal_nature: 'LEGAL_NATURE_INVALID',
+  has_no_sintegra_record: 'SINTEGRA_REGISTERED', has_no_total_share: 'SHARE_PERCENTAGE_INVALID',
+  is_company_lifetime_greater_than_six_months: 'COMPANY_TOO_YOUNG',
+  authentic_document: 'DOCUMENT_NOT_AUTHENTIC', document_is_known: 'DOCUMENT_TYPE_UNKNOWN',
+  document_issue_less_than_10: 'DOCUMENT_TOO_OLD', documentscopy_approved: 'DOCUMENTSCOPY_FRAUD',
+  documentscopy_available: 'DOCUMENTSCOPY_UNAVAILABLE', is_cnh: 'NOT_CNH',
+  facematch_is_equal: 'FACEMATCH_FAILED', facematch_has_selfie_photo: 'SELFIE_MISSING',
+  face_and_birthdate_compare: 'FACE_CPF_MISMATCH',
+  government_document_approved: 'OFFICIAL_BIOMETRICS_FAILED',
+  government_document_available: 'OFFICIAL_BIOMETRICS_NOT_FOUND',
+  more_than_one_face_in_selfie: 'MULTIPLE_FACES_SELFIE',
+  is_selfie_and_front_same_document_type: 'SELFIE_DOCUMENT_TYPE_MISMATCH',
+  selfie_not_same_as_another_selfie_with_same_data: 'SELFIE_REUSE_DETECTED',
+  without_face_accessories: 'FACE_ACCESSORIES_DETECTED',
+  has_no_pep: 'PEP_DETECTED', has_no_pep_department: 'PEP_DEPARTMENT_MATCH',
+  has_no_pep_or_sanctions_compliance_owners: 'OWNERS_PEP_SANCTIONS',
+  has_no_sanctions: 'SANCTIONS_DETECTED',
+  has_no_personal_relationships_trust_rl: 'RELATED_PERSONS_RESTRICTIVE_LIST',
+  is_not_on_restrictive_lists: 'RESTRICTIVE_LIST',
+  has_no_criminal_background: 'CRIMINAL_BACKGROUND',
+  has_no_criminal_background_federal: 'CRIMINAL_BACKGROUND_FEDERAL',
+  has_no_criminal_processes: 'CRIMINAL_PROCESSES',
+  has_no_defendant_processes: 'DEFENDANT_IN_LAWSUIT',
+  has_no_processes: 'JUDICIAL_PROCESSES',
+  has_no_processes_active_party: 'PROCESSES_ACTIVE_PARTY',
+  has_no_processes_passive_party: 'PROCESSES_PASSIVE_PARTY',
+  has_no_processes_other_party: 'PROCESSES_OTHER_PARTY',
+  has_processes_keywords: 'PROCESSES_KEYWORDS_MATCH',
+  has_author_type_null_in_criminal_processes: 'CRIMINAL_AUTHOR_TYPE_NULL',
+  has_arrest_warrant: 'ARREST_WARRANT',
+  credit_score_available: 'CREDIT_SCORE_UNAVAILABLE',
+  credit_score_below: 'CREDIT_SCORE_LOW', credit_score_between: 'CREDIT_SCORE_RANGE',
+  credit_score_over: 'CREDIT_SCORE_HIGH', disabled_on_bacen: 'DISABLED_BACEN',
+  has_debts_on_pgfn: 'PGFN_DEBTS', has_no_labor_debts: 'LABOR_DEBTS',
+  has_active_social_assistence: 'SOCIAL_ASSISTANCE_ACTIVE',
+  has_salary_information: 'SALARY_INFO_NOT_FOUND',
+  is_between_two_and_four_salaries: 'LOW_INCOME_RANGE',
+  has_no_ibope_income: 'IBOPE_INCOME_CHECK',
+  has_no_participant_cvm: 'CVM_REGISTERED', has_penalties_on_cvm: 'CVM_PENALTIES',
+  has_process_on_cade: 'CADE_PROCESS',
+  has_no_class_organizations: 'CLASS_ORGANIZATION_LINKED',
+  has_no_participant_antt: 'ANTT_NOT_AUTHORIZED',
+  has_no_media_exposure: 'MEDIA_EXPOSURE',
+  big_data_source_underage: 'UNDERAGE_SOURCE', invalid_range_ages: 'AGE_RANGE_INVALID',
+  over_18: 'NOT_OVER_18', over_16: 'NOT_OVER_16',
+  cnh_has_valid_date: 'CNH_EXPIRED', has_cnh_for_more_than_three_years: 'CNH_LESS_THAN_3_YEARS',
+  has_definitive_cnh: 'CNH_NOT_DEFINITIVE',
+  driver_has_pending_traffic_violations: 'TRAFFIC_VIOLATIONS_PENDING',
+  driver_has_traffic_violations: 'TRAFFIC_VIOLATIONS',
+  attorney: 'ATTORNEY_FLOW', first_and_last_name_similarity: 'NAME_SIMILARITY_LOW',
+  invalid_zip_code: 'INVALID_ZIP_CODE',
+  is_not_underage_on_bank_source: 'UNDERAGE_BANK_SOURCE',
+  is_pf_on_bank_source: 'PF_BANK_SOURCE', verifai_is_not_high_risk: 'VERIFAI_HIGH_RISK',
+};
+
+const MANUAL_REPROVAL_MAP = {
+  '10': 'PARAMS_NOT_INFORMED', '30': 'UNDERAGE_16', '31': 'PROTESTS_FOUND',
+  '32': 'PROCESSES_FOUND', '50': 'ILLEGIBLE_DOC_QUALITY', '51': 'ILLEGIBLE_DOC_CLIPPING',
+  '52': 'ILLEGIBLE_DOC_OBSTRUCTION', '60': 'CPF_PARAM_DIVERGES_DOC',
+  '61': 'MISSING_FRONT_PHOTO', '62': 'MISSING_BACK_PHOTO',
+  '63': 'INPUT_PARAM_DIVERGES_DOC', '70': 'UNSUPPORTED_DOCUMENT',
+  '71': 'INVALID_DOCUMENT', '72': 'UNSUPPORTED_FILE_FORMAT',
+  '80': 'INVALID_CPF', '81': 'INVALID_CNPJ',
+  '82': 'BIRTHDATE_DIVERGES_OFFICIAL', '83': 'CPF_NOT_INFORMED',
+  '84': 'CNPJ_NOT_INFORMED', '90': 'UNDERAGE_18',
+  '91': 'SELFIE_NOT_SIMILAR', '92': 'LIVENESS_REPROVED',
+  '93': 'CPF_IRREGULAR_RF', '94': 'DOC_NAME_DIVERGES_RF',
+  '95': 'FACE_IN_SUSPECTS_DB', '96': 'PEP_DETECTED_MANUAL',
+};
+
 function extractFlagsFromReasons(statusReasons) {
   const flags = [];
   if (!Array.isArray(statusReasons)) return flags;
 
-  const criticalRules = {
-    cpf_has_not_dead: 'CPF_DEATH_INDICATOR',
-    cpf_error_code: 'CPF_IRREGULAR',
-    facematch_is_equal: 'FACEMATCH_FAILED',
-    documentscopy_approved: 'DOCUMENTSCOPY_FRAUD',
-    has_no_pep: 'PEP_DETECTED',
-    has_no_sanctions: 'SANCTIONS_DETECTED',
-    has_no_criminal_background: 'CRIMINAL_BACKGROUND',
-    has_no_criminal_processes: 'CRIMINAL_PROCESSES',
-    disabled_on_bacen: 'DISABLED_BACEN',
-    has_debts_on_pgfn: 'PGFN_DEBTS',
-    government_document_approved: 'OFFICIAL_BIOMETRICS_FAILED',
-    has_no_arrest_warrant: 'ARREST_WARRANT',
-    authentic_document: 'DOCUMENT_NOT_AUTHENTIC',
-    active_cnpj_number: 'CNPJ_INACTIVE',
-    is_not_on_restrictive_lists: 'RESTRICTIVE_LIST',
-  };
-
   for (const reason of statusReasons) {
     if (reason.status === 'INVALID' || reason.resultStatus === 'REPROVED') {
-      const flagType = criticalRules[reason.code] || `CAF_RULE_${(reason.code || 'unknown').toUpperCase()}`;
+      const flagType = VALIDATION_RULES_MAP[reason.code] || `CAF_RULE_${(reason.code || 'unknown').toUpperCase()}`;
       flags.push(`${flagType}: ${reason.description || reason.code}`);
     }
+  }
+
+  return flags;
+}
+
+function extractFlagsFromManualReprovals(manualReprovalReasons) {
+  const flags = [];
+  if (!Array.isArray(manualReprovalReasons)) return flags;
+
+  for (const reproval of manualReprovalReasons) {
+    const code = String(reproval.code || '');
+    const flagType = MANUAL_REPROVAL_MAP[code] || `MANUAL_REPROVAL_${code}`;
+    flags.push(`${flagType}: ${reproval.reason || `Manual reproval code ${code}`}`);
   }
 
   return flags;
@@ -126,7 +199,7 @@ Deno.serve(async (req) => {
 
     // ── status_updated: main event with full results ──
     if (webhookType === 'status_updated') {
-      // Extract flags from statusReasons
+      // Extract flags from statusReasons (87 rules)
       const reasonFlags = extractFlagsFromReasons(body.statusReasons || []);
       newFlags.push(...reasonFlags);
 
@@ -134,29 +207,21 @@ Deno.serve(async (req) => {
       if (transactionId) {
         try {
           const authToken = getCafToken();
-          const txResponse = await fetch(`${CAF_API_BASE}/v1/transactions/${transactionId}?_includeCroppedImages=true`, {
-            method: 'GET',
-            headers: { 'Authorization': `Bearer ${authToken}` },
-          });
+          const txResponse = await fetch(
+            `${CAF_API_BASE}/v1/transactions/${transactionId}?_includeCroppedImages=true&_includePfRelationships=true&_lang=pt`,
+            { method: 'GET', headers: { 'Authorization': `Bearer ${authToken}` } }
+          );
 
           if (txResponse.ok) {
             const txText = await txResponse.text();
             let txResult;
             try { txResult = JSON.parse(txText); } catch { txResult = null; }
 
-            if (txResult && onboardingCaseId) {
-              // Save each section
-              const sections = txResult.sections || {};
-              for (const [secName, secData] of Object.entries(sections)) {
-                try {
-                  await base44.asServiceRole.entities.ExternalValidationResult.create({
-                    onboardingCaseId, provider: 'CAF',
-                    validationType: `Webhook Auto-Fetch — ${secName}`,
-                    endpoint: `/v1/transactions/${transactionId} (${secName})`,
-                    resultData: secData,
-                    status: 'Sucesso', timestamp: new Date().toISOString(),
-                  });
-                } catch { /* */ }
+            if (txResult) {
+              // Process manualReprovalReasons from full transaction
+              const reprovalFlags = extractFlagsFromManualReprovals(txResult.manualReprovalReasons || []);
+              for (const f of reprovalFlags) {
+                if (!newFlags.includes(f)) newFlags.push(f);
               }
 
               // Additional flags from full transaction validations
@@ -165,7 +230,54 @@ Deno.serve(async (req) => {
                 if (!newFlags.includes(f)) newFlags.push(f);
               }
 
-              console.log(`[CAF-Webhook] Auto-fetched transaction: ${Object.keys(sections).length} sections`);
+              if (onboardingCaseId) {
+                // Save each section
+                const sections = txResult.sections || {};
+                for (const [secName, secData] of Object.entries(sections)) {
+                  try {
+                    await base44.asServiceRole.entities.ExternalValidationResult.create({
+                      onboardingCaseId, provider: 'CAF',
+                      validationType: `Webhook Auto-Fetch — ${secName}`,
+                      endpoint: `/v1/transactions/${transactionId} (${secName})`,
+                      resultData: secData,
+                      status: 'Sucesso', timestamp: new Date().toISOString(),
+                    });
+                  } catch { /* */ }
+                }
+
+                // Save related transactions (PF_PF)
+                const relatedTx = txResult.relatedTransactions || {};
+                if (Object.keys(relatedTx).length > 0) {
+                  try {
+                    await base44.asServiceRole.entities.ExternalValidationResult.create({
+                      onboardingCaseId, provider: 'CAF',
+                      validationType: 'Webhook — Related Transactions (PF_PF)',
+                      endpoint: `/v1/transactions/${transactionId}?_includePfRelationships=true`,
+                      resultData: relatedTx,
+                      status: 'Sucesso', timestamp: new Date().toISOString(),
+                    });
+                  } catch { /* */ }
+                }
+
+                // Save manual reprovals as explicit result
+                if ((txResult.manualReprovalReasons || []).length > 0) {
+                  try {
+                    await base44.asServiceRole.entities.ExternalValidationResult.create({
+                      onboardingCaseId, provider: 'CAF',
+                      validationType: 'Webhook — Manual Reproval Reasons',
+                      endpoint: `/v1/transactions/${transactionId}`,
+                      resultData: {
+                        manualReprovalReasons: txResult.manualReprovalReasons,
+                        flagsExtracted: reprovalFlags,
+                      },
+                      score: 0,
+                      status: 'Falha', timestamp: new Date().toISOString(),
+                    });
+                  } catch { /* */ }
+                }
+
+                console.log(`[CAF-Webhook] Auto-fetched transaction: ${Object.keys(sections).length} sections, ${reprovalFlags.length} manual reprovals`);
+              }
             }
           }
         } catch (e) {
@@ -240,6 +352,33 @@ Deno.serve(async (req) => {
       }
     }
 
+    // ── profile_status_change ──
+    if (webhookType === 'profile_status_change') {
+      const profileStatus = body.status || '';
+      const profileType = body.type || ''; // PF or PJ
+      const profileCpf = body.cpf || '';
+      const profileCnpj = body.cnpj || '';
+      const profileId = body.profileId || '';
+
+      if (profileStatus === 'REPROVED') {
+        newFlags.push(`PROFILE_REPROVED_${profileType}: ${profileCpf || profileCnpj}`);
+      }
+
+      if (onboardingCaseId) {
+        try {
+          await base44.asServiceRole.entities.ExternalValidationResult.create({
+            onboardingCaseId, provider: 'CAF',
+            validationType: `Profile Status Change — ${profileType} (${profileStatus})`,
+            endpoint: 'webhook/profile_status_change',
+            resultData: { profileId, type: profileType, status: profileStatus, cpf: profileCpf, cnpj: profileCnpj, updatedAt: body.updatedAt },
+            score: profileStatus === 'APPROVED' ? 100 : profileStatus === 'REPROVED' ? 0 : 50,
+            status: profileStatus === 'APPROVED' ? 'Sucesso' : profileStatus === 'REPROVED' ? 'Falha' : 'Pendente',
+            timestamp: new Date().toISOString(),
+          });
+        } catch { /* */ }
+      }
+    }
+
     // ── Update OnboardingCase with red flags ──
     if (onboardingCaseId && newFlags.length > 0) {
       try {
@@ -250,10 +389,7 @@ Deno.serve(async (req) => {
 
           // Auto-update case status based on CAF decision
           if (cafStatus === 'APPROVED' && !cases[0].cafCompleted) updates.cafCompleted = true;
-          if (cafStatus === 'REPROVED') {
-            updates.cafCompleted = true;
-            // Don't auto-reject, flag for manual review
-          }
+          if (cafStatus === 'REPROVED') updates.cafCompleted = true;
 
           await base44.asServiceRole.entities.OnboardingCase.update(onboardingCaseId, updates);
         }

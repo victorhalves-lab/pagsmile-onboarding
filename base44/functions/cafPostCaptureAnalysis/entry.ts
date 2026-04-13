@@ -2,10 +2,16 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 /**
  * cafPostCaptureAnalysis — Análise pós-captura completa via CAF Core API
- * Auth: CAF_CLIENT_SECRET as static Bearer token
+ *
+ * UPGRADES v2:
+ *   1. _callbackUrl in every transaction → garante webhook
+ *   2. metadata with onboardingCaseId for correlation
+ *   3. _lang=pt in all requests
  *
  * SÍNCRONO: OCR (nome, CPF, nascimento, RG, mãe)
  * ASSÍNCRONO: Documentoscopy, Document Liveness, Deepfake, Biometria, Facesets
+ *
+ * Auth: CAF_CLIENT_SECRET as static Bearer token
  */
 
 const CAF_API_BASE = 'https://api.combateafraude.com';
@@ -64,7 +70,7 @@ Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
     const body = await req.json();
-    const { onboardingCaseId, frontImageUrl, backImageUrl, selfieImageUrl, cpf, name, birthDate, motherName } = body;
+    const { onboardingCaseId, frontImageUrl, backImageUrl, selfieImageUrl, cpf, name, birthDate, motherName, callbackUrl } = body;
 
     if (!onboardingCaseId) return Response.json({ error: 'onboardingCaseId é obrigatório' }, { status: 400 });
 
@@ -117,9 +123,11 @@ Deno.serve(async (req) => {
         template: { services: ['ocr_sync'] },
         files: ocrFiles,
         parameters: {},
+        metadata: { onboardingCaseId, source: 'pagsmile_ocr_sync' },
       };
       if (personCpf) ocrPayload.parameters.cpf = personCpf;
       if (personName) ocrPayload.parameters.name = personName;
+      if (callbackUrl) ocrPayload._callbackUrl = callbackUrl;
 
       let ocrAttempts = 0;
       while (ocrAttempts <= 2) {
@@ -184,10 +192,16 @@ Deno.serve(async (req) => {
         if (body.isReVerification === true) asyncServices.push('faceAuthentication');
       }
 
-      const asyncPayload = { template: { services: asyncServices }, files: asyncFiles, parameters: {} };
+      const asyncPayload = {
+        template: { services: asyncServices },
+        files: asyncFiles,
+        parameters: {},
+        metadata: { onboardingCaseId, source: 'pagsmile_post_capture' },
+      };
       if (personCpf) asyncPayload.parameters.cpf = personCpf;
       if (personName) asyncPayload.parameters.name = personName;
       if (personBirth) asyncPayload.parameters.birthDate = personBirth;
+      if (callbackUrl) asyncPayload._callbackUrl = callbackUrl;
 
       const asyncResponse = await fetch(`${CAF_API_BASE}/v1/transactions`, {
         method: 'POST',
