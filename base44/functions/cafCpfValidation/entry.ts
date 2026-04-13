@@ -1,35 +1,16 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
-import { encodeBase64 } from 'https://deno.land/std@0.220.0/encoding/base64.ts';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 /**
- * cafCpfValidation — Fase 4.3: Cross-check CPF via Core API vs BDC
- *
- * Usa Core API Transaction com service pfBasicData ou pfData para
- * consultar dados de CPF e cross-validar com o que o BDC retornou.
- *
- * Se houver divergência (nome, nome da mãe, status) → red flag.
+ * cafCpfValidation — Cross-check CPF via Core API vs BDC
+ * Auth: CAF_CLIENT_SECRET as static Bearer token
  */
 
 const CAF_API_BASE = 'https://api.combateafraude.com';
 
-function base64UrlEncode(data) {
-  const b64 = encodeBase64(data);
-  return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-}
-
-async function createCafAuthToken() {
-  const clientId = Deno.env.get('CAF_CLIENT_ID');
-  const clientSecret = Deno.env.get('CAF_CLIENT_SECRET');
-  if (!clientId || !clientSecret) throw new Error('CAF credentials not configured');
-  const header = { alg: 'HS256', typ: 'JWT' };
-  const headerB64 = base64UrlEncode(new TextEncoder().encode(JSON.stringify(header)));
-  const now = Math.floor(Date.now() / 1000);
-  const payload = { iss: clientId, exp: now + 300 };
-  const payloadB64 = base64UrlEncode(new TextEncoder().encode(JSON.stringify(payload)));
-  const signingInput = `${headerB64}.${payloadB64}`;
-  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(clientSecret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
-  const signature = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(signingInput));
-  return `${headerB64}.${payloadB64}.${base64UrlEncode(new Uint8Array(signature))}`;
+function getCafToken() {
+  const token = Deno.env.get('CAF_CLIENT_SECRET');
+  if (!token) throw new Error('CAF_CLIENT_SECRET not configured');
+  return token;
 }
 
 Deno.serve(async (req) => {
@@ -43,9 +24,8 @@ Deno.serve(async (req) => {
     if (!cpf) return Response.json({ error: 'CPF é obrigatório' }, { status: 400 });
     const cleanCpf = cpf.replace(/\D/g, '');
 
-    const authToken = await createCafAuthToken();
+    const authToken = getCafToken();
 
-    // Call CAF Core API Transaction with pfBasicData
     const cafResponse = await fetch(`${CAF_API_BASE}/v1/transactions`, {
       method: 'POST',
       headers: {
@@ -64,7 +44,6 @@ Deno.serve(async (req) => {
 
     console.log('[CPF-Validation] CAF HTTP:', cafResponse.status);
 
-    // Extract data from CAF response
     const cafSection = cafResult?.sections?.pfBasicData || cafResult?.sections?.pf_basic_data || {};
     const cafName = (cafSection.name || cafSection.nome || cafSection.fullName || '').toUpperCase().trim();
     const cafBirth = cafSection.birthDate || cafSection.dataNascimento || '';
@@ -73,7 +52,6 @@ Deno.serve(async (req) => {
     const cafStatus = cafSection.status || cafSection.situacao || cafSection.cpfStatus || '';
     const cafDeath = cafSection.deathIndicator || cafSection.indicadorObito || cafSection.isDeceased || false;
 
-    // Cross-check with BDC
     const crossCheckFlags = [];
     let bdcData = null;
 
@@ -116,13 +94,13 @@ Deno.serve(async (req) => {
 
     const durationMs = Date.now() - startTime;
 
-    // Save results
     if (onboardingCaseId) {
       try {
         await base44.asServiceRole.entities.IntegrationLog.create({
           onboarding_case_id: onboardingCaseId,
           provider: 'CAF',
           service_type: 'cpf_cross_validation',
+          transaction_id: cafResult?.uuid || '',
           status: cafResponse.ok ? 'success' : 'failed',
           result_status: crossCheckFlags.length > 0 ? 'PENDING_REVIEW' : 'APPROVED',
           request_payload: { cpf: `***${cleanCpf.slice(-4)}` },

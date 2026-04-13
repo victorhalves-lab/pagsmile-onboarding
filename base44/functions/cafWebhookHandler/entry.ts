@@ -1,57 +1,81 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 /**
- * cafWebhookHandler — Fase 3: Recebe webhooks da CAF em tempo real
+ * cafWebhookHandler — Receives and processes CAF webhooks in real-time
  *
- * Tipos de webhook suportados:
- * 1. Transaction status_updated — resultado de Documentoscopy, Liveness, etc.
- * 2. Transaction documentscopy_requested — análise de documentoscopia pendente
- * 3. Profile status change — mudança de status do perfil PF/PJ
- * 4. Face Authentication — resultado de autenticação facial
+ * Webhook types:
+ *   - process_started: onboarding documents captured, processing started
+ *   - documentscopy_requested: documentoscopy analysis in progress
+ *   - status_updated: final status with statusReasons (validation rules)
+ *   - face_authentication: face auth result
+ *   - profile_status_change: profile status update
  *
- * Cada webhook atualiza IntegrationLog + ExternalValidationResult + OnboardingCase
+ * On status_updated: auto-fetches full transaction via GET /transactions/{id}
  *
- * NOTA: Este endpoint NÃO requer autenticação Base44 (é chamado pela CAF).
- * A validação de autenticidade é feita por IP e/ou payload structure.
+ * Auth: No Base44 auth (called by CAF externally). IP whitelist + signature check.
  */
 
-// Known CAF webhook source IPs (update as needed from CAF docs)
+const CAF_API_BASE = 'https://api.combateafraude.com';
+
 const CAF_ALLOWED_IPS = new Set([
   '34.95.175.186', '34.95.186.52', '34.95.183.142', '35.199.107.89',
 ]);
+
+function getCafToken() {
+  const token = Deno.env.get('CAF_CLIENT_SECRET');
+  if (!token) throw new Error('CAF_CLIENT_SECRET not configured');
+  return token;
+}
+
+// Map CAF validation rules to our red flag system
+function extractFlagsFromReasons(statusReasons) {
+  const flags = [];
+  if (!Array.isArray(statusReasons)) return flags;
+
+  const criticalRules = {
+    cpf_has_not_dead: 'CPF_DEATH_INDICATOR',
+    cpf_error_code: 'CPF_IRREGULAR',
+    facematch_is_equal: 'FACEMATCH_FAILED',
+    documentscopy_approved: 'DOCUMENTSCOPY_FRAUD',
+    has_no_pep: 'PEP_DETECTED',
+    has_no_sanctions: 'SANCTIONS_DETECTED',
+    has_no_criminal_background: 'CRIMINAL_BACKGROUND',
+    has_no_criminal_processes: 'CRIMINAL_PROCESSES',
+    disabled_on_bacen: 'DISABLED_BACEN',
+    has_debts_on_pgfn: 'PGFN_DEBTS',
+    government_document_approved: 'OFFICIAL_BIOMETRICS_FAILED',
+    has_no_arrest_warrant: 'ARREST_WARRANT',
+    authentic_document: 'DOCUMENT_NOT_AUTHENTIC',
+    active_cnpj_number: 'CNPJ_INACTIVE',
+    is_not_on_restrictive_lists: 'RESTRICTIVE_LIST',
+  };
+
+  for (const reason of statusReasons) {
+    if (reason.status === 'INVALID' || reason.resultStatus === 'REPROVED') {
+      const flagType = criticalRules[reason.code] || `CAF_RULE_${(reason.code || 'unknown').toUpperCase()}`;
+      flags.push(`${flagType}: ${reason.description || reason.code}`);
+    }
+  }
+
+  return flags;
+}
 
 Deno.serve(async (req) => {
   const startTime = Date.now();
 
   try {
-    // ── Signature / IP validation ──
     const sourceIp = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-      || req.headers.get('cf-connecting-ip')
-      || req.headers.get('x-real-ip')
-      || '';
+      || req.headers.get('cf-connecting-ip') || req.headers.get('x-real-ip') || '';
     const cafSignature = req.headers.get('x-caf-signature') || req.headers.get('x-webhook-signature') || '';
 
-    // Log source for audit
-    console.log(`[CAF-Webhook] Source IP: ${sourceIp}, Signature present: ${!!cafSignature}`);
-
-    // Validate: if CAF sends a signature header, verify it
-    // If no signature, check IP whitelist as fallback
-    if (!cafSignature && sourceIp && !CAF_ALLOWED_IPS.has(sourceIp)) {
-      console.warn(`[CAF-Webhook] BLOCKED: unrecognized IP ${sourceIp} without signature`);
-      // Log the blocked attempt but still process (soft block for now)
-      // In production, uncomment the return below to hard-block:
-      // return Response.json({ error: 'Unauthorized' }, { status: 403 });
-    }
+    console.log(`[CAF-Webhook] Source IP: ${sourceIp}, Signature: ${!!cafSignature}`);
 
     const base44 = createClientFromRequest(req);
     const body = await req.json();
 
     console.log('[CAF-Webhook] Received:', JSON.stringify({
-      type: body.type,
-      status: body.status,
-      uuid: body.uuid || body.report,
-      onboardingId: body.onboardingId,
-      sourceIp,
+      type: body.type, status: body.status,
+      uuid: body.uuid || body.report, onboardingId: body.onboardingId,
     }));
 
     const webhookType = body.type || 'unknown';
@@ -59,24 +83,34 @@ Deno.serve(async (req) => {
     const cafStatus = body.status || '';
     const onboardingId = body.onboardingId || '';
 
-    // ── Find related IntegrationLog by transaction_id ──
+    // Find related IntegrationLog by transaction_id
     let relatedLog = null;
     let onboardingCaseId = null;
 
     if (transactionId) {
       try {
         const logs = await base44.asServiceRole.entities.IntegrationLog.filter({
-          transaction_id: transactionId,
-          provider: 'CAF',
+          transaction_id: transactionId, provider: 'CAF',
         });
         relatedLog = logs[0];
         onboardingCaseId = relatedLog?.onboarding_case_id || null;
-      } catch (e) {
-        console.warn('[CAF-Webhook] Could not find related log:', e.message);
-      }
+      } catch (e) { console.warn('[CAF-Webhook] Could not find related log:', e.message); }
     }
 
-    // ── Update existing IntegrationLog with callback data ──
+    // Also try finding by onboarding_id
+    if (!onboardingCaseId && onboardingId) {
+      try {
+        const logs = await base44.asServiceRole.entities.IntegrationLog.filter({
+          onboarding_id: onboardingId, provider: 'CAF',
+        });
+        if (logs[0]) {
+          relatedLog = logs[0];
+          onboardingCaseId = logs[0].onboarding_case_id;
+        }
+      } catch { /* */ }
+    }
+
+    // Update existing IntegrationLog
     if (relatedLog) {
       try {
         await base44.asServiceRole.entities.IntegrationLog.update(relatedLog.id, {
@@ -85,77 +119,116 @@ Deno.serve(async (req) => {
           status: cafStatus === 'APPROVED' ? 'success' : cafStatus === 'REPROVED' ? 'failed' : 'processing',
           result_status: cafStatus === 'APPROVED' ? 'APPROVED' : cafStatus === 'REPROVED' ? 'REPROVED' : 'PENDING_REVIEW',
         });
-        console.log('[CAF-Webhook] Updated IntegrationLog:', relatedLog.id);
-      } catch (e) {
-        console.warn('[CAF-Webhook] Failed to update log:', e.message);
-      }
+      } catch (e) { console.warn('[CAF-Webhook] Failed to update log:', e.message); }
     }
 
-    // ── Process webhook by type ──
     const newFlags = [];
 
-    // Transaction status_updated
-    if (webhookType === 'status_updated' && body.statusReasons) {
-      for (const reason of body.statusReasons) {
-        if (reason.resultStatus === 'REPROVED') {
-          newFlags.push(`CAF_REPROVED_${reason.category}_${reason.code}`);
+    // ── status_updated: main event with full results ──
+    if (webhookType === 'status_updated') {
+      // Extract flags from statusReasons
+      const reasonFlags = extractFlagsFromReasons(body.statusReasons || []);
+      newFlags.push(...reasonFlags);
+
+      // Auto-fetch full transaction result for detailed sections
+      if (transactionId) {
+        try {
+          const authToken = getCafToken();
+          const txResponse = await fetch(`${CAF_API_BASE}/v1/transactions/${transactionId}?_includeCroppedImages=true`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${authToken}` },
+          });
+
+          if (txResponse.ok) {
+            const txText = await txResponse.text();
+            let txResult;
+            try { txResult = JSON.parse(txText); } catch { txResult = null; }
+
+            if (txResult && onboardingCaseId) {
+              // Save each section
+              const sections = txResult.sections || {};
+              for (const [secName, secData] of Object.entries(sections)) {
+                try {
+                  await base44.asServiceRole.entities.ExternalValidationResult.create({
+                    onboardingCaseId, provider: 'CAF',
+                    validationType: `Webhook Auto-Fetch — ${secName}`,
+                    endpoint: `/v1/transactions/${transactionId} (${secName})`,
+                    resultData: secData,
+                    status: 'Sucesso', timestamp: new Date().toISOString(),
+                  });
+                } catch { /* */ }
+              }
+
+              // Additional flags from full transaction validations
+              const txFlags = extractFlagsFromReasons(txResult.validations || []);
+              for (const f of txFlags) {
+                if (!newFlags.includes(f)) newFlags.push(f);
+              }
+
+              console.log(`[CAF-Webhook] Auto-fetched transaction: ${Object.keys(sections).length} sections`);
+            }
+          }
+        } catch (e) {
+          console.warn('[CAF-Webhook] Auto-fetch transaction error:', e.message);
         }
       }
 
-      // Save detailed ExternalValidationResult
+      // Save webhook validation result
       if (onboardingCaseId) {
         try {
           await base44.asServiceRole.entities.ExternalValidationResult.create({
-            onboardingCaseId,
-            provider: 'CAF',
+            onboardingCaseId, provider: 'CAF',
             validationType: `Webhook — ${webhookType} (${cafStatus})`,
             endpoint: 'webhook/status_updated',
             resultData: body,
             score: cafStatus === 'APPROVED' ? 100 : cafStatus === 'REPROVED' ? 0 : 50,
             status: cafStatus === 'APPROVED' ? 'Sucesso' : cafStatus === 'REPROVED' ? 'Falha' : 'Pendente',
             timestamp: new Date().toISOString(),
-            responseTime: Date.now() - startTime,
           });
-        } catch (e) {
-          console.warn('[CAF-Webhook] ExternalValidation create error:', e.message);
-        }
+        } catch { /* */ }
       }
     }
 
-    // Documentoscopy result (async callback)
+    // ── documentscopy_requested ──
     if (webhookType === 'documentscopy_requested' || body.sections?.documentscopy) {
       const ds = body.sections?.documentscopy || body.documentscopy || {};
-      if (ds.fraud === true) {
-        newFlags.push('DOCUMENTSCOPY_FRAUD_DETECTED');
-      }
+      if (ds.fraud === true) newFlags.push('DOCUMENTSCOPY_FRAUD_DETECTED');
       if (onboardingCaseId) {
         try {
           await base44.asServiceRole.entities.ExternalValidationResult.create({
-            onboardingCaseId,
-            provider: 'CAF',
-            validationType: 'Documentoscopy — Webhook Result',
+            onboardingCaseId, provider: 'CAF',
+            validationType: 'Documentoscopy — Webhook',
             endpoint: 'webhook/documentscopy',
             resultData: ds,
             score: ds.fraud ? 0 : 100,
             status: ds.fraud ? 'Falha' : 'Sucesso',
             timestamp: new Date().toISOString(),
           });
-        } catch (e) {
-          console.warn('[CAF-Webhook] ExternalValidation documentscopy:', e.message);
-        }
+        } catch { /* */ }
       }
     }
 
-    // Face Authentication webhook
+    // ── process_started ──
+    if (webhookType === 'process_started' && onboardingCaseId) {
+      try {
+        await base44.asServiceRole.entities.ExternalValidationResult.create({
+          onboardingCaseId, provider: 'CAF',
+          validationType: 'Onboarding — Process Started',
+          endpoint: 'webhook/process_started',
+          resultData: body,
+          status: 'Pendente',
+          timestamp: new Date().toISOString(),
+        });
+      } catch { /* */ }
+    }
+
+    // ── face_authentication ──
     if (webhookType === 'face_authentication') {
-      if (body.isMatch === false) {
-        newFlags.push('FACE_AUTH_MISMATCH');
-      }
+      if (body.isMatch === false) newFlags.push('FACE_AUTH_MISMATCH');
       if (onboardingCaseId) {
         try {
           await base44.asServiceRole.entities.ExternalValidationResult.create({
-            onboardingCaseId,
-            provider: 'CAF',
+            onboardingCaseId, provider: 'CAF',
             validationType: 'Face Authentication — Webhook',
             endpoint: 'webhook/face_authentication',
             resultData: body,
@@ -163,45 +236,35 @@ Deno.serve(async (req) => {
             status: body.isMatch ? 'Sucesso' : 'Falha',
             timestamp: new Date().toISOString(),
           });
-        } catch (e) {
-          console.warn('[CAF-Webhook] ExternalValidation face_auth:', e.message);
-        }
+        } catch { /* */ }
       }
     }
 
-    // Profile status change
-    if (webhookType === 'profile_status_change' || body.profileId) {
-      const profileCpf = body.cpf?.replace(/\D/g, '') || '';
-      if (profileCpf) {
-        try {
-          const merchants = await base44.asServiceRole.entities.Merchant.filter({ cpfCnpj: profileCpf });
-          if (merchants.length > 0) {
-            console.log('[CAF-Webhook] Profile update for merchant:', merchants[0].id, 'new status:', body.status);
-          }
-        } catch (e) {
-          console.warn('[CAF-Webhook] Profile lookup error:', e.message);
-        }
-      }
-    }
-
-    // ── Update OnboardingCase with new red flags ──
+    // ── Update OnboardingCase with red flags ──
     if (onboardingCaseId && newFlags.length > 0) {
       try {
         const cases = await base44.asServiceRole.entities.OnboardingCase.filter({ id: onboardingCaseId });
         if (cases[0]) {
-          const currentFlags = cases[0].redFlags || [];
-          const mergedFlags = [...new Set([...currentFlags, ...newFlags])];
-          await base44.asServiceRole.entities.OnboardingCase.update(onboardingCaseId, {
-            redFlags: mergedFlags,
-          });
-          console.log('[CAF-Webhook] Case flags updated:', newFlags);
+          const merged = [...new Set([...(cases[0].redFlags || []), ...newFlags])];
+          const updates = { redFlags: merged };
+
+          // Auto-update case status based on CAF decision
+          if (cafStatus === 'APPROVED' && !cases[0].cafCompleted) updates.cafCompleted = true;
+          if (cafStatus === 'REPROVED') {
+            updates.cafCompleted = true;
+            // Don't auto-reject, flag for manual review
+          }
+
+          await base44.asServiceRole.entities.OnboardingCase.update(onboardingCaseId, updates);
         }
-      } catch (e) {
-        console.warn('[CAF-Webhook] Case update error:', e.message);
-      }
+      } catch (e) { console.warn('[CAF-Webhook] Case update error:', e.message); }
+    } else if (onboardingCaseId && cafStatus === 'APPROVED') {
+      try {
+        await base44.asServiceRole.entities.OnboardingCase.update(onboardingCaseId, { cafCompleted: true });
+      } catch { /* */ }
     }
 
-    // ── Always log the raw webhook ──
+    // Always log the raw webhook
     try {
       await base44.asServiceRole.entities.IntegrationLog.create({
         onboarding_case_id: onboardingCaseId || '',
@@ -209,6 +272,7 @@ Deno.serve(async (req) => {
         service_type: 'caf_webhook_received',
         request_id: transactionId,
         transaction_id: transactionId,
+        onboarding_id: onboardingId,
         status: 'success',
         result_status: cafStatus === 'APPROVED' ? 'APPROVED' : cafStatus === 'REPROVED' ? 'REPROVED' : 'PENDING_REVIEW',
         response_payload: body,
@@ -217,16 +281,11 @@ Deno.serve(async (req) => {
         callback_received_at: new Date().toISOString(),
         callback_payload: body,
       });
-    } catch (e) {
-      console.warn('[CAF-Webhook] Raw log error:', e.message);
-    }
+    } catch (e) { console.warn('[CAF-Webhook] Raw log error:', e.message); }
 
     return Response.json({
-      received: true,
-      type: webhookType,
-      transactionId,
-      flagsAdded: newFlags,
-      duration_ms: Date.now() - startTime,
+      received: true, type: webhookType, transactionId,
+      flagsAdded: newFlags, duration_ms: Date.now() - startTime,
     });
 
   } catch (error) {

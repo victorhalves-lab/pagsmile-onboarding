@@ -1,43 +1,21 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
-import { encodeBase64 } from 'https://deno.land/std@0.220.0/encoding/base64.ts';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 /**
- * cafScreeningInternacional — Fase 4.2: PEPs + Sanctions + Warnings/Interpol
+ * cafScreeningInternacional — PEPs + Sanctions + Warnings/Interpol via Core API
  *
- * NOTA: A Connect API (api.public.caf.io) requer credenciais OAuth2 separadas.
- * Esta função usa a Core API (api.combateafraude.com) via Transaction,
- * que aceita os mesmos services de KYC PF/PJ.
+ * Auth: CAF_CLIENT_SECRET as static Bearer token
  *
- * Services usados na Core API:
- *   - pfKycComplianceOwners (inclui PEP, sanctions, COAF, INTERPOL, FBI, OFAC, EU, UN)
- *   - pjKycComplianceOwners (screening PJ + todos os sócios automaticamente)
- *
- * Modos de uso:
- *   1. { onboardingCaseId } — busca merchant, faz screening completo
- *   2. { cpf } ou { cnpj } — screening individual
- *   3. { name, cpf } — screening PF individual
+ * Services:
+ *   - pfKycComplianceOwners (PEP, sanctions, COAF, INTERPOL, FBI, OFAC, EU, UN)
+ *   - pjKycComplianceOwners (company + ALL owners screening)
  */
 
 const CAF_API_BASE = 'https://api.combateafraude.com';
 
-function base64UrlEncode(data) {
-  const b64 = encodeBase64(data);
-  return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-}
-
-async function createCafAuthToken() {
-  const clientId = Deno.env.get('CAF_CLIENT_ID');
-  const clientSecret = Deno.env.get('CAF_CLIENT_SECRET');
-  if (!clientId || !clientSecret) throw new Error('CAF credentials not configured');
-  const header = { alg: 'HS256', typ: 'JWT' };
-  const headerB64 = base64UrlEncode(new TextEncoder().encode(JSON.stringify(header)));
-  const now = Math.floor(Date.now() / 1000);
-  const payload = { iss: clientId, exp: now + 300 };
-  const payloadB64 = base64UrlEncode(new TextEncoder().encode(JSON.stringify(payload)));
-  const signingInput = `${headerB64}.${payloadB64}`;
-  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(clientSecret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
-  const signature = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(signingInput));
-  return `${headerB64}.${payloadB64}.${base64UrlEncode(new Uint8Array(signature))}`;
+function getCafToken() {
+  const token = Deno.env.get('CAF_CLIENT_SECRET');
+  if (!token) throw new Error('CAF_CLIENT_SECRET not configured');
+  return token;
 }
 
 async function callCafTransaction(authToken, services, parameters) {
@@ -47,10 +25,7 @@ async function callCafTransaction(authToken, services, parameters) {
       'Authorization': `Bearer ${authToken}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      template: { services },
-      parameters,
-    }),
+    body: JSON.stringify({ template: { services }, parameters }),
   });
   const text = await res.text();
   let data;
@@ -62,22 +37,18 @@ function extractScreeningFlags(result, personName) {
   const flags = [];
   const sections = result?.sections || result || {};
 
-  // Check all KYC-related sections for hits
   for (const [sectionName, sectionData] of Object.entries(sections)) {
     if (!sectionData || typeof sectionData !== 'object') continue;
 
-    // PEP detection
     if (sectionData.isPep === true || sectionData.isPEP === true) {
       flags.push({ type: 'PEP_INTERNATIONAL', person: personName, detail: `PEP detected in ${sectionName}` });
     }
 
-    // Sanctions detection
     const sanctions = sectionData.sanctions || sectionData.Sanctions || [];
     if (Array.isArray(sanctions) && sanctions.length > 0) {
       flags.push({ type: 'SANCTIONS_INTERNATIONAL', person: personName, detail: `${sanctions.length} sanction(s) in ${sectionName}: ${sanctions.map(s => s.source || s.listName || 'N/I').join(', ')}` });
     }
 
-    // Hits array (common format)
     const hits = sectionData.hits || sectionData.results || [];
     if (Array.isArray(hits) && hits.length > 0) {
       for (const hit of hits) {
@@ -94,7 +65,6 @@ function extractScreeningFlags(result, personName) {
       }
     }
 
-    // Owners screening results
     const owners = sectionData.owners || sectionData.relatedPersons || [];
     if (Array.isArray(owners)) {
       for (const owner of owners) {
@@ -121,11 +91,10 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const { onboardingCaseId, cpf, cnpj, name } = body;
 
-    const authToken = await createCafAuthToken();
+    const authToken = getCafToken();
     const allFlags = [];
     const results = {};
 
-    // Determine what to screen
     let targetCpf = cpf;
     let targetCnpj = cnpj;
     let targetName = name || '';
@@ -152,34 +121,27 @@ Deno.serve(async (req) => {
       }
     }
 
-    // PJ Screening: pjKycComplianceOwners (screens company + ALL owners automatically)
     if (targetCnpj) {
       console.log(`[Screening] PJ screening for CNPJ: ***${targetCnpj.slice(-4)}`);
       const pjResult = await callCafTransaction(authToken, ['pjKycComplianceOwners'], { cnpj: targetCnpj });
       results.pjKycComplianceOwners = pjResult.data;
-
       const pjFlags = extractScreeningFlags(pjResult.data, targetName);
       allFlags.push(...pjFlags);
-
       console.log(`[Screening] PJ result: HTTP=${pjResult.status}, flags=${pjFlags.length}`);
     }
 
-    // PF Screening: pfKycComplianceOwners
     if (targetCpf) {
       console.log(`[Screening] PF screening for CPF: ***${targetCpf.slice(-4)}`);
       const pfParams = { cpf: targetCpf };
       if (targetName) pfParams.name = targetName;
-
       const pfResult = await callCafTransaction(authToken, ['pfKycComplianceOwners'], pfParams);
       results.pfKycComplianceOwners = pfResult.data;
-
       const pfFlags = extractScreeningFlags(pfResult.data, targetName);
       allFlags.push(...pfFlags);
-
       console.log(`[Screening] PF result: HTTP=${pfResult.status}, flags=${pfFlags.length}`);
     }
 
-    // Cross-check with BDC if case-based
+    // Cross-check with BDC
     if (onboardingCaseId && allFlags.length > 0) {
       try {
         const bdcLogs = await base44.asServiceRole.entities.IntegrationLog.filter({
@@ -200,9 +162,7 @@ Deno.serve(async (req) => {
     const durationMs = Date.now() - startTime;
     const flagStrings = allFlags.map(f => `${f.type}: ${f.person} — ${f.detail}`);
 
-    // Save results
     if (onboardingCaseId) {
-      // IntegrationLog
       const serviceTypes = [
         { type: 'pep_international', filter: f => f.type === 'PEP_INTERNATIONAL' },
         { type: 'sanctions_international', filter: f => f.type === 'SANCTIONS_INTERNATIONAL' },
@@ -225,7 +185,6 @@ Deno.serve(async (req) => {
         } catch (e) { console.warn('[Screening] Log error:', e.message); }
       }
 
-      // ExternalValidationResult
       if (allFlags.length > 0) {
         try {
           await base44.asServiceRole.entities.ExternalValidationResult.create({
@@ -242,7 +201,6 @@ Deno.serve(async (req) => {
         } catch (e) { console.warn('[Screening] ExternalValidation error:', e.message); }
       }
 
-      // Update case flags
       if (flagStrings.length > 0) {
         try {
           const cases = await base44.asServiceRole.entities.OnboardingCase.filter({ id: onboardingCaseId });
