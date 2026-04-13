@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Building2, User, Mail, Phone, MapPin, Globe, Calendar, Shield, FileText, Users, FileCheck, Stamp, BarChart3, History, Database } from 'lucide-react';
+import { ArrowLeft, Building2, User, Mail, Phone, MapPin, Globe, Calendar, Shield, FileText, Users, FileCheck, Stamp, BarChart3, History, Database, Microscope } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -286,6 +286,11 @@ export default function CadastroDetalhe() {
             </div>
           </div>
           <div className="flex items-center gap-3 flex-shrink-0">
+            <Link to={`/AnaliseCompleta?id=${merchantId}`}>
+              <Button variant="outline" className="gap-2 text-xs border-purple-200 text-purple-700 hover:bg-purple-50">
+                <Microscope className="w-3.5 h-3.5" /> Análise Completa CAF/BDC
+              </Button>
+            </Link>
             <DownloadDossieButton merchantId={merchantId} merchantName={merchant.companyName || merchant.fullName} />
           {(latestCase?.riskScoreV4 != null || latestCase?.riskScore != null || latestScore?.score_final != null) && (() => {
             const scoreV4 = latestCase?.riskScoreV4 ?? latestScore?.score_final;

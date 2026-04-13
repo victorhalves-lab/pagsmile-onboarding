@@ -222,7 +222,7 @@ export default function LeadPixV4Section() {
               <li>• Presença digital: +5</li>
               <li>• Porte grande (DEMAIS): +5 | EPP: +3</li>
               <li>• Intermediário: +10</li>
-              <li>• Merchants >1k: +5</li>
+              <li>• Merchants {'>'}1k: +5</li>
             </ul>
           </div>
           <div>

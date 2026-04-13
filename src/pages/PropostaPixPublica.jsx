@@ -111,14 +111,6 @@ export default function PropostaPixPublica() {
     onSuccess: () => { toast.success(t('pp.proposal_rejected')); queryClient.invalidateQueries({ queryKey: ['pix_proposta_publica', token] }); setShowRecusaModal(false); }
   });
 
-  if (isLoading) return <div className="max-w-4xl mx-auto py-12 px-4 space-y-6"><Skeleton className="h-20 w-full rounded-xl" /><Skeleton className="h-12 w-3/4" /><Skeleton className="h-96 w-full rounded-xl" /></div>;
-  if (!proposta) return <div className="max-w-lg mx-auto py-20 text-center"><AlertTriangle className="w-16 h-16 mx-auto text-amber-500 mb-4" /><h1 className="text-2xl font-bold text-[#002443] mb-2">{t('pp.not_found_title')}</h1><p className="text-[#002443]/60">{t('pp.not_found_desc')}</p></div>;
-
-  // Expired check (show proposal content but disable actions)
-  const isExpired = proposta.status === 'expirada' || (proposta.validUntil && new Date(proposta.validUntil) < new Date() && !['aceita', 'recusada', 'contraproposta'].includes(proposta.status));
-
-  const isAlreadyResponded = ['aceita', 'recusada'].includes(proposta.status);
-
   // Fetch lead to resolve PIX compliance model for the "already accepted" banner
   const { data: leadForBanner } = useQuery({
     queryKey: ['pix_proposta_lead', proposta?.leadId],
@@ -128,6 +120,16 @@ export default function PropostaPixPublica() {
     },
     enabled: !!proposta?.leadId && proposta?.status === 'aceita',
   });
+
+  if (isLoading) return <div className="max-w-4xl mx-auto py-12 px-4 space-y-6"><Skeleton className="h-20 w-full rounded-xl" /><Skeleton className="h-12 w-3/4" /><Skeleton className="h-96 w-full rounded-xl" /></div>;
+  if (!proposta) return <div className="max-w-lg mx-auto py-20 text-center"><AlertTriangle className="w-16 h-16 mx-auto text-amber-500 mb-4" /><h1 className="text-2xl font-bold text-[#002443] mb-2">{t('pp.not_found_title')}</h1><p className="text-[#002443]/60">{t('pp.not_found_desc')}</p></div>;
+
+  // Expired check (show proposal content but disable actions)
+  const isExpired = proposta.status === 'expirada' || (proposta.validUntil && new Date(proposta.validUntil) < new Date() && !['aceita', 'recusada', 'contraproposta'].includes(proposta.status));
+
+  const isAlreadyResponded = ['aceita', 'recusada'].includes(proposta.status);
+
+
 
   const pixComplianceModel = resolvePixComplianceModel(leadForBanner);
   const pixComplianceUrl = (proposta?.status === 'aceita' && proposta?.leadId)

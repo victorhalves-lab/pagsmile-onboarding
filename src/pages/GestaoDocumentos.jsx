@@ -135,7 +135,6 @@ export default function GestaoDocumentos() {
       toast.success(t('gd.doc_updated'));
       setSelectedDoc(null);
       setShowRejectDialog(false);
-      setRejectReason('');
     },
     onError: (error) => {
       toast.error(t('gd.error_update') + error.message);
