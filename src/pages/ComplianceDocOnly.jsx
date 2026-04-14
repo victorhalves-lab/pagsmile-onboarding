@@ -119,9 +119,10 @@ export default function ComplianceDocOnly() {
         ...doc,
         _docKey: doc.documentTypeId || doc.id || `doc_${index}_${(doc.label || '').replace(/\s+/g, '_').toLowerCase().slice(0, 30)}`,
       }));
-      const documentUploads = Object.entries(documents).map(([docId, docData]) => {
+      // Criar individualmente para disparar automação CAF VerifAI em cada documento
+      for (const [docId, docData] of Object.entries(documents)) {
         const docDef = allTemplateDocs.find(d => d._docKey === docId);
-        return {
+        await base44.entities.DocumentUpload.create({
           onboardingCaseId: caseId,
           documentTypeId: docId,
           documentName: docDef?.label || docDef?.name || docId,
@@ -131,11 +132,7 @@ export default function ComplianceDocOnly() {
           fileType: docData.type,
           uploadDate: docData.uploadedAt,
           validationStatus: 'Pendente',
-        };
-      });
-
-      if (documentUploads.length > 0) {
-        await base44.entities.DocumentUpload.bulkCreate(documentUploads);
+        });
       }
 
       // Mark case as doc completed

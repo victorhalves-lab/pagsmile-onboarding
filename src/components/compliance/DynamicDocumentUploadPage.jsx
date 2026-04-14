@@ -294,14 +294,14 @@ export default function DynamicDocumentUploadPage({
         }
       }
 
-      // Criar uploads de documentos (incluindo selfie)
+      // Criar uploads de documentos (individualmente para disparar automação CAF VerifAI em cada um)
       const allTemplateDocs = (template?.requiredDocuments || []).map((doc, index) => ({
         ...doc,
         _docKey: doc.documentTypeId || doc.id || `doc_${index}_${(doc.label || '').replace(/\s+/g, '_').toLowerCase().slice(0, 30)}`
       }));
-      const documentUploads = Object.entries(documents).map(([docId, docData]) => {
+      for (const [docId, docData] of Object.entries(documents)) {
         const docDef = allTemplateDocs.find(d => d._docKey === docId);
-        return {
+        await base44.entities.DocumentUpload.create({
           onboardingCaseId: onboardingCaseId,
           documentTypeId: docId,
           documentName: docDef?.label || docDef?.name || docId,
@@ -311,11 +311,7 @@ export default function DynamicDocumentUploadPage({
           fileType: docData.type,
           uploadDate: docData.uploadedAt,
           validationStatus: 'Pendente'
-        };
-      });
-
-      if (documentUploads.length > 0) {
-        await base44.entities.DocumentUpload.bulkCreate(documentUploads);
+        });
       }
 
       // Limpar localStorage
