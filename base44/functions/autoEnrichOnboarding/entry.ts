@@ -112,6 +112,34 @@ Deno.serve(async (req) => {
       }
     }
 
+    // ═══ STEP 2.7: VerifAI — Run on any documents not yet analyzed ═══
+    let verifaiSuccess = false;
+    try {
+      console.log(`[AutoEnrich] Step 2.7: VerifAI check on pending documents...`);
+      const allDocs = await base44.asServiceRole.entities.DocumentUpload.filter({ onboardingCaseId: caseId });
+      const pendingDocs = allDocs.filter(d => 
+        d.validationStatus === 'Pendente' && 
+        !d.documentTypeId?.startsWith('caf_') &&
+        d.fileUrl
+      );
+      let verifaiRan = 0;
+      for (const doc of pendingDocs) {
+        try {
+          await base44.asServiceRole.functions.invoke('cafVerifaiDocs', { 
+            documentUploadId: doc.id, 
+            onboardingCaseId: caseId 
+          });
+          verifaiRan++;
+        } catch (vErr) {
+          console.warn(`[AutoEnrich] Step 2.7: VerifAI failed for doc ${doc.id}: ${vErr.message}`);
+        }
+      }
+      verifaiSuccess = true;
+      console.log(`[AutoEnrich] Step 2.7: VerifAI ran on ${verifaiRan}/${pendingDocs.length} pending docs`);
+    } catch (verifaiErr) {
+      console.warn(`[AutoEnrich] Step 2.7 failed (non-blocking): ${verifaiErr.message}`);
+    }
+
     // ═══ STEP 3: SENTINEL IA Analysis (QUALITATIVA — recebe V4) ═══
     let sentinelSuccess = false;
     try {
@@ -280,13 +308,13 @@ Deno.serve(async (req) => {
 
     const duration = Date.now() - startTime;
     console.log(`[AutoEnrich] ═══ Pipeline completed in ${duration}ms ═══`);
-    console.log(`[AutoEnrich] Results: CAF=${cafPostCaptureSuccess}, BDC=${bdcSuccess}, Screening=${screeningSuccess}, CPF=${cpfValidationSuccess}, SENTINEL=${sentinelSuccess}`);
+    console.log(`[AutoEnrich] Results: CAF=${cafPostCaptureSuccess}, BDC=${bdcSuccess}, Screening=${screeningSuccess}, CPF=${cpfValidationSuccess}, VerifAI=${verifaiSuccess}, SENTINEL=${sentinelSuccess}`);
     console.log(`[AutoEnrich] Decision: ${finalDecision} (auto=${autoDecisionApplied})`);
 
     return Response.json({
       success: true,
       caseId,
-      pipeline: { cafPostCaptureSuccess, bdcSuccess, screeningSuccess, cpfValidationSuccess, sentinelSuccess },
+      pipeline: { cafPostCaptureSuccess, bdcSuccess, screeningSuccess, cpfValidationSuccess, verifaiSuccess, sentinelSuccess },
       decision: { autoDecisionApplied, finalStatus, finalDecision },
       duration_ms: duration
     });
