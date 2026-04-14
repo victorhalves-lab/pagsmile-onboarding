@@ -4,15 +4,16 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle2, XCircle, AlertTriangle, Zap, Shield, Target, Eye } from 'lucide-react';
+import { CheckCircle2, XCircle, AlertTriangle, Zap, Shield, Target, Eye, ArrowUp } from 'lucide-react';
 
 export default function CaseReviewTab({
-  onboardingCase, reviewComments, setReviewComments,
+  onboardingCase, complianceScore, reviewComments, setReviewComments,
   onShowApprove, onShowReject, onShowRequestInfo,
 }) {
-  const isAutoDecision = onboardingCase.condicoesAutomaticas?.length > 0;
   const subfaixa = onboardingCase.subfaixa;
   const subfaixaNome = onboardingCase.subfaixaNome;
+  const isAutoDecision = complianceScore?.decisao_automatica || false;
+  const escalatedBySentinel = complianceScore?.decisao_escalada_sentinel || false;
 
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-6 space-y-6">
@@ -27,13 +28,19 @@ export default function CaseReviewTab({
           subfaixa === '4' ? 'bg-red-50 border-red-200' :
           'bg-red-50 border-red-300'
         }`}>
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
             <Zap className="w-4 h-4" />
             <span className="text-xs font-bold text-[var(--pagsmile-blue)]">
-              Framework V4: Subfaixa {subfaixa} — {subfaixaNome}
+              V4: Subfaixa {subfaixa} — {subfaixaNome}
             </span>
             {isAutoDecision && <Badge className="bg-blue-100 text-blue-700 text-[9px]">Decisão Automática</Badge>}
+            {escalatedBySentinel && <Badge className="bg-orange-100 text-orange-700 text-[9px]"><ArrowUp className="w-2.5 h-2.5 mr-0.5" />Escalada pelo SENTINEL</Badge>}
           </div>
+          {escalatedBySentinel && complianceScore?.escalation_justification && (
+            <p className="text-[11px] text-orange-700/80 bg-orange-100/50 rounded px-2 py-1 mb-2">
+              <strong>Motivo da escalação:</strong> {complianceScore.escalation_justification}
+            </p>
+          )}
           <div className="grid grid-cols-3 gap-3 text-xs">
             <div>
               <span className="text-[var(--pagsmile-blue)]/50">Score V4</span>
@@ -66,24 +73,54 @@ export default function CaseReviewTab({
         </div>
       )}
 
-      {/* Red Flags Summary */}
-      {onboardingCase.redFlags?.length > 0 && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-xs font-semibold text-red-700 mb-1.5 flex items-center gap-1">
-            <Shield className="w-3.5 h-3.5" /> {onboardingCase.redFlags.length} Red Flag(s) Identificado(s)
-          </p>
-          <ul className="space-y-1">
-            {onboardingCase.redFlags.slice(0, 5).map((f, i) => (
-              <li key={i} className="text-[11px] text-red-600/80 flex items-start gap-1.5">
-                <XCircle className="w-3 h-3 flex-shrink-0 mt-0.5" /> {f}
-              </li>
-            ))}
-            {onboardingCase.redFlags.length > 5 && (
-              <li className="text-[11px] text-red-500/60 italic">... e mais {onboardingCase.redFlags.length - 5}</li>
+      {/* Red Flags Summary — grouped by origin */}
+      {onboardingCase.redFlags?.length > 0 && (() => {
+        const v4Flags = onboardingCase.redFlags.filter(f => f.startsWith('V4:'));
+        const sentinelFlags = onboardingCase.redFlags.filter(f => f.startsWith('SENTINEL:'));
+        const otherFlags = onboardingCase.redFlags.filter(f => !f.startsWith('V4:') && !f.startsWith('SENTINEL:'));
+        return (
+          <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-xs font-semibold text-red-700 mb-1.5 flex items-center gap-1">
+              <Shield className="w-3.5 h-3.5" /> {onboardingCase.redFlags.length} Red Flag(s)
+            </p>
+            {v4Flags.length > 0 && (
+              <div className="mb-2">
+                <p className="text-[10px] font-bold text-red-600/50 mb-1">Motor V4 (determinístico)</p>
+                <ul className="space-y-0.5">
+                  {v4Flags.slice(0, 3).map((f, i) => (
+                    <li key={i} className="text-[11px] text-red-600/80 flex items-start gap-1.5">
+                      <XCircle className="w-3 h-3 flex-shrink-0 mt-0.5" /> {f.replace('V4: ', '')}
+                    </li>
+                  ))}
+                  {v4Flags.length > 3 && <li className="text-[10px] text-red-400 italic">+{v4Flags.length - 3} mais</li>}
+                </ul>
+              </div>
             )}
-          </ul>
-        </div>
-      )}
+            {sentinelFlags.length > 0 && (
+              <div className="mb-2">
+                <p className="text-[10px] font-bold text-red-600/50 mb-1">SENTINEL (qualitativo)</p>
+                <ul className="space-y-0.5">
+                  {sentinelFlags.slice(0, 3).map((f, i) => (
+                    <li key={i} className="text-[11px] text-red-600/80 flex items-start gap-1.5">
+                      <XCircle className="w-3 h-3 flex-shrink-0 mt-0.5" /> {f.replace('SENTINEL: ', '')}
+                    </li>
+                  ))}
+                  {sentinelFlags.length > 3 && <li className="text-[10px] text-red-400 italic">+{sentinelFlags.length - 3} mais</li>}
+                </ul>
+              </div>
+            )}
+            {otherFlags.length > 0 && (
+              <ul className="space-y-0.5">
+                {otherFlags.slice(0, 3).map((f, i) => (
+                  <li key={i} className="text-[11px] text-red-600/80 flex items-start gap-1.5">
+                    <XCircle className="w-3 h-3 flex-shrink-0 mt-0.5" /> {f}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        );
+      })()}
 
       {/* IA Explanation inline */}
       {onboardingCase.iaExplanation && (

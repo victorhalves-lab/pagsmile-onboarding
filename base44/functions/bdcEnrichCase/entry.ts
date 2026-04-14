@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 const BDC_BASE_URL = 'https://plataforma.bigdatacorp.com.br';
 
@@ -1289,10 +1289,17 @@ Deno.serve(async (req) => {
           }
         }
 
+        // V4 deterministic fields ONLY — never touch SENTINEL qualitative fields
+        const v4RedFlags = analysis.blocks.map(b => `V4: ${b.code}_${b.label}`).concat(
+          Object.values(isPF ? analysis.sections : analysis.sections).flatMap(s => (s.items || []).filter(i => i.risk === 'CRITICO' || i.risk === 'ALTO').map(i => `V4: ${i.label}: ${i.value}`))
+        );
+        const v4Positivos = Object.values(isPF ? analysis.sections : analysis.sections).flatMap(s => (s.items || []).filter(i => i.risk === 'OK' && i.points < 0).map(i => i.label));
+
         const scoreData = {
           onboarding_case_id: onboardingCaseId,
           framework_version: 'v4.0',
           segmento: templateModel || 'unknown',
+          // V4 deterministic scoring
           score_base_segmento: analysis.scoring.baseScore,
           score_variaveis: analysis.scoring.variablesScore,
           score_enriquecimento: analysis.scoring.enrichmentScore,
@@ -1301,16 +1308,16 @@ Deno.serve(async (req) => {
           subfaixa_nome: analysis.scoring.subfaixaNome,
           bloqueios_ativos: analysis.blocks.map(b => `${b.code}_${b.label}`),
           variaveis_aplicadas: analysis.sections,
-          red_flags: analysis.blocks.map(b => b.label).concat(
-            Object.values(isPF ? analysis.sections : analysis.sections).flatMap(s => (s.items || []).filter(i => i.risk === 'CRITICO' || i.risk === 'ALTO').map(i => `${i.label}: ${i.value}`))
-          ),
-          pontos_positivos: Object.values(isPF ? analysis.sections : analysis.sections).flatMap(s => (s.items || []).filter(i => i.risk === 'OK' && i.points < 0).map(i => i.label)),
+          // V4 red flags with origin prefix
+          red_flags: v4RedFlags,
+          pontos_positivos: v4Positivos,
+          // Phase tracking
           fase_2_completa: true,
           data_analise_fase_2: new Date().toISOString(),
-          recomendacao_final: analysis.hasBlock ? 'Recusado' : analysis.scoring.finalScore <= 200 ? 'Aprovado' : analysis.scoring.finalScore <= 500 ? 'Aprovado com Condições' : analysis.scoring.finalScore <= 700 ? 'Revisão Manual' : 'Recusado',
-          sumario_executivo: `Enriquecimento BDC: Score ${analysis.scoring.finalScore}/849 (${analysis.scoring.subfaixaNome}). ${analysis.blocks.length} bloqueio(s). ${analysis.datasetsQueried} datasets consultados.${scoreDelta != null ? ` Delta: ${scoreDelta > 0 ? '+' : ''}${scoreDelta} pts.` : ''}`,
         };
+
         if (existing.length > 0) {
+          // Preserve SENTINEL qualitative fields when updating
           await base44.asServiceRole.entities.ComplianceScore.update(existing[0].id, scoreData);
         } else {
           await base44.asServiceRole.entities.ComplianceScore.create(scoreData);

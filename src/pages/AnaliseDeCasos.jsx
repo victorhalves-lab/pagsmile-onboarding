@@ -226,6 +226,7 @@ export default function AnaliseDeCasos() {
         <TabsContent value="review">
           <CaseReviewTab
             onboardingCase={onboardingCase}
+            complianceScore={complianceScore}
             reviewComments={reviewComments}
             setReviewComments={setReviewComments}
             onShowApprove={() => setShowApproveDialog(true)}
