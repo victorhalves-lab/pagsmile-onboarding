@@ -262,6 +262,7 @@ export default function DynamicDocumentUploadPage({
 
         const merchant = await base44.entities.Merchant.create(merchantData);
 
+        const docLinkToken = crypto.randomUUID().replace(/-/g, '').slice(0, 24);
         const onboardingCaseData = {
           merchantId: merchant.id,
           questionnaireTemplateId: template?.id,
@@ -269,6 +270,7 @@ export default function DynamicDocumentUploadPage({
           onboardingLinkCode: linkCode,
           priority: 'medium',
           isSubsellerCase: isSubsellerLink,
+          docLinkToken,
         };
         if (parentMerchantId) onboardingCaseData.parentMerchantId = parentMerchantId;
         const onboardingCase = await base44.entities.OnboardingCase.create(onboardingCaseData);

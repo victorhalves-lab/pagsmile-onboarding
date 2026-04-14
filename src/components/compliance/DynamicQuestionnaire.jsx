@@ -832,6 +832,8 @@ export default function DynamicQuestionnaire({
     const merchant = await base44.entities.Merchant.create(merchantData);
 
     // Create OnboardingCase
+    // Generate a secure docLinkToken so the client can be sent back to upload docs later
+    const docLinkToken = crypto.randomUUID().replace(/-/g, '').slice(0, 24);
     const onboardingCaseData = {
       merchantId: merchant.id,
       questionnaireTemplateId: template?.id || '',
@@ -842,6 +844,7 @@ export default function DynamicQuestionnaire({
       commercialAgentId: lead?.commercialAgentId || '',
       commercialAgentName: lead?.commercialAgentName || '',
       isSubsellerCase: isSubsellerLink,
+      docLinkToken,
     };
     if (parentMerchantId) onboardingCaseData.parentMerchantId = parentMerchantId;
     const onboardingCase = await base44.entities.OnboardingCase.create(onboardingCaseData);
