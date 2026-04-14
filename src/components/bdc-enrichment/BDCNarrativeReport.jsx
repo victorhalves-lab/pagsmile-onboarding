@@ -61,7 +61,16 @@ function buildNarrativePrompt(analysis) {
       let line = `  - ${i.label}: ${i.value} (risco: ${i.risk}, impacto: ${i.points > 0 ? '+' : ''}${i.points} pontos)`;
       if (i.details) line += `\n    Detalhes: ${JSON.stringify(i.details)}`;
       if (i.owners && i.owners.length > 0) line += `\n    Sócios: ${i.owners.map(o => `${o.name} (${o.role || 'N/I'}, ${o.participation || '?'}%)`).join('; ')}`;
-      if (i.lawsuits && i.lawsuits.length > 0) line += `\n    Processos: ${i.lawsuits.slice(0, 5).map(l => `${l.number} — ${l.type} — ${l.status} — Valor: ${l.value || 'N/I'}`).join('; ')}${i.lawsuits.length > 5 ? ` ... e mais ${i.lawsuits.length - 5}` : ''}`;
+      if (i.lawsuits && i.lawsuits.length > 0) {
+        line += `\n    Total de processos: ${i.lawsuits.length}`;
+        for (const l of i.lawsuits.slice(0, 15)) {
+          line += `\n      - Nº ${l.number} | Tipo: ${l.type || 'N/I'} | Assunto: ${l.subject || l.inferredSubject || 'N/I'} | Tribunal: ${l.court || 'N/I'} (${l.state || ''}) | Vara: ${l.judgingBody || l.courtDistrict || 'N/I'} | Status: ${l.status || 'N/I'} | Valor: ${l.value != null ? 'R$ ' + Number(l.value).toLocaleString('pt-BR') : 'N/I'} | Distribuição: ${l.startDate || 'N/I'} | Última mov.: ${l.lastUpdate || 'N/I'}`;
+          if (l.recentUpdates && l.recentUpdates.length > 0) line += ` | Movimentações recentes: ${l.recentUpdates.slice(0, 3).map(u => u.content).join(' → ')}`;
+          if (l.parties && l.parties.length > 0) line += ` | Partes: ${l.parties.slice(0, 4).map(p => `${p.name || p.Name || 'N/I'} (${p.specificType || p.type || p.Type || 'N/I'})`).join(', ')}`;
+          if (l.ownerName) line += ` | Sócio: ${l.ownerName}`;
+        }
+        if (i.lawsuits.length > 15) line += `\n      ... e mais ${i.lawsuits.length - 15} processos`;
+      }
       return line;
     }).join('\n');
     return `[${section}]\n${lines}`;

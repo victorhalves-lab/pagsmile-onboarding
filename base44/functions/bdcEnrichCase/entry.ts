@@ -430,53 +430,102 @@ function analyzeOwners(result) {
   }
 
   // Owners lawsuits — DETALHAMENTO COMPLETO
-  const lawsuits = result?.OwnersLawsuits || result?.owners_lawsuits;
-  if (lawsuits) {
-    const lItems = flattenBDCArray(lawsuits);
-    let totalLawsuits = 0;
+  // BDC returns OwnersLawsuits with per-owner structure containing Lawsuits.Lawsuits[]
+  const ownersLawsuitsRaw = result?.OwnersLawsuits || result?.owners_lawsuits;
+  if (ownersLawsuitsRaw) {
     let criminalFound = false;
     const allOwnerLawsuits = [];
-    for (const item of lItems) {
-      const count = item?.TotalLawsuits || item?.LawsuitsCount || 0;
-      totalLawsuits += Number(count) || 0;
-      const types = item?.LawsuitTypes || item?.Categories || [];
-      if (Array.isArray(types) && types.some(t => /criminal|penal|crime/i.test(String(t)))) criminalFound = true;
-      // Extrai processos individuais
-      const lawsuitList = item?.Lawsuits || item?.LawsuitDetails || item?.Items || [];
-      if (Array.isArray(lawsuitList)) {
-        for (const lw of lawsuitList) {
-          allOwnerLawsuits.push({
-            number: lw?.LawsuitNumber || lw?.Number || lw?.ProcessNumber || lw?.CnjNumber || 'N/I',
-            court: lw?.Court || lw?.CourtName || lw?.JudicialBody || '',
-            type: lw?.LawsuitType || lw?.Type || lw?.Category || '',
-            subject: lw?.Subject || lw?.MainSubject || lw?.Description || '',
-            status: lw?.Status || lw?.CurrentStatus || '',
-            value: lw?.Value || lw?.CauseValue || lw?.Amount || null,
-            startDate: lw?.StartDate || lw?.FilingDate || lw?.DistributionDate || '',
-            lastUpdate: lw?.LastUpdate || lw?.LastMovementDate || lw?.UpdateDate || '',
-            parties: lw?.Parties || lw?.Participants || lw?.InvolvedParties || [],
-            pole: lw?.Pole || lw?.PartyRole || lw?.Side || '',
-            jurisdiction: lw?.Jurisdiction || lw?.Instance || '',
-            area: lw?.Area || lw?.LawArea || '',
-            lastMovement: lw?.LastMovement || lw?.LastMovementDescription || '',
-            ownerName: item?.Name || item?.RelatedPersonName || '',
-          });
+    
+    // Try structured per-owner format: { "cpf1": { Lawsuits: { Lawsuits: [...] } }, "cpf2": ... }
+    const perOwnerEntries = typeof ownersLawsuitsRaw === 'object' && !Array.isArray(ownersLawsuitsRaw)
+      ? Object.entries(ownersLawsuitsRaw).filter(([k]) => k !== 'MatchKeys')
+      : [];
+    
+    if (perOwnerEntries.length > 0) {
+      for (const [ownerDoc, ownerData] of perOwnerEntries) {
+        const ownerName = ownerData?.Name || ownerData?.PersonName || ownerDoc;
+        const lawsuitsArr = ownerData?.Lawsuits?.Lawsuits || ownerData?.Lawsuits || [];
+        if (Array.isArray(lawsuitsArr)) {
+          for (const lw of lawsuitsArr) {
+            const lwType = lw?.Type || '';
+            const courtType = lw?.CourtType || '';
+            if (/criminal|penal|crime/i.test(lwType) || /criminal|penal|crime/i.test(courtType)) criminalFound = true;
+            const updates = lw?.Updates || [];
+            const lastMovement = updates.length > 0 ? updates[0]?.Content || '' : '';
+            const recentUpdates = updates.slice(0, 5).map(u => ({ content: u?.Content || '', date: u?.PublishDate || '' }));
+            const parties = (lw?.Parties || []).map(p => ({
+              name: p?.Name || '', doc: p?.Doc || '', polarity: p?.Polarity || '',
+              type: p?.Type || '', specificType: p?.PartyDetails?.SpecificType || '',
+            }));
+            allOwnerLawsuits.push({
+              number: lw?.Number || 'N/I', court: lw?.CourtName || '',
+              courtType, judgingBody: lw?.JudgingBody || '',
+              type: lwType, subject: lw?.MainSubject || '',
+              otherSubjects: lw?.OtherSubjects || [],
+              inferredSubject: lw?.InferredCNJSubjectName || '',
+              status: lw?.Status || '',
+              value: (lw?.Value != null && lw.Value >= 0) ? lw.Value : null,
+              startDate: lw?.NoticeDate || lw?.StartDate || '',
+              lastUpdate: lw?.LastMovementDate || '',
+              state: lw?.State || '', parties, recentUpdates,
+              area: lw?.InferredBroadCNJSubjectName || lwType,
+              lastMovement, jurisdiction: courtType,
+              ownerName: String(ownerName),
+            });
+          }
+        }
+      }
+    } else {
+      // Fallback flat array
+      const lItems = flattenBDCArray(ownersLawsuitsRaw);
+      for (const item of lItems) {
+        const lawsuitList = item?.Lawsuits?.Lawsuits || item?.Lawsuits || item?.LawsuitDetails || [];
+        if (Array.isArray(lawsuitList)) {
+          for (const lw of lawsuitList) {
+            const lwType = lw?.Type || '';
+            if (/criminal|penal|crime/i.test(lwType)) criminalFound = true;
+            const updates = lw?.Updates || [];
+            const lastMovement = updates.length > 0 ? updates[0]?.Content || '' : '';
+            allOwnerLawsuits.push({
+              number: lw?.Number || 'N/I', court: lw?.CourtName || '',
+              type: lwType, subject: lw?.MainSubject || '',
+              status: lw?.Status || '',
+              value: (lw?.Value != null && lw.Value >= 0) ? lw.Value : null,
+              startDate: lw?.NoticeDate || '', lastUpdate: lw?.LastMovementDate || '',
+              parties: (lw?.Parties || []).map(p => ({ name: p?.Name || '', doc: p?.Doc || '', type: p?.Type || '' })),
+              area: lw?.InferredBroadCNJSubjectName || lwType, lastMovement,
+              ownerName: item?.Name || item?.RelatedPersonName || '',
+            });
+          }
         }
       }
     }
-    if (totalLawsuits > 0 || allOwnerLawsuits.length > 0) {
-      const displayCount = Math.max(totalLawsuits, allOwnerLawsuits.length);
-      const pts = criminalFound ? 50 : (displayCount > 10 ? 20 : 10);
+    
+    if (allOwnerLawsuits.length > 0) {
+      const pts = criminalFound ? 50 : (allOwnerLawsuits.length > 10 ? 20 : 10);
       score += pts;
+      const criminal = allOwnerLawsuits.filter(l => /criminal|penal|crime/i.test(l.type || '') || /criminal|penal|crime/i.test(l.courtType || ''));
       items.push({ 
         label: 'Processos dos sócios', 
-        value: `${displayCount} processo(s)${criminalFound ? ' — INCLUI CRIMINAL' : ''}`, 
+        value: `${allOwnerLawsuits.length} processo(s) detalhado(s)${criminalFound ? ` — ⚠️ ${criminal.length} CRIMINAL(IS)` : ''}`, 
         risk: criminalFound ? 'CRITICO' : 'ALTO', 
         points: pts,
         lawsuits: allOwnerLawsuits,
       });
     } else {
-      items.push({ label: 'Processos dos sócios', value: 'Nenhum encontrado', risk: 'OK', points: 0 });
+      // Check for reported count without details
+      const lItems = flattenBDCArray(ownersLawsuitsRaw);
+      let totalReported = 0;
+      for (const item of lItems) {
+        totalReported += Number(item?.TotalLawsuits || 0);
+      }
+      if (totalReported > 0) {
+        const pts = totalReported > 10 ? 20 : 10;
+        score += pts;
+        items.push({ label: 'Processos dos sócios', value: `${totalReported} processo(s) reportado(s) (detalhes não disponíveis)`, risk: 'ALTO', points: pts, lawsuitCount: totalReported });
+      } else {
+        items.push({ label: 'Processos dos sócios', value: 'Nenhum encontrado', risk: 'OK', points: 0 });
+      }
     }
   }
 
@@ -657,80 +706,152 @@ function analyzeCompliance(result) {
   }
 
   // Processes (company) — DETALHAMENTO COMPLETO
-  const processes = result?.Processes || result?.processes || result?.Lawsuits || result?.lawsuits;
-  if (processes) {
-    const pItems = flattenBDCArray(processes);
-    let totalProcesses = 0;
+  // BDC returns: { Lawsuits: { Lawsuits: [ {Number, Type, MainSubject, CourtName, State, Status, Parties:[], Updates:[], Value, ...} ] } }
+  // OR: { Processes: { ... } } depending on response format
+  const processesRaw = result?.Processes || result?.processes || result?.Lawsuits || result?.lawsuits;
+  if (processesRaw) {
     let hasCriminal = false;
     const allLawsuits = [];
-    for (const item of pItems) {
-      // Conta total
-      const count = Number(item?.TotalLawsuits || item?.NumberOfLawsuits || 0);
-      totalProcesses += count;
-      const types = item?.LawsuitTypes || item?.Categories || [];
-      if (Array.isArray(types) && types.some(t => /criminal|penal|crime/i.test(String(t)))) hasCriminal = true;
-      // Extrai processos individuais da BDC
-      const lawsuitList = item?.Lawsuits || item?.LawsuitDetails || item?.Items || [];
-      if (Array.isArray(lawsuitList)) {
-        for (const lw of lawsuitList) {
-          allLawsuits.push({
-            number: lw?.LawsuitNumber || lw?.Number || lw?.ProcessNumber || lw?.CnjNumber || 'N/I',
-            court: lw?.Court || lw?.CourtName || lw?.JudicialBody || '',
-            type: lw?.LawsuitType || lw?.Type || lw?.Category || '',
-            subject: lw?.Subject || lw?.MainSubject || lw?.Description || '',
-            status: lw?.Status || lw?.CurrentStatus || '',
-            value: lw?.Value || lw?.CauseValue || lw?.Amount || null,
-            startDate: lw?.StartDate || lw?.FilingDate || lw?.DistributionDate || '',
-            lastUpdate: lw?.LastUpdate || lw?.LastMovementDate || lw?.UpdateDate || '',
-            parties: lw?.Parties || lw?.Participants || lw?.InvolvedParties || [],
-            pole: lw?.Pole || lw?.PartyRole || lw?.Side || '',
-            jurisdiction: lw?.Jurisdiction || lw?.Instance || '',
-            area: lw?.Area || lw?.LawArea || '',
-            lastMovement: lw?.LastMovement || lw?.LastMovementDescription || '',
-          });
-        }
+    
+    // Try the real BDC structure first: Lawsuits.Lawsuits[]
+    const directLawsuits = processesRaw?.Lawsuits;
+    if (Array.isArray(directLawsuits) && directLawsuits.length > 0) {
+      for (const lw of directLawsuits) {
+        const lwType = lw?.Type || lw?.LawsuitType || '';
+        const lwArea = lw?.InferredBroadCNJSubjectName || lw?.Area || '';
+        const courtType = lw?.CourtType || '';
+        if (/criminal|penal|crime/i.test(lwType) || /criminal|penal|crime/i.test(courtType)) hasCriminal = true;
+        
+        // Extract last movement from Updates[]
+        const updates = lw?.Updates || [];
+        const lastMovement = updates.length > 0 ? updates[0]?.Content || '' : '';
+        const recentUpdates = updates.slice(0, 5).map(u => ({
+          content: u?.Content || '',
+          date: u?.PublishDate || u?.CaptureDate || '',
+        }));
+        
+        // Extract parties with full detail
+        const parties = (lw?.Parties || []).map(p => ({
+          name: p?.Name || '',
+          doc: p?.Doc || '',
+          polarity: p?.Polarity || '',
+          type: p?.Type || '',
+          specificType: p?.PartyDetails?.SpecificType || '',
+          oab: p?.PartyDetails?.OAB || '',
+          state: p?.PartyDetails?.State || p?.State || '',
+          isActive: p?.IsPartyActive,
+        }));
+
+        allLawsuits.push({
+          number: lw?.Number || 'N/I',
+          court: lw?.CourtName || lw?.Court || '',
+          courtLevel: lw?.CourtLevel || '',
+          courtType: courtType,
+          courtDistrict: lw?.CourtDistrict || '',
+          judgingBody: lw?.JudgingBody || '',
+          type: lwType,
+          subject: lw?.MainSubject || lw?.Subject || '',
+          otherSubjects: lw?.OtherSubjects || [],
+          inferredSubject: lw?.InferredCNJSubjectName || '',
+          inferredBroadSubject: lwArea,
+          status: lw?.Status || '',
+          value: (lw?.Value != null && lw.Value >= 0) ? lw.Value : null,
+          startDate: lw?.NoticeDate || lw?.RedistributionDate || lw?.StartDate || '',
+          lastUpdate: lw?.LastMovementDate || lw?.LastUpdate || '',
+          closeDate: lw?.CloseDate || '',
+          lawsuitAge: lw?.LawSuitAge || null,
+          numberOfParties: lw?.NumberOfParties || 0,
+          numberOfUpdates: lw?.NumberOfUpdates || 0,
+          state: lw?.State || '',
+          hostService: lw?.LawsuitHostService || '',
+          parties,
+          recentUpdates,
+          pole: '',
+          jurisdiction: `${courtType || ''} — Nível ${lw?.CourtLevel || 'N/I'}`,
+          area: lwArea || lwType,
+          lastMovement,
+        });
       }
-      // Também tenta extrair de LawsuitsByType
-      const byType = item?.LawsuitsByType || item?.ByType || {};
-      if (typeof byType === 'object' && !Array.isArray(byType)) {
-        for (const [typeName, typeItems] of Object.entries(byType)) {
-          if (Array.isArray(typeItems)) {
-            for (const lw of typeItems) {
-              if (!allLawsuits.some(e => e.number === (lw?.LawsuitNumber || lw?.Number))) {
-                allLawsuits.push({
-                  number: lw?.LawsuitNumber || lw?.Number || 'N/I',
-                  court: lw?.Court || lw?.CourtName || '',
-                  type: typeName,
-                  subject: lw?.Subject || lw?.Description || '',
-                  status: lw?.Status || '',
-                  value: lw?.Value || lw?.CauseValue || null,
-                  startDate: lw?.StartDate || lw?.FilingDate || '',
-                  lastUpdate: lw?.LastUpdate || '',
-                  parties: lw?.Parties || [],
-                  pole: lw?.Pole || '',
-                  jurisdiction: lw?.Jurisdiction || '',
-                  area: lw?.Area || typeName,
-                  lastMovement: lw?.LastMovement || '',
-                });
-              }
-            }
+    } else {
+      // Fallback: try flattenBDCArray structure
+      const pItems = flattenBDCArray(processesRaw);
+      for (const item of pItems) {
+        const count = Number(item?.TotalLawsuits || item?.NumberOfLawsuits || 0);
+        const types = item?.LawsuitTypes || item?.Categories || [];
+        if (Array.isArray(types) && types.some(t => /criminal|penal|crime/i.test(String(t)))) hasCriminal = true;
+        const lawsuitList = item?.Lawsuits || item?.LawsuitDetails || item?.Items || [];
+        if (Array.isArray(lawsuitList)) {
+          for (const lw of lawsuitList) {
+            const lwType = lw?.Type || lw?.LawsuitType || '';
+            if (/criminal|penal|crime/i.test(lwType)) hasCriminal = true;
+            const updates = lw?.Updates || [];
+            const lastMovement = updates.length > 0 ? updates[0]?.Content || '' : '';
+            const recentUpdates = updates.slice(0, 5).map(u => ({ content: u?.Content || '', date: u?.PublishDate || '' }));
+            const parties = (lw?.Parties || []).map(p => ({
+              name: p?.Name || '', doc: p?.Doc || '', polarity: p?.Polarity || '',
+              type: p?.Type || '', specificType: p?.PartyDetails?.SpecificType || '',
+            }));
+            allLawsuits.push({
+              number: lw?.Number || lw?.LawsuitNumber || 'N/I',
+              court: lw?.CourtName || lw?.Court || '',
+              courtType: lw?.CourtType || '', type: lwType,
+              subject: lw?.MainSubject || lw?.Subject || '',
+              otherSubjects: lw?.OtherSubjects || [],
+              inferredSubject: lw?.InferredCNJSubjectName || '',
+              status: lw?.Status || '',
+              value: (lw?.Value != null && lw.Value >= 0) ? lw.Value : null,
+              startDate: lw?.NoticeDate || lw?.StartDate || '',
+              lastUpdate: lw?.LastMovementDate || lw?.LastUpdate || '',
+              state: lw?.State || '', parties, recentUpdates,
+              area: lw?.InferredBroadCNJSubjectName || lwType,
+              lastMovement, jurisdiction: lw?.CourtType || '',
+            });
           }
         }
       }
     }
-    if (totalProcesses > 0 || allLawsuits.length > 0) {
-      const displayCount = Math.max(totalProcesses, allLawsuits.length);
+
+    const displayCount = allLawsuits.length;
+    if (displayCount > 0) {
       const pts = hasCriminal ? 50 : (displayCount > 20 ? 25 : 10);
       score += pts;
+      // Categorize
+      const criminal = allLawsuits.filter(l => /criminal|penal|crime/i.test(l.type || '') || /criminal|penal|crime/i.test(l.courtType || ''));
+      const civel = allLawsuits.filter(l => /c[ií]vel/i.test(l.type || '') || /c[ií]vel/i.test(l.courtType || ''));
+      const trabalhista = allLawsuits.filter(l => /trabalh/i.test(l.type || '') || /trabalh/i.test(l.courtType || ''));
+      const outros = allLawsuits.filter(l => !criminal.includes(l) && !civel.includes(l) && !trabalhista.includes(l));
+      
+      const breakdown = [];
+      if (criminal.length > 0) breakdown.push(`${criminal.length} criminal(is)`);
+      if (civel.length > 0) breakdown.push(`${civel.length} cível(is)`);
+      if (trabalhista.length > 0) breakdown.push(`${trabalhista.length} trabalhista(s)`);
+      if (outros.length > 0) breakdown.push(`${outros.length} outro(s)`);
+      
       items.push({ 
         label: 'Processos judiciais', 
-        value: `${displayCount} processo(s)${hasCriminal ? ' — INCLUI CRIMINAL' : ''}`, 
+        value: `${displayCount} processo(s) detalhado(s)${hasCriminal ? ' — ⚠️ INCLUI CRIMINAL' : ''} — ${breakdown.join(', ')}`, 
         risk: hasCriminal ? 'CRITICO' : 'ALTO', 
         points: pts,
         lawsuits: allLawsuits,
       });
     } else {
-      items.push({ label: 'Processos judiciais', value: 'Nenhum', risk: 'OK', points: 0 });
+      // BDC may report a count without individual details
+      const pItems = flattenBDCArray(processesRaw);
+      let totalReported = 0;
+      for (const item of pItems) {
+        totalReported += Number(item?.TotalLawsuits || item?.NumberOfLawsuits || 0);
+      }
+      if (totalReported > 0) {
+        const pts = totalReported > 20 ? 25 : 10;
+        score += pts;
+        items.push({ 
+          label: 'Processos judiciais', 
+          value: `${totalReported} processo(s) reportado(s) pela BDC (detalhes individuais não disponíveis nesta consulta)`, 
+          risk: 'ALTO', points: pts, lawsuitCount: totalReported,
+        });
+      } else {
+        items.push({ label: 'Processos judiciais', value: 'Nenhum', risk: 'OK', points: 0 });
+      }
     }
   }
 
@@ -983,42 +1104,77 @@ function analyzePersonData(result) {
     }
   }
 
-  // Processes — with full detail extraction
+  // Processes (PF) — with full detail extraction using real BDC structure
   const pProcesses = result?.Processes || result?.processes;
   if (pProcesses) {
-    const pItems = flattenBDCArray(pProcesses);
-    let total = 0;
     let hasCriminal = false;
     const allLawsuits = [];
-    for (const item of pItems) {
-      total += Number(item?.TotalLawsuits || item?.NumberOfLawsuits || 0);
-      const types = item?.LawsuitTypes || item?.Categories || [];
-      if (Array.isArray(types) && types.some(t => /criminal|penal|crime/i.test(String(t)))) hasCriminal = true;
-      const lawsuitList = item?.Lawsuits || item?.LawsuitDetails || item?.Items || [];
-      if (Array.isArray(lawsuitList)) {
-        for (const lw of lawsuitList) {
-          allLawsuits.push({
-            number: lw?.LawsuitNumber || lw?.Number || lw?.ProcessNumber || lw?.CnjNumber || 'N/I',
-            court: lw?.Court || lw?.CourtName || lw?.JudicialBody || '',
-            type: lw?.LawsuitType || lw?.Type || lw?.Category || '',
-            subject: lw?.Subject || lw?.MainSubject || lw?.Description || '',
-            status: lw?.Status || lw?.CurrentStatus || '',
-            value: lw?.Value || lw?.CauseValue || lw?.Amount || null,
-            startDate: lw?.StartDate || lw?.FilingDate || lw?.DistributionDate || '',
-            lastUpdate: lw?.LastUpdate || lw?.LastMovementDate || lw?.UpdateDate || '',
-            parties: lw?.Parties || lw?.Participants || lw?.InvolvedParties || [],
-            pole: lw?.Pole || lw?.PartyRole || lw?.Side || '',
-            jurisdiction: lw?.Jurisdiction || lw?.Instance || '',
-            area: lw?.Area || lw?.LawArea || '',
-            lastMovement: lw?.LastMovement || lw?.LastMovementDescription || '',
-          });
+    
+    // Try real BDC structure: Lawsuits.Lawsuits[] or direct Lawsuits[]
+    const directLawsuits = pProcesses?.Lawsuits;
+    if (Array.isArray(directLawsuits) && directLawsuits.length > 0) {
+      for (const lw of directLawsuits) {
+        const lwType = lw?.Type || '';
+        const courtType = lw?.CourtType || '';
+        if (/criminal|penal|crime/i.test(lwType) || /criminal|penal|crime/i.test(courtType)) hasCriminal = true;
+        const updates = lw?.Updates || [];
+        const lastMovement = updates.length > 0 ? updates[0]?.Content || '' : '';
+        const recentUpdates = updates.slice(0, 5).map(u => ({ content: u?.Content || '', date: u?.PublishDate || '' }));
+        const parties = (lw?.Parties || []).map(p => ({
+          name: p?.Name || '', doc: p?.Doc || '', polarity: p?.Polarity || '',
+          type: p?.Type || '', specificType: p?.PartyDetails?.SpecificType || '',
+        }));
+        allLawsuits.push({
+          number: lw?.Number || 'N/I', court: lw?.CourtName || '',
+          courtType, judgingBody: lw?.JudgingBody || '', courtDistrict: lw?.CourtDistrict || '',
+          type: lwType, subject: lw?.MainSubject || '',
+          otherSubjects: lw?.OtherSubjects || [],
+          inferredSubject: lw?.InferredCNJSubjectName || '',
+          status: lw?.Status || '',
+          value: (lw?.Value != null && lw.Value >= 0) ? lw.Value : null,
+          startDate: lw?.NoticeDate || lw?.StartDate || '',
+          lastUpdate: lw?.LastMovementDate || '', closeDate: lw?.CloseDate || '',
+          lawsuitAge: lw?.LawSuitAge || null, numberOfUpdates: lw?.NumberOfUpdates || 0,
+          state: lw?.State || '', hostService: lw?.LawsuitHostService || '',
+          parties, recentUpdates,
+          area: lw?.InferredBroadCNJSubjectName || lwType,
+          lastMovement, jurisdiction: courtType,
+        });
+      }
+    } else {
+      // Fallback
+      const pItems = flattenBDCArray(pProcesses);
+      for (const item of pItems) {
+        const lawsuitList = item?.Lawsuits || item?.LawsuitDetails || [];
+        if (Array.isArray(lawsuitList)) {
+          for (const lw of lawsuitList) {
+            const lwType = lw?.Type || '';
+            if (/criminal|penal|crime/i.test(lwType)) hasCriminal = true;
+            const updates = lw?.Updates || [];
+            allLawsuits.push({
+              number: lw?.Number || 'N/I', court: lw?.CourtName || '',
+              type: lwType, subject: lw?.MainSubject || '', status: lw?.Status || '',
+              value: (lw?.Value != null && lw.Value >= 0) ? lw.Value : null,
+              startDate: lw?.NoticeDate || '', lastUpdate: lw?.LastMovementDate || '',
+              parties: (lw?.Parties || []).map(p => ({ name: p?.Name || '', doc: p?.Doc || '', type: p?.Type || '' })),
+              recentUpdates: updates.slice(0, 5).map(u => ({ content: u?.Content || '', date: u?.PublishDate || '' })),
+              area: lw?.InferredBroadCNJSubjectName || lwType,
+              lastMovement: updates.length > 0 ? updates[0]?.Content || '' : '',
+            });
+          }
         }
       }
     }
-    const displayCount = Math.max(total, allLawsuits.length);
-    if (displayCount > 0) {
-      const pts = hasCriminal ? 50 : (displayCount > 5 ? 30 : 10);
-      sections.compliance.items.push({ label: 'Processos judiciais', value: `${displayCount} processo(s)${hasCriminal ? ' — INCLUI CRIMINAL' : ''}`, risk: hasCriminal ? 'CRITICO' : (displayCount > 5 ? 'ALTO' : 'MEDIO'), points: pts, lawsuits: allLawsuits });
+    
+    if (allLawsuits.length > 0) {
+      const pts = hasCriminal ? 50 : (allLawsuits.length > 5 ? 30 : 10);
+      const criminal = allLawsuits.filter(l => /criminal|penal|crime/i.test(l.type || '') || /criminal|penal|crime/i.test(l.courtType || ''));
+      sections.compliance.items.push({ 
+        label: 'Processos judiciais', 
+        value: `${allLawsuits.length} processo(s) detalhado(s)${hasCriminal ? ` — ⚠️ ${criminal.length} CRIMINAL(IS)` : ''}`, 
+        risk: hasCriminal ? 'CRITICO' : (allLawsuits.length > 5 ? 'ALTO' : 'MEDIO'), 
+        points: pts, lawsuits: allLawsuits,
+      });
       sections.compliance.score += pts;
     } else {
       sections.compliance.items.push({ label: 'Processos judiciais', value: 'Nenhum', risk: 'OK', points: 0 });

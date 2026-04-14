@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { ChevronDown, ChevronUp, AlertTriangle, CheckCircle2, Info, AlertOctagon } from 'lucide-react';
+import { ChevronDown, ChevronUp, AlertTriangle, CheckCircle2, Info, AlertOctagon, HelpCircle } from 'lucide-react';
 import BDCLawsuitsViewer from './BDCLawsuitsViewer';
+import { getItemExplanation } from './BDCItemExplanations';
 
 const RISK_CONFIG = {
   'CRITICO': { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200', icon: AlertOctagon, badgeBg: 'bg-red-100' },
@@ -35,10 +36,19 @@ function RiskIndicator({ risk }) {
 
 function AnalysisItem({ item }) {
   const [showDetails, setShowDetails] = useState(false);
+  const [showExplanation, setShowExplanation] = useState(false);
   const c = RISK_CONFIG[item.risk] || RISK_CONFIG.INFO;
   const hasDetails = item.details && Object.keys(item.details).length > 0;
   const hasOwners = item.owners && item.owners.length > 0;
   const hasLawsuits = item.lawsuits && item.lawsuits.length > 0;
+  const hasExpandable = hasDetails || hasOwners || hasLawsuits;
+  const explanation = getItemExplanation(item.label);
+
+  // Auto-expand lawsuits/owners/details for critical/high risk items
+  const [autoExpanded] = useState(() => 
+    (item.risk === 'CRITICO' || item.risk === 'ALTO') && (hasLawsuits || hasOwners)
+  );
+  const isDetailsOpen = showDetails || autoExpanded;
 
   return (
     <div className={`px-4 py-3 border-b border-slate-100 last:border-0 hover:bg-slate-50/50 transition-colors ${item.risk === 'CRITICO' ? 'bg-red-50/30' : item.risk === 'ALTO' ? 'bg-orange-50/20' : ''}`}>
@@ -46,6 +56,15 @@ function AnalysisItem({ item }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs font-semibold text-[#002443]">{item.label}</span>
+            {explanation && (
+              <button 
+                onClick={(e) => { e.stopPropagation(); setShowExplanation(!showExplanation); }}
+                className="text-blue-400 hover:text-blue-600 transition-colors"
+                title="O que isso significa?"
+              >
+                <HelpCircle className="w-3.5 h-3.5" />
+              </button>
+            )}
             <RiskIndicator risk={item.risk} />
             {item.points !== 0 && (
               <span 
@@ -57,14 +76,33 @@ function AnalysisItem({ item }) {
             )}
           </div>
           <p className={`text-[12px] mt-0.5 ${c.text} leading-relaxed`}>{item.value}</p>
+          
+          {/* Contextual explanation */}
+          {showExplanation && explanation && (
+            <div className="mt-2 p-3 bg-blue-50/80 rounded-lg border border-blue-100">
+              <p className="text-[11px] text-blue-800 leading-relaxed">{explanation}</p>
+            </div>
+          )}
         </div>
-        {(hasDetails || hasOwners || hasLawsuits) && (
-          <button onClick={() => setShowDetails(!showDetails)} className="text-[#002443]/30 hover:text-[#002443]/60 p-1">
-            {showDetails ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        {hasExpandable && (
+          <button onClick={() => setShowDetails(!isDetailsOpen)} className="text-[#002443]/30 hover:text-[#002443]/60 p-1">
+            {isDetailsOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
         )}
       </div>
-      {showDetails && hasDetails && (
+
+      {/* Lawsuits summary when no detailed data */}
+      {!hasLawsuits && item.lawsuitCount > 0 && (
+        <div className="mt-2 ml-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
+          <p className="text-[11px] text-amber-800 leading-relaxed">
+            <strong>⚠️ Atenção:</strong> A Big Data Corp reportou <strong>{item.lawsuitCount} processo(s)</strong> mas os detalhes individuais (número, tribunal, tipo, partes) não estão disponíveis nesta consulta. 
+            Isso pode ocorrer porque o dataset de detalhamento completo não foi incluído ou porque os dados estão sob sigilo judicial.
+            <br/>Recomendação: Consultar diretamente nos tribunais ou solicitar o dataset <code className="bg-amber-100 px-1 rounded text-[10px]">processes</code> com parâmetros expandidos.
+          </p>
+        </div>
+      )}
+
+      {isDetailsOpen && hasDetails && (
         <div className="mt-2 ml-4 pl-3 border-l-2 border-slate-200 space-y-1.5">
           {Object.entries(item.details).map(([key, val]) => (
             <div key={key} className="flex items-start gap-2">
@@ -89,7 +127,7 @@ function AnalysisItem({ item }) {
           ))}
         </div>
       )}
-      {showDetails && hasOwners && (
+      {isDetailsOpen && hasOwners && (
         <div className="mt-2 ml-4 overflow-x-auto">
           <table className="w-full text-[11px]">
             <thead>
@@ -113,7 +151,7 @@ function AnalysisItem({ item }) {
           </table>
         </div>
       )}
-      {showDetails && hasLawsuits && (
+      {isDetailsOpen && hasLawsuits && (
         <div className="mt-2 ml-4">
           <BDCLawsuitsViewer lawsuits={item.lawsuits} />
         </div>

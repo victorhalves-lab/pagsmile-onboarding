@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { AlertOctagon, AlertTriangle, ChevronDown, ChevronUp, ShieldAlert, ArrowRight } from 'lucide-react';
+import { AlertOctagon, AlertTriangle, ChevronDown, ChevronUp, ShieldAlert, ArrowRight, HelpCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { getItemExplanation } from './BDCItemExplanations';
 
 /**
  * BDCSmartAlerts — Consolidates the TOP critical/high risk findings across ALL sections
@@ -22,6 +23,57 @@ function getCnaeAlert(cnae) {
   if (!cnae) return null;
   const code = cnae.replace(/[^0-9]/g, '').substring(0, 4);
   return CNAE_RISK_MAP[code] || null;
+}
+
+function AlertCard({ alert, explanation }) {
+  const [showExpl, setShowExpl] = useState(false);
+  return (
+    <div className={`rounded-xl p-4 border ${
+      alert.severity === 'BLOQUEIO' ? 'bg-red-50 border-red-300' :
+      alert.severity === 'CRITICO' ? 'bg-red-50/60 border-red-200' :
+      'bg-orange-50/60 border-orange-200'
+    }`}>
+      <div className="flex items-start gap-3">
+        {alert.severity === 'BLOQUEIO' || alert.severity === 'CRITICO' 
+          ? <AlertOctagon className="w-4 h-4 text-red-600 mt-0.5 shrink-0" />
+          : <AlertTriangle className="w-4 h-4 text-orange-600 mt-0.5 shrink-0" />
+        }
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap mb-1">
+            <span className={`text-xs font-bold ${alert.severity === 'ALTO' ? 'text-orange-800' : 'text-red-800'}`}>
+              {alert.title}
+            </span>
+            {explanation && (
+              <button onClick={() => setShowExpl(!showExpl)} className="text-blue-400 hover:text-blue-600">
+                <HelpCircle className="w-3.5 h-3.5" />
+              </button>
+            )}
+            <Badge className={`text-[9px] ${
+              alert.severity === 'BLOQUEIO' ? 'bg-red-700 text-white' :
+              alert.severity === 'CRITICO' ? 'bg-red-100 text-red-700 border-red-200 border' :
+              'bg-orange-100 text-orange-700 border-orange-200 border'
+            }`}>
+              {alert.severity === 'BLOQUEIO' ? 'BLOQUEANTE' : alert.severity}
+            </Badge>
+            {alert.points > 0 && (
+              <span className="text-[10px] font-mono text-red-600">↑ {alert.points} pts</span>
+            )}
+          </div>
+          <p className={`text-[12px] leading-relaxed ${alert.severity === 'ALTO' ? 'text-orange-700/80' : 'text-red-700/80'}`}>
+            {alert.detail}
+          </p>
+          {alert.isCnae && (
+            <p className="text-[11px] text-[#002443]/60 mt-1 leading-relaxed italic">{alert.detail}</p>
+          )}
+          {showExpl && explanation && (
+            <div className="mt-2 p-2.5 bg-blue-50/80 rounded-lg border border-blue-100">
+              <p className="text-[11px] text-blue-800 leading-relaxed">{explanation}</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function BDCSmartAlerts({ analysis, merchant }) {
@@ -116,43 +168,12 @@ export default function BDCSmartAlerts({ analysis, merchant }) {
 
       {expanded && (
         <div className="border-t border-red-100 p-4 space-y-2.5">
-          {top.map((alert, i) => (
-            <div
-              key={i}
-              className={`rounded-xl p-4 border ${
-                alert.severity === 'BLOQUEIO' ? 'bg-red-50 border-red-300' :
-                alert.severity === 'CRITICO' ? 'bg-red-50/60 border-red-200' :
-                'bg-orange-50/60 border-orange-200'
-              }`}
-            >
-              <div className="flex items-start gap-3">
-                {alert.severity === 'BLOQUEIO' || alert.severity === 'CRITICO' 
-                  ? <AlertOctagon className="w-4 h-4 text-red-600 mt-0.5 shrink-0" />
-                  : <AlertTriangle className="w-4 h-4 text-orange-600 mt-0.5 shrink-0" />
-                }
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <span className={`text-xs font-bold ${alert.severity === 'ALTO' ? 'text-orange-800' : 'text-red-800'}`}>
-                      {alert.title}
-                    </span>
-                    <Badge className={`text-[9px] ${
-                      alert.severity === 'BLOQUEIO' ? 'bg-red-700 text-white' :
-                      alert.severity === 'CRITICO' ? 'bg-red-100 text-red-700 border-red-200 border' :
-                      'bg-orange-100 text-orange-700 border-orange-200 border'
-                    }`}>
-                      {alert.severity === 'BLOQUEIO' ? 'BLOQUEANTE' : alert.severity}
-                    </Badge>
-                    {alert.points > 0 && (
-                      <span className="text-[10px] font-mono text-red-600">↑ {alert.points} pts</span>
-                    )}
-                  </div>
-                  <p className={`text-[12px] leading-relaxed ${alert.severity === 'ALTO' ? 'text-orange-700/80' : 'text-red-700/80'}`}>
-                    {alert.detail}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
+          {top.map((alert, i) => {
+            const explanation = getItemExplanation(alert.title);
+            return (
+              <AlertCard key={i} alert={alert} explanation={explanation} />
+            );
+          })}
           {alerts.length > 8 && (
             <p className="text-[10px] text-red-400 text-center">
               ... e mais {alerts.length - 8} achados nas seções detalhadas abaixo

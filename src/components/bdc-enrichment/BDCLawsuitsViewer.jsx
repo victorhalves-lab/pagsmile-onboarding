@@ -67,9 +67,21 @@ function LawsuitCard({ lawsuit, index }) {
         <div className="border-t border-slate-100 p-4 bg-[#fafafa] space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {lawsuit.court && (
-              <DetailField icon={MapPin} label="Tribunal / Vara" value={lawsuit.court} />
+              <DetailField icon={MapPin} label="Tribunal" value={lawsuit.court} />
             )}
-            {lawsuit.jurisdiction && (
+            {lawsuit.judgingBody && (
+              <DetailField icon={Scale} label="Órgão Julgador / Vara" value={lawsuit.judgingBody} />
+            )}
+            {lawsuit.courtType && (
+              <DetailField icon={Scale} label="Tipo de Justiça" value={lawsuit.courtType} />
+            )}
+            {lawsuit.courtDistrict && (
+              <DetailField icon={MapPin} label="Comarca" value={lawsuit.courtDistrict} />
+            )}
+            {lawsuit.state && (
+              <DetailField icon={MapPin} label="UF" value={lawsuit.state} />
+            )}
+            {lawsuit.jurisdiction && !lawsuit.courtType && (
               <DetailField icon={Scale} label="Instância / Jurisdição" value={lawsuit.jurisdiction} />
             )}
             {lawsuit.startDate && (
@@ -77,6 +89,18 @@ function LawsuitCard({ lawsuit, index }) {
             )}
             {lawsuit.lastUpdate && (
               <DetailField icon={Clock} label="Última Movimentação" value={formatDate(lawsuit.lastUpdate)} />
+            )}
+            {lawsuit.closeDate && lawsuit.closeDate !== '0001-01-01T00:00:00' && (
+              <DetailField icon={Calendar} label="Data de Encerramento" value={formatDate(lawsuit.closeDate)} />
+            )}
+            {lawsuit.lawsuitAge != null && (
+              <DetailField icon={Clock} label="Idade do Processo" value={`${lawsuit.lawsuitAge} dias`} />
+            )}
+            {lawsuit.numberOfUpdates > 0 && (
+              <DetailField icon={FileText} label="Total de Movimentações" value={String(lawsuit.numberOfUpdates)} />
+            )}
+            {lawsuit.hostService && (
+              <DetailField icon={FileText} label="Sistema" value={lawsuit.hostService} />
             )}
             {lawsuit.pole && (
               <DetailField icon={Users} label="Polo" value={lawsuit.pole} />
@@ -86,34 +110,68 @@ function LawsuitCard({ lawsuit, index }) {
             )}
           </div>
 
-          {lawsuit.lastMovement && (
+          {/* Subject + Inferred */}
+          {(lawsuit.subject || lawsuit.inferredSubject) && (
+            <div className="bg-white rounded-lg p-3 border border-slate-100">
+              <p className="text-[10px] font-semibold text-[#002443]/50 mb-1">Assunto Principal</p>
+              <p className="text-xs text-[#002443]/80 leading-relaxed font-medium">{lawsuit.subject || lawsuit.inferredSubject}</p>
+              {lawsuit.otherSubjects && lawsuit.otherSubjects.length > 0 && (
+                <div className="mt-1.5">
+                  <p className="text-[10px] text-[#002443]/40 mb-0.5">Outros assuntos:</p>
+                  {lawsuit.otherSubjects.map((s, i) => (
+                    <span key={i} className="text-[11px] text-[#002443]/60 mr-2">• {s}</span>
+                  ))}
+                </div>
+              )}
+              {lawsuit.inferredBroadSubject && lawsuit.inferredBroadSubject !== lawsuit.subject && (
+                <p className="text-[10px] text-[#002443]/40 mt-1">Área ampla: {lawsuit.inferredBroadSubject}</p>
+              )}
+            </div>
+          )}
+
+          {/* Recent Updates (movimentações) */}
+          {lawsuit.recentUpdates && lawsuit.recentUpdates.length > 0 && (
+            <div className="bg-white rounded-lg p-3 border border-slate-100">
+              <p className="text-[10px] font-semibold text-[#002443]/50 mb-2">
+                Últimas Movimentações ({lawsuit.recentUpdates.length} de {lawsuit.numberOfUpdates || lawsuit.recentUpdates.length})
+              </p>
+              <div className="space-y-2">
+                {lawsuit.recentUpdates.map((upd, i) => (
+                  <div key={i} className="flex items-start gap-2 text-[11px]">
+                    <span className="text-[10px] text-[#002443]/35 font-mono whitespace-nowrap min-w-[70px]">
+                      {upd.date ? formatDate(upd.date) : '—'}
+                    </span>
+                    <span className="text-[#002443]/70 leading-relaxed">{upd.content}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Fallback: lastMovement if no recentUpdates */}
+          {(!lawsuit.recentUpdates || lawsuit.recentUpdates.length === 0) && lawsuit.lastMovement && (
             <div className="bg-white rounded-lg p-3 border border-slate-100">
               <p className="text-[10px] font-semibold text-[#002443]/50 mb-1">Última Movimentação</p>
               <p className="text-xs text-[#002443]/80 leading-relaxed">{lawsuit.lastMovement}</p>
             </div>
           )}
 
-          {lawsuit.subject && (
-            <div className="bg-white rounded-lg p-3 border border-slate-100">
-              <p className="text-[10px] font-semibold text-[#002443]/50 mb-1">Assunto / Descrição</p>
-              <p className="text-xs text-[#002443]/80 leading-relaxed">{lawsuit.subject}</p>
-            </div>
-          )}
-
           {/* Parties */}
           {lawsuit.parties && lawsuit.parties.length > 0 && (
             <div className="bg-white rounded-lg p-3 border border-slate-100">
-              <p className="text-[10px] font-semibold text-[#002443]/50 mb-2">Partes Envolvidas</p>
+              <p className="text-[10px] font-semibold text-[#002443]/50 mb-2">Partes Envolvidas ({lawsuit.parties.length})</p>
               <div className="space-y-1.5">
                 {lawsuit.parties.map((party, i) => {
-                  const name = typeof party === 'string' ? party : (party?.Name || party?.PartyName || party?.PersonName || JSON.stringify(party));
-                  const role = typeof party === 'object' ? (party?.Role || party?.PartyRole || party?.Pole || '') : '';
-                  const doc = typeof party === 'object' ? (party?.TaxIdNumber || party?.Document || '') : '';
+                  const name = typeof party === 'string' ? party : (party?.name || party?.Name || party?.PartyName || '');
+                  const role = typeof party === 'object' ? (party?.specificType || party?.type || party?.Type || party?.Role || '') : '';
+                  const doc = typeof party === 'object' ? (party?.doc || party?.Doc || party?.TaxIdNumber || '') : '';
+                  const polarity = typeof party === 'object' ? (party?.polarity || party?.Polarity || '') : '';
+                  const polarityColors = { ACTIVE: 'text-blue-600', PASSIVE: 'text-red-600', NEUTRAL: 'text-slate-500' };
                   return (
-                    <div key={i} className="flex items-center gap-2 text-[11px]">
+                    <div key={i} className="flex items-center gap-2 text-[11px] flex-wrap">
                       <Users className="w-3 h-3 text-[#002443]/30 shrink-0" />
-                      <span className="text-[#002443] font-medium">{name}</span>
-                      {role && <span className="text-[#002443]/40">({role})</span>}
+                      <span className="text-[#002443] font-medium">{name || 'N/I'}</span>
+                      {role && <span className={`text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 ${polarityColors[polarity] || 'text-[#002443]/50'}`}>{role}</span>}
                       {doc && <span className="text-[#002443]/30 font-mono text-[10px]">{doc}</span>}
                     </div>
                   );
