@@ -9,11 +9,14 @@ import { Badge } from '@/components/ui/badge';
 
 const CORE_DATASETS = {
   identity: { label: 'Dados Cadastrais', required: true, desc: 'Razão social, CNPJ, situação, fundação' },
-  owners: { label: 'Quadro Societário', required: true, desc: 'Sócios, participação, qualificação' },
+  owners: { label: 'Quadro Societário', required: true, desc: 'Sócios, PEP, sanções, grupo econômico' },
   digital: { label: 'Presença Digital', required: false, desc: 'Domínios, passagens, atividade online' },
-  compliance: { label: 'Compliance / PLD', required: true, desc: 'Sanções, PEP, processos, dívida ativa' },
+  compliance: { label: 'Compliance / PLD', required: true, desc: 'Sanções, processos, dívida ativa, distribuição' },
   reputation: { label: 'Reputação / Mídia', required: false, desc: 'Notícias, avaliações, Reclame Aqui' },
   financial: { label: 'Financeiro / Mercado', required: false, desc: 'BCB, CVM, grupo econômico, MCC' },
+  evolution: { label: 'Evolução Histórica', required: false, desc: 'Capital, funcionários, alterações cadastrais' },
+  esg: { label: 'ESG / Lista Suja', required: true, desc: 'Lista Suja MTE, IBAMA, indicadores ESG' },
+  contacts: { label: 'Validação Contatos', required: false, desc: 'Telefones, e-mails, endereços validados' },
 };
 
 export default function BDCDataConfidence({ analysis }) {

@@ -13,6 +13,9 @@ const DIMENSION_LABELS = {
   compliance: 'Compliance / PLD',
   reputation: 'Reputação / Mídia',
   financial: 'Financeiro / Mercado',
+  evolution: 'Evolução Histórica',
+  esg: 'ESG / Lista Suja',
+  contacts: 'Contatos',
 };
 
 function calculateDimensionRisk(section) {

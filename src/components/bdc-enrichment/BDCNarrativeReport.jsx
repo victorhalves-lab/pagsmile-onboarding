@@ -45,6 +45,9 @@ function buildNarrativePrompt(analysis) {
     extractItems('Compliance/PLD', sections.compliance);
     extractItems('Reputação', sections.reputation);
     extractItems('Financeiro', sections.financial);
+    extractItems('Evolução Histórica', sections.evolution);
+    extractItems('ESG / Lista Suja MTE', sections.esg);
+    extractItems('Validação de Contatos', sections.contacts);
   }
 
   const blocksText = (analysis.blocks || []).map(b => `- BLOQUEIO ${b.code}: ${b.label} — ${b.detail}`).join('\n');
@@ -165,12 +168,41 @@ ${isPF ? `Escreva uma análise DETALHADA (mínimo 10 linhas) sobre:
 ## 🌐 Presença Digital e Atividade Real
 ${isPF ? 'Se houver dados de presença online, descreva.' : `
 Escreva uma análise DETALHADA (mínimo 8-10 linhas) sobre:
-- Domínios registrados da empresa — idade do domínio (domínio recente = risco maior), se tem SSL (cadeado de segurança), plataforma tecnológica
-- Passagens pela web — quantas vezes a empresa apareceu em buscas/sites nos últimos 12 meses. Zero passagens pode indicar empresa fantasma que não opera de verdade
-- Nível de atividade — score calculado pela BDC que indica se a empresa tem sinais reais de operação
-- Score de "Shell Company" (empresa de fachada) — se está acima de 30% é preocupante, acima de 50% é grave, acima de 80% é bloqueio
-- Presença em marketplaces (Mercado Livre, Shopee, Amazon) — se relevante para o tipo de negócio
-- Anúncios online encontrados
+- Domínios registrados da empresa — idade do domínio, SSL, plataforma tecnológica, métodos de pagamento aceitos, tipo de site
+- Passagens pela web — quantas vezes a empresa apareceu em buscas/sites nos últimos 12 meses. Zero passagens = empresa fantasma
+- Nível de atividade — score de operação real
+- Score de "Shell Company" (empresa de fachada) — >30% preocupante, >50% grave, >80% bloqueio
+- Presença em marketplaces, anúncios online
+`}
+
+## 📈 Evolução Histórica e Alterações Cadastrais
+${isPF ? 'Se disponível, descreva histórico da pessoa.' : `
+Escreva uma análise DETALHADA sobre:
+- Evolução do capital social ao longo do tempo — se houve queda significativa (esvaziamento patrimonial?)
+- Evolução do número de funcionários — se houve queda drástica (empresa encerrando operações?)
+- Histórico de alterações cadastrais — quantas mudanças nos últimos 12 meses
+- Mudanças de CNAE — se a empresa mudou de atividade recentemente e por quê
+- Mudanças de razão social — se trocou de nome (tentando se desvincular de histórico negativo?)
+- O que a ESTABILIDADE ou INSTABILIDADE cadastral diz sobre esta empresa
+`}
+
+## 🌿 ESG / Lista Suja MTE / Compliance Ambiental
+${isPF ? 'Se disponível, descreva dados ESG da pessoa.' : `
+Escreva uma análise DETALHADA sobre:
+- Se a empresa consta na Lista Suja do MTE (trabalho escravo) — PRESENÇA = REJEIÇÃO IMEDIATA
+- Scores ESG (ambiental, social, governança) se disponíveis
+- Embargos IBAMA se detectados — o que significa para a operação
+- Alertas de desmatamento se detectados
+- Implicações legais e regulatórias de cada achado
+`}
+
+## 📞 Validação de Contatos
+${isPF ? '' : `
+Analise os contatos encontrados pela BDC:
+- Telefones: quantos encontrados, tipos (fixo/móvel), operadoras, status (ativo/inativo)
+- E-mails: domínios corporativos vs genéricos (gmail, hotmail), o que isso indica sobre a maturidade da empresa
+- Endereços: quantos encontrados, se corroboram o endereço declarado
+- Divergências entre contatos declarados e contatos encontrados
 `}
 
 ## ⚠️ Pontos de Atenção — Análise Detalhada de Cada Risco
@@ -235,6 +267,18 @@ Datasets que devem ser explicados (se consultados):
 - **marketplace_data**: Presença em marketplaces (Mercado Livre, Shopee, etc.)
 - **merchant_category_data**: MCC (Merchant Category Code) real da empresa
 - **economic_group**: Grupo econômico — empresas relacionadas
+- **economic_group_kyc**: KYC do grupo econômico — PEP e sanções de entidades do grupo econômico inteiro (participações indiretas)
+- **economic_group_relationships**: Relacionamentos do grupo econômico — mapeamento completo de todas empresas do grupo com vínculos corporativos
+- **configurable_recency_qsa**: QSA em tempo real da Receita Federal — composição societária atualizada em real-time
+- **lawsuits_distribution_data**: Distribuição de processos — visão agregada por tipo (criminal, cível, trabalhista)
+- **owners_lawsuits_distribution**: Distribuição de processos dos sócios — pré-triagem agregada
+- **history_basic_data**: Histórico de dados cadastrais — mudanças de nome, CNAE, regime tributário ao longo do tempo
+- **company_evolution**: Evolução da empresa — série temporal de capital social, funcionários, sócios
+- **esg_and_compliance**: ESG — Lista Suja do MTE (trabalho escravo), indicadores ambientais e sociais, embargos IBAMA
+- **emails_extended**: E-mails associados à empresa — domínios corporativos vs genéricos
+- **phones_extended**: Telefones associados — tipo, operadora, status ativo/inativo
+- **addresses_extended**: Endereços associados em bases públicas e privadas
+- **risk_data**: Dados de risco PF — cobrança, inadimplência, nível de risco individual
 
 REGRAS ABSOLUTAS:
 - NUNCA resuma algo em 1-2 linhas quando pode explicar em 5-8 linhas

@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { 
   Loader2, RefreshCw, Building2, Users, Globe, Shield, 
   TrendingUp, Newspaper, Database, User,
-  AlertOctagon, Phone
+  AlertOctagon, Phone, History, Leaf, Contact
 } from 'lucide-react';
 import BDCScoreHeader from './BDCScoreHeader';
 import BDCAnalysisSection from './BDCAnalysisSection';
@@ -59,7 +59,7 @@ export default function BDCEnrichmentPanel({ onboardingCaseId, merchant, complia
           </div>
           <h3 className="text-lg font-bold text-[#002443] mb-2">Enriquecimento Big Data Corp</h3>
           <p className="text-sm text-[#002443]/60 mb-1">
-            Consulta automática a 34 datasets da BDC para validar dados declarados, 
+            Consulta automática a até 45 datasets da BDC para validar dados declarados, 
             identificar riscos ocultos e gerar score de compliance.
           </p>
           <p className="text-xs text-[#002443]/40 mb-6">
@@ -203,6 +203,30 @@ export default function BDCEnrichmentPanel({ onboardingCaseId, merchant, complia
             items={displayAnalysis.sections?.financial?.items} 
             score={displayAnalysis.sections?.financial?.score} 
             accentColor="emerald"
+            defaultOpen={false}
+          />
+          <BDCAnalysisSection 
+            title="Evolução Histórica / Alterações Cadastrais" 
+            icon={History} 
+            items={displayAnalysis.sections?.evolution?.items} 
+            score={displayAnalysis.sections?.evolution?.score} 
+            accentColor="slate"
+            defaultOpen={displayAnalysis.sections?.evolution?.score > 0}
+          />
+          <BDCAnalysisSection 
+            title="ESG / Lista Suja MTE / Compliance Ambiental" 
+            icon={Leaf} 
+            items={displayAnalysis.sections?.esg?.items} 
+            score={displayAnalysis.sections?.esg?.score} 
+            accentColor="green"
+            defaultOpen={displayAnalysis.sections?.esg?.score > 0}
+          />
+          <BDCAnalysisSection 
+            title="Validação de Contatos" 
+            icon={Contact} 
+            items={displayAnalysis.sections?.contacts?.items} 
+            score={displayAnalysis.sections?.contacts?.score} 
+            accentColor="indigo"
             defaultOpen={false}
           />
         </>

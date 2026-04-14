@@ -62,6 +62,44 @@ const EXPLANATIONS = {
   'Grupo econômico': 'O grupo econômico mostra quantas e quais empresas estão conectadas à empresa analisada através de vínculos societários diretos e indiretos. Grupos grandes (>20 empresas) exigem análise mais aprofundada pois a complexidade societária pode esconder atividades ilícitas.',
   'MCC real': 'O MCC (Merchant Category Code) é o código de 4 dígitos atribuído pelas bandeiras de cartão para classificar o tipo de negócio. O MCC "real" encontrado pela BDC deve corresponder ao MCC declarado pelo merchant. Divergências indicam que a empresa pode estar processando transações em categorias diferentes das declaradas.',
   'Licenças': 'Licenças e autorizações de funcionamento (ANVISA, Licença Ambiental, Alvará, etc.) são indicadores POSITIVOS de conformidade regulatória.',
+
+  // ═══ EVOLUTION & HISTORY — NEW ═══
+  'Queda de capital social': 'O capital social da empresa sofreu uma redução significativa ao longo do tempo. Isso pode indicar esvaziamento patrimonial — quando sócios retiram capital da empresa antes de encerrá-la ou antes de usar a empresa para atividades fraudulentas. Uma queda de mais de 50% é um sinal de alerta grave que exige investigação.',
+  'Evolução do capital social': 'Série temporal do capital social da empresa ao longo do tempo. Capital estável ou crescente indica empresa saudável. Capital que sobe e desce pode indicar instabilidade.',
+  'Queda drástica de funcionários': 'A empresa perdeu mais de 80% dos funcionários em relação ao pico histórico. Isso é um sinal extremamente grave de que a empresa pode estar encerrando operações, enfrentando crise severa, ou se tornando uma empresa de fachada (shell company). Empresas legítimas raramente perdem tantos funcionários sem motivo.',
+  'Evolução de funcionários': 'Série temporal do número de funcionários ao longo do tempo. Permite verificar se a empresa está crescendo, estável ou encolhendo.',
+  'Alterações cadastrais recentes': 'Quantidade de mudanças nos dados cadastrais da empresa nos últimos 12 meses. Mais de 3 alterações recentes pode indicar instabilidade organizacional ou tentativa de mascarar informações (como mudança de CNAE para atividade de menor risco). A Circular BCB 3.978/2020 exige monitoramento de alterações relevantes.',
+  'Histórico de alterações cadastrais': 'Registro completo de todas as mudanças que a empresa fez em seus dados na Receita Federal ao longo da vida. Inclui mudanças de nome, endereço, CNAE, regime tributário, capital social, etc.',
+  'Mudanças de CNAE': 'A empresa alterou sua atividade econômica principal (CNAE) uma ou mais vezes. Múltiplas mudanças de CNAE podem indicar que a empresa está tentando se enquadrar em categorias de menor risco ou que não tem uma atividade definida. Uma mudança recente de CNAE para atividade de maior risco é especialmente preocupante.',
+  'Mudanças de razão social': 'A empresa mudou seu nome oficial. Isso é normal em fusões, aquisições ou rebranding, mas múltiplas mudanças de nome podem indicar tentativa de se desvincular de histórico negativo.',
+
+  // ═══ ESG — NEW ═══
+  'Lista Suja MTE — Trabalho Escravo': 'A Lista Suja do Ministério do Trabalho e Emprego registra empregadores que foram autuados pela prática de trabalho em condições análogas à escravidão. A presença nesta lista é BLOQUEIO AUTOMÁTICO IMEDIATO sem exceção. A legislação brasileira proíbe qualquer relação comercial com empresas na Lista Suja. A Pagsmile pode ser responsabilizada como cúmplice se processar pagamentos para essas empresas.',
+  'Lista Suja MTE': 'Verificação contra a Lista Suja do Ministério do Trabalho e Emprego, que registra empresas flagradas com trabalho escravo. Resultado "NÃO encontrada" significa que a empresa está limpa nesta verificação.',
+  'ESG / Lista Suja MTE': 'Verificação ESG (Environmental, Social, Governance) da empresa, incluindo a crítica verificação contra a Lista Suja do Ministério do Trabalho.',
+  'Score Ambiental ESG': 'Pontuação ambiental que avalia o impacto da empresa no meio ambiente. Scores baixos (abaixo de 30) indicam problemas ambientais significativos.',
+  'Score Social ESG': 'Pontuação social que avalia práticas da empresa em relação a trabalhadores, comunidade e direitos humanos.',
+  'Score Governança ESG': 'Pontuação de governança que avalia transparência, ética corporativa e práticas de gestão.',
+  'Embargo IBAMA': 'Embargo ambiental aplicado pelo IBAMA (Instituto Brasileiro do Meio Ambiente). Indica que a empresa cometeu infração ambiental grave o suficiente para ter atividades embargadas. É um sinal de risco ambiental severo.',
+  'Alerta de desmatamento': 'A empresa ou suas propriedades estão associadas a alertas de desmatamento. Relevante para compliance ambiental e ESG.',
+
+  // ═══ CONTACTS — NEW ═══
+  'Telefones encontrados': 'Telefones associados à empresa na base da Big Data Corp. Permite validar se o telefone declarado no cadastro corresponde aos telefones encontrados. Telefones inativos, pré-pagos, ou em nome de terceiros são sinais de atenção.',
+  'E-mails encontrados': 'E-mails associados à empresa. E-mails apenas em domínios genéricos (gmail, hotmail) para uma empresa de grande porte indicam menor formalização. E-mails corporativos (com domínio próprio) são esperados para empresas estabelecidas.',
+  'Endereços associados': 'Endereços vinculados à empresa em bases públicas e privadas. Permite validar se o endereço declarado corresponde a um endereço real e se há múltiplos endereços associados.',
+
+  // ═══ OWNERS EXPANDED — NEW ═══
+  'QSA tempo real (Receita Federal)': 'QSA consultado em TEMPO REAL diretamente na base da Receita Federal, diferente do QSA padrão que pode ter atraso de dias ou semanas. Permite detectar alterações societárias recentes que ainda não apareceram nas bases consolidadas.',
+  'Divergência QSA padrão vs tempo real': 'Número de sócios no QSA padrão (bases consolidadas) difere do QSA em tempo real da Receita Federal. Isso pode indicar uma alteração societária recente — entrada ou saída de sócio — que merece atenção. Sócios que acabaram de sair podem ter sido removidos para ocultar vínculos problemáticos.',
+  'Sanções no grupo econômico': 'Uma ou mais entidades do GRUPO ECONÔMICO da empresa (não os sócios diretos, mas empresas relacionadas por vínculos societários indiretos) foram encontradas em listas de sanções. Circular BCB 3.978/2020 Art. 16 §§1-4 exige verificação de toda cadeia societária, incluindo participações indiretas.',
+  'PEP no grupo econômico': 'Pessoas Politicamente Expostas identificadas no grupo econômico (participações indiretas). Mesmo que os sócios diretos não sejam PEP, a presença de PEPs no grupo econômico indica exposição política indireta que requer monitoramento.',
+  'KYC grupo econômico': 'Resultado da verificação de KYC (Know Your Customer) de todas as entidades do grupo econômico da empresa — verificação de PEP e sanções em toda a cadeia societária.',
+  'Empresas do grupo econômico': 'Lista de todas as empresas que fazem parte do mesmo grupo econômico, identificadas por vínculos societários diretos e indiretos. Permite mapear a estrutura corporativa completa e identificar holdings intermediárias.',
+  'Participação circular detectada': 'A estrutura societária possui participações cruzadas — empresa A é sócia da empresa B que é sócia da empresa A (ou mais complexo). Participações circulares são um forte indicativo de estruturas criadas para ocultar beneficiários finais e podem estar associadas a lavagem de dinheiro.',
+  'Distribuição processos empresa': 'Visão agregada e estatística dos processos judiciais da empresa, mostrando a distribuição por tipo (criminal, cível, trabalhista, administrativo). É uma pré-triagem rápida que permite avaliar o perfil de litígio da empresa sem precisar analisar cada processo individualmente.',
+  'Distribuição processos sócios': 'Visão agregada dos processos judiciais de todos os sócios, com distribuição por tipo. Permite uma avaliação rápida do perfil de litígio do quadro societário.',
+  'Risco PF — Em cobrança': 'A pessoa física possui registros de cobrança ou negativação (Serasa, SPC, protestos). Indica que o sócio tem dificuldades financeiras pessoais, o que pode afetar a empresa.',
+  'Nível de risco PF': 'Classificação de nível de risco da pessoa física calculada pela BDC, combinando múltiplos indicadores financeiros e comportamentais.',
 };
 
 // Add CNAEs secondary explanation
