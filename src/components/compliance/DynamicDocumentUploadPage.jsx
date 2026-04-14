@@ -316,6 +316,13 @@ export default function DynamicDocumentUploadPage({
         });
       }
 
+      // Mark case as docs + CAF completed so the analysis pipeline knows everything is ready
+      await base44.entities.OnboardingCase.update(onboardingCaseId, {
+        docCompleted: true,
+        cafCompleted: !!cafResult,
+        submissionDate: new Date().toISOString(),
+      });
+
       // Limpar localStorage
       localStorage.removeItem(formDataStorageKey);
       localStorage.removeItem(documentsStorageKey);
