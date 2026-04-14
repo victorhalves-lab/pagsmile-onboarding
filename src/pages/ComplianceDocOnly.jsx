@@ -135,11 +135,17 @@ export default function ComplianceDocOnly() {
         });
       }
 
-      // Mark case as doc completed
+      // Mark case as doc + caf completed and trigger pipeline
       await base44.entities.OnboardingCase.update(caseId, {
         docCompleted: true,
+        cafCompleted: !!cafResult,
+        bigDataCorpCompleted: false,
+        validationsCompleted: false,
         status: 'Em Processamento',
       });
+
+      // Trigger re-analysis pipeline (non-blocking)
+      base44.functions.invoke('autoEnrichOnboarding', { onboardingCaseId: caseId }).catch(() => {});
 
       toast.success('Documentos e verificação enviados com sucesso!');
       setCurrentStep('completed');
@@ -176,20 +182,9 @@ export default function ComplianceDocOnly() {
     );
   }
 
-  // ── Already completed ──
-  if (onboardingCase.docCompleted && onboardingCase.cafCompleted) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center max-w-md mx-auto p-8">
-          <CheckCircle2 className="w-16 h-16 mx-auto text-green-500 mb-4" />
-          <h2 className="text-xl font-bold text-[#002443] mb-2">Documentos já enviados!</h2>
-          <p className="text-[#002443]/60 text-sm">
-            Você já completou o envio de documentos e a verificação de identidade para este caso. Não é necessário enviar novamente.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  // Note: We no longer block re-submission here.
+  // When an analyst resets docCompleted/cafCompleted via bulk actions,
+  // the client can re-submit docs + CAF through the same link.
 
   if (!template) {
     return (

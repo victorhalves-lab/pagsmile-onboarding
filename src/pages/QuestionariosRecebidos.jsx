@@ -8,6 +8,7 @@ import { Download, RefreshCw, Shield, FileCheck, FileEdit, Users } from 'lucide-
 import ComplianceStatsCards from '@/components/compliance/ComplianceStatsCards';
 import ComplianceCaseFilters from '@/components/compliance/ComplianceCaseFilters';
 import ComplianceCasesTable from '@/components/compliance/ComplianceCasesTable';
+import BulkActionsBar from '@/components/compliance/BulkActionsBar';
 import DraftsTab from '@/components/compliance/DraftsTab';
 import SubsellerCasesTab from '@/components/compliance/SubsellerCasesTab';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
@@ -100,6 +101,12 @@ export default function QuestionariosRecebidos() {
     introducers.forEach(i => { map[i.id] = i; });
     return map;
   }, [introducers]);
+
+  const casesMap = React.useMemo(() => {
+    const map = {};
+    onboardingCases.forEach(c => { map[c.id] = c; });
+    return map;
+  }, [onboardingCases]);
 
   // ── Helpers ──
   const getCaseModel = (c) => {
@@ -254,14 +261,13 @@ export default function QuestionariosRecebidos() {
         <TabsContent value="received" className="space-y-6 mt-4">
           <ComplianceStatsCards stats={stats} statusFilter={statusFilter} onStatusFilterChange={setStatusFilter} />
 
-          {selectedRows.length > 0 && (
-            <div className="bg-[#002443] rounded-xl p-3 flex items-center justify-between shadow-lg">
-              <span className="text-sm text-white font-medium">{t('qr.selected', { count: selectedRows.length })}</span>
-              <Button size="sm" className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-lg text-xs" onClick={() => setSelectedRows([])}>
-                {t('qr.clear_selection')}
-              </Button>
-            </div>
-          )}
+          <BulkActionsBar
+            selectedRows={selectedRows}
+            setSelectedRows={setSelectedRows}
+            casesMap={casesMap}
+            merchantMap={merchantMap}
+            onRefresh={refetchCases}
+          />
 
           <ComplianceCaseFilters
             searchTerm={searchTerm} onSearchChange={setSearchTerm}

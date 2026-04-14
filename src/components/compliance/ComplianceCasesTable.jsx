@@ -14,7 +14,7 @@ import {
   Clock, CheckCircle2, AlertTriangle, XCircle, FileCheck,
   Loader2, MoreHorizontal, Mail, Eye, ArrowUpDown, Building2, User,
   Brain, FileText, ChevronLeft, ChevronRight, ChevronDown, UserPlus,
-  Link2, Copy, ScanFace
+  Link2, Copy, ScanFace, RefreshCw
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
@@ -103,13 +103,15 @@ function DocLinkMenuItem({ caseData }) {
     try {
       let token = caseData.docLinkToken;
       if (!token) {
-        // Generate a simple token: base64 of caseId + timestamp
-        const raw = `${caseData.id}_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
-        token = btoa(raw).replace(/[=+/]/g, '').slice(0, 24);
+        token = crypto.randomUUID().replace(/-/g, '').slice(0, 24);
         await base44.entities.OnboardingCase.update(caseData.id, { docLinkToken: token });
       }
-      const baseUrl = window.location.origin;
-      const link = `${baseUrl}/ComplianceDocOnly?caseId=${caseData.id}&token=${token}`;
+      // Reset flags to allow re-submission
+      await base44.entities.OnboardingCase.update(caseData.id, {
+        docCompleted: false,
+        cafCompleted: false,
+      });
+      const link = `${window.location.origin}/ComplianceDocOnly?caseId=${caseData.id}&token=${token}`;
       await navigator.clipboard.writeText(link);
       toast.success('Link copiado! Envie ao cliente para completar docs + verificação CAF.');
     } catch (err) {
@@ -120,13 +122,41 @@ function DocLinkMenuItem({ caseData }) {
     }
   };
 
-  // Don't show if already fully completed
-  if (caseData.docCompleted && caseData.cafCompleted) return null;
-
   return (
     <DropdownMenuItem onClick={handleGenerate} disabled={generating}>
       {generating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <ScanFace className="w-4 h-4 mr-2" />}
       {caseData.docLinkToken ? 'Copiar Link Docs + CAF' : 'Gerar Link Docs + CAF'}
+    </DropdownMenuItem>
+  );
+}
+
+// ── Revalidar individual ──
+function RevalidateMenuItem({ caseData }) {
+  const [running, setRunning] = React.useState(false);
+
+  const handleRevalidate = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setRunning(true);
+    try {
+      await base44.entities.OnboardingCase.update(caseData.id, {
+        bigDataCorpCompleted: false,
+        validationsCompleted: false,
+        status: 'Em Processamento',
+      });
+      await base44.functions.invoke('autoEnrichOnboarding', { onboardingCaseId: caseData.id });
+      toast.success('Pipeline de revalidação iniciado!');
+    } catch (err) {
+      toast.error('Erro ao revalidar: ' + err.message);
+    } finally {
+      setRunning(false);
+    }
+  };
+
+  return (
+    <DropdownMenuItem onClick={handleRevalidate} disabled={running}>
+      {running ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <RefreshCw className="w-4 h-4 mr-2" />}
+      {running ? 'Revalidando...' : 'Revalidar Pipeline'}
     </DropdownMenuItem>
   );
 }
@@ -272,6 +302,7 @@ export default function ComplianceCasesTable({
                             <DropdownMenuItem asChild><Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`}><Eye className="w-4 h-4 mr-2" />Ver Detalhes</Link></DropdownMenuItem>
                             <DropdownMenuItem asChild><Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`}><FileText className="w-4 h-4 mr-2" />Ver Respostas</Link></DropdownMenuItem>
                             {merchant?.email && (<DropdownMenuItem asChild><a href={`mailto:${merchant.email}`}><Mail className="w-4 h-4 mr-2" />Enviar E-mail</a></DropdownMenuItem>)}
+                            <RevalidateMenuItem caseData={c} />
                             <DocLinkMenuItem caseData={c} />
                           </DropdownMenuContent>
                         </DropdownMenu>
