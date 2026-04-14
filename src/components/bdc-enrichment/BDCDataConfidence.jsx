@@ -13,10 +13,13 @@ const CORE_DATASETS = {
   digital: { label: 'Presença Digital', required: false, desc: 'Domínios, passagens, atividade online' },
   compliance: { label: 'Compliance / PLD', required: true, desc: 'Sanções, processos, dívida ativa, distribuição' },
   reputation: { label: 'Reputação / Mídia', required: false, desc: 'Notícias, avaliações, Reclame Aqui' },
-  financial: { label: 'Financeiro / Mercado', required: false, desc: 'BCB, CVM, grupo econômico, MCC' },
+  financial: { label: 'Financeiro / Mercado', required: false, desc: 'BCB, CVM, grupo econômico, MCC, ativos' },
   evolution: { label: 'Evolução Histórica', required: false, desc: 'Capital, funcionários, alterações cadastrais' },
   esg: { label: 'ESG / Lista Suja', required: true, desc: 'Lista Suja MTE, IBAMA, indicadores ESG' },
   contacts: { label: 'Validação Contatos', required: false, desc: 'Telefones, e-mails, endereços validados' },
+  employeesKyc: { label: 'KYC Funcionários', required: false, desc: 'PEP e sanções entre funcionários-chave' },
+  sectorial: { label: 'Dados Setoriais', required: false, desc: 'ANVISA, CVM, ANS, OAB, CRM, CREA' },
+  assets: { label: 'Ativos Patrimoniais', required: false, desc: 'Imóveis, veículos, aeronaves, embarcações' },
 };
 
 export default function BDCDataConfidence({ analysis }) {

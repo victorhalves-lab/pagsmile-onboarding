@@ -98,6 +98,24 @@ export default function BDCScoreHeader({ analysis }) {
           </div>
         </div>
 
+        {/* Weighted breakdown — Sprint 3 */}
+        {scoring.weightBreakdown && (
+          <div className="mb-6">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-[#002443]/50 mb-2">Decomposição por Peso (%)</p>
+            <div className="grid grid-cols-3 lg:grid-cols-6 gap-2">
+              {Object.entries(scoring.weightBreakdown).map(([key, wb]) => (
+                <div key={key} className="p-2 rounded-lg bg-slate-50 border border-slate-100 text-center">
+                  <p className="text-[9px] text-[#002443]/40 truncate capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
+                  <p className={`text-sm font-bold ${wb.rawScore > 30 ? 'text-red-600' : wb.rawScore > 10 ? 'text-amber-600' : wb.rawScore > 0 ? 'text-blue-600' : 'text-emerald-600'}`}>
+                    {wb.weightedScore > 0 ? '+' : ''}{wb.weightedScore}
+                  </p>
+                  <p className="text-[8px] text-[#002443]/30">{wb.weight} × {wb.rawScore}pts</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Blocks alert */}
         {hasBlock && (
           <div className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3">

@@ -1572,7 +1572,7 @@ Deno.serve(async (req) => {
     if (isPF) {
       const blocks = analyzePersonBlocks(result);
       const sections = analyzePersonData(result);
-      const totalScore = sections.identity.score + sections.compliance.score + sections.reputation.score;
+      const totalScore = sections.identity.score + sections.compliance.score + sections.reputation.score + (sections.financial?.score || 0);
       const baseScore = SEGMENT_BASE_SCORES[templateModel] || 30;
       const finalScore = Math.max(0, Math.min(849, baseScore + totalScore));
       const hasBlock = blocks.length > 0;
@@ -1598,11 +1598,33 @@ Deno.serve(async (req) => {
       const evolution = analyzeEvolution(result);
       const esgData = analyzeESG(result);
       const contacts = analyzeContacts(result);
+      const employeesKyc = analyzeEmployeesKyc(result);
+      const sectorial = analyzeSectorial(result);
+      const assets = analyzeAssets(result);
 
-      const totalVariables = identity.score + owners.score + digital.score + compliance.score;
-      const totalEnrichment = reputation.score + financial.score + evolution.score + esgData.score + contacts.score;
+      // ── Weighted percentage scoring ──
+      // Each component has a weight (%) — total = 100%
+      const COMPONENT_WEIGHTS = {
+        identity: 0.10, owners: 0.20, digital: 0.08, compliance: 0.22,
+        reputation: 0.10, financial: 0.08, evolution: 0.07, esg: 0.05,
+        contacts: 0.03, employeesKyc: 0.03, sectorial: 0.02, assets: 0.02,
+      };
+      const componentScores = {
+        identity: identity.score, owners: owners.score, digital: digital.score, compliance: compliance.score,
+        reputation: reputation.score, financial: financial.score, evolution: evolution.score, esg: esgData.score,
+        contacts: contacts.score, employeesKyc: employeesKyc.score, sectorial: sectorial.score, assets: assets.score,
+      };
+      let weightedTotal = 0;
+      const weightBreakdown = {};
+      for (const [key, weight] of Object.entries(COMPONENT_WEIGHTS)) {
+        const raw = componentScores[key] || 0;
+        const weighted = raw * weight;
+        weightedTotal += weighted;
+        weightBreakdown[key] = { rawScore: raw, weight: (weight * 100).toFixed(0) + '%', weightedScore: Math.round(weighted) };
+      }
+
       const baseScore = SEGMENT_BASE_SCORES[templateModel] || 80;
-      const rawScore = baseScore + totalVariables + totalEnrichment;
+      const rawScore = baseScore + Math.round(weightedTotal);
       const finalScore = Math.max(0, Math.min(849, rawScore));
       const hasBlock = blocks.length > 0;
 
@@ -1610,9 +1632,13 @@ Deno.serve(async (req) => {
         type: 'PJ', document: cleanDoc, templateModel, datasetGroup: groupKey,
         datasetsQueried: datasets.length, queryDate: bdcData.QueryDate, elapsedMs: bdcData.ElapsedMilliseconds,
         blocks, hasBlock,
-        sections: { identity, owners, digital, compliance, reputation, financial, evolution, esg: esgData, contacts },
+        sections: { identity, owners, digital, compliance, reputation, financial, evolution, esg: esgData, contacts, employeesKyc, sectorial, assets },
         scoring: {
-          baseScore, variablesScore: totalVariables, enrichmentScore: totalEnrichment,
+          baseScore,
+          variablesScore: Math.round(weightedTotal * 0.6),
+          enrichmentScore: Math.round(weightedTotal * 0.4),
+          weightedTotal: Math.round(weightedTotal),
+          weightBreakdown,
           finalScore: hasBlock ? 850 : finalScore,
           subfaixa: hasBlock ? '5' : finalScore <= 100 ? '1A' : finalScore <= 200 ? '1B' : finalScore <= 300 ? '2A' : finalScore <= 400 ? '2B' : finalScore <= 500 ? '3A' : finalScore <= 600 ? '3B' : finalScore <= 700 ? '4' : '5',
         },

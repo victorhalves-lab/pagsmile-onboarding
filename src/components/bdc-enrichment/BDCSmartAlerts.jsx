@@ -84,7 +84,7 @@ export default function BDCSmartAlerts({ analysis, merchant }) {
 
   // 1. Collect all critical/high items from sections
   const sections = analysis.sections || {};
-  const allSections = ['identity', 'owners', 'digital', 'compliance', 'reputation', 'financial', 'evolution', 'esg', 'contacts'];
+  const allSections = ['identity', 'owners', 'digital', 'compliance', 'reputation', 'financial', 'evolution', 'esg', 'contacts', 'employeesKyc', 'sectorial', 'assets'];
   
   for (const sectionKey of allSections) {
     const section = sections[sectionKey];

@@ -48,6 +48,9 @@ function buildNarrativePrompt(analysis) {
     extractItems('Evolução Histórica', sections.evolution);
     extractItems('ESG / Lista Suja MTE', sections.esg);
     extractItems('Validação de Contatos', sections.contacts);
+    extractItems('KYC Funcionários', sections.employeesKyc);
+    extractItems('Dados Setoriais', sections.sectorial);
+    extractItems('Ativos Patrimoniais', sections.assets);
   }
 
   const blocksText = (analysis.blocks || []).map(b => `- BLOQUEIO ${b.code}: ${b.label} — ${b.detail}`).join('\n');
@@ -97,6 +100,7 @@ Composição do Score:
 Datasets Consultados: ${analysis.datasetsQueried} bases de dados
 Grupo de Datasets: ${analysis.datasetGroup || 'N/D'}
 Modelo do Template: ${analysis.templateModel || 'N/D'}
+${analysis.scoring?.weightBreakdown ? `Pesos ponderados: ${Object.entries(analysis.scoring.weightBreakdown).map(([k,v]) => `${k}(${v.weight})=${v.weightedScore}pts`).join(', ')}` : ''}
 
 ${blocksText ? `═══ BLOQUEIOS ATIVOS (IMPEDEM APROVAÇÃO) ═══\n${blocksText}\n` : '═══ BLOQUEIOS: Nenhum bloqueio ativo ═══'}
 
@@ -205,6 +209,50 @@ Analise os contatos encontrados pela BDC:
 - Divergências entre contatos declarados e contatos encontrados
 `}
 
+## 👷 KYC Funcionários
+${isPF ? 'Não aplicável para PF.' : `
+Analise o resultado do KYC dos funcionários da empresa:
+- Se algum funcionário é PEP (Pessoa Politicamente Exposta) — explicar por que funcionários PEP são um risco operacional
+- Se algum funcionário consta em listas de sanções — impacto direto na operação
+- Número total de funcionários verificados
+`}
+
+## 🏛️ Dados Setoriais (Registros Regulatórios)
+${isPF ? 'Não aplicável para PF.' : `
+Analise os registros em órgãos reguladores setoriais:
+- ANVISA, CVM, ANS, OAB, CRM, CREA, e outros
+- Status de cada registro (ativo, inativo, suspenso)
+- Se a empresa precisa de registro setorial e não possui — red flag regulatório
+- O que cada registro significa para a operação
+`}
+
+## 🏠 Ativos Patrimoniais
+${isPF ? 'Não aplicável para PF.' : `
+Analise os ativos registrados em nome da empresa:
+- Imóveis (cartórios), veículos (DETRAN/RENAVAM), aeronaves (ANAC), embarcações (Marinha)
+- Valor estimado total dos ativos
+- O que a presença ou ausência de ativos diz sobre a solidez da empresa
+- Empresas de fachada raramente possuem ativos patrimoniais registrados
+`}
+
+${isPF ? `## 💰 Renda e Patrimônio Estimado
+Analise os dados de renda e patrimônio da pessoa:
+- Renda estimada mensal — se é compatível com a participação societária
+- Patrimônio estimado — se é compatível com o capital investido
+- O que divergências entre renda/patrimônio e atividade econômica indicam
+
+## 🗳️ Envolvimento Político Individual
+Analise vínculos políticos individuais:
+- Candidaturas, filiações partidárias, cargos públicos
+- Implicações para compliance e PLD/FT
+
+## 📱 Comportamento Digital e Mobilidade
+Analise dados comportamentais:
+- Frequência de mudanças de endereço e telefone
+- Atividade digital — presença ou ausência online
+- O que padrões de alta mobilidade indicam para risco
+` : ''}
+
 ## ⚠️ Pontos de Atenção — Análise Detalhada de Cada Risco
 
 Para CADA item com risco ALTO ou CRÍTICO, escreva um bloco detalhado com:
@@ -279,6 +327,12 @@ Datasets que devem ser explicados (se consultados):
 - **phones_extended**: Telefones associados — tipo, operadora, status ativo/inativo
 - **addresses_extended**: Endereços associados em bases públicas e privadas
 - **risk_data**: Dados de risco PF — cobrança, inadimplência, nível de risco individual
+- **employees_kyc**: KYC dos funcionários — verifica PEP e sanções entre empregados-chave da empresa
+- **sectorial_data**: Dados setoriais — registros em ANVISA, CVM, ANS, OAB, CRM, CREA e outros órgãos reguladores
+- **assets**: Ativos patrimoniais — imóveis, veículos, aeronaves e embarcações registrados em nome da empresa/sócios
+- **income_estimated**: Renda e patrimônio estimado PF — faixa de renda e patrimônio calculados por modelos estatísticos
+- **political_involvement**: Envolvimento político — candidaturas, filiações partidárias, cargos públicos
+- **behavior_data**: Dados comportamentais PF — frequência de mudanças de endereço/telefone, atividade digital
 
 REGRAS ABSOLUTAS:
 - NUNCA resuma algo em 1-2 linhas quando pode explicar em 5-8 linhas

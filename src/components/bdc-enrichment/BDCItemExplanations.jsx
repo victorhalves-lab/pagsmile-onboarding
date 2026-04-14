@@ -111,6 +111,34 @@ const EXPLANATIONS = {
   'Telefones de pessoas vinculadas': 'Telefones de pessoas relacionadas à empresa (sócios, representantes, procuradores). Permite cross-validation com os contatos declarados.',
   'E-mails de pessoas vinculadas': 'E-mails de pessoas relacionadas à empresa. Útil para verificar se os contatos declarados no cadastro correspondem às pessoas vinculadas.',
   'Endereços de pessoas vinculadas': 'Endereços de pessoas relacionadas à empresa. Permite verificar se sócios residem no mesmo endereço da empresa (possível home office ou empresa residencial).',
+
+  // ═══ EMPLOYEES KYC — Sprint 3 ═══
+  'KYC Funcionários': 'Verificação de KYC (Know Your Customer) dos funcionários-chave da empresa. Busca identificar PEPs (Pessoas Politicamente Expostas) e pessoas em listas de sanções entre os empregados. Funcionários com exposição política ou sanções representam risco operacional direto, pois têm acesso às operações financeiras da empresa.',
+  'Funcionário(s) em sanções': 'Um ou mais funcionários da empresa foram encontrados em listas de sanções internacionais (OFAC, EU, UN, CEIS, CNEP). Funcionários sancionados com acesso a operações financeiras representam risco regulatório e criminal extremo. Exige investigação imediata e possível bloqueio.',
+  'Funcionário(s) PEP': 'Um ou mais funcionários da empresa são Pessoas Politicamente Expostas (PEP). A presença de PEPs entre funcionários é um risco operacional pois podem usar a posição para influenciar transações. Requer monitoramento reforçado conforme Circular BCB 3.978/2020.',
+
+  // ═══ SECTORIAL DATA — Sprint 3 ═══
+  'Dados setoriais': 'Registros da empresa em órgãos reguladores setoriais como ANVISA (saúde), CVM (valores mobiliários), ANS (saúde suplementar), OAB (advocacia), CRM (medicina), CREA (engenharia), etc. Registros ativos em entidades reguladoras são indicadores POSITIVOS de conformidade. A ausência de registros para empresas que atuam em setores regulados é uma red flag.',
+  'Registro ANVISA': 'Registro da empresa junto à Agência Nacional de Vigilância Sanitária. Obrigatório para empresas que fabricam, importam ou comercializam medicamentos, alimentos, cosméticos e produtos de saúde.',
+  'Registro CVM': 'Registro da empresa junto à Comissão de Valores Mobiliários. Indica que a empresa atua no mercado de capitais e está sujeita a supervisão regulatória rigorosa.',
+  'Registro ANS': 'Registro da empresa junto à Agência Nacional de Saúde Suplementar. Obrigatório para operadoras de planos de saúde.',
+  'Registro OAB': 'Registro junto à Ordem dos Advogados do Brasil. Indica escritório de advocacia ou sociedade de advogados regularizada.',
+  'Registro CRM': 'Registro junto ao Conselho Regional de Medicina. Indica empresa do setor médico/hospitalar.',
+
+  // ═══ ASSETS — Sprint 3 ═══
+  'Ativos patrimoniais': 'Bens registrados em nome da empresa ou de seus sócios: imóveis (cartórios), veículos (DETRAN/RENAVAM), aeronaves (ANAC) e embarcações (Marinha). A presença de ativos patrimoniais é um indicador POSITIVO de solidez e atividade real. Empresas de fachada raramente possuem bens registrados.',
+
+  // ═══ INCOME/PATRIMONY PF — Sprint 3 ═══
+  'Renda estimada PF': 'Renda mensal estimada da pessoa física, calculada pela Big Data Corp com base em dados de consumo, endereço, veículos, profissão e outros indicadores. Permite validar se a participação societária é compatível com o patrimônio declarado. Renda muito baixa com participação em empresas de alto valor é uma inconsistência que exige investigação.',
+  'Patrimônio estimado PF': 'Patrimônio líquido estimado da pessoa física, incluindo imóveis, veículos e investimentos. Permite avaliar a capacidade financeira do sócio e validar se é compatível com o capital social declarado na empresa.',
+
+  // ═══ POLITICAL INVOLVEMENT PF — Sprint 3 ═══
+  'Envolvimento político PF': 'Verificação individual de envolvimento político da pessoa física: candidaturas, filiações partidárias, cargos públicos exercidos. Diferente da verificação PEP (que é um status formal), esta análise busca qualquer tipo de vínculo político, incluindo filiações a partidos e candidaturas não eleitas. A Circular BCB 3.978/2020 exige Enhanced Due Diligence (EDD) para pessoas com exposição política.',
+
+  // ═══ BEHAVIOR PF — Sprint 3 ═══
+  'Mudanças de endereço frequentes': 'A pessoa física mudou de endereço múltiplas vezes em período recente. Alta mobilidade residencial pode indicar instabilidade ou tentativa de dificultar rastreamento. É analisada em conjunto com outros indicadores — por si só não é determinante, mas combinada com negativação e processos é um sinal de alerta.',
+  'Mudanças de telefone frequentes': 'A pessoa física trocou de número de telefone múltiplas vezes. Troca frequente de número pode indicar comportamento evasivo ou tentativa de evitar cobranças/contatos.',
+  'Atividade digital PF': 'Score de atividade digital da pessoa física — presença em redes sociais, cadastros online, etc. Ausência total de atividade digital pode ser um sinal de alerta para pessoas jovens, pois pode indicar identidade sintética (fraude de identidade).',
 };
 
 // Add CNAEs secondary explanation

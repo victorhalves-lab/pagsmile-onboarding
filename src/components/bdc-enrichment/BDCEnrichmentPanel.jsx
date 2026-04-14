@@ -4,7 +4,8 @@ import { base44 } from '@/api/base44Client';
 import { 
   Loader2, RefreshCw, Building2, Users, Globe, Shield, 
   TrendingUp, Newspaper, Database, User,
-  AlertOctagon, Phone, History, Leaf, Contact
+  AlertOctagon, Phone, History, Leaf, Contact,
+  Briefcase, Landmark, Wallet, DollarSign
 } from 'lucide-react';
 import BDCScoreHeader from './BDCScoreHeader';
 import BDCAnalysisSection from './BDCAnalysisSection';
@@ -154,6 +155,16 @@ export default function BDCEnrichmentPanel({ onboardingCaseId, merchant, complia
             accentColor="amber"
             defaultOpen={displayAnalysis.sections?.reputation?.score > 0}
           />
+          {displayAnalysis.sections?.financial?.items?.length > 0 && (
+            <BDCAnalysisSection 
+              title="Renda / Patrimônio Estimado PF" 
+              icon={DollarSign} 
+              items={displayAnalysis.sections.financial.items} 
+              score={displayAnalysis.sections.financial.score} 
+              accentColor="emerald"
+              defaultOpen={false}
+            />
+          )}
         </>
       ) : (
         <>
@@ -229,6 +240,36 @@ export default function BDCEnrichmentPanel({ onboardingCaseId, merchant, complia
             accentColor="indigo"
             defaultOpen={false}
           />
+          {displayAnalysis.sections?.employeesKyc?.items?.length > 0 && (
+            <BDCAnalysisSection 
+              title="KYC Funcionários" 
+              icon={Briefcase} 
+              items={displayAnalysis.sections.employeesKyc.items} 
+              score={displayAnalysis.sections.employeesKyc.score} 
+              accentColor="purple"
+              defaultOpen={displayAnalysis.sections.employeesKyc.score > 0}
+            />
+          )}
+          {displayAnalysis.sections?.sectorial?.items?.length > 0 && (
+            <BDCAnalysisSection 
+              title="Dados Setoriais (ANVISA, CVM, OAB, CRM)" 
+              icon={Landmark} 
+              items={displayAnalysis.sections.sectorial.items} 
+              score={displayAnalysis.sections.sectorial.score} 
+              accentColor="teal"
+              defaultOpen={false}
+            />
+          )}
+          {displayAnalysis.sections?.assets?.items?.length > 0 && (
+            <BDCAnalysisSection 
+              title="Ativos Patrimoniais (Imóveis, Aeronaves, Embarcações)" 
+              icon={Wallet} 
+              items={displayAnalysis.sections.assets.items} 
+              score={displayAnalysis.sections.assets.score} 
+              accentColor="orange"
+              defaultOpen={false}
+            />
+          )}
         </>
       )}
 

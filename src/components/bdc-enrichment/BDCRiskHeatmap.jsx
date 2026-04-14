@@ -16,6 +16,9 @@ const DIMENSION_LABELS = {
   evolution: 'Evolução Histórica',
   esg: 'ESG / Lista Suja',
   contacts: 'Contatos',
+  employeesKyc: 'KYC Funcionários',
+  sectorial: 'Dados Setoriais',
+  assets: 'Ativos Patrimoniais',
 };
 
 function calculateDimensionRisk(section) {
