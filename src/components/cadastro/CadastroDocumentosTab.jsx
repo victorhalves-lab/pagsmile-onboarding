@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { FileCheck, ExternalLink, Download, Link2, Copy, Check, Send } from 'lucide-react';
+import { FileCheck, ExternalLink, Copy, Check, Link as LinkIcon, Send } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
+import { toast } from 'sonner';
 
 const STATUS_COLORS = {
   'Pendente': 'bg-gray-100 text-gray-700',
@@ -12,82 +12,104 @@ const STATUS_COLORS = {
   'Erro': 'bg-red-100 text-red-700',
 };
 
-function DocRequestLink({ latestCase }) {
+function DocRequestPanel({ latestCase, merchantEmail }) {
   const [copied, setCopied] = useState(false);
   const [generating, setGenerating] = useState(false);
-
-  if (!latestCase) return null;
+  const [sending, setSending] = useState(false);
+  const [token, setToken] = useState(latestCase?.docLinkToken || '');
 
   const generateToken = async () => {
+    if (!latestCase) return;
     setGenerating(true);
-    const token = crypto.randomUUID().replace(/-/g, '').slice(0, 24);
-    await base44.entities.OnboardingCase.update(latestCase.id, { docLinkToken: token });
-    latestCase.docLinkToken = token;
+    const newToken = crypto.randomUUID().replace(/-/g, '').slice(0, 24);
+    await base44.entities.OnboardingCase.update(latestCase.id, { docLinkToken: newToken });
+    setToken(newToken);
     setGenerating(false);
-    toast.success('Token gerado com sucesso!');
+    toast.success('Token gerado com sucesso');
   };
 
-  const docLink = latestCase.docLinkToken
-    ? `${window.location.origin}/ComplianceDocOnly?caseId=${latestCase.id}&token=${latestCase.docLinkToken}`
-    : null;
+  const docUrl = token
+    ? `${window.location.origin}/ComplianceDocOnly?caseId=${latestCase?.id}&token=${token}`
+    : '';
 
   const handleCopy = () => {
-    if (!docLink) return;
-    navigator.clipboard.writeText(docLink);
+    navigator.clipboard.writeText(docUrl);
     setCopied(true);
     toast.success('Link copiado!');
     setTimeout(() => setCopied(false), 2000);
   };
 
-  if (!latestCase.docLinkToken) {
-    return (
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={generateToken}
-        disabled={generating}
-        className="text-xs gap-1.5"
-      >
-        <Link2 className="w-3.5 h-3.5" />
-        {generating ? 'Gerando...' : 'Gerar Link de Documentos'}
-      </Button>
-    );
-  }
+  const handleSendEmail = async () => {
+    if (!merchantEmail || !docUrl) return;
+    setSending(true);
+    await base44.integrations.Core.SendEmail({
+      to: merchantEmail,
+      subject: 'Complemento de Documentos — Pagsmile',
+      body: `<p>Olá,</p><p>Para dar continuidade ao seu processo de onboarding, precisamos que envie os documentos solicitados.</p><p><a href="${docUrl}" style="display:inline-block;padding:12px 24px;background:#2bc196;color:white;text-decoration:none;border-radius:8px;font-weight:600;">Enviar Documentos</a></p><p>Se o botão não funcionar, copie e cole o link abaixo:</p><p>${docUrl}</p><p>Atenciosamente,<br/>Equipe Pagsmile</p>`,
+    });
+    setSending(false);
+    toast.success(`E-mail enviado para ${merchantEmail}`);
+  };
 
   return (
-    <div className="flex items-center gap-2">
-      <Button variant="outline" size="sm" onClick={handleCopy} className="text-xs gap-1.5">
-        {copied ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5" />}
-        {copied ? 'Copiado!' : 'Copiar Link Docs'}
-      </Button>
-      <a href={docLink} target="_blank" rel="noopener noreferrer">
-        <Button variant="ghost" size="sm" className="text-xs gap-1.5">
-          <ExternalLink className="w-3.5 h-3.5" />
-          Abrir
+    <div className="bg-amber-50 rounded-xl border border-amber-200 p-5 mb-4">
+      <div className="flex items-center gap-2 mb-3">
+        <LinkIcon className="w-4 h-4 text-amber-600" />
+        <h3 className="text-sm font-semibold text-amber-800">Solicitar Documentos ao Cliente</h3>
+      </div>
+      {!token ? (
+        <Button onClick={generateToken} disabled={generating} size="sm" className="bg-amber-600 hover:bg-amber-700 text-white">
+          {generating ? 'Gerando...' : 'Gerar Link de Documentos'}
         </Button>
-      </a>
+      ) : (
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <input
+              readOnly
+              value={docUrl}
+              className="flex-1 text-xs bg-white border border-amber-300 rounded-lg px-3 py-2 text-[var(--pagsmile-blue)]/80 font-mono truncate"
+            />
+            <Button onClick={handleCopy} variant="outline" size="sm" className="gap-1 border-amber-300">
+              {copied ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5" />}
+              {copied ? 'Copiado' : 'Copiar'}
+            </Button>
+          </div>
+          {merchantEmail && (
+            <Button onClick={handleSendEmail} disabled={sending} size="sm" variant="outline" className="gap-1 border-amber-300 text-amber-700">
+              <Send className="w-3.5 h-3.5" />
+              {sending ? 'Enviando...' : `Enviar por e-mail (${merchantEmail})`}
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
 
-export default function CadastroDocumentosTab({ documents, latestCase }) {
+export default function CadastroDocumentosTab({ documents, latestCase, merchantEmail }) {
   if (!documents.length) {
     return (
-      <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-10 text-center mt-4">
-        <FileCheck className="w-10 h-10 mx-auto mb-3 text-[var(--pagsmile-blue)]/20" />
-        <p className="text-sm text-[var(--pagsmile-blue)]/50 mb-4">Nenhum documento enviado</p>
-        <DocRequestLink latestCase={latestCase} />
+      <div className="mt-4 space-y-4">
+        {latestCase && (
+          <DocRequestPanel latestCase={latestCase} merchantEmail={merchantEmail} />
+        )}
+        <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-10 text-center">
+          <FileCheck className="w-10 h-10 mx-auto mb-3 text-[var(--pagsmile-blue)]/20" />
+          <p className="text-sm text-[var(--pagsmile-blue)]/50">Nenhum documento enviado</p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="space-y-3 mt-4">
+      {latestCase && !latestCase.docCompleted && (
+        <DocRequestPanel latestCase={latestCase} merchantEmail={merchantEmail} />
+      )}
       <div className="flex items-center justify-between">
         <p className="text-sm text-[var(--pagsmile-blue)]/60">
           {documents.length} documento(s) • {documents.filter(d => d.validationStatus === 'Validado').length} validado(s)
         </p>
-        <DocRequestLink latestCase={latestCase} />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {documents.map(doc => (

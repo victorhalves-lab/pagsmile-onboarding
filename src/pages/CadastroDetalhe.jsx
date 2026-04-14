@@ -335,7 +335,7 @@ export default function CadastroDetalhe() {
           <CadastroDadosTab merchant={merchant} lead={lead} responses={responses} latestCase={latestCase} onMerchantUpdated={handleMerchantUpdated} />
         </TabsContent>
         <TabsContent value="documentos">
-          <CadastroDocumentosTab documents={documents} latestCase={latestCase} />
+          <CadastroDocumentosTab documents={documents} latestCase={latestCase} merchantEmail={merchant?.email} />
         </TabsContent>
         <TabsContent value="proposta">
           <CadastroPropostaTab proposals={allProposals} lead={lead} />

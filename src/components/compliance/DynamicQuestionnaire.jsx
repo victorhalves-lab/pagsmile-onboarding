@@ -745,8 +745,14 @@ export default function DynamicQuestionnaire({
       clientName: clientInfo.name,
     });
 
-    // Create Merchant + OnboardingCase for visibility in compliance dashboard
-    createMerchantAndCase(finalFormData);
+    // For subseller flows: do NOT create Merchant+Case here.
+    // The case must only be created AFTER docs+CAF are completed (in DynamicDocumentUploadPage.handleFinalSubmit).
+    // This prevents the analysis pipeline from running before documents are uploaded.
+    const isSubsellerFlow = flowType === 'subseller' || flowType === 'subseller_pf';
+    if (!isSubsellerFlow) {
+      // Create Merchant + OnboardingCase for visibility in compliance dashboard
+      createMerchantAndCase(finalFormData);
+    }
 
     if (onComplete) {
       onComplete({ formData: finalFormData, template, questions });
