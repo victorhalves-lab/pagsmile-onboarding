@@ -100,6 +100,17 @@ const EXPLANATIONS = {
   'Distribuição processos sócios': 'Visão agregada dos processos judiciais de todos os sócios, com distribuição por tipo. Permite uma avaliação rápida do perfil de litígio do quadro societário.',
   'Risco PF — Em cobrança': 'A pessoa física possui registros de cobrança ou negativação (Serasa, SPC, protestos). Indica que o sócio tem dificuldades financeiras pessoais, o que pode afetar a empresa.',
   'Nível de risco PF': 'Classificação de nível de risco da pessoa física calculada pela BDC, combinando múltiplos indicadores financeiros e comportamentais.',
+
+  // ═══ INDUSTRIAL PROPERTY — NEW ═══
+  'Patentes registradas': 'A empresa possui patentes registradas no INPI (Instituto Nacional da Propriedade Industrial). Patentes são um indicador POSITIVO de inovação e atividade real — empresas de fachada raramente possuem patentes.',
+  'Marcas registradas': 'A empresa possui marcas registradas no INPI. Marcas são indicadores de atividade comercial legítima e investimento em branding.',
+  'Propriedade industrial': 'Registros de propriedade industrial (patentes, marcas, desenhos industriais) associados à empresa no INPI.',
+  'Propriedade industrial dos sócios': 'Registros de propriedade industrial (patentes, marcas) associados individualmente aos sócios da empresa. Pode indicar atividade empreendedora e inovação.',
+
+  // ═══ RELATED PEOPLE CONTACTS — NEW ═══
+  'Telefones de pessoas vinculadas': 'Telefones de pessoas relacionadas à empresa (sócios, representantes, procuradores). Permite cross-validation com os contatos declarados.',
+  'E-mails de pessoas vinculadas': 'E-mails de pessoas relacionadas à empresa. Útil para verificar se os contatos declarados no cadastro correspondem às pessoas vinculadas.',
+  'Endereços de pessoas vinculadas': 'Endereços de pessoas relacionadas à empresa. Permite verificar se sócios residem no mesmo endereço da empresa (possível home office ou empresa residencial).',
 };
 
 // Add CNAEs secondary explanation

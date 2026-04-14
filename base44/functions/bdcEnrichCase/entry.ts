@@ -617,6 +617,56 @@ function analyzeContacts(result) {
     }
   }
 
+  // Related people phones
+  const relPhones = result?.RelatedPeoplePhones || result?.related_people_phones;
+  if (relPhones) {
+    const rpItems = flattenBDCArray(relPhones);
+    const relPhoneList = [];
+    for (const item of rpItems) {
+      const name = item?.Name || item?.PersonName || '';
+      const phone = item?.PhoneNumber || item?.Number || '';
+      const rel = item?.Relationship || item?.RelationType || '';
+      if (phone) relPhoneList.push({ name, phone, rel });
+    }
+    if (relPhoneList.length > 0) {
+      items.push({ label: 'Telefones de pessoas vinculadas', value: `${relPhoneList.length} telefone(s) de pessoas vinculadas: ${relPhoneList.slice(0, 5).map(p => `${p.name || 'N/I'} (${p.rel || 'vínculo'}): ${p.phone}`).join('; ')}`, risk: 'INFO', points: 0 });
+    }
+  }
+
+  // Related people emails
+  const relEmails = result?.RelatedPeopleEmails || result?.related_people_emails;
+  if (relEmails) {
+    const reItems = flattenBDCArray(relEmails);
+    const relEmailList = [];
+    for (const item of reItems) {
+      const name = item?.Name || item?.PersonName || '';
+      const email = item?.Email || item?.EmailAddress || '';
+      const rel = item?.Relationship || item?.RelationType || '';
+      if (email) relEmailList.push({ name, email, rel });
+    }
+    if (relEmailList.length > 0) {
+      items.push({ label: 'E-mails de pessoas vinculadas', value: `${relEmailList.length} e-mail(s) de pessoas vinculadas: ${relEmailList.slice(0, 5).map(e => `${e.name || 'N/I'} (${e.rel || 'vínculo'}): ${e.email}`).join('; ')}`, risk: 'INFO', points: 0 });
+    }
+  }
+
+  // Related people addresses
+  const relAddresses = result?.RelatedPeopleAddresses || result?.related_people_addresses;
+  if (relAddresses) {
+    const raItems = flattenBDCArray(relAddresses);
+    const relAddrList = [];
+    for (const item of raItems) {
+      const name = item?.Name || item?.PersonName || '';
+      const addr = item?.Street || item?.StreetName || item?.Address || '';
+      const city = item?.City || '';
+      const state = item?.State || '';
+      const rel = item?.Relationship || item?.RelationType || '';
+      if (addr) relAddrList.push({ name, address: `${addr}, ${city}/${state}`.trim(), rel });
+    }
+    if (relAddrList.length > 0) {
+      items.push({ label: 'Endereços de pessoas vinculadas', value: `${relAddrList.length} endereço(s) de pessoas vinculadas: ${relAddrList.slice(0, 3).map(a => `${a.name || 'N/I'} (${a.rel || 'vínculo'}): ${a.address}`).join('; ')}`, risk: 'INFO', points: 0 });
+    }
+  }
+
   return { score, items };
 }
 
@@ -1221,6 +1271,48 @@ function analyzeFinancial(result) {
   if (lic) {
     const lItems = flattenBDCArray(lic);
     if (lItems.length > 0) { items.push({ label: 'Licenças', value: `${lItems.length} encontrada(s)`, risk: 'OK', points: -5 }); score -= 5; }
+  }
+
+  // Industrial property (patents, trademarks)
+  const ip = result?.IndustrialProperty || result?.industrial_property;
+  if (ip) {
+    const ipItems = flattenBDCArray(ip);
+    const patents = [];
+    const trademarks = [];
+    for (const item of ipItems) {
+      const type = item?.Type || item?.PropertyType || '';
+      const name = item?.Name || item?.Title || item?.Description || '';
+      const status = item?.Status || '';
+      if (/patent|inven/i.test(type)) patents.push({ name, status });
+      else trademarks.push({ name, status });
+    }
+    if (patents.length > 0) {
+      items.push({ label: 'Patentes registradas', value: `${patents.length} patente(s): ${patents.slice(0, 5).map(p => `${p.name} (${p.status || 'N/I'})`).join('; ')}`, risk: 'OK', points: -5 });
+      score -= 5;
+    }
+    if (trademarks.length > 0) {
+      items.push({ label: 'Marcas registradas', value: `${trademarks.length} marca(s): ${trademarks.slice(0, 5).map(t => `${t.name} (${t.status || 'N/I'})`).join('; ')}`, risk: 'OK', points: -5 });
+      score -= 5;
+    }
+    if (ipItems.length > 0 && patents.length === 0 && trademarks.length === 0) {
+      items.push({ label: 'Propriedade industrial', value: `${ipItems.length} registro(s) encontrado(s)`, risk: 'OK', points: -5 });
+      score -= 5;
+    }
+  }
+
+  // Owners industrial property
+  const oip = result?.OwnersIndustrialProperty || result?.owners_industrial_property;
+  if (oip) {
+    const oipItems = flattenBDCArray(oip);
+    if (oipItems.length > 0) {
+      const ownerIpList = oipItems.slice(0, 5).map(item => {
+        const owner = item?.OwnerName || item?.Name || 'N/I';
+        const type = item?.Type || item?.PropertyType || 'registro';
+        const title = item?.Title || item?.Description || '';
+        return `${owner}: ${title || type}`;
+      });
+      items.push({ label: 'Propriedade industrial dos sócios', value: `${oipItems.length} registro(s): ${ownerIpList.join('; ')}`, risk: 'INFO', points: 0 });
+    }
   }
 
   return { score, items };
