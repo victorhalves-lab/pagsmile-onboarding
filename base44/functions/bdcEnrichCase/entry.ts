@@ -169,10 +169,12 @@ function analyzeBlocks(result, responses) {
   const blocks = [];
   const bd = extractBasicData(result);
 
-  // B01 — CNPJ Inativo
-  const status = safeGet(bd, 'TaxIdStatus') || safeGet(bd, 'TaxIdStatusDescription');
-  if (status && !String(status).toUpperCase().includes('ATIV')) {
-    blocks.push({ code: 'B01', label: 'CNPJ Inativo', severity: 'BLOQUEIO', detail: `Situação cadastral: ${status}. Empresa não pode exercer atividades econômicas legalmente. Exigência: Circular BCB 3.978/2020 Art. 2º.`, score: 850 });
+  // B01 — CNPJ Inativo (only triggers if BDC explicitly says NOT active)
+  const status = safeGet(bd, 'TaxIdStatus') || safeGet(bd, 'TaxIdStatusDescription') || '';
+  const statusUp = String(status).toUpperCase().trim();
+  const cnpjIsActive = !status || statusUp.includes('ATIV') || statusUp.includes('REGULAR');
+  if (status && !cnpjIsActive) {
+    blocks.push({ code: 'B01', label: 'CNPJ Inativo', severity: 'BLOQUEIO', detail: `Situação cadastral BDC: "${status}" (BasicData.TaxIdStatus). Empresa não pode exercer atividades econômicas. Circular BCB 3.978/2020 Art. 2º.`, score: 850 });
   }
 
   // B02 — Idade < 6 meses
@@ -1379,25 +1381,34 @@ function analyzeCreditRisk(result) {
   return { score, items };
 }
 
-// ══════════════════════════════════════════════════════════════════
-// EMPLOYEES KYC — Stub for missing function
-// ══════════════════════════════════════════════════════════════════
 function analyzeEmployeesKyc(result) {
-  return { score: 0, items: [] };
+  const items = []; let score = 0;
+  const ai = result?.ActivityIndicators || result?.activity_indicators;
+  if (ai) { const a = flattenBDCArray(ai); for (const i of a) { const e = i?.EmployeesRange || i?.NumberOfEmployees; if (e != null) { const z = String(e) === '0' || /SEM INFO/i.test(String(e)); items.push({ label: 'Faixa de empregados (RAIS)', value: String(e), risk: z ? 'ALTO' : 'OK', points: z ? 10 : 0 }); if (z) score += 10; } } }
+  const bd = extractBasicData(result);
+  if (bd && items.length === 0) { const n = bd?.NumberOfEmployees || bd?.EmployeesCount; if (n != null) items.push({ label: 'Empregados registrados', value: String(n), risk: Number(n) === 0 ? 'ALTO' : 'OK', points: 0 }); }
+  if (items.length === 0) items.push({ label: 'Dados de funcionários', value: 'Sem dados RAIS/CAGED retornados', risk: 'MEDIO', points: 5 });
+  return { score, items };
 }
-
-// ══════════════════════════════════════════════════════════════════
-// SECTORIAL ANALYSIS — Stub for missing function
-// ══════════════════════════════════════════════════════════════════
 function analyzeSectorial(result) {
-  return { score: 0, items: [] };
+  const items = []; let score = 0;
+  const mcc = result?.MerchantCategoryData || result?.merchant_category_data;
+  if (mcc) { const m = flattenBDCArray(mcc); for (const i of m) { const c = i?.MCC || i?.CategoryCode || ''; const d = i?.Description || i?.CategoryDescription || ''; if (c) items.push({ label: 'MCC', value: `${c}${d ? ` — ${d}` : ''}`, risk: 'INFO', points: 0 }); } }
+  const bd = extractBasicData(result); if (bd) { const acts = bd?.Activities || []; const main = acts.find(a => a.IsMain); if (main) items.push({ label: 'CNAE principal', value: `${main.Code} — ${main.Activity}`, risk: 'INFO', points: 0 }); const fin = acts.filter(a => !a.IsMain && /financ|cart[ãa]o|pagamento|correspondente/i.test(a.Activity || '')); if (fin.length > 0) { score += 5; items.push({ label: 'CNAEs financeiros secundários', value: `${fin.length}: ${fin.map(c => c.Code).join(', ')}`, risk: 'MEDIO', points: 5 }); } if (acts.length > 16) { score += 5; items.push({ label: 'Total CNAEs', value: `${acts.length} (alto número)`, risk: 'MEDIO', points: 5 }); } }
+  const mp = result?.MarketplaceData || result?.marketplace_data; if (mp) { const m = flattenBDCArray(mp); const p = m.map(i => i?.MarketplaceName || i?.Platform || '').filter(Boolean); if (p.length > 0) { score -= 5; items.push({ label: 'Marketplaces', value: p.join(', '), risk: 'OK', points: -5 }); } }
+  const fm = result?.FinancialMarket || result?.financial_market; if (fm) { const f = flattenBDCArray(fm); const r = f.map(i => i?.Entity || i?.RegistrationType || '').filter(Boolean); if (r.length > 0) { score -= 10; items.push({ label: 'Registros BCB/CVM/SUSEP', value: r.join(', '), risk: 'OK', points: -10 }); } }
+  if (items.length === 0) items.push({ label: 'Dados setoriais', value: 'Sem dados setoriais retornados', risk: 'INFO', points: 0 });
+  return { score, items };
 }
-
-// ══════════════════════════════════════════════════════════════════
-// ASSETS ANALYSIS — Stub for missing function
-// ══════════════════════════════════════════════════════════════════
 function analyzeAssets(result) {
-  return { score: 0, items: [] };
+  const items = []; let score = 0;
+  const ip = result?.IndustrialProperty || result?.industrial_property; if (ip) { const i = flattenBDCArray(ip); if (i.length > 0) { score -= 5; items.push({ label: 'Propriedade industrial', value: `${i.length} registro(s) (marcas/patentes)`, risk: 'OK', points: -5 }); } }
+  const oip = result?.OwnersIndustrialProperty || result?.owners_industrial_property; if (oip) { const o = flattenBDCArray(oip); if (o.length > 0) items.push({ label: 'Propriedade industrial sócios', value: `${o.length} registro(s)`, risk: 'INFO', points: 0 }); }
+  const lic = result?.LicensesAndAuthorizations || result?.licenses_and_authorizations; if (lic) { const l = flattenBDCArray(lic); if (l.length > 0) { score -= 5; items.push({ label: 'Licenças/Autorizações', value: `${l.length} encontrada(s)`, risk: 'OK', points: -5 }); } }
+  const aw = result?.AwardsAndCertifications || result?.awards_and_certifications; if (aw) { const a = flattenBDCArray(aw); if (a.length > 0) { score -= 10; items.push({ label: 'Prêmios/Certificações', value: `${a.length} encontrado(s)`, risk: 'OK', points: -10 }); } }
+  const bd = extractBasicData(result); if (bd?.AdditionalOutputData?.CapitalRS) { const c = Number(bd.AdditionalOutputData.CapitalRS); items.push({ label: 'Capital social', value: `R$ ${c.toLocaleString('pt-BR',{minimumFractionDigits:2})}`, risk: c < 10000 ? 'ALTO' : c < 50000 ? 'MEDIO' : 'OK', points: c < 10000 ? 15 : c < 50000 ? 5 : 0 }); if (c < 10000) score += 15; else if (c < 50000) score += 5; }
+  if (items.length === 0) items.push({ label: 'Ativos patrimoniais', value: 'Nenhum ativo patrimonial registrado', risk: 'INFO', points: 0 });
+  return { score, items };
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -1633,8 +1644,9 @@ Deno.serve(async (req) => {
     const cleanDoc = doc.replace(/\D/g, '');
     const isPF = docType === 'cpf' || cleanDoc.length === 11;
     const endpoint = isPF ? '/pessoas' : '/empresas';
-    const groupKey = forceGroup || MODEL_TO_GROUP[templateModel] || (isPF ? 'SUBSELLER_PF' : 'STANDARD');
-    const datasets = DATASET_GROUPS[groupKey] || DATASET_GROUPS.STANDARD;
+    // Default to FULL for PJ when template model not in known mapping — ensures ALL datasets queried
+    const groupKey = forceGroup || MODEL_TO_GROUP[templateModel] || (isPF ? 'SUBSELLER_PF' : 'FULL');
+    const datasets = DATASET_GROUPS[groupKey] || DATASET_GROUPS.FULL;
 
     console.log(`BDC Enrich: ${cleanDoc} | ${endpoint} | group=${groupKey} | datasets=${datasets.length}`);
 
