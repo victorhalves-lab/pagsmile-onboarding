@@ -1,59 +1,214 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 /**
- * SENTINEL v4.0 — Agente de Análise QUALITATIVA de Compliance
+ * SENTINEL v4.1 — Agente de Análise QUALITATIVA de Compliance
  *
- * PAPEL NO PIPELINE UNIFICADO:
- * - SENTINEL é a camada QUALITATIVA. Ele NÃO gera score numérico autoritativo.
- * - O score V4 (de bdcEnrichCase) é a FONTE ÚNICA para: score_final, subfaixa, bloqueios.
- * - SENTINEL RECEBE dados COMPLETOS (BDC raw + CAF logs) e produz análise narrativa.
+ * PIPELINE: camada qualitativa. Score V4 numérico vem de bdcEnrichCase.
+ * SENTINEL analisa contexto, correlaciona dados BDC/CAF/Questionário,
+ * identifica padrões e produz narrativa factual detalhada.
  *
- * v4.0 MUDANÇAS:
- * - Envia dados BDC RAW COMPLETOS ao LLM (não resumo empobrecido)
- * - Envia todos os IntegrationLogs CAF com payloads completos
- * - Prompt reforçado: NUNCA inventar, SEMPRE citar fonte e dado específico
- * - Red flags com evidência obrigatória (fonte, detalhe, severidade)
- * - Pontos de atenção com explicação didática completa
+ * v4.1: Pré-processamento inteligente de dados para evitar timeout.
+ * Em vez de enviar raw data truncado, extrai campos decisórios estruturados.
  */
 
 // ═══ HELPERS ═══
 
-function truncateForPrompt(obj, maxChars = 40000) {
-  const str = JSON.stringify(obj, null, 2);
-  if (str.length <= maxChars) return str;
-  return str.substring(0, maxChars) + '\n... [TRUNCADO por tamanho — dados parciais]';
+function truncate(str, max = 8000) {
+  if (!str || str.length <= max) return str;
+  return str.substring(0, max) + '…[truncado]';
 }
 
-function extractBdcFullData(resultData) {
+/**
+ * Extrai campos decisórios do BDC raw data em formato compacto e estruturado.
+ * Isso reduz ~50KB de raw data para ~4KB de dados relevantes para compliance.
+ */
+function extractBdcDecisionFields(resultData) {
   if (!resultData) return null;
-  // Pass the full raw data but clean up MatchKeys repetition
-  const cleaned = {};
-  for (const [key, value] of Object.entries(resultData)) {
-    if (key === 'MatchKeys' || key === 'Status' || key === 'QueryDate' || key === 'ElapsedMilliseconds') continue;
-    cleaned[key] = value;
+  const d = {};
+
+  // BasicData
+  const basic = resultData.BasicData || resultData.basicData;
+  if (basic) {
+    d.basicData = {
+      officialName: basic.OfficialName || basic.officialName,
+      taxIdStatus: basic.TaxIdStatus || basic.taxIdStatus,
+      taxIdOrigin: basic.TaxIdOrigin || basic.taxIdOrigin,
+      age: basic.Age || basic.age,
+      foundedDate: basic.FoundedDate || basic.foundedDate,
+      isHeadquarter: basic.IsHeadquarter ?? basic.isHeadquarter,
+      isMatrix: basic.IsMatrix ?? basic.isMatrix,
+      mainActivity: basic.MainActivity || basic.mainActivity,
+      mainActivityCode: basic.MainActivityCode || basic.mainActivityCode,
+      shareCapital: basic.ShareCapital || basic.shareCapital,
+      employeeCount: basic.EmployeeCount || basic.employeeCount,
+      companySize: basic.Size || basic.size || basic.CompanySize,
+      status: basic.RegistrationStatus || basic.registrationStatus || basic.Status,
+      naturezaJuridica: basic.LegalNature || basic.legalNature || basic.NaturezaJuridica,
+      phoneList: basic.PhoneList || basic.Phones || [],
+      emailList: basic.EmailList || basic.Emails || [],
+      addressList: basic.AddressList || basic.Addresses || [],
+    };
   }
-  return cleaned;
+
+  // KYC Data
+  const kyc = resultData.KycData || resultData.kycData || resultData.OnlinePrescenceData;
+  if (kyc) {
+    d.kycData = {
+      isPEP: kyc.IsPEP ?? kyc.isPEP,
+      hasSanctions: kyc.IsCurrentlySanctioned ?? kyc.isCurrentlySanctioned ?? kyc.HasSanctions,
+      sanctionsSources: kyc.SanctionsSources || kyc.sanctionsSources || [],
+      hasMediaExposure: kyc.HasMediaExposure ?? kyc.hasMediaExposure,
+      riskLevel: kyc.RiskLevel || kyc.riskLevel,
+      hasAlerts: kyc.HasAlerts ?? kyc.hasAlerts,
+      alerts: kyc.Alerts || kyc.alerts || [],
+    };
+  }
+
+  // Owners / QSA
+  const owners = resultData.Owners || resultData.owners || resultData.OwnershipData;
+  if (owners) {
+    const ownerList = Array.isArray(owners) ? owners : (owners.OwnersList || owners.ownersList || []);
+    d.owners = ownerList.slice(0, 10).map(o => ({
+      name: o.Name || o.name,
+      taxId: o.TaxId || o.taxId,
+      role: o.Role || o.role || o.Qualification,
+      participation: o.Participation || o.participation,
+      isPEP: o.IsPEP ?? o.isPEP,
+      hasSanctions: o.IsCurrentlySanctioned ?? o.isCurrentlySanctioned,
+      hasNegative: o.HasNegativeMedia ?? o.hasNegativeMedia,
+      age: o.Age || o.age,
+    }));
+  }
+
+  // Lawsuits / Processes
+  const proc = resultData.Processes || resultData.processes || resultData.LawsuitsData;
+  if (proc) {
+    const lawsuits = proc.Lawsuits || proc.lawsuits || (Array.isArray(proc) ? proc : []);
+    d.processes = {
+      totalCount: proc.TotalCount || proc.totalCount || lawsuits.length,
+      totalValue: proc.TotalValue || proc.totalValue,
+      asAuthor: proc.AsAuthor || proc.asAuthor || 0,
+      asDefendant: proc.AsDefendant || proc.asDefendant || 0,
+      lawsuits: lawsuits.slice(0, 8).map(l => ({
+        number: l.Number || l.number,
+        type: l.Type || l.type,
+        court: l.Court || l.court,
+        subject: l.Subject || l.subject,
+        value: l.Value || l.value,
+        status: l.Status || l.status,
+        parties: l.Parties || l.parties || l.MainParties,
+        date: l.Date || l.date || l.FilingDate,
+      })),
+    };
+  }
+
+  // Collections / Negativação
+  const col = resultData.Collections || resultData.collections;
+  if (col) {
+    d.collections = {
+      isOnCollection: col.IsCurrentlyOnCollection ?? col.isCurrentlyOnCollection,
+      currentCount: col.CurrentCount || col.currentCount || 0,
+      currentTotal: col.CurrentTotal || col.currentTotal || 0,
+      historicCount: col.HistoricCount || col.historicCount || 0,
+    };
+  }
+
+  // Activity Indicators
+  const act = resultData.ActivityIndicators || resultData.activityIndicators;
+  if (act) {
+    d.activityIndicators = {
+      hasRecentActivity: act.HasRecentActivity ?? act.hasRecentActivity,
+      lastActivityDate: act.LastActivityDate || act.lastActivityDate,
+      isActive: act.IsActive ?? act.isActive,
+      monthsSinceLastActivity: act.MonthsSinceLastActivity || act.monthsSinceLastActivity,
+    };
+  }
+
+  // Domains / Digital Footprint
+  const dom = resultData.Domains || resultData.domains;
+  if (dom) {
+    const domList = Array.isArray(dom) ? dom : (dom.DomainsList || dom.domainsList || []);
+    d.domains = domList.slice(0, 5).map(dd => ({
+      domain: dd.Domain || dd.domain || dd.Name,
+      status: dd.Status || dd.status,
+      createdDate: dd.CreatedDate || dd.createdDate,
+    }));
+  }
+
+  // Relationships / Related companies
+  const rel = resultData.Relationships || resultData.relationships;
+  if (rel) {
+    const relList = Array.isArray(rel) ? rel : (rel.RelationshipsList || []);
+    d.relationships = {
+      totalRelated: relList.length,
+      list: relList.slice(0, 5).map(r => ({
+        name: r.RelatedEntityName || r.Name || r.name,
+        taxId: r.RelatedEntityTaxId || r.TaxId,
+        type: r.RelationshipType || r.Type,
+      })),
+    };
+  }
+
+  // MCC
+  const mcc = resultData.MCC || resultData.Mcc;
+  if (mcc) {
+    d.mcc = {
+      code: mcc.Code || mcc.code || mcc.MccCode,
+      description: mcc.Description || mcc.description,
+      riskLevel: mcc.RiskLevel || mcc.riskLevel,
+    };
+  }
+
+  // Credit Score / Financial
+  const credit = resultData.CreditScore || resultData.creditScore || resultData.FinancialData;
+  if (credit) {
+    d.creditScore = {
+      score: credit.Score || credit.score,
+      rating: credit.Rating || credit.rating,
+      probability: credit.DefaultProbability || credit.defaultProbability,
+    };
+  }
+
+  return d;
 }
 
-function formatCafLogs(logs) {
+function formatCafLogsSummary(logs) {
   if (!logs || logs.length === 0) return null;
-  return logs.map(log => ({
-    servico: log.service_type,
-    status: log.status,
-    resultado: log.result_status,
-    red_flags: log.red_flags || [],
-    is_alive: log.is_alive,
-    similarity: log.similarity,
-    score: log.score,
-    erro: log.error_message || null,
-    duracao_ms: log.duration_ms,
-    data: log.created_date,
-    // Include response payload with full details
-    resposta_completa: log.response_payload || null,
-    // Include request context
-    request_id: log.request_id,
-    transaction_id: log.transaction_id,
-  }));
+  return logs.map(log => {
+    const entry = {
+      servico: log.service_type,
+      status: log.status,
+      resultado: log.result_status,
+      data: log.created_date,
+    };
+    if (log.red_flags?.length > 0) entry.red_flags = log.red_flags;
+    if (log.is_alive != null) entry.is_alive = log.is_alive;
+    if (log.similarity != null) entry.similarity = log.similarity;
+    if (log.score != null) entry.score = log.score;
+    if (log.error_message) entry.erro = log.error_message;
+    // Extract key fields from response payload without sending the whole thing
+    const rp = log.response_payload;
+    if (rp) {
+      const extracted = {};
+      // CAF screening results
+      if (rp.hitsCount != null) extracted.hitsCount = rp.hitsCount;
+      if (rp.hits) extracted.hits = Array.isArray(rp.hits) ? rp.hits.slice(0, 3) : rp.hits;
+      if (rp.result) extracted.result = rp.result;
+      if (rp.status) extracted.resultStatus = rp.status;
+      // Liveness / facematch
+      if (rp.isAlive != null) extracted.isAlive = rp.isAlive;
+      if (rp.score != null) extracted.score = rp.score;
+      if (rp.similarity != null) extracted.similarity = rp.similarity;
+      // Doc results
+      if (rp.documentType) extracted.documentType = rp.documentType;
+      if (rp.fraud != null) extracted.fraud = rp.fraud;
+      // CPF validation
+      if (rp.cpfData) extracted.cpfData = rp.cpfData;
+      if (rp.regularSituation != null) extracted.regularSituation = rp.regularSituation;
+      if (Object.keys(extracted).length > 0) entry.detalhes = extracted;
+    }
+    return entry;
+  });
 }
 
 Deno.serve(async (req) => {
@@ -71,24 +226,22 @@ Deno.serve(async (req) => {
       return Response.json({ error: "ID do caso não fornecido" }, { status: 400 });
     }
 
-    console.log(`[SENTINEL v4] Iniciando análise qualitativa do caso: ${caseId}`);
+    console.log(`[SENTINEL v4.1] Iniciando análise: ${caseId}`);
 
     // ═══ LOAD ALL DATA ═══
     const [onboardingCase] = await base44.asServiceRole.entities.OnboardingCase.filter({ id: caseId });
     if (!onboardingCase) return Response.json({ error: "Caso não encontrado" }, { status: 404 });
 
-    // Check for recent analysis (< 24h)
     const existingScores = await base44.asServiceRole.entities.ComplianceScore.filter({ onboarding_case_id: caseId });
     const existingScore = existingScores[0];
     if (existingScore?.fase_3_completa && existingScore.data_analise_fase_3) {
       const hours = (Date.now() - new Date(existingScore.data_analise_fase_3).getTime()) / 3600000;
       if (hours < 24 && !payload.force) {
-        console.log(`[SENTINEL v4] Análise recente (${hours.toFixed(1)}h). Pulando.`);
+        console.log(`[SENTINEL v4.1] Análise recente (${hours.toFixed(1)}h). Pulando.`);
         return Response.json({ success: true, message: "Análise recente existe", score_id: existingScore.id });
       }
     }
 
-    // Load all related data in parallel
     const [merchantArr, responses, externalValidations, documents, cafIntegrationLogs] = await Promise.all([
       base44.asServiceRole.entities.Merchant.filter({ id: onboardingCase.merchantId }),
       base44.asServiceRole.entities.QuestionnaireResponse.filter({ onboardingCaseId: caseId }),
@@ -98,7 +251,7 @@ Deno.serve(async (req) => {
     ]);
     const merchant = merchantArr[0];
 
-    // ═══ READ V4 SCORE (the authoritative numeric data) ═══
+    // ═══ V4 SCORE (authoritative numeric) ═══
     const v4Data = existingScore ? {
       score_final: existingScore.score_final,
       subfaixa: existingScore.subfaixa,
@@ -115,222 +268,154 @@ Deno.serve(async (req) => {
       condicoes: existingScore.condicoes_automaticas || [],
     } : null;
 
-    console.log(`[SENTINEL v4] V4 context: score=${v4Data?.score_final}, subfaixa=${v4Data?.subfaixa}`);
-
-    // ═══ EXTRACT BDC RAW DATA (FULL — not summary) ═══
+    // ═══ EXTRACT BDC STRUCTURED DECISION FIELDS ═══
     const bdcValidations = externalValidations
       .filter(v => v.provider === 'BigDataCorp' && v.resultData)
       .sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
-    const latestBdc = bdcValidations[0];
-    const bdcFullData = latestBdc?.resultData ? extractBdcFullData(latestBdc.resultData) : null;
-    const bdcDataString = bdcFullData ? truncateForPrompt(bdcFullData, 45000) : null;
+    const bdcDecision = bdcValidations[0]?.resultData ? extractBdcDecisionFields(bdcValidations[0].resultData) : null;
 
-    // ═══ EXTRACT CAF DATA (ALL integration logs with full payloads) ═══
+    // ═══ EXTRACT CAF SUMMARY ═══
     const cafLogs = cafIntegrationLogs.filter(l => l.provider === 'CAF');
-    const cafFullData = formatCafLogs(cafLogs);
-    const cafDataString = cafFullData ? truncateForPrompt(cafFullData, 15000) : null;
+    const cafSummary = formatCafLogsSummary(cafLogs);
 
-    // Also get CAF ExternalValidationResults
     const cafValidations = externalValidations.filter(v => v.provider === 'CAF');
-    const cafValidationsString = cafValidations.length > 0 
-      ? truncateForPrompt(cafValidations.map(v => ({
-          tipo: v.validationType,
-          status: v.status,
-          score: v.score,
-          resultado: v.resultData,
-          data: v.timestamp || v.created_date,
-        })), 10000)
+    const cafValSummary = cafValidations.length > 0
+      ? cafValidations.map(v => ({ tipo: v.validationType, status: v.status, score: v.score, data: v.timestamp || v.created_date }))
       : null;
 
     const hasExternalData = externalValidations.length > 0;
 
-    // ═══ BUILD PROMPT WITH FULL DATA ═══
-    const formattedResponses = responses.map(r => ({
-      pergunta: r.questionText || `Pergunta ${r.questionId}`,
-      resposta: r.valueText || (r.valueNumber != null ? String(r.valueNumber) : null) || (r.valueBoolean != null ? String(r.valueBoolean) : null) || r.valueArray?.join(', ') || 'Não respondido'
-    }));
-    const formattedDocuments = documents.map(d => ({
-      tipo: d.documentName,
-      status: d.validationStatus,
-      arquivo: d.fileName,
-      tamanho: d.fileSize ? `${(d.fileSize / 1024).toFixed(0)} KB` : 'N/D',
-      data_upload: d.uploadDate || d.created_date,
-    }));
+    // ═══ FORMAT QUESTIONNAIRE RESPONSES (semantic) ═══
+    const fmtResponses = responses.map(r => {
+      const tipo = r.questionType || 'TEXT';
+      const pergunta = r.questionText || `Pergunta ${r.questionId}`;
+      const hasVal = (r.valueText != null && r.valueText !== '' && r.valueText !== 'N/A') ||
+                     r.valueNumber != null || r.valueBoolean != null ||
+                     (r.valueArray && r.valueArray.length > 0);
 
-    const analysisPrompt = `Você é o SENTINEL v4, analista sênior de compliance e risco do mercado financeiro brasileiro.
+      if (!hasVal) return `[NÃO RESPONDIDA][${tipo}] "${pergunta}" → Lacuna real`;
 
-═══════════════════════════════════════════════════════════════════
-REGRA ABSOLUTA: VOCÊ NÃO INVENTA INFORMAÇÃO
-═══════════════════════════════════════════════════════════════════
+      if (tipo === 'BOOLEAN') {
+        const v = r.valueBoolean ? 'SIM' : 'NÃO';
+        const pL = pergunta.toLowerCase();
+        const isRisk = /restrit|proibid|cripto|jogos|aposta|sancion|pendência|judicial|litígio|irregularidade|infração|processo|condenação|bloqueio/.test(pL);
+        const isControl = /compliance|pld|monitora|política|programa|certificação|segurança|auditor|controle/.test(pL);
+        const isPEP = /pep|pessoa exposta|politicamente/.test(pL);
 
-REGRAS INVIOLÁVEIS:
-1. NUNCA afirme algo que não esteja explicitamente nos dados fornecidos abaixo.
-2. Se os dados BDC dizem "IsCurrentlySanctioned: false" e os dados CAF de screening retornaram "hitsCount: 0", NÃO diga que há sanções.
-3. Cada red flag DEVE citar a FONTE EXATA (ex: "BDC BasicData.TaxIdStatus", "CAF screening hitsCount", "Questionário pergunta X").
-4. Se um dado não está disponível, diga "DADO NÃO DISPONÍVEL — não foi possível verificar" em vez de inferir.
-5. Cada ponto de atenção DEVE explicar O QUE especificamente está incompleto/inconsistente, COM o valor encontrado e o valor esperado.
-6. Cada ponto positivo DEVE citar a evidência específica (ex: "CPF status REGULAR conforme BDC BasicData.TaxIdStatus").
-7. Red flags devem ter formato: "[FONTE] Descrição detalhada com dados específicos". Exemplos:
-   - "[BDC Processes] Processo nº 00898959520248172001, Tipo: Procedimento Comum, Tribunal: TJPE, Assunto: Revisão de Contrato Bancário, Status: Em Grau de Recurso, Autor vs Banco Pan S/A"
-   - "[CAF Screening] PEP identificado na lista X com detalhes Y"
-   - "[BDC KycData] Sanção ativa encontrada: lista Z, data W"
-   NUNCA escreva apenas "Sanções no CEIS" sem evidência.
+        let ctx = '';
+        if (!r.valueBoolean && isRisk) ctx = '(POSITIVO: nega condição de risco)';
+        else if (r.valueBoolean && isRisk) ctx = '(ATENÇÃO: confirma condição de risco)';
+        else if (r.valueBoolean && isControl) ctx = '(POSITIVO: possui controle)';
+        else if (!r.valueBoolean && isControl) ctx = '(ATENÇÃO: não possui controle)';
+        else if (isPEP) ctx = r.valueBoolean ? '(PEP declarado — cross-validar)' : '(Declara não-PEP — cross-validar)';
 
-═══ SEU PAPEL ═══
-Você é a CAMADA QUALITATIVA do pipeline. O score numérico V4 já foi calculado deterministicamente.
-Seu trabalho é: analisar contexto, correlacionar dados, identificar padrões, e produzir narrativa FACTUAL E DETALHADA.
-Você NÃO produz score numérico — apenas análise qualitativa e uma recomendação que pode ESCALAR a decisão V4.
+        return `[RESPONDIDA][BOOLEAN] "${pergunta}" → ${v} ${ctx}`;
+      }
 
-═══ SCORE V4 (DETERMINÍSTICO — JÁ CALCULADO) ═══
-${v4Data ? `- Score Final: ${v4Data.score_final}/849
-- Subfaixa: ${v4Data.subfaixa} (${v4Data.subfaixa_nome})
-- Composição: Base=${v4Data.score_base} + Variáveis=${v4Data.score_variaveis} + Enriquecimento=${v4Data.score_enriquecimento}
-- Bloqueios: ${v4Data.bloqueios.length > 0 ? v4Data.bloqueios.join(', ') : 'Nenhum'}
-- Red Flags V4: ${v4Data.v4_red_flags.length > 0 ? v4Data.v4_red_flags.join('; ') : 'Nenhum'}
-- Recomendação V4: ${v4Data.v4_recomendacao}
-- Segmento: ${v4Data.segmento}
-- Rolling Reserve: ${v4Data.rolling_reserve}%
-- Monitoramento: ${v4Data.monitoramento}
-- Condições: ${v4Data.condicoes.length > 0 ? v4Data.condicoes.join('; ') : 'Nenhuma'}` : 'V4 NÃO DISPONÍVEL — BDC não executou para este caso. Analise apenas com dados disponíveis.'}
+      if (tipo === 'NUMBER') return `[RESPONDIDA][NUMBER] "${pergunta}" → ${r.valueNumber}`;
+      if (tipo === 'SELECT') return `[RESPONDIDA][SELECT] "${pergunta}" → "${r.valueText}"`;
+      if (tipo === 'MULTI_SELECT') return `[RESPONDIDA][MULTI_SELECT] "${pergunta}" → [${(r.valueArray || []).join(', ')}]`;
 
-═══ DADOS DO MERCHANT ═══
-- Tipo: ${merchant?.type || 'N/A'} | CPF/CNPJ: ${merchant?.cpfCnpj || 'N/A'}
-- Razão Social: ${merchant?.fullName || 'N/A'} | Nome Fantasia: ${merchant?.companyName || 'N/A'}
-- Email: ${merchant?.email || 'N/A'} | Telefone: ${merchant?.phone || 'N/A'}
-- Serviços: ${merchant?.paymentServices?.join(', ') || 'N/A'}
-- É Subseller: ${merchant?.isSubseller ? 'SIM (vinculado a ' + (merchant?.parentMerchantId || 'N/D') + ')' : 'NÃO'}
+      const vt = r.valueText || '';
+      if (vt.trim().length < 3 || ['n/a','na','-','.','...'].includes(vt.trim().toLowerCase())) {
+        return `[PARCIAL][${tipo}] "${pergunta}" → "${vt}" (resposta genérica/vazia)`;
+      }
+      return `[RESPONDIDA][${tipo}] "${pergunta}" → "${vt}"`;
+    });
 
-═══ QUESTIONÁRIO (${responses.length} respostas) ═══
-${JSON.stringify(formattedResponses, null, 2)}
+    const respondidas = fmtResponses.filter(r => r.startsWith('[RESPONDIDA]')).length;
+    const naoResp = fmtResponses.filter(r => r.startsWith('[NÃO RESPONDIDA]')).length;
+    const parciais = fmtResponses.filter(r => r.startsWith('[PARCIAL]')).length;
+    const completude = fmtResponses.length > 0 ? ((respondidas / fmtResponses.length) * 100).toFixed(1) : 0;
 
-═══ DOCUMENTOS ENVIADOS (${documents.length}) ═══
-${JSON.stringify(formattedDocuments, null, 2)}
+    const fmtDocs = documents.map(d => `${d.documentName || 'Doc'}: ${d.validationStatus} (${d.fileName})`);
 
-${bdcDataString ? `═══ DADOS COMPLETOS BDC (Big Data Corp) — FONTE PRIMÁRIA ═══
-ATENÇÃO: Analise TODOS os campos abaixo com cuidado. Estes são os dados REAIS retornados pela API BDC.
-Cite campos específicos ao fazer qualquer afirmação (ex: "BasicData.TaxIdStatus", "Processes.Lawsuits[0].Number").
+    // ═══ BUILD OPTIMIZED PROMPT ═══
+    const prompt = `Você é o SENTINEL v4.1, analista sênior de compliance e risco do mercado financeiro brasileiro.
 
-${bdcDataString}` : '═══ DADOS BDC ═══\nNÃO DISPONÍVEL — BigDataCorp não retornou dados para este caso. Não faça afirmações sobre dados BDC.'}
+## REGRAS INVIOLÁVEIS
+1. NUNCA afirme algo sem dado nos blocos abaixo. Cada afirmação DEVE citar [FONTE: campo].
+2. Red flag sem evidência = PROIBIDO. Se BDC KycData.hasSanctions=false e CAF hitsCount=0, NÃO reporte sanções.
+3. Resposta BOOLEAN "NÃO" em pergunta sobre risco (cripto/jogos/sanções) = POSITIVO, não lacuna.
+4. Pergunta com status [RESPONDIDA] = COMPLETA. Só [NÃO RESPONDIDA] ou [PARCIAL] são lacunas.
+5. Para discrepância declarado vs confirmado: use cross_validation, não "lacuna".
+6. Processos judiciais: detalhe número, tribunal, tipo, assunto, valor, partes, status.
 
-${cafDataString ? `═══ LOGS COMPLETOS CAF (Combate à Fraude) — INTEGRATIONS ═══
-Estes são TODOS os serviços CAF executados para este caso, com respostas completas.
-Inclui: screening internacional (PEP/Sanções/Interpol), CPF validation, liveness, facematch, documentoscopy, VerifAI.
-Cite o serviço específico ao fazer qualquer afirmação.
+## SEU PAPEL
+Camada QUALITATIVA. Score V4 já calculado. Analise contexto, correlacione, identifique padrões, produza narrativa FACTUAL.
+Pode ESCALAR decisão V4 (nunca rebaixar).
 
-${cafDataString}` : '═══ DADOS CAF (Integrations) ═══\nNÃO DISPONÍVEL — Nenhum log de integração CAF encontrado.'}
+## SCORE V4
+${v4Data ? `Score=${v4Data.score_final}/849 | Subfaixa=${v4Data.subfaixa} (${v4Data.subfaixa_nome})
+Composição: Base=${v4Data.score_base} + Var=${v4Data.score_variaveis} + Enriq=${v4Data.score_enriquecimento}
+Bloqueios: ${v4Data.bloqueios.length > 0 ? v4Data.bloqueios.join(', ') : 'Nenhum'}
+Red Flags V4: ${v4Data.v4_red_flags.length > 0 ? v4Data.v4_red_flags.join('; ') : 'Nenhum'}
+Recomendação V4: ${v4Data.v4_recomendacao} | Segmento: ${v4Data.segmento}
+RR: ${v4Data.rolling_reserve}% | Monitoramento: ${v4Data.monitoramento}
+${v4Data.condicoes.length > 0 ? 'Condições: ' + v4Data.condicoes.join('; ') : ''}` : 'V4 NÃO DISPONÍVEL'}
 
-${cafValidationsString ? `═══ VALIDAÇÕES CAF (External Validation Results) ═══
-${cafValidationsString}` : ''}
+## MERCHANT
+Tipo: ${merchant?.type || 'N/A'} | Doc: ${merchant?.cpfCnpj || 'N/A'} | Razão: ${merchant?.fullName || 'N/A'}
+Fantasia: ${merchant?.companyName || 'N/A'} | Email: ${merchant?.email || 'N/A'} | Tel: ${merchant?.phone || 'N/A'}
+Serviços: ${merchant?.paymentServices?.join(', ') || 'N/A'} | Subseller: ${merchant?.isSubseller ? 'SIM' : 'NÃO'}
 
-═══════════════════════════════════════════════════════════════════
-INSTRUÇÕES DE ANÁLISE
-═══════════════════════════════════════════════════════════════════
+## QUESTIONÁRIO (${fmtResponses.length} perguntas — ${completude}% completo — ${respondidas} respondidas, ${naoResp} não respondidas, ${parciais} parciais)
+${fmtResponses.join('\n')}
 
-1. **ANÁLISE DIMENSIONAL** — Avalie cada dimensão com EVIDÊNCIAS ESPECÍFICAS dos dados:
-   IDENTIDADE, SÓCIOS/QSA, COMPLIANCE/REGULATÓRIO, PEGADA DIGITAL, REPUTAÇÃO, FINANCEIRO, BIOMETRIA
-   Para cada dimensão, cite os dados exatos que fundamentam o veredicto.
+## DOCUMENTOS (${documents.length})
+${fmtDocs.length > 0 ? fmtDocs.join('\n') : 'Nenhum documento enviado'}
 
-2. **CROSS-VALIDATION** — Compare declarado (questionário) vs confirmado (BDC/CAF):
-   Para cada campo comparado, mostre: valor declarado, valor confirmado, fonte do dado confirmado, e análise da discrepância.
+${bdcDecision ? `## DADOS BDC (Big Data Corp) — CAMPOS DECISÓRIOS ESTRUTURADOS
+${JSON.stringify(bdcDecision, null, 2)}` : '## DADOS BDC\nNÃO DISPONÍVEL'}
 
-3. **RED FLAGS** — SOMENTE flags baseados em dados REAIS:
-   Formato obrigatório: "[FONTE: campo.específico] Descrição detalhada com valores encontrados"
-   Se BDC KycData.IsCurrentlySanctioned = false e CAF screening hitsCount = 0, NÃO reporte sanções.
-   Se houver processos, detalhe: número, tribunal, tipo, assunto, valor, partes, status atual.
+${cafSummary ? `## CAF — SERVIÇOS EXECUTADOS
+${JSON.stringify(cafSummary, null, 2)}` : '## CAF\nNÃO DISPONÍVEL'}
 
-4. **PONTOS DE ATENÇÃO** — Explique COM DETALHES o que precisa de atenção:
-   Em vez de "Documentação incompleta", diga: "Faltam os documentos X, Y e Z conforme exigido pelo template. Foram enviados apenas: A, B."
-   Em vez de "Inconsistência no histórico", diga: "O questionário declara TPV de R$X/mês, mas o porte BDC é Y com Z empregados, sugerindo capacidade incompatível."
+${cafValSummary ? `## CAF — VALIDAÇÕES
+${JSON.stringify(cafValSummary, null, 2)}` : ''}
 
-5. **PONTOS POSITIVOS** — Cite a evidência específica para cada ponto positivo.
-
-6. **SUMÁRIO EXECUTIVO** — 4-6 linhas com os achados mais importantes, sempre referenciando fontes.
-
-7. **PARECER FINAL** — Narrativa completa para dossiê de compliance. Deve ser detalhado o suficiente para um analista entender TUDO sem consultar outras fontes.
-
-8. **RECOMENDAÇÃO SENTINEL** — Pode ser: Aprovado, Aprovado com Condições, Revisão Manual, Recusado.
-   REGRA: Se V4 diz "Aprovado" mas você identifica red flags FACTUAIS graves, ESCALE para "Revisão Manual".
-   Nunca rebaixe (se V4 diz "Recusado", não sugira "Aprovado").
-   Se V4 não está disponível, baseie-se apenas nos dados disponíveis.
-
-Seja EXTREMAMENTE detalhado, factual, e documente com evidências específicas. Qualidade > brevidade.`;
+## INSTRUÇÕES
+Produza análise EXTREMAMENTE detalhada, precisa, factual. Para cada achado cite [FONTE: campo_específico].
+Na analise_completa_ia, organize por dimensão e detalhe cada achado com dados específicos. Mínimo 15 linhas.
+No parecer_final, escreva como se fosse dossiê oficial de compliance — autocontido e completo.
+Em pontos_positivos e pontos_atencao, cite evidências específicas com valores.
+Red flags: SOMENTE com evidência. Formato "[FONTE: campo] Descrição com valores encontrados".
+Cross-validation: compare declarado (questionário) vs confirmado (BDC/CAF) com detalhes.
+Análise dimensional: 7 dimensões (identidade, sócios, compliance, digital, reputação, financeiro, biometria).
+Se dados insuficientes para uma dimensão, marque veredicto e explique o que falta.
+Qualidade > brevidade. Seja exhaustivo.`;
 
     const responseSchema = {
       type: "object",
       properties: {
-        sentinel_recommendation: {
-          type: "string",
-          enum: ["Aprovado", "Aprovado com Condições", "Revisão Manual", "Recusado"],
-          description: "Recomendação SENTINEL. Pode ESCALAR a decisão V4 mas nunca REBAIXAR."
-        },
-        escalation_justification: {
-          type: "string",
-          description: "Se a recomendação difere do V4, explique POR QUÊ com dados específicos. Vazio se não escalou."
-        },
-        sumario_executivo: {
-          type: "string",
-          description: "Resumo executivo de 4-6 linhas. Cite fontes: [BDC], [CAF], [Questionário]. Deve ser informativo e completo."
-        },
-        analise_completa_ia: {
-          type: "string",
-          description: "Análise completa, detalhada e didática. Para cada achado, cite a fonte exata e o dado específico. Organize por dimensões. Mínimo 10 linhas."
-        },
-        parecer_final: {
-          type: "string",
-          description: "Parecer conclusivo para dossiê. Deve ser autocontido — um analista deve entender tudo lendo apenas este parecer. Cite dados, fontes, valores."
-        },
-        pontos_positivos: {
-          type: "array",
-          items: { type: "string" },
-          description: "Cada item deve citar a evidência. Ex: '[BDC] CPF status REGULAR (BasicData.TaxIdStatus), sem negativação (Collections.IsCurrentlyOnCollection=false)'"
-        },
-        pontos_atencao: {
-          type: "array",
-          items: { type: "string" },
-          description: "Cada item deve explicar O QUE, POR QUÊ e ONDE está o problema. Ex: '[Questionário] Pergunta sobre PEP não respondida (pergunta 14), impossibilitando verificação cruzada com dados BDC que indicam IsPEP=false'"
-        },
-        red_flags: {
-          type: "array",
-          items: { type: "string" },
-          description: "SOMENTE flags com evidência factual. Formato: '[FONTE: campo] Descrição com dados'. NUNCA inventar. Se não há evidência, NÃO inclua."
-        },
-        recomendacoes_revisao_manual: {
-          type: "string",
-          description: "Recomendações detalhadas: o que o analista deve verificar, quais documentos pedir, quais perguntas fazer, e por quê."
-        },
-        perguntas_sugeridas: {
-          type: "array",
-          items: { type: "string" },
-          description: "Perguntas específicas para o merchant, baseadas em lacunas nos dados. Explique por que cada pergunta é necessária."
-        },
-        documentos_adicionais_sugeridos: {
-          type: "array",
-          items: { type: "string" },
-          description: "Documentos que devem ser solicitados, com justificativa baseada nos dados analisados."
-        },
-        nivel_confianca_ia: { type: "number", description: "0-100. Reduza se dados BDC/CAF não estão disponíveis." },
+        sentinel_recommendation: { type: "string", enum: ["Aprovado", "Aprovado com Condições", "Revisão Manual", "Recusado"] },
+        escalation_justification: { type: "string" },
+        sumario_executivo: { type: "string", description: "4-6 linhas, cite fontes [BDC], [CAF], [Questionário]" },
+        analise_completa_ia: { type: "string", description: "Análise detalhada por dimensão. Mínimo 15 linhas. Cite fonte e dado exato para cada achado." },
+        parecer_final: { type: "string", description: "Parecer autocontido para dossiê. Cite dados, fontes, valores." },
+        pontos_positivos: { type: "array", items: { type: "string" }, description: "Cada item com [FONTE] e evidência" },
+        pontos_atencao: { type: "array", items: { type: "string" }, description: "Cada item com O QUE, POR QUÊ e evidência" },
+        red_flags: { type: "array", items: { type: "string" }, description: "SOMENTE com evidência. Formato: [FONTE: campo] Descrição" },
+        recomendacoes_revisao_manual: { type: "string" },
+        perguntas_sugeridas: { type: "array", items: { type: "string" } },
+        documentos_adicionais_sugeridos: { type: "array", items: { type: "string" } },
+        nivel_confianca_ia: { type: "number" },
         total_findings: { type: "number" },
         findings_por_severidade: {
           type: "object",
-          properties: {
-            critico: { type: "number" },
-            alto: { type: "number" },
-            medio: { type: "number" },
-            baixo: { type: "number" },
-            info: { type: "number" }
-          }
+          properties: { critico: { type: "number" }, alto: { type: "number" }, medio: { type: "number" }, baixo: { type: "number" }, info: { type: "number" } }
         },
         overrides_aplicados: { type: "array", items: { type: "string" } },
         condicoes_aprovacao: { type: "string" },
         analise_dimensional: {
           type: "object",
           properties: {
-            identidade: { type: "object", properties: { veredicto: { type: "string", enum: ["APROVADO","ATENCAO","REPROVADO"] }, confianca: { type: "number" }, resumo: { type: "string", description: "Resumo detalhado com citação de dados específicos BDC/CAF" }, findings: { type: "array", items: { type: "string" }, description: "Cada finding com [FONTE] e dados específicos" } } },
-            socios: { type: "object", properties: { veredicto: { type: "string", enum: ["APROVADO","ATENCAO","REPROVADO"] }, confianca: { type: "number" }, resumo: { type: "string" }, findings: { type: "array", items: { type: "string" } } } },
-            compliance: { type: "object", properties: { veredicto: { type: "string", enum: ["APROVADO","ATENCAO","REPROVADO"] }, confianca: { type: "number" }, resumo: { type: "string" }, findings: { type: "array", items: { type: "string" } } } },
-            digital: { type: "object", properties: { veredicto: { type: "string", enum: ["APROVADO","ATENCAO","REPROVADO"] }, confianca: { type: "number" }, resumo: { type: "string" }, findings: { type: "array", items: { type: "string" } } } },
-            reputacao: { type: "object", properties: { veredicto: { type: "string", enum: ["APROVADO","ATENCAO","REPROVADO"] }, confianca: { type: "number" }, resumo: { type: "string" }, findings: { type: "array", items: { type: "string" } } } },
-            financeiro: { type: "object", properties: { veredicto: { type: "string", enum: ["APROVADO","ATENCAO","REPROVADO"] }, confianca: { type: "number" }, resumo: { type: "string" }, findings: { type: "array", items: { type: "string" } } } },
+            identidade: { type: "object", properties: { veredicto: { type: "string", enum: ["APROVADO","ATENCAO","REPROVADO","NAO_DISPONIVEL"] }, confianca: { type: "number" }, resumo: { type: "string" }, findings: { type: "array", items: { type: "string" } } } },
+            socios: { type: "object", properties: { veredicto: { type: "string", enum: ["APROVADO","ATENCAO","REPROVADO","NAO_DISPONIVEL"] }, confianca: { type: "number" }, resumo: { type: "string" }, findings: { type: "array", items: { type: "string" } } } },
+            compliance: { type: "object", properties: { veredicto: { type: "string", enum: ["APROVADO","ATENCAO","REPROVADO","NAO_DISPONIVEL"] }, confianca: { type: "number" }, resumo: { type: "string" }, findings: { type: "array", items: { type: "string" } } } },
+            digital: { type: "object", properties: { veredicto: { type: "string", enum: ["APROVADO","ATENCAO","REPROVADO","NAO_DISPONIVEL"] }, confianca: { type: "number" }, resumo: { type: "string" }, findings: { type: "array", items: { type: "string" } } } },
+            reputacao: { type: "object", properties: { veredicto: { type: "string", enum: ["APROVADO","ATENCAO","REPROVADO","NAO_DISPONIVEL"] }, confianca: { type: "number" }, resumo: { type: "string" }, findings: { type: "array", items: { type: "string" } } } },
+            financeiro: { type: "object", properties: { veredicto: { type: "string", enum: ["APROVADO","ATENCAO","REPROVADO","NAO_DISPONIVEL"] }, confianca: { type: "number" }, resumo: { type: "string" }, findings: { type: "array", items: { type: "string" } } } },
             biometria: { type: "object", properties: { veredicto: { type: "string", enum: ["APROVADO","ATENCAO","REPROVADO","NAO_DISPONIVEL"] }, confianca: { type: "number" }, resumo: { type: "string" }, findings: { type: "array", items: { type: "string" } } } }
           }
         },
@@ -340,13 +425,13 @@ Seja EXTREMAMENTE detalhado, factual, e documente com evidências específicas. 
             type: "object",
             properties: {
               campo: { type: "string" },
-              valor_declarado: { type: "string", description: "Valor do questionário" },
-              fonte_declarado: { type: "string", description: "Qual pergunta do questionário" },
-              valor_confirmado: { type: "string", description: "Valor confirmado por BDC/CAF" },
-              fonte_confirmado: { type: "string", description: "Ex: BDC BasicData.OfficialName, CAF CPF Validation" },
+              valor_declarado: { type: "string" },
+              fonte_declarado: { type: "string" },
+              valor_confirmado: { type: "string" },
+              fonte_confirmado: { type: "string" },
               consistente: { type: "boolean" },
               severidade: { type: "string", enum: ["INFO","LOW","MEDIUM","HIGH","CRITICAL"] },
-              observacao: { type: "string", description: "Análise detalhada da discrepância ou consistência" }
+              observacao: { type: "string" }
             }
           }
         }
@@ -354,22 +439,21 @@ Seja EXTREMAMENTE detalhado, factual, e documente com evidências específicas. 
       required: ["sentinel_recommendation","sumario_executivo","analise_completa_ia","parecer_final","pontos_positivos","pontos_atencao","red_flags","nivel_confianca_ia","total_findings"]
     };
 
-    console.log(`[SENTINEL v4] Invocando LLM com dados completos: BDC=${bdcDataString ? 'SIM' : 'NÃO'}, CAF=${cafDataString ? 'SIM' : 'NÃO'}, Respostas=${responses.length}, Docs=${documents.length}`);
-    
-    const llmResponse = await base44.asServiceRole.integrations.Core.InvokeLLM({
-      prompt: analysisPrompt,
-      response_json_schema: responseSchema,
-      model: 'claude_sonnet_4_6'
-    });
-    
-    console.log(`[SENTINEL v4] LLM respondeu. Recommendation=${llmResponse.sentinel_recommendation}, RedFlags=${(llmResponse.red_flags || []).length}, Confiança=${llmResponse.nivel_confianca_ia}%`);
+    console.log(`[SENTINEL v4.1] LLM call: BDC=${bdcDecision ? 'SIM' : 'NÃO'}, CAF=${cafSummary ? cafSummary.length + ' logs' : 'NÃO'}, Respostas=${responses.length}, Docs=${documents.length}`);
 
-    // ═══ SAVE SENTINEL QUALITATIVE DATA ═══
+    const llmResponse = await base44.asServiceRole.integrations.Core.InvokeLLM({
+      prompt,
+      response_json_schema: responseSchema,
+      model: 'gemini_3_flash'
+    });
+
+    console.log(`[SENTINEL v4.1] LLM OK. Rec=${llmResponse.sentinel_recommendation}, RedFlags=${(llmResponse.red_flags || []).length}, Confiança=${llmResponse.nivel_confianca_ia}%`);
+
+    // ═══ SAVE ═══
     const now = new Date().toISOString();
     const sentinelData = {
       onboarding_case_id: caseId,
-      versao_agente: "SENTINEL v4.0",
-      // SENTINEL qualitative fields
+      versao_agente: "SENTINEL v4.1",
       sentinel_recommendation: llmResponse.sentinel_recommendation,
       sumario_executivo: llmResponse.sumario_executivo,
       analise_completa_ia: llmResponse.analise_completa_ia,
@@ -388,7 +472,6 @@ Seja EXTREMAMENTE detalhado, factual, e documente com evidências específicas. 
       analise_dimensional: llmResponse.analise_dimensional || null,
       cross_validation: llmResponse.cross_validation || [],
       escalation_justification: llmResponse.escalation_justification || "",
-      // Phase tracking
       fase_1_completa: true,
       data_analise_fase_1: now,
       fase_2_completa: hasExternalData || (existingScore?.fase_2_completa || false),
@@ -399,19 +482,18 @@ Seja EXTREMAMENTE detalhado, factual, e documente com evidências específicas. 
 
     if (existingScore) {
       await base44.asServiceRole.entities.ComplianceScore.update(existingScore.id, sentinelData);
-      console.log(`[SENTINEL v4] Score updated: ${existingScore.id}`);
+      console.log(`[SENTINEL v4.1] Score updated: ${existingScore.id}`);
     } else {
       await base44.asServiceRole.entities.ComplianceScore.create(sentinelData);
-      console.log(`[SENTINEL v4] Score created`);
+      console.log(`[SENTINEL v4.1] Score created`);
     }
 
-    // Update OnboardingCase with SENTINEL narrative
     await base44.asServiceRole.entities.OnboardingCase.update(caseId, {
       iaExplanation: llmResponse.sumario_executivo,
     });
 
     const duration = Date.now() - startTime;
-    console.log(`[SENTINEL v4] Concluído em ${duration}ms`);
+    console.log(`[SENTINEL v4.1] Concluído em ${duration}ms`);
 
     return Response.json({
       success: true,
@@ -425,7 +507,7 @@ Seja EXTREMAMENTE detalhado, factual, e documente com evidências específicas. 
     });
 
   } catch (error) {
-    console.error(`[SENTINEL v4] Erro:`, error);
+    console.error(`[SENTINEL v4.1] Erro:`, error);
     return Response.json({ error: error.message, stack: error.stack }, { status: 500 });
   }
 });
