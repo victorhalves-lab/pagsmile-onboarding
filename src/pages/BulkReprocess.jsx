@@ -9,7 +9,9 @@ import { AlertCircle, Loader2, Play, RotateCcw, Trash2, Search, Filter, CheckCir
 import CaseSelectionTable from '../components/bulk-reprocess/CaseSelectionTable';
 import ProcessingQueue from '../components/bulk-reprocess/ProcessingQueue';
 
-const DELAY_BETWEEN_CASES_MS = 3000;
+const DELAY_BETWEEN_TRIGGERS_MS = 1500;
+const POLL_INTERVAL_MS = 5000;
+const MAX_POLL_TIME_MS = 10 * 60 * 1000; // 10 minutes max per case
 
 export default function BulkReprocess() {
   const [cases, setCases] = useState([]);
@@ -65,14 +67,44 @@ export default function BulkReprocess() {
     await loadCases();
   };
 
-  // FASE 2: Process queue from browser
+  // Poll a single case until it leaves "Em Processamento" or times out
+  const pollCaseCompletion = async (caseId, startTime) => {
+    while (true) {
+      if (abortRef.current) return { status: 'aborted' };
+      const elapsed = Date.now() - startTime;
+      if (elapsed > MAX_POLL_TIME_MS) return { status: 'timeout' };
+
+      await new Promise(r => setTimeout(r, POLL_INTERVAL_MS));
+
+      try {
+        const [freshCase] = await base44.entities.OnboardingCase.filter({ id: caseId });
+        if (!freshCase) return { status: 'error', error: 'Case not found' };
+        
+        // Pipeline is done when status is no longer "Em Processamento" AND validationsCompleted is true
+        if (freshCase.status !== 'Em Processamento' || freshCase.validationsCompleted) {
+          return { 
+            status: 'success', 
+            result: { 
+              finalStatus: freshCase.status, 
+              decision: freshCase.iaDecision,
+              subfaixa: freshCase.subfaixa,
+              score: freshCase.riskScoreV4
+            } 
+          };
+        }
+      } catch (e) {
+        // polling error, keep trying
+      }
+    }
+  };
+
+  // FASE 2: Fire-and-forget + poll
   const handleReprocess = async () => {
     if (selectedIds.length === 0) return;
     setPhase('processing');
     abortRef.current = false;
     pauseRef.current = false;
 
-    // Build queue
     const selectedCases = cases.filter(c => selectedIds.includes(c.id));
     const initialQueue = selectedCases.map(c => ({
       caseId: c.id,
@@ -87,38 +119,40 @@ export default function BulkReprocess() {
     for (let i = 0; i < initialQueue.length; i++) {
       if (abortRef.current) break;
 
-      // Pause support
       while (pauseRef.current && !abortRef.current) {
         await new Promise(r => setTimeout(r, 500));
       }
       if (abortRef.current) break;
 
       setCurrentIndex(i);
-
-      // Mark as processing
-      setQueue(prev => prev.map((q, idx) => idx === i ? { ...q, status: 'processing', currentStep: true } : q));
+      setQueue(prev => prev.map((q, idx) => idx === i ? { ...q, status: 'processing' } : q));
 
       const start = Date.now();
       try {
-        const res = await base44.functions.invoke('autoEnrichOnboarding', { onboardingCaseId: initialQueue[i].caseId });
-        const data = res.data;
+        // Fire-and-forget: trigger returns immediately
+        await base44.functions.invoke('triggerEnrichment', { onboardingCaseId: initialQueue[i].caseId });
+        
+        // Now poll until pipeline finishes
+        const pollResult = await pollCaseCompletion(initialQueue[i].caseId, start);
         const duration = Date.now() - start;
 
-        if (data?.error) {
-          setQueue(prev => prev.map((q, idx) => idx === i ? { ...q, status: 'error', error: data.error, duration } : q));
-        } else if (data?.skipped) {
-          setQueue(prev => prev.map((q, idx) => idx === i ? { ...q, status: 'skipped', error: `Skipped: ${data.reason}`, duration } : q));
+        if (pollResult.status === 'success') {
+          setQueue(prev => prev.map((q, idx) => idx === i ? { ...q, status: 'success', result: pollResult.result, duration } : q));
+        } else if (pollResult.status === 'timeout') {
+          setQueue(prev => prev.map((q, idx) => idx === i ? { ...q, status: 'error', error: 'Timeout (>10min)', duration } : q));
+        } else if (pollResult.status === 'aborted') {
+          break;
         } else {
-          setQueue(prev => prev.map((q, idx) => idx === i ? { ...q, status: 'success', result: data, duration } : q));
+          setQueue(prev => prev.map((q, idx) => idx === i ? { ...q, status: 'error', error: pollResult.error || 'Unknown error', duration } : q));
         }
       } catch (err) {
         const duration = Date.now() - start;
         setQueue(prev => prev.map((q, idx) => idx === i ? { ...q, status: 'error', error: err.message, duration } : q));
       }
 
-      // Delay between cases
+      // Small delay between triggers to not overwhelm APIs
       if (i < initialQueue.length - 1 && !abortRef.current) {
-        await new Promise(r => setTimeout(r, DELAY_BETWEEN_CASES_MS));
+        await new Promise(r => setTimeout(r, DELAY_BETWEEN_TRIGGERS_MS));
       }
     }
 
