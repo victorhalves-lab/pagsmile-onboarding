@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 
 import AnaliseResumoExecutivo from '@/components/analise-completa/AnaliseResumoExecutivo';
+import BdcV4AnalysisPanel from '@/components/analise-completa/BdcV4AnalysisPanel';
 import AnaliseCafCompleta from '@/components/analise-completa/AnaliseCafCompleta';
 import AnaliseBdcCompleta from '@/components/analise-completa/AnaliseBdcCompleta';
 import AnaliseCruzada from '@/components/analise-completa/AnaliseCruzada';
@@ -148,7 +149,10 @@ export default function AnaliseCompleta() {
         bdcLogs={bdcLogs}
       />
 
-      {/* 2. Análise Cruzada CAF + BDC */}
+      {/* 2. Análise de Risco V4 — Visão Microscópica com explicações */}
+      <BdcV4AnalysisPanel latestScore={latestScore} />
+
+      {/* 3. Análise Cruzada CAF + BDC */}
       <AnaliseCruzada
         merchant={merchant}
         cafValidations={cafValidations}
@@ -158,7 +162,7 @@ export default function AnaliseCompleta() {
         responses={responses}
       />
 
-      {/* 3. CAF — Todos os resultados microscópicos */}
+      {/* 4. CAF — Todos os resultados microscópicos */}
       <AnaliseCafCompleta
         cafValidations={cafValidations}
         cafLogs={cafLogs}
@@ -166,7 +170,7 @@ export default function AnaliseCompleta() {
         latestCase={latestCase}
       />
 
-      {/* 4. BDC — Todos os resultados microscópicos */}
+      {/* 5. BDC — Dados brutos por dataset */}
       <AnaliseBdcCompleta
         bdcValidations={bdcValidations}
         bdcLogs={bdcLogs}
@@ -175,7 +179,7 @@ export default function AnaliseCompleta() {
         responses={responses}
       />
 
-      {/* 5. Timeline de todas as integrações */}
+      {/* 6. Timeline de todas as integrações */}
       <AnaliseTimelineIntegracoes
         integrationLogs={integrationLogs}
         validations={validations}

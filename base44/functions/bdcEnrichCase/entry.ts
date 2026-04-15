@@ -21,6 +21,7 @@ const DATASET_GROUPS = {
     'related_people_phones','related_people_emails','related_people_addresses',
     'owners_industrial_property','industrial_property','licenses_and_authorizations',
     'esg_and_compliance',
+    'credit_risk','credit_score',
   ],
   // Standard — E-commerce, SaaS, Infoprodutos, Dropshipping, Educação, Link Pgto
   STANDARD: [
@@ -36,6 +37,7 @@ const DATASET_GROUPS = {
     'phones_extended','emails_extended','addresses_extended',
     'related_people_phones','related_people_emails','related_people_addresses',
     'esg_and_compliance',
+    'credit_risk','credit_score',
   ],
   // Lite — MPE
   LITE: [
@@ -71,6 +73,7 @@ const DATASET_GROUPS = {
     'phones_extended','emails_extended','addresses_extended',
     'related_people_phones','related_people_emails','related_people_addresses',
     'esg_and_compliance',
+    'credit_risk','credit_score',
   ],
   // Subseller PJ
   SUBSELLER_PJ: [
@@ -1319,6 +1322,85 @@ function analyzeFinancial(result) {
 }
 
 // ══════════════════════════════════════════════════════════════════
+// CREDIT RISK ANALYSIS — NEW (credit_risk + credit_score datasets)
+// ══════════════════════════════════════════════════════════════════
+function analyzeCreditRisk(result) {
+  const items = [];
+  let score = 0;
+  const cr = result?.CreditRisk || result?.credit_risk;
+  if (cr) {
+    const crItems = flattenBDCArray(cr);
+    for (const item of crItems) {
+      const creditScore = item?.Score || item?.CreditScore;
+      const riskLevel = item?.RiskLevel || item?.Level || '';
+      const probability = item?.DefaultProbability || item?.ProbabilityOfDefault;
+      const paymentHistory = item?.PaymentHistory || item?.PaymentBehavior || '';
+      const protests = item?.Protests || item?.ProtestCount || 0;
+      const protestValue = item?.ProtestValue || item?.TotalProtestValue || 0;
+      const bouncedChecks = item?.BouncedChecks || item?.BouncedCheckCount || 0;
+      const bankruptcies = item?.Bankruptcies || item?.BankruptcyRecords || 0;
+      const pendingDebts = item?.PendingDebts || item?.TotalPendingDebts || 0;
+
+      if (creditScore != null) {
+        const cs = Number(creditScore);
+        const risk = cs < 300 ? 'CRITICO' : cs < 500 ? 'ALTO' : cs < 700 ? 'MEDIO' : 'OK';
+        const pts = cs < 300 ? 40 : cs < 500 ? 20 : cs < 700 ? 5 : -10;
+        score += pts;
+        items.push({ label: 'Score de crédito PJ', value: `${cs}/1000 — ${risk === 'OK' ? 'Bom pagador' : risk === 'MEDIO' ? 'Regular' : risk === 'ALTO' ? 'Alto risco' : 'Inadimplente provável'}`, risk, points: pts });
+      }
+      if (riskLevel) items.push({ label: 'Nível de risco de crédito', value: String(riskLevel), risk: /alto|high|very_high/i.test(riskLevel) ? 'ALTO' : 'INFO', points: 0 });
+      if (probability != null) items.push({ label: 'Probabilidade de inadimplência', value: `${(Number(probability) * 100).toFixed(1)}%`, risk: Number(probability) > 0.3 ? 'ALTO' : Number(probability) > 0.1 ? 'MEDIO' : 'OK', points: 0 });
+      if (paymentHistory) items.push({ label: 'Comportamento de pagamento', value: String(paymentHistory), risk: 'INFO', points: 0 });
+      if (Number(protests) > 0) {
+        const pts = Number(protests) > 5 ? 20 : 10;
+        score += pts;
+        items.push({ label: 'Protestos', value: `${protests} protesto(s)${protestValue > 0 ? ` — R$ ${Number(protestValue).toLocaleString('pt-BR', {minimumFractionDigits:2})}` : ''}`, risk: Number(protests) > 5 ? 'ALTO' : 'MEDIO', points: pts });
+      }
+      if (Number(bouncedChecks) > 0) { score += 15; items.push({ label: 'Cheques devolvidos', value: `${bouncedChecks} registro(s) — indica histórico de inadimplência bancária`, risk: 'ALTO', points: 15 }); }
+      if (Number(bankruptcies) > 0) { score += 50; items.push({ label: 'Falências/Recuperações judiciais', value: `${bankruptcies} registro(s) — risco financeiro extremo`, risk: 'CRITICO', points: 50 }); }
+      if (Number(pendingDebts) > 0) { items.push({ label: 'Dívidas pendentes', value: `R$ ${Number(pendingDebts).toLocaleString('pt-BR', {minimumFractionDigits:2})}`, risk: Number(pendingDebts) > 100000 ? 'ALTO' : 'MEDIO', points: 0 }); }
+    }
+  }
+  const cs = result?.CreditScore || result?.credit_score;
+  if (cs && !cr) {
+    const csItems = flattenBDCArray(cs);
+    for (const item of csItems) {
+      const creditScore = item?.Score || item?.CreditScore;
+      if (creditScore != null) {
+        const csn = Number(creditScore);
+        const risk = csn < 300 ? 'CRITICO' : csn < 500 ? 'ALTO' : csn < 700 ? 'MEDIO' : 'OK';
+        const pts = csn < 300 ? 40 : csn < 500 ? 20 : csn < 700 ? 5 : -10;
+        score += pts;
+        items.push({ label: 'Score de crédito', value: `${csn}/1000`, risk, points: pts });
+      }
+    }
+  }
+  if (items.length === 0) items.push({ label: 'Análise de crédito', value: 'Dataset não consultado ou sem dados retornados', risk: 'INFO', points: 0 });
+  return { score, items };
+}
+
+// ══════════════════════════════════════════════════════════════════
+// EMPLOYEES KYC — Stub for missing function
+// ══════════════════════════════════════════════════════════════════
+function analyzeEmployeesKyc(result) {
+  return { score: 0, items: [] };
+}
+
+// ══════════════════════════════════════════════════════════════════
+// SECTORIAL ANALYSIS — Stub for missing function
+// ══════════════════════════════════════════════════════════════════
+function analyzeSectorial(result) {
+  return { score: 0, items: [] };
+}
+
+// ══════════════════════════════════════════════════════════════════
+// ASSETS ANALYSIS — Stub for missing function
+// ══════════════════════════════════════════════════════════════════
+function analyzeAssets(result) {
+  return { score: 0, items: [] };
+}
+
+// ══════════════════════════════════════════════════════════════════
 // PERSON (PF) ANALYSIS — kept from original + risk_data
 // ══════════════════════════════════════════════════════════════════
 function analyzePersonBlocks(result) {
@@ -1601,18 +1683,21 @@ Deno.serve(async (req) => {
       const employeesKyc = analyzeEmployeesKyc(result);
       const sectorial = analyzeSectorial(result);
       const assets = analyzeAssets(result);
+      const creditRisk = analyzeCreditRisk(result);
 
       // ── Weighted percentage scoring ──
       // Each component has a weight (%) — total = 100%
       const COMPONENT_WEIGHTS = {
-        identity: 0.10, owners: 0.20, digital: 0.08, compliance: 0.22,
-        reputation: 0.10, financial: 0.08, evolution: 0.07, esg: 0.05,
-        contacts: 0.03, employeesKyc: 0.03, sectorial: 0.02, assets: 0.02,
+        identity: 0.10, owners: 0.18, digital: 0.07, compliance: 0.20,
+        reputation: 0.08, financial: 0.08, evolution: 0.06, esg: 0.05,
+        contacts: 0.03, employeesKyc: 0.02, sectorial: 0.02, assets: 0.02,
+        creditRisk: 0.09,
       };
       const componentScores = {
         identity: identity.score, owners: owners.score, digital: digital.score, compliance: compliance.score,
         reputation: reputation.score, financial: financial.score, evolution: evolution.score, esg: esgData.score,
         contacts: contacts.score, employeesKyc: employeesKyc.score, sectorial: sectorial.score, assets: assets.score,
+        creditRisk: creditRisk.score,
       };
       let weightedTotal = 0;
       const weightBreakdown = {};
@@ -1632,7 +1717,7 @@ Deno.serve(async (req) => {
         type: 'PJ', document: cleanDoc, templateModel, datasetGroup: groupKey,
         datasetsQueried: datasets.length, queryDate: bdcData.QueryDate, elapsedMs: bdcData.ElapsedMilliseconds,
         blocks, hasBlock,
-        sections: { identity, owners, digital, compliance, reputation, financial, evolution, esg: esgData, contacts, employeesKyc, sectorial, assets },
+        sections: { identity, owners, digital, compliance, reputation, financial, evolution, esg: esgData, contacts, employeesKyc, sectorial, assets, creditRisk },
         scoring: {
           baseScore,
           variablesScore: Math.round(weightedTotal * 0.6),
