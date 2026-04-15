@@ -1,8 +1,10 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.21';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
+    // This function is called from PUBLIC compliance pages (unauthenticated clients).
+    // All entity operations use asServiceRole, so auth is not required.
     const body = await req.json();
     const { sessionToken, flowType, templateModel, currentPhase, currentStep, formData, documentsData, clientEmail, clientName, linkCode } = body;
 

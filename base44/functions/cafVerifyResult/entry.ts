@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 /**
  * Verifies and persists the result of a CAF SDK step (DocumentDetector, FaceLiveness, or Manual Selfie).

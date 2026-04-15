@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 /**
  * analyzeCnpjEnrichment — Fase 3 do roadmap de Compliance
@@ -201,11 +201,8 @@ function analyzeCnaeRisk(cnaeFiscal, cnaesSecundarios) {
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-    
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    // This function is called from PUBLIC compliance pages (unauthenticated clients)
+    // as well as from admin pages. Do NOT require auth — use asServiceRole for entity access.
 
     const body = await req.json();
     const { cnpjDataArray, tpvDeclarado, siteDeclared, onboardingCaseId } = body;

@@ -1,5 +1,3 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
-
 // Mapeamento de código de natureza jurídica para tipo de empresa
 function mapNaturezaJuridica(codigo, opcaoPeloMei) {
   if (opcaoPeloMei === true) return 'MEI';
@@ -293,7 +291,8 @@ async function fetchCnpjReceitaWs(cnpj) {
 
 Deno.serve(async (req) => {
   try {
-    const base44 = createClientFromRequest(req);
+    // This function is called from PUBLIC compliance pages (unauthenticated clients).
+    // No auth required — it only proxies external CNPJ APIs (BrasilAPI, OpenCNPJ, ReceitaWS).
     const { cnpj } = await req.json();
     
     if (!cnpj || cnpj.length !== 14) {

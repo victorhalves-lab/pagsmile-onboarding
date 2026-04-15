@@ -1,5 +1,3 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
-
 /**
  * complianceValidations — Função unificada de validações complementares
  * 
@@ -298,7 +296,8 @@ async function handleValidatePhone(phone, empresaUf) {
 
 Deno.serve(async (req) => {
   try {
-    const base44 = createClientFromRequest(req);
+    // This function is called from PUBLIC compliance pages (unauthenticated clients).
+    // No auth required — it only proxies external APIs (ViaCEP, BrasilAPI, DNS).
     const body = await req.json();
     const { action } = body;
     
