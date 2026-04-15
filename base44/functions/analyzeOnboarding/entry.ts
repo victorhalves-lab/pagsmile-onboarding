@@ -566,10 +566,16 @@ Deno.serve(async (req) => {
 
     // ═══ SAVE ═══
     const now = new Date().toISOString();
+    // Safety cap: even if LLM somehow returns "Recusado" despite schema enum, cap to "Revisão Manual"
+    const cappedRecommendation = (llmResponse.sentinel_recommendation === 'Recusado') ? 'Revisão Manual' : llmResponse.sentinel_recommendation;
+    if (cappedRecommendation !== llmResponse.sentinel_recommendation) {
+      console.warn(`[SENTINEL v5.1] SAFETY CAP: LLM returned "Recusado", capped to "Revisão Manual". SENTINEL cannot reject.`);
+    }
+
     const sentinelData = {
       onboarding_case_id: caseId,
       versao_agente: "SENTINEL v5.1",
-      sentinel_recommendation: llmResponse.sentinel_recommendation,
+      sentinel_recommendation: cappedRecommendation,
       sumario_executivo: llmResponse.sumario_executivo,
       analise_completa_ia: llmResponse.analise_completa_ia,
       parecer_final: llmResponse.parecer_final,
@@ -614,7 +620,7 @@ Deno.serve(async (req) => {
       success: true,
       case_id: caseId,
       score_id: existingScore?.id,
-      sentinel_recommendation: llmResponse.sentinel_recommendation,
+      sentinel_recommendation: cappedRecommendation,
       escalation_justification: llmResponse.escalation_justification || null,
       nivel_confianca: llmResponse.nivel_confianca_ia,
       red_flags_count: (llmResponse.red_flags || []).length,

@@ -232,6 +232,7 @@ Deno.serve(async (req) => {
 
     // ═══ STEP 4: DECISÃO UNIFICADA ═══
     // V4 subfaixa = autoridade para decisão. SENTINEL pode ESCALAR (nunca rebaixar).
+    // REGRA DE OURO: Só V4 bloqueios ou CAF fraude podem recusar. SENTINEL max = Revisão Manual.
     let autoDecisionApplied = false;
     let finalStatus = null;
     let finalDecision = null;
@@ -243,7 +244,20 @@ Deno.serve(async (req) => {
       // Load SENTINEL's recommendation from ComplianceScore
       const scores = await base44.asServiceRole.entities.ComplianceScore.filter({ onboarding_case_id: caseId });
       const latestScore = scores[0];
-      const sentinelRecommendation = latestScore?.sentinel_recommendation;
+      let sentinelRecommendation = latestScore?.sentinel_recommendation;
+
+      // ═══ SAFETY CAP: If SENTINEL somehow recommended "Recusado", force it to "Revisão Manual" ═══
+      if (sentinelRecommendation === 'Recusado') {
+        console.log(`[AutoEnrich] Step 4: SAFETY CAP — sentinel_recommendation was "Recusado", capping to "Revisão Manual". SENTINEL cannot reject.`);
+        sentinelRecommendation = 'Revisão Manual';
+        // Also fix the stored value
+        if (latestScore) {
+          await base44.asServiceRole.entities.ComplianceScore.update(latestScore.id, {
+            sentinel_recommendation: 'Revisão Manual',
+            escalation_justification: (latestScore.escalation_justification || '') + ' [CAP APLICADO: SENTINEL tentou recusar, capeado para Revisão Manual por regra v5.1]',
+          });
+        }
+      }
 
       if (subfaixa && v4Score != null) {
         // Maps by subfaixa
@@ -371,6 +385,26 @@ Deno.serve(async (req) => {
         }
 
         console.log(`[AutoEnrich] Step 4: Decision="${finalDecision}" (subfaixa=${subfaixa}, v4Score=${v4Score}, escalated=${escalatedBySentinel})`);
+
+        // ═══ FINAL SAFETY NET: Never "Recusado" without V4 blocks ═══
+        // This catches ANY scenario where the decision ended up as "Recusado" but there are no objective blocks
+        const hasObjectiveBlocks = (freshCase.bloqueiosAtivos || []).length > 0;
+        if (finalDecision === 'Recusado' && !hasObjectiveBlocks && !cafFraudDetected) {
+          console.warn(`[AutoEnrich] SAFETY NET: Decision was "Recusado" but NO V4 blocks and NO CAF fraud. Downgrading to "Revisão Manual".`);
+          finalDecision = 'Revisão Manual';
+          finalStatus = 'Manual';
+          autoDecisionApplied = false;
+          // Update the already-saved data
+          await base44.asServiceRole.entities.OnboardingCase.update(caseId, {
+            status: 'Manual',
+            iaDecision: 'Revisão Manual',
+          });
+          if (latestScore) {
+            await base44.asServiceRole.entities.ComplianceScore.update(latestScore.id, {
+              recomendacao_final: 'Revisão Manual',
+            });
+          }
+        }
       }
     } catch (autoErr) {
       console.warn(`[AutoEnrich] Step 4 failed (non-blocking): ${autoErr.message}`);
