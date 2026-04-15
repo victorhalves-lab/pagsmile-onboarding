@@ -291,6 +291,8 @@ export default function PropostaPublica() {
     return `${window.location.origin}/ComplianceDinamico?model=${model}&leadId=${proposta.leadId || ''}`;
   };
   
+  const complianceUrl = getComplianceUrl();
+
   // Ao clicar no botão de compliance da proposta já aceita, limpar dados residuais
   const handleGoToCompliance = () => {
     if (!complianceUrl) return;
@@ -306,7 +308,6 @@ export default function PropostaPublica() {
     }
     window.location.href = complianceUrl;
   };
-  const complianceUrl = getComplianceUrl();
 
   const rates = proposta.rates || {};
   const taxaRAV = parseFloat(rates.rav?.taxa) || 0;

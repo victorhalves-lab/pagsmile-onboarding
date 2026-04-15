@@ -123,84 +123,20 @@ export default function LeadPixV4() {
     if (!validateStep()) return;
     setSubmitting(true);
 
+    try {
     const silentFlags = calculatePixSilentFlags(form, cnpjData);
     const leadScore = calculatePixLeadScore(form, cnpjData, silentFlags);
     const scoreLabel = getPixScoreLabel(leadScore);
     const proto = `PIX4-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 99999)).padStart(5, '0')}`;
-
-    const bizMap = {
-      'Gateway/PSP': 'GATEWAY', 'Marketplace': 'MARKETPLACE', 'Plataforma Vertical': 'GATEWAY',
-    };
-
-    let introducerData = {};
-    if (onboardingLink?.introducerId) {
-      const introducers = await base44.entities.Introducer.filter({ id: onboardingLink.introducerId });
-      if (introducers.length > 0) {
-        introducerData = { introducerId: introducers[0].id, introducerReferralCode: introducers[0].referralCode, introducerName: introducers[0].name };
-      }
-    }
-
-    const complianceTemplate = form.tipoNegocio === 'merchant' ? 'PIX_Merchants_v4' : 'PIX_Intermediarios_v4';
-
-    await base44.entities.Lead.create({
-      email: form.email,
-      fullName: form.razaoSocial || form.nomeFantasia || form.contactName,
-      cpfCnpj: form.cnpj?.replace(/\D/g, ''),
-      phone: form.phone,
-      companyName: form.nomeFantasia || form.razaoSocial,
-      contactName: form.contactName,
-      contactRole: form.cargo === 'Outro' ? form.cargoOutro : form.cargo,
-      website: form.presencaDigital,
-      status: 'questionario_preenchido',
-      businessSubCategory: bizMap[form.segmentoPix] || 'MERCHAN',
-      tpvMensal: form.tpvPix ? Number(form.tpvPix) : undefined,
-      ticketMedio: form.ticketMedioPix ? Number(form.ticketMedioPix) : undefined,
-      transacoesMes: form.transacoesPix ? Number(form.transacoesPix) : undefined,
-      protocolo: proto,
-      origemLead: linkCode ? `lead_pix_v4_${linkCode}` : 'questionario_pix_v4_publico',
-      onboardingLinkCode: linkCode || undefined,
-      leadQualifierScore: leadScore,
-      leadQualifierLevel: scoreLabel.label === 'Muito Quente' ? 'EXCELENTE' : scoreLabel.label === 'Quente' ? 'BOM' : scoreLabel.label === 'Morno' ? 'REGULAR' : 'FRACO',
-      ...introducerData,
-      commercialAgentId: onboardingLink?.commercialAgentId || undefined,
-      commercialAgentName: onboardingLink?.commercialAgentName || undefined,
-      lastInteractionDate: new Date().toISOString(),
-      questionnaireData: {
-        origem: 'questionario_lead_pix_v4',
-        versao: '4.0',
-        ...form,
-        _silentFlags: silentFlags,
-        _leadScore: leadScore,
-        _cnpjEnrichment: cnpjData || null,
-        _tipoNegocio: form.tipoNegocio,
-        _segmentoSelecionado: form.segmentoPix,
-        _questionarioCompliancePix: complianceTemplate,
-        _emailType: form.email ? (form.email.split('@')[1]?.toLowerCase() && ['gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com'].includes(form.email.split('@')[1]?.toLowerCase()) ? 'personal' : 'corporate') : null,
-      },
-    });
-
-    if (onboardingLink) {
-      await base44.entities.OnboardingLink.update(onboardingLink.id, {
-        submissionCount: (onboardingLink.submissionCount || 0) + 1
-      });
-    }
-
-    base44.analytics.track({
-      eventName: 'onboarding_form_submitted',
-      properties: {
-        form_type: 'lead_pix_v4',
-        segment: form.segmentoPix || '',
-        tipo_negocio: form.tipoNegocio || '',
-        has_introducer: !!introducerData.introducerId,
-        link_code: linkCode || '',
-        protocolo: proto,
-        lead_score: leadScore,
-      }
-    });
-
+...
     setProtocolo(proto);
-    setSubmitting(false);
     setSubmitted(true);
+    } catch (err) {
+      console.error('Submit error:', err);
+      toast.error('Erro ao enviar questionário. Tente novamente.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (submitted) {

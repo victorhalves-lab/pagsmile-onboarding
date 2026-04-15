@@ -130,15 +130,10 @@ export default function OnboardingCompletion() {
           </div>
         )}
 
-        {/* Botão */}
-        <Button
-          onClick={() => navigate('/AdminDashboard')}
-          variant="ghost"
-          className="text-slate-400 hover:text-white px-8"
-        >
-          Ir para o Dashboard
-          <ArrowRight className="w-4 h-4 ml-2" />
-        </Button>
+        {/* Botão — escondido para clientes públicos */}
+        <div className="text-center text-sm text-slate-500 mt-4">
+          <p>Você já pode fechar esta janela.</p>
+        </div>
 
         {/* Logo */}
         <div className="mt-12">

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, Pencil, MapPin, Loader2, Search } from 'lucide-react';
@@ -98,16 +98,25 @@ export default function StepEndereco({ form, updateField, cnpjData }) {
     return parts.join(' — ');
   };
 
+  // When no address is available from CNPJ, auto-confirm so the user isn't blocked
+  useEffect(() => {
+    if (!hasAddress && !editMode && !confirmed) {
+      updateField('_enderecoConfirmado', true);
+      setConfirmed(true);
+    }
+  }, [hasAddress, editMode, confirmed]);
+
   if (!hasAddress && !editMode) {
     return (
       <div className="space-y-5">
         <div>
           <h2 className="text-lg font-bold text-[#002443]">Endereço da Empresa</h2>
-          <p className="text-xs text-[#002443]/50 mt-1">Não foi possível obter o endereço automaticamente.</p>
+          <p className="text-xs text-[#002443]/50 mt-1">Não foi possível obter o endereço automaticamente. Você pode informar manualmente ou avançar.</p>
         </div>
-        <Button onClick={() => setEditMode(true)} className="bg-[#002443] text-white rounded-xl gap-2">
-          <MapPin className="w-4 h-4" /> Informar endereço manualmente
+        <Button onClick={() => { setEditMode(true); updateField('_enderecoConfirmado', false); setConfirmed(false); }} variant="outline" className="rounded-xl gap-2">
+          <MapPin className="w-4 h-4" /> Informar endereço manualmente (opcional)
         </Button>
+        <p className="text-[10px] text-[#2bc196] font-medium">✓ Você pode avançar sem endereço</p>
       </div>
     );
   }
