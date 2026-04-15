@@ -223,7 +223,7 @@ Deno.serve(async (req) => {
     let sentinelSuccess = false;
     try {
       console.log(`[AutoEnrich] Step 3: SENTINEL analysis...`);
-      const sentinelRes = await base44.asServiceRole.functions.invoke('analyzeOnboarding', { onboardingCaseId: caseId });
+      const sentinelRes = await base44.asServiceRole.functions.invoke('analyzeOnboarding', { onboardingCaseId: caseId, force: true });
       sentinelSuccess = sentinelRes?.data?.success === true;
       console.log(`[AutoEnrich] Step 3: ${sentinelSuccess ? 'OK' : 'FAILED'} — recommendation=${sentinelRes?.data?.sentinel_recommendation}`);
     } catch (sentinelErr) {
@@ -307,13 +307,18 @@ Deno.serve(async (req) => {
           if (sentinelLevel >= 4) sentinelLevel = 3;
           const cappedRecommendation = sentinelLevel === 3 ? 'Revisão Manual' : sentinelLevel === 2 ? 'Aprovado com Condições' : sentinelLevel === 1 ? 'Aprovado com Condições Leves' : 'Aprovado';
           
+          // FIX #6: Only set escalatedBySentinel=true when SENTINEL actually changes the decision upward
           if (sentinelLevel > v4Level) {
             // SENTINEL escalates — adopt capped recommendation
             finalDecision = cappedRecommendation;
             finalStatus = cappedRecommendation === 'Revisão Manual' ? 'Manual' : 'Aprovado';
             escalatedBySentinel = true;
-            autoDecisionApplied = cappedRecommendation === 'Aprovado com Condições Leves'; // Light conditions = still auto
+            autoDecisionApplied = cappedRecommendation !== 'Revisão Manual'; // Conditions = still auto
             console.log(`[AutoEnrich] Step 4: SENTINEL ESCALATED from V4 "${v4Decision.decision}" to "${cappedRecommendation}" (original sentinel: "${sentinelRecommendation}", capped)`);
+          } else {
+            // SENTINEL agrees or is less restrictive — V4 stands, no escalation
+            escalatedBySentinel = false;
+            console.log(`[AutoEnrich] Step 4: SENTINEL AGREES with V4 "${v4Decision.decision}" (sentinel="${sentinelRecommendation}"). No escalation.`);
           }
         }
 
