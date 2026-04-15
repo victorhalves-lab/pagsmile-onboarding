@@ -288,6 +288,45 @@
         "BAIXA"
       ],
       "description": "Prioridade de atendimento sugerida pela IA"
+    },
+    "bdcEnrichmentData": {
+      "type": "object",
+      "description": "Dados BDC brutos do enriquecimento (activity_indicators, domains, MCC, etc.)"
+    },
+    "bdcLeadScore": {
+      "type": "number",
+      "description": "Score calculado com dados BDC verificados (0-100)"
+    },
+    "bdcScoreLevel": {
+      "type": "string",
+      "enum": [
+        "EXCELENTE",
+        "BOM",
+        "REGULAR",
+        "FRACO",
+        "INSUFICIENTE"
+      ],
+      "description": "Classifica\u00e7\u00e3o do score BDC enriquecido"
+    },
+    "bdcFlags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Flags BDC ativas (ex: BDC_SHELL_COMPANY, BDC_NO_ACTIVITY)"
+    },
+    "bdcCrossValidation": {
+      "type": "object",
+      "description": "Resultado da cross-validation declarado vs BDC verificado"
+    },
+    "bdcDueReport": {
+      "type": "object",
+      "description": "Relat\u00f3rio de deep due diligence BDC (KYC, processos, san\u00e7\u00f5es)"
+    },
+    "bdcEnrichmentDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data do \u00faltimo enriquecimento BDC"
     }
   },
   "required": [

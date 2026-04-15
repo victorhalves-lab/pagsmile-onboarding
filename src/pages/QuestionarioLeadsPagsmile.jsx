@@ -18,6 +18,7 @@ import StepProcessadorAtual from '@/components/lead-pagsmile/StepProcessadorAtua
 import StepComplianceRisco from '@/components/lead-pagsmile/StepComplianceRisco';
 import StepFechamento from '@/components/lead-pagsmile/StepFechamento';
 import { calculateLeadScore, calculateSilentFlags, getScoreLabel, SEGMENTS } from '@/components/lead-pagsmile/pagsmileQuestionnaireData';
+import { calculateBDCEnrichedScore, getBDCScoreLabel } from '@/components/lead-scoring/bdcLeadScoring';
 
 const STEPS = [
   { id: 'segmento', label: 'Tipo de Negócio' },
@@ -54,6 +55,7 @@ export default function QuestionarioLeadsPagsmile() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [protocolo, setProtocolo] = useState('');
+  const [bdcData, setBdcData] = useState(null);
 
   const updateField = (field, value) => {
     setForm(prev => ({ ...prev, [field]: value }));
@@ -176,7 +178,18 @@ export default function QuestionarioLeadsPagsmile() {
 
     try {
     const silentFlags = calculateSilentFlags(form, cnpjData);
-    const leadScore = calculateLeadScore(form, silentFlags);
+    const declarativeScore = calculateLeadScore(form, silentFlags);
+
+    // BDC enriched scoring
+    let bdcFullData = bdcData;
+    if (bdcData && form.cnpj) {
+      try {
+        const fullResp = await base44.functions.invoke('bdcEnrichLead', { cnpj: form.cnpj.replace(/\D/g, ''), level: 'full' });
+        if (fullResp.data?.success) bdcFullData = fullResp.data;
+      } catch (e) { console.warn('BDC full enrichment failed:', e.message); }
+    }
+    const bdcResult = calculateBDCEnrichedScore(declarativeScore, bdcFullData, form.tpvMensal, form.segmento);
+    const leadScore = bdcResult.finalScore;
     const proto = `PSM-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 99999)).padStart(5, '0')}`;
 
     const segmentLabel = SEGMENTS.find(s => s.id === form.segmento)?.label || form.segmento;
@@ -227,6 +240,12 @@ export default function QuestionarioLeadsPagsmile() {
       commercialAgentId: onboardingLink?.commercialAgentId || undefined,
       commercialAgentName: onboardingLink?.commercialAgentName || undefined,
       lastInteractionDate: new Date().toISOString(),
+      bdcEnrichmentData: bdcFullData || bdcData || null,
+      bdcLeadScore: bdcResult.bdcScore,
+      bdcScoreLevel: getBDCScoreLabel(bdcResult.finalScore).label,
+      bdcFlags: bdcResult.activeFlags || [],
+      bdcCrossValidation: bdcResult.crossValidation || null,
+      bdcEnrichmentDate: bdcFullData ? new Date().toISOString() : undefined,
       questionnaireData: {
         origem: 'questionario_leads_pagsmile_v5',
         versao: '5.0',
@@ -234,8 +253,11 @@ export default function QuestionarioLeadsPagsmile() {
         segmentoLabel: segmentLabel,
         ...form,
         _silentFlags: silentFlags,
+        _declarativeScore: declarativeScore,
+        _bdcScore: bdcResult.bdcScore,
         _leadScore: leadScore,
         _cnpjEnrichment: cnpjData || null,
+        _bdcEnrichment: bdcFullData || bdcData || null,
       },
       expectedRates: {
         mdr1x: form.mdrAvista ? Number(form.mdrAvista) : undefined,
@@ -361,7 +383,7 @@ export default function QuestionarioLeadsPagsmile() {
       <Card className="rounded-2xl border border-[#002443]/5 shadow-sm mb-6">
         <CardContent className="p-6 sm:p-8">
           {step === 0 && <StepSegmento form={form} updateField={updateField} cnpjData={cnpjData} />}
-          {step === 1 && <StepDadosEmpresa form={form} updateField={updateField} cnpjData={cnpjData} setCnpjData={setCnpjData} errors={errors} />}
+          {step === 1 && <StepDadosEmpresa form={form} updateField={updateField} cnpjData={cnpjData} setCnpjData={setCnpjData} errors={errors} setBdcData={(d) => { setBdcData(d); updateField('_bdcQuickData', d); }} />}
           {step === 2 && <StepEndereco form={form} updateField={updateField} cnpjData={cnpjData} />}
           {step === 3 && <StepContato form={form} updateField={updateField} errors={errors} />}
           {step === 4 && <StepModeloNegocio form={form} updateField={updateField} errors={errors} />}
