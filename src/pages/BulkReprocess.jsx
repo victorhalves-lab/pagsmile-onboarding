@@ -1,220 +1,295 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { AlertCircle, CheckCircle2, Clock, Loader2, Play, RotateCcw, Trash2 } from 'lucide-react';
+import { AlertCircle, Loader2, Play, RotateCcw, Trash2, Search, Filter, CheckCircle2, XCircle, Pause } from 'lucide-react';
+import CaseSelectionTable from '../components/bulk-reprocess/CaseSelectionTable';
+import ProcessingQueue from '../components/bulk-reprocess/ProcessingQueue';
 
 const DELAY_BETWEEN_CASES_MS = 3000;
 
 export default function BulkReprocess() {
-  const [phase, setPhase] = useState('idle'); // idle | cleaning | ready | processing | done
   const [cases, setCases] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(-1);
-  const [results, setResults] = useState([]);
-  const [cleanResult, setCleanResult] = useState(null);
-  const [error, setError] = useState(null);
-  const abortRef = useRef(false);
+  const [loading, setLoading] = useState(true);
+  const [selectedIds, setSelectedIds] = useState([]);
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
 
-  // Load current status
-  const loadStatus = async () => {
-    const res = await base44.functions.invoke('bulkReprocessCompliance', { action: 'status' });
+  // Processing state
+  const [phase, setPhase] = useState('idle'); // idle | cleaning | ready | processing | paused | done
+  const [cleanResult, setCleanResult] = useState(null);
+  const [queue, setQueue] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(-1);
+  const abortRef = useRef(false);
+  const pauseRef = useRef(false);
+
+  // Load cases
+  const loadCases = useCallback(async () => {
+    setLoading(true);
+    const res = await base44.functions.invoke('bulkReprocessCompliance', { action: 'list' });
     setCases(res.data.cases || []);
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { loadCases(); }, [loadCases]);
+
+  // Filtered cases
+  const filteredCases = cases.filter(c => {
+    const matchSearch = !search || 
+      c.merchantName?.toLowerCase().includes(search.toLowerCase()) ||
+      c.merchantCpfCnpj?.includes(search) ||
+      c.id.includes(search);
+    const matchStatus = statusFilter === 'all' || 
+      (statusFilter === 'pendente' && !c.validationsDone) ||
+      (statusFilter === 'processado' && c.validationsDone) ||
+      c.status === statusFilter;
+    return matchSearch && matchStatus;
+  });
+
+  // Select only pending
+  const selectAllPending = () => {
+    setSelectedIds(filteredCases.filter(c => !c.validationsDone).map(c => c.id));
   };
 
-  useEffect(() => { loadStatus(); }, []);
-
-  // FASE 1: Clean
+  // FASE 1: Clean selected
   const handleClean = async () => {
+    if (selectedIds.length === 0) return;
     setPhase('cleaning');
-    setError(null);
-    const res = await base44.functions.invoke('bulkReprocessCompliance', { action: 'clean' });
+    setCleanResult(null);
+    const res = await base44.functions.invoke('bulkReprocessCompliance', { action: 'clean', caseIds: selectedIds });
     setCleanResult(res.data);
     setPhase('ready');
-    await loadStatus();
+    await loadCases();
   };
 
-  // FASE 2: Reprocess one by one from browser
+  // FASE 2: Process queue from browser
   const handleReprocess = async () => {
+    if (selectedIds.length === 0) return;
     setPhase('processing');
-    setResults([]);
     abortRef.current = false;
+    pauseRef.current = false;
 
-    const pendingCases = cases.filter(c => !c.validationsDone);
+    // Build queue
+    const selectedCases = cases.filter(c => selectedIds.includes(c.id));
+    const initialQueue = selectedCases.map(c => ({
+      caseId: c.id,
+      merchantName: c.merchantName,
+      status: 'pending',
+      result: null,
+      error: null,
+      duration: null,
+    }));
+    setQueue(initialQueue);
 
-    for (let i = 0; i < pendingCases.length; i++) {
+    for (let i = 0; i < initialQueue.length; i++) {
       if (abortRef.current) break;
-      setCurrentIndex(i);
-      const c = pendingCases[i];
-      const start = Date.now();
 
-      let result;
+      // Pause support
+      while (pauseRef.current && !abortRef.current) {
+        await new Promise(r => setTimeout(r, 500));
+      }
+      if (abortRef.current) break;
+
+      setCurrentIndex(i);
+
+      // Mark as processing
+      setQueue(prev => prev.map((q, idx) => idx === i ? { ...q, status: 'processing', currentStep: true } : q));
+
+      const start = Date.now();
       try {
-        const res = await base44.functions.invoke('autoEnrichOnboarding', { onboardingCaseId: c.id });
-        result = {
-          caseId: c.id, success: !res.data?.error && !res.data?.skipped,
-          decision: res.data?.decision?.finalDecision || res.data?.skipped ? 'skipped' : 'unknown',
-          duration: Date.now() - start,
-        };
+        const res = await base44.functions.invoke('autoEnrichOnboarding', { onboardingCaseId: initialQueue[i].caseId });
+        const data = res.data;
+        const duration = Date.now() - start;
+
+        if (data?.error) {
+          setQueue(prev => prev.map((q, idx) => idx === i ? { ...q, status: 'error', error: data.error, duration } : q));
+        } else if (data?.skipped) {
+          setQueue(prev => prev.map((q, idx) => idx === i ? { ...q, status: 'skipped', error: `Skipped: ${data.reason}`, duration } : q));
+        } else {
+          setQueue(prev => prev.map((q, idx) => idx === i ? { ...q, status: 'success', result: data, duration } : q));
+        }
       } catch (err) {
-        result = { caseId: c.id, success: false, decision: err.message, duration: Date.now() - start };
+        const duration = Date.now() - start;
+        setQueue(prev => prev.map((q, idx) => idx === i ? { ...q, status: 'error', error: err.message, duration } : q));
       }
 
-      setResults(prev => [...prev, result]);
-
       // Delay between cases
-      if (i < pendingCases.length - 1 && !abortRef.current) {
+      if (i < initialQueue.length - 1 && !abortRef.current) {
         await new Promise(r => setTimeout(r, DELAY_BETWEEN_CASES_MS));
       }
     }
 
     setPhase('done');
     setCurrentIndex(-1);
-    await loadStatus();
+    await loadCases();
   };
 
-  const handleAbort = () => { abortRef.current = true; };
+  const handlePause = () => {
+    pauseRef.current = !pauseRef.current;
+    setPhase(pauseRef.current ? 'paused' : 'processing');
+  };
 
-  const totalCases = cases.length;
-  const doneCases = results.filter(r => r.success).length;
-  const failedCases = results.filter(r => !r.success).length;
-  const progress = totalCases > 0 ? ((results.length / totalCases) * 100) : 0;
-  const pendingCount = cases.filter(c => !c.validationsDone).length;
+  const handleAbort = () => {
+    abortRef.current = true;
+    pauseRef.current = false;
+    setPhase('done');
+  };
+
+  const isProcessing = phase === 'processing' || phase === 'paused';
+  const queueSuccessCount = queue.filter(q => q.status === 'success').length;
+  const queueFailCount = queue.filter(q => q.status === 'error' || q.status === 'skipped').length;
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold text-[#002443]">Reprocessamento Completo de Compliance</h1>
-      <p className="text-sm text-[#002443]/70">
-        Reset + reprocessamento de TODAS as análises usando o pipeline V5 completo (BDC + CAF + SENTINEL).
-        Preserva respostas, documentos e dados do merchant.
-      </p>
+    <div className="max-w-6xl mx-auto space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-[#002443]">Reprocessamento de Compliance</h1>
+        <p className="text-sm text-[#002443]/60 mt-1">
+          Selecione os casos para limpar e reprocessar pelo pipeline V5 completo (BDC → CAF → SENTINEL).
+        </p>
+      </div>
 
-      {/* Status Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Status Atual</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-3 gap-4 text-center">
-            <div>
-              <div className="text-3xl font-bold text-[#002443]">{totalCases}</div>
-              <div className="text-xs text-[#002443]/60">Total de Casos</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-green-600">{cases.filter(c => c.validationsDone).length}</div>
-              <div className="text-xs text-[#002443]/60">Processados</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-amber-600">{pendingCount}</div>
-              <div className="text-xs text-[#002443]/60">Pendentes</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Stats */}
+      <div className="grid grid-cols-4 gap-4">
+        {[
+          { label: 'Total', value: cases.length, color: 'text-[#002443]' },
+          { label: 'Processados', value: cases.filter(c => c.validationsDone).length, color: 'text-green-600' },
+          { label: 'Pendentes', value: cases.filter(c => !c.validationsDone).length, color: 'text-amber-600' },
+          { label: 'Selecionados', value: selectedIds.length, color: 'text-[#2bc196]' },
+        ].map(s => (
+          <Card key={s.label}>
+            <CardContent className="pt-4 pb-3 text-center">
+              <div className={`text-3xl font-bold ${s.color}`}>{s.value}</div>
+              <div className="text-xs text-[#002443]/50 mt-0.5">{s.label}</div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
       {/* Controls */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Controles</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* FASE 1 */}
-          <div className="flex items-center gap-3">
-            <Button onClick={handleClean} disabled={phase === 'cleaning' || phase === 'processing'} variant="destructive" className="gap-2">
-              {phase === 'cleaning' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-              FASE 1: Limpar Análises Antigas
+        <CardContent className="pt-5 space-y-4">
+          {/* Filters */}
+          <div className="flex flex-wrap gap-3 items-center">
+            <div className="relative flex-1 min-w-[200px] max-w-sm">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/30" />
+              <Input
+                placeholder="Buscar merchant, CNPJ ou case ID..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-[180px]">
+                <Filter className="w-3.5 h-3.5 mr-1.5 text-[#002443]/40" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os status</SelectItem>
+                <SelectItem value="pendente">Pendentes</SelectItem>
+                <SelectItem value="processado">Já processados</SelectItem>
+                <SelectItem value="Pendente">Pendente</SelectItem>
+                <SelectItem value="Em Processamento">Em Processamento</SelectItem>
+                <SelectItem value="Aprovado">Aprovado</SelectItem>
+                <SelectItem value="Manual">Manual</SelectItem>
+                <SelectItem value="Recusado">Recusado</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button variant="outline" size="sm" onClick={selectAllPending} disabled={isProcessing}>
+              Selecionar todos pendentes
             </Button>
+            <Button variant="ghost" size="sm" onClick={loadCases} disabled={isProcessing} className="gap-1.5">
+              <RotateCcw className="w-3.5 h-3.5" /> Atualizar
+            </Button>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex flex-wrap gap-3 items-center border-t pt-4">
+            <Button
+              onClick={handleClean}
+              disabled={selectedIds.length === 0 || isProcessing || phase === 'cleaning'}
+              variant="destructive"
+              className="gap-2"
+            >
+              {phase === 'cleaning' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+              Limpar Análises ({selectedIds.length})
+            </Button>
+
+            <Button
+              onClick={handleReprocess}
+              disabled={selectedIds.length === 0 || isProcessing || phase === 'cleaning'}
+              className="gap-2 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
+            >
+              <Play className="w-4 h-4" />
+              Reprocessar Pipeline V5 ({selectedIds.length})
+            </Button>
+
+            {isProcessing && (
+              <>
+                <Button onClick={handlePause} variant="outline" size="sm" className="gap-1.5">
+                  <Pause className="w-3.5 h-3.5" />
+                  {phase === 'paused' ? 'Retomar' : 'Pausar'}
+                </Button>
+                <Button onClick={handleAbort} variant="outline" size="sm" className="gap-1.5 text-red-600 border-red-200 hover:bg-red-50">
+                  <XCircle className="w-3.5 h-3.5" /> Parar
+                </Button>
+              </>
+            )}
+
             {cleanResult && (
-              <span className="text-sm text-green-600">
-                ✓ {cleanResult.casesReset} casos resetados, {cleanResult.scoresDeleted} scores deletados
+              <span className="text-sm text-green-600 flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4" />
+                {cleanResult.casesReset} resetados, {cleanResult.scoresDeleted} scores deletados
               </span>
             )}
           </div>
-
-          {/* FASE 2 */}
-          <div className="flex items-center gap-3">
-            <Button onClick={handleReprocess} disabled={phase !== 'ready' && phase !== 'idle' && phase !== 'done'} className="gap-2 bg-[#2bc196] hover:bg-[#2bc196]/90">
-              {phase === 'processing' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
-              FASE 2: Reprocessar Pipeline V5
-            </Button>
-            {phase === 'processing' && (
-              <Button onClick={handleAbort} variant="outline" size="sm" className="text-red-600">Parar</Button>
-            )}
-            <Button onClick={loadStatus} variant="ghost" size="sm" className="gap-1">
-              <RotateCcw className="w-3 h-3" /> Atualizar
-            </Button>
-          </div>
-
-          {/* Progress */}
-          {phase === 'processing' && (
-            <div className="space-y-2">
-              <Progress value={progress} className="h-3" />
-              <div className="flex justify-between text-xs text-[#002443]/60">
-                <span>Processando caso {currentIndex + 1} de {pendingCount}...</span>
-                <span>{results.length}/{pendingCount} concluídos</span>
-              </div>
-            </div>
-          )}
-
-          {error && (
-            <div className="flex items-center gap-2 text-red-600 text-sm">
-              <AlertCircle className="w-4 h-4" /> {error}
-            </div>
-          )}
         </CardContent>
       </Card>
 
-      {/* Results */}
-      {results.length > 0 && (
+      {/* Processing Queue */}
+      {queue.length > 0 && (
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">
-              Resultados — {doneCases} sucesso, {failedCases} falhas
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg flex items-center justify-between">
+              <span>Fila de Processamento</span>
+              {phase === 'done' && (
+                <span className="text-sm font-normal text-[#002443]/60">
+                  {queueSuccessCount} sucesso · {queueFailCount} falhas
+                </span>
+              )}
+              {phase === 'paused' && (
+                <Badge className="bg-amber-100 text-amber-700">Pausado</Badge>
+              )}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-1 max-h-96 overflow-y-auto">
-              {results.map((r, i) => (
-                <div key={i} className="flex items-center justify-between py-1.5 px-3 rounded-lg bg-[#f4f4f4] text-sm">
-                  <div className="flex items-center gap-2">
-                    {r.success ? <CheckCircle2 className="w-4 h-4 text-green-600" /> : <AlertCircle className="w-4 h-4 text-red-500" />}
-                    <span className="font-mono text-xs">...{r.caseId.slice(-8)}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Badge variant={r.success ? 'default' : 'destructive'} className="text-xs">
-                      {r.decision}
-                    </Badge>
-                    <span className="text-xs text-[#002443]/50 flex items-center gap-1">
-                      <Clock className="w-3 h-3" /> {Math.round(r.duration / 1000)}s
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <ProcessingQueue queue={queue} currentIndex={currentIndex} totalSelected={queue.length} />
           </CardContent>
         </Card>
       )}
 
-      {/* Cases Table */}
+      {/* Cases table */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Casos ({cases.length})</CardTitle>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg">Casos de Compliance ({filteredCases.length})</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-1 max-h-96 overflow-y-auto">
-            {cases.map(c => (
-              <div key={c.id} className="flex items-center justify-between py-1.5 px-3 rounded-lg bg-[#f4f4f4] text-xs">
-                <span className="font-mono">...{c.id.slice(-8)}</span>
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="text-xs">{c.status}</Badge>
-                  {c.score != null && <span>Score: {c.score}</span>}
-                  {c.subfaixa && <Badge className="text-xs">{c.subfaixa}</Badge>}
-                  {c.validationsDone && <CheckCircle2 className="w-3.5 h-3.5 text-green-600" />}
-                </div>
-              </div>
-            ))}
-          </div>
+        <CardContent className="p-0">
+          {loading ? (
+            <div className="flex items-center justify-center py-16">
+              <Loader2 className="w-6 h-6 animate-spin text-[#2bc196]" />
+            </div>
+          ) : (
+            <CaseSelectionTable
+              cases={filteredCases}
+              selectedIds={selectedIds}
+              onSelectionChange={setSelectedIds}
+              processing={isProcessing}
+            />
+          )}
         </CardContent>
       </Card>
     </div>
