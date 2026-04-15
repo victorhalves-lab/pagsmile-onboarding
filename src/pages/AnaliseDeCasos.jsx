@@ -187,6 +187,7 @@ export default function AnaliseDeCasos() {
           />
         </TabsContent>
 
+
         <TabsContent value="info">
           <CaseMerchantTab merchant={merchant} />
         </TabsContent>

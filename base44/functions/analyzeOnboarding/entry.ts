@@ -107,7 +107,7 @@ const PARTIAL_SCHEMA = {
 const FINAL_SCHEMA = {
   type: "object",
   properties: {
-    sentinel_recommendation: { type: "string", enum: ["Aprovado", "Aprovado com Condições", "Revisão Manual", "Recusado"] },
+    sentinel_recommendation: { type: "string", enum: ["Aprovado", "Aprovado com Condições Leves", "Aprovado com Condições", "Revisão Manual"] },
     escalation_justification: { type: "string" },
     sumario_executivo: { type: "string", description: "4-8 linhas com fontes citadas" },
     analise_completa_ia: { type: "string", description: "Análise consolidada COMPLETA. Mínimo 25 linhas. TODOS os detalhes das 3 análises." },
@@ -361,7 +361,7 @@ DIMENSÕES ${label}:
 ${serializeFullData(analysis.dimensoes || {})}`;
   }
 
-  return `Você é o SENTINEL v5, analista sênior de compliance. Recebeu TRÊS análises parciais independentes sobre o mesmo merchant.
+  return `Você é o SENTINEL v5.1, analista sênior de compliance. Recebeu TRÊS análises parciais independentes sobre o mesmo merchant.
 Sua tarefa é CONSOLIDAR em uma análise FINAL única, completa e robusta.
 
 ${merchantCtx}
@@ -378,18 +378,41 @@ ${formatPartial('ANÁLISE 3: CAF (Combate à Fraude)', cafAnalysis)}
 
 ${SENTINEL_RULES}
 
+═══ REGRA FUNDAMENTAL DE DECISÃO — LEIA COM ATENÇÃO ═══
+
+VOCÊ NÃO TEM PODER DE RECUSAR. Apenas dados objetivos (bloqueios V4 ou fraude CAF confirmada) podem recusar.
+
+Sua recomendação deve ser UMA destas (em ordem crescente de cautela):
+1. "Aprovado" — BDC/CAF limpos, questionário sem problemas significativos
+2. "Aprovado com Condições Leves" — BDC/CAF limpos, mas há pontos de atenção menores (ex: empresa nova, capital baixo). Sugira 1-3 condições leves como monitoramento trimestral.
+3. "Aprovado com Condições" — BDC/CAF limpos, mas há pontos de atenção significativos. Sugira condições mais rigorosas (Rolling Reserve, KYC reforçado, limite de TPV, monitoramento mensal).
+4. "Revisão Manual" — Há inconsistências sérias que requerem investigação humana. MÁXIMO que você pode recomendar.
+
+REGRAS DE PESO:
+- Os dados OBJETIVOS da BDC e CAF têm PESO MÁXIMO. Se BDC e CAF não encontraram problemas graves (sem bloqueios, sem sanções, sem fraude), a empresa é PRESUMIDAMENTE BOA.
+- Inconsistências no questionário são PONTOS DE ATENÇÃO, não motivos de recusa. O merchant pode ter errado no preenchimento (ex: confundir faturamento com volume transacionado).
+- Ausência de dados NÃO é evidência negativa. "Sem website" ou "profileExists=false na CAF" NÃO são motivos para recusar — muitas empresas legítimas não têm site ou nunca usaram CAF.
+- NUNCA recomende "Recusado" — essa opção não existe para você. Se encontrar algo muito grave que seria motivo de recusa, recomende "Revisão Manual" e justifique detalhadamente POR QUE o analista deve investigar.
+
+COMO DEFINIR CONDIÇÕES:
+Quando recomendar "Aprovado com Condições Leves" ou "Aprovado com Condições", DETALHE cada condição:
+- O que: descrição clara da condição (ex: "Rolling Reserve de 10%")  
+- Por quê: qual achado motivou esta condição (ex: "Capital social de R$25k para volume declarado de R$10M")
+- Duração: por quanto tempo (ex: "Primeiros 6 meses, com revisão")
+- Critério de remoção: quando a condição pode ser removida (ex: "Após 6 meses sem chargebacks acima de 1%")
+
 FOCO PRINCIPAL: CRUZAR as 3 fontes de dados para identificar DIVERGÊNCIAS.
 - O que o merchant DECLAROU no questionário vs o que o BDC CONFIRMOU vs o que a CAF VERIFICOU.
 - Cada divergência é uma cross-validation que deve ser documentada com severidade.
 
-1. SUMÁRIO EXECUTIVO: 4-8 linhas com os achados mais importantes de TODAS as 3 análises.
+1. SUMÁRIO EXECUTIVO: 4-8 linhas com os achados mais importantes de TODAS as 3 análises. Comece com a DECISÃO recomendada.
 2. ANÁLISE COMPLETA: Consolide TODAS as análises em narrativa única por dimensões. Mínimo 25 linhas. NÃO resuma — inclua TODOS os detalhes.
 3. PARECER FINAL: Narrativa autocontida para dossiê. Um analista deve entender TUDO sem consultar outras fontes.
-4. RED FLAGS: Consolide das 3 (sem duplicar). Mantenha formato "[FONTE: campo] Descrição". Adicione novos red flags de cross-validation.
+4. RED FLAGS: Consolide das 3 (sem duplicar). Mantenha formato "[FONTE: campo] Descrição". Lembre: red flags são INFORMATIVOS, não decisórios.
 5. PONTOS POSITIVOS / ATENÇÃO: Consolide das 3.
 6. CROSS-VALIDATION GLOBAL: Cruze declarações do questionário com dados BDC e CAF. Documente CADA divergência.
 7. ANÁLISE DIMENSIONAL (7 dimensões): Use dados das 3 análises para cada dimensão.
-8. RECOMENDAÇÃO: Pode ESCALAR decisão V4 se houver red flags FACTUAIS graves, nunca REBAIXAR.
+8. CONDIÇÕES DETALHADAS: Se recomendar condições, detalhe CADA uma com O QUE, POR QUÊ, DURAÇÃO e CRITÉRIO DE REMOÇÃO.
 
 Produza análise ROBUSTA, COMPLETA, com TODOS os dados e insights das 3 análises.`;
 }
@@ -545,7 +568,7 @@ Deno.serve(async (req) => {
     const now = new Date().toISOString();
     const sentinelData = {
       onboarding_case_id: caseId,
-      versao_agente: "SENTINEL v5.0",
+      versao_agente: "SENTINEL v5.1",
       sentinel_recommendation: llmResponse.sentinel_recommendation,
       sumario_executivo: llmResponse.sumario_executivo,
       analise_completa_ia: llmResponse.analise_completa_ia,
@@ -596,7 +619,7 @@ Deno.serve(async (req) => {
       nivel_confianca: llmResponse.nivel_confianca_ia,
       red_flags_count: (llmResponse.red_flags || []).length,
       duration_ms: duration,
-      architecture: "v5.0 — 3 parallel analyses (QST + BDC + CAF) + consolidation"
+      architecture: "v5.1 — 3 parallel analyses (QST + BDC + CAF) + consolidation. SENTINEL max=Revisão Manual, never Recusado."
     });
 
   } catch (error) {

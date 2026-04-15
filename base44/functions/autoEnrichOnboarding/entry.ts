@@ -259,23 +259,26 @@ Deno.serve(async (req) => {
           '3B': ['KYC completo em 15 dias', 'PLD semanal', 'Limite de TPV de R$200k/mês', 'Revisão a cada 60 dias', 'Antecipação bloqueada'],
         };
 
-        // V4 base decision
+        // V4 base decision — v5.1: More granular conditions
         let v4Decision;
         if (subfaixa === '1A' || subfaixa === '1B') {
           v4Decision = { status: 'Aprovado', decision: 'Aprovado', isAuto: true };
-        } else if (subfaixa === '2A' || subfaixa === '2B') {
+        } else if (subfaixa === '2A') {
+          v4Decision = { status: 'Aprovado', decision: 'Aprovado com Condições Leves', isAuto: true };
+        } else if (subfaixa === '2B') {
           v4Decision = { status: 'Aprovado', decision: 'Aprovado com Condições', isAuto: true };
         } else if (subfaixa === '3A' || subfaixa === '3B') {
-          v4Decision = { status: 'Manual', decision: 'Revisão Manual', isAuto: true };
+          v4Decision = { status: 'Manual', decision: 'Revisão Manual', isAuto: false };
         } else if (subfaixa === '4') {
           v4Decision = { status: 'Manual', decision: 'Revisão Manual', isAuto: false };
         } else {
           v4Decision = { status: 'Recusado', decision: 'Recusado', isAuto: true };
         }
 
-        // SENTINEL ESCALATION: SENTINEL can escalate (move toward more caution) but NEVER downgrade
-        // Escalation hierarchy: Aprovado < Aprovado com Condições < Revisão Manual < Recusado
-        const decisionHierarchy = { 'Aprovado': 0, 'Aprovado com Condições': 1, 'Revisão Manual': 2, 'Recusado': 3 };
+        // SENTINEL ESCALATION v5.1: SENTINEL can escalate but NEVER to "Recusado".
+        // Only objective data (V4 blocks, CAF fraud) can reject. SENTINEL max = "Revisão Manual".
+        // Hierarchy: Aprovado < Aprovado com Condições Leves < Aprovado com Condições < Revisão Manual
+        const decisionHierarchy = { 'Aprovado': 0, 'Aprovado com Condições Leves': 1, 'Aprovado com Condições': 2, 'Revisão Manual': 3, 'Recusado': 4 };
         
         finalDecision = v4Decision.decision;
         finalStatus = v4Decision.status;
@@ -284,22 +287,50 @@ Deno.serve(async (req) => {
 
         if (sentinelRecommendation) {
           const v4Level = decisionHierarchy[v4Decision.decision] ?? 0;
-          const sentinelLevel = decisionHierarchy[sentinelRecommendation] ?? 0;
+          let sentinelLevel = decisionHierarchy[sentinelRecommendation] ?? 0;
+          
+          // CAP: SENTINEL cannot recommend "Recusado" — cap at "Revisão Manual"
+          if (sentinelLevel >= 4) sentinelLevel = 3;
+          const cappedRecommendation = sentinelLevel === 3 ? 'Revisão Manual' : sentinelLevel === 2 ? 'Aprovado com Condições' : sentinelLevel === 1 ? 'Aprovado com Condições Leves' : 'Aprovado';
           
           if (sentinelLevel > v4Level) {
-            // SENTINEL escalates — adopt SENTINEL's more cautious recommendation
-            finalDecision = sentinelRecommendation;
-            finalStatus = sentinelRecommendation === 'Recusado' ? 'Recusado' : 'Manual';
+            // SENTINEL escalates — adopt capped recommendation
+            finalDecision = cappedRecommendation;
+            finalStatus = cappedRecommendation === 'Revisão Manual' ? 'Manual' : 'Aprovado';
             escalatedBySentinel = true;
-            autoDecisionApplied = false; // Needs human review since SENTINEL escalated
-            console.log(`[AutoEnrich] Step 4: SENTINEL ESCALATED from V4 "${v4Decision.decision}" to "${sentinelRecommendation}"`);
+            autoDecisionApplied = cappedRecommendation === 'Aprovado com Condições Leves'; // Light conditions = still auto
+            console.log(`[AutoEnrich] Step 4: SENTINEL ESCALATED from V4 "${v4Decision.decision}" to "${cappedRecommendation}" (original sentinel: "${sentinelRecommendation}", capped)`);
           }
+        }
+
+        // CHECK: CAF biometric fraud overrides everything — only OBJECTIVE data can reject
+        let cafFraudDetected = false;
+        const cafLogs = await base44.asServiceRole.entities.IntegrationLog.filter({ onboarding_case_id: caseId });
+        for (const log of cafLogs) {
+          if (log.provider !== 'CAF') continue;
+          const svc = log.service_type || '';
+          const result = log.result_status || '';
+          // Biometric fraud: liveness failed, facematch failed, deepfake detected, documentscopy REPROVED
+          if ((svc === 'liveness' || svc === 'face_liveness' || svc === 'deepfake_detection') && result === 'REPROVED') {
+            cafFraudDetected = true;
+          }
+          if (svc === 'documentscopy' && result === 'REPROVED') {
+            cafFraudDetected = true;
+          }
+        }
+        if (cafFraudDetected) {
+          finalDecision = 'Revisão Manual';
+          finalStatus = 'Manual';
+          escalatedBySentinel = true;
+          autoDecisionApplied = false;
+          console.log(`[AutoEnrich] Step 4: CAF BIOMETRIC FRAUD DETECTED — forced to Revisão Manual with fraud flag`);
         }
 
         // Merge red flags from V4 + SENTINEL with origin tags
         const v4RedFlags = (freshCase.redFlags || []).map(f => f.startsWith('V4:') || f.startsWith('SENTINEL:') || f.startsWith('CAF:') ? f : `V4: ${f}`);
         const sentinelRedFlags = (latestScore?.sentinel_red_flags || []).map(f => f.startsWith('SENTINEL:') ? f : `SENTINEL: ${f}`);
-        const mergedRedFlags = [...new Set([...v4RedFlags, ...sentinelRedFlags])];
+        const cafFlags = cafFraudDetected ? ['CAF: Fraude biométrica/documental detectada — liveness ou documentoscopia reprovada'] : [];
+        const mergedRedFlags = [...new Set([...v4RedFlags, ...sentinelRedFlags, ...cafFlags])];
 
         const updateData = {
           status: finalStatus,
