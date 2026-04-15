@@ -78,18 +78,35 @@ const getModelBadge = (model) => {
   return <Badge className={`${color} text-xs font-medium border-0`}>{label}</Badge>;
 };
 
-const getScoreBadge = (score) => {
-  if (score === undefined || score === null) return <span className="text-[var(--pagsmile-blue)]/50">-</span>;
-  let colorClass = 'text-red-600 bg-red-50';
-  let label = 'Crítico';
-  if (score >= 80) { colorClass = 'text-green-600 bg-green-50'; label = 'Baixo Risco'; }
-  else if (score >= 50) { colorClass = 'text-orange-600 bg-orange-50'; label = 'Médio Risco'; }
+// V4 Score Badge: 0-849 scale where 0=best
+const getV4ScoreBadge = (v4Score, subfaixa, subfaixaNome) => {
+  if (v4Score === undefined || v4Score === null) return <span className="text-[var(--pagsmile-blue)]/50">-</span>;
+  const subfaixaColors = {
+    '1A': 'text-green-700 bg-green-50', '1B': 'text-green-600 bg-green-50',
+    '2A': 'text-blue-700 bg-blue-50', '2B': 'text-blue-600 bg-blue-50',
+    '3A': 'text-yellow-700 bg-yellow-50', '3B': 'text-orange-700 bg-orange-50',
+    '4': 'text-red-600 bg-red-50', '5': 'text-red-800 bg-red-100',
+  };
+  const colorClass = subfaixaColors[subfaixa] || 'text-slate-600 bg-slate-50';
+  const displayName = subfaixaNome || subfaixa || '';
   return (
     <div className="flex items-center gap-2">
-      <span className={`font-bold text-lg ${colorClass.split(' ')[0]}`}>{score}</span>
-      <span className={`text-xs px-2 py-0.5 rounded-full ${colorClass}`}>{label}</span>
+      <span className={`font-bold text-lg ${colorClass.split(' ')[0]}`}>{Math.round(v4Score)}</span>
+      {displayName && <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${colorClass}`}>{displayName}</span>}
     </div>
   );
+};
+
+const getDecisionBadge = (decision) => {
+  if (!decision) return <span className="text-[var(--pagsmile-blue)]/50">-</span>;
+  const config = {
+    'Aprovado': 'bg-green-100 text-green-700',
+    'Aprovado com Condições': 'bg-blue-100 text-blue-700',
+    'Revisão Manual': 'bg-orange-100 text-orange-700',
+    'Recusado': 'bg-red-100 text-red-700',
+  };
+  const colorClass = config[decision] || 'bg-slate-100 text-slate-700';
+  return <Badge className={`${colorClass} text-[10px] font-semibold border-0`}>{decision}</Badge>;
 };
 
 // ── DocLink button: generates a token and copies the doc+CAF link ──
@@ -200,12 +217,17 @@ export default function ComplianceCasesTable({
               </TableHead>
               <TableHead>Modelo</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead className="text-center">Fase 1 (SQ)</TableHead>
-              <TableHead className="text-center">Fase 2 (SVE)</TableHead>
               <TableHead className="text-center">
                 <button className="flex items-center gap-1 hover:text-[var(--pagsmile-blue)] font-semibold mx-auto"
-                  onClick={() => { if (sortField === 'riskScore') setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc'); else { setSortField('riskScore'); setSortOrder('desc'); } }}>
-                  <Brain className="w-4 h-4 mr-1" /> Final (SGC) <ArrowUpDown className="w-3 h-3" />
+                  onClick={() => { if (sortField === 'riskScoreV4') setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc'); else { setSortField('riskScoreV4'); setSortOrder('asc'); } }}>
+                  Score V4 <ArrowUpDown className="w-3 h-3" />
+                </button>
+              </TableHead>
+              <TableHead className="text-center">Subfaixa</TableHead>
+              <TableHead className="text-center">
+                <button className="flex items-center gap-1 hover:text-[var(--pagsmile-blue)] font-semibold mx-auto"
+                  onClick={() => { if (sortField === 'iaDecision') setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc'); else { setSortField('iaDecision'); setSortOrder('asc'); } }}>
+                  <Brain className="w-4 h-4 mr-1" /> Decisão <ArrowUpDown className="w-3 h-3" />
                 </button>
               </TableHead>
               <TableHead>Tempo na Fila</TableHead>
@@ -244,13 +266,20 @@ export default function ComplianceCasesTable({
                     <TableCell>{getModelBadge(getCaseModel(c))}</TableCell>
                     <TableCell>{getStatusBadge(c.status)}</TableCell>
                     <TableCell className="text-center">
-                      <span className="text-sm font-medium text-[var(--pagsmile-blue)]/80">{scoresMap[c.id]?.score_questionario || '-'}</span>
+                      <div className="flex justify-center">{getV4ScoreBadge(c.riskScoreV4, c.subfaixa, c.subfaixaNome)}</div>
                     </TableCell>
                     <TableCell className="text-center">
-                      <span className="text-sm font-medium text-[var(--pagsmile-blue)]/80">{scoresMap[c.id]?.score_validacao_externa || '-'}</span>
+                      {c.subfaixa ? (
+                        <Badge className={`text-[10px] font-bold border-0 ${
+                          {'1A':'bg-green-100 text-green-700','1B':'bg-green-100 text-green-700',
+                           '2A':'bg-blue-100 text-blue-700','2B':'bg-blue-100 text-blue-700',
+                           '3A':'bg-yellow-100 text-yellow-700','3B':'bg-orange-100 text-orange-700',
+                           '4':'bg-red-100 text-red-700','5':'bg-red-200 text-red-800'}[c.subfaixa] || 'bg-slate-100 text-slate-600'
+                        }`}>{c.subfaixa}</Badge>
+                      ) : <span className="text-[var(--pagsmile-blue)]/50">-</span>}
                     </TableCell>
                     <TableCell className="text-center">
-                      <div className="flex justify-center">{getScoreBadge(scoresMap[c.id]?.score_geral_composto || c.riskScore)}</div>
+                      <div className="flex justify-center">{getDecisionBadge(scoresMap[c.id]?.recomendacao_final || c.iaDecision)}</div>
                     </TableCell>
                     <TableCell>
                       {(() => {

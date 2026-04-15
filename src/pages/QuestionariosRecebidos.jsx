@@ -80,7 +80,13 @@ export default function QuestionariosRecebidos() {
 
   const scoresMap = React.useMemo(() => {
     const map = {};
-    complianceScores.forEach(s => { map[s.onboarding_case_id] = s; });
+    // Keep only the most recently updated score per case
+    complianceScores.forEach(s => {
+      const existing = map[s.onboarding_case_id];
+      if (!existing || new Date(s.updated_date) > new Date(existing.updated_date)) {
+        map[s.onboarding_case_id] = s;
+      }
+    });
     return map;
   }, [complianceScores]);
 
@@ -158,12 +164,16 @@ export default function QuestionariosRecebidos() {
       const caseModel = getCaseModel(c);
       const matchesModel = modelFilter === 'all' || caseModel === modelFilter;
       let matchesScore = true;
-      if (scoreFilter !== 'all' && c.riskScore !== undefined) {
-        if (scoreFilter === 'high') matchesScore = c.riskScore >= 80;
-        else if (scoreFilter === 'medium') matchesScore = c.riskScore >= 50 && c.riskScore < 80;
-        else if (scoreFilter === 'low') matchesScore = c.riskScore < 50;
-      } else if (scoreFilter !== 'all' && c.riskScore === undefined) {
-        matchesScore = false;
+      if (scoreFilter !== 'all') {
+        const v4 = c.riskScoreV4;
+        if (v4 != null) {
+          // V4: 0=best, 849=worst. high risk = high score
+          if (scoreFilter === 'high') matchesScore = v4 >= 400;
+          else if (scoreFilter === 'medium') matchesScore = v4 >= 150 && v4 < 400;
+          else if (scoreFilter === 'low') matchesScore = v4 < 150;
+        } else {
+          matchesScore = false;
+        }
       }
       let matchesDate = true;
       if (dateFilter !== 'all') {
