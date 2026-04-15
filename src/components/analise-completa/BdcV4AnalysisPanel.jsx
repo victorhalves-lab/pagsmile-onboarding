@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Shield, ChevronDown, ChevronUp, AlertOctagon, BarChart3, Layers } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import BdcSectionInterpreter, { BlockInterpreter } from './BdcSectionInterpreter';
-import { SECTION_EXPLANATIONS } from './BdcExplanations';
+import BdcSectionInterpreter, { BlockInterpreter } from '@/components/analise-completa/BdcSectionInterpreter';
+import { SECTION_EXPLANATIONS } from '@/components/analise-completa/BdcExplanations';
 
 const SECTION_ICONS = {
   identity: '🏢', owners: '👥', digital: '🌐', compliance: '⚖️',
