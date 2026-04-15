@@ -22,19 +22,27 @@ import CafManualSelfieUpload from './CafManualSelfieUpload';
  * - Full CAF data enrichment: isAlive, isMatch, similarity, sessionId, detectedDocument, storageInfo
  */
 
-const CAF_DD_SDK_URL = 'https://repo.combateafraude.com/javascript/release/document-detector/6.13.0/document-detector-6.13.0.umd.js';
-const CAF_DD_WASM_URL = 'https://repo.combateafraude.com/javascript/release/document-detector/6.13.0/dd-validator.wasm';
-const CAF_FL_SDK_URL = 'https://repo.combateafraude.com/javascript/release/caf-face-liveness/0.16.0/caf-face-liveness_0.16.0.umd.js';
+const CAF_DD_SDK_URL = 'https://repo.combateafraude.com/javascript/release/document-detector/latest/document-detector.umd.js';
+const CAF_FL_SDK_URL = 'https://repo.combateafraude.com/javascript/release/caf-face-liveness/latest/caf-face-liveness.umd.js';
 
 function loadScript(src) {
   return new Promise((resolve, reject) => {
-    const existing = document.querySelector(`script[src="${src}"]`);
-    if (existing) { resolve(); return; }
+    // Check if already loaded by looking for the script tag
+    const existing = document.querySelector(`script[data-caf-src="${src}"]`);
+    if (existing) {
+      // If the script tag exists, check if it already loaded
+      if (existing.dataset.loaded === 'true') { resolve(); return; }
+      // If still loading, wait for it
+      existing.addEventListener('load', resolve);
+      existing.addEventListener('error', () => reject(new Error(`Falha ao carregar SDK: ${src}`)));
+      return;
+    }
     const script = document.createElement('script');
     script.src = src;
     script.async = true;
-    script.onload = resolve;
-    script.onerror = () => reject(new Error(`Falha ao carregar SDK: ${src}`));
+    script.setAttribute('data-caf-src', src);
+    script.onload = () => { script.dataset.loaded = 'true'; resolve(); };
+    script.onerror = () => reject(new Error(`Falha ao carregar SDK: ${src}. Verifique sua conexão e tente novamente.`));
     document.body.appendChild(script);
   });
 }

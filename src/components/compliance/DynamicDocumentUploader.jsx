@@ -165,15 +165,6 @@ export default function DynamicDocumentUploader({
     }
   }, [documents, storageKey]);
 
-  // Verificar se todos os documentos obrigatórios foram enviados
-  useEffect(() => {
-    if (onAllRequiredUploaded) {
-      const allMandatoryUploaded = mandatoryDocs.length === 0 || 
-        mandatoryDocs.every(d => documents[d._docKey || d.documentTypeId || d.id]?.url);
-      onAllRequiredUploaded(allMandatoryUploaded);
-    }
-  }, [onAllRequiredUploaded, documents, requiredDocs]);
-
   const handleUpload = async (docId, file) => {
     setUploadingDoc(docId);
     try {
@@ -207,6 +198,15 @@ export default function DynamicDocumentUploader({
   // Separar obrigatórios e opcionais
   const mandatoryDocs = requiredDocs.filter(d => d.required);
   const optionalDocs = requiredDocs.filter(d => !d.required);
+
+  // Verificar se todos os documentos obrigatórios foram enviados
+  useEffect(() => {
+    if (onAllRequiredUploaded) {
+      const allMandatoryUploaded = mandatoryDocs.length === 0 || 
+        mandatoryDocs.every(d => documents[d._docKey || d.documentTypeId || d.id]?.url);
+      onAllRequiredUploaded(allMandatoryUploaded);
+    }
+  }, [onAllRequiredUploaded, documents, mandatoryDocs]);
 
   const uploadedCount = Object.keys(documents).length;
   const totalRequired = mandatoryDocs.length;

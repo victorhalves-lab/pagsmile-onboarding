@@ -66,16 +66,23 @@ export default function useCnpjAutocomplete() {
     setIsLoading(true);
     lastCnpjRef.current = cnpj;
 
-    const response = await base44.functions.invoke('brasilApiCnpj', { cnpj });
-    setIsLoading(false);
-    
-    if (response.data?.error) {
-      setError(response.data.error);
+    try {
+      const response = await base44.functions.invoke('brasilApiCnpj', { cnpj });
+      setIsLoading(false);
+      
+      if (response.data?.error) {
+        setError(response.data.error);
+        return null;
+      }
+      
+      setData(response.data);
+      return response.data;
+    } catch (err) {
+      setIsLoading(false);
+      console.error('[CNPJ] API error:', err?.message || err);
+      setError('Não foi possível consultar o CNPJ. Você pode preencher os dados manualmente.');
       return null;
     }
-    
-    setData(response.data);
-    return response.data;
   }, [data]);
 
   const reset = useCallback(() => {

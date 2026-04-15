@@ -111,7 +111,8 @@ export default function ComplianceDocOnly() {
   };
 
   // ── Final submit ──
-  const handleFinalSubmit = async () => {
+  const handleFinalSubmit = async (cafResultParam) => {
+    const effectiveCafResult = cafResultParam || cafResult;
     setIsSubmitting(true);
     try {
       // Save document uploads
@@ -138,7 +139,7 @@ export default function ComplianceDocOnly() {
       // Mark case as doc + caf completed and trigger pipeline
       await base44.entities.OnboardingCase.update(caseId, {
         docCompleted: true,
-        cafCompleted: !!cafResult,
+        cafCompleted: !!effectiveCafResult,
         bigDataCorpCompleted: false,
         validationsCompleted: false,
         status: 'Em Processamento',
@@ -280,7 +281,7 @@ export default function ComplianceDocOnly() {
             onboardingCaseId={caseId}
             onComplete={(result) => {
               setCafResult(result);
-              handleFinalSubmit();
+              handleFinalSubmit(result);
             }}
           />
         </div>

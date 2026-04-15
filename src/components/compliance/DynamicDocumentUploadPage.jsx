@@ -33,6 +33,7 @@ export default function DynamicDocumentUploadPage({
   // Phase: 'docs_upload' = uploading docs, 'caf_verification' = running CAF SDK, 'done' = all complete
   const [currentStep, setCurrentStep] = useState('docs_upload');
   const [cafResult, setCafResult] = useState(null);
+  const cafResultRef = React.useRef(null);
 
   // Session for save & resume
   const {
@@ -183,7 +184,10 @@ export default function DynamicDocumentUploadPage({
     }
   };
 
-  const handleFinalSubmit = async () => {
+  const handleFinalSubmit = async (cafResultParam) => {
+    // Use parameter if provided (from CAF onComplete), otherwise use state/ref
+    const effectiveCafResult = cafResultParam || cafResultRef.current || cafResult;
+
     const requiredDocs = (template?.requiredDocuments || []).map((doc, index) => ({
       ...doc,
       _docKey: doc.documentTypeId || doc.id || `doc_${index}_${(doc.label || '').replace(/\s+/g, '_').toLowerCase().slice(0, 30)}`
@@ -200,7 +204,7 @@ export default function DynamicDocumentUploadPage({
 
     try {
       if (onSubmit) {
-        await onSubmit({ template, documents, formDataStorageKey, questions, cafResult });
+        await onSubmit({ template, documents, formDataStorageKey, questions, cafResult: effectiveCafResult });
         return;
       }
 
@@ -319,7 +323,7 @@ export default function DynamicDocumentUploadPage({
       // Mark case as docs + CAF completed so the analysis pipeline knows everything is ready
       await base44.entities.OnboardingCase.update(onboardingCaseId, {
         docCompleted: true,
-        cafCompleted: !!cafResult,
+        cafCompleted: !!effectiveCafResult,
         submissionDate: new Date().toISOString(),
       });
 
@@ -463,10 +467,13 @@ export default function DynamicDocumentUploadPage({
             personCpf={getPersonData().cpf}
             onboardingCaseId={localStorage.getItem('created_onboarding_case_id') || ''}
             onComplete={(result) => {
+              // Store the result in a ref so handleFinalSubmit can access it immediately
+              // (setState is async so cafResult wouldn't be available yet)
+              cafResultRef.current = result;
               setCafResult(result);
               setCurrentStep('done');
               // Auto-submit after CAF completes
-              handleFinalSubmit();
+              handleFinalSubmit(result);
             }}
           />
         </div>

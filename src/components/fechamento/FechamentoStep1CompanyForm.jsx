@@ -58,7 +58,10 @@ export default function FechamentoStep1CompanyForm({ formData, setFormData, next
     if (raw.length === 14) {
       consultarCnpj(raw).then(result => {
         setHasConsulted(true);
-        if (!result) return;
+        if (!result) {
+          // Even if API failed, allow manual entry — show the form fields
+          return;
+        }
         update('razaoSocial', result.razao_social || '');
         update('nomeFantasia', result.nome_fantasia || '');
         if (result.site_sugerido) update('website', result.site_sugerido);
@@ -101,7 +104,10 @@ export default function FechamentoStep1CompanyForm({ formData, setFormData, next
   const isInactive = cnpjData && cnpjData.situacao_cadastral !== 2;
   const hasPrefillAddr = !!(addr.cep || addr.logradouro);
 
-  const canProceed = formData.cnpj?.length === 14 && formData.razaoSocial && formData.contactName && formData.email?.includes('@') && formData.contactRole && addressConfirmed;
+  // Address is required ONLY if it was pre-filled from CNPJ lookup (hasPrefillAddr).
+  // If no address was returned (e.g. CNPJ API failure, or manual entry), skip the address confirmation requirement.
+  const addressOk = hasPrefillAddr ? addressConfirmed : true;
+  const canProceed = formData.cnpj?.length === 14 && formData.razaoSocial && formData.contactName && formData.email?.includes('@') && formData.contactRole && addressOk;
 
   return (
     <div className="space-y-6">
