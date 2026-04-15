@@ -169,7 +169,8 @@ function analyzeBlocks(result, responses) {
   const blocks = [];
   const bd = extractBasicData(result);
 
-  // B01 — CNPJ Inativo (only triggers if BDC explicitly says NOT active)
+  // B01 — CNPJ Inativo (PJ only — never for PF/CPF)
+  // Only triggers when BDC explicitly returns a non-active status string
   const status = safeGet(bd, 'TaxIdStatus') || safeGet(bd, 'TaxIdStatusDescription') || '';
   const statusUp = String(status).toUpperCase().trim();
   const cnpjIsActive = !status || statusUp.includes('ATIV') || statusUp.includes('REGULAR');
@@ -1664,6 +1665,7 @@ Deno.serve(async (req) => {
 
     let analysis;
     if (isPF) {
+      // PF uses dedicated person analysis — NEVER run PJ analyzeBlocks for CPFs
       const blocks = analyzePersonBlocks(result);
       const sections = analyzePersonData(result);
       const totalScore = sections.identity.score + sections.compliance.score + sections.reputation.score + (sections.financial?.score || 0);
