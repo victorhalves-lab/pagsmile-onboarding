@@ -50,6 +50,7 @@ import CadastroDetalhe from './pages/CadastroDetalhe';
 import ComplianceDocOnly from './pages/ComplianceDocOnly';
 import BDCHealthDashboard from './pages/BDCHealthDashboard';
 import AnaliseCompleta from './pages/AnaliseCompleta';
+import BulkReprocess from './pages/BulkReprocess';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -269,6 +270,7 @@ const AuthenticatedApp = () => {
       <Route path="/CadastroDetalhe" element={<LayoutWrapper currentPageName="CadastroDetalhe"><CadastroDetalhe /></LayoutWrapper>} />
       <Route path="/BDCHealthDashboard" element={<LayoutWrapper currentPageName="BDCHealthDashboard"><BDCHealthDashboard /></LayoutWrapper>} />
       <Route path="/AnaliseCompleta" element={<LayoutWrapper currentPageName="AnaliseCompleta"><AnaliseCompleta /></LayoutWrapper>} />
+      <Route path="/BulkReprocess" element={<LayoutWrapper currentPageName="BulkReprocess"><BulkReprocess /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

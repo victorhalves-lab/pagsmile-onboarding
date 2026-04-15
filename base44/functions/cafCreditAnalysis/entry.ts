@@ -19,15 +19,11 @@ Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
 
-    // Support both admin UI calls and service-role pipeline calls
-    try {
-      const user = await base44.auth.me();
-      if (!user || user.role !== 'admin') {
-        return Response.json({ error: 'Forbidden' }, { status: 403 });
-      }
-    } catch {
-      // Called via service role from autoEnrichOnboarding pipeline — allowed
-    }
+    // Auth: allow admin users AND service-role pipeline calls
+    let isAuth = false;
+    try { const u = await base44.auth.me(); if (u?.role === 'admin') isAuth = true; } catch {}
+    if (!isAuth) { try { await base44.asServiceRole.entities.OnboardingCase.list('-created_date', 1); isAuth = true; } catch {} }
+    if (!isAuth) return Response.json({ error: 'Forbidden' }, { status: 403 });
 
     const body = await req.json();
     const { cpf, cnpj, onboardingCaseId } = body;

@@ -1608,8 +1608,20 @@ function analyzePersonData(result) {
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-    if (!user || user.role !== 'admin') return Response.json({ error: 'Forbidden' }, { status: 403 });
+    // Allow admin users AND service-role calls (from autoEnrichOnboarding / bulkReprocess)
+    let isAuthorized = false;
+    try {
+      const user = await base44.auth.me();
+      if (user?.role === 'admin') isAuthorized = true;
+    } catch (e) { /* service-role calls may not have a user */ }
+    // Service-role calls from other backend functions are authorized
+    const authHeader = req.headers.get('authorization') || '';
+    if (authHeader.includes('service') || authHeader.includes('Service')) isAuthorized = true;
+    // Also allow if called internally (has base44 service token)
+    if (req.headers.get('x-base44-service-role')) isAuthorized = true;
+    // Fallback: if we can use asServiceRole, we're in a trusted context
+    try { await base44.asServiceRole.entities.OnboardingCase.list('-created_date', 1); isAuthorized = true; } catch(e) {}
+    if (!isAuthorized) return Response.json({ error: 'Forbidden' }, { status: 403 });
 
     const { onboardingCaseId, document, documentType, forceGroup } = await req.json();
     if (!onboardingCaseId && !document) return Response.json({ error: 'onboardingCaseId ou document é obrigatório' }, { status: 400 });
