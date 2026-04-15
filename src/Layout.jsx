@@ -31,7 +31,8 @@ import {
   Handshake,
   BarChart3,
   Presentation,
-  Database
+  Database,
+  RotateCcw
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -126,6 +127,7 @@ export default function Layout({ children, currentPageName }) {
         { label: t('menu.subaccount_links'), path: 'GerenciarSubsellerLinks', icon: Users },
         { label: 'Risk Scoring', path: 'RiskScoringV4', icon: Shield },
         { label: 'Risk Scoring Subcontas', path: 'RiskScoringSubcontas', icon: Shield },
+        { label: 'Reprocessar Compliance', path: 'BulkReprocess', icon: RotateCcw },
       ]
     },
     {
