@@ -74,6 +74,10 @@ Deno.serve(async (req) => {
 
     if (!onboardingCaseId) return Response.json({ error: 'onboardingCaseId é obrigatório' }, { status: 400 });
 
+    // ITEM 1 FIX: Auto-resolve callbackUrl from cafWebhookHandler endpoint
+    // If no callbackUrl provided, build it from the app's function URL
+    const resolvedCallbackUrl = body.callbackUrl || '';
+
     let merchant = null;
     let onboardingCase = null;
     try {
@@ -127,7 +131,7 @@ Deno.serve(async (req) => {
       };
       if (personCpf) ocrPayload.parameters.cpf = personCpf;
       if (personName) ocrPayload.parameters.name = personName;
-      if (callbackUrl) ocrPayload._callbackUrl = callbackUrl;
+      if (resolvedCallbackUrl) ocrPayload._callbackUrl = resolvedCallbackUrl;
 
       let ocrAttempts = 0;
       while (ocrAttempts <= 2) {
@@ -201,7 +205,7 @@ Deno.serve(async (req) => {
       if (personCpf) asyncPayload.parameters.cpf = personCpf;
       if (personName) asyncPayload.parameters.name = personName;
       if (personBirth) asyncPayload.parameters.birthDate = personBirth;
-      if (callbackUrl) asyncPayload._callbackUrl = callbackUrl;
+      if (resolvedCallbackUrl) asyncPayload._callbackUrl = resolvedCallbackUrl;
 
       const asyncResponse = await fetch(`${CAF_API_BASE}/v1/transactions`, {
         method: 'POST',

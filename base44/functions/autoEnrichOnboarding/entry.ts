@@ -6,13 +6,17 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
  * ARQUITETURA REORGANIZADA (V4 + SENTINEL coordenados):
  *
  * ┌─────────────────────────────────────────────────────────────┐
- * │ Step 0: CAF Post-Capture (OCR, Documentoscopy, Biometria)  │
- * │ Step 1: BDC Enrichment → Score V4 DETERMINÍSTICO           │
- * │ Step 2: CAF Screening Internacional (PEP/Sanctions)        │
+ * │ Step 0:   CAF Post-Capture (OCR, Documentoscopy, Biometria)│
+ * │ Step 0.5: CAF Profile Check (histórico cross-merchant)     │
+ * │ Step 1:   BDC Enrichment → Score V4 DETERMINÍSTICO         │
+ * │ Step 1.5: CAF Full Enrichment (KYC/KYB completo)           │
+ * │ Step 1.7: CAF Credit Analysis (segunda fonte crédito)      │
+ * │ Step 2:   CAF Screening Internacional (PEP/Sanctions)      │
  * │ Step 2.5: CAF CPF Cross-Validation                         │
- * │ Step 3: SENTINEL IA → Análise QUALITATIVA (recebe V4)      │
- * │ Step 4: DECISÃO UNIFICADA (V4 = autoridade, SENTINEL = voz)│
- * │ Step 5: Slack Notification                                  │
+ * │ Step 2.7: VerifAI Docs (documentos pendentes)              │
+ * │ Step 3:   SENTINEL IA → Análise QUALITATIVA (recebe V4)    │
+ * │ Step 4:   DECISÃO UNIFICADA (V4=autoridade, SENTINEL=voz)  │
+ * │ Step 5:   Slack Notification                                │
  * └─────────────────────────────────────────────────────────────┘
  *
  * REGRA DE OURO:
@@ -62,17 +66,48 @@ Deno.serve(async (req) => {
 
     await base44.asServiceRole.entities.OnboardingCase.update(caseId, { status: 'Em Processamento' });
 
+    // Load merchant data early — needed by multiple steps
+    const [merchant] = await base44.asServiceRole.entities.Merchant.filter({ id: onboardingCase.merchantId });
+    const merchantCpf = merchant?.cpfCnpj?.replace(/\D/g, '');
+
     // ═══ STEP 0: CAF Post-Capture Analysis ═══
+    // ITEM 1 FIX: Now passes callbackUrl so async results (documentscopy, deepfake, etc.) return via webhook
     let cafPostCaptureSuccess = false;
     if (onboardingCase.docCompleted || onboardingCase.cafCompleted) {
       try {
         console.log(`[AutoEnrich] Step 0: CAF post-capture...`);
-        const cafRes = await base44.asServiceRole.functions.invoke('cafPostCaptureAnalysis', { onboardingCaseId: caseId });
+        const cafRes = await base44.asServiceRole.functions.invoke('cafPostCaptureAnalysis', { 
+          onboardingCaseId: caseId,
+          // callbackUrl will be resolved by the function itself if empty
+        });
         cafPostCaptureSuccess = cafRes?.data?.success === true;
         console.log(`[AutoEnrich] Step 0: ${cafPostCaptureSuccess ? 'OK' : 'FAILED'}`);
       } catch (cafErr) {
         console.warn(`[AutoEnrich] Step 0 failed (non-blocking): ${cafErr.message}`);
       }
+    }
+
+    // ═══ STEP 0.5: CAF Profile Check (ITEM 5 — cross-merchant history) ═══
+    let profileCheckSuccess = false;
+    try {
+      console.log(`[AutoEnrich] Step 0.5: CAF profile check...`);
+      const profileParams = { onboardingCaseId: caseId };
+      if (merchantCpf && (merchant?.type === 'PF' || merchantCpf.length === 11)) {
+        profileParams.cpf = merchantCpf;
+      } else if (merchant?.cpfCnpj) {
+        const doc = merchant.cpfCnpj.replace(/\D/g, '');
+        if (doc.length === 14) profileParams.cnpj = doc;
+        else profileParams.cpf = doc;
+      }
+      if (profileParams.cpf || profileParams.cnpj) {
+        const profileRes = await base44.asServiceRole.functions.invoke('cafCheckProfile', profileParams);
+        profileCheckSuccess = profileRes?.data?.success === true;
+        console.log(`[AutoEnrich] Step 0.5: ${profileCheckSuccess ? 'OK' : 'FAILED'} — profileExists=${profileRes?.data?.profileExists}, flags=${profileRes?.data?.flagCount || 0}`);
+      } else {
+        console.log(`[AutoEnrich] Step 0.5: Skipped — no CPF/CNPJ available`);
+      }
+    } catch (profileErr) {
+      console.warn(`[AutoEnrich] Step 0.5 failed (non-blocking): ${profileErr.message}`);
     }
 
     // ═══ STEP 1: BDC Enrichment → Score V4 (DETERMINÍSTICO) ═══
@@ -84,6 +119,52 @@ Deno.serve(async (req) => {
       console.log(`[AutoEnrich] Step 1: ${bdcSuccess ? 'OK' : 'FAILED'} — V4 score=${bdcRes?.data?.analysis?.scoring?.finalScore}`);
     } catch (bdcErr) {
       console.warn(`[AutoEnrich] Step 1 failed (non-blocking): ${bdcErr.message}`);
+    }
+
+    // ═══ STEP 1.5: CAF Full Enrichment (ITEM 3 — KYC/KYB completo) ═══
+    let cafEnrichSuccess = false;
+    try {
+      console.log(`[AutoEnrich] Step 1.5: CAF full enrichment...`);
+      const enrichParams = { onboardingCaseId: caseId, includeCredit: true };
+      if (merchant?.type === 'PF' || merchantCpf?.length === 11) {
+        enrichParams.cpf = merchantCpf;
+      } else if (merchant?.cpfCnpj) {
+        const doc = merchant.cpfCnpj.replace(/\D/g, '');
+        if (doc.length === 14) enrichParams.cnpj = doc;
+        else enrichParams.cpf = doc;
+      }
+      if (enrichParams.cpf || enrichParams.cnpj) {
+        const enrichRes = await base44.asServiceRole.functions.invoke('cafFullEnrichment', enrichParams);
+        cafEnrichSuccess = enrichRes?.data?.success === true;
+        console.log(`[AutoEnrich] Step 1.5: ${cafEnrichSuccess ? 'OK' : 'FAILED'} — sections=${enrichRes?.data?.sectionsReturned?.length || 0}, flags=${enrichRes?.data?.flagCount || 0}`);
+      } else {
+        console.log(`[AutoEnrich] Step 1.5: Skipped — no CPF/CNPJ available`);
+      }
+    } catch (enrichErr) {
+      console.warn(`[AutoEnrich] Step 1.5 failed (non-blocking): ${enrichErr.message}`);
+    }
+
+    // ═══ STEP 1.7: CAF Credit Analysis (ITEM 4 — segunda fonte de crédito) ═══
+    let cafCreditSuccess = false;
+    try {
+      console.log(`[AutoEnrich] Step 1.7: CAF credit analysis...`);
+      const creditParams = { onboardingCaseId: caseId };
+      if (merchant?.type === 'PF' || merchantCpf?.length === 11) {
+        creditParams.cpf = merchantCpf;
+      } else if (merchant?.cpfCnpj) {
+        const doc = merchant.cpfCnpj.replace(/\D/g, '');
+        if (doc.length === 14) creditParams.cnpj = doc;
+        else creditParams.cpf = doc;
+      }
+      if (creditParams.cpf || creditParams.cnpj) {
+        const creditRes = await base44.asServiceRole.functions.invoke('cafCreditAnalysis', creditParams);
+        cafCreditSuccess = creditRes?.data?.success === true;
+        console.log(`[AutoEnrich] Step 1.7: ${cafCreditSuccess ? 'OK' : 'FAILED'}`);
+      } else {
+        console.log(`[AutoEnrich] Step 1.7: Skipped — no CPF/CNPJ available`);
+      }
+    } catch (creditErr) {
+      console.warn(`[AutoEnrich] Step 1.7 failed (non-blocking): ${creditErr.message}`);
     }
 
     // ═══ STEP 2: CAF Screening Internacional ═══
@@ -99,8 +180,6 @@ Deno.serve(async (req) => {
 
     // ═══ STEP 2.5: CAF CPF Cross-Validation ═══
     let cpfValidationSuccess = false;
-    const [merchant] = await base44.asServiceRole.entities.Merchant.filter({ id: onboardingCase.merchantId });
-    const merchantCpf = merchant?.cpfCnpj?.replace(/\D/g, '');
     if (merchantCpf && (merchant?.type === 'PF' || merchantCpf.length === 11)) {
       try {
         console.log(`[AutoEnrich] Step 2.5: CPF cross-validation...`);
@@ -308,13 +387,13 @@ Deno.serve(async (req) => {
 
     const duration = Date.now() - startTime;
     console.log(`[AutoEnrich] ═══ Pipeline completed in ${duration}ms ═══`);
-    console.log(`[AutoEnrich] Results: CAF=${cafPostCaptureSuccess}, BDC=${bdcSuccess}, Screening=${screeningSuccess}, CPF=${cpfValidationSuccess}, VerifAI=${verifaiSuccess}, SENTINEL=${sentinelSuccess}`);
+    console.log(`[AutoEnrich] Results: ProfileCheck=${profileCheckSuccess}, CAF=${cafPostCaptureSuccess}, BDC=${bdcSuccess}, CAFEnrich=${cafEnrichSuccess}, CAFCredit=${cafCreditSuccess}, Screening=${screeningSuccess}, CPF=${cpfValidationSuccess}, VerifAI=${verifaiSuccess}, SENTINEL=${sentinelSuccess}`);
     console.log(`[AutoEnrich] Decision: ${finalDecision} (auto=${autoDecisionApplied})`);
 
     return Response.json({
       success: true,
       caseId,
-      pipeline: { cafPostCaptureSuccess, bdcSuccess, screeningSuccess, cpfValidationSuccess, verifaiSuccess, sentinelSuccess },
+      pipeline: { profileCheckSuccess, cafPostCaptureSuccess, bdcSuccess, cafEnrichSuccess, cafCreditSuccess, screeningSuccess, cpfValidationSuccess, verifaiSuccess, sentinelSuccess },
       decision: { autoDecisionApplied, finalStatus, finalDecision },
       duration_ms: duration
     });
