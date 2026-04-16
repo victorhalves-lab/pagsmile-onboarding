@@ -179,9 +179,9 @@ export default function CadastroComplianceTab({ score, latestCase, allScores = [
             <div className="flex flex-wrap gap-2 text-xs">
               {score?.segmento && <Badge variant="outline" className="text-[10px]">Segmento: {score.segmento}</Badge>}
               {score?.is_pix && <Badge className="bg-emerald-100 text-emerald-700 text-[10px]">Fluxo PIX</Badge>}
-              {score?.decisao_automatica && <Badge className="bg-blue-100 text-blue-700 text-[10px]"><Zap className="w-3 h-3 mr-1" />Decisão Automática por Subfaixa</Badge>}
-              {!score?.decisao_automatica && (effectiveSubfaixa === '4' || effectiveSubfaixa === '5') && <Badge className="bg-red-100 text-red-700 text-[10px]">⚠️ Revisão Manual Obrigatória</Badge>}
-              {!score?.decisao_automatica && effectiveSubfaixa && !['4','5'].includes(effectiveSubfaixa) && <Badge className="bg-amber-100 text-amber-700 text-[10px]">Revisão Manual Requerida</Badge>}
+              {score?.decisao_automatica && <Badge className="bg-blue-100 text-blue-700 text-[10px]"><Zap className="w-3 h-3 mr-1" />Decisão Automática (Data-First v7)</Badge>}
+              {!score?.decisao_automatica && (effectiveSubfaixa === '4' || effectiveSubfaixa === '5') && <Badge className="bg-red-100 text-red-700 text-[10px]">⚠️ Revisão Manual (Subfaixa 4+)</Badge>}
+              {effectiveSubfaixa && ['3A','3B'].includes(effectiveSubfaixa) && score?.decisao_automatica && <Badge className="bg-amber-100 text-amber-700 text-[10px]">Aprovado com Condições Rigorosas</Badge>}
               {(score?.rolling_reserve_percent > 0 || latestCase?.rollingReservePercent > 0) && <Badge className="bg-orange-100 text-orange-700 text-[10px]">Rolling Reserve: {score?.rolling_reserve_percent || latestCase?.rollingReservePercent}%</Badge>}
             </div>
           </div>

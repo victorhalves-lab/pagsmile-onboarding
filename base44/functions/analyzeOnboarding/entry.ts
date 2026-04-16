@@ -1,21 +1,21 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 /**
- * SENTINEL v6.0 — Agente de Análise QUALITATIVA de Compliance
+ * SENTINEL v7.0 — Agente RELATOR de Compliance (NÃO DECISOR)
  *
- * PIPELINE: 4 chamadas LLM paralelas + consolidação
+ * PIPELINE: 3 chamadas LLM paralelas + consolidação narrativa
  *   1. Análise do QUESTIONÁRIO (respostas, documentos, declarações)
  *   2. Análise do BDC (Big Data Corp — dados cadastrais, processos, sócios, etc.)
  *   3. Análise da CAF (biometria, liveness, facematch, screening PEP/sanções)
- *   4. CONSOLIDAÇÃO final (merge das 3 análises + V4 score + TABELA DE DECISÃO)
+ *   4. CONSOLIDAÇÃO narrativa (merge das 3 análises para dossiê)
  *
- * v6.0 CHANGES vs v5.1:
- * - TABELA DE DECISÃO QUANTITATIVA no prompt de consolidação (elimina subjetividade)
- * - Ausência de dados NÃO é red flag (corrige viés catastrofista)
- * - Dados BDC/CAF objetivos pesam 80%, questionário pesa 20%
- * - V4 recomendacao usa decisão V4 PURA (não recomendacao_final anterior)
- * - Prompt CAF sem viés catastrofista sobre dados ausentes
- * - Prompt consolidação com regras de proporcionalidade
+ * v7.0 — MODELO DATA-FIRST:
+ * - SENTINEL é RELATOR, NÃO DECISOR. Sua recomendação NÃO afeta o status do caso.
+ * - Decisão é 100% determinística no orquestrador (autoEnrichOnboarding) baseada em subfaixa V4 + CAF.
+ * - Questionário é CONTEXTO, nunca veto. Inconsistências são "observações", não red flags.
+ * - Ausência de dados NÃO é red flag.
+ * - Red flags SOMENTE para: sanções confirmadas, fraude biométrica, processos criminais.
+ * - O relatório SENTINEL serve para o analista ter contexto se precisar revisar.
  */
 
 // ═══ HELPERS ═══
@@ -232,8 +232,9 @@ function buildQuestionnairePrompt(merchantCtx, formattedResponses, formattedDocu
   };
   stats.completude = stats.total > 0 ? ((stats.respondidas / stats.total) * 100).toFixed(1) : '0';
 
-  return `Você é o SENTINEL v6, analista sênior de compliance EQUILIBRADO e JUSTO. Analise EXCLUSIVAMENTE o QUESTIONÁRIO preenchido pelo merchant.
+  return `Você é o SENTINEL v7, relator de compliance. Analise EXCLUSIVAMENTE o QUESTIONÁRIO preenchido pelo merchant.
 NÃO analise dados BDC nem CAF — isso será feito em análises separadas.
+LEMBRE: Você é um RELATOR, não um decisor. Sua análise é INFORMATIVA para o dossiê.
 
 ${SENTINEL_RULES}
 
@@ -245,7 +246,9 @@ REGRAS DE INTERPRETAÇÃO:
 2. "NÃO" em perguntas sobre riscos/proibições/cripto/jogos/PEP = resposta DESEJADA e POSITIVA.
 3. "SIM" em perguntas sobre compliance/PLD/monitoramento = resposta DESEJADA e POSITIVA.
 4. Somente "NÃO RESPONDIDA" = informação realmente ausente.
-5. Inconsistências numéricas (TPV, ticket, transações) são ERROS DE PREENCHIMENTO comuns — registre como "ponto_de_atencao", NÃO como red flag.
+5. Inconsistências numéricas são ERROS DE PREENCHIMENTO — registre como "ponto_de_atencao", NUNCA como red flag.
+6. Capital social baixo, falta de PCI DSS, falta de website, email genérico = "ponto_de_atencao", NUNCA red flag.
+7. NENHUMA informação do questionário sozinha justifica red flag. Questionário é CONTEXTO.
 
 ESTATÍSTICAS: Total=${stats.total} | Respondidas=${stats.respondidas} | Não Respondidas=${stats.naoRespondidas} | Completude=${stats.completude}%
 
@@ -256,13 +259,15 @@ ${serializeFullData(formattedResponses.map(r => `[${r.status}][${r.tipo}] "${r.p
 ${serializeFullData(formattedDocuments)}
 
 ═══ INSTRUÇÕES ═══
-Produza uma análise EQUILIBRADA do QUESTIONÁRIO:
+Produza um RELATÓRIO EQUILIBRADO do questionário para dossiê:
 1. PERFIL DECLARADO: modelo de negócio, segmento, volume, estrutura societária.
-2. PONTOS POSITIVOS: respostas que demonstram compliance, controles, transparência. Seja GENEROSO em reconhecer pontos positivos.
-3. PONTOS DE ATENÇÃO: inconsistências numéricas, lacunas. Lembre: merchants frequentemente erram ao preencher (ex: confundem faturamento com TPV).
-4. RED FLAGS (APENAS): declarações que indicam ATIVIDADE PROIBIDA ou FRAUDE EVIDENTE (ex: "SIM" para atividades proibidas, dados fictícios óbvios como nome="teste").
+2. PONTOS POSITIVOS: respostas que demonstram compliance, controles, transparência. Seja GENEROSO.
+3. PONTOS DE ATENÇÃO: inconsistências, lacunas. São OBSERVAÇÕES para dossiê, não problemas graves.
+4. RED FLAGS: SOMENTE se o merchant declarou explicitamente atividade PROIBIDA (jogos, crypto, armas)
+   ou dados OBVIAMENTE fictícios (nome="teste teste", CPF=00000000000). NADA MAIS é red flag do questionário.
 
-IMPORTANTE: Um questionário com inconsistências numéricas NÃO é motivo para recusar. É apenas um ponto para esclarecer.`;
+REGRA ABSOLUTA: O questionário NUNCA gera red flags por inconsistências numéricas, falta de controles,
+capital baixo, email genérico, ou falta de certificações. Esses são PONTOS DE ATENÇÃO apenas.`;
 }
 
 function buildBdcPrompt(merchantCtx, v4Ctx, bdcDataString, v4VariablesString) {
@@ -272,8 +277,9 @@ function buildBdcPrompt(merchantCtx, v4Ctx, bdcDataString, v4VariablesString) {
     ? `\n\n═══ NOTA: Dados raw BDC disponíveis (${(bdcDataString.length/1000).toFixed(0)}k chars) mas omitidos por tamanho. Variáveis V4 acima contêm dados processados. ═══`
     : '';
 
-  return `Você é o SENTINEL v6, analista sênior de compliance EQUILIBRADO e JUSTO. Analise EXCLUSIVAMENTE os DADOS BDC (Big Data Corp) e o Score V4 deste merchant.
+  return `Você é o SENTINEL v7, relator de compliance. Analise EXCLUSIVAMENTE os DADOS BDC (Big Data Corp) e o Score V4 deste merchant.
 NÃO analise questionário nem CAF — isso será feito em análises separadas.
+LEMBRE: Você é um RELATOR. Sua análise documenta os dados objetivos para o dossiê.
 
 ${SENTINEL_RULES}
 
@@ -311,8 +317,9 @@ Para CADA dimensão: cite dados EXATOS. NÃO invente. EQUILIBRE positivos e nega
 function buildCafPrompt(merchantCtx, cafDataString, cafValidationsString) {
   const hasCafData = cafDataString || cafValidationsString;
 
-  return `Você é o SENTINEL v6, analista sênior de compliance EQUILIBRADO e JUSTO. Analise EXCLUSIVAMENTE os DADOS CAF (Combate à Fraude) deste merchant.
+  return `Você é o SENTINEL v7, relator de compliance. Analise EXCLUSIVAMENTE os DADOS CAF (Combate à Fraude) deste merchant.
 NÃO analise questionário nem BDC — isso será feito em análises separadas.
+LEMBRE: Você é um RELATOR. Sua análise documenta os dados biométricos e de screening para o dossiê.
 
 ${SENTINEL_RULES}
 
@@ -369,8 +376,11 @@ DIMENSÕES ${label}:
 ${serializeFullData(analysis.dimensoes || {})}`;
   }
 
-  return `Você é o SENTINEL v6.0, analista sênior de compliance. Recebeu TRÊS análises parciais independentes sobre o mesmo merchant.
-Sua tarefa é CONSOLIDAR em uma análise FINAL única, EQUILIBRADA e ASSERTIVA.
+  return `Você é o SENTINEL v7.0, relator sênior de compliance. Você é um RELATOR, NÃO um decisor.
+Sua tarefa é CONSOLIDAR três análises parciais em um RELATÓRIO narrativo para dossiê.
+
+IMPORTANTE: Sua "sentinel_recommendation" é APENAS INFORMATIVA — ela NÃO afeta a decisão final.
+A decisão real é 100% determinística baseada na subfaixa V4 + CAF. Você está gerando documentação.
 
 ${merchantCtx}
 
@@ -383,80 +393,62 @@ ${formatPartial('ANÁLISE 2: BDC (Big Data Corp)', bdcAnalysis)}
 ${formatPartial('ANÁLISE 3: CAF (Combate à Fraude)', cafAnalysis)}
 
 ═══════════════════════════════════════════════════════════════════
-TABELA DE DECISÃO QUANTITATIVA — SIGA RIGOROSAMENTE
+INSTRUÇÕES PARA RELATÓRIO (NÃO DECISÃO)
 ═══════════════════════════════════════════════════════════════════
 
-PASSO 1: Verifique DADOS OBJETIVOS (peso 80%):
-┌────────────────────────────────────────────────────────────────┐
-│ BDC: CNPJ/CPF ativo?              SIM=OK  NÃO=BLOQUEIO       │
-│ BDC: Sanções ativas?              NÃO=OK  SIM=BLOQUEIO        │
-│ BDC: Processos criminais?         NÃO=OK  SIM=ATENÇÃO         │
-│ BDC: Negativação/Cobrança?        NÃO=OK  SIM=ATENÇÃO         │
-│ BDC: PEP confirmado?              NÃO=OK  SIM=ATENÇÃO         │
-│ BDC: Dívida ativa gov?            NÃO=OK  SIM=ATENÇÃO         │
-│ CAF: Liveness reprovado?          NÃO=OK  SIM=BLOQUEIO        │
-│ CAF: Deepfake detectado?          NÃO=OK  SIM=BLOQUEIO        │
-│ CAF: Documentoscopia reprovada?   NÃO=OK  SIM=BLOQUEIO        │
-│ CAF: Sanções com hits?            NÃO=OK  SIM=BLOQUEIO        │
-│ V4: Bloqueios ativos (B01-B10)?   NÃO=OK  SIM=BLOQUEIO        │
-└────────────────────────────────────────────────────────────────┘
+Você está gerando um RELATÓRIO para dossiê de compliance, NÃO tomando uma decisão.
+A decisão já foi tomada deterministicamente pelo framework V4:
+- 1A/1B → Aprovado automaticamente
+- 2A → Aprovado com Condições Leves
+- 2B/3A/3B → Aprovado com Condições
+- 4 → Revisão Manual
+- 5 → Recusado (bloqueios V4)
 
-PASSO 2: Verifique QUESTIONÁRIO (peso 20%):
-┌────────────────────────────────────────────────────────────────┐
-│ Dados fictícios óbvios (nome="teste", data futura)?   →ATENÇÃO│
-│ Atividade proibida declarada?                         →ATENÇÃO│
-│ Inconsistência numérica (TPV vs ticket)?     →INFO (erro form)│
-│ Falta de controles PLD?                      →ATENÇÃO menor   │
-│ Sem website?                                 →INFO (normal)   │
-│ Email genérico (@gmail)?                     →INFO (normal)   │
-└────────────────────────────────────────────────────────────────┘
+Para sentinel_recommendation, REFLITA a decisão V4:
+- Se V4 = 1A/1B → recomende "Aprovado"
+- Se V4 = 2A → recomende "Aprovado com Condições Leves"  
+- Se V4 = 2B/3A/3B → recomende "Aprovado com Condições"
+- Se V4 = 4 ou BLOQUEIOS → recomende "Revisão Manual"
+- Única exceção: se CAF detectou fraude biométrica confirmada (liveness/documentscopy REPROVED), recomende "Revisão Manual"
 
-PASSO 3: TABELA DE DECISÃO FINAL:
-┌─────────────────────────────────────────────────────────────────────────────┐
-│ V4 = 1A/1B (VERDE) + BDC sem BLOQUEIOS + CAF sem BLOQUEIOS                │
-│   → "Aprovado" (mesmo com pontos de atenção no questionário)               │
-│   EXCEÇÃO: escalar para "Aprovado com Condições Leves" SOMENTE se houver   │
-│   processos cíveis significativos OU PEP confirmado.                       │
-│                                                                             │
-│ V4 = 1A/1B (VERDE) + BDC sem BLOQUEIOS + CAF NÃO DISPONÍVEL               │
-│   → "Aprovado com Condições Leves" (condição: completar CAF)               │
-│                                                                             │
-│ V4 = 2A/2B (AZUL/AMARELO) + BDC sem BLOQUEIOS + CAF sem BLOQUEIOS         │
-│   → "Aprovado com Condições" (Rolling Reserve, monitoramento)              │
-│                                                                             │
-│ V4 = 3A/3B/4 (LARANJA/VERMELHO) + BDC sem BLOQUEIOS                       │
-│   → "Aprovado com Condições" (condições rigorosas)                          │
-│   EXCEÇÃO: escalar para "Revisão Manual" SOMENTE se houver processos        │
-│   criminais ativos OU PEP com conflito de interesse.                        │
-│                                                                             │
-│ Qualquer BLOQUEIO V4 ativo OU CAF fraude confirmada                        │
-│   → "Revisão Manual" (MÁXIMO que você pode recomendar)                     │
-│                                                                             │
-│ V4 NÃO DISPONÍVEL (BDC não executou)                                       │
-│   → "Aprovado com Condições Leves" (condição: executar BDC)                │
-│   NÃO escalar para "Revisão Manual" por falta de dados.                    │
-└─────────────────────────────────────────────────────────────────────────────┘
+═══ REGRAS PARA O RELATÓRIO ═══
 
-═══ REGRAS ABSOLUTAS ═══
+1. RED FLAGS — CRITÉRIO ULTRA-RESTRITIVO: SOMENTE classifique como red flag:
+   - Sanções CONFIRMADAS (BDC Sanctions ou CAF screening com hits > 0)
+   - Fraude biométrica CONFIRMADA (liveness REPROVED, deepfake DETECTED, documentscopy REPROVED)
+   - Processos CRIMINAIS ativos (BDC Processes com tipo criminal)
+   - Bloqueios V4 ativos (B01-B10)
+   NADA MAIS é red flag. Especificamente, NENHUM dos seguintes é red flag:
+   - Inconsistências no questionário (são "observações para dossiê")
+   - Ausência de dados (profileExists=false, dados BDC indisponíveis)
+   - Email genérico ou provedor específico
+   - Falta de website, falta de PCI DSS
+   - Discrepâncias numéricas (TPV vs ticket vs transações)
+   - Capital social baixo
+   - Empresa jovem
 
-1. VOCÊ NÃO TEM PODER DE RECUSAR. "Revisão Manual" é o MÁXIMO.
-2. "Revisão Manual" SOMENTE quando há BLOQUEIOS V4 ou FRAUDE CAF CONFIRMADA.
-3. Inconsistências de questionário NUNCA justificam "Revisão Manual" sozinhas.
-4. Ausência de dados NUNCA justifica "Revisão Manual".
-5. Se V4 é VERDE (1A/1B) e BDC não tem bloqueios → PRESUMA que a empresa é boa.
-6. EQUILIBRE pontos positivos e negativos. Se há 5 pontos positivos e 2 de atenção, a decisão deve refletir maioria positiva.
-7. Red flags são SOMENTE: fraude biométrica, sanções confirmadas, processos criminais, dados fictícios óbvios, bloqueios V4 ativos.
+2. PONTOS DE ATENÇÃO: Use para tudo que não é red flag mas merece nota:
+   - Inconsistências de preenchimento do questionário
+   - Dados ausentes ou incompletos
+   - Observações sobre modelo de negócio
+   
+3. PONTOS POSITIVOS: Seja GENEROSO. Inclua TODOS os dados limpos:
+   - CNPJ ativo = positivo. Sem sanções = positivo. Sem processos criminais = positivo.
+   - Sem negativação = positivo. CAF screening clean = positivo. Liveness approved = positivo.
 
-═══ INSTRUÇÕES DE OUTPUT ═══
+4. SUMÁRIO EXECUTIVO: Comece SEMPRE com a subfaixa V4 e o que ela significa.
+   Depois cite os dados positivos. Por último, observações de atenção.
+   Tom: factual, equilibrado, profissional. NÃO alarmista.
 
-1. SUMÁRIO EXECUTIVO: 4-8 linhas. COMECE com a decisão. Cite dados positivos primeiro, depois atenções.
-2. ANÁLISE COMPLETA: Consolide as 3 análises com EQUILÍBRIO.
-3. PARECER FINAL: Narrativa autocontida. Inclua dados positivos E negativos proporcionalmente.
-4. RED FLAGS: SOMENTE problemas com evidência concreta (fraude, sanção, processo criminal). NÃO inclua inconsistências de formulário.
-5. CROSS-VALIDATION: Cruze questionário vs BDC vs CAF.
-6. CONDIÇÕES: Se recomendar condições, detalhe O QUE, POR QUÊ, DURAÇÃO.
+5. PARECER FINAL: Narrativa para dossiê. Proporcional — se 80% dos dados são positivos,
+   80% do parecer deve ser positivo. NÃO dê mais espaço a problemas menores.
 
-Produza análise EQUILIBRADA, ASSERTIVA, que reflita os dados objetivos.`;
+6. CROSS-VALIDATION: Cruze questionário vs BDC vs CAF. Divergências são "observações", não red flags.
+
+7. CONDIÇÕES SUGERIDAS: Sugira condições proporcionais à subfaixa V4. NÃO sugira condições
+   mais rigorosas do que o necessário para a subfaixa.
+
+Produza um RELATÓRIO EQUILIBRADO que documenta os dados para compliance.`;
 }
 
 // ═══ MAIN HANDLER ═══
@@ -476,7 +468,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: "ID do caso não fornecido" }, { status: 400 });
     }
 
-    console.log(`[SENTINEL v6.0] Iniciando análise: ${caseId}`);
+    console.log(`[SENTINEL v7.0] Iniciando análise: ${caseId}`);
 
     // ═══ LOAD ALL DATA ═══
     const [onboardingCase] = await base44.asServiceRole.entities.OnboardingCase.filter({ id: caseId });
@@ -487,7 +479,7 @@ Deno.serve(async (req) => {
     if (existingScore?.fase_3_completa && existingScore.data_analise_fase_3) {
       const hours = (Date.now() - new Date(existingScore.data_analise_fase_3).getTime()) / 3600000;
       if (hours < 24 && !payload.force) {
-        console.log(`[SENTINEL v6.0] Análise recente (${hours.toFixed(1)}h). Pulando.`);
+        console.log(`[SENTINEL v7.0] Análise recente (${hours.toFixed(1)}h). Pulando.`);
         return Response.json({ success: true, message: "Análise recente existe", score_id: existingScore.id });
       }
     }
@@ -528,7 +520,7 @@ Deno.serve(async (req) => {
       condicoes: existingScore.condicoes_automaticas || [],
     } : null;
 
-    console.log(`[SENTINEL v6.0] V4: score=${v4Data?.score_final}, subfaixa=${v4Data?.subfaixa}, decisaoPura=${v4DecisaoPura}`);
+    console.log(`[SENTINEL v7.0] V4: score=${v4Data?.score_final}, subfaixa=${v4Data?.subfaixa}, decisaoPura=${v4DecisaoPura}`);
 
     // ═══ EXTRACT DATA ═══
     const bdcValidations = externalValidations
@@ -571,7 +563,7 @@ Deno.serve(async (req) => {
     const bdcPrompt = buildBdcPrompt(merchantCtx, v4Ctx, bdcDataString, v4VariablesString);
     const cafPrompt = buildCafPrompt(merchantCtx, cafDataString, cafValidationsString);
 
-    console.log(`[SENTINEL v6.0] Lançando 3 LLM calls paralelas: QST(${(qstPrompt.length/1000).toFixed(0)}k) | BDC(${(bdcPrompt.length/1000).toFixed(0)}k) | CAF(${(cafPrompt.length/1000).toFixed(0)}k)`);
+    console.log(`[SENTINEL v7.0] Lançando 3 LLM calls paralelas: QST(${(qstPrompt.length/1000).toFixed(0)}k) | BDC(${(bdcPrompt.length/1000).toFixed(0)}k) | CAF(${(cafPrompt.length/1000).toFixed(0)}k)`);
 
     // ═══ PARALLEL EXECUTION ═══
     const EMPTY_PARTIAL = { analise_detalhada: 'Análise não disponível — falha na execução do LLM.', red_flags: [], pontos_positivos: [], pontos_atencao: [], cross_validations: [], dimensoes: {} };
@@ -598,11 +590,11 @@ Deno.serve(async (req) => {
     const bdcAnalysis = results[1].status === 'fulfilled' ? results[1].value : EMPTY_PARTIAL;
     const cafAnalysis = results[2].status === 'fulfilled' ? results[2].value : EMPTY_PARTIAL;
 
-    if (results[0].status === 'rejected') console.warn(`[SENTINEL v6.0] QST LLM failed: ${results[0].reason?.message}`);
-    if (results[1].status === 'rejected') console.warn(`[SENTINEL v6.0] BDC LLM failed: ${results[1].reason?.message}`);
-    if (results[2].status === 'rejected') console.warn(`[SENTINEL v6.0] CAF LLM failed: ${results[2].reason?.message}`);
+    if (results[0].status === 'rejected') console.warn(`[SENTINEL v7.0] QST LLM failed: ${results[0].reason?.message}`);
+    if (results[1].status === 'rejected') console.warn(`[SENTINEL v7.0] BDC LLM failed: ${results[1].reason?.message}`);
+    if (results[2].status === 'rejected') console.warn(`[SENTINEL v7.0] CAF LLM failed: ${results[2].reason?.message}`);
 
-    console.log(`[SENTINEL v6.0] Parciais prontas. QST flags=${qstAnalysis.red_flags?.length}, BDC flags=${bdcAnalysis.red_flags?.length}, CAF flags=${cafAnalysis.red_flags?.length}. Consolidando...`);
+    console.log(`[SENTINEL v7.0] Parciais prontas. QST flags=${qstAnalysis.red_flags?.length}, BDC flags=${bdcAnalysis.red_flags?.length}, CAF flags=${cafAnalysis.red_flags?.length}. Consolidando...`);
 
     // ═══ CONSOLIDATION ═══
     const consolidationPrompt = buildConsolidationPrompt(merchantCtx, v4Ctx, qstAnalysis, bdcAnalysis, cafAnalysis);
@@ -613,19 +605,20 @@ Deno.serve(async (req) => {
       model: 'gemini_3_1_pro'
     });
 
-    console.log(`[SENTINEL v6.0] Consolidação pronta. Recommendation=${llmResponse.sentinel_recommendation}, RedFlags=${(llmResponse.red_flags || []).length}, Confiança=${llmResponse.nivel_confianca_ia}%`);
+    console.log(`[SENTINEL v7.0] Consolidação pronta. Recommendation=${llmResponse.sentinel_recommendation} (INFORMATIVA), RedFlags=${(llmResponse.red_flags || []).length}, Confiança=${llmResponse.nivel_confianca_ia}%`);
 
     // ═══ SAVE ═══
     const now = new Date().toISOString();
     // Safety cap: even if LLM somehow returns "Recusado" despite schema enum, cap to "Revisão Manual"
+    // Note: In v7.0, sentinel_recommendation is INFORMATIVE ONLY — it does NOT affect the final decision
     const cappedRecommendation = (llmResponse.sentinel_recommendation === 'Recusado') ? 'Revisão Manual' : llmResponse.sentinel_recommendation;
     if (cappedRecommendation !== llmResponse.sentinel_recommendation) {
-      console.warn(`[SENTINEL v6.0] SAFETY CAP: LLM returned "Recusado", capped to "Revisão Manual".`);
+      console.warn(`[SENTINEL v7.0] SAFETY CAP: LLM returned "Recusado", capped to "Revisão Manual" (informative only).`);
     }
 
     const sentinelData = {
       onboarding_case_id: caseId,
-      versao_agente: "SENTINEL v6.0",
+      versao_agente: "SENTINEL v7.0 (RELATOR)",
       sentinel_recommendation: cappedRecommendation,
       sumario_executivo: llmResponse.sumario_executivo,
       analise_completa_ia: llmResponse.analise_completa_ia,
@@ -654,10 +647,10 @@ Deno.serve(async (req) => {
 
     if (existingScore) {
       await base44.asServiceRole.entities.ComplianceScore.update(existingScore.id, sentinelData);
-      console.log(`[SENTINEL v6.0] Score updated: ${existingScore.id}`);
+      console.log(`[SENTINEL v7.0] Score updated: ${existingScore.id}`);
     } else {
       await base44.asServiceRole.entities.ComplianceScore.create(sentinelData);
-      console.log(`[SENTINEL v6.0] Score created`);
+      console.log(`[SENTINEL v7.0] Score created`);
     }
 
     await base44.asServiceRole.entities.OnboardingCase.update(caseId, {
@@ -665,22 +658,22 @@ Deno.serve(async (req) => {
     });
 
     const duration = Date.now() - startTime;
-    console.log(`[SENTINEL v6.0] Concluído em ${duration}ms`);
+    console.log(`[SENTINEL v7.0] Concluído em ${duration}ms`);
 
     return Response.json({
       success: true,
       case_id: caseId,
       score_id: existingScore?.id,
       sentinel_recommendation: cappedRecommendation,
-      escalation_justification: llmResponse.escalation_justification || null,
+      sentinel_role: 'RELATOR (informativo — não afeta decisão)',
       nivel_confianca: llmResponse.nivel_confianca_ia,
       red_flags_count: (llmResponse.red_flags || []).length,
       duration_ms: duration,
-      architecture: "v6.0 — 3 parallel analyses + DECISION TABLE. Balanced, assertive, objective-data-first."
+      architecture: "v7.0 DATA-FIRST — SENTINEL is reporter only. Decision is 100% deterministic (V4 subfaixa + CAF fraud)."
     });
 
   } catch (error) {
-    console.error(`[SENTINEL v6.0] Erro:`, error);
+    console.error(`[SENTINEL v7.0] Erro:`, error);
     return Response.json({ error: error.message, stack: error.stack }, { status: 500 });
   }
 });

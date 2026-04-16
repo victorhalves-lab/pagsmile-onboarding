@@ -46,8 +46,8 @@ export default function SentinelAnalysisPanel({ score, latestCase }) {
               <Brain className="w-5 h-5 text-violet-600" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-[var(--pagsmile-blue)]">Análise SENTINEL — Inteligência Artificial</h3>
-              <p className="text-xs text-[var(--pagsmile-blue)]/40">Análise qualitativa com explicações detalhadas por seção</p>
+              <h3 className="text-base font-bold text-[var(--pagsmile-blue)]">Relatório SENTINEL — Dossiê de Compliance</h3>
+              <p className="text-xs text-[var(--pagsmile-blue)]/40">Relatório qualitativo para dossiê — decisão é determinística (V4 + CAF)</p>
             </div>
           </div>
           <div className="flex items-center gap-2 flex-wrap justify-end">

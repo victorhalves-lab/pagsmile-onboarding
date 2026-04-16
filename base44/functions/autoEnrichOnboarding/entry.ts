@@ -3,7 +3,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 /**
  * autoEnrichOnboarding — Orquestrador UNIFICADO do pipeline de risco.
  *
- * ARQUITETURA REORGANIZADA (V4 + SENTINEL coordenados):
+ * ARQUITETURA DATA-FIRST v7.0:
  *
  * ┌─────────────────────────────────────────────────────────────┐
  * │ Step 0:   CAF Post-Capture (OCR, Documentoscopy, Biometria)│
@@ -14,17 +14,20 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
  * │ Step 2:   CAF Screening Internacional (PEP/Sanctions)      │
  * │ Step 2.5: CAF CPF Cross-Validation                         │
  * │ Step 2.7: VerifAI Docs (documentos pendentes)              │
- * │ Step 3:   SENTINEL IA → Análise QUALITATIVA (recebe V4)    │
- * │ Step 4:   DECISÃO UNIFICADA (V4=autoridade, SENTINEL=voz)  │
+ * │ Step 3:   SENTINEL IA → Relatório qualitativo (SEM DECISÃO)│
+ * │ Step 4:   DECISÃO 100% DETERMINÍSTICA (subfaixa V4 + CAF)  │
  * │ Step 5:   Slack Notification                                │
  * └─────────────────────────────────────────────────────────────┘
  *
- * REGRA DE OURO:
- * - V4 (bdcEnrichCase) = FONTE ÚNICA para: score_final, subfaixa, bloqueios
- * - SENTINEL (analyzeOnboarding) = FONTE ÚNICA para: análise narrativa,
- *   dimensional, cross-validation, parecer, perguntas sugeridas
- * - DECISÃO FINAL = baseada na subfaixa V4, com possibilidade de
- *   SENTINEL escalar de "Aprovado" para "Manual" (nunca o contrário)
+ * REGRA DE OURO v7:
+ * - V4 (bdcEnrichCase) = DECISOR ABSOLUTO: score, subfaixa, bloqueios
+ * - SENTINEL (analyzeOnboarding) = RELATOR APENAS: narrativa, dossiê,
+ *   cross-validation, parecer (NÃO afeta decisão)
+ * - DECISÃO FINAL = 100% determinística: subfaixa V4 + bloqueios + CAF fraud
+ * - SENTINEL NUNCA escala, NUNCA veta, NUNCA muda status
+ * - Subfaixas 1A→3B = APROVAÇÃO AUTOMÁTICA (com condições progressivas)
+ * - Subfaixa 4 = único caso de Revisão Manual
+ * - Subfaixa 5 = Recusado (bloqueios V4 ativos)
  */
 
 Deno.serve(async (req) => {
@@ -230,9 +233,11 @@ Deno.serve(async (req) => {
       console.warn(`[AutoEnrich] Step 3 failed (non-blocking): ${sentinelErr.message}`);
     }
 
-    // ═══ STEP 4: DECISÃO UNIFICADA ═══
-    // V4 subfaixa = autoridade para decisão. SENTINEL pode ESCALAR (nunca rebaixar).
-    // REGRA DE OURO: Só V4 bloqueios ou CAF fraude podem recusar. SENTINEL max = Revisão Manual.
+    // ═══ STEP 4: DECISÃO 100% DETERMINÍSTICA (DATA-FIRST v7.0) ═══
+    // REGRA DE OURO v7: Dados objetivos (BDC V4 + CAF) = VERDADE ABSOLUTA.
+    // SENTINEL = RELATOR (gera dossiê), NUNCA DECISOR.
+    // Questionário = CONTEXTO, nunca veto.
+    // Decisão baseada EXCLUSIVAMENTE em: subfaixa V4 + bloqueios V4 + CAF fraud.
     let autoDecisionApplied = false;
     let finalStatus = null;
     let finalDecision = null;
@@ -241,26 +246,12 @@ Deno.serve(async (req) => {
       const subfaixa = freshCase?.subfaixa;
       const v4Score = freshCase?.riskScoreV4;
 
-      // Load SENTINEL's recommendation from ComplianceScore
+      // Load ComplianceScore for metadata (SENTINEL is read-only — no decision power)
       const scores = await base44.asServiceRole.entities.ComplianceScore.filter({ onboarding_case_id: caseId });
       const latestScore = scores[0];
-      let sentinelRecommendation = latestScore?.sentinel_recommendation;
-
-      // ═══ SAFETY CAP: If SENTINEL somehow recommended "Recusado", force it to "Revisão Manual" ═══
-      if (sentinelRecommendation === 'Recusado') {
-        console.log(`[AutoEnrich] Step 4: SAFETY CAP — sentinel_recommendation was "Recusado", capping to "Revisão Manual". SENTINEL cannot reject.`);
-        sentinelRecommendation = 'Revisão Manual';
-        // Also fix the stored value
-        if (latestScore) {
-          await base44.asServiceRole.entities.ComplianceScore.update(latestScore.id, {
-            sentinel_recommendation: 'Revisão Manual',
-            escalation_justification: (latestScore.escalation_justification || '') + ' [CAP APLICADO: SENTINEL tentou recusar, capeado para Revisão Manual por regra v5.1]',
-          });
-        }
-      }
 
       if (subfaixa && v4Score != null) {
-        // Maps by subfaixa
+        // ═══ MAPS BY SUBFAIXA ═══
         const rollingReserveMap = { '1A': 0, '1B': 0, '2A': 5, '2B': 10, '3A': 15, '3B': 20, '4': 20, '5': 20 };
         const monitoringMap = {
           '1A': 'PADRAO', '1B': 'PADRAO', '2A': 'REFORÇADO_LEVE', '2B': 'REFORÇADO',
@@ -273,7 +264,14 @@ Deno.serve(async (req) => {
           '3B': ['KYC completo em 15 dias', 'PLD semanal', 'Limite de TPV de R$200k/mês', 'Revisão a cada 60 dias', 'Antecipação bloqueada'],
         };
 
-        // V4 base decision — v5.1: More granular conditions
+        // ═══ TABELA DE DECISÃO DETERMINÍSTICA v7.0 ═══
+        // SENTINEL NÃO TEM VOZ. Decisão é puramente subfaixa + bloqueios + CAF.
+        // 1A/1B → Aprovado automático
+        // 2A    → Aprovado com Condições Leves (automático)
+        // 2B    → Aprovado com Condições (automático)
+        // 3A/3B → Aprovado com Condições Rigorosas (automático) ← MUDANÇA: antes era Manual
+        // 4     → Revisão Manual (único cenário real de manual)
+        // 5     → Recusado (bloqueios V4 ativos)
         let v4Decision;
         if (subfaixa === '1A' || subfaixa === '1B') {
           v4Decision = { status: 'Aprovado', decision: 'Aprovado', isAuto: true };
@@ -281,66 +279,28 @@ Deno.serve(async (req) => {
           v4Decision = { status: 'Aprovado', decision: 'Aprovado com Condições Leves', isAuto: true };
         } else if (subfaixa === '2B') {
           v4Decision = { status: 'Aprovado', decision: 'Aprovado com Condições', isAuto: true };
-        } else if (subfaixa === '3A' || subfaixa === '3B') {
-          v4Decision = { status: 'Manual', decision: 'Revisão Manual', isAuto: false };
+        } else if (subfaixa === '3A') {
+          v4Decision = { status: 'Aprovado', decision: 'Aprovado com Condições', isAuto: true };
+        } else if (subfaixa === '3B') {
+          v4Decision = { status: 'Aprovado', decision: 'Aprovado com Condições', isAuto: true };
         } else if (subfaixa === '4') {
           v4Decision = { status: 'Manual', decision: 'Revisão Manual', isAuto: false };
         } else {
           v4Decision = { status: 'Recusado', decision: 'Recusado', isAuto: true };
         }
 
-        // SENTINEL ESCALATION v5.1: SENTINEL can escalate but NEVER to "Recusado".
-        // Only objective data (V4 blocks, CAF fraud) can reject. SENTINEL max = "Revisão Manual".
-        // Hierarchy: Aprovado < Aprovado com Condições Leves < Aprovado com Condições < Revisão Manual
-        const decisionHierarchy = { 'Aprovado': 0, 'Aprovado com Condições Leves': 1, 'Aprovado com Condições': 2, 'Revisão Manual': 3, 'Recusado': 4 };
-        
         finalDecision = v4Decision.decision;
         finalStatus = v4Decision.status;
         autoDecisionApplied = v4Decision.isAuto;
-        let escalatedBySentinel = false;
 
-        if (sentinelRecommendation) {
-          const v4Level = decisionHierarchy[v4Decision.decision] ?? 0;
-          let sentinelLevel = decisionHierarchy[sentinelRecommendation] ?? 0;
-          
-          // CAP: SENTINEL cannot recommend "Recusado" — cap at "Revisão Manual"
-          if (sentinelLevel >= 4) sentinelLevel = 3;
-          const cappedRecommendation = sentinelLevel === 3 ? 'Revisão Manual' : sentinelLevel === 2 ? 'Aprovado com Condições' : sentinelLevel === 1 ? 'Aprovado com Condições Leves' : 'Aprovado';
-          
-          // ESCALATION CAP v6.0: SENTINEL can only escalate by MAX 1 level for V4 GREEN (1A/1B)
-          // V4 Green = data is CLEAN. SENTINEL should NOT override to "Revisão Manual" based on questionnaire alone.
-          // Max escalation for V4 Green: "Aprovado" → "Aprovado com Condições Leves" or "Aprovado com Condições"
-          const isV4Green = subfaixa === '1A' || subfaixa === '1B';
-          const maxEscalationLevel = isV4Green ? Math.min(v4Level + 2, 2) : 3; // Green: max "Aprovado com Condições"; Others: max "Revisão Manual"
-          
-          if (sentinelLevel > v4Level) {
-            const effectiveLevel = Math.min(sentinelLevel, maxEscalationLevel);
-            const effectiveRecommendation = effectiveLevel === 3 ? 'Revisão Manual' : effectiveLevel === 2 ? 'Aprovado com Condições' : effectiveLevel === 1 ? 'Aprovado com Condições Leves' : 'Aprovado';
-            
-            if (effectiveLevel > v4Level) {
-              finalDecision = effectiveRecommendation;
-              finalStatus = effectiveRecommendation === 'Revisão Manual' ? 'Manual' : 'Aprovado';
-              escalatedBySentinel = true;
-              autoDecisionApplied = effectiveRecommendation !== 'Revisão Manual';
-              console.log(`[AutoEnrich] Step 4: SENTINEL ESCALATED from V4 "${v4Decision.decision}" to "${effectiveRecommendation}" (original="${sentinelRecommendation}", capped by v6 rule, isV4Green=${isV4Green})`);
-            } else {
-              escalatedBySentinel = false;
-              console.log(`[AutoEnrich] Step 4: SENTINEL wanted "${cappedRecommendation}" but V4 GREEN cap prevents escalation. Keeping "${v4Decision.decision}".`);
-            }
-          } else {
-            escalatedBySentinel = false;
-            console.log(`[AutoEnrich] Step 4: SENTINEL AGREES with V4 "${v4Decision.decision}" (sentinel="${sentinelRecommendation}"). No escalation.`);
-          }
-        }
-
-        // CHECK: CAF biometric fraud overrides everything — only OBJECTIVE data can reject
+        // ═══ CAF FRAUD CHECK — única exceção que pode mudar decisão ═══
+        // Dados biométricos/documentais CAF são OBJETIVOS — fraude confirmada = manual obrigatório
         let cafFraudDetected = false;
         const cafLogs = await base44.asServiceRole.entities.IntegrationLog.filter({ onboarding_case_id: caseId });
         for (const log of cafLogs) {
           if (log.provider !== 'CAF') continue;
           const svc = log.service_type || '';
           const result = log.result_status || '';
-          // Biometric fraud: liveness failed, facematch failed, deepfake detected, documentscopy REPROVED
           if ((svc === 'liveness' || svc === 'face_liveness' || svc === 'deepfake_detection') && result === 'REPROVED') {
             cafFraudDetected = true;
           }
@@ -348,20 +308,22 @@ Deno.serve(async (req) => {
             cafFraudDetected = true;
           }
         }
-        if (cafFraudDetected) {
+        if (cafFraudDetected && finalDecision !== 'Recusado') {
           finalDecision = 'Revisão Manual';
           finalStatus = 'Manual';
-          escalatedBySentinel = true;
           autoDecisionApplied = false;
-          console.log(`[AutoEnrich] Step 4: CAF BIOMETRIC FRAUD DETECTED — forced to Revisão Manual with fraud flag`);
+          console.log(`[AutoEnrich] Step 4: CAF FRAUD DETECTED — overriding to Revisão Manual`);
         }
 
-        // Merge red flags from V4 + SENTINEL with origin tags
+        console.log(`[AutoEnrich] Step 4: DETERMINISTIC DECISION="${finalDecision}" (subfaixa=${subfaixa}, v4Score=${v4Score}, cafFraud=${cafFraudDetected})`);
+
+        // ═══ MERGE RED FLAGS (informativo apenas — não afeta decisão) ═══
         const v4RedFlags = (freshCase.redFlags || []).map(f => f.startsWith('V4:') || f.startsWith('SENTINEL:') || f.startsWith('CAF:') ? f : `V4: ${f}`);
         const sentinelRedFlags = (latestScore?.sentinel_red_flags || []).map(f => f.startsWith('SENTINEL:') ? f : `SENTINEL: ${f}`);
         const cafFlags = cafFraudDetected ? ['CAF: Fraude biométrica/documental detectada — liveness ou documentoscopia reprovada'] : [];
         const mergedRedFlags = [...new Set([...v4RedFlags, ...sentinelRedFlags, ...cafFlags])];
 
+        // ═══ UPDATE CASE ═══
         const updateData = {
           status: finalStatus,
           iaDecision: finalDecision,
@@ -375,24 +337,20 @@ Deno.serve(async (req) => {
         };
         await base44.asServiceRole.entities.OnboardingCase.update(caseId, updateData);
 
-        // Update ComplianceScore with unified decision
+        // ═══ UPDATE COMPLIANCE SCORE ═══
         if (latestScore) {
           await base44.asServiceRole.entities.ComplianceScore.update(latestScore.id, {
-            // V4 fields (already set by bdcEnrichCase, but ensure consistency)
             decisao_automatica: autoDecisionApplied,
             rolling_reserve_percent: rollingReserveMap[subfaixa] || 0,
             monitoramento_nivel: monitoringMap[subfaixa] || 'PADRAO',
             condicoes_automaticas: conditionsMap[subfaixa] || [],
-            // UNIFIED decision
             recomendacao_final: finalDecision,
-            // Red flags unificadas
             red_flags: mergedRedFlags,
-            // Tracking
-            decisao_escalada_sentinel: escalatedBySentinel,
+            decisao_escalada_sentinel: false, // v7: SENTINEL never escalates
           });
         }
 
-        // Update merchant
+        // ═══ UPDATE MERCHANT ═══
         if (freshCase.merchantId) {
           await base44.asServiceRole.entities.Merchant.update(freshCase.merchantId, {
             onboardingStatus: finalStatus,
@@ -400,25 +358,16 @@ Deno.serve(async (req) => {
           });
         }
 
-        console.log(`[AutoEnrich] Step 4: Decision="${finalDecision}" (subfaixa=${subfaixa}, v4Score=${v4Score}, escalated=${escalatedBySentinel})`);
-
-        // ═══ FINAL SAFETY NET: Never "Recusado" without V4 blocks ═══
-        // This catches ANY scenario where the decision ended up as "Recusado" but there are no objective blocks
+        // ═══ SAFETY NET: Never "Recusado" without V4 blocks ═══
         const hasObjectiveBlocks = (freshCase.bloqueiosAtivos || []).length > 0;
         if (finalDecision === 'Recusado' && !hasObjectiveBlocks && !cafFraudDetected) {
-          console.warn(`[AutoEnrich] SAFETY NET: Decision was "Recusado" but NO V4 blocks and NO CAF fraud. Downgrading to "Revisão Manual".`);
+          console.warn(`[AutoEnrich] SAFETY NET: "Recusado" without V4 blocks or CAF fraud → downgrading to "Revisão Manual".`);
           finalDecision = 'Revisão Manual';
           finalStatus = 'Manual';
           autoDecisionApplied = false;
-          // Update the already-saved data
-          await base44.asServiceRole.entities.OnboardingCase.update(caseId, {
-            status: 'Manual',
-            iaDecision: 'Revisão Manual',
-          });
+          await base44.asServiceRole.entities.OnboardingCase.update(caseId, { status: 'Manual', iaDecision: 'Revisão Manual' });
           if (latestScore) {
-            await base44.asServiceRole.entities.ComplianceScore.update(latestScore.id, {
-              recomendacao_final: 'Revisão Manual',
-            });
+            await base44.asServiceRole.entities.ComplianceScore.update(latestScore.id, { recomendacao_final: 'Revisão Manual' });
           }
         }
       }
@@ -442,17 +391,16 @@ Deno.serve(async (req) => {
       const sentinelConf = latestScore?.nivel_confianca_ia;
 
       const slackMessage = [
-        `${emoji} *Pipeline de Compliance Concluído*`,
+        `${emoji} *Pipeline de Compliance v7.0 — DATA-FIRST*`,
         ``,
         `*Empresa:* ${notifyMerchant?.fullName || 'N/D'} (${notifyMerchant?.cpfCnpj || 'N/D'})`,
         `*Score V4:* ${notifyCase?.riskScoreV4 ?? 'N/D'}/849 ${sfEmoji} Subfaixa ${notifyCase?.subfaixa || 'N/D'} — ${notifyCase?.subfaixaNome || ''}`,
-        sentinelConf != null ? `*Confiança SENTINEL:* ${sentinelConf}%` : '',
-        `*Decisão:* ${notifyCase?.iaDecision || notifyCase?.status || 'N/D'}${autoDecisionApplied ? ' ⚡ Automática' : latestScore?.decisao_escalada_sentinel ? ' 🔺 Escalada pelo SENTINEL' : ''}`,
+        `*Decisão:* ${notifyCase?.iaDecision || notifyCase?.status || 'N/D'}${autoDecisionApplied ? ' ⚡ AUTOMÁTICA (determinística)' : ' 🔍 Manual (subfaixa 4+)'}`,
         notifyCase?.rollingReservePercent > 0 ? `*Rolling Reserve:* ${notifyCase.rollingReservePercent}%` : '',
         notifyCase?.monitoramentoNivel ? `*Monitoramento:* ${notifyCase.monitoramentoNivel.replace(/_/g, ' ')}` : '',
-        topRedFlags.length > 0 ? `\n🚩 *Red Flags (${notifyCase.redFlags.length} total):*\n${topRedFlags.map(f => `  • ${f}`).join('\n')}` : '',
+        topRedFlags.length > 0 ? `\n🚩 *Red Flags V4/CAF (${notifyCase.redFlags.length} total):*\n${topRedFlags.map(f => `  • ${f}`).join('\n')}` : '',
         ``,
-        `📊 <${`https://app.base44.com/CadastroDetalhe?id=${notifyMerchant?.id}`}|Ver Análise Completa>`,
+        `📊 <${`https://app.base44.com/CadastroDetalhe?id=${notifyMerchant?.id}`}|Ver Dossiê Completo>`,
       ].filter(Boolean).join('\n');
 
       const { accessToken } = await base44.asServiceRole.connectors.getConnection('slackbot');
