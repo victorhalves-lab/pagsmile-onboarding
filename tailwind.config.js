@@ -7,6 +7,9 @@ module.exports = {
       'bg-violet-50', 'text-violet-600', 'bg-cyan-50', 'text-cyan-600',
       'bg-red-50', 'text-red-600', 'bg-amber-50', 'text-amber-600',
       'bg-emerald-50', 'text-emerald-600',
+      'bg-blue-50/30', 'border-blue-100', 'bg-amber-50/30', 'border-amber-100',
+      'bg-orange-50/30', 'border-orange-100', 'bg-emerald-50/30', 'border-emerald-100',
+      'bg-indigo-50/30', 'border-indigo-100', 'bg-violet-50/30', 'border-violet-100',
     ],
   theme: {
   	extend: {

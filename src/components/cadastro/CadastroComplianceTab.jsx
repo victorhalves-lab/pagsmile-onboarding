@@ -13,6 +13,7 @@ import ComplianceScoreBreakdown from './ComplianceScoreBreakdown';
 import ComplianceMonitoringPanel from './ComplianceMonitoringPanel';
 import ComplianceDecisionMatrix from './ComplianceDecisionMatrix';
 import ComplianceCrossValidation from './ComplianceCrossValidation';
+import SentinelAnalysisPanel from '@/components/compliance/SentinelAnalysisPanel';
 
 export default function CadastroComplianceTab({ score, latestCase, allScores = [], allCases = [], allCaseIds = [] }) {
   const [activeSection, setActiveSection] = useState(null);
@@ -161,55 +162,8 @@ export default function CadastroComplianceTab({ score, latestCase, allScores = [
       {/* ═══ Findings Section ═══ */}
       <ComplianceFindingsSection findings={allFindings} findingsBySeverity={findingsBySeverity} />
 
-      {/* ═══ IA Explanation ═══ */}
-      {(latestCase?.iaExplanation || score?.analise_completa_ia || score?.sumario_executivo) && (
-        <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-5">
-          <h3 className="text-sm font-semibold text-[var(--pagsmile-blue)] mb-3 flex items-center gap-2">
-            <Info className="w-4 h-4 text-blue-600" />
-            Análise Inteligente
-            {latestCase?.iaDecision && (
-              <Badge className={`ml-auto text-xs ${
-                latestCase.iaDecision === 'Aprovado' ? 'bg-green-100 text-green-700' :
-                latestCase.iaDecision === 'Recusado' ? 'bg-red-100 text-red-700' :
-                'bg-amber-100 text-amber-700'
-              }`}>Decisão IA: {latestCase.iaDecision}</Badge>
-            )}
-          </h3>
-          
-          {score?.sumario_executivo && (
-            <div className="mb-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
-              <p className="text-xs font-semibold text-blue-700 mb-1">Sumário Executivo</p>
-              <p className="text-sm text-[var(--pagsmile-blue)]/80 leading-relaxed whitespace-pre-wrap">{score.sumario_executivo}</p>
-            </div>
-          )}
-
-          {latestCase?.iaExplanation && (
-            <div className="mb-3">
-              <p className="text-xs font-semibold text-[var(--pagsmile-blue)]/60 mb-1">Parecer da IA</p>
-              <p className="text-sm text-[var(--pagsmile-blue)]/70 leading-relaxed whitespace-pre-wrap">{latestCase.iaExplanation}</p>
-            </div>
-          )}
-
-          {score?.analise_completa_ia && (
-            <details className="group">
-              <summary className="cursor-pointer text-xs font-semibold text-[var(--pagsmile-green)] hover:text-[var(--pagsmile-green)]/80 flex items-center gap-1">
-                <ChevronRight className="w-3 h-3 group-open:rotate-90 transition-transform" />
-                Ver análise completa da IA
-              </summary>
-              <div className="mt-2 p-3 bg-gray-50 rounded-lg">
-                <p className="text-sm text-[var(--pagsmile-blue)]/70 leading-relaxed whitespace-pre-wrap">{score.analise_completa_ia}</p>
-              </div>
-            </details>
-          )}
-
-          {score?.parecer_final && (
-            <div className="mt-3 p-3 bg-gray-50 rounded-lg border-l-4 border-[var(--pagsmile-green)]">
-              <p className="text-xs font-semibold text-[var(--pagsmile-blue)] mb-1">Parecer Final</p>
-              <p className="text-sm text-[var(--pagsmile-blue)]/70 leading-relaxed whitespace-pre-wrap">{score.parecer_final}</p>
-            </div>
-          )}
-        </div>
-      )}
+      {/* ═══ SENTINEL Analysis — Formatted ═══ */}
+      <SentinelAnalysisPanel score={score} latestCase={latestCase} />
 
       {/* ═══ Bloqueios Ativos ═══ */}
       {score?.bloqueios_ativos?.length > 0 && (
@@ -243,9 +197,9 @@ export default function CadastroComplianceTab({ score, latestCase, allScores = [
             </h3>
             <ul className="space-y-1.5">
               {score.pontos_positivos.map((p, i) => (
-                <li key={i} className="text-xs text-green-700/80 flex items-start gap-2">
+                <li key={i} className="text-xs text-green-700/80 flex items-start gap-2 p-2 bg-green-100/40 rounded-lg">
                   <TrendingDown className="w-3 h-3 flex-shrink-0 mt-0.5 text-green-500" />
-                  {p}
+                  <span>{cleanFlagText(p)}</span>
                 </li>
               ))}
             </ul>
@@ -260,9 +214,9 @@ export default function CadastroComplianceTab({ score, latestCase, allScores = [
             </h3>
             <ul className="space-y-1.5">
               {score.pontos_atencao.map((p, i) => (
-                <li key={i} className="text-xs text-amber-700/80 flex items-start gap-2">
+                <li key={i} className="text-xs text-amber-700/80 flex items-start gap-2 p-2 bg-amber-100/40 rounded-lg">
                   <AlertTriangle className="w-3 h-3 flex-shrink-0 mt-0.5 text-amber-500" />
-                  {p}
+                  <span>{cleanFlagText(p)}</span>
                 </li>
               ))}
             </ul>
@@ -270,19 +224,29 @@ export default function CadastroComplianceTab({ score, latestCase, allScores = [
         )}
 
         {score?.red_flags?.length > 0 && (
-          <div className="bg-red-50 rounded-xl border border-red-200 p-4">
+          <div className="bg-red-50 rounded-xl border border-red-200 p-4 md:col-span-2">
             <h3 className="text-sm font-semibold text-red-700 mb-2 flex items-center gap-2">
               <ShieldAlert className="w-4 h-4" />
               Red Flags ({score.red_flags.length})
             </h3>
-            <ul className="space-y-1.5">
-              {score.red_flags.map((r, i) => (
-                <li key={i} className="text-xs text-red-700/80 flex items-start gap-2">
-                  <XCircle className="w-3 h-3 flex-shrink-0 mt-0.5 text-red-500" />
-                  {r}
-                </li>
-              ))}
-            </ul>
+            <div className="space-y-2">
+              {score.red_flags.map((r, i) => {
+                const { source, text } = parseRedFlag(r);
+                return (
+                  <div key={i} className="flex items-start gap-2.5 p-2.5 bg-red-100/40 rounded-lg">
+                    <XCircle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-red-500" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-red-700/90 leading-relaxed">{text}</p>
+                      {source && (
+                        <span className="inline-flex items-center mt-1 px-1.5 py-0.5 rounded bg-red-100 text-[9px] font-medium text-red-600 border border-red-200">
+                          Fonte: {source}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
@@ -400,4 +364,35 @@ export default function CadastroComplianceTab({ score, latestCase, allScores = [
       )}
     </div>
   );
+}
+
+// ═══ Utility: Clean flag text — removes "SENTINEL: ", "V4: " prefixes and [FONTE:...] brackets ═══
+function cleanFlagText(text) {
+  if (!text) return '';
+  return text
+    .replace(/^(SENTINEL|V4|CAF):\s*/i, '')
+    .replace(/\[FONTE:\s*[^\]]+\]\s*/gi, '')
+    .replace(/\[([^\]]+)\]/g, '($1)')
+    .trim();
+}
+
+function parseRedFlag(text) {
+  if (!text) return { source: '', text: '' };
+  // Extract source prefix (V4:, SENTINEL:, CAF:)
+  const prefixMatch = text.match(/^(SENTINEL|V4|CAF):\s*/i);
+  const prefix = prefixMatch ? prefixMatch[1].toUpperCase() : '';
+  let cleaned = prefixMatch ? text.slice(prefixMatch[0].length) : text;
+  
+  // Extract [FONTE: ...] 
+  let source = prefix;
+  const fonteMatch = cleaned.match(/\[FONTE:\s*([^\]]+)\]/i);
+  if (fonteMatch) {
+    source = (prefix ? prefix + ' — ' : '') + fonteMatch[1].trim();
+    cleaned = cleaned.replace(fonteMatch[0], '').trim();
+  }
+  
+  // Clean remaining brackets
+  cleaned = cleaned.replace(/\[([^\]]+)\]/g, '($1)').trim();
+  
+  return { source, text: cleaned };
 }

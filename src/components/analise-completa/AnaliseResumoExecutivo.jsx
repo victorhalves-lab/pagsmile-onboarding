@@ -163,16 +163,26 @@ export default function AnaliseResumoExecutivo({ merchant, latestCase, latestSco
             <p className="text-xs text-red-600/70 mb-3">
               Sinalizações automáticas geradas pelas validações da CAF e/ou BDC que indicam possíveis riscos ao negócio.
             </p>
-            <div className="space-y-1.5">
-              {redFlags.map((flag, i) => (
-                <div key={i} className="flex items-start gap-2 p-2.5 bg-red-100/50 rounded-lg">
-                  <XCircle className="w-3.5 h-3.5 text-red-600 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-xs font-semibold text-red-700">{flag}</p>
-                    <p className="text-[10px] text-red-600/60 mt-0.5">{getFlagBusinessExplanation(flag)}</p>
+            <div className="space-y-2">
+              {redFlags.map((flag, i) => {
+                const { source, text } = parseFlag(flag);
+                return (
+                  <div key={i} className="flex items-start gap-2.5 p-3 bg-red-100/50 rounded-lg">
+                    <XCircle className="w-3.5 h-3.5 text-red-600 flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="text-xs text-red-700 leading-relaxed">{text}</p>
+                      <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                        {source && (
+                          <span className="inline-flex px-1.5 py-0.5 rounded bg-red-100 text-[9px] font-medium text-red-600 border border-red-200">
+                            {source}
+                          </span>
+                        )}
+                        <span className="text-[9px] text-red-500/60">{getFlagBusinessExplanation(flag)}</span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
@@ -192,6 +202,21 @@ function QuickMetric({ icon: Icon, label, value, sub, iconColor, bgColor }) {
       <p className="text-[10px] text-[var(--pagsmile-blue)]/40 mt-0.5">{sub}</p>
     </div>
   );
+}
+
+function parseFlag(text) {
+  if (!text) return { source: '', text: '' };
+  const prefixMatch = text.match(/^(SENTINEL|V4|CAF):\s*/i);
+  const prefix = prefixMatch ? prefixMatch[1].toUpperCase() : '';
+  let cleaned = prefixMatch ? text.slice(prefixMatch[0].length) : text;
+  let source = prefix;
+  const fonteMatch = cleaned.match(/\[FONTE:\s*([^\]]+)\]/i);
+  if (fonteMatch) {
+    source = (prefix ? prefix + ' · ' : '') + fonteMatch[1].trim();
+    cleaned = cleaned.replace(fonteMatch[0], '').trim();
+  }
+  cleaned = cleaned.replace(/\[([^\]]+)\]/g, '($1)').trim();
+  return { source, text: cleaned };
 }
 
 function getFlagBusinessExplanation(flag) {
