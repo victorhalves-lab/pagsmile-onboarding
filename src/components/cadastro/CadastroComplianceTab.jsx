@@ -14,8 +14,38 @@ import ComplianceMonitoringPanel from './ComplianceMonitoringPanel';
 import ComplianceDecisionMatrix from './ComplianceDecisionMatrix';
 import ComplianceCrossValidation from './ComplianceCrossValidation';
 import SentinelAnalysisPanel from '@/components/compliance/SentinelAnalysisPanel';
+import DatasetResultsSummary from './DatasetResultsSummary';
+import CafResultsSummaryBusiness from './CafResultsSummaryBusiness';
+import BDCDataConfidence from '@/components/bdc-enrichment/BDCDataConfidence';
+import BDCRiskHeatmap from '@/components/bdc-enrichment/BDCRiskHeatmap';
 
-export default function CadastroComplianceTab({ score, latestCase, allScores = [], allCases = [], allCaseIds = [] }) {
+function reconstructAnalysis(cs) {
+  if (!cs?.variaveis_aplicadas) return null;
+  return {
+    type: cs.segmento === 'subseller_pf' ? 'PF' : 'PJ',
+    templateModel: cs.segmento,
+    datasetGroup: 'CACHED',
+    datasetsQueried: 0,
+    queryDate: cs.data_analise_fase_2,
+    elapsedMs: 0,
+    blocks: (cs.bloqueios_ativos || []).map(b => {
+      const parts = b.split('_');
+      return { code: parts[0] || 'B??', label: parts.slice(1).join(' '), severity: 'BLOQUEIO' };
+    }),
+    hasBlock: (cs.bloqueios_ativos || []).length > 0,
+    sections: cs.variaveis_aplicadas,
+    scoring: {
+      baseScore: cs.score_base_segmento || 0,
+      variablesScore: cs.score_variaveis || 0,
+      enrichmentScore: cs.score_enriquecimento || 0,
+      finalScore: cs.score_final || 0,
+      subfaixa: cs.subfaixa || '4',
+      subfaixaNome: cs.subfaixa_nome || 'N/D',
+    },
+  };
+}
+
+export default function CadastroComplianceTab({ score, latestCase, allScores = [], allCases = [], allCaseIds = [], integrationLogs = [], validations = [] }) {
   const [activeSection, setActiveSection] = useState(null);
 
   // Fetch findings for all cases
@@ -60,6 +90,7 @@ export default function CadastroComplianceTab({ score, latestCase, allScores = [
     );
   }
 
+  const bdcAnalysis = useMemo(() => reconstructAnalysis(score), [score]);
   const toggleSection = (id) => setActiveSection(prev => prev === id ? null : id);
 
   // Compute risk level color
@@ -150,6 +181,12 @@ export default function CadastroComplianceTab({ score, latestCase, allScores = [
         </div>
       )}
 
+      {/* ═══ Data Confidence — Which datasets returned data ═══ */}
+      {bdcAnalysis && <BDCDataConfidence analysis={bdcAnalysis} />}
+
+      {/* ═══ Risk Heatmap — Radar by dimension ═══ */}
+      {bdcAnalysis && <BDCRiskHeatmap analysis={bdcAnalysis} />}
+
       {/* ═══ Decision Matrix (7 Dimensions) ═══ */}
       {score && <ComplianceDecisionMatrix score={score} />}
 
@@ -164,6 +201,12 @@ export default function CadastroComplianceTab({ score, latestCase, allScores = [
 
       {/* ═══ SENTINEL Analysis — Formatted ═══ */}
       <SentinelAnalysisPanel score={score} latestCase={latestCase} />
+
+      {/* ═══ Dataset Results Summary — What each BDC dataset found ═══ */}
+      <DatasetResultsSummary score={score} />
+
+      {/* ═══ CAF Results — Business Language ═══ */}
+      <CafResultsSummaryBusiness integrationLogs={integrationLogs} validations={validations} />
 
       {/* ═══ Bloqueios Ativos ═══ */}
       {score?.bloqueios_ativos?.length > 0 && (

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Brain, ChevronDown, ChevronUp, FileText, ClipboardCheck, MessageSquare, Shield, BookOpen, Target } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import SentinelTextFormatter from './SentinelTextFormatter';
@@ -142,7 +142,7 @@ export default function SentinelAnalysisPanel({ score, latestCase }) {
           </SentinelSection>
         )}
 
-        {/* 5. Análise Completa */}
+        {/* 5. Análise Completa — with smart segmentation */}
         {hasFullAnalysis && (
           <SentinelSection
             id="full"
@@ -155,10 +155,71 @@ export default function SentinelAnalysisPanel({ score, latestCase }) {
             onToggle={() => toggle('full')}
             accentColor="indigo"
           >
-            <SentinelTextFormatter text={hasFullAnalysis} />
+            <SegmentedAnalysis text={hasFullAnalysis} />
           </SentinelSection>
         )}
       </div>
+    </div>
+  );
+}
+
+/**
+ * For very long analysis texts, splits into sub-sections by detecting headers/dimensions.
+ * Shows first 3 sections initially with a "show more" toggle.
+ */
+function SegmentedAnalysis({ text }) {
+  const [showAll, setShowAll] = useState(false);
+  
+  const segments = useMemo(() => {
+    if (!text) return [];
+    // Split by double-star headers, "Dimensão" patterns, or markdown ## headers
+    const lines = text.split('\n');
+    const segs = [];
+    let current = { title: '', content: '' };
+    
+    for (const line of lines) {
+      const headerMatch = line.match(/^(?:\*\*)?(?:Dimensão|DIMENSÃO|Análise|ANÁLISE|Seção|SEÇÃO)\s+(\d+|[A-Z])[.:]?\s*(.*?)(?:\*\*)?$/i) ||
+                          line.match(/^##\s+(.+)$/);
+      if (headerMatch) {
+        if (current.content.trim()) segs.push({ ...current });
+        current = { title: line.replace(/[*#]+/g, '').trim(), content: '' };
+      } else {
+        current.content += line + '\n';
+      }
+    }
+    if (current.content.trim()) segs.push({ ...current });
+    
+    return segs;
+  }, [text]);
+
+  // If text doesn't segment well (≤2 segments), just render it normally
+  if (segments.length <= 2) {
+    return <SentinelTextFormatter text={text} />;
+  }
+
+  const visibleSegments = showAll ? segments : segments.slice(0, 3);
+  const hiddenCount = segments.length - 3;
+
+  return (
+    <div className="space-y-4">
+      {visibleSegments.map((seg, i) => (
+        <div key={i}>
+          {seg.title && (
+            <h4 className="text-xs font-bold text-[var(--pagsmile-blue)] uppercase tracking-wide mb-2 pb-1 border-b border-slate-200">
+              {seg.title}
+            </h4>
+          )}
+          <SentinelTextFormatter text={seg.content} variant="compact" />
+        </div>
+      ))}
+      {!showAll && hiddenCount > 0 && (
+        <button
+          onClick={() => setShowAll(true)}
+          className="w-full py-2.5 text-center text-xs font-medium text-indigo-600 hover:text-indigo-800 border border-dashed border-indigo-200 rounded-lg hover:bg-indigo-50/50 transition-colors"
+        >
+          Mostrar mais {hiddenCount} seções da análise
+        </button>
+      )}
     </div>
   );
 }

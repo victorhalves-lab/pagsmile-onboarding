@@ -344,7 +344,7 @@ export default function CadastroDetalhe() {
           <CadastroContratoTab contracts={allContracts} />
         </TabsContent>
         <TabsContent value="compliance">
-          <CadastroComplianceTab score={latestScore} latestCase={latestCase} allScores={scores} allCases={cases} allCaseIds={allCaseIds} />
+          <CadastroComplianceTab score={latestScore} latestCase={latestCase} allScores={scores} allCases={cases} allCaseIds={allCaseIds} integrationLogs={integrationLogs} validations={validations} />
         </TabsContent>
         <TabsContent value="regulatory">
           <CadastroRegulatoryPanel merchant={merchant} latestCase={latestCase} validations={validations} integrationLogs={integrationLogs} score={latestScore} />

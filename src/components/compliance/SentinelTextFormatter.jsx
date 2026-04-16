@@ -27,6 +27,12 @@ function cleanSentinelText(text) {
   // Convert numbered lists like "1. " or "1) " at start of line
   cleaned = cleaned.replace(/^(\d+)[.)]\s+/gm, '- **$1.** ');
   
+  // Convert dimension-style headers like "**Dimensão X:**" or "Dimensão X:" to proper markdown headers
+  cleaned = cleaned.replace(/^\*{0,2}(Dimensão|DIMENSÃO|Análise|ANÁLISE|Seção|SEÇÃO)\s+(\d+|[A-Z])[.:]\s*\*{0,2}\s*/gm, '## $1 $2: ');
+  
+  // Convert other bold headers at line start like "**Some Title:**"
+  cleaned = cleaned.replace(/^\*\*([^*]{3,60}):\*\*\s*/gm, '## $1\n');
+  
   // Ensure double newlines between paragraphs for markdown
   cleaned = cleaned.replace(/\n(?!\n)/g, '\n\n');
   
