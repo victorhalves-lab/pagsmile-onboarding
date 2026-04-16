@@ -81,6 +81,8 @@ export default function CadastroComplianceTab({ score, latestCase, allScores = [
     });
   }, [findings, findingsByScore]);
 
+  const bdcAnalysis = useMemo(() => reconstructAnalysis(score), [score]);
+
   if (!score && !latestCase) {
     return (
       <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-10 text-center mt-4">
@@ -90,7 +92,6 @@ export default function CadastroComplianceTab({ score, latestCase, allScores = [
     );
   }
 
-  const bdcAnalysis = useMemo(() => reconstructAnalysis(score), [score]);
   const toggleSection = (id) => setActiveSection(prev => prev === id ? null : id);
 
   // Compute risk level color
