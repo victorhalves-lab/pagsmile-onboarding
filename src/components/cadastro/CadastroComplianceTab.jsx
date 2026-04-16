@@ -12,14 +12,18 @@ import FindingsSectionV2 from '@/components/compliance-v2/FindingsSectionV2';
 import SentinelReportV2 from '@/components/compliance-v2/SentinelReportV2';
 import ConditionsSection from '@/components/compliance-v2/ConditionsSection';
 import PointsAndFlags from '@/components/compliance-v2/PointsAndFlags';
+import ScoreGauge from '@/components/compliance-v2/ScoreGauge';
+import BDCQSAPanel from '@/components/compliance-v2/BDCQSAPanel';
+import BDCProcessosPanel from '@/components/compliance-v2/BDCProcessosPanel';
+import BDCCreditPanel from '@/components/compliance-v2/BDCCreditPanel';
+import SentinelDimensionsPanel from '@/components/compliance-v2/SentinelDimensionsPanel';
+import TechnicalMetadata from '@/components/compliance-v2/TechnicalMetadata';
 
 // Existing components that are already good
 import ComplianceScoreBreakdown from './ComplianceScoreBreakdown';
-import ComplianceDecisionMatrix from './ComplianceDecisionMatrix';
 import ComplianceCrossValidation from './ComplianceCrossValidation';
 import ComplianceVariablesDetail from './ComplianceVariablesDetail';
 import ComplianceMonitoringPanel from './ComplianceMonitoringPanel';
-import DatasetResultsSummary from './DatasetResultsSummary';
 import BDCDataConfidence from '@/components/bdc-enrichment/BDCDataConfidence';
 import BDCRiskHeatmap from '@/components/bdc-enrichment/BDCRiskHeatmap';
 
@@ -171,6 +175,15 @@ export default function CadastroComplianceTab({ score, latestCase, allScores = [
       {/* ═══ 3. BIG DATA CORP — ANÁLISE COMPLETA ═══ */}
       <BDCFullAnalysis integrationLogs={integrationLogs} validations={validations} />
 
+      {/* ═══ 3.4 QSA — Quadro Societário ═══ */}
+      <BDCQSAPanel integrationLogs={integrationLogs} validations={validations} />
+
+      {/* ═══ 3.8 Processos Judiciais ═══ */}
+      <BDCProcessosPanel integrationLogs={integrationLogs} validations={validations} />
+
+      {/* ═══ 3.11 Score de Crédito BDC ═══ */}
+      <BDCCreditPanel integrationLogs={integrationLogs} validations={validations} />
+
       {/* ═══ 4. CAF — ANÁLISE COMPLETA ═══ */}
       <CAFFullAnalysis integrationLogs={integrationLogs} validations={validations} />
 
@@ -180,7 +193,8 @@ export default function CadastroComplianceTab({ score, latestCase, allScores = [
       {/* ═══ 6. FINDINGS ═══ */}
       <FindingsSectionV2 findings={allFindings} findingsBySeverity={findingsBySeverity} />
 
-      {/* ═══ 7. SCORE BREAKDOWN ═══ */}
+      {/* ═══ 7. SCORE BREAKDOWN with Gauge ═══ */}
+      {isV4 && <ScoreGauge score={scoreVal} subfaixa={effectiveSubfaixa} subfaixaNome={effectiveSubfaixaNome} />}
       {score && <ComplianceScoreBreakdown score={score} />}
 
       {/* ═══ 8. CONDIÇÕES & RECOMENDAÇÕES ═══ */}
@@ -213,15 +227,12 @@ export default function CadastroComplianceTab({ score, latestCase, allScores = [
         </div>
       )}
 
-      {/* ═══ 12. DATA CONFIDENCE & HEATMAP ═══ */}
+      {/* ═══ 12. SENTINEL DIMENSIONS — 7 dimensões ═══ */}
+      <SentinelDimensionsPanel score={score} />
+
+      {/* ═══ 13. DATA CONFIDENCE & HEATMAP ═══ */}
       <BDCDataConfidence analysis={bdcAnalysis} analiseDimensional={score?.analise_dimensional} />
       <BDCRiskHeatmap analysis={bdcAnalysis} analiseDimensional={score?.analise_dimensional} />
-
-      {/* ═══ 13. DECISION MATRIX ═══ */}
-      {score && <ComplianceDecisionMatrix score={score} />}
-
-      {/* ═══ 14. DATASET RESULTS (legacy) ═══ */}
-      <DatasetResultsSummary score={score} />
 
       {/* ═══ 15. VARIABLES V4 ═══ */}
       {score && <ComplianceVariablesDetail score={score} />}
@@ -243,7 +254,10 @@ export default function CadastroComplianceTab({ score, latestCase, allScores = [
         </div>
       )}
 
-      {/* ═══ 18. HISTÓRICO ═══ */}
+      {/* ═══ 18. METADADOS TÉCNICOS ═══ */}
+      <TechnicalMetadata score={score} latestCase={latestCase} integrationLogs={integrationLogs} />
+
+      {/* ═══ 19. HISTÓRICO ═══ */}
       {allCases.length > 1 && (
         <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-5">
           <h3 className="text-sm font-bold text-[var(--pagsmile-blue)] mb-3 flex items-center gap-2">

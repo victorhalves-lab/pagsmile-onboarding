@@ -71,8 +71,8 @@ function ServiceCard({ svcType, record }) {
             </div>
           )}
 
-          {/* Biometric metrics */}
-          {(record.is_alive != null || record.similarity != null || record.probability != null) && (
+          {/* Biometric & score metrics */}
+          {(record.is_alive != null || record.similarity != null || record.probability != null || record.score != null) && (
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
               {record.is_alive != null && (
                 <div className={`p-3 rounded-xl border ${record.is_alive ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
@@ -84,12 +84,27 @@ function ServiceCard({ svcType, record }) {
                 <div className="p-3 rounded-xl border bg-blue-50 border-blue-200">
                   <p className="text-[10px] font-bold opacity-60">Similaridade Facial</p>
                   <p className="text-sm font-bold text-blue-700">{(record.similarity * 100).toFixed(0)}%</p>
+                  <div className="h-1.5 bg-blue-100 rounded-full mt-1 overflow-hidden">
+                    <div className="h-full bg-blue-500 rounded-full" style={{ width: `${record.similarity * 100}%` }} />
+                  </div>
                 </div>
               )}
               {record.probability != null && (
                 <div className="p-3 rounded-xl border bg-indigo-50 border-indigo-200">
                   <p className="text-[10px] font-bold opacity-60">Probabilidade</p>
                   <p className="text-sm font-bold text-indigo-700">{(record.probability * 100).toFixed(0)}%</p>
+                  <div className="h-1.5 bg-indigo-100 rounded-full mt-1 overflow-hidden">
+                    <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${record.probability * 100}%` }} />
+                  </div>
+                </div>
+              )}
+              {record.score != null && (
+                <div className="p-3 rounded-xl border bg-emerald-50 border-emerald-200">
+                  <p className="text-[10px] font-bold opacity-60">Score</p>
+                  <p className="text-sm font-bold text-emerald-700">{record.score}/1000</p>
+                  <div className="h-1.5 bg-emerald-100 rounded-full mt-1 overflow-hidden">
+                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${(record.score / 1000) * 100}%` }} />
+                  </div>
                 </div>
               )}
             </div>
