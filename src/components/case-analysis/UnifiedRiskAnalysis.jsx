@@ -96,10 +96,10 @@ export default function UnifiedRiskAnalysis({
       {bdcAnalysis && <BDCSmartAlerts analysis={bdcAnalysis} merchant={merchant} />}
 
       {/* 5. Risk Heatmap — Radar by dimension */}
-      {bdcAnalysis && <BDCRiskHeatmap analysis={bdcAnalysis} />}
+      <BDCRiskHeatmap analysis={bdcAnalysis} analiseDimensional={complianceScore?.analise_dimensional} />
 
       {/* 6. Data Confidence — Dataset coverage */}
-      {bdcAnalysis && <BDCDataConfidence analysis={bdcAnalysis} />}
+      <BDCDataConfidence analysis={bdcAnalysis} analiseDimensional={complianceScore?.analise_dimensional} />
 
       {/* 7. Declared vs Confirmed — Cross-validation */}
       {bdcAnalysis && <BDCDeclaredVsConfirmed analysis={bdcAnalysis} merchant={merchant} />}

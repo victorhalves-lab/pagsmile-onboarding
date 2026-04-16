@@ -122,8 +122,13 @@ export default function CadastroComplianceTab({ score, latestCase, allScores = [
     return 'bg-red-50';
   };
 
-  const scoreVal = score?.score_final ?? score?.score_geral_composto;
-  const isV4 = score?.framework_version === 'v4.0' || score?.score_final != null;
+  const scoreVal = score?.score_final ?? latestCase?.riskScoreV4 ?? score?.score_geral_composto ?? latestCase?.riskScore;
+  const isV4 = score?.framework_version === 'v4.0' || score?.score_final != null || latestCase?.riskScoreV4 != null;
+  const effectiveSubfaixa = score?.subfaixa || latestCase?.subfaixa;
+  const effectiveSubfaixaNome = score?.subfaixa_nome || latestCase?.subfaixaNome;
+  const effectiveRecomendacao = score?.recomendacao_final || latestCase?.iaDecision;
+  const effectiveMonitoramento = score?.monitoramento_nivel || latestCase?.monitoramentoNivel;
+  const effectiveConfianca = score?.nivel_confianca_ia;
   const findingsBySeverity = {
     BLOQUEANTE: allFindings.filter(f => f.severidade === 'BLOQUEANTE').length,
     CRITICAL: allFindings.filter(f => f.severidade === 'CRITICAL').length,
@@ -136,7 +141,7 @@ export default function CadastroComplianceTab({ score, latestCase, allScores = [
   return (
     <div className="space-y-4 mt-4">
       {/* ═══ Hero Score Card ═══ */}
-      {score && (
+      {(score || latestCase?.riskScoreV4 != null) && (
         <div className={`rounded-xl border overflow-hidden ${getRiskBg(scoreVal, isV4)}`}>
           <div className="p-6">
             <div className="flex items-center gap-2 mb-4">
@@ -153,41 +158,41 @@ export default function CadastroComplianceTab({ score, latestCase, allScores = [
                 {isV4 && <p className="text-[9px] text-[var(--pagsmile-blue)]/30">escala 0-1000</p>}
               </div>
               <div className="bg-white/80 backdrop-blur rounded-lg p-3 text-center border border-white/50">
-                <p className="text-xl font-bold text-[var(--pagsmile-blue)]">{score.subfaixa || '—'}</p>
-                <p className="text-[10px] text-[var(--pagsmile-blue)]/50 font-medium">{score.subfaixa_nome || 'Subfaixa'}</p>
+                <p className="text-xl font-bold text-[var(--pagsmile-blue)]">{effectiveSubfaixa || '—'}</p>
+                <p className="text-[10px] text-[var(--pagsmile-blue)]/50 font-medium">{effectiveSubfaixaNome || 'Subfaixa'}</p>
               </div>
               <div className="bg-white/80 backdrop-blur rounded-lg p-3 text-center border border-white/50">
-                <p className="text-sm font-bold text-[var(--pagsmile-blue)]">{score.recomendacao_final || '—'}</p>
+                <p className="text-sm font-bold text-[var(--pagsmile-blue)]">{effectiveRecomendacao || '—'}</p>
                 <p className="text-[10px] text-[var(--pagsmile-blue)]/50 font-medium">Recomendação</p>
               </div>
               <div className="bg-white/80 backdrop-blur rounded-lg p-3 text-center border border-white/50">
-                <p className="text-sm font-bold text-[var(--pagsmile-blue)]">{score.monitoramento_nivel?.replace(/_/g, ' ') || '—'}</p>
+                <p className="text-sm font-bold text-[var(--pagsmile-blue)]">{(effectiveMonitoramento || '').replace(/_/g, ' ') || '—'}</p>
                 <p className="text-[10px] text-[var(--pagsmile-blue)]/50 font-medium">Monitoramento</p>
               </div>
               <div className="bg-white/80 backdrop-blur rounded-lg p-3 text-center border border-white/50">
-                <p className="text-sm font-bold text-[var(--pagsmile-blue)]">{score.nivel_confianca_ia != null ? `${score.nivel_confianca_ia}%` : '—'}</p>
+                <p className="text-sm font-bold text-[var(--pagsmile-blue)]">{effectiveConfianca != null ? `${effectiveConfianca}%` : '—'}</p>
                 <p className="text-[10px] text-[var(--pagsmile-blue)]/50 font-medium">Confiança IA</p>
               </div>
             </div>
 
             {/* Extra context */}
             <div className="flex flex-wrap gap-2 text-xs">
-              {score.segmento && <Badge variant="outline" className="text-[10px]">Segmento: {score.segmento}</Badge>}
-              {score.is_pix && <Badge className="bg-emerald-100 text-emerald-700 text-[10px]">Fluxo PIX</Badge>}
-              {score.decisao_automatica && <Badge className="bg-blue-100 text-blue-700 text-[10px]"><Zap className="w-3 h-3 mr-1" />Decisão Automática por Subfaixa</Badge>}
-              {!score.decisao_automatica && score.subfaixa === '4' && <Badge className="bg-red-100 text-red-700 text-[10px]">⚠️ Revisão Manual Obrigatória</Badge>}
-              {!score.decisao_automatica && score.subfaixa && score.subfaixa !== '4' && <Badge className="bg-amber-100 text-amber-700 text-[10px]">Revisão Manual Requerida</Badge>}
-              {score.rolling_reserve_percent > 0 && <Badge className="bg-orange-100 text-orange-700 text-[10px]">Rolling Reserve: {score.rolling_reserve_percent}%</Badge>}
+              {score?.segmento && <Badge variant="outline" className="text-[10px]">Segmento: {score.segmento}</Badge>}
+              {score?.is_pix && <Badge className="bg-emerald-100 text-emerald-700 text-[10px]">Fluxo PIX</Badge>}
+              {score?.decisao_automatica && <Badge className="bg-blue-100 text-blue-700 text-[10px]"><Zap className="w-3 h-3 mr-1" />Decisão Automática por Subfaixa</Badge>}
+              {!score?.decisao_automatica && (effectiveSubfaixa === '4' || effectiveSubfaixa === '5') && <Badge className="bg-red-100 text-red-700 text-[10px]">⚠️ Revisão Manual Obrigatória</Badge>}
+              {!score?.decisao_automatica && effectiveSubfaixa && !['4','5'].includes(effectiveSubfaixa) && <Badge className="bg-amber-100 text-amber-700 text-[10px]">Revisão Manual Requerida</Badge>}
+              {(score?.rolling_reserve_percent > 0 || latestCase?.rollingReservePercent > 0) && <Badge className="bg-orange-100 text-orange-700 text-[10px]">Rolling Reserve: {score?.rolling_reserve_percent || latestCase?.rollingReservePercent}%</Badge>}
             </div>
           </div>
         </div>
       )}
 
       {/* ═══ Data Confidence — Which datasets returned data ═══ */}
-      {bdcAnalysis && <BDCDataConfidence analysis={bdcAnalysis} />}
+      <BDCDataConfidence analysis={bdcAnalysis} analiseDimensional={score?.analise_dimensional} />
 
       {/* ═══ Risk Heatmap — Radar by dimension ═══ */}
-      {bdcAnalysis && <BDCRiskHeatmap analysis={bdcAnalysis} />}
+      <BDCRiskHeatmap analysis={bdcAnalysis} analiseDimensional={score?.analise_dimensional} />
 
       {/* ═══ Decision Matrix (7 Dimensions) ═══ */}
       {score && <ComplianceDecisionMatrix score={score} />}

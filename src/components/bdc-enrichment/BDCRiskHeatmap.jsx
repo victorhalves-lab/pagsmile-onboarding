@@ -49,14 +49,54 @@ function getRiskLabel(val) {
   return 'Baixo';
 }
 
-export default function BDCRiskHeatmap({ analysis }) {
-  if (!analysis?.sections) return null;
+// Map analise_dimensional keys to display labels
+const DIMENSIONAL_LABELS = {
+  identidade: 'Identidade / Cadastro',
+  socios: 'Sócios / QSA',
+  compliance: 'Compliance / PLD',
+  digital: 'Presença Digital',
+  reputacao: 'Reputação / Mídia',
+  financeiro: 'Financeiro / Mercado',
+  biometria: 'Biometria / Liveness',
+};
 
-  const sections = analysis.sections;
-  const dimensions = Object.entries(DIMENSION_LABELS).map(([key, label]) => {
-    const risk = calculateDimensionRisk(sections[key]);
-    return { dimension: label, risk, key, color: getRiskColor(risk), label: getRiskLabel(risk) };
-  }).filter(d => sections[d.key]);
+const VEREDICTO_TO_RISK = {
+  'REPROVADO': 90,
+  'CRITICO': 90,
+  'ALTO': 75,
+  'ATENCAO': 50,
+  'MEDIO': 45,
+  'OK': 15,
+  'APROVADO': 10,
+  'BAIXO': 10,
+  'NAO_DISPONIVEL': 60,
+};
+
+function buildDimensionsFromDimensional(analiseDimensional) {
+  return Object.entries(analiseDimensional)
+    .filter(([, val]) => val && typeof val === 'object')
+    .map(([key, val]) => {
+      const risk = VEREDICTO_TO_RISK[val.veredicto] ?? 50;
+      const label = DIMENSIONAL_LABELS[key] || key;
+      return { dimension: label, risk, key, color: getRiskColor(risk), label: getRiskLabel(risk) };
+    });
+}
+
+export default function BDCRiskHeatmap({ analysis, analiseDimensional }) {
+  let dimensions = [];
+
+  if (analysis?.sections) {
+    const sections = analysis.sections;
+    dimensions = Object.entries(DIMENSION_LABELS).map(([key, label]) => {
+      const risk = calculateDimensionRisk(sections[key]);
+      return { dimension: label, risk, key, color: getRiskColor(risk), label: getRiskLabel(risk) };
+    }).filter(d => sections[d.key]);
+  }
+
+  // Fallback to analise_dimensional from SENTINEL
+  if (dimensions.length < 3 && analiseDimensional && typeof analiseDimensional === 'object') {
+    dimensions = buildDimensionsFromDimensional(analiseDimensional);
+  }
 
   if (dimensions.length < 3) return null;
 

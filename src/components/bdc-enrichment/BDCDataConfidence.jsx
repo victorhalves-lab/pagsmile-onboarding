@@ -22,16 +22,43 @@ const CORE_DATASETS = {
   assets: { label: 'Ativos Patrimoniais', required: false, desc: 'Imóveis, veículos, aeronaves, embarcações' },
 };
 
-export default function BDCDataConfidence({ analysis }) {
-  if (!analysis?.sections) return null;
+// Map analise_dimensional keys → core dataset keys
+const DIMENSIONAL_TO_CORE = {
+  identidade: 'identity',
+  socios: 'owners',
+  compliance: 'compliance',
+  digital: 'digital',
+  reputacao: 'reputation',
+  financeiro: 'financial',
+  biometria: null, // no direct core dataset
+};
 
-  const sections = analysis.sections;
-  const results = Object.entries(CORE_DATASETS).map(([key, config]) => {
-    const section = sections[key];
-    const hasData = section?.items && section.items.length > 0;
-    const itemCount = section?.items?.length || 0;
-    return { key, ...config, hasData, itemCount };
-  });
+export default function BDCDataConfidence({ analysis, analiseDimensional }) {
+  const hasSections = analysis?.sections && Object.keys(analysis.sections).length > 0;
+  const hasDimensional = analiseDimensional && typeof analiseDimensional === 'object' && Object.keys(analiseDimensional).length > 0;
+
+  if (!hasSections && !hasDimensional) return null;
+
+  let results;
+  if (hasSections) {
+    const sections = analysis.sections;
+    results = Object.entries(CORE_DATASETS).map(([key, config]) => {
+      const section = sections[key];
+      const hasData = section?.items && section.items.length > 0;
+      const itemCount = section?.items?.length || 0;
+      return { key, ...config, hasData, itemCount };
+    });
+  } else {
+    // Build from analise_dimensional: mark dimensions as "has data" if veredicto !== NAO_DISPONIVEL
+    results = Object.entries(CORE_DATASETS).map(([key, config]) => {
+      // Find matching dimensional key
+      const dimKey = Object.entries(DIMENSIONAL_TO_CORE).find(([, v]) => v === key)?.[0];
+      const dimData = dimKey ? analiseDimensional[dimKey] : null;
+      const hasData = dimData ? dimData.veredicto !== 'NAO_DISPONIVEL' : false;
+      const itemCount = dimData?.findings?.length || 0;
+      return { key, ...config, hasData, itemCount };
+    });
+  }
 
   const withData = results.filter(r => r.hasData).length;
   const total = results.length;
@@ -113,9 +140,10 @@ export default function BDCDataConfidence({ analysis }) {
       <div className="mt-3 pt-3 border-t border-slate-100 flex items-center gap-2 text-[10px] text-[#002443]/40">
         <Database className="w-3 h-3" />
         <span>
-          {analysis.datasetsQueried || '?'} datasets consultados na BDC • 
-          Grupo: {analysis.datasetGroup || 'N/D'} • 
-          Modelo: {analysis.templateModel || 'N/D'}
+          {analysis?.datasetsQueried || '?'} datasets consultados na BDC • 
+          Grupo: {analysis?.datasetGroup || 'N/D'} • 
+          Modelo: {analysis?.templateModel || 'N/D'}
+          {!hasSections && hasDimensional && ' (dados derivados da análise dimensional SENTINEL)'}
         </span>
       </div>
     </div>

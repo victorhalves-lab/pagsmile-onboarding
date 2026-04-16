@@ -58,9 +58,45 @@ function translateItemToBusinessLanguage(item) {
 
 const SECTION_ORDER = ['compliance', 'creditRisk', 'owners', 'identity', 'reputation', 'digital', 'financial', 'evolution', 'esg', 'contacts', 'employeesKyc', 'sectorial', 'assets'];
 
+// Map analise_dimensional to a sections-like format for fallback display
+function buildSectionsFromDimensional(dim) {
+  if (!dim || typeof dim !== 'object') return {};
+  const MAP = {
+    identidade: 'identity',
+    socios: 'owners',
+    compliance: 'compliance',
+    digital: 'digital',
+    reputacao: 'reputation',
+    financeiro: 'financial',
+    biometria: null,
+  };
+  const result = {};
+  for (const [dimKey, data] of Object.entries(dim)) {
+    const sectionKey = MAP[dimKey];
+    if (!sectionKey || !data) continue;
+    const items = (data.findings || []).map((f, i) => ({
+      key: `finding_${i}`,
+      label: f.replace(/\[FONTE:\s*[^\]]*\]\s*/gi, '').trim(),
+      value: '',
+      risk: data.veredicto === 'REPROVADO' ? 'CRITICO' : data.veredicto === 'ATENCAO' ? 'MEDIO' : 'OK',
+      points: 0,
+    }));
+    if (items.length > 0) {
+      result[sectionKey] = { items, score: 0 };
+    }
+  }
+  return result;
+}
+
 export default function DatasetResultsSummary({ score }) {
   const [expandedSection, setExpandedSection] = useState(null);
-  const sections = score?.variaveis_aplicadas || {};
+  let sections = score?.variaveis_aplicadas || {};
+  
+  // Fallback: if variaveis_aplicadas is empty, try analise_dimensional
+  if (Object.keys(sections).length === 0 && score?.analise_dimensional) {
+    sections = buildSectionsFromDimensional(score.analise_dimensional);
+  }
+  
   const activeKeys = SECTION_ORDER.filter(k => sections[k]?.items?.length > 0);
 
   if (activeKeys.length === 0) return null;
