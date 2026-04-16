@@ -553,8 +553,8 @@ export default function PropostaPublica() {
         )}
       </div>
 
-      {/* Seção: Prazo + Antecipação + Volume — sempre 3 cards lado a lado */}
-      <div className="grid gap-4 mb-6" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>
+      {/* Seção: Prazo + Antecipação + Volume */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <Card>
           <CardContent className="py-5 text-center">
             <p className="text-xs text-[#002443]/50 mb-2 uppercase font-semibold tracking-wide">{t('pp.receiving_term')}</p>
