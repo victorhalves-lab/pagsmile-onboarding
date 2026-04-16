@@ -307,16 +307,27 @@ Deno.serve(async (req) => {
           if (sentinelLevel >= 4) sentinelLevel = 3;
           const cappedRecommendation = sentinelLevel === 3 ? 'Revisão Manual' : sentinelLevel === 2 ? 'Aprovado com Condições' : sentinelLevel === 1 ? 'Aprovado com Condições Leves' : 'Aprovado';
           
-          // FIX #6: Only set escalatedBySentinel=true when SENTINEL actually changes the decision upward
+          // ESCALATION CAP v6.0: SENTINEL can only escalate by MAX 1 level for V4 GREEN (1A/1B)
+          // V4 Green = data is CLEAN. SENTINEL should NOT override to "Revisão Manual" based on questionnaire alone.
+          // Max escalation for V4 Green: "Aprovado" → "Aprovado com Condições Leves" or "Aprovado com Condições"
+          const isV4Green = subfaixa === '1A' || subfaixa === '1B';
+          const maxEscalationLevel = isV4Green ? Math.min(v4Level + 2, 2) : 3; // Green: max "Aprovado com Condições"; Others: max "Revisão Manual"
+          
           if (sentinelLevel > v4Level) {
-            // SENTINEL escalates — adopt capped recommendation
-            finalDecision = cappedRecommendation;
-            finalStatus = cappedRecommendation === 'Revisão Manual' ? 'Manual' : 'Aprovado';
-            escalatedBySentinel = true;
-            autoDecisionApplied = cappedRecommendation !== 'Revisão Manual'; // Conditions = still auto
-            console.log(`[AutoEnrich] Step 4: SENTINEL ESCALATED from V4 "${v4Decision.decision}" to "${cappedRecommendation}" (original sentinel: "${sentinelRecommendation}", capped)`);
+            const effectiveLevel = Math.min(sentinelLevel, maxEscalationLevel);
+            const effectiveRecommendation = effectiveLevel === 3 ? 'Revisão Manual' : effectiveLevel === 2 ? 'Aprovado com Condições' : effectiveLevel === 1 ? 'Aprovado com Condições Leves' : 'Aprovado';
+            
+            if (effectiveLevel > v4Level) {
+              finalDecision = effectiveRecommendation;
+              finalStatus = effectiveRecommendation === 'Revisão Manual' ? 'Manual' : 'Aprovado';
+              escalatedBySentinel = true;
+              autoDecisionApplied = effectiveRecommendation !== 'Revisão Manual';
+              console.log(`[AutoEnrich] Step 4: SENTINEL ESCALATED from V4 "${v4Decision.decision}" to "${effectiveRecommendation}" (original="${sentinelRecommendation}", capped by v6 rule, isV4Green=${isV4Green})`);
+            } else {
+              escalatedBySentinel = false;
+              console.log(`[AutoEnrich] Step 4: SENTINEL wanted "${cappedRecommendation}" but V4 GREEN cap prevents escalation. Keeping "${v4Decision.decision}".`);
+            }
           } else {
-            // SENTINEL agrees or is less restrictive — V4 stands, no escalation
             escalatedBySentinel = false;
             console.log(`[AutoEnrich] Step 4: SENTINEL AGREES with V4 "${v4Decision.decision}" (sentinel="${sentinelRecommendation}"). No escalation.`);
           }

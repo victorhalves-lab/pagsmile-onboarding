@@ -178,14 +178,10 @@ function analyzeBlocks(result, responses) {
     blocks.push({ code: 'B01', label: 'CNPJ Inativo', severity: 'BLOQUEIO', detail: `Situação cadastral BDC: "${status}" (BasicData.TaxIdStatus). Empresa não pode exercer atividades econômicas. Circular BCB 3.978/2020 Art. 2º.`, score: 850 });
   }
 
-  // B02 — Idade < 6 meses
-  const founded = safeGet(bd, 'FoundedDate') || safeGet(bd, 'Age.FoundedDate');
-  if (founded) {
-    const months = (Date.now() - new Date(founded).getTime()) / (30.44 * 24 * 3600 * 1000);
-    if (months < 6) {
-      blocks.push({ code: 'B02', label: 'Empresa < 6 meses', severity: 'BLOQUEIO', detail: `Fundada em ${new Date(founded).toLocaleDateString('pt-BR')} (${Math.round(months)} meses). Empresas com menos de 6 meses não possuem histórico suficiente para avaliação de risco. Taxa de mortalidade no 1º ano: ~20%.`, score: 850 });
-    }
-  }
+  // B02 — Idade < 6 meses → NÃO É MAIS BLOQUEIO
+  // Empresa jovem gera Rolling Reserve alto (20-30%), NÃO bloqueio.
+  // Removido do analyzeBlocks — tratado como variável de risco em analyzeIdentity.
+  // (O score de idade já é contabilizado em analyzeIdentity com +25 pontos para < 1 ano)
 
   // B03 — Sanções (empresa)
   const kyc = result?.Kyc || result?.kyc;
