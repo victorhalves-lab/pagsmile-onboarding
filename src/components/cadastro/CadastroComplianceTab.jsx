@@ -14,6 +14,7 @@ import ComplianceMonitoringPanel from './ComplianceMonitoringPanel';
 import ComplianceDecisionMatrix from './ComplianceDecisionMatrix';
 import ComplianceCrossValidation from './ComplianceCrossValidation';
 import SentinelAnalysisPanel from '@/components/compliance/SentinelAnalysisPanel';
+import SentinelTextFormatter from '@/components/compliance/SentinelTextFormatter';
 import DatasetResultsSummary from './DatasetResultsSummary';
 import CafResultsSummaryBusiness from './CafResultsSummaryBusiness';
 import BDCDataConfidence from '@/components/bdc-enrichment/BDCDataConfidence';
@@ -329,7 +330,9 @@ export default function CadastroComplianceTab({ score, latestCase, allScores = [
           </h3>
           
           {score.recomendacoes_revisao_manual && (
-            <p className="text-sm text-blue-700/80 leading-relaxed mb-3 whitespace-pre-wrap">{score.recomendacoes_revisao_manual}</p>
+            <div className="mb-3">
+              <SentinelTextFormatter text={score.recomendacoes_revisao_manual} />
+            </div>
           )}
           
           {score.perguntas_sugeridas?.length > 0 && (

@@ -5,6 +5,7 @@ import {
   Lightbulb, FileQuestion, FileText, ThumbsUp, ThumbsDown, Eye, Gauge,
   Target, List, Bookmark, Flag, Search
 } from 'lucide-react';
+import SentinelTextFormatter from '../compliance/SentinelTextFormatter';
 
 function SectionCard({ icon: Icon, title, iconBg, iconColor, children, defaultOpen = true }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -72,7 +73,7 @@ export default function UnifiedIAAnalysis({ complianceScore, onboardingCase }) {
               <Target className="w-4 h-4 text-[#002443]/50" />
               <span className="text-xs font-bold uppercase tracking-wider text-[#002443]/50">Sumário Executivo</span>
             </div>
-            <p className="text-sm text-[#002443]/80 leading-relaxed">{complianceScore.sumario_executivo}</p>
+            <SentinelTextFormatter text={complianceScore.sumario_executivo} />
           </div>
         )}
 
@@ -190,7 +191,9 @@ export default function UnifiedIAAnalysis({ complianceScore, onboardingCase }) {
         {/* Recomendações para Revisão Manual */}
         {isManualReview && complianceScore.recomendacoes_revisao_manual && (
           <SectionCard icon={Lightbulb} title="Recomendações para o Analista" iconBg="bg-orange-50" iconColor="text-orange-600" defaultOpen={true}>
-            <p className="mt-3 text-sm text-orange-700 whitespace-pre-wrap leading-relaxed">{complianceScore.recomendacoes_revisao_manual}</p>
+            <div className="mt-3">
+              <SentinelTextFormatter text={complianceScore.recomendacoes_revisao_manual} />
+            </div>
           </SectionCard>
         )}
 
@@ -229,7 +232,7 @@ export default function UnifiedIAAnalysis({ complianceScore, onboardingCase }) {
               <Bookmark className="w-4 h-4 text-amber-600" />
               <span className="text-sm font-bold text-amber-800">Condições para Aprovação</span>
             </div>
-            <p className="text-sm text-amber-700 whitespace-pre-wrap">{complianceScore.condicoes_aprovacao}</p>
+            <SentinelTextFormatter text={complianceScore.condicoes_aprovacao} />
           </div>
         )}
 
@@ -240,7 +243,7 @@ export default function UnifiedIAAnalysis({ complianceScore, onboardingCase }) {
               <Eye className="w-4 h-4 text-[#002443]/60" />
               <span className="text-sm font-bold text-[#002443]">Parecer Final SENTINEL</span>
             </div>
-            <p className="text-sm text-[#002443]/70 whitespace-pre-wrap leading-relaxed">{complianceScore.parecer_final}</p>
+            <SentinelTextFormatter text={complianceScore.parecer_final} />
           </div>
         )}
 
@@ -261,8 +264,8 @@ export default function UnifiedIAAnalysis({ complianceScore, onboardingCase }) {
             </button>
             {expandedFullAnalysis && (
               <div className="px-4 pb-4 border-t border-slate-100">
-                <div className="mt-3 whitespace-pre-wrap bg-slate-50 p-4 rounded-lg text-sm text-[#002443]/70 leading-relaxed max-h-[600px] overflow-y-auto">
-                  {complianceScore.analise_completa_ia}
+                <div className="mt-3 bg-slate-50 p-4 rounded-lg max-h-[600px] overflow-y-auto">
+                  <SentinelTextFormatter text={complianceScore.analise_completa_ia} />
                 </div>
               </div>
             )}

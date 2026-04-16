@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Eye, FileQuestion, FileText, Lightbulb, Bookmark, ChevronDown, ChevronUp, Brain, Search } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import ReactMarkdown from 'react-markdown';
+import SentinelTextFormatter from '../compliance/SentinelTextFormatter';
 
 function Section({ icon: Icon, title, iconBg, iconColor, children, defaultOpen = false }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -49,7 +49,7 @@ export default function RiskFinalVerdict({ complianceScore, onboardingCase }) {
               <Eye className="w-4 h-4 text-[#002443]/60" />
               <span className="text-xs font-bold uppercase tracking-wider text-[#002443]/50">Parecer Final</span>
             </div>
-            <div className="text-sm text-[#002443]/80 leading-relaxed whitespace-pre-wrap">{complianceScore.parecer_final}</div>
+            <SentinelTextFormatter text={complianceScore.parecer_final} />
           </div>
         )}
 
@@ -61,13 +61,13 @@ export default function RiskFinalVerdict({ complianceScore, onboardingCase }) {
               <span className="text-sm font-bold text-amber-800">Condições Sugeridas pelo SENTINEL</span>
             </div>
             <p className="text-xs text-amber-600/80 mb-2">Estas condições foram sugeridas pela IA para mitigar os pontos de atenção identificados.</p>
-            <div className="text-sm text-amber-700 whitespace-pre-wrap leading-relaxed">{complianceScore.condicoes_aprovacao}</div>
+            <SentinelTextFormatter text={complianceScore.condicoes_aprovacao} />
           </div>
         )}
 
         {/* Findings */}
         {hasFindings && (
-          <Section icon={Search} title={`Findings (${complianceScore.total_findings})`} iconBg="bg-indigo-50" iconColor="text-indigo-600">
+          <Section icon={Search} title={`Findings (${complianceScore.total_findings})`} iconBg="bg-indigo-50" iconColor="text-indigo-600" defaultOpen={true}>
             <div className="mt-3">
               <p className="text-[10px] text-[#002443]/40 mb-3">Findings são achados categorizados por severidade. São informativos, não decisórios.</p>
               {complianceScore.findings_por_severidade && (
@@ -114,7 +114,7 @@ export default function RiskFinalVerdict({ complianceScore, onboardingCase }) {
 
         {/* Suggested Documents */}
         {complianceScore.documentos_adicionais_sugeridos?.length > 0 && (
-          <Section icon={FileText} title="Documentos Adicionais Sugeridos" iconBg="bg-purple-50" iconColor="text-purple-600">
+          <Section icon={FileText} title="Documentos Adicionais Sugeridos" iconBg="bg-purple-50" iconColor="text-purple-600" defaultOpen={true}>
             <ul className="mt-3 space-y-1.5">
               {complianceScore.documentos_adicionais_sugeridos.map((d, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-purple-700 leading-relaxed">
@@ -129,27 +129,17 @@ export default function RiskFinalVerdict({ complianceScore, onboardingCase }) {
         {/* Manual review recommendations */}
         {complianceScore.recomendacoes_revisao_manual && (
           <Section icon={Lightbulb} title="Recomendações para o Analista" iconBg="bg-orange-50" iconColor="text-orange-600" defaultOpen={isManualReview}>
-            <p className="mt-3 text-sm text-orange-700 whitespace-pre-wrap leading-relaxed">{complianceScore.recomendacoes_revisao_manual}</p>
+            <div className="mt-3">
+              <SentinelTextFormatter text={complianceScore.recomendacoes_revisao_manual} />
+            </div>
           </Section>
         )}
 
         {/* Full analysis (collapsed) */}
         {complianceScore.analise_completa_ia && (
-          <Section icon={Brain} title="Análise Completa SENTINEL (texto integral)" iconBg="bg-[#002443]/5" iconColor="text-[#002443]/60">
-            <div className="mt-3 prose prose-sm max-w-none text-[#002443]">
-              <ReactMarkdown
-                components={{
-                  h2: ({ children }) => <h2 className="text-base font-bold text-[#002443] mt-5 mb-2 pb-1.5 border-b border-[#002443]/10">{children}</h2>,
-                  h3: ({ children }) => <h3 className="text-sm font-bold text-[#002443] mt-4 mb-1.5">{children}</h3>,
-                  p: ({ children }) => <p className="text-[13px] text-[#002443]/80 leading-[1.7] my-1.5">{children}</p>,
-                  strong: ({ children }) => <strong className="text-[#002443] font-bold">{children}</strong>,
-                  li: ({ children }) => <li className="text-[13px] text-[#002443]/80 leading-[1.7] my-1">{children}</li>,
-                  ul: ({ children }) => <ul className="list-disc pl-5 my-2 space-y-0.5">{children}</ul>,
-                  ol: ({ children }) => <ol className="list-decimal pl-5 my-2 space-y-0.5">{children}</ol>,
-                }}
-              >
-                {complianceScore.analise_completa_ia}
-              </ReactMarkdown>
+          <Section icon={Brain} title="Análise Completa SENTINEL (texto integral)" iconBg="bg-[#002443]/5" iconColor="text-[#002443]/60" defaultOpen={true}>
+            <div className="mt-3">
+              <SentinelTextFormatter text={complianceScore.analise_completa_ia} />
             </div>
           </Section>
         )}
