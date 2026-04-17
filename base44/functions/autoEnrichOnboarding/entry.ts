@@ -191,14 +191,38 @@ Deno.serve(async (req) => {
     }
 
     // ═══ STEP 1: BDC Enrichment → Score V4 (DETERMINÍSTICO) ═══
+    // v8: BDC agora tem retry em queue persistente. Se lotes CRÍTICOS falharem,
+    // bdcEnrichCase retorna 202 + enfileira retry — pipeline PARA aqui até BDC voltar.
     let bdcSuccess = false;
+    let bdcEnqueued = false;
     try {
       console.log(`[AutoEnrich] Step 1: BDC enrichment (V4 scoring)...`);
       const bdcRes = await base44.asServiceRole.functions.invoke('bdcEnrichCase', { onboardingCaseId: caseId });
       bdcSuccess = bdcRes?.data?.success === true;
+      bdcEnqueued = bdcRes?.data?.reason === 'critical_batches_failed_enqueued';
+
+      if (bdcEnqueued) {
+        console.warn(`[AutoEnrich] ⏸️  Step 1: CRITICAL batches failed — BDC enqueued for retry. BLOCKING pipeline.`);
+        console.warn(`[AutoEnrich] Failed batches: ${(bdcRes?.data?.failedBatches || []).join(', ')}`);
+        // Pipeline blocked — bdcRetryWorker will retry and re-trigger autoEnrichOnboarding
+        return Response.json({
+          success: false,
+          blocked: true,
+          reason: 'bdc_critical_failed',
+          failedBatches: bdcRes?.data?.failedBatches,
+          message: 'Pipeline bloqueado — aguardando BDC. Retry automático em andamento.',
+        });
+      }
       console.log(`[AutoEnrich] Step 1: ${bdcSuccess ? 'OK' : 'FAILED'} — V4 score=${bdcRes?.data?.analysis?.scoring?.finalScore}`);
     } catch (bdcErr) {
-      console.warn(`[AutoEnrich] Step 1 failed (non-blocking): ${bdcErr.message}`);
+      console.error(`[AutoEnrich] Step 1 CRITICAL ERROR: ${bdcErr.message} — BLOCKING pipeline`);
+      // If bdcEnrichCase itself threw (not just returned 202), we can't trust any downstream analysis
+      return Response.json({
+        success: false,
+        blocked: true,
+        reason: 'bdc_exception',
+        error: bdcErr.message,
+      });
     }
 
     // ═══ POST-BDC: Enrich representante legal from BDC sócios data (P5) ═══

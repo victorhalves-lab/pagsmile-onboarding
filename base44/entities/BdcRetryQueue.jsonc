@@ -1,0 +1,129 @@
+{
+  "name": "BdcRetryQueue",
+  "type": "object",
+  "properties": {
+    "onboarding_case_id": {
+      "type": "string",
+      "description": "ID do OnboardingCase aguardando dados BDC"
+    },
+    "merchant_id": {
+      "type": "string",
+      "description": "ID do Merchant associado"
+    },
+    "document": {
+      "type": "string",
+      "description": "CPF ou CNPJ limpo (apenas d\u00edgitos)"
+    },
+    "document_type": {
+      "type": "string",
+      "enum": [
+        "cpf",
+        "cnpj"
+      ],
+      "description": "Tipo do documento"
+    },
+    "template_model": {
+      "type": "string",
+      "description": "Modelo do question\u00e1rio usado (para determinar datasets)"
+    },
+    "dataset_group": {
+      "type": "string",
+      "description": "Grupo de datasets (FULL, STANDARD, LITE, etc.)"
+    },
+    "batches_pending": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "batch_id": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "CRITICAL",
+              "IMPORTANT",
+              "COMPLEMENTARY"
+            ]
+          },
+          "datasets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "attempts": {
+            "type": "number"
+          },
+          "last_error": {
+            "type": "string"
+          },
+          "last_attempt_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "success",
+              "degraded"
+            ]
+          }
+        }
+      },
+      "description": "Lotes de datasets pendentes com status individual"
+    },
+    "batches_success": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs dos lotes que j\u00e1 obtiveram sucesso"
+    },
+    "attempt_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Total de tentativas (soma de todos os lotes)"
+    },
+    "next_retry_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Quando a pr\u00f3xima tentativa deve rodar"
+    },
+    "first_attempt_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Quando foi enfileirado pela primeira vez"
+    },
+    "last_success_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Quando o \u00faltimo lote obteve sucesso"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "processing",
+        "success",
+        "giving_up"
+      ],
+      "default": "pending",
+      "description": "Status geral da queue"
+    },
+    "last_error": {
+      "type": "string",
+      "description": "\u00daltima mensagem de erro global"
+    },
+    "merged_result": {
+      "type": "object",
+      "description": "Resultado consolidado da BDC (datasets combinados de todos os lotes)"
+    }
+  },
+  "required": [
+    "onboarding_case_id",
+    "document",
+    "document_type"
+  ]
+}
