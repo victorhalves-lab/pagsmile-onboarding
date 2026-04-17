@@ -73,12 +73,16 @@ Deno.serve(async (req) => {
     const [merchant] = await base44.asServiceRole.entities.Merchant.filter({ id: onboardingCase.merchantId });
     const merchantCpf = merchant?.cpfCnpj?.replace(/\D/g, '');
 
-    // For PJ: extract representative's CPF and name from multiple sources
-    // Priority chain:
-    //   P4: Explicit "CPF/Nome do Representante Legal" question response
-    //   P3: Explicit "CPF/Nome do Responsável Legal" question response
-    //   P2: First sócio from ComplianceSession.formData.socios (every sócio IS a representante legal)
-    //   P1: Any 11-digit CPF in questionnaire responses
+    // ═══ PRE-EXTRACTION: Representante Legal CPF/Name ═══
+    // Extracted from questionnaire BEFORE BDC runs (for Step 0 CAF).
+    // AFTER BDC runs (Step 1), we'll enrich with BDC sócios data (P5 — highest priority).
+    //
+    // Priority chain (ascending — higher number wins):
+    //   P1: Any 11-digit CPF / "Nome completo" generic in questionnaire
+    //   P2: First sócio from ComplianceSession.formData.socios
+    //   P3: "CPF/Nome do Responsável Legal" question response
+    //   P4: "CPF/Nome do Representante Legal" question response
+    //   P5: BDC Relationships (QSA) — first sócio from official Receita Federal data (post-Step 1)
     let representanteCpf = null;
     let representanteNome = null;
     let repCpfPriority = 0;
@@ -86,83 +90,56 @@ Deno.serve(async (req) => {
 
     if (merchant?.type === 'PJ' || (merchantCpf && merchantCpf.length === 14)) {
       try {
-        // Source 1: QuestionnaireResponse records (explicit fields)
         const responses = await base44.asServiceRole.entities.QuestionnaireResponse.filter({ onboardingCaseId: caseId });
         for (const r of responses) {
           const t = (r.questionText || '').toLowerCase();
           const val = r.valueText || '';
           const cleanVal = val.replace(/\D/g, '');
 
-          // CPF P4: "CPF do Representante Legal"
           if (cleanVal.length === 11 && t.includes('cpf') && t.includes('representante') && t.includes('legal') && repCpfPriority < 4) {
             representanteCpf = cleanVal; repCpfPriority = 4;
           }
-          // CPF P3: "CPF do Responsável Legal"
           if (cleanVal.length === 11 && t.includes('cpf') && (t.includes('responsável') || t.includes('responsavel')) && repCpfPriority < 3) {
             representanteCpf = cleanVal; repCpfPriority = 3;
           }
-          // CPF P1: Any 11-digit CPF
           if (cleanVal.length === 11 && repCpfPriority < 1) {
             representanteCpf = cleanVal; repCpfPriority = 1;
           }
 
-          // Name P4: "Nome completo do Representante Legal"
           if (t.includes('representante legal') && t.includes('nome') && val.length > 3 && repNamePriority < 4) {
             representanteNome = val; repNamePriority = 4;
           }
-          // Name P3: "Nome do Responsável Legal"
           if ((t.includes('responsável legal') || (t.includes('nome') && t.includes('responsável'))) && val.length > 3 && repNamePriority < 3) {
             representanteNome = val; repNamePriority = 3;
           }
-          // Name P1: "Nome completo" generic
           if (t.includes('nome completo') && val.length > 3 && repNamePriority < 1) {
             representanteNome = val; repNamePriority = 1;
           }
         }
 
-        // Source 2: ComplianceSession.formData.socios (sócios = representantes legais)
+        // Source 2: ComplianceSession.formData.socios
         if (repCpfPriority < 2 || repNamePriority < 2) {
           try {
             const sessions = await base44.asServiceRole.entities.ComplianceSession.filter({ status: 'completed' });
-            // Find session linked to this case by checking formData for caseId or matching linkCode
             let sessionFormData = null;
             for (const s of sessions) {
-              if (s.linkCode === onboardingCase.onboardingLinkCode) {
-                sessionFormData = s.formData;
-                break;
-              }
-            }
-            // Also try from formData in responses directly
-            if (!sessionFormData) {
-              // Scan responses for socios data pattern
-              for (const r of responses) {
-                if (r.questionText?.toLowerCase().includes('sóci') && r.valueArray?.length > 0) {
-                  // Some systems store socios as array
-                  break;
-                }
-              }
+              if (s.linkCode === onboardingCase.onboardingLinkCode) { sessionFormData = s.formData; break; }
             }
             const socios = sessionFormData?.socios || [];
             if (Array.isArray(socios) && socios.length > 0) {
               for (const socio of socios) {
                 const socioCpf = (socio.cpf || '').replace(/\D/g, '');
                 const socioNome = (socio.nome || '').trim();
-                if (socioCpf.length === 11 && repCpfPriority < 2) {
-                  representanteCpf = socioCpf; repCpfPriority = 2;
-                }
-                if (socioNome.length > 3 && socioNome.includes(' ') && repNamePriority < 2) {
-                  representanteNome = socioNome; repNamePriority = 2;
-                }
+                if (socioCpf.length === 11 && repCpfPriority < 2) { representanteCpf = socioCpf; repCpfPriority = 2; }
+                if (socioNome.length > 3 && socioNome.includes(' ') && repNamePriority < 2) { representanteNome = socioNome; repNamePriority = 2; }
                 if (repCpfPriority >= 2 && repNamePriority >= 2) break;
               }
               console.log(`[AutoEnrich] Found ${socios.length} sócios in ComplianceSession`);
             }
-          } catch (sessErr) {
-            console.warn('[AutoEnrich] Could not load ComplianceSession socios:', sessErr.message);
-          }
+          } catch (sessErr) { console.warn('[AutoEnrich] ComplianceSession socios:', sessErr.message); }
         }
 
-        console.log(`[AutoEnrich] Representante legal: CPF=${representanteCpf ? representanteCpf.substring(0, 3) + '***' + representanteCpf.substring(8) : 'EMPTY'} (P${repCpfPriority}), Name=${representanteNome || 'EMPTY'} (P${repNamePriority})`);
+        console.log(`[AutoEnrich] Pre-BDC Representante: CPF=${representanteCpf ? representanteCpf.substring(0, 3) + '***' + representanteCpf.substring(8) : 'EMPTY'} (P${repCpfPriority}), Name=${representanteNome || 'EMPTY'} (P${repNamePriority})`);
       } catch (e) { console.warn('[AutoEnrich] Could not extract representante CPF:', e.message); }
     }
 
@@ -222,6 +199,69 @@ Deno.serve(async (req) => {
       console.log(`[AutoEnrich] Step 1: ${bdcSuccess ? 'OK' : 'FAILED'} — V4 score=${bdcRes?.data?.analysis?.scoring?.finalScore}`);
     } catch (bdcErr) {
       console.warn(`[AutoEnrich] Step 1 failed (non-blocking): ${bdcErr.message}`);
+    }
+
+    // ═══ POST-BDC: Enrich representante legal from BDC sócios data (P5) ═══
+    // BDC returns official Receita Federal QSA via `Relationships` dataset.
+    // This is the MOST RELIABLE source of sócio data — overrides questionnaire answers.
+    if (bdcSuccess && (merchant?.type === 'PJ' || (merchantCpf && merchantCpf.length === 14))) {
+      try {
+        // Read BDC result from ExternalValidationResult (saved by bdcEnrichCase)
+        const bdcResults = await base44.asServiceRole.entities.ExternalValidationResult.filter({
+          onboardingCaseId: caseId, provider: 'BigDataCorp'
+        });
+        const bdcResult = bdcResults.find(r => r.validationType?.includes('PJ'))?.resultData;
+        if (bdcResult) {
+          // Extract sócios from Relationships (QSA — official Receita Federal data)
+          const rels = bdcResult?.Relationships || bdcResult?.relationships;
+          const relEntries = rels?.Relationships || (Array.isArray(rels) ? rels : []);
+          const bdcSocios = [];
+          if (Array.isArray(relEntries)) {
+            for (const e of relEntries) {
+              const doc = (e.RelatedEntityTaxIdNumber || e.TaxIdNumber || '').replace(/\D/g, '');
+              const name = e.RelatedEntityName || e.Name || '';
+              const role = e.RelationshipName || e.Qualification || e.Role || '';
+              if (doc.length === 11 && name.length > 3) {
+                bdcSocios.push({ cpf: doc, nome: name, cargo: role });
+              }
+            }
+          }
+
+          // Also check OwnersKyc for additional detail
+          const ownersKyc = bdcResult?.OwnersKyc || bdcResult?.owners_kyc;
+          if (ownersKyc) {
+            const kycItems = Array.isArray(ownersKyc) ? ownersKyc : [ownersKyc];
+            for (const item of kycItems) {
+              if (item?.MatchKeys) continue;
+              const doc = (item?.TaxIdNumber || item?.CPF || '').replace(/\D/g, '');
+              const name = item?.Name || item?.RelatedPersonName || '';
+              if (doc.length === 11 && name.length > 3) {
+                // Only add if not already in bdcSocios
+                if (!bdcSocios.some(s => s.cpf === doc)) {
+                  bdcSocios.push({ cpf: doc, nome: name, cargo: 'sócio (kyc)' });
+                }
+              }
+            }
+          }
+
+          if (bdcSocios.length > 0) {
+            console.log(`[AutoEnrich] BDC returned ${bdcSocios.length} sócios from official QSA: ${bdcSocios.map(s => s.nome.split(' ')[0]).join(', ')}`);
+            // P5: BDC QSA data overrides all questionnaire sources
+            const firstSocio = bdcSocios[0];
+            if (firstSocio.cpf && repCpfPriority < 5) {
+              representanteCpf = firstSocio.cpf; repCpfPriority = 5;
+            }
+            if (firstSocio.nome && repNamePriority < 5) {
+              representanteNome = firstSocio.nome; repNamePriority = 5;
+            }
+            console.log(`[AutoEnrich] Post-BDC Representante: CPF=${representanteCpf ? representanteCpf.substring(0, 3) + '***' + representanteCpf.substring(8) : 'EMPTY'} (P${repCpfPriority}), Name=${representanteNome || 'EMPTY'} (P${repNamePriority})`);
+          } else {
+            console.log(`[AutoEnrich] BDC QSA: No PF sócios found in Relationships/OwnersKyc`);
+          }
+        }
+      } catch (bdcSocioErr) {
+        console.warn(`[AutoEnrich] Post-BDC sócio extraction failed (non-blocking): ${bdcSocioErr.message}`);
+      }
     }
 
     // ═══ STEP 1.5: CAF Full Enrichment (ITEM 3 — KYC/KYB completo) ═══
