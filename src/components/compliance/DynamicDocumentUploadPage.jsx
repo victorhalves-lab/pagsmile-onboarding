@@ -103,12 +103,18 @@ export default function DynamicDocumentUploadPage({
   }, [documents, saveProgress]);
 
   // Get person data from saved form for CAF
-  // Priority: "CPF do Representante Legal" > "CPF do Responsável Legal" > any 11-digit CPF_CNPJ
+  // Priority chain:
+  //   P4: Explicit "CPF/Nome do Representante Legal" question fields
+  //   P3: Explicit "CPF/Nome do Responsável Legal" question fields
+  //   P2: First sócio from formData.socios array (every sócio IS a representante legal)
+  //   P1: Any CPF_CNPJ field with 11 digits / any "Nome completo" field
+  //   P0: Raw fallback scan
   const getPersonData = () => {
     const fd = JSON.parse(localStorage.getItem(formDataStorageKey) || '{}');
     let name = '', cpf = '';
     let namePriority = 0, cpfPriority = 0; // higher = better match
 
+    // ── Source 1: Explicit question fields ──
     if (questions.length > 0) {
       for (const q of questions) {
         const t = (q.text || '').toLowerCase().trim();
@@ -116,37 +122,53 @@ export default function DynamicDocumentUploadPage({
         if (!val || typeof val !== 'string') continue;
         const cleanVal = val.replace(/\D/g, '');
 
-        // ── CPF extraction with priority ──
-        // P3: "CPF do Representante Legal" (exact best match for CAF face match)
-        if (cleanVal.length === 11 && t.includes('cpf') && t.includes('representante') && t.includes('legal') && cpfPriority < 3) {
+        // CPF P4: "CPF do Representante Legal"
+        if (cleanVal.length === 11 && t.includes('cpf') && t.includes('representante') && t.includes('legal') && cpfPriority < 4) {
+          cpf = val; cpfPriority = 4;
+        }
+        // CPF P3: "CPF do Responsável Legal"
+        if (cleanVal.length === 11 && t.includes('cpf') && (t.includes('responsável') || t.includes('responsavel')) && cpfPriority < 3) {
           cpf = val; cpfPriority = 3;
         }
-        // P2: "CPF do Responsável Legal" or "CPF do responsável"
-        if (cleanVal.length === 11 && t.includes('cpf') && (t.includes('responsável') || t.includes('responsavel')) && cpfPriority < 2) {
-          cpf = val; cpfPriority = 2;
-        }
-        // P1: Any CPF_CNPJ field with 11 digits
+        // CPF P1: Any CPF_CNPJ field with 11 digits
         if (cleanVal.length === 11 && q.type === 'CPF_CNPJ' && cpfPriority < 1) {
           cpf = val; cpfPriority = 1;
         }
 
-        // ── Name extraction with priority ──
-        // P3: "Nome completo do Representante Legal"
-        if (t.includes('representante legal') && t.includes('nome') && namePriority < 3) {
+        // Name P4: "Nome completo do Representante Legal"
+        if (t.includes('representante legal') && t.includes('nome') && namePriority < 4) {
+          name = val; namePriority = 4;
+        }
+        // Name P3: "Nome do Responsável Legal"
+        if ((t.includes('responsável legal') || (t.includes('nome') && t.includes('responsável'))) && namePriority < 3) {
           name = val; namePriority = 3;
         }
-        // P2: "Nome do Responsável Legal" or "Nome completo do responsável"
-        if ((t.includes('responsável legal') || (t.includes('nome') && t.includes('responsável'))) && namePriority < 2) {
-          name = val; namePriority = 2;
-        }
-        // P1: "Nome completo" generic
+        // Name P1: "Nome completo" generic
         if (t.includes('nome completo') && namePriority < 1) {
           name = val; namePriority = 1;
         }
       }
     }
 
-    // Fallback: scan all values for 11-digit patterns (CPF) and multi-word strings (name)
+    // ── Source 2: Sócios array (every sócio IS a representante legal) ──
+    // Use the first sócio with valid CPF as P2 fallback
+    const socios = fd.socios || [];
+    if (Array.isArray(socios) && socios.length > 0) {
+      for (const socio of socios) {
+        const socioCpf = (socio.cpf || '').replace(/\D/g, '');
+        const socioNome = (socio.nome || '').trim();
+        if (socioCpf.length === 11 && cpfPriority < 2) {
+          cpf = socio.cpf; cpfPriority = 2;
+        }
+        if (socioNome.length > 3 && socioNome.includes(' ') && namePriority < 2) {
+          name = socioNome; namePriority = 2;
+        }
+        // Stop after first valid sócio (principal)
+        if (cpfPriority >= 2 && namePriority >= 2) break;
+      }
+    }
+
+    // ── Source 3: Raw fallback scan ──
     if (!cpf || !name) {
       for (const q of questions) {
         const val = fd[q.id];
@@ -157,7 +179,7 @@ export default function DynamicDocumentUploadPage({
       }
     }
 
-    console.log('[CAF-PersonData] Extracted:', { name: name ? name.substring(0, 20) + '...' : 'EMPTY', cpf: cpf ? cpf.substring(0, 3) + '***' : 'EMPTY', namePriority, cpfPriority });
+    console.log('[CAF-PersonData] Extracted:', { name: name ? name.substring(0, 20) + '...' : 'EMPTY', cpf: cpf ? cpf.substring(0, 3) + '***' : 'EMPTY', namePriority, cpfPriority, sociosCount: socios.length });
     return { name, cpf };
   };
 

@@ -73,31 +73,96 @@ Deno.serve(async (req) => {
     const [merchant] = await base44.asServiceRole.entities.Merchant.filter({ id: onboardingCase.merchantId });
     const merchantCpf = merchant?.cpfCnpj?.replace(/\D/g, '');
 
-    // For PJ: extract representative's CPF from questionnaire responses (needed for CAF face match)
+    // For PJ: extract representative's CPF and name from multiple sources
+    // Priority chain:
+    //   P4: Explicit "CPF/Nome do Representante Legal" question response
+    //   P3: Explicit "CPF/Nome do Responsável Legal" question response
+    //   P2: First sócio from ComplianceSession.formData.socios (every sócio IS a representante legal)
+    //   P1: Any 11-digit CPF in questionnaire responses
     let representanteCpf = null;
     let representanteNome = null;
+    let repCpfPriority = 0;
+    let repNamePriority = 0;
+
     if (merchant?.type === 'PJ' || (merchantCpf && merchantCpf.length === 14)) {
       try {
+        // Source 1: QuestionnaireResponse records (explicit fields)
         const responses = await base44.asServiceRole.entities.QuestionnaireResponse.filter({ onboardingCaseId: caseId });
         for (const r of responses) {
           const t = (r.questionText || '').toLowerCase();
           const val = r.valueText || '';
           const cleanVal = val.replace(/\D/g, '');
-          // Priority: "CPF do Representante Legal" > "CPF do Responsável Legal" > any 11-digit CPF
-          if (cleanVal.length === 11 && t.includes('cpf') && t.includes('representante') && t.includes('legal')) {
-            representanteCpf = cleanVal;
-          } else if (!representanteCpf && cleanVal.length === 11 && t.includes('cpf') && (t.includes('responsável') || t.includes('responsavel'))) {
-            representanteCpf = cleanVal;
+
+          // CPF P4: "CPF do Representante Legal"
+          if (cleanVal.length === 11 && t.includes('cpf') && t.includes('representante') && t.includes('legal') && repCpfPriority < 4) {
+            representanteCpf = cleanVal; repCpfPriority = 4;
           }
-          if (t.includes('representante legal') && t.includes('nome') && val.length > 3) {
-            representanteNome = val;
-          } else if (!representanteNome && (t.includes('responsável legal') || t.includes('nome do responsável')) && val.length > 3) {
-            representanteNome = val;
+          // CPF P3: "CPF do Responsável Legal"
+          if (cleanVal.length === 11 && t.includes('cpf') && (t.includes('responsável') || t.includes('responsavel')) && repCpfPriority < 3) {
+            representanteCpf = cleanVal; repCpfPriority = 3;
+          }
+          // CPF P1: Any 11-digit CPF
+          if (cleanVal.length === 11 && repCpfPriority < 1) {
+            representanteCpf = cleanVal; repCpfPriority = 1;
+          }
+
+          // Name P4: "Nome completo do Representante Legal"
+          if (t.includes('representante legal') && t.includes('nome') && val.length > 3 && repNamePriority < 4) {
+            representanteNome = val; repNamePriority = 4;
+          }
+          // Name P3: "Nome do Responsável Legal"
+          if ((t.includes('responsável legal') || (t.includes('nome') && t.includes('responsável'))) && val.length > 3 && repNamePriority < 3) {
+            representanteNome = val; repNamePriority = 3;
+          }
+          // Name P1: "Nome completo" generic
+          if (t.includes('nome completo') && val.length > 3 && repNamePriority < 1) {
+            representanteNome = val; repNamePriority = 1;
           }
         }
-        if (representanteCpf) {
-          console.log(`[AutoEnrich] Found representante legal CPF: ${representanteCpf.substring(0, 3)}***${representanteCpf.substring(8)}, name: ${representanteNome || 'N/D'}`);
+
+        // Source 2: ComplianceSession.formData.socios (sócios = representantes legais)
+        if (repCpfPriority < 2 || repNamePriority < 2) {
+          try {
+            const sessions = await base44.asServiceRole.entities.ComplianceSession.filter({ status: 'completed' });
+            // Find session linked to this case by checking formData for caseId or matching linkCode
+            let sessionFormData = null;
+            for (const s of sessions) {
+              if (s.linkCode === onboardingCase.onboardingLinkCode) {
+                sessionFormData = s.formData;
+                break;
+              }
+            }
+            // Also try from formData in responses directly
+            if (!sessionFormData) {
+              // Scan responses for socios data pattern
+              for (const r of responses) {
+                if (r.questionText?.toLowerCase().includes('sóci') && r.valueArray?.length > 0) {
+                  // Some systems store socios as array
+                  break;
+                }
+              }
+            }
+            const socios = sessionFormData?.socios || [];
+            if (Array.isArray(socios) && socios.length > 0) {
+              for (const socio of socios) {
+                const socioCpf = (socio.cpf || '').replace(/\D/g, '');
+                const socioNome = (socio.nome || '').trim();
+                if (socioCpf.length === 11 && repCpfPriority < 2) {
+                  representanteCpf = socioCpf; repCpfPriority = 2;
+                }
+                if (socioNome.length > 3 && socioNome.includes(' ') && repNamePriority < 2) {
+                  representanteNome = socioNome; repNamePriority = 2;
+                }
+                if (repCpfPriority >= 2 && repNamePriority >= 2) break;
+              }
+              console.log(`[AutoEnrich] Found ${socios.length} sócios in ComplianceSession`);
+            }
+          } catch (sessErr) {
+            console.warn('[AutoEnrich] Could not load ComplianceSession socios:', sessErr.message);
+          }
         }
+
+        console.log(`[AutoEnrich] Representante legal: CPF=${representanteCpf ? representanteCpf.substring(0, 3) + '***' + representanteCpf.substring(8) : 'EMPTY'} (P${repCpfPriority}), Name=${representanteNome || 'EMPTY'} (P${repNamePriority})`);
       } catch (e) { console.warn('[AutoEnrich] Could not extract representante CPF:', e.message); }
     }
 
@@ -120,6 +185,7 @@ Deno.serve(async (req) => {
     }
 
     // ═══ STEP 0.5: CAF Profile Check (ITEM 5 — cross-merchant history) ═══
+    // For PJ: check profile of the representante legal (person), not just the company
     let profileCheckSuccess = false;
     try {
       console.log(`[AutoEnrich] Step 0.5: CAF profile check...`);
@@ -128,8 +194,13 @@ Deno.serve(async (req) => {
         profileParams.cpf = merchantCpf;
       } else if (merchant?.cpfCnpj) {
         const doc = merchant.cpfCnpj.replace(/\D/g, '');
-        if (doc.length === 14) profileParams.cnpj = doc;
-        else profileParams.cpf = doc;
+        if (doc.length === 14) {
+          profileParams.cnpj = doc;
+          // Also check representante legal profile for PJ
+          if (representanteCpf) profileParams.cpf = representanteCpf;
+        } else {
+          profileParams.cpf = doc;
+        }
       }
       if (profileParams.cpf || profileParams.cnpj) {
         const profileRes = await base44.asServiceRole.functions.invoke('cafCheckProfile', profileParams);
@@ -154,6 +225,7 @@ Deno.serve(async (req) => {
     }
 
     // ═══ STEP 1.5: CAF Full Enrichment (ITEM 3 — KYC/KYB completo) ═══
+    // For PJ: send both CNPJ (company) AND representante CPF (person) for comprehensive KYC
     let cafEnrichSuccess = false;
     try {
       console.log(`[AutoEnrich] Step 1.5: CAF full enrichment...`);
@@ -162,8 +234,13 @@ Deno.serve(async (req) => {
         enrichParams.cpf = merchantCpf;
       } else if (merchant?.cpfCnpj) {
         const doc = merchant.cpfCnpj.replace(/\D/g, '');
-        if (doc.length === 14) enrichParams.cnpj = doc;
-        else enrichParams.cpf = doc;
+        if (doc.length === 14) {
+          enrichParams.cnpj = doc;
+          // Also include representante CPF for person-level KYC on PJ
+          if (representanteCpf) enrichParams.cpf = representanteCpf;
+        } else {
+          enrichParams.cpf = doc;
+        }
       }
       if (enrichParams.cpf || enrichParams.cnpj) {
         const enrichRes = await base44.asServiceRole.functions.invoke('cafFullEnrichment', enrichParams);
@@ -177,6 +254,7 @@ Deno.serve(async (req) => {
     }
 
     // ═══ STEP 1.7: CAF Credit Analysis (ITEM 4 — segunda fonte de crédito) ═══
+    // For PJ: use representante CPF for personal credit analysis
     let cafCreditSuccess = false;
     try {
       console.log(`[AutoEnrich] Step 1.7: CAF credit analysis...`);
@@ -185,8 +263,12 @@ Deno.serve(async (req) => {
         creditParams.cpf = merchantCpf;
       } else if (merchant?.cpfCnpj) {
         const doc = merchant.cpfCnpj.replace(/\D/g, '');
-        if (doc.length === 14) creditParams.cnpj = doc;
-        else creditParams.cpf = doc;
+        if (doc.length === 14) {
+          creditParams.cnpj = doc;
+          if (representanteCpf) creditParams.cpf = representanteCpf;
+        } else {
+          creditParams.cpf = doc;
+        }
       }
       if (creditParams.cpf || creditParams.cnpj) {
         const creditRes = await base44.asServiceRole.functions.invoke('cafCreditAnalysis', creditParams);
