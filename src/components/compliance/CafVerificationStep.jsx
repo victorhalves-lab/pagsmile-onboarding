@@ -10,9 +10,11 @@ import CafLivenessPreparation from './CafLivenessPreparation';
 import CafLivenessOverlay from './CafLivenessOverlay';
 import CafDifficultyModal from './CafDifficultyModal';
 import CafManualSelfieUpload from './CafManualSelfieUpload';
+import BdcFallbackVerification from './BdcFallbackVerification';
 
 /**
  * CAF SDK Web Integration — DocumentDetector + FaceLiveness
+ * With BDC BigID Fallback when SDK fails to load
  * 
  * CRITICAL FIX NOTES:
  * - FaceLiveness.run() returns a JWT STRING directly, NOT an object with .signedResponse
@@ -137,6 +139,7 @@ export default function CafVerificationStep({
   const [livenessAttempts, setLivenessAttempts] = useState(0);
   const [showDifficultyModal, setShowDifficultyModal] = useState(false);
   const [manualFallback, setManualFallback] = useState(false);
+  const [bdcFallback, setBdcFallback] = useState(false);
   const flContainerRef = useRef(null);
 
   const stepIndex = phase === 'ready' || phase === 'loading' ? 0 
@@ -183,9 +186,17 @@ export default function CafVerificationStep({
       setPhase('doc_front');
     } catch (err) {
       console.error('[CAF] Init error:', err);
-      setError(err.message);
-      setPhase('error');
-      toast.error('Erro ao iniciar verificação: ' + err.message);
+      // If SDK failed to load (network/CDN issue), offer BDC fallback
+      if (err.message?.includes('Falha ao carregar SDK') || err.message?.includes('não carregou')) {
+        console.log('[CAF] SDK load failed — enabling BDC BigID fallback');
+        setBdcFallback(true);
+        setPhase('bdc_fallback');
+        toast.info('SDK CAF indisponível. Usando verificação alternativa BigDataCorp.');
+      } else {
+        setError(err.message);
+        setPhase('error');
+        toast.error('Erro ao iniciar verificação: ' + err.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -745,6 +756,15 @@ export default function CafVerificationStep({
             A selfie será salva automaticamente após a verificação.
           </p>
         </div>
+      )}
+
+      {/* ── BDC BigID Fallback ── */}
+      {phase === 'bdc_fallback' && (
+        <BdcFallbackVerification
+          onboardingCaseId={onboardingCaseId}
+          personCpf={personCpf}
+          onComplete={onComplete}
+        />
       )}
 
       {/* ── Manual Selfie Fallback ── */}
