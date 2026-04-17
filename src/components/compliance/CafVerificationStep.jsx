@@ -22,17 +22,15 @@ import CafManualSelfieUpload from './CafManualSelfieUpload';
  * - Full CAF data enrichment: isAlive, isMatch, similarity, sessionId, detectedDocument, storageInfo
  */
 
-const CAF_DD_SDK_URL = 'https://repo.combateafraude.com/javascript/release/document-detector/latest/document-detector.umd.js';
-const CAF_FL_SDK_URL = 'https://repo.combateafraude.com/javascript/release/caf-face-liveness/latest/caf-face-liveness.umd.js';
+const CAF_DD_SDK_URL = 'https://repo.combateafraude.com/javascript/release/document-detector/6.13.0/document-detector-6.13.0.umd.js';
+const CAF_DD_WASM_URL = 'https://repo.combateafraude.com/javascript/release/document-detector/6.13.0/dd-validator.wasm';
+const CAF_FL_SDK_URL = 'https://repo.combateafraude.com/javascript/release/caf-face-liveness/0.16.0/caf-face-liveness_0.16.0.umd.js';
 
 function loadScript(src) {
   return new Promise((resolve, reject) => {
-    // Check if already loaded by looking for the script tag
     const existing = document.querySelector(`script[data-caf-src="${src}"]`);
     if (existing) {
-      // If the script tag exists, check if it already loaded
       if (existing.dataset.loaded === 'true') { resolve(); return; }
-      // If still loading, wait for it
       existing.addEventListener('load', resolve);
       existing.addEventListener('error', () => reject(new Error(`Falha ao carregar SDK: ${src}`)));
       return;
@@ -45,6 +43,15 @@ function loadScript(src) {
     script.onerror = () => reject(new Error(`Falha ao carregar SDK: ${src}. Verifique sua conexão e tente novamente.`));
     document.body.appendChild(script);
   });
+}
+
+function preloadWasm(url) {
+  const link = document.createElement('link');
+  link.rel = 'prefetch';
+  link.href = url;
+  link.as = 'fetch';
+  link.crossOrigin = 'anonymous';
+  document.head.appendChild(link);
 }
 
 const STEPS = [
@@ -155,6 +162,9 @@ export default function CafVerificationStep({
       setSdkToken(data.sdkToken);
       setPersonId(data.personId);
 
+      // Preload the WASM file needed by DocumentDetector
+      preloadWasm(CAF_DD_WASM_URL);
+      
       await Promise.all([
         loadScript(CAF_DD_SDK_URL),
         loadScript(CAF_FL_SDK_URL),
