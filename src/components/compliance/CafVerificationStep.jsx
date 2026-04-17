@@ -806,6 +806,16 @@ export default function CafVerificationStep({
               <RefreshCw className="w-4 h-4 mr-2" /> Tentar Novamente
             </Button>
             
+            {(error?.includes('Falha ao carregar SDK') || error?.includes('não carregou') || retryCount >= 2) && (
+              <Button
+                onClick={() => { setBdcFallback(true); setPhase('bdc_fallback'); setError(null); }}
+                variant="outline"
+                className="px-6 h-11 rounded-xl border-blue-200 text-blue-700 hover:bg-blue-50"
+              >
+                Verificação Alternativa (BigDataCorp)
+              </Button>
+            )}
+
             {livenessAttempts >= 3 && (
               <Button
                 onClick={handleManualFallback}
