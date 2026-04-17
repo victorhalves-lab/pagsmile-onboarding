@@ -45,6 +45,11 @@ const PERSON_DATASET_ALIASES = {
   'financial_interests':           'financial_interests',
   'risk_data':                     'risk_data',
 
+  // Sprint 2 PF — Cross-check financeiro & redes
+  'personal_relationships':        'personal_relationships',
+  'scr_positive_score':            'scr_positive_score',
+  'simples_nacional_collection':   'simples_nacional_collection',
+
   // Contatos de pessoas relacionadas
   'related_people_phones':         'related_people_phones',
   'related_people_emails':         'related_people_emails',
@@ -59,7 +64,7 @@ const PERSON_DATASET_GROUPS = {
     'relationships', 'electoral_donors',
   ].join(','),
 
-  // Subseller PF — expandido com datasets regulatórios
+  // Subseller PF — expandido com datasets regulatórios + cross-check financeiro
   'subseller_pf': [
     'basic_data', 'kyc', 'processes', 'collections',
     'emails_extended', 'phones_extended', 'addresses_extended',
@@ -68,6 +73,13 @@ const PERSON_DATASET_GROUPS = {
     'risk_data', 'government_debtors', 'first_level_family_kyc',
     'social_assistance', 'electoral_donors', 'public_servants',
     'presumed_income', 'financial_interests',
+    'personal_relationships', 'scr_positive_score', 'simples_nacional_collection',
+  ].join(','),
+
+  // Cross-check financeiro (uso avulso)
+  'financial_crosscheck': [
+    'basic_data', 'presumed_income', 'financial_interests',
+    'scr_positive_score', 'simples_nacional_collection',
   ].join(','),
 
   // Básico
