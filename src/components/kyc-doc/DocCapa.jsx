@@ -6,14 +6,14 @@ const LOGO_DARK = "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/pu
 
 export default function DocCapa() {
   return (
-    <div className="bg-[#002443] rounded-2xl p-10 mb-8 text-white relative overflow-hidden print:rounded-none print:p-8">
+    <div className="kyc-doc-dark-bg bg-[#002443] rounded-2xl p-10 mb-8 text-white relative overflow-hidden print:rounded-none print:p-8">
       <div className="absolute top-0 right-0 w-64 h-64 bg-[#2bc196]/10 rounded-full -translate-y-1/2 translate-x-1/2" />
       <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#2bc196]/5 rounded-full translate-y-1/2 -translate-x-1/2" />
       <div className="relative z-10">
         <img src={LOGO_DARK} alt="PagSmile" className="h-8 mb-8" />
         <div className="flex items-center gap-3 mb-2">
           <Shield className="w-8 h-8 text-[#2bc196]" />
-          <span className="text-[#2bc196] text-sm font-bold tracking-wider uppercase">Documento Oficial de Compliance</span>
+          <span className="text-[#2bc196] kyc-doc-green-text text-sm font-bold tracking-wider uppercase">Documento Oficial de Compliance</span>
         </div>
         <h1 className="text-3xl md:text-4xl font-black mb-3 print:text-2xl">Manual Completo de Processos KYC / KYB</h1>
         <p className="text-white/60 text-sm max-w-2xl leading-relaxed">

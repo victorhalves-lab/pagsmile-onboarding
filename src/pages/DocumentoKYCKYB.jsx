@@ -75,7 +75,9 @@ export default function DocumentoKYCKYB() {
     <div className="max-w-5xl mx-auto pb-16 print:max-w-none print:pb-0">
       <style>{`
         @media print {
-          body { font-size: 10pt !important; }
+          /* Force backgrounds to print */
+          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+          body { font-size: 10pt !important; background: white !important; }
           .no-print { display: none !important; }
           .print-break { page-break-before: always; }
           .print-avoid-break { page-break-inside: avoid; }
@@ -83,20 +85,32 @@ export default function DocumentoKYCKYB() {
           h1 { font-size: 16pt !important; }
           h2 { font-size: 13pt !important; }
           h3 { font-size: 11pt !important; }
+          /* Override global * {color:#002443} for dark backgrounds */
+          .kyc-doc-dark-bg, .kyc-doc-dark-bg * { color: #ffffff !important; }
+          .kyc-doc-dark-bg strong { color: #ffffff !important; }
+          .kyc-doc-dark-bg .text-white\\/60, .kyc-doc-dark-bg .text-white\\/40, .kyc-doc-dark-bg .text-white\\/30, .kyc-doc-dark-bg .text-white\\/20 { color: rgba(255,255,255,0.6) !important; }
+          .kyc-doc-green-text { color: #2bc196 !important; }
+          /* Force table header backgrounds */
+          .kyc-doc-table-header { background-color: #002443 !important; }
+          .kyc-doc-table-header th { color: #ffffff !important; }
+          /* Force InfoBox backgrounds */
+          .kyc-doc-infobox { -webkit-print-color-adjust: exact !important; }
+          /* Force section card styling */
+          .kyc-doc-section { border: 1px solid #e2e8f0 !important; }
         }
       `}</style>
 
       <DocCapa />
 
       {/* TOC */}
-      <div className="bg-white rounded-2xl border border-[#002443]/8 p-6 mb-8 print:break-after-page print:border-0">
+      <div className="kyc-doc-section bg-white rounded-2xl border border-[#002443]/8 p-6 mb-8 print:break-after-page">
         <h2 className="text-base font-bold text-[#002443] mb-4 flex items-center gap-2">
           <FileText className="w-4 h-4 text-[#2bc196]" /> Índice Completo
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
           {TOC.map(t => (
             <a key={t.id} href={`#${t.id}`} className="flex items-center gap-2 py-1.5 px-2 rounded-lg text-sm text-[#002443]/70 hover:bg-[#2bc196]/5 hover:text-[#2bc196] transition-colors print:text-xs">
-              <span className="w-6 h-6 rounded-full bg-[#002443] text-white text-[10px] flex items-center justify-center font-bold flex-shrink-0">{t.n}</span>
+              <span className="kyc-doc-dark-bg w-6 h-6 rounded-full bg-[#002443] text-white text-[10px] flex items-center justify-center font-bold flex-shrink-0">{t.n}</span>
               {t.label}
             </a>
           ))}
@@ -121,7 +135,7 @@ export default function DocumentoKYCKYB() {
       </div>
 
       {/* Footer */}
-      <div className="mt-8 bg-[#002443] rounded-2xl p-6 text-center print:rounded-none">
+      <div className="mt-8 kyc-doc-dark-bg bg-[#002443] rounded-2xl p-6 text-center print:rounded-none">
         <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png" alt="PagSmile" className="h-6 mx-auto mb-3 opacity-60" />
         <p className="text-white/30 text-xs">PagSmile — Manual de Processos KYC/KYB — Compliance V4.0</p>
         <p className="text-white/20 text-[10px] mt-1">Documento Confidencial — {new Date().toLocaleDateString('pt-BR')} — Todos os direitos reservados</p>
