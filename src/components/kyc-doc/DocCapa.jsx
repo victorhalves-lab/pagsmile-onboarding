@@ -6,7 +6,7 @@ const LOGO_DARK = "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/pu
 
 export default function DocCapa() {
   return (
-    <div className="kyc-doc-dark-bg bg-[#002443] rounded-2xl p-10 mb-8 text-white relative overflow-hidden print:rounded-none print:p-8">
+    <div className="kyc-doc-cover bg-[#002443] rounded-2xl p-10 mb-8 text-white relative overflow-hidden">
       <div className="absolute top-0 right-0 w-64 h-64 bg-[#2bc196]/10 rounded-full -translate-y-1/2 translate-x-1/2" />
       <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#2bc196]/5 rounded-full translate-y-1/2 -translate-x-1/2" />
       <div className="relative z-10">
