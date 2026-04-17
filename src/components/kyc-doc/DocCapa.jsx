@@ -1,12 +1,12 @@
 import React from 'react';
 import { Shield, Printer } from 'lucide-react';
 
-const LOGO_DARK = "https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png";
+const LOGO_LIGHT = "https://media.base44.com/images/public/6983b65f017b96d5f695f9bb/2ff9f262a_Logo-modo-claro.jpg";
 
 export default function DocCapa() {
   return (
     <div className="bg-white px-8 pt-12 pb-10 mb-8">
-      <img src={LOGO_DARK} alt="PagSmile" className="h-8 mb-10" />
+      <img src={LOGO_LIGHT} alt="PagSmile" className="h-8 mb-10" />
 
       <div className="flex items-center gap-2 mb-3">
         <Shield className="w-6 h-6 text-[#2bc196]" />
