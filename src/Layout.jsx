@@ -128,6 +128,7 @@ export default function Layout({ children, currentPageName }) {
         { label: 'Risk Scoring', path: 'RiskScoringV4', icon: Shield },
         { label: 'Risk Scoring Subcontas', path: 'RiskScoringSubcontas', icon: Shield },
         { label: 'Reprocessar Compliance', path: 'BulkReprocess', icon: RotateCcw },
+        { label: 'Documento KYC/KYB', path: 'DocumentoKYCKYB', icon: FileText },
       ]
     },
     {

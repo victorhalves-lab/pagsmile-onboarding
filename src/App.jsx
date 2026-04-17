@@ -51,6 +51,7 @@ import ComplianceDocOnly from './pages/ComplianceDocOnly';
 import BDCHealthDashboard from './pages/BDCHealthDashboard';
 import AnaliseCompleta from './pages/AnaliseCompleta';
 import BulkReprocess from './pages/BulkReprocess';
+import DocumentoKYCKYB from './pages/DocumentoKYCKYB';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -271,6 +272,7 @@ const AuthenticatedApp = () => {
       <Route path="/BDCHealthDashboard" element={<LayoutWrapper currentPageName="BDCHealthDashboard"><BDCHealthDashboard /></LayoutWrapper>} />
       <Route path="/AnaliseCompleta" element={<LayoutWrapper currentPageName="AnaliseCompleta"><AnaliseCompleta /></LayoutWrapper>} />
       <Route path="/BulkReprocess" element={<LayoutWrapper currentPageName="BulkReprocess"><BulkReprocess /></LayoutWrapper>} />
+      <Route path="/DocumentoKYCKYB" element={<LayoutWrapper currentPageName="DocumentoKYCKYB"><DocumentoKYCKYB /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
