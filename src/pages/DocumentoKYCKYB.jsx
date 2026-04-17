@@ -93,23 +93,7 @@ export default function DocumentoKYCKYB() {
           *, *::before, *::after { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
           body { margin: 0 !important; padding: 0 !important; background: white !important; }
 
-          /* ═══ KILL ALL LAYOUT CHROME — sidebar, header, fixed bars, gradients ═══ */
-          /* The sidebar (aside, position:fixed, bg-[#002443]) renders on EVERY printed page.
-             Fixed elements repeat per page in print — that's the root cause of the blue bar. */
-          nav, aside, header, .no-print { display: none !important; }
-
-          /* Nuclear: any fixed/sticky element outside #kyc-doc must vanish */
-          body * { position: static !important; }
-          #kyc-doc, #kyc-doc * { position: relative !important; }
-          #kyc-doc table, #kyc-doc table * { position: static !important; }
-
-          /* Remove sidebar margin from main content */
-          main, div[class*="flex-1"], div[class*="lg:ml-"] {
-            margin-left: 0 !important; padding: 0 !important; margin: 0 !important;
-          }
-          body > div, body > div > div, body > div > div > main {
-            margin: 0 !important; padding: 0 !important; max-width: 100% !important; width: 100% !important;
-          }
+          .no-print { display: none !important; }
 
           #kyc-doc { max-width: 100% !important; margin: 0 !important; padding: 0 !important; font-size: 9.5pt !important; color: #1a1a1a !important; }
           #kyc-doc * { color: inherit !important; }

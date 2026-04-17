@@ -272,7 +272,7 @@ const AuthenticatedApp = () => {
       <Route path="/BDCHealthDashboard" element={<LayoutWrapper currentPageName="BDCHealthDashboard"><BDCHealthDashboard /></LayoutWrapper>} />
       <Route path="/AnaliseCompleta" element={<LayoutWrapper currentPageName="AnaliseCompleta"><AnaliseCompleta /></LayoutWrapper>} />
       <Route path="/BulkReprocess" element={<LayoutWrapper currentPageName="BulkReprocess"><BulkReprocess /></LayoutWrapper>} />
-      <Route path="/DocumentoKYCKYB" element={<LayoutWrapper currentPageName="DocumentoKYCKYB"><DocumentoKYCKYB /></LayoutWrapper>} />
+      <Route path="/DocumentoKYCKYB" element={<DocumentoKYCKYB />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
