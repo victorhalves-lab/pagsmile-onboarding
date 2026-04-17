@@ -1,44 +1,35 @@
 import React from 'react';
 
 /* ─────────────────────────────────────────────────────────
-   DocHelpers — Document-style primitives
-   Designed to look good on screen AND print identically.
-   NO cards, NO rounded corners, NO shadows, NO borders.
-   Clean report / whitepaper aesthetic.
+   DocHelpers — Clean document primitives
+   100% white bg, black text, green/blue accents on text only
    ───────────────────────────────────────────────────────── */
 
 export const S = ({ children }) => (
-  <section className="mb-10">{children}</section>
+  <section className="mb-8">{children}</section>
 );
 
 export const H1 = ({ children, id }) => (
-  <h1 id={id} className="text-[22px] font-extrabold text-[#002443] mt-10 mb-5 pb-2 border-b-[3px] border-[#2bc196]">
-    {children}
-  </h1>
+  <div id={id} className="mt-12 mb-5">
+    <h1 className="text-xl font-extrabold text-[#002443]">{children}</h1>
+    <div className="w-16 h-[2px] bg-[#2bc196] mt-2" />
+  </div>
 );
 
 export const H2 = ({ children }) => (
-  <h2 className="text-[17px] font-bold text-[#002443] mt-8 mb-3 pl-3 border-l-[3px] border-[#2bc196]">
-    {children}
-  </h2>
+  <h2 className="text-base font-bold text-[#002443] mt-8 mb-3">{children}</h2>
 );
 
 export const H3 = ({ children }) => (
-  <h3 className="text-[15px] font-semibold text-[#002443] mt-5 mb-2">
-    {children}
-  </h3>
+  <h3 className="text-sm font-semibold text-[#2bc196] mt-6 mb-2">{children}</h3>
 );
 
 export const P = ({ children }) => (
-  <p className="text-[13px] text-[#002443]/80 leading-[1.85] mb-3">
-    {children}
-  </p>
+  <p className="text-[13px] text-[#1a1a1a]/80 leading-[1.85] mb-3">{children}</p>
 );
 
 export const Li = ({ children, className = '' }) => (
-  <li className={`text-[13px] text-[#002443]/80 leading-[1.75] ${className}`}>
-    {children}
-  </li>
+  <li className={`text-[13px] text-[#1a1a1a]/80 leading-[1.75] marker:text-[#2bc196] ${className}`}>{children}</li>
 );
 
 export const Bold = ({ children }) => (
@@ -49,9 +40,9 @@ export const Table = ({ headers, rows }) => (
   <div className="my-5 overflow-x-auto">
     <table className="w-full text-xs border-collapse">
       <thead>
-        <tr className="bg-[#002443]">
+        <tr className="border-b-2 border-[#2bc196]">
           {headers.map((h, i) => (
-            <th key={i} className="px-3 py-2.5 text-left text-white font-semibold border border-[#002443]">
+            <th key={i} className="px-3 py-2.5 text-left text-[#002443] font-bold bg-white border-b-2 border-[#2bc196]">
               {h}
             </th>
           ))}
@@ -59,9 +50,9 @@ export const Table = ({ headers, rows }) => (
       </thead>
       <tbody>
         {rows.map((r, i) => (
-          <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-[#f6f8fa]'}>
+          <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-[#f9f9f9]'}>
             {r.map((c, j) => (
-              <td key={j} className="px-3 py-2 border border-[#e0e0e0] align-top text-[#333]">
+              <td key={j} className="px-3 py-2 border-b border-[#e8e8e8] align-top text-[#1a1a1a]">
                 {c}
               </td>
             ))}
@@ -72,21 +63,12 @@ export const Table = ({ headers, rows }) => (
   </div>
 );
 
-export const InfoBox = ({ title, children, color = 'blue' }) => {
-  const colors = {
-    blue:   'border-l-blue-500 bg-blue-50/60',
-    green:  'border-l-emerald-500 bg-emerald-50/60',
-    red:    'border-l-red-500 bg-red-50/60',
-    amber:  'border-l-amber-500 bg-amber-50/60',
-    purple: 'border-l-purple-500 bg-purple-50/60',
-  };
-  return (
-    <div className={`border-l-4 ${colors[color] || colors.blue} pl-4 pr-4 py-3 my-5`}>
-      <p className="text-xs font-bold text-[#002443] mb-1">{title}</p>
-      <div className="text-xs text-[#002443]/70 leading-relaxed space-y-1">{children}</div>
-    </div>
-  );
-};
+export const InfoBox = ({ title, children }) => (
+  <div className="border border-[#e8e8e8] border-l-[3px] border-l-[#2bc196] bg-white pl-4 pr-4 py-3 my-5">
+    <p className="text-xs font-bold text-[#002443] mb-1">{title}</p>
+    <div className="text-xs text-[#1a1a1a]/70 leading-relaxed space-y-1">{children}</div>
+  </div>
+);
 
 export const QuestionTable = ({ questions }) => (
   <Table
