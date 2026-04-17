@@ -250,9 +250,84 @@ export const SECTION_EXPLANATIONS = {
   },
 };
 
+// ─── PF-SPECIFIC Field Explanations ───
+Object.assign(FIELD_EXPLANATIONS, {
+  'Situação CPF': {
+    what: 'Status oficial do CPF na Receita Federal: Regular, Suspensa, Cancelada, Pendente de Regularização, Titular Falecido.',
+    why: 'CPF não-regular impede qualquer operação financeira. Cancelada/Titular Falecido = bloqueio imediato.',
+    regulation: 'IN RFB 1.548/2015 + Circular BCB 3.978/2020 Art. 2º.',
+    thresholds: 'REGULAR: OK | Qualquer outro: Bloqueio automático (B01)',
+  },
+  'Dívida ativa PF': {
+    what: 'Inscrição da pessoa física na dívida ativa da União — dívidas tributárias ou não-tributárias cobradas pela PGFN.',
+    why: 'PF com dívida ativa elevada opera pagamentos com risco de fraude ou lavagem. Indica incapacidade financeira.',
+    regulation: 'Lei 6.830/1980 (Execuções Fiscais).',
+    thresholds: '> R$100k: Crítico (+60 pts) | R$50k-R$100k: Alto (+30 pts) | < R$50k: Médio (+15 pts) | R$0: OK',
+  },
+  'Familiar PEP': {
+    what: 'Familiar de primeiro nível (cônjuge, pais, filhos) é Pessoa Politicamente Exposta.',
+    why: 'PEP por extensão: familiares de PEPs também exigem Enhanced Due Diligence conforme regulamentação do BCB.',
+    regulation: 'Circular BCB 3.978/2020 Art. 14 §2º.',
+  },
+  'Familiar em sanções': {
+    what: 'Familiar de primeiro nível encontrado em listas de sanções (OFAC, EU, UN, CEIS).',
+    why: 'BLOQUEANTE: vínculos diretos com pessoa sancionada impedem qualquer relação comercial.',
+    regulation: 'Lei 9.613/1998 Art. 10.',
+  },
+  'Programas sociais': {
+    what: 'Beneficiário de programas sociais como Bolsa Família, BPC ou CadÚnico.',
+    why: 'Perfil de renda incompatível com operação de pagamentos de alto valor. Indica possível uso de laranja.',
+    regulation: 'Circular BCB 3.978/2020 Art. 13 — exige compatibilidade perfil vs operações.',
+  },
+  'Doações eleitorais PF': {
+    what: 'Valor total de doações a campanhas eleitorais registradas no TSE.',
+    why: 'Doações altas indicam vínculos políticos e possível exposição como PEP por extensão.',
+    regulation: 'Lei 9.504/1997.',
+  },
+  'Servidor público': {
+    what: 'Vínculo funcional ativo com órgão público (federal, estadual ou municipal).',
+    why: 'Servidor público pode ter vedação legal para atividade empresarial e conflito de interesses.',
+    regulation: 'Lei 8.112/1990 Art. 117.',
+  },
+  'SCR Score Positivo (BCB)': {
+    what: 'Score de crédito do Sistema de Informações de Crédito do Banco Central — padrão ouro de avaliação de risco de crédito no Brasil.',
+    why: 'Score BCB é o gold standard: calculado com base em TODAS as operações de crédito acima de R$200 reportadas ao BCB. Score abaixo de 300 = inadimplência confirmada.',
+    regulation: 'Resolução BCB 5.037/2022 — Sistema de Informações de Crédito (SCR).',
+    thresholds: '< 300: Crítico (+40 pts) | 300-500: Alto (+20 pts) | 500-700: Médio (+5 pts) | > 700: Bom (-10 pts, reduz score)',
+  },
+  'SCR Valor vencido': {
+    what: 'Valor de operações de crédito vencidas (inadimplidas) registradas no SCR do Banco Central.',
+    why: 'Valor vencido > R$50k é inadimplência significativa. Indica alto risco de default em operações financeiras.',
+    thresholds: '> R$50k: Alto (+25 pts) | < R$50k: Médio (+10 pts)',
+  },
+  'MEI acima do teto': {
+    what: 'Arrecadação média mensal de MEI acima do teto de faturamento permitido (R$ 81k/ano = R$ 6.750/mês).',
+    why: 'MEI com faturamento acima do teto está em situação irregular fiscal. Pode indicar subdeclaração ou uso indevido do regime tributário.',
+    regulation: 'LC 123/2006 Art. 18-A — limite de faturamento MEI.',
+    thresholds: '> R$ 6.750/mês: Alto (+20 pts)',
+  },
+  'Rede no mesmo endereço': {
+    what: 'Múltiplas pessoas com CPFs distintos registradas no mesmo endereço, com vínculos ou atividades comerciais.',
+    why: 'Padrão clássico de rede de laranjas: 3+ pessoas no mesmo endereço operando MEIs ou recebendo pagamentos é sinal forte de fraude organizada.',
+    thresholds: '≥ 5 pessoas: Crítico (+25 pts) | 3-4 pessoas: Alto (+15 pts)',
+  },
+  'Interesses financeiros': {
+    what: 'Participações em fundos de investimento, seguros, previdência, consórcios e outros produtos financeiros.',
+    why: 'Pessoa sem NENHUM interesse financeiro operando pagamentos é incompatível — indica perfil sem vida financeira ativa.',
+  },
+  'Renda presumida': {
+    what: 'Estimativa de renda mensal baseada em dados cadastrais, patrimônio e movimentação financeira.',
+    why: 'Cross-check fundamental: renda presumida de R$3k vs TPV declarado de R$200k/mês = desproporção bloqueante.',
+  },
+  'Relacionamentos pessoais': {
+    what: 'Rede de relacionamentos pessoais da PF: vínculos familiares, profissionais, coabitação.',
+    why: 'Informação de contexto que alimenta a análise de rede de laranjas e vínculos suspeitos.',
+  },
+});
+
 // Block code explanations
 export const BLOCK_EXPLANATIONS = {
-  B01: { title: 'CNPJ Inativo', desc: 'A empresa não possui situação cadastral ATIVA na Receita Federal. Pode estar suspensa, inapta ou baixada.', consequence: 'Bloqueio automático — empresa não pode legalmente exercer atividades econômicas.', regulation: 'Circular BCB 3.978/2020 Art. 2º + IN RFB 1.863/2018' },
+  B01: { title: 'CPF/CNPJ Irregular', desc: 'A pessoa ou empresa não possui situação cadastral ATIVA na Receita Federal. Pode estar suspensa, inapta, cancelada ou baixada.', consequence: 'Bloqueio automático — não pode legalmente exercer atividades econômicas.', regulation: 'Circular BCB 3.978/2020 Art. 2º + IN RFB 1.863/2018' },
   B02: { title: 'Empresa muito nova', desc: 'Empresa com menos de 6 meses de existência desde a abertura do CNPJ.', consequence: 'Bloqueio automático — sem histórico suficiente para avaliação de risco.', regulation: 'Política interna — taxa de mortalidade no 1º ano: ~20% (SEBRAE)' },
   B03: { title: 'Sanções', desc: 'Empresa ou sócio encontrado em listas de sanções nacionais ou internacionais (OFAC, EU, UN, CEIS, CNEP).', consequence: 'Bloqueio automático — transacionar com entidade sancionada é ilegal.', regulation: 'Lei 9.613/1998 Art. 10 + Circular BCB 3.978/2020 Art. 16' },
   B05: { title: 'Shell Company', desc: 'Probabilidade > 80% de ser empresa de fachada segundo algoritmo BDC.', consequence: 'Bloqueio automático — risco de lavagem de dinheiro.', regulation: 'Lei 9.613/1998 (PLD/FT)' },

@@ -28,21 +28,32 @@ const CAF_DD_SDK_URL = 'https://repo.combateafraude.com/javascript/release/docum
 const CAF_DD_WASM_URL = 'https://repo.combateafraude.com/javascript/release/document-detector/6.13.0/dd-validator.wasm';
 const CAF_FL_SDK_URL = 'https://repo.combateafraude.com/javascript/release/caf-face-liveness/0.16.0/caf-face-liveness_0.16.0.umd.js';
 
-function loadScript(src) {
+function loadScript(src, retries = 2) {
   return new Promise((resolve, reject) => {
+    // Remove any stale/broken script tags from previous failed loads
     const existing = document.querySelector(`script[data-caf-src="${src}"]`);
     if (existing) {
       if (existing.dataset.loaded === 'true') { resolve(); return; }
-      existing.addEventListener('load', resolve);
-      existing.addEventListener('error', () => reject(new Error(`Falha ao carregar SDK: ${src}`)));
-      return;
+      // Previous script tag exists but didn't finish — remove and reload fresh
+      existing.remove();
     }
     const script = document.createElement('script');
     script.src = src;
     script.async = true;
     script.setAttribute('data-caf-src', src);
+    script.setAttribute('crossorigin', 'anonymous');
     script.onload = () => { script.dataset.loaded = 'true'; resolve(); };
-    script.onerror = () => reject(new Error(`Falha ao carregar SDK: ${src}. Verifique sua conexão e tente novamente.`));
+    script.onerror = () => {
+      script.remove();
+      if (retries > 0) {
+        console.warn(`[CAF] Script load failed, retrying (${retries} left): ${src}`);
+        setTimeout(() => {
+          loadScript(src, retries - 1).then(resolve).catch(reject);
+        }, 1500);
+      } else {
+        reject(new Error(`Falha ao carregar SDK: ${src}. Verifique sua conexão e tente novamente.`));
+      }
+    };
     document.body.appendChild(script);
   });
 }
@@ -186,12 +197,13 @@ export default function CafVerificationStep({
       setPhase('doc_front');
     } catch (err) {
       console.error('[CAF] Init error:', err);
-      // If SDK failed to load (network/CDN issue), offer BDC fallback
-      if (err.message?.includes('Falha ao carregar SDK') || err.message?.includes('não carregou')) {
+      // If SDK failed to load (network/CDN issue), offer BDC fallback immediately
+      const isLoadError = err.message?.includes('Falha ao carregar SDK') || err.message?.includes('não carregou');
+      if (isLoadError) {
         console.log('[CAF] SDK load failed — enabling BDC BigID fallback');
         setBdcFallback(true);
         setPhase('bdc_fallback');
-        toast.info('SDK CAF indisponível. Usando verificação alternativa BigDataCorp.');
+        toast.info('SDK de verificação facial indisponível no momento. Usando método alternativo seguro.');
       } else {
         setError(err.message);
         setPhase('error');
