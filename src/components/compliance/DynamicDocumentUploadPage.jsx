@@ -112,11 +112,12 @@ export default function DynamicDocumentUploadPage({
         const t = (q.text || '').toLowerCase().trim();
         const val = fd[q.id];
         if (!val || typeof val !== 'string') continue;
-        // CPF fields: look for CPF-type questions or text matching CPF
-        if (!cpf && (q.type === 'CPF_CNPJ' && val.replace(/\D/g, '').length === 11)) cpf = val;
-        if (!cpf && (t === 'cpf' || t === 'cpf do responsável' || t === 'cpf do representante' || t === 'cpf do sócio')) cpf = val;
+        // CPF fields: look for CPF-type questions or text containing CPF-related keywords
+        const cleanVal = val.replace(/\D/g, '');
+        if (!cpf && q.type === 'CPF_CNPJ' && cleanVal.length === 11) cpf = val;
+        if (!cpf && cleanVal.length === 11 && (t.includes('cpf') && (t.includes('responsável') || t.includes('representante') || t.includes('sócio') || t === 'cpf'))) cpf = val;
         // Name fields: representante legal, responsável, nome completo
-        if (!name && (t === 'nome completo' || t === 'nome do responsável' || t === 'nome do representante' || t.includes('representante legal'))) name = val;
+        if (!name && (t.includes('nome completo') || t.includes('nome do responsável') || t.includes('nome do representante') || t.includes('representante legal'))) name = val;
         if (!name && t === 'razão social') name = val;
       }
     }

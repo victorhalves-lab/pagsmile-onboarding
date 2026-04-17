@@ -69,6 +69,7 @@ Deno.serve(async (req) => {
     // Step 1: Create or find person in CAF
     let personId = null;
     const cleanCpf = (personCpf || '').replace(/\D/g, '');
+    console.log('[CAF-Token] Input CPF:', cleanCpf ? `${cleanCpf.substring(0, 3)}***${cleanCpf.substring(8)}` : 'EMPTY — face authentication will not work');
 
     if (cleanCpf && cleanCpf.length === 11) {
       // Try to find existing person by CPF

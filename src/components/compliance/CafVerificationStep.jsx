@@ -283,10 +283,19 @@ export default function CafVerificationStep({
           isCaptureValid: result?.isCaptureValid,
           storageInfo: result?.image?.storageInfo || null,
         });
-        setSavedResults(prev => ({ ...prev, front: !!persistResult?.success }));
 
         await dd.close();
         await dd.dispose();
+
+        if (!persistResult?.success) {
+          console.error('[CAF] Doc front persist FAILED — blocking advancement');
+          setSavedResults(prev => ({ ...prev, front: false }));
+          setError('Não foi possível salvar a captura do documento (frente). Verifique sua conexão e tente novamente.');
+          setPhase('error');
+          return;
+        }
+
+        setSavedResults(prev => ({ ...prev, front: true }));
         toast.success('Frente do documento capturada e salva!');
         setPhase('doc_back');
       } catch (err) {
@@ -372,10 +381,19 @@ export default function CafVerificationStep({
           isCaptureValid: result?.isCaptureValid,
           storageInfo: result?.image?.storageInfo || null,
         });
-        setSavedResults(prev => ({ ...prev, back: !!persistResult?.success }));
 
         await dd.close();
         await dd.dispose();
+
+        if (!persistResult?.success) {
+          console.error('[CAF] Doc back persist FAILED — blocking advancement');
+          setSavedResults(prev => ({ ...prev, back: false }));
+          setError('Não foi possível salvar a captura do documento (verso). Verifique sua conexão e tente novamente.');
+          setPhase('error');
+          return;
+        }
+
+        setSavedResults(prev => ({ ...prev, back: true }));
         toast.success('Verso do documento capturado e salvo! Preparando prova de vida...');
         setPhase('liveness_prep');
       } catch (err) {
@@ -408,11 +426,18 @@ export default function CafVerificationStep({
         const CafFaceLivenessSdk = window['CafFaceLiveness'];
         if (!CafFaceLivenessSdk) throw new Error('FaceLiveness SDK não disponível');
 
+        // Only enable face authentication if BOTH documents were successfully persisted
+        // Without persisted docs, CAF has no face reference → "Face picture match" error
+        const canDoFaceAuth = savedResults.front && savedResults.back;
+        if (!canDoFaceAuth) {
+          console.warn('[CAF] Documents not persisted — disabling performFaceAuthentication');
+        }
+
         await CafFaceLivenessSdk.init(sdkToken, personId, {
           htmlContainerId: 'caf-fl-container',
           language: 'pt_BR',
-          performFaceAuthentication: true,
-          cameraPreviewFilter: 'classic', // FIX C01: Remove scary sketch effect, use natural camera view
+          performFaceAuthentication: canDoFaceAuth,
+          cameraPreviewFilter: 'classic',
         }, {
           startButton: {
             label: 'Iniciar Verificação Facial',
@@ -447,9 +472,18 @@ export default function CafVerificationStep({
           module: 'liveness',
           signedResponse: jwtResult, // This IS the JWT string directly from run()
         });
-        setSavedResults(prev => ({ ...prev, liveness: !!persistResult?.success }));
 
         CafFaceLivenessSdk.dispose();
+
+        if (!persistResult?.success) {
+          console.error('[CAF] Liveness persist FAILED — blocking advancement');
+          setSavedResults(prev => ({ ...prev, liveness: false }));
+          setError('Não foi possível salvar o resultado da prova de vida. Verifique sua conexão e tente novamente.');
+          setPhase('error');
+          return;
+        }
+
+        setSavedResults(prev => ({ ...prev, liveness: true }));
         toast.success('Prova de vida concluída e salva com sucesso!');
         setPhase('done');
       } catch (err) {
