@@ -7,8 +7,9 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
  * Endpoints:
  *  - Documentoscopia: POST https://app.bigdatacorp.com.br/bigid/documentoscopia/checar
  *  - Facematch 1:1:   POST https://app.bigdatacorp.com.br/bigid/biometrias/facematch
+ *  - Liveness:        POST https://app.bigdatacorp.com.br/bigid/biometrias/liveness
  * 
- * Both use the same AccessToken/TokenId as the plataforma API.
+ * All use the same AccessToken/TokenId as the plataforma API.
  */
 
 const BDC_BIGID_URL = 'https://app.bigdatacorp.com.br';
@@ -31,9 +32,9 @@ Deno.serve(async (req) => {
     if (!accessToken || !tokenId) return Response.json({ error: 'BDC tokens not configured' }, { status: 500 });
 
     const body = await req.json();
-    const { action, onboardingCaseId, documentImageBase64, selfieImageBase64, documentImageUrl, selfieImageUrl } = body;
+    const { action, onboardingCaseId, documentImageBase64, selfieImageBase64, documentImageUrl, selfieImageUrl, livenessImageBase64, livenessImageUrl } = body;
 
-    if (!action) return Response.json({ error: 'action is required (documentoscopia | facematch | full_verification)' }, { status: 400 });
+    if (!action) return Response.json({ error: 'action is required (documentoscopia | facematch | liveness | full_verification)' }, { status: 400 });
 
     const headers = {
       'AccessToken': accessToken,
@@ -258,17 +259,93 @@ Deno.serve(async (req) => {
     }
 
     // ═══════════════════════════════════════════════════════
-    // ACTION: full_verification — Documentoscopia + Facematch combined
+    // ACTION: liveness — Proof of life verification
+    // ═══════════════════════════════════════════════════════
+    if (action === 'liveness' || action === 'full_verification') {
+      const livenessImg = livenessImageBase64 || selfieImageBase64;
+      const livenessUrl = livenessImageUrl || selfieImageUrl;
+
+      if (!livenessImg && !livenessUrl) {
+        if (action === 'liveness') return Response.json({ error: 'livenessImageBase64 or selfieImageBase64 required for liveness' }, { status: 400 });
+        results.liveness = { skipped: true, reason: 'No liveness image provided' };
+      } else {
+        const lvParams = [];
+        if (livenessImg) {
+          const cleanLv = livenessImg.replace(/^data:image\/\w+;base64,/, '');
+          lvParams.push(`IMG=${cleanLv}`);
+        } else if (livenessUrl) {
+          lvParams.push(`IMG_URL=${livenessUrl}`);
+        }
+
+        const lvPayload = { Parameters: lvParams };
+
+        console.log('[BDC-BigID] Liveness request starting...');
+        const lvResponse = await fetch(`${BDC_BIGID_URL}/bigid/biometrias/liveness`, {
+          method: 'POST', headers, body: JSON.stringify(lvPayload),
+        });
+
+        const lvText = await lvResponse.text();
+        let lvData;
+        try { lvData = JSON.parse(lvText); } catch (e) {
+          console.error('[BDC-BigID] Liveness parse error:', lvText.substring(0, 300));
+          results.liveness = { error: 'Parse error', raw: lvText.substring(0, 300) };
+        }
+
+        if (lvData) {
+          const isAlive = lvData.EstimatedInfo?.IsAlive === true || lvData.EstimatedInfo?.IsAlive === 'true' || lvData.ResultCode === 1;
+          const probability = lvData.EstimatedInfo?.Probability ? Number(lvData.EstimatedInfo.Probability) : null;
+
+          results.liveness = {
+            success: lvData.ResultCode >= 0,
+            resultCode: lvData.ResultCode,
+            resultMessage: lvData.ResultMessage,
+            ticketId: lvData.TicketId,
+            isAlive,
+            probability,
+          };
+          console.log(`[BDC-BigID] Liveness done: code=${lvData.ResultCode}, alive=${isAlive}, prob=${probability}`);
+        }
+      }
+
+      if (action === 'liveness') {
+        results.success = results.liveness?.success || false;
+        results.durationMs = Date.now() - startTime;
+
+        if (onboardingCaseId) {
+          try {
+            await base44.asServiceRole.entities.IntegrationLog.create({
+              onboarding_case_id: onboardingCaseId,
+              provider: 'BigDataCorp',
+              service_type: 'prova_de_vida',
+              status: results.success ? 'success' : 'failed',
+              result_status: results.liveness?.isAlive ? 'APPROVED' : 'REPROVED',
+              is_alive: results.liveness?.isAlive || false,
+              probability: results.liveness?.probability || null,
+              response_payload: results,
+              duration_ms: results.durationMs,
+              red_flags: results.liveness?.isAlive === false ? ['BDC_LIVENESS_FAILED: Prova de vida não aprovada'] : [],
+            });
+          } catch (e) { console.warn('[BDC-BigID] Log save error:', e.message); }
+        }
+
+        return Response.json(results);
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // ACTION: full_verification — Documentoscopia + Facematch + Liveness combined
     // ═══════════════════════════════════════════════════════
     if (action === 'full_verification') {
       const docOk = results.documentoscopia?.success;
       const fmOk = results.facematch?.success || results.facematch?.skipped;
       const isMatch = results.facematch?.isMatch !== false;
       const noSuspicious = !results.hasSuspiciousFindings;
+      const lvOk = results.liveness?.isAlive !== false; // true or skipped
 
-      results.success = docOk && fmOk;
-      results.overallDecision = (docOk && isMatch && noSuspicious) ? 'APPROVED' 
-        : (docOk && !noSuspicious) ? 'PENDING_REVIEW' 
+      results.success = docOk && fmOk && lvOk;
+      results.overallDecision = (docOk && isMatch && noSuspicious && lvOk) ? 'APPROVED' 
+        : (docOk && !noSuspicious) ? 'PENDING_REVIEW'
+        : (!lvOk) ? 'REPROVED'
         : 'REPROVED';
       results.durationMs = Date.now() - startTime;
 
@@ -278,6 +355,7 @@ Deno.serve(async (req) => {
           const allFlags = [
             ...(results.forensicAlerts?.filter(a => a.isSuspicious).map(a => `BDC_FORENSIC: ${a.code} - ${a.description}`) || []),
             ...(results.facematch?.isMatch === false ? ['BDC_FACEMATCH_FAILED'] : []),
+            ...(results.liveness?.isAlive === false ? ['BDC_LIVENESS_FAILED: Prova de vida não aprovada'] : []),
           ];
 
           await base44.asServiceRole.entities.IntegrationLog.create({
@@ -302,11 +380,12 @@ Deno.serve(async (req) => {
           await base44.asServiceRole.entities.ExternalValidationResult.create({
             onboardingCaseId,
             provider: 'BigDataCorp',
-            validationType: 'BigID Full Verification (Documentoscopia + Facematch)',
+            validationType: 'BigID Full Verification (Documentoscopia + Facematch + Liveness)',
             endpoint: `${BDC_BIGID_URL}/bigid`,
             resultData: {
               documentoscopia: results.documentoscopia,
               facematch: results.facematch,
+              liveness: results.liveness,
               extractedData: results.extractedData,
               officialValidation: results.officialValidation,
               forensicAlerts: results.forensicAlerts,

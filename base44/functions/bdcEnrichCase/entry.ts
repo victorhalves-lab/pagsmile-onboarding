@@ -87,13 +87,15 @@ const DATASET_GROUPS = {
     'reputations_and_reviews','media_profile_and_exposure',
     'esg_and_compliance',
   ],
-  // Subseller PF (endpoint /pessoas)
+  // Subseller PF (endpoint /pessoas) — expandido com datasets regulatórios
   SUBSELLER_PF: [
     'basic_data','kyc','processes','collections',
     'emails_extended','phones_extended','addresses_extended',
     'media_profile_and_exposure','online_presence',
     'related_people_phones','related_people_emails','related_people_addresses',
-    'risk_data',
+    'risk_data','government_debtors','first_level_family_kyc',
+    'social_assistance','electoral_donors','public_servants',
+    'presumed_income','financial_interests',
   ],
 };
 
@@ -1440,6 +1442,20 @@ function analyzePersonBlocks(result) {
       }
     }
   }
+  // B10 — Familiar de primeiro nível em sanções
+  const familyKyc = result?.FirstLevelFamilyKyc || result?.first_level_family_kyc;
+  if (familyKyc) {
+    const fItems = flattenBDCArray(familyKyc);
+    for (const item of fItems) {
+      const sanctions = item?.Sanctions || [];
+      if (Array.isArray(sanctions) && sanctions.length > 0) {
+        const name = item?.Name || item?.RelativeName || 'N/I';
+        const rel = item?.Relationship || item?.RelationType || 'familiar';
+        blocks.push({ code: 'B10', label: 'Familiar em lista de sanções', severity: 'BLOQUEIO', detail: `${name} (${rel}) encontrado em ${sanctions.length} lista(s) de sanções: ${sanctions.map(s => s.Source || s.ListName || 'N/I').join(', ')}. Circular BCB 3.978/2020 Art. 14 §2º.`, score: 850 });
+        break;
+      }
+    }
+  }
   return blocks;
 }
 
@@ -1595,6 +1611,127 @@ function analyzePersonData(result) {
     }
   }
 
+  // ══════ NOVOS DATASETS PF — Sprint Compliance Expandido ══════
+
+  // Government Debtors PF
+  const pfDebtors = result?.GovernmentDebtors || result?.government_debtors;
+  if (pfDebtors) {
+    const dItems = flattenBDCArray(pfDebtors);
+    let totalDebt = 0;
+    for (const item of dItems) { totalDebt += Number(item?.TotalValue || item?.Value || 0); }
+    if (totalDebt > 0) {
+      const pts = totalDebt > 100000 ? 60 : totalDebt > 50000 ? 30 : 15;
+      sections.compliance.score += pts;
+      sections.compliance.items.push({ label: 'Dívida ativa PF', value: `R$ ${totalDebt.toLocaleString('pt-BR', {minimumFractionDigits:2})} — PF inscrita em dívida ativa`, risk: totalDebt > 100000 ? 'CRITICO' : 'ALTO', points: pts });
+    } else {
+      sections.compliance.items.push({ label: 'Dívida ativa PF', value: 'Nenhuma — PF sem dívida ativa', risk: 'OK', points: 0 });
+    }
+  }
+
+  // First Level Family KYC — PEP por extensão
+  const familyKyc = result?.FirstLevelFamilyKyc || result?.first_level_family_kyc;
+  if (familyKyc) {
+    const fItems = flattenBDCArray(familyKyc);
+    const familyPep = [];
+    const familySanctioned = [];
+    for (const item of fItems) {
+      const name = item?.Name || item?.RelativeName || 'N/I';
+      const rel = item?.Relationship || item?.RelationType || '';
+      if (item?.IsPEP || item?.IsPep) familyPep.push(`${name} (${rel})`);
+      const sanctions = item?.Sanctions || [];
+      if (Array.isArray(sanctions) && sanctions.length > 0) familySanctioned.push(`${name} (${rel})`);
+    }
+    if (familySanctioned.length > 0) {
+      sections.compliance.score += 80;
+      sections.compliance.items.push({ label: 'Familiar em sanções', value: `BLOQUEANTE: ${familySanctioned.join(', ')} — Familiar de primeiro nível em lista de sanções`, risk: 'CRITICO', points: 80 });
+    }
+    if (familyPep.length > 0) {
+      sections.compliance.score += 30;
+      sections.compliance.items.push({ label: 'Familiar PEP', value: `${familyPep.join(', ')} — PEP por extensão (Circular BCB 3.978/2020 Art. 14 §2º)`, risk: 'ALTO', points: 30 });
+    }
+    if (familyPep.length === 0 && familySanctioned.length === 0 && fItems.length > 0) {
+      sections.compliance.items.push({ label: 'KYC familiar', value: `${fItems.length} familiar(es) verificado(s) — Sem PEP ou sanções`, risk: 'OK', points: 0 });
+    }
+  }
+
+  // Social Assistance — Bolsa Família / BPC
+  const socialAssist = result?.SocialAssistance || result?.social_assistance;
+  if (socialAssist) {
+    const saItems = flattenBDCArray(socialAssist);
+    const programs = [];
+    for (const item of saItems) {
+      const program = item?.ProgramName || item?.Program || item?.Benefit || '';
+      const status = item?.Status || item?.BenefitStatus || '';
+      if (program) programs.push(`${program}${status ? ` (${status})` : ''}`);
+    }
+    if (programs.length > 0) {
+      sections.compliance.score += 25;
+      sections.compliance.items.push({ label: 'Programas sociais', value: `Beneficiário de: ${programs.join(', ')} — Incompatível com alto TPV. Circular BCB 3.978/2020 Art. 13 exige compatibilidade perfil vs operações.`, risk: 'ALTO', points: 25 });
+    }
+  }
+
+  // Electoral Donors PF
+  const pfDonors = result?.ElectoralDonors || result?.electoral_donors;
+  if (pfDonors) {
+    const edItems = flattenBDCArray(pfDonors);
+    let totalDonated = 0;
+    for (const item of edItems) { totalDonated += Number(item?.TotalDonated || item?.Value || item?.Amount || 0); }
+    if (totalDonated > 0) {
+      const pts = totalDonated > 100000 ? 20 : 5;
+      sections.compliance.score += pts;
+      sections.compliance.items.push({ label: 'Doações eleitorais PF', value: `R$ ${totalDonated.toLocaleString('pt-BR')} — Indica vínculos políticos`, risk: totalDonated > 100000 ? 'ALTO' : 'MEDIO', points: pts });
+    }
+  }
+
+  // Public Servants
+  const servants = result?.PublicServants || result?.public_servants;
+  if (servants) {
+    const svItems = flattenBDCArray(servants);
+    const activeServants = [];
+    for (const item of svItems) {
+      const entity = item?.Entity || item?.Organ || item?.Agency || '';
+      const role = item?.Role || item?.Position || item?.JobTitle || '';
+      const status = item?.Status || '';
+      if (entity || role) activeServants.push(`${role || 'N/I'} em ${entity || 'N/I'}${status ? ` (${status})` : ''}`);
+    }
+    if (activeServants.length > 0) {
+      sections.compliance.score += 15;
+      sections.compliance.items.push({ label: 'Servidor público', value: `${activeServants.join('; ')} — Possível vedação legal (Lei 8.112/1990 Art. 117) e conflito de interesses`, risk: 'ALTO', points: 15 });
+    }
+  }
+
+  // Presumed Income — cross-check
+  const income = result?.PresumedIncome || result?.presumed_income;
+  if (income) {
+    const iItems = flattenBDCArray(income);
+    for (const item of iItems) {
+      const monthlyIncome = item?.MonthlyIncome || item?.EstimatedIncome || item?.Income;
+      const incomeRange = item?.IncomeRange || item?.Range || '';
+      if (monthlyIncome != null) {
+        sections.identity.items.push({ label: 'Renda presumida', value: `R$ ${Number(monthlyIncome).toLocaleString('pt-BR')}/mês`, risk: 'INFO', points: 0 });
+      } else if (incomeRange) {
+        sections.identity.items.push({ label: 'Faixa de renda', value: String(incomeRange), risk: 'INFO', points: 0 });
+      }
+    }
+  }
+
+  // Financial Interests
+  const finInterests = result?.FinancialInterests || result?.financial_interests;
+  if (finInterests) {
+    const fiItems = flattenBDCArray(finInterests);
+    const interests = [];
+    for (const item of fiItems) {
+      const type = item?.Type || item?.InterestType || item?.Category || '';
+      if (type) interests.push(type);
+    }
+    if (interests.length > 0) {
+      sections.identity.items.push({ label: 'Interesses financeiros', value: interests.slice(0, 10).join(', '), risk: 'INFO', points: 0 });
+    } else if (fiItems.length === 0) {
+      sections.identity.items.push({ label: 'Interesses financeiros', value: 'ZERO — Nenhum interesse financeiro detectado. Pode indicar perfil incompatível com operação financeira.', risk: 'MEDIO', points: 5 });
+      sections.identity.score += 5;
+    }
+  }
+
   return sections;
 }
 
@@ -1659,15 +1796,25 @@ Deno.serve(async (req) => {
 
     console.log(`BDC Enrich: ${cleanDoc} | ${endpoint} | group=${groupKey} | datasets=${datasets.length}`);
 
-    const bdcResponse = await fetch(`${BDC_BASE_URL}${endpoint}`, {
-      method: 'POST',
-      headers: { 'AccessToken': accessToken, 'TokenId': tokenId, 'Accept': 'application/json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ Datasets: datasets.join(','), q: `doc{${cleanDoc}}`, Limit: 1 }),
-    });
-
-    const rawText = await bdcResponse.text();
-    let bdcData;
-    try { bdcData = JSON.parse(rawText); } catch (e) { return Response.json({ error: 'BDC parse error', raw: rawText.substring(0, 300) }, { status: 500 }); }
+    // Retry with exponential backoff
+    let bdcData = null;
+    for (let att = 0; att < 3; att++) {
+      try {
+        const r = await fetch(`${BDC_BASE_URL}${endpoint}`, {
+          method: 'POST',
+          headers: { 'AccessToken': accessToken, 'TokenId': tokenId, 'Accept': 'application/json', 'Content-Type': 'application/json' },
+          body: JSON.stringify({ Datasets: datasets.join(','), q: `doc{${cleanDoc}}`, Limit: 1 }),
+        });
+        const txt = await r.text();
+        if ([500,502,503,504,429].includes(r.status) && att < 2) { console.warn(`[BDC] Retry ${att+1} HTTP ${r.status}`); await new Promise(w => setTimeout(w, (att+1)*1500)); continue; }
+        bdcData = JSON.parse(txt);
+        break;
+      } catch (e) {
+        if (att < 2) { console.warn(`[BDC] Retry ${att+1}: ${e.message}`); await new Promise(w => setTimeout(w, (att+1)*1500)); continue; }
+        return Response.json({ error: `BDC failed: ${e.message}` }, { status: 502 });
+      }
+    }
+    if (!bdcData) return Response.json({ error: 'BDC failed after retries' }, { status: 502 });
 
     const result = bdcData.Result?.[0] || {};
 

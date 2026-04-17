@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.23';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 const BDC_BASE_URL = 'https://plataforma.bigdatacorp.com.br';
 
@@ -36,6 +36,19 @@ const PERSON_DATASET_ALIASES = {
   // Profissional
   'professional_data':             'professional_data',
   'university':                    'university',
+
+  // Novos datasets PF — Sprint Compliance Expandido
+  'first_level_family_kyc':        'first_level_family_kyc',
+  'social_assistance':             'social_assistance',
+  'public_servants':               'public_servants',
+  'presumed_income':               'presumed_income',
+  'financial_interests':           'financial_interests',
+  'risk_data':                     'risk_data',
+
+  // Contatos de pessoas relacionadas
+  'related_people_phones':         'related_people_phones',
+  'related_people_emails':         'related_people_emails',
+  'related_people_addresses':      'related_people_addresses',
 };
 
 const PERSON_DATASET_GROUPS = {
@@ -46,11 +59,15 @@ const PERSON_DATASET_GROUPS = {
     'relationships', 'electoral_donors',
   ].join(','),
 
-  // Subseller PF
+  // Subseller PF — expandido com datasets regulatórios
   'subseller_pf': [
     'basic_data', 'kyc', 'processes', 'collections',
     'emails_extended', 'phones_extended', 'addresses_extended',
     'media_profile_and_exposure', 'online_presence',
+    'related_people_phones', 'related_people_emails', 'related_people_addresses',
+    'risk_data', 'government_debtors', 'first_level_family_kyc',
+    'social_assistance', 'electoral_donors', 'public_servants',
+    'presumed_income', 'financial_interests',
   ].join(','),
 
   // Básico

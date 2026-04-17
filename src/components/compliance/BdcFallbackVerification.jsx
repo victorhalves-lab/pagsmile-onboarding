@@ -23,13 +23,15 @@ async function fileToBase64(file) {
 }
 
 export default function BdcFallbackVerification({ onboardingCaseId, personCpf, onComplete }) {
-  const [step, setStep] = useState('doc_front'); // doc_front → doc_back → selfie → processing → done
+  const [step, setStep] = useState('doc_front'); // doc_front → doc_back → selfie → liveness → processing → done
   const [docFrontFile, setDocFrontFile] = useState(null);
   const [docFrontPreview, setDocFrontPreview] = useState(null);
   const [docBackFile, setDocBackFile] = useState(null);
   const [docBackPreview, setDocBackPreview] = useState(null);
   const [selfieFile, setSelfieFile] = useState(null);
   const [selfiePreview, setSelfiePreview] = useState(null);
+  const [livenessFile, setLivenessFile] = useState(null);
+  const [livenessPreview, setLivenessPreview] = useState(null);
   const [processing, setProcessing] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
@@ -52,6 +54,9 @@ export default function BdcFallbackVerification({ onboardingCaseId, personCpf, o
     } else if (type === 'doc_back') {
       setDocBackFile(file);
       setDocBackPreview(preview);
+    } else if (type === 'liveness') {
+      setLivenessFile(file);
+      setLivenessPreview(preview);
     } else {
       setSelfieFile(file);
       setSelfiePreview(preview);
@@ -71,13 +76,15 @@ export default function BdcFallbackVerification({ onboardingCaseId, personCpf, o
     try {
       const docBase64 = await fileToBase64(docFrontFile);
       const selfieBase64 = await fileToBase64(selfieFile);
+      const livenessBase64 = livenessFile ? await fileToBase64(livenessFile) : null;
 
-      // Upload document front via BDC Documentoscopia + Facematch
+      // Upload via BDC Documentoscopia + Facematch + Liveness
       const response = await base44.functions.invoke('bdcBigIdFallback', {
         action: 'full_verification',
         onboardingCaseId: onboardingCaseId || '',
         documentImageBase64: docBase64,
         selfieImageBase64: selfieBase64,
+        livenessImageBase64: livenessBase64 || selfieBase64,
       });
 
       const data = response.data;
@@ -141,8 +148,13 @@ export default function BdcFallbackVerification({ onboardingCaseId, personCpf, o
           Documento analisado e identidade verificada via BigDataCorp.
         </p>
         {result?.facematch?.similarity && (
-          <p className="text-xs text-green-600 mb-4">
+          <p className="text-xs text-green-600 mb-2">
             Similaridade facial: {Number(result.facematch.similarity).toFixed(1)}%
+          </p>
+        )}
+        {result?.liveness?.isAlive && (
+          <p className="text-xs text-green-600 mb-4">
+            Prova de vida: Aprovada ✓ {result.liveness.probability ? `(${(Number(result.liveness.probability)*100).toFixed(0)}%)` : ''}
           </p>
         )}
         <Button
@@ -201,6 +213,7 @@ export default function BdcFallbackVerification({ onboardingCaseId, personCpf, o
           <button onClick={() => {
             if (type === 'doc_front') { setDocFrontFile(null); setDocFrontPreview(null); }
             else if (type === 'doc_back') { setDocBackFile(null); setDocBackPreview(null); }
+            else if (type === 'liveness') { setLivenessFile(null); setLivenessPreview(null); }
             else { setSelfieFile(null); setSelfiePreview(null); }
           }} className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">✕</button>
         </div>
@@ -245,23 +258,61 @@ export default function BdcFallbackVerification({ onboardingCaseId, personCpf, o
 
       {step === 'selfie' && (
         <div className="space-y-4">
-          <UploadCard title="🤳 Selfie" icon={ScanFace}
-            preview={selfiePreview} fileSet={!!selfieFile} type="selfie" />
-          
-          {selfieFile && (
+          <UploadCard title="🤳 Selfie para Comparação Facial" icon={ScanFace}
+            preview={selfiePreview} fileSet={!!selfieFile} type="selfie"
+            onNext={() => setStep('liveness')} />
+        </div>
+      )}
+
+      {step === 'liveness' && (
+        <div className="space-y-4">
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-purple-50 mb-3">
+                <Camera className="w-7 h-7 text-purple-600" />
+              </div>
+              <h3 className="text-lg font-bold text-[#002443] mb-1">🛡️ Prova de Vida</h3>
+              <p className="text-sm text-[#002443]/60">
+                Tire uma nova foto olhando diretamente para a câmera. Isso confirma que você é uma pessoa real.
+              </p>
+            </div>
+
+            {livenessPreview ? (
+              <div className="relative">
+                <img src={livenessPreview} alt="Liveness" className="w-full max-h-48 object-contain rounded-xl border" />
+                <button onClick={() => { setLivenessFile(null); setLivenessPreview(null); }} 
+                  className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">✕</button>
+              </div>
+            ) : (
+              <label className="flex flex-col items-center justify-center border-2 border-dashed border-purple-300 rounded-xl p-8 cursor-pointer hover:border-purple-400 hover:bg-purple-50/50 transition-colors">
+                <Camera className="w-8 h-8 text-purple-400 mb-2" />
+                <p className="text-sm font-medium text-[#002443]">Tire uma foto de prova de vida</p>
+                <p className="text-xs text-[#002443]/50 mt-1">Use a câmera frontal • Olhe para a câmera</p>
+                <input type="file" accept="image/*" capture="user"
+                  className="hidden" onChange={(e) => handleFileSelect(e, 'liveness')} />
+              </label>
+            )}
+          </div>
+
+          {livenessFile && (
             <Button onClick={handleSubmit} disabled={processing}
               className="w-full bg-[#2bc196] hover:bg-[#2bc196]/90 text-white h-12 rounded-xl shadow-lg">
               {processing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Shield className="w-4 h-4 mr-2" />}
-              Enviar para Verificação
+              Enviar para Verificação Completa
             </Button>
           )}
+
+          <button onClick={handleSubmit} disabled={processing}
+            className="w-full text-xs text-[#002443]/40 hover:text-[#002443]/60 py-2">
+            Pular prova de vida e enviar apenas com selfie
+          </button>
         </div>
       )}
 
       <div className="flex items-start gap-3 bg-slate-50 rounded-xl p-4">
         <Shield className="w-5 h-5 text-[#002443]/40 shrink-0 mt-0.5" />
         <p className="text-xs text-[#002443]/50">
-          Verificação segura via BigDataCorp BigID. OCR + validação forense + comparação facial 1:1.
+          Verificação segura via BigDataCorp BigID. OCR + validação forense + comparação facial 1:1 + prova de vida.
         </p>
       </div>
     </div>
