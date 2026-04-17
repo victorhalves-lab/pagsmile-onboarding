@@ -69,10 +69,25 @@ export default function DocumentoKYCKYB() {
 
   return (
     <div id="kyc-doc" className="bg-white max-w-[900px] mx-auto">
-      {/* Print styles */}
+      {/* Document overrides + Print styles */}
       <style>{`
-        #kyc-doc { font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; color: #1a1a1a; }
-        #kyc-doc * { color: inherit; }
+        #kyc-doc { font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; color: #1a1a1a; background: white !important; }
+        #kyc-doc, #kyc-doc * { color: #1a1a1a; }
+        #kyc-doc h1, #kyc-doc h2 { color: #002443 !important; }
+        #kyc-doc h3 { color: #2bc196 !important; }
+        #kyc-doc strong { color: #002443 !important; }
+
+        /* Kill any inherited dark backgrounds inside the document */
+        #kyc-doc div, #kyc-doc section, #kyc-doc header, #kyc-doc footer,
+        #kyc-doc nav, #kyc-doc main, #kyc-doc article {
+          background-color: transparent !important;
+        }
+        /* Only the root container is white */
+        #kyc-doc { background: white !important; }
+        /* Table headers: white bg, never dark */
+        #kyc-doc thead tr, #kyc-doc thead th { background: white !important; color: #002443 !important; }
+        /* InfoBox: white bg with green left border only */
+        #kyc-doc div[class*="border-l-"] { background: white !important; }
 
         @media print {
           *, *::before, *::after { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
