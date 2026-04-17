@@ -103,33 +103,61 @@ export default function DynamicDocumentUploadPage({
   }, [documents, saveProgress]);
 
   // Get person data from saved form for CAF
+  // Priority: "CPF do Representante Legal" > "CPF do Responsável Legal" > any 11-digit CPF_CNPJ
   const getPersonData = () => {
     const fd = JSON.parse(localStorage.getItem(formDataStorageKey) || '{}');
     let name = '', cpf = '';
-    // Strategy 1: Use questions metadata to find CPF and name fields by question text
+    let namePriority = 0, cpfPriority = 0; // higher = better match
+
     if (questions.length > 0) {
       for (const q of questions) {
         const t = (q.text || '').toLowerCase().trim();
         const val = fd[q.id];
         if (!val || typeof val !== 'string') continue;
-        // CPF fields: look for CPF-type questions or text containing CPF-related keywords
         const cleanVal = val.replace(/\D/g, '');
-        if (!cpf && q.type === 'CPF_CNPJ' && cleanVal.length === 11) cpf = val;
-        if (!cpf && cleanVal.length === 11 && (t.includes('cpf') && (t.includes('responsável') || t.includes('representante') || t.includes('sócio') || t === 'cpf'))) cpf = val;
-        // Name fields: representante legal, responsável, nome completo
-        if (!name && (t.includes('nome completo') || t.includes('nome do responsável') || t.includes('nome do representante') || t.includes('representante legal'))) name = val;
-        if (!name && t === 'razão social') name = val;
+
+        // ── CPF extraction with priority ──
+        // P3: "CPF do Representante Legal" (exact best match for CAF face match)
+        if (cleanVal.length === 11 && t.includes('cpf') && t.includes('representante') && t.includes('legal') && cpfPriority < 3) {
+          cpf = val; cpfPriority = 3;
+        }
+        // P2: "CPF do Responsável Legal" or "CPF do responsável"
+        if (cleanVal.length === 11 && t.includes('cpf') && (t.includes('responsável') || t.includes('responsavel')) && cpfPriority < 2) {
+          cpf = val; cpfPriority = 2;
+        }
+        // P1: Any CPF_CNPJ field with 11 digits
+        if (cleanVal.length === 11 && q.type === 'CPF_CNPJ' && cpfPriority < 1) {
+          cpf = val; cpfPriority = 1;
+        }
+
+        // ── Name extraction with priority ──
+        // P3: "Nome completo do Representante Legal"
+        if (t.includes('representante legal') && t.includes('nome') && namePriority < 3) {
+          name = val; namePriority = 3;
+        }
+        // P2: "Nome do Responsável Legal" or "Nome completo do responsável"
+        if ((t.includes('responsável legal') || (t.includes('nome') && t.includes('responsável'))) && namePriority < 2) {
+          name = val; namePriority = 2;
+        }
+        // P1: "Nome completo" generic
+        if (t.includes('nome completo') && namePriority < 1) {
+          name = val; namePriority = 1;
+        }
       }
     }
-    // Strategy 2: Fallback — scan all values for 11-digit patterns (CPF) and multi-word strings (name)
+
+    // Fallback: scan all values for 11-digit patterns (CPF) and multi-word strings (name)
     if (!cpf || !name) {
-      Object.values(fd).forEach(val => {
-        if (typeof val !== 'string') return;
+      for (const q of questions) {
+        const val = fd[q.id];
+        if (typeof val !== 'string') continue;
         const clean = val.replace(/\D/g, '');
         if (!cpf && clean.length === 11) cpf = val;
         if (!name && val.length > 3 && val.includes(' ') && !/^\d/.test(val)) name = val;
-      });
+      }
     }
+
+    console.log('[CAF-PersonData] Extracted:', { name: name ? name.substring(0, 20) + '...' : 'EMPTY', cpf: cpf ? cpf.substring(0, 3) + '***' : 'EMPTY', namePriority, cpfPriority });
     return { name, cpf };
   };
 

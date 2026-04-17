@@ -73,6 +73,34 @@ Deno.serve(async (req) => {
     const [merchant] = await base44.asServiceRole.entities.Merchant.filter({ id: onboardingCase.merchantId });
     const merchantCpf = merchant?.cpfCnpj?.replace(/\D/g, '');
 
+    // For PJ: extract representative's CPF from questionnaire responses (needed for CAF face match)
+    let representanteCpf = null;
+    let representanteNome = null;
+    if (merchant?.type === 'PJ' || (merchantCpf && merchantCpf.length === 14)) {
+      try {
+        const responses = await base44.asServiceRole.entities.QuestionnaireResponse.filter({ onboardingCaseId: caseId });
+        for (const r of responses) {
+          const t = (r.questionText || '').toLowerCase();
+          const val = r.valueText || '';
+          const cleanVal = val.replace(/\D/g, '');
+          // Priority: "CPF do Representante Legal" > "CPF do Responsável Legal" > any 11-digit CPF
+          if (cleanVal.length === 11 && t.includes('cpf') && t.includes('representante') && t.includes('legal')) {
+            representanteCpf = cleanVal;
+          } else if (!representanteCpf && cleanVal.length === 11 && t.includes('cpf') && (t.includes('responsável') || t.includes('responsavel'))) {
+            representanteCpf = cleanVal;
+          }
+          if (t.includes('representante legal') && t.includes('nome') && val.length > 3) {
+            representanteNome = val;
+          } else if (!representanteNome && (t.includes('responsável legal') || t.includes('nome do responsável')) && val.length > 3) {
+            representanteNome = val;
+          }
+        }
+        if (representanteCpf) {
+          console.log(`[AutoEnrich] Found representante legal CPF: ${representanteCpf.substring(0, 3)}***${representanteCpf.substring(8)}, name: ${representanteNome || 'N/D'}`);
+        }
+      } catch (e) { console.warn('[AutoEnrich] Could not extract representante CPF:', e.message); }
+    }
+
     // ═══ STEP 0: CAF Post-Capture Analysis ═══
     // ITEM 1 FIX: Now passes callbackUrl so async results (documentscopy, deepfake, etc.) return via webhook
     let cafPostCaptureSuccess = false;
@@ -81,7 +109,8 @@ Deno.serve(async (req) => {
         console.log(`[AutoEnrich] Step 0: CAF post-capture...`);
         const cafRes = await base44.asServiceRole.functions.invoke('cafPostCaptureAnalysis', { 
           onboardingCaseId: caseId,
-          // callbackUrl will be resolved by the function itself if empty
+          cpf: representanteCpf || (merchantCpf?.length === 11 ? merchantCpf : undefined),
+          name: representanteNome || merchant?.fullName || undefined,
         });
         cafPostCaptureSuccess = cafRes?.data?.success === true;
         console.log(`[AutoEnrich] Step 0: ${cafPostCaptureSuccess ? 'OK' : 'FAILED'}`);
@@ -182,11 +211,13 @@ Deno.serve(async (req) => {
     }
 
     // ═══ STEP 2.5: CAF CPF Cross-Validation ═══
+    // For PF: validate the merchant CPF. For PJ: validate the representante legal CPF.
     let cpfValidationSuccess = false;
-    if (merchantCpf && (merchant?.type === 'PF' || merchantCpf.length === 11)) {
+    const cpfToValidate = representanteCpf || (merchantCpf?.length === 11 ? merchantCpf : null);
+    if (cpfToValidate) {
       try {
-        console.log(`[AutoEnrich] Step 2.5: CPF cross-validation...`);
-        const cpfRes = await base44.asServiceRole.functions.invoke('cafCpfValidation', { cpf: merchantCpf, onboardingCaseId: caseId });
+        console.log(`[AutoEnrich] Step 2.5: CPF cross-validation (${representanteCpf ? 'representante legal' : 'merchant'})...`);
+        const cpfRes = await base44.asServiceRole.functions.invoke('cafCpfValidation', { cpf: cpfToValidate, onboardingCaseId: caseId });
         cpfValidationSuccess = cpfRes?.data?.success === true;
         console.log(`[AutoEnrich] Step 2.5: ${cpfValidationSuccess ? 'OK' : 'FAILED'}`);
       } catch (cpfErr) {
