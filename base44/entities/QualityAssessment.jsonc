@@ -1,0 +1,98 @@
+{
+  "name": "QualityAssessment",
+  "type": "object",
+  "properties": {
+    "compliance_score_id": {
+      "type": "string",
+      "description": "ID do ComplianceScore vinculado"
+    },
+    "onboarding_case_id": {
+      "type": "string",
+      "description": "ID do caso de onboarding"
+    },
+    "secao_questionario": {
+      "type": "string",
+      "description": "Se\u00e7\u00e3o onde o campo se encontra"
+    },
+    "campo_avaliado": {
+      "type": "string",
+      "description": "Nome do campo de texto avaliado"
+    },
+    "texto_original_mascarado": {
+      "type": "string",
+      "description": "Texto original com dados sens\u00edveis mascarados"
+    },
+    "score_especificidade": {
+      "type": "number",
+      "description": "Nota 1-5"
+    },
+    "score_coerencia": {
+      "type": "number",
+      "description": "Nota 1-5"
+    },
+    "score_profundidade": {
+      "type": "number",
+      "description": "Nota 1-5"
+    },
+    "score_linguagem": {
+      "type": "number",
+      "description": "Nota 1-5"
+    },
+    "score_qualidade_total": {
+      "type": "number",
+      "description": "Score total calculado"
+    },
+    "classificacao_qualidade": {
+      "type": "string",
+      "enum": [
+        "INSUFICIENTE",
+        "FRACA",
+        "ACEIT\u00c1VEL",
+        "BOA",
+        "EXCELENTE"
+      ]
+    },
+    "padroes_evasivos_detectados": {
+      "type": "string",
+      "description": "Lista de padr\u00f5es evasivos identificados"
+    },
+    "deducao_pontos": {
+      "type": "number",
+      "description": "Pontos deduzidos baseados na qualidade"
+    },
+    "observacoes": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es adicionais"
+    },
+    "data_avaliacao": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "compliance_score_id",
+    "campo_avaliado"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

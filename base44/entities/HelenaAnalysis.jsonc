@@ -1,0 +1,159 @@
+{
+  "name": "HelenaAnalysis",
+  "type": "object",
+  "properties": {
+    "onboarding_case_id": {
+      "type": "string",
+      "description": "ID do OnboardingCase analisado"
+    },
+    "merchant_id": {
+      "type": "string",
+      "description": "ID do Merchant"
+    },
+    "analysis_type": {
+      "type": "string",
+      "enum": [
+        "initial",
+        "reanalysis",
+        "periodic_review"
+      ],
+      "default": "initial"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "processing",
+        "completed",
+        "failed"
+      ],
+      "default": "pending"
+    },
+    "score": {
+      "type": "number",
+      "description": "Score de risco calculado (0-100)"
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "APPROVED",
+        "MANUAL_REVIEW",
+        "REJECTED"
+      ],
+      "description": "Decis\u00e3o da IA"
+    },
+    "recommendation": {
+      "type": "string",
+      "description": "Recomenda\u00e7\u00e3o resumida"
+    },
+    "justification": {
+      "type": "string",
+      "description": "Justificativa detalhada da an\u00e1lise"
+    },
+    "breakdown": {
+      "type": "object",
+      "description": "Detalhamento por categoria",
+      "properties": {
+        "cadastral_score": {
+          "type": "number"
+        },
+        "financial_score": {
+          "type": "number"
+        },
+        "pld_score": {
+          "type": "number"
+        },
+        "documents_score": {
+          "type": "number"
+        },
+        "external_validations_score": {
+          "type": "number"
+        }
+      }
+    },
+    "positive_factors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Fatores positivos identificados"
+    },
+    "risk_factors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Fatores de risco identificados"
+    },
+    "red_flags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Red flags cr\u00edticos"
+    },
+    "data_sources_used": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Fontes de dados utilizadas na an\u00e1lise"
+    },
+    "caf_data_considered": {
+      "type": "object",
+      "description": "Dados da CAF considerados"
+    },
+    "bigdatacorp_data_considered": {
+      "type": "object",
+      "description": "Dados da BigDataCorp considerados"
+    },
+    "questionnaire_data_considered": {
+      "type": "object",
+      "description": "Dados do question\u00e1rio considerados"
+    },
+    "processing_time_ms": {
+      "type": "number"
+    },
+    "model_version": {
+      "type": "string",
+      "description": "Vers\u00e3o do modelo/prompt usado"
+    },
+    "analyst_feedback": {
+      "type": "string",
+      "enum": [
+        "agree",
+        "disagree",
+        "partial"
+      ],
+      "description": "Feedback do analista sobre a an\u00e1lise"
+    },
+    "analyst_feedback_notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "onboarding_case_id"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

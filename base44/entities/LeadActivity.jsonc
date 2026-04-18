@@ -1,0 +1,76 @@
+{
+  "name": "LeadActivity",
+  "type": "object",
+  "properties": {
+    "leadId": {
+      "type": "string",
+      "description": "ID do Lead"
+    },
+    "activityType": {
+      "type": "string",
+      "enum": [
+        "questionario_preenchido",
+        "analisado_priscila",
+        "contato_iniciado",
+        "proposta_criada",
+        "proposta_enviada",
+        "proposta_visualizada",
+        "proposta_aceita",
+        "proposta_recusada",
+        "proposta_contraproposta",
+        "kyc_iniciado",
+        "kyc_aprovado",
+        "kyc_revisao_manual",
+        "kyc_rejeitado",
+        "status_alterado_manual",
+        "perdido",
+        "nota_adicionada"
+      ],
+      "description": "Tipo de atividade"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o da atividade"
+    },
+    "performedBy": {
+      "type": "string",
+      "description": "Quem realizou a atividade"
+    },
+    "activityDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data da atividade"
+    },
+    "details": {
+      "type": "object",
+      "description": "Detalhes adicionais"
+    }
+  },
+  "required": [
+    "leadId",
+    "activityType",
+    "performedBy"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

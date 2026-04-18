@@ -1,0 +1,77 @@
+{
+  "name": "DocumentUpload",
+  "type": "object",
+  "properties": {
+    "onboardingCaseId": {
+      "type": "string",
+      "description": "ID do OnboardingCase ao qual este documento pertence"
+    },
+    "documentTypeId": {
+      "type": "string",
+      "description": "ID do DocumentType"
+    },
+    "documentName": {
+      "type": "string",
+      "description": "Nome do tipo de documento para refer\u00eancia hist\u00f3rica"
+    },
+    "fileUrl": {
+      "type": "string",
+      "description": "URL do arquivo armazenado (privado)"
+    },
+    "fileName": {
+      "type": "string",
+      "description": "Nome original do arquivo"
+    },
+    "fileSize": {
+      "type": "number",
+      "description": "Tamanho do arquivo em bytes"
+    },
+    "fileType": {
+      "type": "string",
+      "description": "Tipo MIME do arquivo"
+    },
+    "uploadDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data e hora do upload"
+    },
+    "validationStatus": {
+      "type": "string",
+      "enum": [
+        "Pendente",
+        "Validado",
+        "Rejeitado",
+        "Erro"
+      ],
+      "default": "Pendente",
+      "description": "Status da valida\u00e7\u00e3o do documento"
+    },
+    "validationNotes": {
+      "type": "string",
+      "description": "Notas sobre a valida\u00e7\u00e3o do documento"
+    }
+  },
+  "required": [
+    "onboardingCaseId",
+    "documentTypeId",
+    "fileUrl"
+  ],
+  "rls": {
+    "create": true,
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,140 @@
+{
+  "name": "Question",
+  "type": "object",
+  "properties": {
+    "questionnaireTemplateId": {
+      "type": "string",
+      "description": "ID do QuestionnaireTemplate ao qual esta pergunta pertence"
+    },
+    "order": {
+      "type": "number",
+      "description": "Ordem de exibi\u00e7\u00e3o da pergunta no question\u00e1rio"
+    },
+    "text": {
+      "type": "string",
+      "description": "Texto da pergunta"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "TEXT",
+        "NUMBER",
+        "DATE",
+        "SELECT",
+        "MULTI_SELECT",
+        "FILE_UPLOAD",
+        "BOOLEAN",
+        "EMAIL",
+        "PHONE",
+        "CPF_CNPJ"
+      ],
+      "description": "Tipo de resposta esperado"
+    },
+    "options": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Op\u00e7\u00f5es dispon\u00edveis (para SELECT e MULTI_SELECT)"
+    },
+    "isRequired": {
+      "type": "boolean",
+      "default": false,
+      "description": "Indica se a pergunta \u00e9 obrigat\u00f3ria"
+    },
+    "isLibraryQuestion": {
+      "type": "boolean",
+      "default": false,
+      "description": "Indica se \u00e9 uma pergunta da biblioteca reutiliz\u00e1vel"
+    },
+    "conditionalLogic": {
+      "type": "object",
+      "description": "L\u00f3gica condicional para exibi\u00e7\u00e3o da pergunta",
+      "properties": {
+        "dependsOn": {
+          "type": "string"
+        },
+        "operator": {
+          "type": "string",
+          "enum": [
+            "equals",
+            "not_equals",
+            "contains",
+            "greater_than",
+            "less_than",
+            "in"
+          ]
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "helpText": {
+      "type": "string",
+      "description": "Texto de ajuda"
+    },
+    "placeholder": {
+      "type": "string",
+      "description": "Placeholder"
+    },
+    "riskWeight": {
+      "type": "number",
+      "default": 0
+    },
+    "riskValues": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "number"
+      }
+    },
+    "validationRules": {
+      "type": "object",
+      "properties": {
+        "minLength": {
+          "type": "number"
+        },
+        "maxLength": {
+          "type": "number"
+        },
+        "minValue": {
+          "type": "number"
+        },
+        "maxValue": {
+          "type": "number"
+        },
+        "pattern": {
+          "type": "string"
+        }
+      }
+    },
+    "sourceEntityPath": {
+      "type": "string",
+      "description": "Caminho para pr\u00e9-preenchimento"
+    }
+  },
+  "required": [
+    "questionnaireTemplateId",
+    "order",
+    "text",
+    "type"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": true,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

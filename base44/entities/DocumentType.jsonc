@@ -1,0 +1,92 @@
+{
+  "name": "DocumentType",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nome do tipo de documento (ex: 'RG Frente', 'Comprovante de Endere\u00e7o')"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o detalhada do documento"
+    },
+    "allowedFormats": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "PDF",
+          "JPG",
+          "JPEG",
+          "PNG"
+        ]
+      },
+      "description": "Formatos de arquivo permitidos"
+    },
+    "maxSizeMB": {
+      "type": "number",
+      "default": 10,
+      "description": "Tamanho m\u00e1ximo do arquivo em MB"
+    },
+    "merchantType": {
+      "type": "string",
+      "enum": [
+        "PF",
+        "PJ",
+        "BOTH"
+      ],
+      "description": "Tipo de merchant para o qual este documento \u00e9 aplic\u00e1vel"
+    },
+    "isRequired": {
+      "type": "boolean",
+      "default": true,
+      "description": "Indica se o documento \u00e9 obrigat\u00f3rio"
+    },
+    "conditionalLogic": {
+      "type": "object",
+      "description": "L\u00f3gica condicional para solicitar o documento",
+      "properties": {
+        "dependsOn": {
+          "type": "string",
+          "description": "ID da pergunta da qual este documento depende"
+        },
+        "operator": {
+          "type": "string",
+          "enum": [
+            "equals",
+            "contains"
+          ]
+        },
+        "value": {
+          "description": "Valor esperado para solicitar este documento"
+        }
+      }
+    },
+    "instructions": {
+      "type": "string",
+      "description": "Instru\u00e7\u00f5es para o merchant sobre como enviar o documento"
+    }
+  },
+  "required": [
+    "name",
+    "allowedFormats"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": true,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

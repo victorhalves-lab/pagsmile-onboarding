@@ -1,0 +1,184 @@
+{
+  "name": "QuestionarioSimplificado",
+  "type": "object",
+  "properties": {
+    "protocolo": {
+      "type": "string",
+      "description": "C\u00f3digo \u00fanico do question\u00e1rio simplificado (PAG-QS-YYYY-NNNNN)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "novo",
+        "vinculado",
+        "convertido"
+      ],
+      "default": "novo",
+      "description": "Status do question\u00e1rio"
+    },
+    "nome_empresa": {
+      "type": "string",
+      "description": "Raz\u00e3o Social ou Nome Fantasia"
+    },
+    "cnpj": {
+      "type": "string",
+      "description": "CNPJ da empresa"
+    },
+    "contato_nome": {
+      "type": "string",
+      "description": "Nome completo do contato"
+    },
+    "contato_email": {
+      "type": "string",
+      "format": "email",
+      "description": "E-mail do contato"
+    },
+    "contato_telefone": {
+      "type": "string",
+      "description": "Telefone do contato"
+    },
+    "contato_cargo": {
+      "type": "string",
+      "description": "Cargo do contato"
+    },
+    "taxas_credito_1x": {
+      "type": "object",
+      "description": "Taxas de cr\u00e9dito \u00e0 vista por bandeira",
+      "properties": {
+        "visa": {
+          "type": "number"
+        },
+        "mastercard": {
+          "type": "number"
+        },
+        "amex": {
+          "type": "number"
+        },
+        "elo": {
+          "type": "number"
+        }
+      }
+    },
+    "taxas_credito_2_6x": {
+      "type": "object",
+      "description": "Taxas de cr\u00e9dito 2-6x por bandeira",
+      "properties": {
+        "visa": {
+          "type": "number"
+        },
+        "mastercard": {
+          "type": "number"
+        },
+        "amex": {
+          "type": "number"
+        },
+        "elo": {
+          "type": "number"
+        }
+      }
+    },
+    "taxas_credito_7_12x": {
+      "type": "object",
+      "description": "Taxas de cr\u00e9dito 7-12x por bandeira",
+      "properties": {
+        "visa": {
+          "type": "number"
+        },
+        "mastercard": {
+          "type": "number"
+        },
+        "amex": {
+          "type": "number"
+        },
+        "elo": {
+          "type": "number"
+        }
+      }
+    },
+    "usa_antecipacao": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se utiliza antecipa\u00e7\u00e3o"
+    },
+    "percentual_antecipacao": {
+      "type": "number",
+      "description": "Percentual do TPV antecipado"
+    },
+    "taxa_antecipacao": {
+      "type": "number",
+      "description": "Taxa de antecipa\u00e7\u00e3o (% a.m.)"
+    },
+    "distribuicao_avista": {
+      "type": "number",
+      "description": "Distribui\u00e7\u00e3o de pagamentos \u00e0 vista (%)"
+    },
+    "distribuicao_2_6x": {
+      "type": "number",
+      "description": "Distribui\u00e7\u00e3o de pagamentos 2-6x (%)"
+    },
+    "distribuicao_7_12x": {
+      "type": "number",
+      "description": "Distribui\u00e7\u00e3o de pagamentos 7-12x (%)"
+    },
+    "pix_tipo": {
+      "type": "string",
+      "enum": [
+        "percentual",
+        "fixo"
+      ],
+      "default": "percentual",
+      "description": "Tipo de cobran\u00e7a PIX"
+    },
+    "pix_valor": {
+      "type": "number",
+      "description": "Valor da taxa PIX"
+    },
+    "taxa_antifraude_centavos": {
+      "type": "number",
+      "description": "Taxa de antifraude em centavos"
+    },
+    "usa_fee_transacao": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se paga fee fixo por transa\u00e7\u00e3o"
+    },
+    "fee_transacao_centavos": {
+      "type": "number",
+      "description": "Valor do fee por transa\u00e7\u00e3o em centavos"
+    },
+    "lead_id": {
+      "type": "string",
+      "description": "ID do lead vinculado"
+    },
+    "onboarding_link_code": {
+      "type": "string",
+      "description": "C\u00f3digo do link de onboarding usado"
+    }
+  },
+  "required": [
+    "nome_empresa",
+    "cnpj",
+    "contato_nome",
+    "contato_email",
+    "contato_telefone",
+    "contato_cargo"
+  ],
+  "rls": {
+    "create": true,
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

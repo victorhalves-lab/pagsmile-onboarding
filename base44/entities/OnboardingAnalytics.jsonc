@@ -1,0 +1,103 @@
+{
+  "name": "OnboardingAnalytics",
+  "type": "object",
+  "properties": {
+    "onboardingLinkId": {
+      "type": "string",
+      "description": "ID do link de onboarding"
+    },
+    "onboardingLinkCode": {
+      "type": "string",
+      "description": "C\u00f3digo \u00fanico do link"
+    },
+    "sessionId": {
+      "type": "string",
+      "description": "ID \u00fanico da sess\u00e3o do usu\u00e1rio"
+    },
+    "eventType": {
+      "type": "string",
+      "enum": [
+        "link_click",
+        "page_view",
+        "page_complete",
+        "form_submit",
+        "onboarding_complete",
+        "onboarding_abandoned"
+      ],
+      "description": "Tipo do evento"
+    },
+    "pageName": {
+      "type": "string",
+      "description": "Nome da p\u00e1gina (ex: ComplianceOnboardingStart, CompliancePixOnly, Step1, Step2...)"
+    },
+    "stepNumber": {
+      "type": "number",
+      "description": "N\u00famero do step atual (1-11 para Pix, 1-19 para Full)"
+    },
+    "totalSteps": {
+      "type": "number",
+      "description": "Total de steps do fluxo"
+    },
+    "flowType": {
+      "type": "string",
+      "enum": [
+        "pix_only",
+        "full_kyc"
+      ],
+      "description": "Tipo do fluxo de onboarding"
+    },
+    "merchantId": {
+      "type": "string",
+      "description": "ID do merchant se j\u00e1 criado"
+    },
+    "onboardingCaseId": {
+      "type": "string",
+      "description": "ID do caso de onboarding se j\u00e1 criado"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Dados adicionais do evento",
+      "properties": {
+        "userAgent": {
+          "type": "string"
+        },
+        "referrer": {
+          "type": "string"
+        },
+        "timeOnPage": {
+          "type": "number"
+        },
+        "utmSource": {
+          "type": "string"
+        },
+        "utmMedium": {
+          "type": "string"
+        },
+        "utmCampaign": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "required": [
+    "eventType"
+  ],
+  "rls": {
+    "create": true,
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

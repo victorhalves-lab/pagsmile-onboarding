@@ -1,0 +1,125 @@
+{
+  "name": "PartnerCost",
+  "type": "object",
+  "properties": {
+    "partnerId": {
+      "type": "string",
+      "description": "ID do Partner ao qual estas taxas se referem"
+    },
+    "mcc": {
+      "type": "string",
+      "description": "Merchant Category Code"
+    },
+    "mccLabel": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o amig\u00e1vel do MCC"
+    },
+    "rates": {
+      "type": "object",
+      "description": "Taxas de MDR Cr\u00e9dito detalhadas para este MCC",
+      "properties": {
+        "cartao": {
+          "type": "object",
+          "properties": {
+            "visa": {
+              "type": "object",
+              "properties": {
+                "avista": {
+                  "type": "number"
+                },
+                "de2a6x": {
+                  "type": "number"
+                },
+                "de7a12x": {
+                  "type": "number"
+                }
+              }
+            },
+            "mastercard": {
+              "type": "object",
+              "properties": {
+                "avista": {
+                  "type": "number"
+                },
+                "de2a6x": {
+                  "type": "number"
+                },
+                "de7a12x": {
+                  "type": "number"
+                }
+              }
+            },
+            "elo": {
+              "type": "object",
+              "properties": {
+                "avista": {
+                  "type": "number"
+                },
+                "de2a6x": {
+                  "type": "number"
+                },
+                "de7a12x": {
+                  "type": "number"
+                }
+              }
+            },
+            "amex": {
+              "type": "object",
+              "properties": {
+                "avista": {
+                  "type": "number"
+                },
+                "de2a6x": {
+                  "type": "number"
+                },
+                "de7a12x": {
+                  "type": "number"
+                }
+              }
+            },
+            "outras": {
+              "type": "object",
+              "properties": {
+                "avista": {
+                  "type": "number"
+                },
+                "de2a6x": {
+                  "type": "number"
+                },
+                "de7a12x": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "partnerId",
+    "mcc"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

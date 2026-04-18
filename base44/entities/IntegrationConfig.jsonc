@@ -1,0 +1,111 @@
+{
+  "name": "IntegrationConfig",
+  "type": "object",
+  "properties": {
+    "provider": {
+      "type": "string",
+      "enum": [
+        "CAF",
+        "BigDataCorp"
+      ],
+      "description": "Provedor da integra\u00e7\u00e3o"
+    },
+    "name": {
+      "type": "string",
+      "description": "Nome da configura\u00e7\u00e3o"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se a integra\u00e7\u00e3o est\u00e1 ativa"
+    },
+    "environment": {
+      "type": "string",
+      "enum": [
+        "sandbox",
+        "production"
+      ],
+      "default": "sandbox",
+      "description": "Ambiente da integra\u00e7\u00e3o"
+    },
+    "api_base_url": {
+      "type": "string",
+      "description": "URL base da API"
+    },
+    "webhook_url": {
+      "type": "string",
+      "description": "URL do webhook para receber callbacks"
+    },
+    "webhook_secret": {
+      "type": "string",
+      "description": "Secret para validar webhooks"
+    },
+    "template_id": {
+      "type": "string",
+      "description": "ID do template no provedor (CAF Transaction Template, BDC Onboarding Type)"
+    },
+    "services_enabled": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Lista de servi\u00e7os habilitados (liveness, facematch, ocr, kyc, etc)"
+    },
+    "settings": {
+      "type": "object",
+      "description": "Configura\u00e7\u00f5es espec\u00edficas do provedor",
+      "properties": {
+        "auto_approve_threshold": {
+          "type": "number"
+        },
+        "auto_reject_threshold": {
+          "type": "number"
+        },
+        "callback_env": {
+          "type": "string"
+        },
+        "onboarding_type": {
+          "type": "string"
+        }
+      }
+    },
+    "last_test_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_test_status": {
+      "type": "string",
+      "enum": [
+        "success",
+        "failed",
+        "pending"
+      ]
+    }
+  },
+  "required": [
+    "provider",
+    "name"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

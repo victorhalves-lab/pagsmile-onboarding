@@ -1,0 +1,80 @@
+{
+  "name": "AuditLog",
+  "type": "object",
+  "properties": {
+    "entityName": {
+      "type": "string",
+      "description": "Nome da entidade que foi modificada"
+    },
+    "entityId": {
+      "type": "string",
+      "description": "ID do registro que foi modificado"
+    },
+    "actionType": {
+      "type": "string",
+      "enum": [
+        "CREATE",
+        "UPDATE",
+        "DELETE",
+        "VIEW",
+        "APPROVAL",
+        "REJECTION",
+        "VALIDATION"
+      ],
+      "description": "Tipo de a\u00e7\u00e3o realizada"
+    },
+    "actionDescription": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o detalhada da a\u00e7\u00e3o"
+    },
+    "changedBy": {
+      "type": "string",
+      "description": "E-mail ou ID do usu\u00e1rio que realizou a a\u00e7\u00e3o"
+    },
+    "changeDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data e hora da a\u00e7\u00e3o"
+    },
+    "details": {
+      "type": "object",
+      "description": "Detalhes adicionais sobre a mudan\u00e7a (ex: valores antes/depois)"
+    },
+    "ipAddress": {
+      "type": "string",
+      "description": "Endere\u00e7o IP de onde a a\u00e7\u00e3o foi realizada"
+    },
+    "userAgent": {
+      "type": "string",
+      "description": "User agent do navegador/cliente"
+    }
+  },
+  "required": [
+    "entityName",
+    "entityId",
+    "actionType",
+    "changedBy"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

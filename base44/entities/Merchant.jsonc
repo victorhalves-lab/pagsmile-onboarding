@@ -1,0 +1,108 @@
+{
+  "name": "Merchant",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "PF",
+        "PJ"
+      ],
+      "description": "Tipo de merchant: Pessoa F\u00edsica ou Pessoa Jur\u00eddica"
+    },
+    "cpfCnpj": {
+      "type": "string",
+      "description": "CPF (para PF) ou CNPJ (para PJ)"
+    },
+    "fullName": {
+      "type": "string",
+      "description": "Nome completo (PF) ou Raz\u00e3o Social (PJ)"
+    },
+    "companyName": {
+      "type": "string",
+      "description": "Nome Fantasia (apenas para PJ)"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "E-mail do merchant"
+    },
+    "phone": {
+      "type": "string",
+      "description": "Telefone de contato"
+    },
+    "dateOfBirth": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de nascimento (apenas para PF)"
+    },
+    "nationality": {
+      "type": "string",
+      "description": "Nacionalidade (apenas para PF)"
+    },
+    "motherName": {
+      "type": "string",
+      "description": "Nome da m\u00e3e (apenas para PF)"
+    },
+    "onboardingStatus": {
+      "type": "string",
+      "enum": [
+        "Pendente",
+        "Em An\u00e1lise",
+        "Aprovado",
+        "Manual",
+        "Recusado"
+      ],
+      "default": "Pendente",
+      "description": "Status atual do processo de onboarding"
+    },
+    "riskScore": {
+      "type": "number",
+      "description": "Score de risco calculado pela IA (0-100)"
+    },
+    "paymentServices": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "Pix",
+          "Cart\u00e3o"
+        ]
+      },
+      "description": "Servi\u00e7os de pagamento solicitados pelo merchant"
+    },
+    "parentMerchantId": {
+      "type": "string",
+      "description": "ID do Merchant principal (seller) se este for um subseller"
+    },
+    "isSubseller": {
+      "type": "boolean",
+      "default": false,
+      "description": "Indica se este Merchant \u00e9 um subseller vinculado a um seller principal"
+    }
+  },
+  "required": [
+    "type",
+    "cpfCnpj",
+    "fullName",
+    "email"
+  ],
+  "rls": {
+    "create": true,
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

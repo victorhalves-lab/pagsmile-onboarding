@@ -1,0 +1,87 @@
+{
+  "name": "ComplianceSession",
+  "type": "object",
+  "properties": {
+    "sessionToken": {
+      "type": "string",
+      "description": "Token \u00fanico da sess\u00e3o (gerado na cria\u00e7\u00e3o, usado para retomar)"
+    },
+    "linkCode": {
+      "type": "string",
+      "description": "C\u00f3digo do OnboardingLink usado"
+    },
+    "flowType": {
+      "type": "string",
+      "description": "Tipo de fluxo (pix, lite, saas, ecommerce, full_kyc)"
+    },
+    "templateModel": {
+      "type": "string",
+      "description": "Modelo do template (pix, lite, saas, ecommerce, merchant, gateway, marketplace)"
+    },
+    "currentPhase": {
+      "type": "string",
+      "enum": [
+        "questionnaire",
+        "documents",
+        "completed"
+      ],
+      "default": "questionnaire",
+      "description": "Fase atual: preenchimento do question\u00e1rio ou envio de documentos"
+    },
+    "currentStep": {
+      "type": "number",
+      "default": 1,
+      "description": "Etapa atual dentro da fase"
+    },
+    "formData": {
+      "type": "object",
+      "description": "Respostas do question\u00e1rio salvas"
+    },
+    "documentsData": {
+      "type": "object",
+      "description": "Dados dos documentos j\u00e1 enviados"
+    },
+    "clientEmail": {
+      "type": "string",
+      "description": "E-mail do cliente para identifica\u00e7\u00e3o"
+    },
+    "clientName": {
+      "type": "string",
+      "description": "Nome do cliente para exibi\u00e7\u00e3o"
+    },
+    "lastAccessDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data do \u00faltimo acesso"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        "expired"
+      ],
+      "default": "active",
+      "description": "Status da sess\u00e3o"
+    }
+  },
+  "required": [
+    "sessionToken",
+    "flowType",
+    "templateModel"
+  ],
+  "rls": {
+    "create": true,
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": true,
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

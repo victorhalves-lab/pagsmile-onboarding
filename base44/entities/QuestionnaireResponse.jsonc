@@ -1,0 +1,63 @@
+{
+  "name": "QuestionnaireResponse",
+  "type": "object",
+  "properties": {
+    "onboardingCaseId": {
+      "type": "string",
+      "description": "ID do OnboardingCase ao qual esta resposta pertence"
+    },
+    "questionId": {
+      "type": "string",
+      "description": "ID da Question sendo respondida"
+    },
+    "valueText": {
+      "type": "string",
+      "description": "Valor da resposta em formato texto"
+    },
+    "valueNumber": {
+      "type": "number",
+      "description": "Valor da resposta em formato num\u00e9rico"
+    },
+    "valueBoolean": {
+      "type": "boolean",
+      "description": "Valor da resposta em formato booleano"
+    },
+    "valueArray": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Valor da resposta em formato array (para m\u00faltiplas escolhas)"
+    },
+    "questionText": {
+      "type": "string",
+      "description": "C\u00f3pia do texto da pergunta para refer\u00eancia hist\u00f3rica"
+    },
+    "questionType": {
+      "type": "string",
+      "description": "C\u00f3pia do tipo da pergunta para refer\u00eancia hist\u00f3rica"
+    }
+  },
+  "required": [
+    "onboardingCaseId",
+    "questionId"
+  ],
+  "rls": {
+    "create": true,
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

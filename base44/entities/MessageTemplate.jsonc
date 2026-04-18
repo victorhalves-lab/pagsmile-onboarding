@@ -1,0 +1,71 @@
+{
+  "name": "MessageTemplate",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nome do template"
+    },
+    "subject": {
+      "type": "string",
+      "description": "Assunto do e-mail (com placeholders)"
+    },
+    "body": {
+      "type": "string",
+      "description": "Corpo da mensagem (com placeholders como {{leadName}}, {{linkUrl}}, {{agentName}})"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "EMAIL",
+        "SMS",
+        "WHATSAPP"
+      ],
+      "default": "EMAIL",
+      "description": "Tipo de mensagem"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "FOLLOW_UP",
+        "WELCOME",
+        "PROPOSAL",
+        "GENERAL"
+      ],
+      "default": "GENERAL",
+      "description": "Categoria do template"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se o template est\u00e1 ativo"
+    }
+  },
+  "required": [
+    "name",
+    "body",
+    "type"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "name": "ExternalValidationResult",
+  "type": "object",
+  "properties": {
+    "onboardingCaseId": {
+      "type": "string",
+      "description": "ID do OnboardingCase ao qual este resultado pertence"
+    },
+    "provider": {
+      "type": "string",
+      "enum": [
+        "BigDataCorp",
+        "CAF",
+        "Doc"
+      ],
+      "description": "Provedor da valida\u00e7\u00e3o externa"
+    },
+    "validationType": {
+      "type": "string",
+      "description": "Tipo espec\u00edfico de valida\u00e7\u00e3o (ex: 'Empresa Basic Data', 'CAF KYC', 'Liveness')"
+    },
+    "endpoint": {
+      "type": "string",
+      "description": "Endpoint da API que foi chamado"
+    },
+    "resultData": {
+      "type": "object",
+      "description": "JSON completo da resposta da integra\u00e7\u00e3o"
+    },
+    "score": {
+      "type": "number",
+      "description": "Score num\u00e9rico do resultado, se aplic\u00e1vel"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Sucesso",
+        "Falha",
+        "Pendente",
+        "Erro"
+      ],
+      "default": "Pendente",
+      "description": "Status da valida\u00e7\u00e3o"
+    },
+    "errorMessage": {
+      "type": "string",
+      "description": "Mensagem de erro, se houver"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data e hora da valida\u00e7\u00e3o"
+    },
+    "responseTime": {
+      "type": "number",
+      "description": "Tempo de resposta da API em milissegundos"
+    }
+  },
+  "required": [
+    "onboardingCaseId",
+    "provider",
+    "validationType"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

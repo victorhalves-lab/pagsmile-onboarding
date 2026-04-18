@@ -1,0 +1,70 @@
+{
+  "name": "PriscilaConfig",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nome da configura\u00e7\u00e3o"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se est\u00e1 ativa"
+    },
+    "priscilaVersion": {
+      "type": "string",
+      "description": "Vers\u00e3o da PRISCILA"
+    },
+    "llmPromptTemplate": {
+      "type": "string",
+      "description": "Template do prompt para a LLM"
+    },
+    "llmResponseJsonSchema": {
+      "type": "object",
+      "description": "JSON Schema da resposta esperada da LLM"
+    },
+    "validationRules": {
+      "type": "object",
+      "description": "Regras do Validador (Etapa 1)"
+    },
+    "riskClassificationRules": {
+      "type": "object",
+      "description": "Regras do Classificador (Etapa 2)"
+    },
+    "decisionRules": {
+      "type": "object",
+      "description": "Regras do Decisor (Etapa 3)"
+    },
+    "benchmarksConcorrentes": {
+      "type": "object",
+      "description": "Dados de benchmark"
+    }
+  },
+  "required": [
+    "name",
+    "isActive",
+    "priscilaVersion"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "name": "RevalidationSchedule",
+  "type": "object",
+  "properties": {
+    "merchantId": {
+      "type": "string",
+      "description": "ID do Merchant a ser revalidado"
+    },
+    "scheduledDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data programada para revalida\u00e7\u00e3o"
+    },
+    "revalidationType": {
+      "type": "string",
+      "enum": [
+        "periodic",
+        "risk_based",
+        "regulatory",
+        "manual"
+      ],
+      "default": "periodic",
+      "description": "Tipo de revalida\u00e7\u00e3o"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "in_progress",
+        "completed",
+        "cancelled"
+      ],
+      "default": "pending",
+      "description": "Status da revalida\u00e7\u00e3o"
+    },
+    "frequency": {
+      "type": "string",
+      "enum": [
+        "monthly",
+        "quarterly",
+        "semi_annual",
+        "annual"
+      ],
+      "description": "Frequ\u00eancia de revalida\u00e7\u00e3o"
+    },
+    "lastRevalidationDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data da \u00faltima revalida\u00e7\u00e3o"
+    },
+    "nextRevalidationDate": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data da pr\u00f3xima revalida\u00e7\u00e3o"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es sobre a revalida\u00e7\u00e3o"
+    },
+    "triggeredBy": {
+      "type": "string",
+      "description": "Quem/o que disparou a revalida\u00e7\u00e3o"
+    },
+    "onboardingCaseId": {
+      "type": "string",
+      "description": "ID do caso de revalida\u00e7\u00e3o criado"
+    }
+  },
+  "required": [
+    "merchantId",
+    "scheduledDate"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
