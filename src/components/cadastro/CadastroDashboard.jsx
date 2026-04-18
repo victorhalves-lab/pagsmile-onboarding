@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { BarChart, Bar, PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend, LineChart, Line, CartesianGrid } from 'recharts';
 import { TrendingUp, Shield, Users, Building2, Clock, CheckCircle2, XCircle, AlertTriangle, BarChart3 } from 'lucide-react';
+import { segmentLabel } from '@/lib/segmentLabels';
 
 const COLORS = {
   'Aprovado': '#22c55e',
@@ -73,7 +74,7 @@ export default function CadastroDashboard({ merchants, cases, leads }) {
     const counts = {};
     leads.forEach(l => {
       if (l.businessSubCategory) {
-        const seg = l.businessSubCategory;
+        const seg = segmentLabel(l.businessSubCategory);
         counts[seg] = (counts[seg] || 0) + 1;
       }
     });

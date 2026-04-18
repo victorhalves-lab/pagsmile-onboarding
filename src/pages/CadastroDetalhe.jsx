@@ -18,6 +18,7 @@ import CadastroHistoricoTab from '@/components/cadastro/CadastroHistoricoTab';
 import CadastroEnrichmentTab from '@/components/cadastro/CadastroEnrichmentTab';
 import CadastroRegulatoryPanel from '@/components/cadastro/CadastroRegulatoryPanel';
 import DownloadDossieButton from '@/components/cadastro/DownloadDossieButton';
+import { segmentLabel } from '@/lib/segmentLabels';
 
 const STATUS_CONFIG = {
   'Pendente': { color: 'bg-gray-100 text-gray-700' },
@@ -273,6 +274,11 @@ export default function CadastroDetalhe() {
               <h1 className="text-xl font-bold text-[var(--pagsmile-blue)]">{merchant.companyName || merchant.fullName}</h1>
               <Badge variant="outline" className="text-xs">{merchant.type}</Badge>
               {merchant.isSubseller && <Badge className="bg-purple-100 text-purple-700 text-xs">Subseller</Badge>}
+              {(lead?.businessSubCategory || latestCase?.questionnaireTemplateId) && (
+                <Badge className="bg-emerald-50 text-emerald-700 text-xs border-emerald-200">
+                  {segmentLabel(lead?.businessSubCategory)}
+                </Badge>
+              )}
               <Badge className={`${sc.color} text-xs`}>{merchant.onboardingStatus}</Badge>
             </div>
             {merchant.fullName && merchant.companyName && (

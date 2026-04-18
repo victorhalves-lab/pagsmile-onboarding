@@ -26,6 +26,7 @@ import ComplianceVariablesDetail from './ComplianceVariablesDetail';
 import ComplianceMonitoringPanel from './ComplianceMonitoringPanel';
 import BDCDataConfidence from '@/components/bdc-enrichment/BDCDataConfidence';
 import BDCRiskHeatmap from '@/components/bdc-enrichment/BDCRiskHeatmap';
+import { segmentLabel } from '@/lib/segmentLabels';
 
 function reconstructAnalysis(cs) {
   if (!cs?.variaveis_aplicadas) return null;
@@ -158,7 +159,7 @@ export default function CadastroComplianceTab({ score, latestCase, allScores = [
               </div>
             </div>
             <div className="flex flex-wrap gap-2 text-xs">
-              {score?.segmento && <Badge variant="outline" className="text-[10px]">Segmento: {score.segmento}</Badge>}
+              {score?.segmento && <Badge variant="outline" className="text-[10px]">Segmento: {segmentLabel(score.segmento)}</Badge>}
               {score?.is_pix && <Badge className="bg-emerald-100 text-emerald-700 text-[10px]">Fluxo PIX</Badge>}
               {score?.decisao_automatica && <Badge className="bg-blue-100 text-blue-700 text-[10px]"><Zap className="w-3 h-3 mr-1" />Decisão Automática (Data-First v7)</Badge>}
               {!score?.decisao_automatica && ['4', '5'].includes(effectiveSubfaixa) && <Badge className="bg-red-100 text-red-700 text-[10px]">⚠️ Revisão Manual (Subfaixa 4+)</Badge>}

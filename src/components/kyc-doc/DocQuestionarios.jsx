@@ -1,32 +1,19 @@
 import React from 'react';
 import { S, H1, H2, H3, P, Li, Bold, InfoBox, QuestionTable } from './DocHelpers';
-
-// Model name → readable name
-const MODEL_NAMES = {
-  'ComplianceGatewayV4': 'Gateway / PSP — Cartão (FULL)',
-  'ComplianceMarketplaceV4': 'Marketplace — Cartão (FULL)',
-  'ComplianceGatewayAutocomplete': 'Gateway Autocomplete — Cartão (FULL)',
-  'ComplianceMarketplaceAutocomplete': 'Marketplace Autocomplete — Cartão (FULL)',
-  'CompliancePlataformaVerticalV4': 'Plataforma Vertical — Cartão (FULL)',
-  'ComplianceEcommerceV4': 'E-commerce — Cartão (STANDARD)',
-  'ComplianceSaaSV4': 'SaaS / Recorrência — Cartão (STANDARD)',
-  'ComplianceInfoprodutosV4': 'Infoprodutos — Cartão (STANDARD)',
-  'ComplianceDropshippingV4': 'Dropshipping — Cartão (STANDARD)',
-  'ComplianceEducacaoV4': 'Educação — Cartão (STANDARD)',
-  'ComplianceMerchantLinkV4': 'Link de Pagamento — Cartão (STANDARD)',
-  'ComplianceMPEV4': 'MPE — Cartão (LITE)',
-  'CompliancePixMerchantV4': 'PIX Merchant',
-  'pix_merchant_v4': 'PIX Merchant',
-  'pix_intermediario_v4': 'PIX Intermediário',
-  'subseller_v2': 'Subseller PJ (V2 — Dinâmico por Segmento)',
-  'subseller_pf': 'Subseller PF (Pessoa Física)',
-  'subseller': 'Subseller PJ (V1 — Legacy)',
-};
+import { segmentLabel, datasetGroupFor } from '@/lib/segmentLabels';
 
 export default function DocQuestionarios({ templates, questionsByTemplate }) {
   // Sort: main compliance first, then subsellers
   const sorted = [...templates].sort((a, b) => {
-    const order = { 'ComplianceGatewayV4': 1, 'ComplianceMarketplaceV4': 2, 'ComplianceEcommerceV4': 3, 'ComplianceSaaSV4': 4, 'ComplianceInfoprodutosV4': 5, 'ComplianceDropshippingV4': 6, 'ComplianceEducacaoV4': 7, 'ComplianceMPEV4': 8, 'ComplianceMerchantLinkV4': 9, 'CompliancePlataformaVerticalV4': 10, 'CompliancePixMerchantV4': 11, 'pix_merchant_v4': 12, 'pix_intermediario_v4': 13, 'subseller_v2': 14, 'subseller_pf': 15, 'subseller': 16 };
+    const order = {
+      'ComplianceGatewayV4': 1, 'ComplianceMarketplaceV4': 2, 'CompliancePlataformaVerticalV4': 3,
+      'ComplianceEcommerceV4': 4, 'ComplianceSaaSV4': 5, 'ComplianceInfoprodutosV4': 6,
+      'ComplianceDropshippingV4': 7, 'ComplianceEducacaoV4': 8, 'ComplianceLinkPagamentoV4': 9,
+      'ComplianceMerchantLinkV4': 10, 'ComplianceMPEV4': 11,
+      'CompliancePixIntermediarioV4': 12, 'pix_intermediario_v4': 13,
+      'CompliancePixMerchantV4': 14, 'pix_merchant_v4': 15,
+      'subseller_v2': 20, 'subseller_pf': 21, 'subseller': 22,
+    };
     return (order[a.model] || 50) - (order[b.model] || 50);
   });
 
@@ -48,7 +35,9 @@ export default function DocQuestionarios({ templates, questionsByTemplate }) {
         const questions = questionsByTemplate[template.id] || [];
         if (questions.length === 0) return null;
 
-        const readableName = MODEL_NAMES[template.model] || template.name;
+        const segLabel = segmentLabel(template.model);
+        const group = datasetGroupFor(template.model);
+        const readableName = group ? `${segLabel} (${group})` : (template.name || segLabel);
         const conditionalQs = questions.filter(q => q.conditionalLogic);
         const requiredQs = questions.filter(q => q.isRequired);
         const riskQs = questions.filter(q => q.riskWeight > 0);
