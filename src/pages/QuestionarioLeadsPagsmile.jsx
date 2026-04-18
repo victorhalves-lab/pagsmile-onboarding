@@ -286,7 +286,7 @@ export default function QuestionarioLeadsPagsmile() {
       properties: {
         form_type: 'lead_pagsmile_v5',
         segment: form.segmento || '',
-        has_introducer: !!introducerData.introducerId,
+        has_introducer: !!onboardingLink?.introducerId,
         link_code: linkCode || '',
         protocolo: proto,
         lead_score: leadScore,
