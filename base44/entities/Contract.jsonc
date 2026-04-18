@@ -3,28 +3,22 @@
   "type": "object",
   "properties": {
     "leadId": {
-      "type": "string",
-      "description": "ID do Lead vinculado"
+      "type": "string"
     },
     "proposalId": {
-      "type": "string",
-      "description": "ID da Proposal vinculada"
+      "type": "string"
     },
     "onboardingCaseId": {
-      "type": "string",
-      "description": "ID do OnboardingCase vinculado"
+      "type": "string"
     },
     "merchantId": {
-      "type": "string",
-      "description": "ID do Merchant vinculado"
+      "type": "string"
     },
     "clientCnpj": {
-      "type": "string",
-      "description": "CNPJ do cliente (\u00e2ncora central)"
+      "type": "string"
     },
     "codigo": {
-      "type": "string",
-      "description": "C\u00f3digo \u00fanico do contrato (CONTR-YYYY-NNNNN)"
+      "type": "string"
     },
     "status": {
       "type": "string",
@@ -36,12 +30,10 @@
         "signed",
         "cancelled"
       ],
-      "default": "pre_generated",
-      "description": "Status do contrato"
+      "default": "pre_generated"
     },
     "publicLinkCode": {
-      "type": "string",
-      "description": "C\u00f3digo \u00fanico para link p\u00fablico do contrato"
+      "type": "string"
     },
     "ratesSourceType": {
       "type": "string",
@@ -51,64 +43,49 @@
         "standard_proposal",
         "segment_default_rates"
       ],
-      "default": "manual",
-      "description": "Origem das taxas: manual, proposta aceita, proposta padr\u00e3o ou taxas padr\u00e3o por segmento"
+      "default": "manual"
     },
     "ratesSourceId": {
-      "type": "string",
-      "description": "ID da origem das taxas (StandardProposal ou SegmentDefaultRates)"
+      "type": "string"
     },
     "ratesSourceName": {
-      "type": "string",
-      "description": "Nome da origem para exibi\u00e7\u00e3o r\u00e1pida (ex: 'Proposta Padr\u00e3o E-commerce' ou 'Segmento Educa\u00e7\u00e3o')"
+      "type": "string"
     },
     "clientName": {
-      "type": "string",
-      "description": "Raz\u00e3o Social do contratante"
+      "type": "string"
     },
     "clientDocument": {
-      "type": "string",
-      "description": "CNPJ do contratante"
+      "type": "string"
     },
     "clientAddress": {
-      "type": "string",
-      "description": "Endere\u00e7o completo do contratante"
+      "type": "string"
     },
     "clientCity": {
-      "type": "string",
-      "description": "Cidade do contratante"
+      "type": "string"
     },
     "clientState": {
-      "type": "string",
-      "description": "Estado (UF) do contratante"
+      "type": "string"
     },
     "clientZipCode": {
-      "type": "string",
-      "description": "CEP do contratante"
+      "type": "string"
     },
     "clientEmail": {
-      "type": "string",
-      "description": "E-mail do contratante"
+      "type": "string"
     },
     "clientPhone": {
-      "type": "string",
-      "description": "Telefone do contratante"
+      "type": "string"
     },
     "clientRepresentativeName": {
-      "type": "string",
-      "description": "Nome do representante legal do contratante"
+      "type": "string"
     },
     "clientRepresentativeRole": {
-      "type": "string",
-      "description": "Cargo do representante legal do contratante"
+      "type": "string"
     },
     "clientRepresentativeCPF": {
-      "type": "string",
-      "description": "CPF do representante legal do contratante"
+      "type": "string"
     },
     "modules": {
       "type": "object",
-      "description": "M\u00f3dulos contratados",
       "properties": {
         "contaPagamento": {
           "type": "boolean",
@@ -137,275 +114,95 @@
       }
     },
     "otherModules": {
-      "type": "string",
-      "description": "M\u00f3dulos adicionais (texto livre)"
+      "type": "string"
     },
     "rates": {
-      "type": "object",
-      "description": "Taxas comerciais",
-      "properties": {
-        "cartao": {
-          "type": "object",
-          "properties": {
-            "visa": {
-              "type": "object",
-              "properties": {
-                "avista": {
-                  "type": "number"
-                },
-                "de2a6x": {
-                  "type": "number"
-                },
-                "de7a12x": {
-                  "type": "number"
-                },
-                "de13a21x": {
-                  "type": "number"
-                }
-              }
-            },
-            "mastercard": {
-              "type": "object",
-              "properties": {
-                "avista": {
-                  "type": "number"
-                },
-                "de2a6x": {
-                  "type": "number"
-                },
-                "de7a12x": {
-                  "type": "number"
-                },
-                "de13a21x": {
-                  "type": "number"
-                }
-              }
-            },
-            "elo": {
-              "type": "object",
-              "properties": {
-                "avista": {
-                  "type": "number"
-                },
-                "de2a6x": {
-                  "type": "number"
-                },
-                "de7a12x": {
-                  "type": "number"
-                },
-                "de13a21x": {
-                  "type": "number"
-                }
-              }
-            },
-            "amex": {
-              "type": "object",
-              "properties": {
-                "avista": {
-                  "type": "number"
-                },
-                "de2a6x": {
-                  "type": "number"
-                },
-                "de7a12x": {
-                  "type": "number"
-                },
-                "de13a21x": {
-                  "type": "number"
-                }
-              }
-            },
-            "outras": {
-              "type": "object",
-              "properties": {
-                "avista": {
-                  "type": "number"
-                },
-                "de2a6x": {
-                  "type": "number"
-                },
-                "de7a12x": {
-                  "type": "number"
-                },
-                "de13a21x": {
-                  "type": "number"
-                }
-              }
-            }
-          }
-        },
-        "debito": {
-          "type": "object",
-          "properties": {
-            "visa": {
-              "type": "number"
-            },
-            "mastercard": {
-              "type": "number"
-            },
-            "elo": {
-              "type": "number"
-            },
-            "outras": {
-              "type": "number"
-            }
-          }
-        },
-        "pix": {
-          "type": "object",
-          "properties": {
-            "tipo": {
-              "type": "string",
-              "enum": [
-                "percentual",
-                "fixo"
-              ]
-            },
-            "valor": {
-              "type": "number"
-            }
-          }
-        },
-        "boleto": {
-          "type": "number"
-        },
-        "antifraude": {
-          "type": "number"
-        },
-        "feeTransacao": {
-          "type": "number"
-        },
-        "rav": {
-          "type": "object",
-          "properties": {
-            "taxa": {
-              "type": "number"
-            },
-            "prazo": {
-              "type": "string"
-            }
-          }
-        },
-        "percentualAntecipacao": {
-          "type": "number"
-        },
-        "alertaPreChargeback": {
-          "type": "number"
-        }
-      }
+      "type": "object"
     },
     "projectedTpvMonth1": {
-      "type": "number",
-      "description": "TPV m\u00ednimo garantido M\u00eas 1 (R$)"
+      "type": "number"
     },
     "projectedTpvMonth2": {
-      "type": "number",
-      "description": "TPV m\u00ednimo garantido M\u00eas 2 (R$)"
+      "type": "number"
     },
     "projectedTpvMonth3": {
-      "type": "number",
-      "description": "TPV m\u00ednimo garantido M\u00eas 3 em diante (R$)"
+      "type": "number"
     },
     "setupFee": {
-      "type": "number",
-      "description": "Taxa de setup (R$)"
+      "type": "number"
     },
     "paymentTerm": {
-      "type": "string",
-      "description": "Prazo de liquida\u00e7\u00e3o (ex: D+1, D+30)"
+      "type": "string"
     },
     "bankInstitution": {
-      "type": "string",
-      "description": "Institui\u00e7\u00e3o banc\u00e1ria para liquida\u00e7\u00e3o"
+      "type": "string"
     },
     "bankAgency": {
-      "type": "string",
-      "description": "Ag\u00eancia banc\u00e1ria"
+      "type": "string"
     },
     "bankAccountNumber": {
-      "type": "string",
-      "description": "N\u00famero da conta banc\u00e1ria"
+      "type": "string"
     },
     "accountMaintenanceFee": {
-      "type": "number",
-      "description": "Tarifa de manuten\u00e7\u00e3o de conta"
+      "type": "number"
     },
     "cardWithdrawalFee": {
-      "type": "number",
-      "description": "Tarifa de saque com cart\u00e3o"
+      "type": "number"
     },
     "tedDocTransferFee": {
-      "type": "number",
-      "description": "Tarifa de transfer\u00eancia TED/DOC"
+      "type": "number"
     },
     "physicalCardIssuanceFee": {
-      "type": "number",
-      "description": "Tarifa de emiss\u00e3o de cart\u00e3o f\u00edsico"
+      "type": "number"
     },
     "physicalCard2ndCopyFee": {
-      "type": "number",
-      "description": "Tarifa de 2\u00aa via de cart\u00e3o f\u00edsico"
+      "type": "number"
     },
     "slaUptime": {
-      "type": "string",
-      "description": "SLA de disponibilidade (%)"
+      "type": "string"
     },
     "slaResponseTime": {
-      "type": "string",
-      "description": "Tempo de resposta do suporte"
+      "type": "string"
     },
     "supportCriticalSLA": {
-      "type": "string",
-      "description": "SLA de suporte cr\u00edtico"
+      "type": "string"
     },
     "supportHighSLA": {
-      "type": "string",
-      "description": "SLA de suporte alto"
+      "type": "string"
     },
     "supportMediumSLA": {
-      "type": "string",
-      "description": "SLA de suporte m\u00e9dio"
+      "type": "string"
     },
     "supportLowSLA": {
-      "type": "string",
-      "description": "SLA de suporte baixo"
+      "type": "string"
     },
     "pixRiskReservePercentage": {
-      "type": "number",
-      "description": "Percentual de reserva de risco Pix (%)"
+      "type": "number"
     },
     "pixRiskReserveDays": {
-      "type": "number",
-      "description": "Dias de reten\u00e7\u00e3o reserva Pix"
+      "type": "number"
     },
     "cardRiskReservePercentage": {
-      "type": "number",
-      "description": "Percentual de reserva de risco Cart\u00e3o (%)"
+      "type": "number"
     },
     "cardRiskReserveDays": {
-      "type": "number",
-      "description": "Dias de reten\u00e7\u00e3o reserva Cart\u00e3o"
+      "type": "number"
     },
     "cardRiskReservePartialReleaseDays": {
-      "type": "number",
-      "description": "Dias para libera\u00e7\u00e3o parcial reserva Cart\u00e3o"
+      "type": "number"
     },
     "chargebackFee": {
-      "type": "number",
-      "description": "Taxa de chargeback (R$)"
+      "type": "number"
     },
     "chargebackThreshold": {
-      "type": "number",
-      "description": "Threshold de chargeback (%)"
+      "type": "number"
     },
     "contractDate": {
       "type": "string",
-      "format": "date",
-      "description": "Data do contrato"
+      "format": "date"
     },
     "contractDurationMonths": {
-      "type": "number",
-      "description": "Dura\u00e7\u00e3o do contrato em meses"
+      "type": "number"
     },
     "earlyTerminationPenaltyPercentage": {
       "type": "number"
@@ -441,12 +238,10 @@
       "type": "string"
     },
     "customClauses": {
-      "type": "string",
-      "description": "Cl\u00e1usulas customizadas adicionais"
+      "type": "string"
     },
     "clientSuggestions": {
-      "type": "string",
-      "description": "Sugest\u00f5es internas do time comercial"
+      "type": "string"
     },
     "proposalLocked": {
       "type": "boolean",
@@ -489,7 +284,11 @@
         "role": "admin"
       }
     },
-    "read": true,
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
     "update": {
       "user_condition": {
         "role": "admin"

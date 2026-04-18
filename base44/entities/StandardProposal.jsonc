@@ -3,8 +3,7 @@
   "type": "object",
   "properties": {
     "templateName": {
-      "type": "string",
-      "description": "Nome do modelo de proposta (ex: Proposta Padr\u00e3o E-commerce)"
+      "type": "string"
     },
     "segment": {
       "type": "string",
@@ -19,12 +18,10 @@
         "MPE",
         "Plataformas Verticais",
         "Link de Pagamento"
-      ],
-      "description": "Segmento de cliente ao qual esta proposta padr\u00e3o se aplica"
+      ]
     },
     "description": {
-      "type": "string",
-      "description": "Descri\u00e7\u00e3o do modelo de proposta"
+      "type": "string"
     },
     "businessSubCategory": {
       "type": "string",
@@ -39,8 +36,7 @@
         "dropshipping",
         "plataformas_verticais",
         "link_pagamento"
-      ],
-      "description": "Segmento de neg\u00f3cio"
+      ]
     },
     "status": {
       "type": "string",
@@ -49,13 +45,11 @@
         "ativa",
         "inativa"
       ],
-      "default": "rascunho",
-      "description": "Status da proposta padr\u00e3o"
+      "default": "rascunho"
     },
     "isDefaultForSegment": {
       "type": "boolean",
-      "default": false,
-      "description": "Indica se esta \u00e9 a proposta padr\u00e3o principal do segmento (para links r\u00e1pidos)"
+      "default": false
     },
     "clienteNome": {
       "type": "string"
@@ -79,178 +73,7 @@
       "type": "string"
     },
     "rates": {
-      "type": "object",
-      "description": "Taxas oferecidas",
-      "properties": {
-        "cartao": {
-          "type": "object",
-          "properties": {
-            "visa": {
-              "type": "object",
-              "properties": {
-                "avista": {
-                  "type": "number"
-                },
-                "de2a6x": {
-                  "type": "number"
-                },
-                "de7a12x": {
-                  "type": "number"
-                },
-                "de13a21x": {
-                  "type": "number"
-                }
-              }
-            },
-            "mastercard": {
-              "type": "object",
-              "properties": {
-                "avista": {
-                  "type": "number"
-                },
-                "de2a6x": {
-                  "type": "number"
-                },
-                "de7a12x": {
-                  "type": "number"
-                },
-                "de13a21x": {
-                  "type": "number"
-                }
-              }
-            },
-            "elo": {
-              "type": "object",
-              "properties": {
-                "avista": {
-                  "type": "number"
-                },
-                "de2a6x": {
-                  "type": "number"
-                },
-                "de7a12x": {
-                  "type": "number"
-                },
-                "de13a21x": {
-                  "type": "number"
-                }
-              }
-            },
-            "amex": {
-              "type": "object",
-              "properties": {
-                "avista": {
-                  "type": "number"
-                },
-                "de2a6x": {
-                  "type": "number"
-                },
-                "de7a12x": {
-                  "type": "number"
-                },
-                "de13a21x": {
-                  "type": "number"
-                }
-              }
-            },
-            "outras": {
-              "type": "object",
-              "properties": {
-                "avista": {
-                  "type": "number"
-                },
-                "de2a6x": {
-                  "type": "number"
-                },
-                "de7a12x": {
-                  "type": "number"
-                },
-                "de13a21x": {
-                  "type": "number"
-                }
-              }
-            }
-          }
-        },
-        "debito": {
-          "type": "object",
-          "properties": {
-            "visa": {
-              "type": "number"
-            },
-            "mastercard": {
-              "type": "number"
-            },
-            "elo": {
-              "type": "number"
-            },
-            "outras": {
-              "type": "number"
-            }
-          }
-        },
-        "pix": {
-          "type": "object",
-          "properties": {
-            "tipo": {
-              "type": "string",
-              "enum": [
-                "percentual",
-                "fixo"
-              ]
-            },
-            "valor": {
-              "type": "number"
-            }
-          }
-        },
-        "boleto": {
-          "type": "number"
-        },
-        "antifraude": {
-          "type": "number"
-        },
-        "feeTransacao": {
-          "type": "number"
-        },
-        "taxa3ds": {
-          "type": "number"
-        },
-        "setup": {
-          "type": "number"
-        },
-        "rav": {
-          "type": "object",
-          "properties": {
-            "taxa": {
-              "type": "number"
-            },
-            "prazo": {
-              "type": "string"
-            }
-          }
-        },
-        "minimoGarantido": {
-          "type": "object",
-          "properties": {
-            "mes1": {
-              "type": "number"
-            },
-            "mes2": {
-              "type": "number"
-            },
-            "mes3": {
-              "type": "number"
-            }
-          }
-        },
-        "alertaPreChargeback": {
-          "type": "number"
-        },
-        "percentualAntecipacao": {
-          "type": "number"
-        }
-      }
+      "type": "object"
     },
     "tokenPublico": {
       "type": "string"
@@ -282,7 +105,11 @@
         "role": "admin"
       }
     },
-    "read": true,
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
     "update": {
       "user_condition": {
         "role": "admin"

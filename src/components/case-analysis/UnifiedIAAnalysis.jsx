@@ -6,6 +6,7 @@ import {
   Target, List, Bookmark, Flag, Search
 } from 'lucide-react';
 import SentinelTextFormatter from '../compliance/SentinelTextFormatter';
+import FindingsExplainer from '../compliance/FindingsExplainer';
 
 function SectionCard({ icon: Icon, title, iconBg, iconColor, children, defaultOpen = true }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -123,39 +124,14 @@ export default function UnifiedIAAnalysis({ complianceScore, onboardingCase }) {
           </div>
         )}
 
-        {/* Findings por Severidade */}
+        {/* Findings por Severidade — com explicação e drill-down */}
         {hasFindings && (
           <SectionCard icon={Search} title={`Findings Identificados (${complianceScore.total_findings})`} iconBg="bg-indigo-50" iconColor="text-indigo-600" defaultOpen={true}>
             <div className="mt-3">
-              <p className="text-xs text-[#002443]/50 mb-3">
-                Findings são achados específicos detectados durante a análise — categorizados por severidade.
-              </p>
-              {complianceScore.findings_por_severidade && (
-                <div className="flex gap-2 flex-wrap">
-                  {Object.entries(complianceScore.findings_por_severidade)
-                    .sort(([a], [b]) => {
-                      const order = { BLOQUEANTE: 0, CRITICAL: 1, HIGH: 2, MEDIUM: 3, LOW: 4, INFO: 5 };
-                      return (order[a] ?? 6) - (order[b] ?? 6);
-                    })
-                    .map(([severity, count]) => (
-                      <div key={severity} className={`px-3 py-2 rounded-lg border text-center min-w-[80px] ${
-                        severity === 'CRITICAL' || severity === 'BLOQUEANTE' ? 'bg-red-50 border-red-200' :
-                        severity === 'HIGH' ? 'bg-orange-50 border-orange-200' :
-                        severity === 'MEDIUM' ? 'bg-amber-50 border-amber-200' :
-                        severity === 'LOW' ? 'bg-blue-50 border-blue-200' :
-                        'bg-slate-50 border-slate-200'
-                      }`}>
-                        <p className={`text-lg font-black ${
-                          severity === 'CRITICAL' || severity === 'BLOQUEANTE' ? 'text-red-700' :
-                          severity === 'HIGH' ? 'text-orange-700' :
-                          severity === 'MEDIUM' ? 'text-amber-700' :
-                          severity === 'LOW' ? 'text-blue-700' : 'text-slate-700'
-                        }`}>{count}</p>
-                        <p className="text-[9px] font-bold uppercase tracking-wider opacity-60">{severity}</p>
-                      </div>
-                    ))}
-                </div>
-              )}
+              <FindingsExplainer
+                complianceScoreId={complianceScore.id}
+                findingsBySeverity={complianceScore.findings_por_severidade}
+              />
             </div>
           </SectionCard>
         )}

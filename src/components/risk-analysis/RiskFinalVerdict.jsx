@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Eye, FileQuestion, FileText, Lightbulb, Bookmark, ChevronDown, ChevronUp, Brain, Search } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import SentinelTextFormatter from '../compliance/SentinelTextFormatter';
+import FindingsExplainer from '../compliance/FindingsExplainer';
 
 function Section({ icon: Icon, title, iconBg, iconColor, children, defaultOpen = false }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -65,35 +66,14 @@ export default function RiskFinalVerdict({ complianceScore, onboardingCase }) {
           </div>
         )}
 
-        {/* Findings */}
+        {/* Findings — com drill-down detalhado */}
         {hasFindings && (
           <Section icon={Search} title={`Findings (${complianceScore.total_findings})`} iconBg="bg-indigo-50" iconColor="text-indigo-600" defaultOpen={true}>
             <div className="mt-3">
-              <p className="text-[10px] text-[#002443]/40 mb-3">Findings são achados categorizados por severidade. São informativos, não decisórios.</p>
-              {complianceScore.findings_por_severidade && (
-                <div className="flex gap-2 flex-wrap">
-                  {Object.entries(complianceScore.findings_por_severidade)
-                    .sort(([a], [b]) => {
-                      const order = { BLOQUEANTE: 0, CRITICAL: 1, critico: 1, HIGH: 2, alto: 2, MEDIUM: 3, medio: 3, LOW: 4, baixo: 4, INFO: 5, info: 5 };
-                      return (order[a] ?? 6) - (order[b] ?? 6);
-                    })
-                    .map(([severity, count]) => {
-                      const colors = {
-                        CRITICAL: 'bg-red-50 border-red-200 text-red-700', critico: 'bg-red-50 border-red-200 text-red-700',
-                        HIGH: 'bg-orange-50 border-orange-200 text-orange-700', alto: 'bg-orange-50 border-orange-200 text-orange-700',
-                        MEDIUM: 'bg-amber-50 border-amber-200 text-amber-700', medio: 'bg-amber-50 border-amber-200 text-amber-700',
-                        LOW: 'bg-blue-50 border-blue-200 text-blue-700', baixo: 'bg-blue-50 border-blue-200 text-blue-700',
-                        INFO: 'bg-slate-50 border-slate-200 text-slate-700', info: 'bg-slate-50 border-slate-200 text-slate-700',
-                      };
-                      return (
-                        <div key={severity} className={`px-3 py-2 rounded-lg border text-center min-w-[70px] ${colors[severity] || 'bg-slate-50 border-slate-200'}`}>
-                          <p className="text-lg font-black">{count}</p>
-                          <p className="text-[9px] font-bold uppercase tracking-wider opacity-60">{severity}</p>
-                        </div>
-                      );
-                    })}
-                </div>
-              )}
+              <FindingsExplainer
+                complianceScoreId={complianceScore.id}
+                findingsBySeverity={complianceScore.findings_por_severidade}
+              />
             </div>
           </Section>
         )}

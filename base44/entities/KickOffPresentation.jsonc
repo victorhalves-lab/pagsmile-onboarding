@@ -3,44 +3,34 @@
   "type": "object",
   "properties": {
     "clientName": {
-      "type": "string",
-      "description": "Nome do cliente"
+      "type": "string"
     },
     "clientCnpj": {
-      "type": "string",
-      "description": "CNPJ do cliente"
+      "type": "string"
     },
     "proposalId": {
-      "type": "string",
-      "description": "ID da Proposal vinculada"
+      "type": "string"
     },
     "proposalCodigo": {
-      "type": "string",
-      "description": "C\u00f3digo da proposta"
+      "type": "string"
     },
     "contractId": {
-      "type": "string",
-      "description": "ID do Contract vinculado"
+      "type": "string"
     },
     "contractCodigo": {
-      "type": "string",
-      "description": "C\u00f3digo do contrato"
+      "type": "string"
     },
     "segment": {
-      "type": "string",
-      "description": "Segmento do cliente"
+      "type": "string"
     },
     "publicToken": {
-      "type": "string",
-      "description": "Token p\u00fablico para acesso externo"
+      "type": "string"
     },
     "proposalData": {
-      "type": "object",
-      "description": "Snapshot das taxas da proposta"
+      "type": "object"
     },
     "contractData": {
-      "type": "object",
-      "description": "Snapshot dos dados do contrato"
+      "type": "object"
     },
     "responsavelId": {
       "type": "string"
@@ -67,7 +57,11 @@
         "role": "admin"
       }
     },
-    "read": true,
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
     "update": {
       "user_condition": {
         "role": "admin"
