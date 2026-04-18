@@ -1008,17 +1008,14 @@ export default function DynamicQuestionnaire({
             className={`px-2.5 py-1 rounded-lg text-xs font-bold tracking-wide ${hasBranding ? '' : badgeColor}`}
             style={hasBranding ? { backgroundColor: bPrimary + '20', color: bPrimary } : undefined}
           >
-            {hasBranding ? branding.name : (badgeLabel || templateModel?.toUpperCase())}
+            {hasBranding
+              ? branding.name
+              : (badgeLabel || templateModel?.toUpperCase() || '').replace(/\s*v?\d+(\.\d+)?\s*$/i, '').trim()}
           </div>
         </div>
         <h1 className="text-xl md:text-2xl font-bold mt-2" style={hasBranding ? { color: bSecondary } : { color: '#002443' }}>
-          {template.name}
+          {(template.name || '').replace(/\s*v?\d+(\.\d+)?\s*$/i, '').trim()}
         </h1>
-        {template.description && (
-          <p className="text-sm mt-1 max-w-lg mx-auto" style={{ color: (hasBranding ? bSecondary : '#002443') + '99' }}>
-            {template.description}
-          </p>
-        )}
         <div className="mt-3 flex justify-center">
           <AutoSaveIndicator
             saving={isSaving}
