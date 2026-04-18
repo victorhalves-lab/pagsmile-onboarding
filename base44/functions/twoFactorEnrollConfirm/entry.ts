@@ -85,25 +85,31 @@ Deno.serve(async (req) => {
     if (!user?.email) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await req.json().catch(() => ({}));
-    const totpCode = String(body.totpCode || '').trim();
     const pin = String(body.pin || '').trim();
+    const totpCode = String(body.totpCode || '').trim(); // optional fallback
 
-    if (!/^\d{6}$/.test(totpCode)) return Response.json({ error: 'Código TOTP inválido' }, { status: 400 });
     if (!/^\d{6}$/.test(pin)) return Response.json({ error: 'PIN deve ter 6 dígitos' }, { status: 400 });
 
-    // Load fresh user with pending totp_secret
     const freshUser = await base44.asServiceRole.entities.User.get(user.id);
     if (!freshUser?.totp_secret) {
       return Response.json({ error: 'Secret TOTP não iniciado' }, { status: 400 });
     }
 
-    const totpValid = await verifyTotp(freshUser.totp_secret, totpCode);
+    // Accept if TOTP was already verified in step 1 within the last 10 minutes.
+    const verifiedAt = freshUser.totp_enroll_verified_at ? new Date(freshUser.totp_enroll_verified_at).getTime() : 0;
+    const verifiedRecent = verifiedAt > 0 && (Date.now() - verifiedAt) < 10 * 60 * 1000;
+
+    let totpValid = verifiedRecent;
+    // Fallback: if TOTP was resubmitted, validate it now (keeps backward compat).
+    if (!totpValid && /^\d{6}$/.test(totpCode)) {
+      totpValid = await verifyTotp(freshUser.totp_secret, totpCode);
+    }
     if (!totpValid) {
       await base44.asServiceRole.entities.TwoFactorAudit.create({
         user_email: user.email, event: 'totp_fail',
         details: { phase: 'enrollment' },
       });
-      return Response.json({ error: 'Código TOTP inválido' }, { status: 400 });
+      return Response.json({ error: 'Código TOTP expirado. Volte ao passo 1 e digite um novo código.' }, { status: 400 });
     }
 
     // Hash PIN with salt

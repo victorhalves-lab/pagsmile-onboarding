@@ -45,10 +45,21 @@ export default function TwoFactorEnrollScreen({ userEmail, onComplete }) {
     setTimeout(() => setCopiedSecret(false), 2000);
   };
 
-  const handleStep1 = () => {
+  const handleStep1 = async () => {
     if (!/^\d{6}$/.test(totpCode)) { setError('Digite o código de 6 dígitos do app autenticador'); return; }
     setError('');
-    setStep(2);
+    setLoading(true);
+    try {
+      const res = await base44.functions.invoke('twoFactorEnrollVerifyTotp', { totpCode });
+      if (res.data?.success) {
+        setStep(2);
+      } else {
+        setError(res.data?.error || 'Código TOTP inválido');
+      }
+    } catch (e) {
+      setError(e?.response?.data?.error || 'Código TOTP inválido. Tente novamente.');
+    }
+    setLoading(false);
   };
 
   const handleFinalize = async () => {
@@ -137,8 +148,8 @@ export default function TwoFactorEnrollScreen({ userEmail, onComplete }) {
                     />
                   </div>
                   {error && <p className="text-red-400 text-sm">{error}</p>}
-                  <Button onClick={handleStep1} disabled={totpCode.length !== 6} className="w-full h-12 bg-[#2bc196] hover:bg-[#2bc196]/90">
-                    Próximo →
+                  <Button onClick={handleStep1} disabled={loading || totpCode.length !== 6} className="w-full h-12 bg-[#2bc196] hover:bg-[#2bc196]/90">
+                    {loading ? 'Verificando...' : 'Próximo →'}
                   </Button>
                 </>
               )}
