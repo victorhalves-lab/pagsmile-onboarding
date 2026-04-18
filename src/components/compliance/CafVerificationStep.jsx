@@ -11,6 +11,7 @@ import CafLivenessOverlay from './CafLivenessOverlay';
 import CafDifficultyModal from './CafDifficultyModal';
 import CafManualSelfieUpload from './CafManualSelfieUpload';
 import BdcFallbackVerification from './BdcFallbackVerification';
+import CafErrorDiagnostic from './CafErrorDiagnostic';
 
 /**
  * CAF SDK Web Integration — DocumentDetector + FaceLiveness
@@ -148,8 +149,12 @@ export default function CafVerificationStep({
   const [phase, setPhase] = useState('ready');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [errorName, setErrorName] = useState(null); // nome técnico do erro CAF
   const [sdkToken, setSdkToken] = useState(null);
   const [personId, setPersonId] = useState(null);
+  const [tokenType, setTokenType] = useState('unknown'); // 'session' | 'fallback'
+  const [canUseFaceAuth, setCanUseFaceAuth] = useState(true);
+  const [resolvedPerson, setResolvedPerson] = useState(null); // {cpf, name, source, evidenceChain}
   const [docResults, setDocResults] = useState({ front: null, back: null });
   const [livenessResult, setLivenessResult] = useState(null);
   const [savedResults, setSavedResults] = useState({ front: false, back: false, liveness: false });
@@ -160,6 +165,24 @@ export default function CafVerificationStep({
   const [bdcFallback, setBdcFallback] = useState(false);
   const flContainerRef = useRef(null);
 
+  const docLinkToken = (typeof localStorage !== 'undefined' && localStorage.getItem('created_doc_link_token')) || undefined;
+
+  // Helper: log SDK errors to backend (fire-and-forget)
+  const logSdkError = useCallback((stage, err, attemptNumber = 1) => {
+    if (!onboardingCaseId) return;
+    try {
+      base44.functions.invoke('cafLogSdkError', {
+        onboardingCaseId,
+        docLinkToken,
+        stage,
+        errorName: err?.name || 'Unknown',
+        errorMessage: err?.message || String(err),
+        attemptNumber,
+        tokenType,
+      }).catch(() => {});
+    } catch {}
+  }, [onboardingCaseId, docLinkToken, tokenType]);
+
   const stepIndex = phase === 'ready' || phase === 'loading' ? 0 
     : phase === 'doc_front' ? 1 
     : phase === 'doc_back' ? 2 
@@ -167,13 +190,44 @@ export default function CafVerificationStep({
     : phase === 'liveness' ? 4 : 5;
 
   // ── Step 1: Get token from backend + load SDKs ──
+  // FLUXO DE LASTRO:
+  //  1) Se temos onboardingCaseId, pergunta ao BACKEND qual CPF/nome usar (cascata Lead → BDC → Questionnaire)
+  //  2) Se backend achou CPF confiável, passa pro cafGenerateToken que tenta criar person real
+  //  3) Token volta com tokenType='session' (canUseFaceAuth=true) OU 'fallback' (face auth OFF)
   const startVerification = useCallback(async () => {
     setLoading(true);
     setError(null);
+    setErrorName(null);
     setPhase('loading');
     try {
+      // ── FASE A: Resolver CPF + Nome via LASTRO do backend ──
+      let effectiveCpf = personCpf || '';
+      let effectiveName = personName || '';
+      let resolveData = null;
+      
+      if (onboardingCaseId) {
+        try {
+          const resolveRes = await base44.functions.invoke('cafResolvePersonData', {
+            onboardingCaseId,
+            docLinkToken,
+          });
+          resolveData = resolveRes.data;
+          if (resolveData?.cpf) {
+            effectiveCpf = resolveData.cpf;
+            effectiveName = resolveData.name || effectiveName;
+            setResolvedPerson(resolveData);
+            console.log('[CAF] Person resolved via backend lastro:', { source: resolveData.source, hasCpf: true });
+          } else {
+            console.warn('[CAF] Backend lastro did NOT find CPF — falling back to frontend CPF:', personCpf);
+          }
+        } catch (resolveErr) {
+          console.warn('[CAF] cafResolvePersonData failed, using frontend CPF:', resolveErr.message);
+        }
+      }
+
+      // ── FASE B: Gerar token CAF com o CPF resolvido ──
       const response = await base44.functions.invoke('cafGenerateToken', {
-        personCpf: personCpf || '',
+        personCpf: effectiveCpf,
         onboardingCaseId: onboardingCaseId || '',
       });
       const data = response.data;
@@ -182,10 +236,18 @@ export default function CafVerificationStep({
       }
       setSdkToken(data.sdkToken);
       setPersonId(data.personId);
+      setTokenType(data.tokenType || 'unknown');
+      setCanUseFaceAuth(data.canUseFaceAuth !== false);
 
-      // Preload the WASM file needed by DocumentDetector
+      console.log('[CAF] Token info:', { 
+        tokenType: data.tokenType, 
+        canUseFaceAuth: data.canUseFaceAuth,
+        strategy: data.tokenStrategy,
+        hasPersonId: !!data.personId,
+      });
+
+      // ── FASE C: Carregar SDKs ──
       preloadWasm(CAF_DD_WASM_URL);
-      
       await Promise.all([
         loadScript(CAF_DD_SDK_URL),
         loadScript(CAF_FL_SDK_URL),
@@ -200,10 +262,16 @@ export default function CafVerificationStep({
         throw new Error('FaceLiveness SDK não carregou corretamente.');
       }
 
-      toast.success('SDK carregado! Iniciando captura do documento...');
+      // Alertar se caiu em fallback — mas continua (documento ainda funciona)
+      if (data.tokenType === 'fallback' || data.canUseFaceAuth === false) {
+        toast.info('Verificação iniciada em modo simplificado. Você poderá enviar selfie manualmente ao final.', { duration: 5000 });
+      } else {
+        toast.success('SDK carregado! Iniciando captura do documento...');
+      }
       setPhase('doc_front');
     } catch (err) {
       console.error('[CAF] Init error:', err);
+      logSdkError('init', err);
       // If SDK failed to load (network/CDN issue), offer BDC fallback immediately
       const isLoadError = err.message?.includes('Falha ao carregar SDK') || err.message?.includes('não carregou');
       if (isLoadError) {
@@ -212,14 +280,14 @@ export default function CafVerificationStep({
         setPhase('bdc_fallback');
         toast.info('SDK de verificação facial indisponível no momento. Usando método alternativo seguro.');
       } else {
+        setErrorName(err.name || 'NetworkError');
         setError(err.message);
         setPhase('error');
-        toast.error('Erro ao iniciar verificação: ' + err.message);
       }
     } finally {
       setLoading(false);
     }
-  }, [personCpf, onboardingCaseId]);
+  }, [personCpf, personName, onboardingCaseId, docLinkToken, logSdkError]);
 
   // ── Step 2: DocumentDetector — FRONT capture (skip if already saved) ──
   useEffect(() => {
@@ -308,23 +376,16 @@ export default function CafVerificationStep({
       } catch (err) {
         if (cancelled) return;
         console.error('[CAF] Doc front error:', err?.name, err?.message);
+        logSdkError('document_front', err, retryCount + 1);
         if (dd) { try { await dd.close(); await dd.dispose(); } catch {} }
-        
-        if (err?.name === 'CafSdkCanceledError' || err?.name === 'CafSdkCancelledError') {
-          setError('Captura cancelada pelo usuário. Clique em "Tentar Novamente" para reiniciar.');
-        } else if (err?.name === 'CafCameraPermissionDeniedError') {
-          setError('Permissão de câmera negada. Habilite a câmera nas configurações do navegador e tente novamente.');
-        } else if (err?.name === 'CafCameraUnsupportedError') {
-          setError('Câmera não suportada neste dispositivo/navegador.');
-        } else {
-          setError('Erro na captura do documento (frente): ' + (err?.message || err));
-        }
+        setErrorName(err?.name || null);
+        setError(err?.message || String(err));
         setPhase('error');
       }
     };
     runCapture();
     return () => { cancelled = true; };
-  }, [phase, sdkToken, personId, onboardingCaseId]);
+  }, [phase, sdkToken, personId, onboardingCaseId, logSdkError, retryCount]);
 
   // ── Step 3: DocumentDetector — BACK capture (skip if already saved) ──
   useEffect(() => {
@@ -406,21 +467,16 @@ export default function CafVerificationStep({
       } catch (err) {
         if (cancelled) return;
         console.error('[CAF] Doc back error:', err?.name, err?.message);
+        logSdkError('document_back', err, retryCount + 1);
         if (dd) { try { await dd.close(); await dd.dispose(); } catch {} }
-        
-        if (err?.name === 'CafSdkCanceledError' || err?.name === 'CafSdkCancelledError') {
-          setError('Captura cancelada pelo usuário. Clique em "Tentar Novamente" para reiniciar.');
-        } else if (err?.name === 'CafCameraPermissionDeniedError') {
-          setError('Permissão de câmera negada. Habilite a câmera nas configurações do navegador.');
-        } else {
-          setError('Erro na captura do documento (verso): ' + (err?.message || err));
-        }
+        setErrorName(err?.name || null);
+        setError(err?.message || String(err));
         setPhase('error');
       }
     };
     runCapture();
     return () => { cancelled = true; };
-  }, [phase, sdkToken, personId, onboardingCaseId]);
+  }, [phase, sdkToken, personId, onboardingCaseId, logSdkError, retryCount]);
 
   // ── Step 4: FaceLiveness (with Face Authentication) ──
   useEffect(() => {
@@ -433,11 +489,20 @@ export default function CafVerificationStep({
         const CafFaceLivenessSdk = window['CafFaceLiveness'];
         if (!CafFaceLivenessSdk) throw new Error('FaceLiveness SDK não disponível');
 
-        // Only enable face authentication if BOTH documents were successfully persisted
-        // Without persisted docs, CAF has no face reference → "Face picture match" error
-        const canDoFaceAuth = savedResults.front && savedResults.back;
+        // ── CRÍTICO: Face authentication só se TUDO estiver OK ──
+        //  1) Token é 'session' (não fallback)
+        //  2) canUseFaceAuth=true do backend (person criado na CAF)
+        //  3) Ambos documentos foram persistidos
+        // Se qualquer item falhar → desabilita face auth → prova de vida simples (sem match)
+        // → evita o erro "Face picture match" que a OMEGPAY e outros clientes estavam batendo.
+        const docsOk = savedResults.front && savedResults.back;
+        const canDoFaceAuth = canUseFaceAuth && tokenType === 'session' && docsOk;
         if (!canDoFaceAuth) {
-          console.warn('[CAF] Documents not persisted — disabling performFaceAuthentication');
+          console.warn('[CAF] performFaceAuthentication DISABLED:', {
+            canUseFaceAuth, tokenType, docsOk, reason: 
+              !canUseFaceAuth ? 'backend token fallback' : 
+              tokenType !== 'session' ? 'token fallback' : 'docs not persisted'
+          });
         }
 
         await CafFaceLivenessSdk.init(sdkToken, personId, {
@@ -496,29 +561,16 @@ export default function CafVerificationStep({
       } catch (err) {
         if (cancelled) return;
         console.error('[CAF] Liveness error:', err?.name, err?.message);
+        logSdkError('liveness', err, livenessAttempts);
         try { window['CafFaceLiveness']?.dispose(); } catch {}
-        
-        if (err?.name === 'CafSdkCanceledError' || err?.name === 'CafSdkCancelledError') {
-          setError('Verificação facial cancelada pelo usuário.');
-        } else if (err?.name === 'CafCameraPermissionDeniedError') {
-          setError('Permissão de câmera negada. Habilite a câmera nas configurações do navegador.');
-        } else if (err?.name === 'CafFaceLivenessError') {
-          setError('Falha na prova de vida. Procure um ambiente bem iluminado e tente novamente.');
-        } else if (err?.name === 'CafFaceAuthenticationError') {
-          setError('Falha na autenticação facial. Sua face não correspondeu ao documento. Tente novamente.');
-        } else if (err?.name === 'CafUnsupportedError') {
-          setError('Seu dispositivo/navegador não suporta esta verificação.');
-        } else if (err?.name === 'CafDeviceMotionPermissionDeniedError') {
-          setError('Permissão de movimento do dispositivo negada. Permita o acesso e tente novamente.');
-        } else {
-          setError('Erro na prova de vida: ' + (err?.message || err));
-        }
+        setErrorName(err?.name || null);
+        setError(err?.message || String(err));
         setPhase('error');
       }
     };
     runLiveness();
     return () => { cancelled = true; };
-  }, [phase, sdkToken, personId, onboardingCaseId]);
+  }, [phase, sdkToken, personId, onboardingCaseId, canUseFaceAuth, tokenType, savedResults, logSdkError, livenessAttempts]);
 
   // ── When all done, notify parent ──
   useEffect(() => {
@@ -696,12 +748,26 @@ export default function CafVerificationStep({
             </div>
           </div>
 
-          {personCpf && (
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200">
-              <Shield className="w-5 h-5 text-[#002443]/50 shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-medium text-[#002443]">CPF identificado: {personCpf}</p>
-                <p className="text-xs text-[#002443]/50 mt-0.5">A verificação será vinculada a este documento.</p>
+          {/* Identificação do representante — mostra CPF localmente OU o que o backend resolveu */}
+          {(personCpf || resolvedPerson?.cpf) && (
+            <div className="flex items-start gap-3 p-3 rounded-xl bg-emerald-50 border border-emerald-200">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-[#002443]">
+                  Identificamos seu cadastro{resolvedPerson?.name ? `: ${resolvedPerson.name}` : ''}
+                </p>
+                <p className="text-xs text-[#002443]/60 mt-0.5">
+                  CPF: {(resolvedPerson?.cpf || personCpf || '').replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.***.***-$4')}
+                </p>
+                {resolvedPerson?.source && resolvedPerson.source !== 'none' && (
+                  <p className="text-[10px] text-emerald-700 mt-1">
+                    ✓ Dados confirmados via {
+                      resolvedPerson.source === 'questionnaire_explicit' ? 'questionário' :
+                      resolvedPerson.source === 'bdc_enrichment' ? 'enriquecimento BigDataCorp' :
+                      resolvedPerson.source === 'lead_pf' ? 'cadastro do lead' : 'base de dados'
+                    }
+                  </p>
+                )}
               </div>
             </div>
           )}
@@ -738,6 +804,20 @@ export default function CafVerificationStep({
           <Loader2 className="w-10 h-10 animate-spin text-purple-500 mx-auto mb-4" />
           <p className="text-sm font-medium text-[#002443]">Carregando SDK de verificação...</p>
           <p className="text-xs text-[#002443]/50 mt-1">Obtendo token seguro e preparando a câmera.</p>
+        </div>
+      )}
+
+      {/* ── Aviso de modo simplificado (quando token é fallback) ── */}
+      {tokenType === 'fallback' && !canUseFaceAuth && phase !== 'ready' && phase !== 'loading' && phase !== 'error' && (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-start gap-2">
+          <Shield className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-xs font-semibold text-blue-900">Verificação em modo simplificado</p>
+            <p className="text-[11px] text-blue-700 mt-0.5">
+              Você vai fazer a captura do documento + prova de vida normalmente. 
+              Ao final, você pode ser redirecionado para enviar uma selfie manualmente — é igualmente seguro.
+            </p>
+          </div>
         </div>
       )}
 
@@ -838,47 +918,18 @@ export default function CafVerificationStep({
         />
       )}
 
-      {/* ── Error state ── */}
+      {/* ── Error state — diagnóstico inteligente ── */}
       {phase === 'error' && (
-        <div className="bg-white rounded-2xl border border-red-200 p-6 text-center space-y-4">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-red-50 mb-2">
-            <XCircle className="w-7 h-7 text-red-500" />
-          </div>
-          <h3 className="text-lg font-bold text-[#002443]">Erro na Verificação</h3>
-          <p className="text-sm text-red-600 bg-red-50 rounded-lg p-3 text-left">{error}</p>
-          
-          <p className="text-xs text-[#002443]/40">
-            Tentativa {retryCount + 1} • Face: {livenessAttempts}x
-          </p>
-          
-          <div className="flex flex-col gap-2 items-center">
-            <Button
-              onClick={handleRetry}
-              className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-6 h-11 rounded-xl"
-            >
-              <RefreshCw className="w-4 h-4 mr-2" /> Tentar Novamente
-            </Button>
-            
-            {(error?.includes('Falha ao carregar SDK') || error?.includes('não carregou') || retryCount >= 2) && (
-              <Button
-                onClick={() => { setBdcFallback(true); setPhase('bdc_fallback'); setError(null); }}
-                variant="outline"
-                className="px-6 h-11 rounded-xl border-blue-200 text-blue-700 hover:bg-blue-50"
-              >
-                Verificação Alternativa (BigDataCorp)
-              </Button>
-            )}
-
-            {livenessAttempts >= 3 && (
-              <Button
-                onClick={handleManualFallback}
-                variant="outline"
-                className="px-6 h-11 rounded-xl border-purple-200 text-purple-700 hover:bg-purple-50"
-              >
-                Enviar Selfie Manualmente
-              </Button>
-            )}
-          </div>
+        <div className="bg-white rounded-2xl border border-slate-200 p-5">
+          <CafErrorDiagnostic
+            errorName={errorName}
+            errorMessage={error}
+            attemptCount={Math.max(retryCount + 1, livenessAttempts)}
+            tokenType={tokenType}
+            onRetry={handleRetry}
+            onManualFallback={handleManualFallback}
+            onBdcFallback={() => { setBdcFallback(true); setPhase('bdc_fallback'); setError(null); setErrorName(null); }}
+          />
         </div>
       )}
 

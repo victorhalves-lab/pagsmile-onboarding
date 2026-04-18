@@ -68,6 +68,7 @@ Deno.serve(async (req) => {
 
     // Step 1: Create or find person in CAF
     let personId = null;
+    let personCreationFailed = false;
     const cleanCpf = (personCpf || '').replace(/\D/g, '');
     console.log('[CAF-Token] Input CPF:', cleanCpf ? `${cleanCpf.substring(0, 3)}***${cleanCpf.substring(8)}` : 'EMPTY — face authentication will not work');
 
@@ -105,17 +106,23 @@ Deno.serve(async (req) => {
             personId = createData.id || createData._id || createData.personId;
             console.log('[CAF-Token] Created new person:', personId);
           } else {
+            personCreationFailed = true;
             console.log('[CAF-Token] Person creation failed:', createRes.status, await createRes.text());
           }
         } catch (e) {
+          personCreationFailed = true;
           console.log('[CAF-Token] Person creation error:', e.message);
         }
       }
+    } else {
+      // CPF ausente/inválido — personId nunca será criado
+      personCreationFailed = true;
     }
 
     // Step 2: Generate SDK session token
     // Try CAF BFF session token endpoint first
     let sdkToken = null;
+    let tokenStrategy = 'none';
 
     // Strategy A: BFF session-tokens endpoint (for newer CAF SDK)
     try {
@@ -134,6 +141,7 @@ Deno.serve(async (req) => {
       if (tokenRes.ok) {
         const tokenData = await tokenRes.json();
         sdkToken = tokenData.token || tokenData.sessionToken || tokenData.access_token;
+        if (sdkToken) tokenStrategy = 'bff_session';
         console.log('[CAF-Token] BFF token generated successfully');
       } else {
         console.log('[CAF-Token] BFF token failed:', tokenRes.status);
@@ -160,6 +168,7 @@ Deno.serve(async (req) => {
         if (tokenRes.ok) {
           const tokenData = await tokenRes.json();
           sdkToken = tokenData.token || tokenData.sessionToken;
+          if (sdkToken) tokenStrategy = 'sdk_tokens';
           console.log('[CAF-Token] SDK token generated successfully');
         } else {
           console.log('[CAF-Token] SDK token failed:', tokenRes.status, await tokenRes.text());
@@ -169,15 +178,19 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Strategy C: Use the auth token directly as SDK token
-    // Some CAF integrations allow using the client credentials token directly
+    // Strategy C: Use the auth token directly as SDK token (FALLBACK)
+    // This works for DocumentDetector but NOT for FaceLiveness with performFaceAuthentication=true
     if (!sdkToken) {
       const clientId = Deno.env.get('CAF_CLIENT_ID');
-      // The CAF Web SDK can accept the clientId as the token for initialization
-      // when using the "token" param in the SDK constructor
       sdkToken = clientId || authToken;
-      console.log('[CAF-Token] Using clientId/authToken as SDK token (fallback)');
+      tokenStrategy = 'fallback_clientid';
+      console.log('[CAF-Token] Using clientId/authToken as SDK token (fallback — face auth will be disabled)');
     }
+
+    // tokenType: 'session' = completo, 'fallback' = face auth não vai funcionar confiavelmente
+    const tokenType = (tokenStrategy === 'bff_session' || tokenStrategy === 'sdk_tokens') ? 'session' : 'fallback';
+    // Face auth só funciona se: token é session + person foi criado + CPF válido
+    const canUseFaceAuth = tokenType === 'session' && !!personId && !personCreationFailed;
 
     // Log the token generation
     if (onboardingCaseId) {
@@ -187,8 +200,17 @@ Deno.serve(async (req) => {
           provider: 'CAF',
           service_type: 'sdk_token_generation',
           status: sdkToken ? 'success' : 'failed',
+          result_status: canUseFaceAuth ? 'APPROVED' : 'PENDING_REVIEW',
           request_payload: { hasCpf: !!cleanCpf, hasPersonId: !!personId },
-          response_payload: { tokenGenerated: !!sdkToken, personId },
+          response_payload: { 
+            tokenGenerated: !!sdkToken, 
+            personId, 
+            tokenType, 
+            tokenStrategy,
+            canUseFaceAuth,
+            personCreationFailed,
+          },
+          red_flags: !canUseFaceAuth ? ['CAF_TOKEN_WITHOUT_FACE_AUTH'] : [],
           duration_ms: Date.now() - startTime,
         });
       } catch (e) {
@@ -204,11 +226,15 @@ Deno.serve(async (req) => {
     }
 
     const durationMs = Date.now() - startTime;
-    console.log(`[CAF-Token] Token generated in ${durationMs}ms, personId: ${personId}`);
+    console.log(`[CAF-Token] Token generated in ${durationMs}ms, personId: ${personId}, tokenType: ${tokenType}, canUseFaceAuth: ${canUseFaceAuth}`);
 
     return Response.json({
       sdkToken,
       personId: personId || cleanCpf || 'anonymous',
+      tokenType,             // 'session' | 'fallback' — frontend usa isso pra decidir
+      tokenStrategy,         // debug
+      canUseFaceAuth,        // se false, frontend DESABILITA performFaceAuthentication
+      personCreationFailed,  // debug
       duration_ms: durationMs,
     });
 
