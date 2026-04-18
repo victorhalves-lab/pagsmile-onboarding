@@ -134,7 +134,11 @@ export default function PropostaPixDetalhes() {
   }
 
   const sCfg = STATUS_CONFIG[proposta.status] || STATUS_CONFIG.rascunho;
-  const publicLink = proposta.tokenPublico ? `${window.location.origin}/PropostaPixPublica?token=${proposta.tokenPublico}` : null;
+  const publicLink = proposta.publicSlug
+    ? `${window.location.origin}/pix/${proposta.publicSlug}`
+    : proposta.tokenPublico
+    ? `${window.location.origin}/PropostaPixPublica?token=${proposta.tokenPublico}`
+    : null;
   const rates = proposta.rates || {};
   const isRascunho = proposta.status === 'rascunho';
   const canEdit = ['rascunho', 'enviada', 'visualizada'].includes(proposta.status);

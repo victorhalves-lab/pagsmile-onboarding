@@ -147,7 +147,9 @@ export default function PropostaDetalhes() {
     const root = versionHistory.find(v => v.id === proposta.rootProposalId);
     return root?.tokenPublico || proposta.tokenPublico;
   })();
-  const publicLink = stableToken
+  const publicLink = proposta.publicSlug
+    ? `${window.location.origin}/p/${proposta.publicSlug}`
+    : stableToken
     ? `${window.location.origin}${createPageUrl('PropostaPublica')}?token=${stableToken}`
     : null;
 

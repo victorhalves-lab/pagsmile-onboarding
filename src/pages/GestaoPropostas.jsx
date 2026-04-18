@@ -118,7 +118,12 @@ export default function GestaoPropostas() {
   }, [propostas, search, statusFilter, sourceFlowFilter]);
 
   const copyLink = (proposta) => {
-    const url = window.location.origin + createPageUrl('PropostaPublica') + `?token=${proposta.tokenPublico}`;
+    const isPix = proposta._entityType === 'PixProposal';
+    const slugPrefix = isPix ? '/pix' : '/p';
+    const legacyPath = isPix ? '/PropostaPixPublica' : createPageUrl('PropostaPublica');
+    const url = proposta.publicSlug
+      ? `${window.location.origin}${slugPrefix}/${proposta.publicSlug}`
+      : `${window.location.origin}${legacyPath}?token=${proposta.tokenPublico}`;
     navigator.clipboard.writeText(url);
     toast.success(t('common.link_copied'));
   };
@@ -391,7 +396,18 @@ export default function GestaoPropostas() {
                               </Button>
                             )}
                             {p.tokenPublico && (
-                              <a href={`${window.location.origin}/PropostaPublica?token=${p.tokenPublico}`} target="_blank" rel="noopener noreferrer">
+                              <a
+                                href={(() => {
+                                  const isPix = p._entityType === 'PixProposal';
+                                  const prefix = isPix ? '/pix' : '/p';
+                                  const legacy = isPix ? '/PropostaPixPublica' : '/PropostaPublica';
+                                  return p.publicSlug
+                                    ? `${window.location.origin}${prefix}/${p.publicSlug}`
+                                    : `${window.location.origin}${legacy}?token=${p.tokenPublico}`;
+                                })()}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
                                 <Button variant="ghost" size="sm" title="Ver proposta na mesa">
                                   <Link2 className="w-4 h-4" />
                                 </Button>

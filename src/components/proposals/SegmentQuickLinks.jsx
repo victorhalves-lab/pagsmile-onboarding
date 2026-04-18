@@ -50,11 +50,14 @@ export default function SegmentQuickLinks({ proposals }) {
     return map;
   }, [proposals]);
 
+  const buildUrl = (prop) => prop.publicSlug
+    ? `${window.location.origin}/pp/${prop.publicSlug}`
+    : `${window.location.origin}/PropostaPadraoPublica?token=${prop.tokenPublico}`;
+
   const copyLink = (segment) => {
     const prop = segmentMap[segment];
     if (!prop) return;
-    const url = `${window.location.origin}/PropostaPadraoPublica?token=${prop.tokenPublico}`;
-    navigator.clipboard.writeText(url);
+    navigator.clipboard.writeText(buildUrl(prop));
     setCopiedSegment(segment);
     toast.success(`Link da proposta ${segment} copiado!`);
     setTimeout(() => setCopiedSegment(null), 2000);
@@ -63,8 +66,7 @@ export default function SegmentQuickLinks({ proposals }) {
   const openLink = (segment) => {
     const prop = segmentMap[segment];
     if (!prop) return;
-    const url = `${window.location.origin}/PropostaPadraoPublica?token=${prop.tokenPublico}`;
-    window.open(url, '_blank');
+    window.open(buildUrl(prop), '_blank');
   };
 
   return (

@@ -44,9 +44,15 @@ export default function PreviewContrato() {
     },
   });
 
+  const buildContractLink = () => {
+    if (contract?.publicSlug) return `${window.location.origin}/c/${contract.publicSlug}`;
+    if (contract?.publicLinkCode) return window.location.origin + createPageUrl(`ContratoPublico?code=${contract.publicLinkCode}`);
+    return null;
+  };
+
   const copyPublicLink = () => {
-    if (!contract?.publicLinkCode) return;
-    const link = window.location.origin + createPageUrl(`ContratoPublico?code=${contract.publicLinkCode}`);
+    const link = buildContractLink();
+    if (!link) return;
     navigator.clipboard.writeText(link);
     toast.success(t('pc.link_copied'));
   };
@@ -147,12 +153,12 @@ export default function PreviewContrato() {
       </div>
 
       {/* Public Link */}
-      {contract.publicLinkCode && (
+      {(contract.publicSlug || contract.publicLinkCode) && (
         <Card className="bg-blue-50 border border-blue-200">
           <CardContent className="p-3 flex items-center gap-3">
             <LinkIcon className="w-4 h-4 text-blue-600" />
-            <span className="text-xs text-blue-700 font-medium flex-1">
-              Link público: {window.location.origin}{createPageUrl(`ContratoPublico?code=${contract.publicLinkCode}`)}
+            <span className="text-xs text-blue-700 font-medium flex-1 truncate">
+              Link público: {buildContractLink()}
             </span>
             <Button size="sm" variant="ghost" onClick={copyPublicLink}>
               <Copy className="w-3.5 h-3.5 mr-1" /> {t('pc.copy')}

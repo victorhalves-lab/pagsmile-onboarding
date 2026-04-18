@@ -58,7 +58,9 @@ export default function GestaoPropostasPadrao() {
   }, [proposals, search, statusFilter, segmentFilter]);
 
   const copyLink = (p) => {
-    const url = `${window.location.origin}/PropostaPadraoPublica?token=${p.tokenPublico}`;
+    const url = p.publicSlug
+      ? `${window.location.origin}/pp/${p.publicSlug}`
+      : `${window.location.origin}/PropostaPadraoPublica?token=${p.tokenPublico}`;
     navigator.clipboard.writeText(url);
     toast.success(t('gsp.link_copied'));
   };

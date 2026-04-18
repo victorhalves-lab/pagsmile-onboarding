@@ -48,7 +48,9 @@ export default function PropostaPadraoDetalhes() {
   }
 
   const sCfg = STATUS_CONFIG[proposta.status] || STATUS_CONFIG.rascunho;
-  const publicLink = proposta.tokenPublico
+  const publicLink = proposta.publicSlug
+    ? `${window.location.origin}/pp/${proposta.publicSlug}`
+    : proposta.tokenPublico
     ? `${window.location.origin}/PropostaPadraoPublica?token=${proposta.tokenPublico}`
     : null;
 

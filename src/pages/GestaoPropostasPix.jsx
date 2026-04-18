@@ -57,7 +57,9 @@ export default function GestaoPropostasPix() {
   }, [propostas, search, statusFilter]);
 
   const copyLink = (proposta) => {
-    const url = `${window.location.origin}/PropostaPixPublica?token=${proposta.tokenPublico}`;
+    const url = proposta.publicSlug
+      ? `${window.location.origin}/pix/${proposta.publicSlug}`
+      : `${window.location.origin}/PropostaPixPublica?token=${proposta.tokenPublico}`;
     navigator.clipboard.writeText(url);
     toast.success(t('gpx.link_copied'));
   };
