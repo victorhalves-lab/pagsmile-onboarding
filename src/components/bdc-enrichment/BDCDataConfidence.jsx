@@ -1,6 +1,8 @@
 import React from 'react';
-import { CheckCircle2, AlertTriangle, XCircle, Database } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, XCircle, Database, Info } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { getDatasetInfo } from '../risk-analysis/datasetGlossary';
 
 /**
  * BDCDataConfidence — Shows which datasets returned data and which came empty,
@@ -111,30 +113,60 @@ export default function BDCDataConfidence({ analysis, analiseDimensional }) {
         </div>
       )}
 
-      {/* Dataset grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-        {results.map(r => (
-          <div 
-            key={r.key} 
-            className={`rounded-lg p-2.5 border ${
-              r.hasData ? 'bg-green-50/50 border-green-200' : 'bg-slate-50 border-slate-200 opacity-60'
-            }`}
-          >
-            <div className="flex items-center gap-1.5 mb-0.5">
-              {r.hasData 
-                ? <CheckCircle2 className="w-3 h-3 text-green-600" /> 
-                : <XCircle className="w-3 h-3 text-slate-400" />
-              }
-              <span className="text-[11px] font-semibold text-[#002443]">{r.label}</span>
-              {r.required && <Badge className="bg-blue-100 text-blue-600 text-[8px] px-1 h-3.5">obrigatório</Badge>}
-            </div>
-            <p className="text-[9px] text-[#002443]/40 ml-4.5">{r.desc}</p>
-            {r.hasData && (
-              <p className="text-[9px] text-green-600 font-medium ml-4.5">{r.itemCount} item(ns)</p>
-            )}
-          </div>
-        ))}
+      {/* Cobertura global hint */}
+      <div className="mb-3 p-2 rounded-lg bg-slate-50 border border-slate-200 flex items-start gap-2">
+        <Info className="w-3 h-3 text-[#002443]/40 shrink-0 mt-0.5" />
+        <p className="text-[10px] text-[#002443]/60 leading-relaxed">
+          <strong>Cobertura: {withData}/{total} fontes responderam ({confidencePercent}%).</strong>{' '}
+          Quanto mais datasets BDC respondem com dados, mais confiável a análise. Datasets vazios podem indicar CNPJ novo ou sem dados históricos. Passe o mouse sobre cada card para ver o que ele traz.
+        </p>
       </div>
+
+      {/* Dataset grid with tooltips explaining what each brings */}
+      <TooltipProvider delayDuration={200}>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+          {results.map(r => {
+            const info = getDatasetInfo(r.key);
+            return (
+              <Tooltip key={r.key}>
+                <TooltipTrigger asChild>
+                  <div
+                    className={`rounded-lg p-2.5 border cursor-help ${
+                      r.hasData ? 'bg-green-50/50 border-green-200' : 'bg-slate-50 border-slate-200 opacity-60'
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                      {r.hasData
+                        ? <CheckCircle2 className="w-3 h-3 text-green-600" />
+                        : <XCircle className="w-3 h-3 text-slate-400" />
+                      }
+                      <span className="text-[11px] font-semibold text-[#002443]">{r.label}</span>
+                      {r.required && <Badge className="bg-blue-100 text-blue-600 text-[8px] px-1 h-3.5">obrigatório</Badge>}
+                      <Info className="w-2.5 h-2.5 text-[#002443]/30 ml-auto" />
+                    </div>
+                    <p className="text-[9px] text-[#002443]/40 ml-4.5">{r.desc}</p>
+                    {r.hasData && (
+                      <p className="text-[9px] text-green-600 font-medium ml-4.5">{r.itemCount} item(ns)</p>
+                    )}
+                  </div>
+                </TooltipTrigger>
+                {info && (
+                  <TooltipContent side="top" className="max-w-xs bg-[#002443] text-white border-[#002443]">
+                    <p className="text-[11px] font-bold mb-1">{info.label}</p>
+                    <p className="text-[10px] text-white/80 leading-relaxed mb-1.5">{info.brings}</p>
+                    {info.datasets && (
+                      <div className="pt-1 border-t border-white/20">
+                        <p className="text-[9px] text-white/50">Datasets BDC:</p>
+                        <p className="text-[9px] font-mono text-[#2bc196]">{info.datasets.join(', ')}</p>
+                      </div>
+                    )}
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            );
+          })}
+        </div>
+      </TooltipProvider>
 
       {/* Info about datasets queried */}
       <div className="mt-3 pt-3 border-t border-slate-100 flex items-center gap-2 text-[10px] text-[#002443]/40">

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { ShieldAlert, ChevronDown, ChevronUp } from 'lucide-react';
+import { ShieldAlert, ChevronDown, ChevronUp, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import RedFlagCard from '../risk-analysis/RedFlagCard';
 import { enrichRedFlag } from '../risk-analysis/redFlagEnricher';
@@ -93,8 +93,21 @@ function cnaeToEnrichedFlag(cnaeCode, cnaeInfo) {
   };
 }
 
-export default function BDCSmartAlerts({ analysis, merchant }) {
+function normaliseForMatch(s) {
+  return String(s || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]/g, '')
+    .slice(0, 40);
+}
+
+export default function BDCSmartAlerts({ analysis, merchant, existingRedFlags = [] }) {
   const [expanded, setExpanded] = useState(true);
+
+  const redFlagKeys = useMemo(() => {
+    return new Set((existingRedFlags || []).map(f => normaliseForMatch(f)));
+  }, [existingRedFlags]);
 
   const alerts = useMemo(() => {
     if (!analysis) return [];
@@ -165,9 +178,35 @@ export default function BDCSmartAlerts({ analysis, merchant }) {
 
       {expanded && (
         <div className="border-t border-red-100 p-4 space-y-2.5">
-          {top.map((flag, i) => (
-            <RedFlagCard key={`sa-${i}`} flag={flag} defaultOpen={i === 0} />
-          ))}
+          {top.map((flag, i) => {
+            const alreadyShown = redFlagKeys.has(normaliseForMatch(flag.title));
+            if (alreadyShown) {
+              return (
+                <div
+                  key={`sa-dup-${i}`}
+                  className="flex items-center gap-2 p-2.5 rounded-lg bg-slate-50/60 border border-dashed border-slate-200 text-[11px] text-[#002443]/60"
+                >
+                  <ExternalLink className="w-3 h-3 text-[#002443]/30" />
+                  <span className="flex-1">
+                    <strong className="text-[#002443]/80">Já visto no bloco "Alertas Identificados":</strong>{' '}
+                    {flag.title}
+                  </span>
+                  <a
+                    href="#risk-red-flags"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      const el = document.querySelector('[data-red-flags-panel]');
+                      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}
+                    className="text-[10px] font-semibold text-[#2bc196] hover:underline"
+                  >
+                    ↑ ver lá
+                  </a>
+                </div>
+              );
+            }
+            return <RedFlagCard key={`sa-${i}`} flag={flag} defaultOpen={i === 0} />;
+          })}
           {alerts.length > 10 && (
             <p className="text-[10px] text-red-400/70 text-center italic pt-2">
               + {alerts.length - 10} achados adicionais disponíveis na Análise Dimensional (bloco abaixo).

@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
-import { CheckCircle2, AlertTriangle, XCircle, ShieldCheck, ShieldAlert, ArrowRight, Info, ChevronDown, ChevronUp, HelpCircle, AlertOctagon } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, XCircle, ShieldCheck, ShieldAlert, ArrowRight, Info, ChevronDown, ChevronUp, HelpCircle, AlertOctagon, Eye, FileText, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { base44 } from '@/api/base44Client';
+import EscalationPointsList from './EscalationPointsList';
 
 const DECISION_CONFIG = {
   'Aprovado': { bg: 'bg-emerald-900', border: 'border-emerald-700', icon: CheckCircle2, iconColor: 'text-emerald-300', label: 'APROVADO', sublabel: 'Dados objetivos (BDC + CAF) não identificaram riscos impeditivos. Aprovação automática.' },
@@ -259,17 +263,95 @@ export default function RiskVerdictBanner({ onboardingCase, complianceScore }) {
               sentinelRecommendation={sentinelRecommendation}
               bloqueios={bloqueios}
             />
+
+            {/* Numbered list of escalation points — extracted from red_flags/pontos_atencao */}
+            <EscalationPointsList
+              complianceScore={complianceScore}
+              onboardingCase={onboardingCase}
+            />
           </div>
         </div>
       </div>
 
-      {/* Executive summary */}
+      {/* Executive summary with lead-style first sentence */}
       {complianceScore?.sumario_executivo && (
         <div className="px-6 pb-5 border-t border-white/10 pt-4">
           <p className="text-[10px] font-bold text-white/40 uppercase tracking-wider mb-2">Resumo Executivo SENTINEL</p>
-          <p className="text-sm text-white/60 leading-relaxed">{complianceScore.sumario_executivo}</p>
+          <ExecutiveSummary text={complianceScore.sumario_executivo} />
         </div>
       )}
+
+      {/* Action buttons */}
+      <BannerActionButtons onboardingCase={onboardingCase} />
+    </div>
+  );
+}
+
+function ExecutiveSummary({ text }) {
+  const match = String(text).match(/^([^.!?]{15,}[.!?])\s+(.*)/s);
+  if (match && match[2].length > 10) {
+    return (
+      <p className="text-sm text-white/70 leading-relaxed">
+        <strong className="text-white font-bold">{match[1]}</strong>{' '}
+        <span className="text-white/60">{match[2]}</span>
+      </p>
+    );
+  }
+  return <p className="text-sm text-white/60 leading-relaxed">{text}</p>;
+}
+
+function BannerActionButtons({ onboardingCase }) {
+  const [generating, setGenerating] = useState(false);
+
+  const handleScrollToAnalysis = () => {
+    const el = document.querySelector('[data-sentinel-full-analysis]');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      toast.info('Análise completa está mais abaixo nesta página.');
+    }
+  };
+
+  const handleGeneratePdf = async () => {
+    if (!onboardingCase?.id) return;
+    setGenerating(true);
+    try {
+      const res = await base44.functions.invoke('generateCompliancePdf', { onboardingCaseId: onboardingCase.id });
+      const url = res?.data?.url || res?.data?.pdfUrl;
+      if (url) {
+        window.open(url, '_blank', 'noopener,noreferrer');
+        toast.success('PDF do parecer gerado.');
+      } else {
+        toast.error('PDF gerado mas URL não retornada. Veja o console.');
+      }
+    } catch (err) {
+      toast.error('Falha ao gerar PDF: ' + (err?.message || 'erro desconhecido'));
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  return (
+    <div className="px-6 pb-5 pt-3 border-t border-white/10 flex flex-wrap gap-2">
+      <Button
+        size="sm"
+        variant="ghost"
+        onClick={handleScrollToAnalysis}
+        className="bg-white/10 hover:bg-white/20 text-white border-white/10 border h-8 text-xs"
+      >
+        <Eye className="w-3.5 h-3.5 mr-1.5" />
+        Ver análise completa
+      </Button>
+      <Button
+        size="sm"
+        variant="ghost"
+        onClick={handleGeneratePdf}
+        disabled={generating}
+        className="bg-white/10 hover:bg-white/20 text-white border-white/10 border h-8 text-xs"
+      >
+        {generating ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> : <FileText className="w-3.5 h-3.5 mr-1.5" />}
+        {generating ? 'Gerando PDF…' : 'Gerar parecer PDF'}
+      </Button>
     </div>
   );
 }

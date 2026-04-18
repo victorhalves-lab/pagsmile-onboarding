@@ -8,7 +8,23 @@ import { List, ChevronRight } from 'lucide-react';
  * document with a table of contents and clearly separated section cards.
  */
 
-export default function SentinelDocumentRenderer({ text, showIndex = true, compact = false }) {
+const CONCLUSION_IDS = new Set(['conclusao', 'recomendacao', 'condicoes']);
+
+function isConclusionSection(section) {
+  if (!section) return false;
+  const base = (section.id || '').split('-')[0];
+  return CONCLUSION_IDS.has(base);
+}
+
+function conclusionTone(decision) {
+  const d = (decision || '').toLowerCase();
+  if (d.includes('recusa')) return { bg: 'bg-red-50', border: 'border-red-300', barBg: 'bg-red-500', headText: 'text-red-800', chip: 'bg-red-600 text-white' };
+  if (d.includes('manual') || d.includes('condi')) return { bg: 'bg-amber-50', border: 'border-amber-300', barBg: 'bg-amber-500', headText: 'text-amber-800', chip: 'bg-amber-500 text-white' };
+  if (d.includes('aprov')) return { bg: 'bg-emerald-50', border: 'border-emerald-300', barBg: 'bg-emerald-500', headText: 'text-emerald-800', chip: 'bg-emerald-600 text-white' };
+  return { bg: 'bg-slate-50', border: 'border-slate-300', barBg: 'bg-slate-500', headText: 'text-[#002443]', chip: 'bg-slate-700 text-white' };
+}
+
+export default function SentinelDocumentRenderer({ text, showIndex = true, compact = false, decision }) {
   const sections = useMemo(() => parseSentinelText(text), [text]);
   const [activeId, setActiveId] = useState(sections[0]?.id);
 
@@ -62,31 +78,42 @@ export default function SentinelDocumentRenderer({ text, showIndex = true, compa
       {/* Sections */}
       <div className="space-y-3">
         {sections.map((sec, idx) => (
-          <SectionCard key={sec.id} section={sec} index={idx} compact={compact} />
+          <SectionCard key={sec.id} section={sec} index={idx} compact={compact} decision={decision} />
         ))}
       </div>
     </div>
   );
 }
 
-function SectionCard({ section, index, compact }) {
+function SectionCard({ section, index, compact, decision }) {
+  const isConclusion = isConclusionSection(section);
+  const tone = isConclusion ? conclusionTone(decision) : null;
+
+  const rootClass = isConclusion
+    ? `rounded-xl border-2 ${tone.border} ${tone.bg} overflow-hidden scroll-mt-20 shadow-sm`
+    : 'rounded-xl border border-[#002443]/8 bg-white overflow-hidden scroll-mt-20';
+
   return (
-    <div
-      id={`sentinel-sec-${section.id}`}
-      className="rounded-xl border border-[#002443]/8 bg-white overflow-hidden scroll-mt-20"
-    >
+    <div id={`sentinel-sec-${section.id}`} className={rootClass}>
+      {isConclusion && <div className={`h-1 ${tone.barBg}`} />}
+
       {/* Section header */}
-      <div className="flex items-center gap-2.5 px-4 py-3 border-b border-[#002443]/5 bg-gradient-to-r from-slate-50 to-transparent">
+      <div className={`flex items-center gap-2.5 px-4 py-3 border-b ${isConclusion ? `${tone.border}` : 'border-[#002443]/5 bg-gradient-to-r from-slate-50 to-transparent'}`}>
         <span className="text-xl leading-none">{section.icon}</span>
         <div className="flex-1 min-w-0">
-          <h5 className="text-sm font-bold text-[#002443]">
-            {index > 0 && <span className="text-[#002443]/30 font-mono mr-2">{String(index).padStart(2, '0')}</span>}
+          <h5 className={`text-sm font-bold ${isConclusion ? tone.headText : 'text-[#002443]'}`}>
+            {index > 0 && <span className="opacity-40 font-mono mr-2">{String(index).padStart(2, '0')}</span>}
             {section.title}
           </h5>
-          <p className="text-[10px] text-[#002443]/40">
+          <p className="text-[10px] opacity-60">
             {section.paragraphs.length} parágrafo{section.paragraphs.length !== 1 ? 's' : ''}
           </p>
         </div>
+        {isConclusion && decision && (
+          <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${tone.chip}`}>
+            {decision}
+          </span>
+        )}
       </div>
 
       {/* Section body */}

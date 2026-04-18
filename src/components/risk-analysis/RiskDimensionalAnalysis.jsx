@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Building2, Users, Globe, Shield, TrendingUp, DollarSign, History, Leaf, Phone, UserCheck, BarChart3, Landmark, CreditCard, ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
+import { Building2, Users, Globe, Shield, TrendingUp, DollarSign, History, Leaf, Phone, UserCheck, BarChart3, Landmark, CreditCard, ChevronDown, ChevronUp, HelpCircle, Info } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const RISK_COLORS = {
   'CRITICO': 'bg-red-50 text-red-700 border-red-200',
@@ -51,11 +52,15 @@ function DimensionSection({ sectionKey, section }) {
   const totalPts = section.score || 0;
   const critCount = section.items.filter(i => i.risk === 'CRITICO').length;
   const altoCount = section.items.filter(i => i.risk === 'ALTO').length;
+  const okCount = section.items.filter(i => i.risk === 'OK' || i.risk === 'BAIXO' || !i.risk).length;
+  const totalItems = section.items.length;
   const overallRisk = critCount > 0 ? 'CRITICO' : altoCount > 0 ? 'ALTO' : totalPts > 20 ? 'MEDIO' : 'OK';
+  const okPct = totalItems > 0 ? Math.round((okCount / totalItems) * 100) : 0;
 
   return (
-    <div className="border border-[#002443]/8 rounded-xl overflow-hidden">
+    <div data-dimension-anchor={sectionKey} className="border border-[#002443]/8 rounded-xl overflow-hidden scroll-mt-20">
       <button
+        type="button"
         onClick={() => setExpanded(!expanded)}
         className="w-full flex items-center gap-3 p-4 hover:bg-slate-50/50 transition-colors text-left"
       >
@@ -63,8 +68,32 @@ function DimensionSection({ sectionKey, section }) {
           <Icon className="w-4 h-4 text-[#002443]/60" />
         </div>
         <div className="flex-1 min-w-0">
-          <span className="text-sm font-bold text-[#002443]">{dimCfg.label}</span>
-          <span className="text-[10px] text-[#002443]/40 ml-2">{section.items.length} itens • {totalPts > 0 ? '+' : ''}{totalPts} pts</span>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-bold text-[#002443]">{dimCfg.label}</span>
+            <TooltipProvider delayDuration={200}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="cursor-help"><Info className="w-3 h-3 text-[#002443]/30" /></span>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs bg-[#002443] text-white">
+                  <p className="text-[11px] leading-relaxed">{dimCfg.desc}</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          <div className="flex items-center gap-3 mt-1">
+            <span className="text-[10px] text-[#002443]/40">{totalItems} itens • {totalPts > 0 ? '+' : ''}{totalPts} pts</span>
+            {/* Progress bar: % of items with OK/low risk */}
+            <div className="flex-1 max-w-[140px] flex items-center gap-1.5">
+              <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                <div
+                  className={`h-full rounded-full ${okPct >= 70 ? 'bg-emerald-400' : okPct >= 40 ? 'bg-amber-400' : 'bg-red-400'}`}
+                  style={{ width: `${okPct}%` }}
+                />
+              </div>
+              <span className="text-[9px] font-mono text-[#002443]/40 shrink-0">{okCount}/{totalItems} OK</span>
+            </div>
+          </div>
         </div>
         <div className="flex items-center gap-1.5">
           {critCount > 0 && <Badge className="bg-red-50 text-red-700 border-red-200 border text-[9px]">{critCount} crítico</Badge>}
@@ -90,9 +119,12 @@ function DimensionItem({ item }) {
   const [showHelp, setShowHelp] = useState(false);
   const explanation = ITEM_EXPLANATIONS[item.label];
   const riskColor = RISK_COLORS[item.risk] || RISK_COLORS['INFO'];
+  const isCritical = item.risk === 'CRITICO';
+  const isAlto = item.risk === 'ALTO';
+  const emphasisBorder = isCritical ? 'border-l-4 border-l-red-500' : isAlto ? 'border-l-4 border-l-orange-500' : '';
 
   return (
-    <div className={`rounded-lg p-3 border ${riskColor}`}>
+    <div className={`rounded-lg p-3 border ${riskColor} ${emphasisBorder}`}>
       <div className="flex items-start gap-2">
         <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${RISK_DOT[item.risk] || 'bg-slate-400'}`} />
         <div className="flex-1 min-w-0">

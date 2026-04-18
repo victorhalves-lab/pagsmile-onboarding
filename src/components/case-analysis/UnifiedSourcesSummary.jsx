@@ -8,7 +8,36 @@ import {
   AlertTriangle, Loader2, RefreshCw, Eye, TrendingUp, Newspaper
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 import BDCEnrichmentPanel from '../bdc-enrichment/BDCEnrichmentPanel';
+
+function formatRelativeTime(date) {
+  if (!date) return null;
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return null;
+  const now = new Date();
+  const diffMs = now - d;
+  const diffMin = Math.floor(diffMs / 60000);
+  if (diffMin < 1) return 'agora há pouco';
+  if (diffMin < 60) return `há ${diffMin} min`;
+  const diffH = Math.floor(diffMin / 60);
+  if (diffH < 24) return `há ${diffH}h`;
+  const diffD = Math.floor(diffH / 24);
+  if (diffD < 30) return `há ${diffD} dia${diffD !== 1 ? 's' : ''}`;
+  const diffMo = Math.floor(diffD / 30);
+  return `há ${diffMo} mês${diffMo !== 1 ? 'es' : ''}`;
+}
+
+function getLatestDate(items) {
+  if (!items || items.length === 0) return null;
+  return items.reduce((latest, v) => {
+    const d = v.created_date || v.timestamp;
+    if (!d) return latest;
+    if (!latest || new Date(d) > new Date(latest)) return d;
+    return latest;
+  }, null);
+}
 
 function StatusDot({ success }) {
   return (
@@ -19,6 +48,8 @@ function StatusDot({ success }) {
 function CafSummarySection({ validations, integrationLogs }) {
   const [expanded, setExpanded] = useState(false);
   const cafValidations = validations.filter(v => v.provider === 'CAF');
+  const latestCafDate = getLatestDate(cafValidations);
+  const relativeCaf = formatRelativeTime(latestCafDate);
 
   if (cafValidations.length === 0) {
     return (
@@ -50,6 +81,12 @@ function CafSummarySection({ validations, integrationLogs }) {
           <Badge className={`text-[10px] border-0 ${allApproved ? 'bg-emerald-100 text-emerald-700' : 'bg-orange-100 text-orange-700'}`}>
             {allApproved ? 'Todas aprovadas' : 'Atenção'}
           </Badge>
+          {relativeCaf && (
+            <span className="flex items-center gap-1 text-[10px] text-[#002443]/40 ml-1">
+              <Clock className="w-2.5 h-2.5" />
+              Consultado {relativeCaf}
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
@@ -110,9 +147,30 @@ function CafSummarySection({ validations, integrationLogs }) {
 
 function BdcSummarySection({ validations, complianceScore, merchant, onboardingCaseId, onComplete }) {
   const [expanded, setExpanded] = useState(false);
+  const [revalidating, setRevalidating] = useState(false);
+  const queryClient = useQueryClient();
 
   const bdcValidations = validations.filter(v => v.provider === 'BigDataCorp');
   const hasBdcData = bdcValidations.length > 0;
+  const latestBdcDate = getLatestDate(bdcValidations);
+  const relativeBdc = formatRelativeTime(latestBdcDate);
+
+  const handleRevalidate = async (e) => {
+    e.stopPropagation();
+    if (!window.confirm('Revalidar os dados BDC deste caso? A consulta consome créditos BDC.')) return;
+    setRevalidating(true);
+    try {
+      await base44.functions.invoke('revalidateBdc', { onboardingCaseId });
+      toast.success('Revalidação BDC iniciada. Os dados serão atualizados em instantes.');
+      queryClient.invalidateQueries({ queryKey: ['validations', onboardingCaseId] });
+      queryClient.invalidateQueries({ queryKey: ['complianceScore', onboardingCaseId] });
+      onComplete?.();
+    } catch (err) {
+      toast.error('Falha ao revalidar: ' + (err?.message || 'erro desconhecido'));
+    } finally {
+      setRevalidating(false);
+    }
+  };
   const hasCachedAnalysis = complianceScore?.variaveis_aplicadas && complianceScore?.framework_version === 'v4.0' && complianceScore?.fase_2_completa;
   const hasDetailedAnalysis = hasBdcData || hasCachedAnalysis;
 
@@ -127,8 +185,26 @@ function BdcSummarySection({ validations, complianceScore, merchant, onboardingC
             </div>
             <span className="text-sm font-bold text-[#002443]">BigDataCorp — Enriquecimento Completo</span>
             <Badge className="bg-emerald-100 text-emerald-700 border-0 text-[10px]">{bdcValidations.length} consulta(s)</Badge>
+            {relativeBdc && (
+              <span className="flex items-center gap-1 text-[10px] text-[#002443]/40 ml-1">
+                <Clock className="w-2.5 h-2.5" />
+                {relativeBdc}
+              </span>
+            )}
           </div>
-          <ChevronUp className="w-4 h-4 text-slate-400" />
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleRevalidate}
+              disabled={revalidating}
+              className="h-7 text-[11px] gap-1"
+            >
+              {revalidating ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+              {revalidating ? 'Revalidando…' : 'Revalidar dados'}
+            </Button>
+            <ChevronUp className="w-4 h-4 text-slate-400" />
+          </div>
         </button>
         <div className="border-t border-slate-100 p-4">
           <BDCEnrichmentPanel
@@ -156,8 +232,26 @@ function BdcSummarySection({ validations, complianceScore, merchant, onboardingC
           ) : (
             <Badge className="bg-slate-100 text-slate-500 border-0 text-[10px]">Não consultado</Badge>
           )}
+          {relativeBdc && (
+            <span className="flex items-center gap-1 text-[10px] text-[#002443]/40 ml-1">
+              <Clock className="w-2.5 h-2.5" />
+              Consultado {relativeBdc}
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-2">
+          {hasBdcData && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleRevalidate}
+              disabled={revalidating}
+              className="h-7 text-[11px] gap-1"
+            >
+              {revalidating ? <Loader2 className="w-3 h-3 animate-spin" /> : <RefreshCw className="w-3 h-3" />}
+              {revalidating ? 'Revalidando…' : 'Revalidar'}
+            </Button>
+          )}
           {expanded ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
         </div>
       </button>

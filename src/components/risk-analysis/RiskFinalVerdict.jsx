@@ -115,11 +115,16 @@ export default function RiskFinalVerdict({ complianceScore, onboardingCase }) {
 
         {/* Full analysis — navigable document with TOC + section cards */}
         {complianceScore.analise_completa_ia && (
-          <Section icon={Brain} title="Análise Completa SENTINEL" iconBg="bg-[#002443]/5" iconColor="text-[#002443]/60" defaultOpen={true}>
-            <div className="mt-3">
-              <SentinelDocumentRenderer text={complianceScore.analise_completa_ia} />
-            </div>
-          </Section>
+          <div data-sentinel-full-analysis>
+            <Section icon={Brain} title="Análise Completa SENTINEL" iconBg="bg-[#002443]/5" iconColor="text-[#002443]/60" defaultOpen={true}>
+              <div className="mt-3">
+                <SentinelDocumentRenderer
+                  text={complianceScore.analise_completa_ia}
+                  decision={complianceScore.recomendacao_final}
+                />
+              </div>
+            </Section>
+          </div>
         )}
 
         {/* Metadata */}

@@ -28,7 +28,7 @@ export default function RiskRedFlagsPanel({ onboardingCase, complianceScore }) {
   enriched.forEach(f => { bySev[f.severity] = (bySev[f.severity] || 0) + 1; });
 
   return (
-    <div className="bg-white rounded-2xl border border-red-200 overflow-hidden">
+    <div data-red-flags-panel className="bg-white rounded-2xl border border-red-200 overflow-hidden scroll-mt-20">
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}

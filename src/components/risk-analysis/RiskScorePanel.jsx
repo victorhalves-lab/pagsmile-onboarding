@@ -1,6 +1,7 @@
 import React from 'react';
 import { Shield, TrendingUp, TrendingDown, Lock, Eye, Activity, Info } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import ScoreBreakdownExplainer from './ScoreBreakdownExplainer';
 
 const SUBFAIXA_CONFIG = {
   '1A': { label: 'VERDE EXPRESS', color: 'bg-emerald-500', text: 'text-emerald-700', bgLight: 'bg-emerald-50', border: 'border-emerald-200' },
@@ -133,6 +134,9 @@ export default function RiskScorePanel({ onboardingCase, complianceScore }) {
             );
           })}
         </div>
+
+        {/* Entenda o Score V4 — expansible layer-by-layer breakdown */}
+        <ScoreBreakdownExplainer complianceScore={complianceScore} segmento={segmento} />
       </div>
     </div>
   );

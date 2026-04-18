@@ -1,6 +1,52 @@
 import React from 'react';
 import { CheckCircle2, AlertTriangle, XCircle, HelpCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+
+const DIVERGENCE_EXPLANATIONS = {
+  'Razão Social': {
+    divergence: 'Os nomes são similares mas não idênticos. Pode ser abreviação ("LTDA" vs "LTDA."), pequena alteração cadastral recente ou discrepância tipográfica.',
+    mismatch: 'Nomes completamente diferentes entre o que o cliente declarou e o que consta na Receita Federal. Sinal forte de identidade construída ou declaração incorreta — investigar CNPJ.',
+  },
+  'CNPJ': {
+    divergence: 'CNPJs com formatação diferente ou com ou sem dígitos de pontuação. Normalmente é só formatação.',
+    mismatch: 'CNPJ declarado não bate com o que a BDC consultou. Erro crítico — refazer busca com o CNPJ correto.',
+  },
+  'CPF': {
+    divergence: 'CPFs com formatação diferente.',
+    mismatch: 'CPF declarado diverge do encontrado — investigar.',
+  },
+  'CNAE/MCC Principal': {
+    divergence: 'MCC declarado e CNAE da Receita descrevem atividades similares mas com códigos distintos. Pode ser enquadramento subótimo.',
+    mismatch: 'MCC declarado e CNAE descrevem atividades MUITO distintas (ex: cliente diz "moda" mas CNAE é "serviços financeiros"). Risco alto de chargeback por categoria errada, ou tentativa de ocultar atividade real.',
+  },
+  'Capital Social': {
+    divergence: 'Valores próximos mas diferentes — pode ser alteração cadastral recente não atualizada.',
+    mismatch: 'Capital declarado muito diferente do registrado na Receita. Investigar se houve alteração societária recente OU se o cliente declarou valor incorreto.',
+  },
+  'Situação Cadastral': {
+    divergence: 'Situação cadastral com termos diferentes mas sentido similar.',
+    mismatch: 'A Receita indica situação IRREGULAR (inativa/suspensa/inapta) enquanto o cliente pressupõe ativa. Pode ser bloqueio automático — checar bloco de bloqueios.',
+  },
+  'Data de Fundação': {
+    divergence: 'Datas próximas — possível diferença entre data de constituição e data de início de atividades.',
+    mismatch: 'Diferença grande entre data declarada e data oficial. Investigar histórico de alterações da empresa.',
+  },
+  'Localização': {
+    divergence: 'Endereços similares — pode ser mudança recente ou formatação diferente.',
+    mismatch: 'Endereço declarado diferente do fiscal da Receita. Pode ser endereço operacional distinto (filial, galpão) ou sinal de shell company com endereço virtual.',
+  },
+  'Qtd. Sócios': {
+    divergence: 'Diferença pequena (1 sócio) entre declarado e QSA da BDC — pode ser alteração societária recente.',
+    mismatch: 'Quantidade de sócios declarada muito diferente da BDC. Pode indicar laranjas não declarados, alteração recente, ou estrutura de holding não explicitada.',
+  },
+};
+
+function getDivergenceExplanation(field, status) {
+  const info = DIVERGENCE_EXPLANATIONS[field];
+  if (!info) return null;
+  return info[status] || null;
+}
 
 /**
  * BDCDeclaredVsConfirmed — Side-by-side comparison of what the merchant declared
@@ -170,37 +216,60 @@ export default function BDCDeclaredVsConfirmed({ merchant, analysis, questionnai
         </div>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-slate-50 text-[10px] font-bold text-[#002443]/50 uppercase tracking-wider">
-              <th className="px-4 py-2.5 text-left">Campo</th>
-              <th className="px-4 py-2.5 text-left">Declarado pelo Merchant</th>
-              <th className="px-4 py-2.5 text-left">Confirmado pela BDC</th>
-              <th className="px-4 py-2.5 text-center">Status</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {enrichedRows.map((row, i) => {
-              const cfg = getStatusConfig(row.status);
-              const Icon = cfg.icon;
-              return (
-                <tr key={i} className={`${cfg.bg}/30 hover:${cfg.bg}/50 transition-colors`}>
-                  <td className="px-4 py-3 text-xs font-semibold text-[#002443]">{row.field}</td>
-                  <td className="px-4 py-3 text-xs text-[#002443]/70">{row.declared || <span className="text-[#002443]/30 italic">Não declarado</span>}</td>
-                  <td className="px-4 py-3 text-xs text-[#002443]/70 font-medium">{row.confirmed || <span className="text-[#002443]/30 italic">Não encontrado</span>}</td>
-                  <td className="px-4 py-3 text-center">
-                    <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border ${cfg.border} ${cfg.bg}`}>
-                      <Icon className={`w-3 h-3 ${cfg.color}`} />
-                      <span className={`text-[10px] font-semibold ${cfg.color}`}>{cfg.label}</span>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      <TooltipProvider delayDuration={200}>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="bg-slate-50 text-[10px] font-bold text-[#002443]/50 uppercase tracking-wider">
+                <th className="px-4 py-2.5 text-left">Campo</th>
+                <th className="px-4 py-2.5 text-left">Declarado pelo Merchant</th>
+                <th className="px-4 py-2.5 text-left">Confirmado pela BDC</th>
+                <th className="px-4 py-2.5 text-center">Divergência</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {enrichedRows.map((row, i) => {
+                const cfg = getStatusConfig(row.status);
+                const Icon = cfg.icon;
+                const explanation = getDivergenceExplanation(row.field, row.status);
+                const semaforo = row.status === 'match' ? '✅' : row.status === 'divergence' ? '⚠️' : row.status === 'mismatch' ? '❌' : '❓';
+                return (
+                  <tr key={i} className={`${cfg.bg}/30 hover:${cfg.bg}/50 transition-colors`}>
+                    <td className="px-4 py-3 text-xs font-semibold text-[#002443]">{row.field}</td>
+                    <td className="px-4 py-3 text-xs text-[#002443]/70">{row.declared || <span className="text-[#002443]/30 italic">Não declarado</span>}</td>
+                    <td className="px-4 py-3 text-xs text-[#002443]/70 font-medium">{row.confirmed || <span className="text-[#002443]/30 italic">Não encontrado</span>}</td>
+                    <td className="px-4 py-3 text-center">
+                      {explanation ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border ${cfg.border} ${cfg.bg} cursor-help`}>
+                              <span className="text-[11px]">{semaforo}</span>
+                              <Icon className={`w-3 h-3 ${cfg.color}`} />
+                              <span className={`text-[10px] font-semibold ${cfg.color}`}>{cfg.label}</span>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent side="left" className="max-w-xs bg-[#002443] text-white border-[#002443]">
+                            <p className="text-[10px] font-bold mb-1 text-[#2bc196]">
+                              {row.status === 'divergence' ? '⚠️ Divergência leve' : '❌ Divergência grave'}
+                            </p>
+                            <p className="text-[11px] leading-relaxed">{explanation}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : (
+                        <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border ${cfg.border} ${cfg.bg}`}>
+                          <span className="text-[11px]">{semaforo}</span>
+                          <Icon className={`w-3 h-3 ${cfg.color}`} />
+                          <span className={`text-[10px] font-semibold ${cfg.color}`}>{cfg.label}</span>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </TooltipProvider>
     </div>
   );
 }

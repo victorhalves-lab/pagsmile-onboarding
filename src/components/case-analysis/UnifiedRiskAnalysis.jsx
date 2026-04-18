@@ -92,8 +92,14 @@ export default function UnifiedRiskAnalysis({
         complianceScore={complianceScore}
       />
 
-      {/* 4. Smart Alerts — Top critical BDC findings */}
-      {bdcAnalysis && <BDCSmartAlerts analysis={bdcAnalysis} merchant={merchant} />}
+      {/* 4. Smart Alerts — Top critical BDC findings (with dedup vs Red Flags) */}
+      {bdcAnalysis && (
+        <BDCSmartAlerts
+          analysis={bdcAnalysis}
+          merchant={merchant}
+          existingRedFlags={onboardingCase?.redFlags || complianceScore?.red_flags || []}
+        />
+      )}
 
       {/* 5. Risk Heatmap — Radar by dimension */}
       <BDCRiskHeatmap analysis={bdcAnalysis} analiseDimensional={complianceScore?.analise_dimensional} />
