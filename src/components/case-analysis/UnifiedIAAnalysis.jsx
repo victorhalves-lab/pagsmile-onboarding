@@ -6,7 +6,8 @@ import {
   Target, List, Bookmark, Flag, Search
 } from 'lucide-react';
 import SentinelTextFormatter from '../compliance/SentinelTextFormatter';
-import FindingsExplainer from '../compliance/FindingsExplainer';
+import SentinelDocumentRenderer from '../risk-analysis/SentinelDocumentRenderer';
+import FindingsWithFallback from '../risk-analysis/FindingsWithFallback';
 
 function SectionCard({ icon: Icon, title, iconBg, iconColor, children, defaultOpen = true }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -124,14 +125,11 @@ export default function UnifiedIAAnalysis({ complianceScore, onboardingCase }) {
           </div>
         )}
 
-        {/* Findings por Severidade — com explicação e drill-down */}
+        {/* Findings por Severidade — com drill-down detalhado e fallback garantido */}
         {hasFindings && (
           <SectionCard icon={Search} title={`Findings Identificados (${complianceScore.total_findings})`} iconBg="bg-indigo-50" iconColor="text-indigo-600" defaultOpen={true}>
             <div className="mt-3">
-              <FindingsExplainer
-                complianceScoreId={complianceScore.id}
-                findingsBySeverity={complianceScore.findings_por_severidade}
-              />
+              <FindingsWithFallback complianceScore={complianceScore} />
             </div>
           </SectionCard>
         )}
@@ -240,8 +238,8 @@ export default function UnifiedIAAnalysis({ complianceScore, onboardingCase }) {
             </button>
             {expandedFullAnalysis && (
               <div className="px-4 pb-4 border-t border-slate-100">
-                <div className="mt-3 bg-slate-50 p-4 rounded-lg max-h-[600px] overflow-y-auto">
-                  <SentinelTextFormatter text={complianceScore.analise_completa_ia} />
+                <div className="mt-3">
+                  <SentinelDocumentRenderer text={complianceScore.analise_completa_ia} />
                 </div>
               </div>
             )}

@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Eye, FileQuestion, FileText, Lightbulb, Bookmark, ChevronDown, ChevronUp, Brain, Search } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import SentinelTextFormatter from '../compliance/SentinelTextFormatter';
-import FindingsExplainer from '../compliance/FindingsExplainer';
+import SentinelDocumentRenderer from './SentinelDocumentRenderer';
+import FindingsWithFallback from './FindingsWithFallback';
 
 function Section({ icon: Icon, title, iconBg, iconColor, children, defaultOpen = false }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -66,14 +67,11 @@ export default function RiskFinalVerdict({ complianceScore, onboardingCase }) {
           </div>
         )}
 
-        {/* Findings — com drill-down detalhado */}
+        {/* Findings — com drill-down detalhado e fallback garantido */}
         {hasFindings && (
           <Section icon={Search} title={`Findings (${complianceScore.total_findings})`} iconBg="bg-indigo-50" iconColor="text-indigo-600" defaultOpen={true}>
             <div className="mt-3">
-              <FindingsExplainer
-                complianceScoreId={complianceScore.id}
-                findingsBySeverity={complianceScore.findings_por_severidade}
-              />
+              <FindingsWithFallback complianceScore={complianceScore} />
             </div>
           </Section>
         )}
@@ -115,11 +113,11 @@ export default function RiskFinalVerdict({ complianceScore, onboardingCase }) {
           </Section>
         )}
 
-        {/* Full analysis (collapsed) */}
+        {/* Full analysis — navigable document with TOC + section cards */}
         {complianceScore.analise_completa_ia && (
-          <Section icon={Brain} title="Análise Completa SENTINEL (texto integral)" iconBg="bg-[#002443]/5" iconColor="text-[#002443]/60" defaultOpen={true}>
+          <Section icon={Brain} title="Análise Completa SENTINEL" iconBg="bg-[#002443]/5" iconColor="text-[#002443]/60" defaultOpen={true}>
             <div className="mt-3">
-              <SentinelTextFormatter text={complianceScore.analise_completa_ia} />
+              <SentinelDocumentRenderer text={complianceScore.analise_completa_ia} />
             </div>
           </Section>
         )}

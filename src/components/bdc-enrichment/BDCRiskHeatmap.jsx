@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
+import { MousePointerClick, Info } from 'lucide-react';
+import HeatmapDrillDown from '../risk-analysis/HeatmapDrillDown';
 
 /**
- * BDCRiskHeatmap — Visual radar chart showing risk across 6 dimensions.
- * Green = low risk, Yellow = medium, Red = high.
+ * BDCRiskHeatmap v2 — radar chart + clickable dimensions.
+ * Click any dimension (radar axis or legend row) → opens a HeatmapDrillDown panel
+ * below with: what the dimension analyses, why the score is X, what high score
+ * means and recommended action.
  */
 
 const DIMENSION_LABELS = {
@@ -21,6 +25,31 @@ const DIMENSION_LABELS = {
   assets: 'Ativos Patrimoniais',
 };
 
+const DIMENSIONAL_LABELS = {
+  identidade: 'Identidade / Cadastro',
+  socios: 'Sócios / QSA',
+  compliance: 'Compliance / PLD',
+  digital: 'Presença Digital',
+  reputacao: 'Reputação / Mídia',
+  financeiro: 'Financeiro / Mercado',
+  biometria: 'Biometria / Liveness',
+};
+
+const DIMENSIONAL_TO_BDC_KEY = {
+  identidade: 'identity',
+  socios: 'owners',
+  compliance: 'compliance',
+  digital: 'digital',
+  reputacao: 'reputation',
+  financeiro: 'financial',
+  biometria: 'biometria',
+};
+
+const VEREDICTO_TO_RISK = {
+  REPROVADO: 90, CRITICO: 90, ALTO: 75, ATENCAO: 50, MEDIO: 45,
+  OK: 15, APROVADO: 10, BAIXO: 10, NAO_DISPONIVEL: 60,
+};
+
 function calculateDimensionRisk(section) {
   if (!section?.items || section.items.length === 0) return 0;
   let totalWeight = 0;
@@ -32,7 +61,6 @@ function calculateDimensionRisk(section) {
     else if (item.risk === 'ALTO') riskPoints += w * 75;
     else if (item.risk === 'MEDIO') riskPoints += w * 40;
     else if (item.risk === 'BAIXO') riskPoints += w * 15;
-    else riskPoints += 0;
   }
   return totalWeight > 0 ? Math.min(100, Math.round(riskPoints / totalWeight)) : 0;
 }
@@ -49,40 +77,20 @@ function getRiskLabel(val) {
   return 'Baixo';
 }
 
-// Map analise_dimensional keys to display labels
-const DIMENSIONAL_LABELS = {
-  identidade: 'Identidade / Cadastro',
-  socios: 'Sócios / QSA',
-  compliance: 'Compliance / PLD',
-  digital: 'Presença Digital',
-  reputacao: 'Reputação / Mídia',
-  financeiro: 'Financeiro / Mercado',
-  biometria: 'Biometria / Liveness',
-};
-
-const VEREDICTO_TO_RISK = {
-  'REPROVADO': 90,
-  'CRITICO': 90,
-  'ALTO': 75,
-  'ATENCAO': 50,
-  'MEDIO': 45,
-  'OK': 15,
-  'APROVADO': 10,
-  'BAIXO': 10,
-  'NAO_DISPONIVEL': 60,
-};
-
 function buildDimensionsFromDimensional(analiseDimensional) {
   return Object.entries(analiseDimensional)
     .filter(([, val]) => val && typeof val === 'object')
     .map(([key, val]) => {
       const risk = VEREDICTO_TO_RISK[val.veredicto] ?? 50;
       const label = DIMENSIONAL_LABELS[key] || key;
-      return { dimension: label, risk, key, color: getRiskColor(risk), label: getRiskLabel(risk) };
+      const bdcKey = DIMENSIONAL_TO_BDC_KEY[key] || key;
+      return { dimension: label, risk, key: bdcKey, color: getRiskColor(risk), label: getRiskLabel(risk) };
     });
 }
 
 export default function BDCRiskHeatmap({ analysis, analiseDimensional }) {
+  const [selectedDim, setSelectedDim] = useState(null);
+
   let dimensions = [];
 
   if (analysis?.sections) {
@@ -93,7 +101,6 @@ export default function BDCRiskHeatmap({ analysis, analiseDimensional }) {
     }).filter(d => sections[d.key]);
   }
 
-  // Fallback to analise_dimensional from SENTINEL
   if (dimensions.length < 3 && analiseDimensional && typeof analiseDimensional === 'object') {
     dimensions = buildDimensionsFromDimensional(analiseDimensional);
   }
@@ -104,14 +111,27 @@ export default function BDCRiskHeatmap({ analysis, analiseDimensional }) {
     subject: d.dimension.split(' / ')[0],
     A: d.risk,
     fullMark: 100,
+    key: d.key,
   }));
+
+  const selectedDimData = selectedDim ? dimensions.find(d => d.key === selectedDim) : null;
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200 p-5">
-      <h4 className="text-sm font-bold text-[#002443] mb-1">🗺️ Mapa de Calor de Risco</h4>
-      <p className="text-[10px] text-[#002443]/40 mb-4">
-        Visão geral do nível de risco em cada dimensão de análise (0 = sem risco, 100 = risco máximo)
-      </p>
+      <div className="flex items-start gap-3 mb-3">
+        <span className="text-2xl leading-none">🗺️</span>
+        <div className="flex-1">
+          <h4 className="text-sm font-bold text-[#002443]">Mapa de Calor de Risco por Dimensão</h4>
+          <p className="text-[11px] text-[#002443]/50 mt-0.5 leading-relaxed">
+            Cada eixo do radar é uma dimensão de análise (Identidade, Sócios, Financeiro, etc.).
+            <strong className="text-[#002443]/70"> Quanto mais afastado do centro, maior o risco.</strong>
+          </p>
+          <p className="text-[11px] text-[#2bc196] mt-1 flex items-center gap-1 font-semibold">
+            <MousePointerClick className="w-3 h-3" />
+            Clique em qualquer dimensão da legenda para ver o detalhamento completo.
+          </p>
+        </div>
+      </div>
 
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Radar */}
@@ -119,20 +139,20 @@ export default function BDCRiskHeatmap({ analysis, analiseDimensional }) {
           <ResponsiveContainer width="100%" height={280}>
             <RadarChart data={radarData} outerRadius="75%">
               <PolarGrid stroke="#e2e8f0" />
-              <PolarAngleAxis 
-                dataKey="subject" 
+              <PolarAngleAxis
+                dataKey="subject"
                 tick={{ fill: '#002443', fontSize: 11, fontWeight: 600 }}
               />
-              <PolarRadiusAxis 
-                domain={[0, 100]} 
+              <PolarRadiusAxis
+                domain={[0, 100]}
                 tick={{ fill: '#002443', fontSize: 9 }}
                 tickCount={5}
               />
-              <Radar 
-                name="Risco" 
-                dataKey="A" 
-                stroke="#dc2626" 
-                fill="#dc2626" 
+              <Radar
+                name="Risco"
+                dataKey="A"
+                stroke="#dc2626"
+                fill="#dc2626"
                 fillOpacity={0.15}
                 strokeWidth={2}
               />
@@ -140,25 +160,44 @@ export default function BDCRiskHeatmap({ analysis, analiseDimensional }) {
           </ResponsiveContainer>
         </div>
 
-        {/* Legend */}
-        <div className="lg:w-[240px] space-y-2">
-          {dimensions.map(d => (
-            <div key={d.key} className="flex items-center gap-3 p-2.5 rounded-lg bg-slate-50">
-              <div 
-                className="w-3 h-3 rounded-full shrink-0" 
-                style={{ backgroundColor: d.color }}
-              />
-              <div className="flex-1 min-w-0">
-                <p className="text-[11px] font-semibold text-[#002443] truncate">{d.dimension}</p>
-                <p className="text-[10px] text-[#002443]/40">
-                  Risco: <span className="font-bold" style={{ color: d.color }}>{d.risk}/100</span> — {d.label}
-                </p>
-              </div>
-            </div>
-          ))}
+        {/* Clickable legend */}
+        <div className="lg:w-[280px] space-y-1.5">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50 mb-1 flex items-center gap-1">
+            <Info className="w-3 h-3" /> Dimensões — clique para abrir
+          </p>
+          {dimensions.map(d => {
+            const isSelected = selectedDim === d.key;
+            return (
+              <button
+                key={d.key}
+                type="button"
+                onClick={() => setSelectedDim(isSelected ? null : d.key)}
+                className={`w-full flex items-center gap-3 p-2.5 rounded-lg text-left transition-all ${
+                  isSelected
+                    ? 'bg-[#002443] text-white ring-2 ring-[#2bc196] shadow-md'
+                    : 'bg-slate-50 hover:bg-slate-100 border border-transparent hover:border-[#002443]/10'
+                }`}
+              >
+                <div
+                  className="w-3 h-3 rounded-full shrink-0 ring-2 ring-white"
+                  style={{ backgroundColor: d.color }}
+                />
+                <div className="flex-1 min-w-0">
+                  <p className={`text-[11px] font-semibold truncate ${isSelected ? 'text-white' : 'text-[#002443]'}`}>
+                    {d.dimension}
+                  </p>
+                  <p className={`text-[10px] ${isSelected ? 'text-white/70' : 'text-[#002443]/40'}`}>
+                    Risco: <span className="font-bold" style={{ color: isSelected ? d.color : d.color }}>{d.risk}/100</span> — {d.label}
+                  </p>
+                </div>
+                <MousePointerClick className={`w-3 h-3 shrink-0 ${isSelected ? 'text-[#2bc196]' : 'text-[#002443]/30'}`} />
+              </button>
+            );
+          })}
+
           {/* Color legend */}
           <div className="pt-2 mt-2 border-t border-slate-200">
-            <div className="flex items-center gap-4 text-[10px] text-[#002443]/50">
+            <div className="flex items-center gap-3 text-[10px] text-[#002443]/50 flex-wrap">
               <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500" /> 0-39 Baixo</span>
               <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-500" /> 40-69 Moderado</span>
               <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500" /> 70+ Alto</span>
@@ -166,6 +205,17 @@ export default function BDCRiskHeatmap({ analysis, analiseDimensional }) {
           </div>
         </div>
       </div>
+
+      {/* Drill-down panel */}
+      {selectedDimData && (
+        <HeatmapDrillDown
+          dimKey={selectedDimData.key}
+          score={selectedDimData.risk}
+          onClose={() => setSelectedDim(null)}
+          analysis={analysis}
+          analiseDimensional={analiseDimensional}
+        />
+      )}
     </div>
   );
 }
