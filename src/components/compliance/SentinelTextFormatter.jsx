@@ -115,6 +115,55 @@ function normalise(text) {
   // Bold headers at start "**Título:**" — convert to subheading
   out = out.replace(/^\s*\*\*([^*\n]{3,80}):\*\*\s*/gim, '\n\n#### $1\n\n');
 
+  // ─── Inline Sentinel markers → break into labeled paragraphs ───
+  // When Sentinel writes a condition, it uses inline labels like
+  // "O QUE: ... POR QUÊ: ... DURAÇÃO: ... CRITÉRIO DE REMOÇÃO: ..."
+  // We convert each of them into its own paragraph with a small bold label.
+  const INLINE_LABELS = [
+    'O\\s*QUE',
+    'POR\\s*QU[ÊE]',
+    'DURA[ÇC][ÃA]O',
+    'CRIT[ÉE]RIO\\s+DE\\s+REMO[ÇC][ÃA]O',
+    'ONDE',
+    'EVID[ÊE]NCIA',
+    'IMPACTO',
+    'RISCO',
+    'PRAZO',
+    'A[ÇC][ÃA]O',
+    'RESPONS[ÁA]VEL',
+  ];
+  const inlineLabelsGroup = INLINE_LABELS.join('|');
+  // Break BEFORE each occurrence (unless it's already at line start) with two newlines + bold label
+  const inlineRe = new RegExp(`\\s*\\b(${inlineLabelsGroup})\\s*[:：]\\s*`, 'gi');
+  out = out.replace(inlineRe, (_m, label) => {
+    // Normalize label capitalization: "O QUE", "Por quê", "Duração", "Critério de Remoção"
+    const clean = label.replace(/\s+/g, ' ').trim();
+    const pretty = clean.toUpperCase() === 'O QUE'
+      ? 'O que'
+      : /^POR\s*QU/i.test(clean)
+      ? 'Por quê'
+      : /^DURA/i.test(clean)
+      ? 'Duração'
+      : /^CRIT/i.test(clean)
+      ? 'Critério de remoção'
+      : /^ONDE$/i.test(clean)
+      ? 'Onde'
+      : /^EVID/i.test(clean)
+      ? 'Evidência'
+      : /^IMPACTO$/i.test(clean)
+      ? 'Impacto'
+      : /^RISCO$/i.test(clean)
+      ? 'Risco'
+      : /^PRAZO$/i.test(clean)
+      ? 'Prazo'
+      : /^A[ÇC]/i.test(clean)
+      ? 'Ação'
+      : /^RESPONS/i.test(clean)
+      ? 'Responsável'
+      : clean;
+    return `\n\n**${pretty}:** `;
+  });
+
   // Numbered list "1. " or "1) " at line start → markdown list
   out = out.replace(/^\s*(\d+)[.)]\s+/gm, '- **$1.** ');
 
