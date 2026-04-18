@@ -103,18 +103,29 @@ function OwnershipChart({ validations = [] }) {
 }
 
 function BiometryPanel({ validations = [], integrationLogs = [], faceMatchThreshold = 50 }) {
-  const cafLiveness = validations.find(v => v.provider === 'CAF' && v.validationType?.includes('Liveness'));
-  const cafDocFront = validations.find(v => v.provider === 'CAF' && v.validationType?.includes('Frente'));
-  const cafDocBack = validations.find(v => v.provider === 'CAF' && v.validationType?.includes('Verso'));
+  // Match by internal service_type/validationType (English keys used throughout the system)
+  const isLivenessType = (s = '') => /liveness|face_authentication|facematch/i.test(s);
+  const isDocFrontType = (s = '') => /document.*front|doc.*front|frente/i.test(s);
+  const isDocBackType = (s = '') => /document.*back|doc.*back|verso/i.test(s);
+
+  const allRecords = [...validations, ...integrationLogs];
+  const findRec = (fn) => allRecords.find(r => r.provider === 'CAF' && fn(r.validationType || r.service_type || ''));
+
+  const cafLiveness = findRec(isLivenessType);
+  const cafDocFront = findRec(isDocFrontType);
+  const cafDocBack = findRec(isDocBackType);
   
-  const livenessData = cafLiveness?.resultData || {};
-  const isAlive = livenessData.isAlive;
+  // Read from resultData (ExternalValidationResult) or response_payload (IntegrationLog)
+  const livenessData = cafLiveness?.resultData || cafLiveness?.response_payload || {};
+  const isAlive = livenessData.isAlive ?? cafLiveness?.is_alive;
   const isMatch = livenessData.isMatch;
-  const similarity = livenessData.similarity;
+  const similarity = livenessData.similarity ?? cafLiveness?.similarity;
   const similarityPct = similarity != null ? (similarity * 100).toFixed(1) : null;
-  
-  const docFrontValid = cafDocFront?.resultData?.isCaptureValid;
-  const docBackValid = cafDocBack?.resultData?.isCaptureValid;
+
+  const docFrontData = cafDocFront?.resultData || cafDocFront?.response_payload || {};
+  const docBackData = cafDocBack?.resultData || cafDocBack?.response_payload || {};
+  const docFrontValid = docFrontData.isCaptureValid ?? (cafDocFront?.status === 'Sucesso' || cafDocFront?.status === 'success' ? true : cafDocFront?.status === 'Falha' ? false : undefined);
+  const docBackValid = docBackData.isCaptureValid ?? (cafDocBack?.status === 'Sucesso' || cafDocBack?.status === 'success' ? true : cafDocBack?.status === 'Falha' ? false : undefined);
 
   const matchAboveThreshold = similarityPct != null ? parseFloat(similarityPct) >= faceMatchThreshold : isMatch;
 

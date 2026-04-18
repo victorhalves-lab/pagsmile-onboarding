@@ -16,6 +16,8 @@ import DocSubsellers from '@/components/kyc-doc/DocSubsellers';
 import DocSentinel from '@/components/kyc-doc/DocSentinel';
 import DocMonitoramento from '@/components/kyc-doc/DocMonitoramento';
 import DocPainelAnalista from '@/components/kyc-doc/DocPainelAnalista';
+import DocAcessos from '@/components/kyc-doc/DocAcessos';
+import DocEscalacoes from '@/components/kyc-doc/DocEscalacoes';
 
 const TOC = [
   { id: 's1', n: '1', label: 'Visão Geral — Arquitetura Completa do Pipeline KYC/KYB' },
@@ -31,6 +33,8 @@ const TOC = [
   { id: 's11', n: '11', label: 'Análise SENTINEL IA (Agente Relator)' },
   { id: 's12', n: '12', label: 'Monitoramento Contínuo e Revalidação' },
   { id: 's13', n: '13', label: 'Painel de Análise de Risco — Visão Completa do Analista' },
+  { id: 's14', n: '14', label: 'Governança de Acesso — Perfis, 2FA e Auditoria' },
+  { id: 's15', n: '15', label: 'Escalações Questionáveis — Monitoramento de Qualidade da Decisão' },
 ];
 
 export default function DocumentoKYCKYB() {
@@ -191,6 +195,8 @@ export default function DocumentoKYCKYB() {
         <div id="s11"><DocSentinel /></div>
         <div id="s12"><DocMonitoramento /></div>
         <div id="s13"><DocPainelAnalista /></div>
+        <div id="s14" className="doc-break"><DocAcessos /></div>
+        <div id="s15"><DocEscalacoes /></div>
       </div>
 
       {/* ═══ FOOTER ═══ */}

@@ -97,6 +97,29 @@ export default function DocBDC() {
       <InfoBox title="Retry e Resiliência" color="amber">
         <p>Cada consulta BDC tem retry automático com backoff exponencial: se a API retornar erro 500/502/503/504/429, o sistema tenta novamente até 3 vezes com intervalos de 1.5s, 3s e 4.5s. Isso garante resiliência contra instabilidades temporárias da API.</p>
       </InfoBox>
+
+      <H2>5.3. Fila de Retry Persistente (BdcRetryQueue)</H2>
+      <P>Além do retry inline dentro de uma única chamada, o sistema mantém uma <strong>fila persistente</strong> de retries para lotes de datasets que falharam mesmo após as 3 tentativas iniciais. A entidade <code>BdcRetryQueue</code> armazena cada caso pendente com seus lotes de datasets divididos em 3 níveis de prioridade:</P>
+
+      <Table headers={['Prioridade', 'Datasets (CNPJ)', 'Datasets (CPF)', 'Política de retry']} rows={[
+        ['CRITICAL', 'basic_data, kyc, owners_kyc, processes, government_debtors, activity_indicators, esg_and_compliance', 'basic_data, kyc, scr_positive_score, processes, first_level_family_kyc, collections', 'Até 5 tentativas com backoff exponencial 2m/5m/15m/45m/120m. Se falhar todas, caso vai para "giving_up" e dispara alerta Slack.'],
+        ['IMPORTANT', 'relationships, collections, credit_risk, media_profile_and_exposure, reputations_and_reviews, domains, passages', 'presumed_income, social_assistance, financial_interests, personal_relationships, simples_nacional_collection', 'Até 3 tentativas com backoff 5m/20m/60m. Caso continua para decisão mesmo sem esses dados (são enriquecimentos relevantes mas não críticos).'],
+        ['COMPLEMENTARY', 'online_ads, marketplace_data, awards_and_certifications, industrial_property, licenses_and_authorizations, political_involvement, owners_electoral_donors, economic_group, economic_group_relationships', 'electoral_donors, public_servants, risk_data', 'Até 2 tentativas com backoff 10m/60m. Não bloqueia a decisão.'],
+      ]} />
+
+      <H2>5.4. Worker de Retry (bdcRetryWorker)</H2>
+      <P>A cada 5 minutos, a função <code>bdcRetryWorker</code> (agendada como automation) varre a <code>BdcRetryQueue</code> buscando registros com <code>next_retry_at</code> ≤ agora e <code>status</code> = "pending". Para cada um:</P>
+      <ul className="list-disc ml-6 space-y-1 mb-4">
+        <Li>Identifica o próximo lote pendente (CRITICAL primeiro, depois IMPORTANT, depois COMPLEMENTARY).</Li>
+        <Li>Executa a chamada BDC apenas para os datasets daquele lote específico (economiza requests).</Li>
+        <Li>Se o lote voltou com sucesso, marca como "success", mescla os datasets ao <code>merged_result</code> do caso e dispara re-cálculo do Score V4 via <code>bdcEnrichCase</code> em modo "merge".</Li>
+        <Li>Se o lote falhou novamente, incrementa <code>attempts</code>, calcula o próximo <code>next_retry_at</code> (backoff exponencial com jitter de ±20% para evitar thundering herd), e volta ao status "pending".</Li>
+        <Li>Se esgotou o número máximo de tentativas, marca o lote como "degraded" (IMPORTANT/COMPLEMENTARY) ou o caso inteiro como "giving_up" (CRITICAL).</Li>
+      </ul>
+
+      <InfoBox title="Por que fila persistente e não só retry inline?" color="blue">
+        <p>Uma indisponibilidade de 1–2 horas da BDC (já aconteceu em produção) bloquearia dezenas de onboardings se dependêssemos só de retry inline. A fila permite que: (a) o cliente finalize o onboarding sem esperar a BDC se recuperar, (b) a decisão preliminar seja calculada com os dados disponíveis, (c) quando a BDC voltar, os dados complementares sejam automaticamente mesclados e o score recalculado — sem nenhuma ação humana necessária.</p>
+      </InfoBox>
     </S>
   );
 }

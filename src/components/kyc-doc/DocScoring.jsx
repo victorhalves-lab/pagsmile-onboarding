@@ -68,7 +68,7 @@ export default function DocScoring() {
         ['3A', '401 — 500', 'AMARELO', 'Aprovado com condições rigorosas: KYC em 30 dias + PLD quinzenal + limite TPV R$500k/mês + revisão a cada 90 dias', '15%', 'INTENSO'],
         ['3B', '501 — 600', 'LARANJA', 'Aprovado com condições rigorosas: KYC em 15 dias + PLD semanal + limite TPV R$200k/mês + revisão a cada 60 dias + antecipação bloqueada', '20%', 'INTENSO PLUS'],
         ['4', '601 — 700', 'VERMELHO', 'Revisão Manual — um analista humano deve revisar o dossiê completo antes de qualquer decisão', '20%', 'MÁXIMO'],
-        ['5', '701 — 849 (ou 850)', 'BLOQUEIO', 'Recusado automaticamente — existem bloqueios V4 ativos (B01-B10) que impedem qualquer aprovação', '20%', 'MÁXIMO'],
+        ['5', '701 — 850', 'BLOQUEIO', 'Recusado automaticamente — existem bloqueios V4 ativos (B01-B10) que impedem qualquer aprovação (score = 850 quando há bloqueio)', '20%', 'MÁXIMO'],
       ]} />
     </S>
   );

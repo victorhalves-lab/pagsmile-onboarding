@@ -68,6 +68,17 @@ export default function CadastroSubsellersTab({ subsellers }) {
               </div>
               <p className="text-xs text-[var(--pagsmile-blue)]/50">{formatDoc(s.cpfCnpj)}</p>
             </div>
+            {s._scoreV4 != null && (
+              <div className="text-right hidden sm:block">
+                <p className="text-sm font-bold text-[var(--pagsmile-blue)]">{s._scoreV4}</p>
+                <p className="text-[9px] text-[var(--pagsmile-blue)]/40">Score V4</p>
+              </div>
+            )}
+            {s._subfaixa && (
+              <Badge variant="outline" className="text-[10px] hidden sm:inline-flex">
+                {s._subfaixa}{s._subfaixaNome ? ` • ${s._subfaixaNome}` : ''}
+              </Badge>
+            )}
             <Badge className={`text-[10px] ${STATUS_CONFIG[s.onboardingStatus] || STATUS_CONFIG['Pendente']}`}>
               {s.onboardingStatus}
             </Badge>

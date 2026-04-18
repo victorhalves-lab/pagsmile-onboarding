@@ -64,13 +64,30 @@ export default function DocPainelAnalista() {
       <H2>13.6. Aba Dados (Respostas do Questionário)</H2>
       <P>Exibe todas as respostas do questionário de compliance em formato organizado por seção, com destaque visual para: campos preenchidos automaticamente via autocomplete CNPJ (badge "Receita Federal"), campos com flags de compliance ativos, e campos obrigatórios não respondidos.</P>
 
-      <H2>13.7. Aba Subcontas (quando aplicável)</H2>
+      <H2>13.7. Aba Regulatório</H2>
+      <P>Esta aba especializada apresenta o checklist regulatório do caso contra as normas do Banco Central aplicáveis:</P>
+      <ul className="list-disc ml-6 space-y-1 mb-4">
+        <Li><Bold>BC 475 — Protege+:</Bold> Validação de que a consulta prévia à BigDataCorp foi realizada antes da abertura de conta (obrigatório a partir de Dez/2025).</Li>
+        <Li><Bold>BC 3988 — Irregularidades RF:</Bold> Confirma que o CNPJ/CPF não possui irregularidades graves na Receita Federal (situação ATIVA obrigatória).</Li>
+        <Li><Bold>BC 3978 — Motivos de Rejeição:</Bold> Verifica se os motivos da decisão estão explicitamente registrados (bloqueios V4 + red flags) para comunicação ao titular.</Li>
+        <Li><Bold>BC 96 — Via do Contrato:</Bold> Confirma disponibilização da via do contrato ao cliente por meio eletrônico (Art.6 §1).</Li>
+        <Li><Bold>Organograma Societário 100%:</Bold> Checklist de identificação de beneficiários finais com participação somando 100% (Circular BCB 3.978/2020 Art.16).</Li>
+        <Li><Bold>Documentoscopia × Biometria:</Bold> Painel cruzando liveness CAF, facematch, documento frente e verso com threshold configurável de similaridade.</Li>
+      </ul>
+
+      <H2>13.8. Aba Propostas</H2>
+      <P>Lista todas as propostas comerciais associadas ao caso (por lead, por CNPJ ou por nome comercial). Cada proposta mostra: código (PROP-YYYY-NNNNN), cliente, status (rascunho/enviada/visualizada/aceita/recusada/contraproposta/expirada), data de envio e validade, parceiro escolhido, rentabilidade estimada (TPV base + receita MDR + margem %), taxas por bandeira e versão atual da proposta. Link direto para <code>PropostaDetalhes</code> de cada item.</P>
+
+      <H2>13.9. Aba Contratos</H2>
+      <P>Lista todos os contratos vinculados ao merchant (por CNPJ ou por merchantId). Exibe: código do contrato, status (pre_generated/under_review/ready/sent/signed/cancelled), módulos contratados (conta pagamento, subadquirência cartão, PIX, boleto, gateway), datas de envio e assinatura, taxas consolidadas e link público amigável (slug <code>/c/:slug</code>).</P>
+
+      <H2>13.10. Aba Subcontas (quando aplicável)</H2>
       <P>Para sellers que têm subsellers, esta aba lista todos os subsellers vinculados com: nome, CNPJ/CPF, score V4, subfaixa, status da decisão, e link para o dossiê completo de cada subseller.</P>
 
-      <H2>13.8. Aba Histórico</H2>
+      <H2>13.11. Aba Histórico</H2>
       <P>Linha do tempo completa de todas as ações do caso: criação, submissão, cada etapa do pipeline (com duração), decisão automática, revisões manuais, revalidações, e alterações de status. Cada evento mostra: data/hora, ator (sistema ou analista), ação e detalhes.</P>
 
-      <H2>13.9. Ações do Analista</H2>
+      <H2>13.12. Ações do Analista</H2>
       <P>Para casos em Revisão Manual (subfaixa 4), o analista tem as seguintes ações disponíveis:</P>
       <ul className="list-disc ml-6 space-y-1 mb-4">
         <Li><Bold>Aprovar:</Bold> Com ou sem condições adicionais. O analista pode adicionar condições customizadas além das automáticas.</Li>

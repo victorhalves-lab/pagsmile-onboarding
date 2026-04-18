@@ -28,10 +28,12 @@ export default function DocCapa() {
 
       <div className="w-16 h-[2px] bg-[#2bc196] mb-4" />
 
-      <div className="flex items-center gap-3 text-[11px] text-[#1a1a1a]/40 font-medium tracking-wide">
+      <div className="flex items-center gap-3 text-[11px] text-[#1a1a1a]/40 font-medium tracking-wide flex-wrap">
         <span>Versão 4.0</span>
         <span>|</span>
-        <span>{new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
+        <span>Última revisão: {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
+        <span>|</span>
+        <span>Gerado dinamicamente a partir do sistema</span>
         <span>|</span>
         <span>Confidencial</span>
       </div>

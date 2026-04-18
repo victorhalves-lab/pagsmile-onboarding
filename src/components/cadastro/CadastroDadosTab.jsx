@@ -31,11 +31,20 @@ function Section({ title, children }) {
   );
 }
 
+// Pick the first non-null/undefined value across response columns
+function pickAnswer(r) {
+  if (r.valueText !== null && r.valueText !== undefined && r.valueText !== '') return r.valueText;
+  if (r.valueNumber !== null && r.valueNumber !== undefined) return r.valueNumber;
+  if (r.valueBoolean !== null && r.valueBoolean !== undefined) return r.valueBoolean;
+  if (Array.isArray(r.valueArray) && r.valueArray.length) return r.valueArray;
+  return null;
+}
+
 export default function CadastroDadosTab({ merchant, lead, responses, latestCase, onMerchantUpdated }) {
   // Group responses by question text for display
   const questionResponses = responses.map(r => ({
     question: r.questionText || `Pergunta ${r.questionId}`,
-    answer: r.valueText || r.valueNumber || r.valueBoolean || (r.valueArray?.length ? r.valueArray : null),
+    answer: pickAnswer(r),
   }));
 
   // Lead questionnaire data

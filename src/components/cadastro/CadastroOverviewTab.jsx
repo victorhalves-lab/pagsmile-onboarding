@@ -1,6 +1,7 @@
 import React from 'react';
 import { Shield, FileText, FileCheck, Stamp, Users, AlertTriangle, CheckCircle2, Clock, XCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { segmentLabel } from '@/lib/segmentLabels';
 
 function InfoCard({ icon: Icon, title, value, sub, color = 'text-blue-600', bg = 'bg-blue-50' }) {
   return (
@@ -134,7 +135,7 @@ export default function CadastroOverviewTab({ merchant, latestCase, lead, latest
             {lead.businessSubCategory && (
               <div>
                 <p className="text-[10px] text-[var(--pagsmile-blue)]/50">Segmento</p>
-                <p className="font-semibold capitalize">{lead.businessSubCategory}</p>
+                <p className="font-semibold">{segmentLabel(lead.businessSubCategory)}</p>
               </div>
             )}
             {lead.priscilaRiskLevel && (

@@ -84,11 +84,44 @@ export default function CadastroDetalhe() {
 
   const lead = allLeads[0] || null;
 
-  const { data: subsellers = [] } = useQuery({
+  const { data: subsellersRaw = [] } = useQuery({
     queryKey: ['cadastro-subsellers', merchantId],
     queryFn: () => base44.entities.Merchant.filter({ parentMerchantId: merchantId }),
     enabled: !!merchantId && !merchant?.isSubseller,
   });
+
+  // Fetch latest OnboardingCase per subseller to surface score V4 + subfaixa in the list
+  const subsellerIds = useMemo(() => subsellersRaw.map(s => s.id), [subsellersRaw]);
+  const { data: subsellerCases = [] } = useQuery({
+    queryKey: ['cadastro-subsellers-cases', subsellerIds],
+    queryFn: async () => {
+      if (!subsellerIds.length) return [];
+      const results = await Promise.all(
+        subsellerIds.map(id => base44.entities.OnboardingCase.filter({ merchantId: id }, '-created_date', 1))
+      );
+      return results.flat();
+    },
+    enabled: subsellerIds.length > 0,
+  });
+
+  const subsellers = useMemo(() => {
+    const caseByMerchant = new Map();
+    subsellerCases.forEach(c => {
+      const prev = caseByMerchant.get(c.merchantId);
+      if (!prev || new Date(c.created_date) > new Date(prev.created_date)) {
+        caseByMerchant.set(c.merchantId, c);
+      }
+    });
+    return subsellersRaw.map(s => {
+      const c = caseByMerchant.get(s.id);
+      return {
+        ...s,
+        _scoreV4: c?.riskScoreV4 ?? null,
+        _subfaixa: c?.subfaixa ?? null,
+        _subfaixaNome: c?.subfaixaNome ?? null,
+      };
+    });
+  }, [subsellersRaw, subsellerCases]);
 
   // Fetch responses from ALL cases
   const allCaseIds = useMemo(() => cases.map(c => c.id), [cases]);
