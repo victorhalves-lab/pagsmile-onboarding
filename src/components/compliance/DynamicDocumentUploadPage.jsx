@@ -322,6 +322,9 @@ export default function DynamicDocumentUploadPage({
           throw new Error(submitRes.data?.error || 'Erro ao criar caso');
         }
         onboardingCaseId = submitRes.data.onboardingCaseId;
+        if (submitRes.data?.docLinkToken) {
+          localStorage.setItem('created_doc_link_token', submitRes.data.docLinkToken);
+        }
       }
 
       // Upload documentos via publicComplianceDocUpload (asServiceRole)
@@ -348,9 +351,11 @@ export default function DynamicDocumentUploadPage({
         });
       }
 
-      // Mark case as docs + CAF completed — via public function (service role, whitelisted fields)
+      // Mark case as docs + CAF completed — via public function (service role, whitelisted fields).
+      // The docLinkToken authenticates the update so anonymous clients can't flip case fields.
       await base44.functions.invoke('publicComplianceCaseUpdate', {
         caseId: onboardingCaseId,
+        docLinkToken: localStorage.getItem('created_doc_link_token') || undefined,
         updates: {
           docCompleted: true,
           cafCompleted: !!effectiveCafResult,
@@ -365,6 +370,7 @@ export default function DynamicDocumentUploadPage({
       localStorage.removeItem('current_compliance_model');
       localStorage.removeItem('created_merchant_id');
       localStorage.removeItem('created_onboarding_case_id');
+      localStorage.removeItem('created_doc_link_token');
 
       base44.analytics.track({
         eventName: 'compliance_stage_completed',

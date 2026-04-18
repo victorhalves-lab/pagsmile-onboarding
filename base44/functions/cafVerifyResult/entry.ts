@@ -34,6 +34,7 @@ Deno.serve(async (req) => {
     const { 
       onboardingCaseId, 
       module,           // 'document_front' | 'document_back' | 'liveness' | 'manual_selfie'
+      docLinkToken,     // Authenticates the caller for this specific case (from publicComplianceSubmit)
       // DocumentDetector fields
       imageBase64,      // base64 data URI from blob (preferred — no expiry risk)
       imageUrl,         // temporary CAF URL for document image (fallback)
@@ -51,6 +52,31 @@ Deno.serve(async (req) => {
     }
     if (!module) {
       return Response.json({ error: 'module is required' }, { status: 400 });
+    }
+
+    // Authenticate caller using the case's docLinkToken. Cases created before this deploy
+    // may not have a token — we fall back to allow (backward compat) but log the bypass
+    // so we can monitor how many legacy cases are still using the unauthenticated path.
+    let theCase = null;
+    try {
+      const cases = await base44.asServiceRole.entities.OnboardingCase.filter({ id: onboardingCaseId });
+      theCase = cases[0] || null;
+    } catch (authErr) {
+      // A lookup failure (malformed id, etc.) is treated the same as "not found" — we
+      // simply can't find this case, so we refuse. We do NOT return 500 here because
+      // that would let a malformed id become a DoS vector.
+      console.warn('[CAF] cafVerifyResult case lookup failed:', authErr.message);
+    }
+    if (!theCase) {
+      return Response.json({ error: 'Caso não encontrado' }, { status: 404 });
+    }
+    if (theCase.docLinkToken) {
+      if (!docLinkToken || docLinkToken !== theCase.docLinkToken) {
+        console.warn('[CAF] cafVerifyResult: invalid docLinkToken for case', onboardingCaseId);
+        return Response.json({ error: 'Invalid or missing docLinkToken' }, { status: 403 });
+      }
+    } else {
+      console.log('[CAF] cafVerifyResult: legacy case (no docLinkToken) — accepting:', onboardingCaseId);
     }
 
     let isApproved = false;

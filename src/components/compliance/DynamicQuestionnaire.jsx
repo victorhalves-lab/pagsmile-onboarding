@@ -861,8 +861,13 @@ export default function DynamicQuestionnaire({
     // Persist IDs so the document upload page can reuse them
     localStorage.setItem('created_merchant_id', res.data.merchantId);
     localStorage.setItem('created_onboarding_case_id', res.data.onboardingCaseId);
+    // Persist docLinkToken so public endpoints (publicComplianceCaseUpdate, cafVerifyResult)
+    // can authenticate updates for this specific case instead of accepting anonymous writes.
+    if (res.data.docLinkToken) {
+      localStorage.setItem('created_doc_link_token', res.data.docLinkToken);
+    }
 
-    return { merchantId: res.data.merchantId, onboardingCaseId: res.data.onboardingCaseId };
+    return { merchantId: res.data.merchantId, onboardingCaseId: res.data.onboardingCaseId, docLinkToken: res.data.docLinkToken };
   }, [questions, lead, template, linkCode]);
 
   // Callback quando o cliente confirma que concluiu na CAF

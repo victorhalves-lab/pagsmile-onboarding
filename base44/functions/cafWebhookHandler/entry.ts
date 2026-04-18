@@ -15,8 +15,12 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 const CAF_API_BASE = 'https://api.combateafraude.com';
 
-const CAF_ALLOWED_IPS = new Set([
-  '34.95.175.186', '34.95.186.52', '34.95.183.142', '35.199.107.89',
+// Official CAF Connect API webhook IPs (docs.caf.io/caf-api/connect/webhook/best-practices).
+// Kept as a reference for optional enforcement — actual filtering is done at the audit/log
+// layer only. We still capture the real source IP on every webhook (see handler) so we can
+// build evidence over time about which IPs CAF is actually using for THIS app.
+const CAF_KNOWN_IPS = new Set([
+  '34.234.120.59', '18.229.212.133', '3.218.90.124', '44.219.96.170', '18.235.54.162',
 ]);
 
 function getCafToken() {
@@ -137,11 +141,16 @@ Deno.serve(async (req) => {
   const startTime = Date.now();
 
   try {
+    // Capture observability headers BEFORE parsing the body so we can audit the real
+    // source of every webhook (needed to verify if CAF is sending the documented IPs
+    // and the X-Caf-Signature header in production).
     const sourceIp = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
       || req.headers.get('cf-connecting-ip') || req.headers.get('x-real-ip') || '';
     const cafSignature = req.headers.get('x-caf-signature') || req.headers.get('x-webhook-signature') || '';
+    const userAgent = req.headers.get('user-agent') || '';
+    const ipIsKnown = sourceIp ? CAF_KNOWN_IPS.has(sourceIp) : false;
 
-    console.log(`[CAF-Webhook] Source IP: ${sourceIp}, Signature: ${!!cafSignature}`);
+    console.log(`[CAF-Webhook] Source IP: ${sourceIp} (known=${ipIsKnown}), Signature present: ${!!cafSignature}, UA: ${userAgent}`);
 
     const base44 = createClientFromRequest(req);
     const body = await req.json();
@@ -412,7 +421,9 @@ Deno.serve(async (req) => {
       } catch { /* */ }
     }
 
-    // Always log the raw webhook
+    // Always log the raw webhook — now includes the real source IP, signature presence
+    // and user-agent so we can audit which IPs CAF is actually using and whether the
+    // X-Caf-Signature header is being sent (Connect API should always send it).
     try {
       await base44.asServiceRole.entities.IntegrationLog.create({
         onboarding_case_id: onboardingCaseId || '',
@@ -423,6 +434,13 @@ Deno.serve(async (req) => {
         onboarding_id: onboardingId,
         status: 'success',
         result_status: cafStatus === 'APPROVED' ? 'APPROVED' : cafStatus === 'REPROVED' ? 'REPROVED' : 'PENDING_REVIEW',
+        request_payload: {
+          source_ip: sourceIp,
+          ip_in_known_list: ipIsKnown,
+          has_signature: !!cafSignature,
+          signature_prefix: cafSignature ? cafSignature.slice(0, 12) : '',
+          user_agent: userAgent,
+        },
         response_payload: body,
         red_flags: newFlags,
         duration_ms: Date.now() - startTime,

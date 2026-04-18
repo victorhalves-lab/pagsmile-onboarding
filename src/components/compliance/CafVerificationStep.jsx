@@ -115,8 +115,15 @@ async function blobToBase64(blob) {
  * Returns the backend response or null on failure.
  */
 async function persistCafResult(payload) {
+  // Attach docLinkToken (generated server-side at publicComplianceSubmit) to authenticate
+  // this public write. Without a valid token the backend will refuse to persist CAF
+  // results for an existing case, preventing anonymous tampering.
+  const authedPayload = {
+    ...payload,
+    docLinkToken: (typeof localStorage !== 'undefined' && localStorage.getItem('created_doc_link_token')) || undefined,
+  };
   try {
-    const response = await base44.functions.invoke('cafVerifyResult', payload);
+    const response = await base44.functions.invoke('cafVerifyResult', authedPayload);
     console.log('[CAF] Result persisted:', response.data);
     return response.data;
   } catch (err) {
@@ -124,7 +131,7 @@ async function persistCafResult(payload) {
     toast.error('Erro ao salvar resultado da verificação. Tentando novamente...');
     // Retry once
     try {
-      const response = await base44.functions.invoke('cafVerifyResult', payload);
+      const response = await base44.functions.invoke('cafVerifyResult', authedPayload);
       console.log('[CAF] Result persisted on retry:', response.data);
       return response.data;
     } catch (retryErr) {

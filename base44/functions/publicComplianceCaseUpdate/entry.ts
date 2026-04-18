@@ -17,7 +17,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Method not allowed' }, { status: 405 });
     }
     const body = await req.json().catch(() => ({}));
-    const { caseId, updates } = body;
+    const { caseId, updates, docLinkToken } = body;
     if (!caseId || !updates || typeof updates !== 'object') {
       return Response.json({ error: 'caseId and updates required' }, { status: 400 });
     }
@@ -33,11 +33,23 @@ Deno.serve(async (req) => {
 
     const base44 = createClientFromRequest(req);
 
-    // Verify case exists (service role)
+    // Verify case exists (service role) and check the docLinkToken matches.
+    // The token is generated server-side at publicComplianceSubmit and returned to the
+    // client, so only the session that created the case can flip these flags.
     let cases = [];
     try { cases = await base44.asServiceRole.entities.OnboardingCase.filter({ id: caseId }); } catch (_) {}
     if (cases.length === 0) {
       return Response.json({ error: 'Caso não encontrado' }, { status: 404 });
+    }
+
+    const theCase = cases[0];
+    // Cases created AFTER this deploy will always have a docLinkToken. If the case has
+    // a token, the caller MUST provide a matching one. Legacy cases without a token are
+    // still accepted without auth to avoid breaking in-flight flows.
+    if (theCase.docLinkToken) {
+      if (!docLinkToken || docLinkToken !== theCase.docLinkToken) {
+        return Response.json({ error: 'Invalid or missing docLinkToken' }, { status: 403 });
+      }
     }
 
     await base44.asServiceRole.entities.OnboardingCase.update(caseId, safeUpdates);
