@@ -180,6 +180,37 @@ Deno.serve(async (req) => {
       return Response.json({ proposal: results[0] || null });
     }
 
+    // ── Resolve public slug → target URL ──
+    // Maps friendly URL (/p/:slug, /pp/:slug, /pix/:slug, /c/:slug) to legacy page URL.
+    if (kind === 'resolve_public_slug') {
+      const { entityType, slug } = body;
+      if (!entityType || !slug) return Response.json({ error: 'entityType and slug required' }, { status: 400 });
+      try {
+        if (entityType === 'proposal') {
+          const r = await base44.asServiceRole.entities.Proposal.filter({ publicSlug: slug });
+          if (r.length > 0 && r[0].tokenPublico) {
+            return Response.json({ redirectTo: `/PropostaPublica?token=${encodeURIComponent(r[0].tokenPublico)}` });
+          }
+        } else if (entityType === 'standardProposal') {
+          const r = await base44.asServiceRole.entities.StandardProposal.filter({ publicSlug: slug });
+          if (r.length > 0 && r[0].tokenPublico) {
+            return Response.json({ redirectTo: `/PropostaPadraoPublica?token=${encodeURIComponent(r[0].tokenPublico)}` });
+          }
+        } else if (entityType === 'pixProposal') {
+          const r = await base44.asServiceRole.entities.PixProposal.filter({ publicSlug: slug });
+          if (r.length > 0 && r[0].tokenPublico) {
+            return Response.json({ redirectTo: `/PropostaPixPublica?token=${encodeURIComponent(r[0].tokenPublico)}` });
+          }
+        } else if (entityType === 'contract') {
+          const r = await base44.asServiceRole.entities.Contract.filter({ publicSlug: slug });
+          if (r.length > 0 && r[0].publicLinkCode) {
+            return Response.json({ redirectTo: `/ContratoPublico?code=${encodeURIComponent(r[0].publicLinkCode)}` });
+          }
+        }
+      } catch (_) {}
+      return Response.json({ redirectTo: null });
+    }
+
     return Response.json({ error: 'Unknown kind' }, { status: 400 });
   } catch (error) {
     console.error('publicReadContext error:', error);

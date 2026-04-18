@@ -14,6 +14,7 @@ import ExportButtons from '@/components/proposals/ExportButtons';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 import SEGMENT_TO_COMPLIANCE from '@/components/fechamento/segmentComplianceMap';
 import InternationalPaymentsBanner from '@/components/landing/InternationalPaymentsBanner';
+import { canonicalizeSlugUrl } from '@/lib/publicSlug';
 
 const QUESTIONNAIRE_URL = 'https://pagsmilecompliance.base44.app/QuestionarioLeadsPagsmile';
 
@@ -36,6 +37,11 @@ export default function PropostaPadraoPublica() {
     },
     enabled: !!token,
   });
+
+  // Canonicalize URL to /pp/:slug when coming from legacy ?token= link
+  React.useEffect(() => {
+    if (proposta?.publicSlug) canonicalizeSlugUrl('standardProposal', proposta.publicSlug);
+  }, [proposta?.publicSlug]);
 
   if (isLoading) {
     return (

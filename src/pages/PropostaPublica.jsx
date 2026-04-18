@@ -23,6 +23,7 @@ import { useTranslation } from '@/lib/i18n/LanguageContext';
 import InternationalPaymentsBanner from '@/components/landing/InternationalPaymentsBanner';
 import { resolveComplianceModel } from '@/components/compliance/segmentToComplianceV4Map';
 import { getOverridesForPrazo } from '@/lib/overridesUtils';
+import { canonicalizeSlugUrl } from '@/lib/publicSlug';
 
 export default function PropostaPublica() {
   const { t } = useTranslation();
@@ -71,6 +72,11 @@ export default function PropostaPublica() {
     },
     enabled: !!token
   });
+
+  // Canonicalize URL to /p/:slug when coming from legacy ?token= link
+  useEffect(() => {
+    if (proposta?.publicSlug) canonicalizeSlugUrl('proposal', proposta.publicSlug);
+  }, [proposta?.publicSlug]);
 
   // Register view via public backend function (idempotent on server side)
   useEffect(() => {

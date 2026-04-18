@@ -17,6 +17,7 @@ import ContrapropostaModal from '@/components/proposals/ContrapropostaModal';
 import RecusaModal from '@/components/proposals/RecusaModal';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 import { resolvePixComplianceModel } from '@/components/compliance/segmentToComplianceV4Map';
+import { canonicalizeSlugUrl } from '@/lib/publicSlug';
 
 export default function PropostaPixPublica() {
   const { t } = useTranslation();
@@ -38,6 +39,11 @@ export default function PropostaPixPublica() {
     },
     enabled: !!token
   });
+
+  // Canonicalize URL to /pix/:slug when coming from legacy ?token= link
+  useEffect(() => {
+    if (proposta?.publicSlug) canonicalizeSlugUrl('pixProposal', proposta.publicSlug);
+  }, [proposta?.publicSlug]);
 
   // Track view via public function (idempotent on server)
   useEffect(() => {

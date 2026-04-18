@@ -54,6 +54,7 @@ import AnaliseCompleta from './pages/AnaliseCompleta';
 import BulkReprocess from './pages/BulkReprocess';
 import DocumentoKYCKYB from './pages/DocumentoKYCKYB';
 import EscalationsReview from './pages/EscalationsReview';
+import PublicSlugRedirect from './pages/PublicSlugRedirect';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -111,6 +112,11 @@ function isPublicPath(pathname) {
   if (PUBLIC_PATHS.has(pathname)) return true;
   if (pathname.startsWith('/parceiro/')) return true;
   if (pathname.startsWith('/s/')) return true;
+  // Friendly public slug routes for proposals and contracts
+  if (pathname.startsWith('/p/')) return true;
+  if (pathname.startsWith('/pp/')) return true;
+  if (pathname.startsWith('/pix/')) return true;
+  if (pathname.startsWith('/c/')) return true;
   return false;
 }
 
@@ -179,6 +185,12 @@ const PublicRoutes = () => (
 
     {/* Slug redirect — short URLs */}
     <Route path="/s/:slug" element={<LayoutWrapper currentPageName="SlugRedirect"><SlugRedirect /></LayoutWrapper>} />
+
+    {/* Friendly public slug URLs for proposals and contracts */}
+    <Route path="/p/:slug" element={<LayoutWrapper currentPageName="PublicSlugRedirect"><PublicSlugRedirect type="proposal" /></LayoutWrapper>} />
+    <Route path="/pp/:slug" element={<LayoutWrapper currentPageName="PublicSlugRedirect"><PublicSlugRedirect type="standardProposal" /></LayoutWrapper>} />
+    <Route path="/pix/:slug" element={<LayoutWrapper currentPageName="PublicSlugRedirect"><PublicSlugRedirect type="pixProposal" /></LayoutWrapper>} />
+    <Route path="/c/:slug" element={<LayoutWrapper currentPageName="PublicSlugRedirect"><PublicSlugRedirect type="contract" /></LayoutWrapper>} />
   </Routes>
 );
 

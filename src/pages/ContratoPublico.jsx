@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Loader2, FileText, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ConteudoContrato from '@/components/contrato/ConteudoContrato';
+import { canonicalizeSlugUrl } from '@/lib/publicSlug';
 
 export default function ContratoPublico() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -17,6 +18,11 @@ export default function ContratoPublico() {
     },
     enabled: !!code,
   });
+
+  // Canonicalize URL to /c/:slug when coming from legacy ?code= link
+  useEffect(() => {
+    if (contract?.publicSlug) canonicalizeSlugUrl('contract', contract.publicSlug);
+  }, [contract?.publicSlug]);
 
   if (isLoading) {
     return (

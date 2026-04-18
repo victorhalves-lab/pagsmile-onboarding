@@ -10,7 +10,9 @@ export default function AllLinksPanel({ proposals }) {
 
   if (activeProposals.length === 0) return null;
 
-  const buildUrl = (p) => `${window.location.origin}/PropostaPadraoPublica?token=${p.tokenPublico}`;
+  const buildUrl = (p) => p.publicSlug
+    ? `${window.location.origin}/pp/${p.publicSlug}`
+    : `${window.location.origin}/PropostaPadraoPublica?token=${p.tokenPublico}`;
 
   const copyOne = (p) => {
     navigator.clipboard.writeText(buildUrl(p));
