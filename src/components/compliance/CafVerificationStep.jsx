@@ -262,12 +262,7 @@ export default function CafVerificationStep({
         throw new Error('FaceLiveness SDK não carregou corretamente.');
       }
 
-      // Alertar se caiu em fallback — mas continua (documento ainda funciona)
-      if (data.tokenType === 'fallback' || data.canUseFaceAuth === false) {
-        toast.info('Verificação iniciada em modo simplificado. Você poderá enviar selfie manualmente ao final.', { duration: 5000 });
-      } else {
-        toast.success('SDK carregado! Iniciando captura do documento...');
-      }
+      toast.success('SDK carregado! Iniciando captura do documento...');
       setPhase('doc_front');
     } catch (err) {
       console.error('[CAF] Init error:', err);
@@ -489,26 +484,15 @@ export default function CafVerificationStep({
         const CafFaceLivenessSdk = window['CafFaceLiveness'];
         if (!CafFaceLivenessSdk) throw new Error('FaceLiveness SDK não disponível');
 
-        // ── CRÍTICO: Face authentication só se TUDO estiver OK ──
-        //  1) Token é 'session' (não fallback)
-        //  2) canUseFaceAuth=true do backend (person criado na CAF)
-        //  3) Ambos documentos foram persistidos
-        // Se qualquer item falhar → desabilita face auth → prova de vida simples (sem match)
-        // → evita o erro "Face picture match" que a OMEGPAY e outros clientes estavam batendo.
-        const docsOk = savedResults.front && savedResults.back;
-        const canDoFaceAuth = canUseFaceAuth && tokenType === 'session' && docsOk;
-        if (!canDoFaceAuth) {
-          console.warn('[CAF] performFaceAuthentication DISABLED:', {
-            canUseFaceAuth, tokenType, docsOk, reason: 
-              !canUseFaceAuth ? 'backend token fallback' : 
-              tokenType !== 'session' ? 'token fallback' : 'docs not persisted'
-          });
-        }
-
+        // ── performFaceAuthentication SEMPRE false ──
+        // O match facial agora é feito server-side via POST /v1/transactions + peopleFaceAuthenticator
+        // (endpoint que aceita nossas credenciais Bearer). Isso evita o erro "Face picture match"
+        // que era causado pela tentativa do SDK de acessar /v1/persons (exige AWS Sig v4).
+        // O match real rodará em cafFaceMatchTransaction após esta captura.
         await CafFaceLivenessSdk.init(sdkToken, personId, {
           htmlContainerId: 'caf-fl-container',
           language: 'pt_BR',
-          performFaceAuthentication: canDoFaceAuth,
+          performFaceAuthentication: false,
           cameraPreviewFilter: 'classic',
         }, {
           startButton: {
@@ -556,7 +540,42 @@ export default function CafVerificationStep({
         }
 
         setSavedResults(prev => ({ ...prev, liveness: true }));
-        toast.success('Prova de vida concluída e salva com sucesso!');
+
+        // ── Face Match REAL via /v1/transactions (peopleFaceAuthenticator) ──
+        // A selfie foi baixada e armazenada por cafVerifyResult → uploadedImageUrl.
+        // Agora disparamos o match server-side contra a base oficial do CPF (Receita/TSE).
+        const selfieUrl = persistResult?.uploadedImageUrl;
+        if (selfieUrl) {
+          toast.info('Comparando selfie com a base oficial do CPF...', { duration: 3000 });
+          try {
+            const imgRes = await fetch(selfieUrl);
+            const imgBlob = await imgRes.blob();
+            const selfieB64 = await blobToBase64(imgBlob);
+            const matchRes = await base44.functions.invoke('cafFaceMatchTransaction', {
+              onboardingCaseId: onboardingCaseId || '',
+              docLinkToken,
+              selfieBase64: selfieB64,
+            });
+            const matchData = matchRes?.data || {};
+            console.log('[CAF] Face match result:', {
+              status: matchData.status,
+              isMatch: matchData.isMatch,
+              similarity: matchData.similarity,
+            });
+            if (matchData.isMatch) {
+              toast.success('Identidade confirmada!');
+            } else if (matchData.completed) {
+              toast.warning('Verificação concluída — será revisada manualmente.');
+            } else {
+              toast.info('Prova de vida salva. Match facial em processamento.');
+            }
+          } catch (matchErr) {
+            console.warn('[CAF] Face match transaction failed (non-blocking):', matchErr.message);
+          }
+        } else {
+          toast.success('Prova de vida concluída e salva com sucesso!');
+        }
+
         setPhase('done');
       } catch (err) {
         if (cancelled) return;
@@ -804,20 +823,6 @@ export default function CafVerificationStep({
           <Loader2 className="w-10 h-10 animate-spin text-purple-500 mx-auto mb-4" />
           <p className="text-sm font-medium text-[#002443]">Carregando SDK de verificação...</p>
           <p className="text-xs text-[#002443]/50 mt-1">Obtendo token seguro e preparando a câmera.</p>
-        </div>
-      )}
-
-      {/* ── Aviso de modo simplificado (quando token é fallback) ── */}
-      {tokenType === 'fallback' && !canUseFaceAuth && phase !== 'ready' && phase !== 'loading' && phase !== 'error' && (
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-start gap-2">
-          <Shield className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-          <div className="flex-1">
-            <p className="text-xs font-semibold text-blue-900">Verificação em modo simplificado</p>
-            <p className="text-[11px] text-blue-700 mt-0.5">
-              Você vai fazer a captura do documento + prova de vida normalmente. 
-              Ao final, você pode ser redirecionado para enviar uma selfie manualmente — é igualmente seguro.
-            </p>
-          </div>
         </div>
       )}
 
