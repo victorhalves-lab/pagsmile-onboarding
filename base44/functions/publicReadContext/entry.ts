@@ -308,32 +308,56 @@ Deno.serve(async (req) => {
         return matches.sort((a, b) => (b.version || 1) - (a.version || 1))[0];
       };
 
+      // ORPHAN SLUG FALLBACK: if the exact slug isn't found, extract the company
+      // name part (everything before the trailing 4-char suffix) and try to find
+      // the current version of any proposal whose slug starts with the same base.
+      // This rescues links sent to clients whose slug was later rotated (new version
+      // = new slug). Example: "kingpay-3mbr" → base "kingpay" → find current KINGPAY.
+      const findByOrphanBase = async (entityName) => {
+        const m = slug.match(/^(.+)-[a-z0-9]{4}$/i);
+        if (!m) return null;
+        const base = m[1].toLowerCase();
+        if (!base || base.length < 3) return null;
+        try {
+          // Search by slug prefix using regex — matches any slug starting with "base-"
+          const candidates = await base44.asServiceRole.entities[entityName].filter({
+            publicSlug: { $regex: `^${base}-`, $options: 'i' },
+            isCurrentVersion: true,
+          });
+          if (candidates.length > 0) return candidates[0];
+          // Broader fallback: any version with matching base, then resolve to current
+          const anyVer = await base44.asServiceRole.entities[entityName].filter({
+            publicSlug: { $regex: `^${base}-`, $options: 'i' },
+          });
+          if (anyVer.length > 0) return await pickCurrentVersion(entityName, anyVer);
+        } catch (_) {}
+        return null;
+      };
+
       try {
         if (entityType === 'proposal') {
           const r = await base44.asServiceRole.entities.Proposal.filter({ publicSlug: slug });
-          if (r.length > 0) {
-            const picked = await pickCurrentVersion('Proposal', r);
-            if (picked?.tokenPublico) {
-              return Response.json({ redirectTo: `/PropostaPublica?token=${encodeURIComponent(picked.tokenPublico)}` });
-            }
+          const picked = r.length > 0 ? await pickCurrentVersion('Proposal', r) : await findByOrphanBase('Proposal');
+          if (picked?.tokenPublico) {
+            return Response.json({ redirectTo: `/PropostaPublica?token=${encodeURIComponent(picked.tokenPublico)}` });
           }
         } else if (entityType === 'standardProposal') {
           const r = await base44.asServiceRole.entities.StandardProposal.filter({ publicSlug: slug });
-          if (r.length > 0 && r[0].tokenPublico) {
-            return Response.json({ redirectTo: `/PropostaPadraoPublica?token=${encodeURIComponent(r[0].tokenPublico)}` });
+          const picked = r.length > 0 ? r[0] : await findByOrphanBase('StandardProposal');
+          if (picked?.tokenPublico) {
+            return Response.json({ redirectTo: `/PropostaPadraoPublica?token=${encodeURIComponent(picked.tokenPublico)}` });
           }
         } else if (entityType === 'pixProposal') {
           const r = await base44.asServiceRole.entities.PixProposal.filter({ publicSlug: slug });
-          if (r.length > 0) {
-            const picked = await pickCurrentVersion('PixProposal', r);
-            if (picked?.tokenPublico) {
-              return Response.json({ redirectTo: `/PropostaPixPublica?token=${encodeURIComponent(picked.tokenPublico)}` });
-            }
+          const picked = r.length > 0 ? await pickCurrentVersion('PixProposal', r) : await findByOrphanBase('PixProposal');
+          if (picked?.tokenPublico) {
+            return Response.json({ redirectTo: `/PropostaPixPublica?token=${encodeURIComponent(picked.tokenPublico)}` });
           }
         } else if (entityType === 'contract') {
           const r = await base44.asServiceRole.entities.Contract.filter({ publicSlug: slug });
-          if (r.length > 0 && r[0].publicLinkCode) {
-            return Response.json({ redirectTo: `/ContratoPublico?code=${encodeURIComponent(r[0].publicLinkCode)}` });
+          const picked = r.length > 0 ? r[0] : await findByOrphanBase('Contract');
+          if (picked?.publicLinkCode) {
+            return Response.json({ redirectTo: `/ContratoPublico?code=${encodeURIComponent(picked.publicLinkCode)}` });
           }
         }
       } catch (_) {}
