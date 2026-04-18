@@ -180,6 +180,50 @@ Deno.serve(async (req) => {
       return Response.json({ proposal: results[0] || null });
     }
 
+    // ── Proposal by token (resolves to CURRENT version when multiple exist) ──
+    if (kind === 'proposal_by_token') {
+      const { token } = body;
+      if (!token) return Response.json({ error: 'token required' }, { status: 400 });
+      let results = [];
+      try { results = await base44.asServiceRole.entities.Proposal.filter({ tokenPublico: token }); } catch (_) {}
+      if (results.length === 0) return Response.json({ proposal: null });
+      // Multiple matches (legacy token shared across versions): pick current version
+      if (results.length > 1) {
+        const current = results.find(r => r.isCurrentVersion === true);
+        const picked = current || results.sort((a, b) => (b.version || 1) - (a.version || 1))[0];
+        return Response.json({ proposal: picked });
+      }
+      const p = results[0];
+      // If this token belongs to an old version, try to resolve to the current one via rootId
+      if (p.isCurrentVersion === false && p.rootProposalId) {
+        try {
+          const currentByRoot = await base44.asServiceRole.entities.Proposal.filter({ rootProposalId: p.rootProposalId, isCurrentVersion: true });
+          if (currentByRoot.length > 0) return Response.json({ proposal: currentByRoot[0] });
+        } catch (_) {}
+      }
+      if (p.isCurrentVersion === false) {
+        try {
+          const childCurrent = await base44.asServiceRole.entities.Proposal.filter({ rootProposalId: p.id, isCurrentVersion: true });
+          if (childCurrent.length > 0) return Response.json({ proposal: childCurrent[0] });
+        } catch (_) {}
+      }
+      return Response.json({ proposal: p });
+    }
+
+    // ── PixProposal by token ──
+    if (kind === 'pix_proposal_by_token') {
+      const { token } = body;
+      if (!token) return Response.json({ error: 'token required' }, { status: 400 });
+      let results = [];
+      try { results = await base44.asServiceRole.entities.PixProposal.filter({ tokenPublico: token }); } catch (_) {}
+      if (results.length === 0) return Response.json({ proposal: null });
+      if (results.length > 1) {
+        const current = results.find(r => r.isCurrentVersion === true);
+        return Response.json({ proposal: current || results.sort((a, b) => (b.version || 1) - (a.version || 1))[0] });
+      }
+      return Response.json({ proposal: results[0] });
+    }
+
     // ── Resolve public slug → target URL ──
     // Maps friendly URL (/p/:slug, /pp/:slug, /pix/:slug, /c/:slug) to legacy page URL.
     // For versioned proposals (Proposal/PixProposal): always resolves to the CURRENT version's token,

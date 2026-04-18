@@ -30,12 +30,16 @@ export default function PropostaPixPublica() {
   const [showContrapropostaModal, setShowContrapropostaModal] = useState(false);
   const [showRecusaModal, setShowRecusaModal] = useState(false);
 
+  // Public read via backend function (service role, validates token).
   const { data: proposta, isLoading } = useQuery({
     queryKey: ['pix_proposta_publica', token],
     queryFn: async () => {
       if (!token) return null;
-      const results = await base44.entities.PixProposal.filter({ tokenPublico: token });
-      return results[0] || null;
+      const res = await base44.functions.invoke('publicReadContext', {
+        kind: 'pix_proposal_by_token',
+        token,
+      });
+      return res.data?.proposal || null;
     },
     enabled: !!token
   });

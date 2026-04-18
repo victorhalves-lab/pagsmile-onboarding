@@ -36,39 +36,17 @@ export default function PropostaPublica() {
   const [showContrapropostaModal, setShowContrapropostaModal] = useState(false);
   const [showRecusaModal, setShowRecusaModal] = useState(false);
 
+  // Public read via backend function (service role, validates token).
+  // Frontend is anonymous — NO RLS, NO auth, works for any client with the URL.
   const { data: proposta, isLoading, error } = useQuery({
     queryKey: ['proposta_publica', token],
     queryFn: async () => {
       if (!token) return null;
-      const results = await base44.entities.Proposal.filter({ tokenPublico: token });
-      if (!results.length) return null;
-      
-      // If multiple versions share the same token, pick the current version
-      if (results.length > 1) {
-        const current = results.find(r => r.isCurrentVersion === true);
-        if (current) return current;
-        return results.sort((a, b) => (b.version || 1) - (a.version || 1))[0];
-      }
-      
-      const proposal = results[0];
-      
-      if (proposal.isCurrentVersion === false && proposal.rootProposalId) {
-        const currentVersions = await base44.entities.Proposal.filter({ 
-          rootProposalId: proposal.rootProposalId, 
-          isCurrentVersion: true 
-        });
-        if (currentVersions.length > 0) return currentVersions[0];
-      }
-      
-      if (proposal.isCurrentVersion === false) {
-        const childVersions = await base44.entities.Proposal.filter({ 
-          rootProposalId: proposal.id, 
-          isCurrentVersion: true 
-        });
-        if (childVersions.length > 0) return childVersions[0];
-      }
-      
-      return proposal;
+      const res = await base44.functions.invoke('publicReadContext', {
+        kind: 'proposal_by_token',
+        token,
+      });
+      return res.data?.proposal || null;
     },
     enabled: !!token
   });
