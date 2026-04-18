@@ -108,22 +108,14 @@ export default function PropostaPixDetalhes() {
 
   const criarNovaVersao = async () => {
     const seq = String(Math.floor(Math.random() * 99999)).padStart(5, '0');
+    // Each version gets its OWN unique token and slug (auto-generated on create).
+    // All old links remain active — the public resolver always finds the current
+    // version via rootProposalId + isCurrentVersion=true.
     const { id, created_date, updated_date, created_by, tokenPublico, publicSlug, sentDate, acceptedDate, rejectedDate, rejectedReason, counterProposalDetails, ...dataToCopy } = proposta;
     const newVersion = (proposta.version || 1) + 1;
 
-    // Resolve stable token AND stable slug from the ROOT proposal — the public link stays the same across versions.
-    let stableToken = proposta.tokenPublico;
-    let stableSlug = proposta.publicSlug;
-    if (rootId && rootId !== proposta.id) {
-      const rootProposals = await base44.entities.PixProposal.filter({ id: rootId });
-      if (rootProposals[0]?.tokenPublico) stableToken = rootProposals[0].tokenPublico;
-      if (rootProposals[0]?.publicSlug) stableSlug = rootProposals[0].publicSlug;
-    }
-
     const newProposta = {
       ...dataToCopy, codigo: `PIX-${new Date().getFullYear()}-${seq}`, status: 'rascunho',
-      tokenPublico: stableToken,
-      publicSlug: stableSlug, // reuse root slug — keeps /pix/:slug stable across versions
       version: newVersion, previousVersionId: proposta.id, rootProposalId: rootId, isCurrentVersion: true,
     };
     const created = await base44.entities.PixProposal.create(newProposta);

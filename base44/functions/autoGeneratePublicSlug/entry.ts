@@ -62,19 +62,9 @@ Deno.serve(async (req) => {
     if (!entity) return Response.json({ ok: true, skipped: 'not found' });
     if (entity.publicSlug) return Response.json({ ok: true, skipped: 'already has slug' });
 
-    // If this is a new VERSION of an existing proposal (has rootProposalId/previousVersionId),
-    // inherit the slug from the root instead of generating a new one. This keeps the public
-    // link stable across versions (/p/:slug always points to the current version).
-    if (entity.rootProposalId || entity.previousVersionId) {
-      const rootId = entity.rootProposalId || entity.previousVersionId;
-      try {
-        const root = await base44.asServiceRole.entities[event.entity_name].get(rootId);
-        if (root?.publicSlug) {
-          await base44.asServiceRole.entities[event.entity_name].update(event.entity_id, { publicSlug: root.publicSlug });
-          return Response.json({ ok: true, slug: root.publicSlug, inherited: true });
-        }
-      } catch (_) { /* fall through to generate new slug */ }
-    }
+    // RULE: Every proposal version gets its OWN unique slug. All old links remain
+    // active because the public resolver (publicReadContext: resolve_public_slug)
+    // always follows rootProposalId → isCurrentVersion=true to render the latest data.
 
     const nameField = NAME_FIELD[event.entity_name];
     const slug = generateSlug(entity[nameField] || '');

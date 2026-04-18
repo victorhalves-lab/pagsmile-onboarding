@@ -89,24 +89,16 @@ export default function PropostaDetalhes() {
   const criarNovaVersao = async () => {
     const year = new Date().getFullYear();
     const seq = String(Math.floor(Math.random() * 99999)).padStart(5, '0');
-    const { id, created_date, updated_date, created_by, publicLinkCode, publicSlug, sentDate, acceptedDate, rejectedDate, rejectedReason, counterProposalDetails, ...dataToCopy } = proposta;
+    // Each version gets its OWN unique token and slug (auto-generated on create).
+    // All old links remain active — the public resolver always finds the current
+    // version via rootProposalId + isCurrentVersion=true.
+    const { id, created_date, updated_date, created_by, tokenPublico, publicLinkCode, publicSlug, sentDate, acceptedDate, rejectedDate, rejectedReason, counterProposalDetails, ...dataToCopy } = proposta;
     const newVersion = (proposta.version || 1) + 1;
-
-    // Resolve stable token AND stable slug from the ROOT proposal — the public link stays the same across versions.
-    let stableToken = proposta.tokenPublico;
-    let stableSlug = proposta.publicSlug;
-    if (rootId && rootId !== proposta.id) {
-      const rootProposals = await base44.entities.Proposal.filter({ id: rootId });
-      if (rootProposals[0]?.tokenPublico) stableToken = rootProposals[0].tokenPublico;
-      if (rootProposals[0]?.publicSlug) stableSlug = rootProposals[0].publicSlug;
-    }
 
     const newProposta = {
       ...dataToCopy,
       codigo: `PROP-${year}-${seq}`,
       status: 'rascunho',
-      tokenPublico: stableToken,
-      publicSlug: stableSlug, // reuse root slug — keeps /p/:slug stable across versions
       version: newVersion,
       previousVersionId: proposta.id,
       rootProposalId: rootId,
