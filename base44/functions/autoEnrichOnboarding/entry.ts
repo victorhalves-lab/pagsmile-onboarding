@@ -30,6 +30,10 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
  * - Subfaixa 5 = Recusado (bloqueios V4 ativos)
  */
 
+function hasObjectiveBlocksEarly(caseObj) {
+  return Array.isArray(caseObj?.bloqueiosAtivos) && caseObj.bloqueiosAtivos.length > 0;
+}
+
 Deno.serve(async (req) => {
   const startTime = Date.now();
 
@@ -470,29 +474,75 @@ Deno.serve(async (req) => {
         finalStatus = v4Decision.status;
         autoDecisionApplied = v4Decision.isAuto;
 
-        // ═══ CAF FRAUD CHECK — única exceção que pode mudar decisão ═══
-        // Dados biométricos/documentais CAF são OBJETIVOS — fraude confirmada = manual obrigatório
-        let cafFraudDetected = false;
+        // ═══ CAF FRAUD CHECK — v8 INTELLIGENT CLASSIFICATION ═══
+        // Separa "fraude confirmada" (score baixo ou deepfake) de "problema de qualidade" (score zona cinza)
+        // Aplica hierarquia por subfaixa: 1A/1B/2A precisam 2 sinais, outros bastam 1
         const cafLogs = await base44.asServiceRole.entities.IntegrationLog.filter({ onboarding_case_id: caseId });
+
+        const BINARY_FRAUD_SERVICES = new Set(['deepfake_detection']);
+        const QUALITY_SCORED_SERVICES = new Set(['liveness', 'face_liveness', 'face_authentication', 'documentscopy', 'document_liveness']);
+        const FRAUD_SCORE_THRESHOLDS = { liveness: 40, face_liveness: 40, face_authentication: 40, documentscopy: 30, document_liveness: 30 };
+        const QUALITY_ZONE_MAX = 70;
+        const LOW_RISK_SUBFAIXAS = new Set(['1A', '1B', '2A']);
+
+        const confirmedFrauds = [];
+        const qualityIssues = [];
+
         for (const log of cafLogs) {
           if (log.provider !== 'CAF') continue;
           const svc = log.service_type || '';
           const result = log.result_status || '';
-          if ((svc === 'liveness' || svc === 'face_liveness' || svc === 'deepfake_detection') && result === 'REPROVED') {
-            cafFraudDetected = true;
+          if (result !== 'REPROVED') continue;
+          const score = typeof log.score === 'number' ? log.score : null;
+
+          if (BINARY_FRAUD_SERVICES.has(svc)) {
+            confirmedFrauds.push({ svc, score, reason: `${svc} REPROVED — fraude binária` });
+            continue;
           }
-          if (svc === 'documentscopy' && result === 'REPROVED') {
-            cafFraudDetected = true;
+          if (QUALITY_SCORED_SERVICES.has(svc)) {
+            const threshold = FRAUD_SCORE_THRESHOLDS[svc] ?? 40;
+            if (score == null) {
+              qualityIssues.push({ svc, score, reason: `${svc} REPROVED sem score — ambíguo` });
+            } else if (score < threshold) {
+              confirmedFrauds.push({ svc, score, reason: `${svc} score ${score} (< ${threshold})` });
+            } else if (score <= QUALITY_ZONE_MAX) {
+              qualityIssues.push({ svc, score, reason: `${svc} score ${score} (zona cinza ${threshold}–${QUALITY_ZONE_MAX})` });
+            } else {
+              qualityIssues.push({ svc, score, reason: `${svc} score ${score} (próximo do corte)` });
+            }
+          } else {
+            qualityIssues.push({ svc, score, reason: `${svc} REPROVED — serviço não mapeado` });
           }
         }
+
+        const uniqueConfirmedServices = new Set(confirmedFrauds.map(f => f.svc));
+        const requiredSignals = LOW_RISK_SUBFAIXAS.has(subfaixa) ? 2 : 1;
+        const cafFraudDetected = uniqueConfirmedServices.size >= requiredSignals;
+        const recaptureRecommended = !cafFraudDetected && qualityIssues.length > 0 && (freshCase.cafRecaptureAttempts || 0) < 2;
+
+        let escalationReason = null;
+        let escalationSource = 'NONE';
+
         if (cafFraudDetected && finalDecision !== 'Recusado') {
+          escalationReason = `${uniqueConfirmedServices.size} sinal(is) CAF confirmado(s) em ${[...uniqueConfirmedServices].join(', ')} — limite para subfaixa ${subfaixa} é ${requiredSignals}. Detalhes: ${confirmedFrauds.map(f => f.reason).join('; ')}`;
+          escalationSource = 'CAF_FRAUD';
           finalDecision = 'Revisão Manual';
           finalStatus = 'Manual';
           autoDecisionApplied = false;
-          console.log(`[AutoEnrich] Step 4: CAF FRAUD DETECTED — overriding to Revisão Manual`);
+          console.log(`[AutoEnrich] Step 4: CAF FRAUD CONFIRMED (${uniqueConfirmedServices.size}/${requiredSignals} signals) — overriding to Revisão Manual`);
+        } else if (recaptureRecommended) {
+          // Low-quality CAF but not enough confirmed frauds — request recapture instead of escalating
+          escalationReason = `Qualidade CAF insuficiente: ${qualityIssues.map(q => q.reason).join('; ')}. Recaptura solicitada antes de escalar.`;
+          escalationSource = 'CAF_QUALITY';
+          console.log(`[AutoEnrich] Step 4: CAF QUALITY ISSUE — keeping V4 decision, requesting recapture`);
+        } else if (hasObjectiveBlocksEarly(freshCase)) {
+          escalationSource = 'V4_BLOCK';
+        } else if (subfaixa === '4') {
+          escalationSource = 'V4_SUBFAIXA_4';
+          escalationReason = `Subfaixa 4 — Score V4=${v4Score} exige revisão humana por padrão do framework.`;
         }
 
-        console.log(`[AutoEnrich] Step 4: DETERMINISTIC DECISION="${finalDecision}" (subfaixa=${subfaixa}, v4Score=${v4Score}, cafFraud=${cafFraudDetected})`);
+        console.log(`[AutoEnrich] Step 4: DETERMINISTIC DECISION="${finalDecision}" (subfaixa=${subfaixa}, v4Score=${v4Score}, confirmedFrauds=${uniqueConfirmedServices.size}, qualityIssues=${qualityIssues.length}, recapture=${recaptureRecommended})`);
 
         // ═══ MERGE RED FLAGS (informativo apenas — não afeta decisão) ═══
         const v4RedFlags = (freshCase.redFlags || []).map(f => f.startsWith('V4:') || f.startsWith('SENTINEL:') || f.startsWith('CAF:') ? f : `V4: ${f}`);
@@ -511,7 +561,14 @@ Deno.serve(async (req) => {
           redFlags: mergedRedFlags,
           validationsCompleted: true,
           finalDecisionDate: new Date().toISOString(),
+          escalationSource,
+          escalationReason: escalationReason || '',
         };
+        if (recaptureRecommended) {
+          updateData.cafRecaptureRequested = true;
+          updateData.cafRecaptureReason = qualityIssues.map(q => q.reason).join('; ');
+          updateData.cafRecaptureRequestedAt = new Date().toISOString();
+        }
         await base44.asServiceRole.entities.OnboardingCase.update(caseId, updateData);
 
         // ═══ UPDATE COMPLIANCE SCORE ═══
@@ -542,7 +599,12 @@ Deno.serve(async (req) => {
           finalDecision = 'Revisão Manual';
           finalStatus = 'Manual';
           autoDecisionApplied = false;
-          await base44.asServiceRole.entities.OnboardingCase.update(caseId, { status: 'Manual', iaDecision: 'Revisão Manual' });
+          await base44.asServiceRole.entities.OnboardingCase.update(caseId, {
+            status: 'Manual',
+            iaDecision: 'Revisão Manual',
+            escalationSource: 'SAFETY_NET',
+            escalationReason: 'Rebaixamento automático: decisão "Recusado" sem bloqueio V4 nem fraude CAF confirmada. Casos assim devem passar por análise humana.',
+          });
           if (latestScore) {
             await base44.asServiceRole.entities.ComplianceScore.update(latestScore.id, { recomendacao_final: 'Revisão Manual' });
           }

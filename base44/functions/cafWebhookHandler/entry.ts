@@ -391,7 +391,19 @@ Deno.serve(async (req) => {
           if (cafStatus === 'APPROVED' && !cases[0].cafCompleted) updates.cafCompleted = true;
           if (cafStatus === 'REPROVED') updates.cafCompleted = true;
 
+          // v8: Webhook only persists the raw CAF decision + flags — the intelligent
+          // escalation hierarchy (score thresholds, subfaixa rules) is recomputed by
+          // autoEnrichOnboarding on the next pipeline run. This keeps a single source
+          // of truth and avoids divergent logic between webhook and batch pipeline.
           await base44.asServiceRole.entities.OnboardingCase.update(onboardingCaseId, updates);
+
+          // Trigger pipeline rerun so intelligent classifier re-evaluates with the new CAF data
+          try {
+            await base44.asServiceRole.functions.invoke('autoEnrichOnboarding', { onboardingCaseId });
+            console.log(`[CAF-Webhook] Pipeline rerun triggered for case ${onboardingCaseId}`);
+          } catch (pipeErr) {
+            console.warn(`[CAF-Webhook] Pipeline rerun failed (non-blocking): ${pipeErr.message}`);
+          }
         }
       } catch (e) { console.warn('[CAF-Webhook] Case update error:', e.message); }
     } else if (onboardingCaseId && cafStatus === 'APPROVED') {

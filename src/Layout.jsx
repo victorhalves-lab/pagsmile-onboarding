@@ -32,7 +32,8 @@ import {
   BarChart3,
   Presentation,
   Database,
-  RotateCcw
+  RotateCcw,
+  AlertTriangle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -127,6 +128,7 @@ export default function Layout({ children, currentPageName }) {
         { label: t('menu.subaccount_links'), path: 'GerenciarSubsellerLinks', icon: Users },
         { label: 'Risk Scoring', path: 'RiskScoringV4', icon: Shield },
         { label: 'Risk Scoring Subcontas', path: 'RiskScoringSubcontas', icon: Shield },
+        { label: 'Escalações Questionáveis', path: 'EscalationsReview', icon: AlertTriangle, highlight: true },
         { label: 'Reprocessar Compliance', path: 'BulkReprocess', icon: RotateCcw },
         { label: 'Documento KYC/KYB', path: 'DocumentoKYCKYB', icon: FileText },
       ]

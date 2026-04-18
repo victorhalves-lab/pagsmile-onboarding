@@ -178,6 +178,41 @@
     "docLinkToken": {
       "type": "string",
       "description": "Token de seguran\u00e7a para link p\u00fablico de upload de documentos + CAF"
+    },
+    "cafRecaptureRequested": {
+      "type": "boolean",
+      "default": false,
+      "description": "Indica se uma nova captura CAF (selfie/documento) foi solicitada ao cliente devido a baixa qualidade da primeira tentativa."
+    },
+    "cafRecaptureReason": {
+      "type": "string",
+      "description": "Motivo leg\u00edvel da solicita\u00e7\u00e3o de recaptura (ex: 'liveness com score 58 \u2014 selfie pouco n\u00edtida')."
+    },
+    "cafRecaptureRequestedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data da solicita\u00e7\u00e3o de recaptura."
+    },
+    "cafRecaptureAttempts": {
+      "type": "number",
+      "default": 0,
+      "description": "N\u00famero de tentativas de recaptura j\u00e1 realizadas."
+    },
+    "escalationReason": {
+      "type": "string",
+      "description": "Motivo t\u00e9cnico da escala\u00e7\u00e3o para Revis\u00e3o Manual (ex: 'CAF liveness REPROVED score 58; recapture falhou')."
+    },
+    "escalationSource": {
+      "type": "string",
+      "enum": [
+        "V4_BLOCK",
+        "V4_SUBFAIXA_4",
+        "CAF_FRAUD",
+        "CAF_QUALITY",
+        "SAFETY_NET",
+        "NONE"
+      ],
+      "description": "Origem t\u00e9cnica da escala\u00e7\u00e3o."
     }
   },
   "required": [
@@ -185,11 +220,7 @@
     "questionnaireTemplateId"
   ],
   "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
+    "create": true,
     "read": {
       "user_condition": {
         "role": "admin"

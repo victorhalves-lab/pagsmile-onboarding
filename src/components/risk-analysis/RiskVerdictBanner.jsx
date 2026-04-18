@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 import EscalationPointsList from './EscalationPointsList';
+import EscalationReasonBanner from './EscalationReasonBanner';
 
 const DECISION_CONFIG = {
   'Aprovado': { bg: 'bg-emerald-900', border: 'border-emerald-700', icon: CheckCircle2, iconColor: 'text-emerald-300', label: 'APROVADO', sublabel: 'Dados objetivos (BDC + CAF) não identificaram riscos impeditivos. Aprovação automática.' },
@@ -263,6 +264,9 @@ export default function RiskVerdictBanner({ onboardingCase, complianceScore }) {
               sentinelRecommendation={sentinelRecommendation}
               bloqueios={bloqueios}
             />
+
+            {/* Technical reason for escalation (new v8 — prevents analyst guesswork) */}
+            <EscalationReasonBanner onboardingCase={onboardingCase} />
 
             {/* Numbered list of escalation points — extracted from red_flags/pontos_atencao */}
             <EscalationPointsList
