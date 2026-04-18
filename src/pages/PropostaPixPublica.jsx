@@ -39,42 +39,38 @@ export default function PropostaPixPublica() {
     enabled: !!token
   });
 
-  // Track view
+  // Track view via public function (idempotent on server)
   useEffect(() => {
     if (proposta && proposta.status === 'enviada') {
       const viewKey = `pix_proposta_viewed_${proposta.id}`;
       if (sessionStorage.getItem(viewKey)) return;
       sessionStorage.setItem(viewKey, '1');
-      base44.entities.PixProposal.update(proposta.id, { status: 'visualizada' });
-      if (proposta.leadId) {
-        base44.entities.LeadActivity.create({
-          leadId: proposta.leadId, activityType: 'proposta_visualizada',
-          description: `Proposta PIX ${proposta.codigo} visualizada pelo cliente`,
-          performedBy: 'cliente', activityDate: new Date().toISOString()
-        });
-      }
+      base44.functions.invoke('publicProposalAction', {
+        token, type: 'pix_proposal', action: 'view',
+      }).catch(() => {});
     }
   }, [proposta?.id]);
 
+  // Helper: fetch lead (via public function) for compliance model
+  const fetchLeadForCompliance = async (leadId) => {
+    if (!leadId) return null;
+    try {
+      const res = await base44.functions.invoke('publicReadData', { kind: 'lead_by_id', leadId });
+      return res.data?.lead || null;
+    } catch { return null; }
+  };
+
   const aceitarMutation = useMutation({
     mutationFn: async () => {
-      await base44.entities.PixProposal.update(proposta.id, { status: 'aceita', acceptedDate: new Date().toISOString() });
-
-      // Fetch lead to resolve PIX compliance model (merchant vs intermediario)
-      let lead = null;
-      if (proposta.leadId) {
-        await base44.entities.Lead.update(proposta.leadId, { status: 'proposta_aceita', lastInteractionDate: new Date().toISOString() });
-        const leads = await base44.entities.Lead.filter({ id: proposta.leadId });
-        lead = leads[0];
-      }
-      await base44.entities.LeadActivity.create({
-        leadId: proposta.leadId || '', activityType: 'proposta_aceita',
-        description: `Proposta PIX ${proposta.codigo} aceita pelo cliente`,
-        performedBy: 'cliente', activityDate: new Date().toISOString()
+      const res = await base44.functions.invoke('publicProposalAction', {
+        token, type: 'pix_proposal', action: 'accept',
       });
+      if (res.data?.error) throw new Error(res.data.error);
+
+      const lead = await fetchLeadForCompliance(proposta.leadId);
+
       base44.analytics.track({ eventName: 'pix_proposta_aceita', properties: { proposal_id: proposta.id, proposal_code: proposta.codigo || '', client_name: proposta.clienteNome || '', success: true } });
 
-      // Redirect to PIX compliance V4 questionnaire
       let complianceUrl = null;
       if (proposta.leadId) {
         const keysToClean = ['compliance_session_token', 'compliance_data_pix', 'compliance_data_pix_merchant_v4', 'compliance_data_pix_intermediario_v4'];
@@ -95,41 +91,36 @@ export default function PropostaPixPublica() {
 
   const contrapropostaMutation = useMutation({
     mutationFn: async (data) => {
-      await base44.entities.PixProposal.update(proposta.id, { status: 'contraproposta', counterProposalDetails: data });
-      await base44.entities.LeadActivity.create({ leadId: proposta.leadId || '', activityType: 'proposta_contraproposta', description: `Contraproposta PIX recebida para ${proposta.codigo}`, performedBy: 'cliente', activityDate: new Date().toISOString() });
-      if (proposta.leadId) { await base44.entities.Lead.update(proposta.leadId, { status: 'em_contato_comercial', lastInteractionDate: new Date().toISOString() }); }
+      const res = await base44.functions.invoke('publicProposalAction', {
+        token, type: 'pix_proposal', action: 'counter', payload: { details: data },
+      });
+      if (res.data?.error) throw new Error(res.data.error);
     },
     onSuccess: () => { toast.success(t('pp.counter_sent_success')); queryClient.invalidateQueries({ queryKey: ['pix_proposta_publica', token] }); setShowContrapropostaModal(false); }
   });
 
   const recusarMutation = useMutation({
     mutationFn: async (data) => {
-      await base44.entities.PixProposal.update(proposta.id, { status: 'recusada', rejectedDate: new Date().toISOString(), rejectedReason: `${data.motivo}${data.detalhe ? `: ${data.detalhe}` : ''}` });
-      await base44.entities.LeadActivity.create({ leadId: proposta.leadId || '', activityType: 'proposta_recusada', description: `Proposta PIX ${proposta.codigo} recusada: ${data.motivo}`, performedBy: 'cliente', activityDate: new Date().toISOString() });
-      if (proposta.leadId) { await base44.entities.Lead.update(proposta.leadId, { status: 'proposta_recusada', lastInteractionDate: new Date().toISOString() }); }
+      const res = await base44.functions.invoke('publicProposalAction', {
+        token, type: 'pix_proposal', action: 'reject', payload: { motivo: data.motivo, detalhe: data.detalhe },
+      });
+      if (res.data?.error) throw new Error(res.data.error);
     },
     onSuccess: () => { toast.success(t('pp.proposal_rejected')); queryClient.invalidateQueries({ queryKey: ['pix_proposta_publica', token] }); setShowRecusaModal(false); }
   });
 
-  // Fetch lead to resolve PIX compliance model for the "already accepted" banner
+  // Fetch lead (via public function) to resolve compliance model for the "already accepted" banner
   const { data: leadForBanner } = useQuery({
     queryKey: ['pix_proposta_lead', proposta?.leadId],
-    queryFn: async () => {
-      const leads = await base44.entities.Lead.filter({ id: proposta.leadId });
-      return leads[0] || null;
-    },
+    queryFn: async () => fetchLeadForCompliance(proposta.leadId),
     enabled: !!proposta?.leadId && proposta?.status === 'aceita',
   });
 
   if (isLoading) return <div className="max-w-4xl mx-auto py-12 px-4 space-y-6"><Skeleton className="h-20 w-full rounded-xl" /><Skeleton className="h-12 w-3/4" /><Skeleton className="h-96 w-full rounded-xl" /></div>;
   if (!proposta) return <div className="max-w-lg mx-auto py-20 text-center"><AlertTriangle className="w-16 h-16 mx-auto text-amber-500 mb-4" /><h1 className="text-2xl font-bold text-[#002443] mb-2">{t('pp.not_found_title')}</h1><p className="text-[#002443]/60">{t('pp.not_found_desc')}</p></div>;
 
-  // Expired check (show proposal content but disable actions)
   const isExpired = proposta.status === 'expirada' || (proposta.validUntil && new Date(proposta.validUntil) < new Date() && !['aceita', 'recusada', 'contraproposta'].includes(proposta.status));
-
   const isAlreadyResponded = ['aceita', 'recusada'].includes(proposta.status);
-
-
 
   const pixComplianceModel = resolvePixComplianceModel(leadForBanner);
   const pixComplianceUrl = (proposta?.status === 'aceita' && proposta?.leadId)
@@ -139,21 +130,17 @@ export default function PropostaPixPublica() {
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4" ref={contentRef}>
-      {/* Expired Banner */}
       {isExpired && (
         <div className="rounded-2xl p-6 mb-6 text-center bg-amber-50 border border-amber-200">
           <div className="flex items-center justify-center gap-3 mb-2">
             <Clock className="w-8 h-8 text-amber-500" />
             <h2 className="text-xl font-bold text-amber-800">{t('pp.expired_title')}</h2>
           </div>
-          <p className="text-sm text-amber-600">
-            {t('pp.expired_desc', { date: moment(proposta.validUntil).format('DD/MM/YYYY') })}
-          </p>
+          <p className="text-sm text-amber-600">{t('pp.expired_desc', { date: moment(proposta.validUntil).format('DD/MM/YYYY') })}</p>
           <p className="text-xs text-amber-500 mt-2">{t('pp.expired_contact')}</p>
         </div>
       )}
 
-      {/* Status Banner */}
       {isAlreadyResponded && (
         <div className={`rounded-2xl p-6 mb-6 text-center ${proposta.status === 'aceita' ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
           <div className="flex items-center justify-center gap-3 mb-2">
@@ -182,7 +169,6 @@ export default function PropostaPixPublica() {
         </div>
       )}
 
-      {/* Hero Header */}
       <div className="relative overflow-hidden bg-[#002443] rounded-3xl p-8 md:p-12 mb-8 text-center shadow-xl">
         <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#2bc196 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
         <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#2bc196] rounded-full blur-3xl opacity-20 pointer-events-none" />
@@ -194,11 +180,9 @@ export default function PropostaPixPublica() {
           <p className="text-white/80 text-base md:text-lg max-w-lg mx-auto">
             {t('pp.prepared_for')} <span className="font-bold text-white">{proposta.clienteNome}</span>
           </p>
-
         </div>
       </div>
 
-      {/* Client & Validity */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <Card className="border-[#2bc196]/20 bg-[#2bc196]/5">
           <CardContent className="py-4">
@@ -217,7 +201,6 @@ export default function PropostaPixPublica() {
         </Card>
       </div>
 
-      {/* PIX Rate Card */}
       <Card className="mb-6 border-[#2bc196]/30 bg-gradient-to-r from-[#2bc196]/5 to-transparent">
         <CardContent className="py-8">
           <div className="flex items-center justify-center gap-3 mb-6">
@@ -237,7 +220,6 @@ export default function PropostaPixPublica() {
         </CardContent>
       </Card>
 
-      {/* TPV Mínimo — na proposta PIX, o mínimo garantido não é de cartão, é geral */}
       {rates.minimoGarantido && (parseFloat(rates.minimoGarantido.mes1) > 0 || parseFloat(rates.minimoGarantido.mes2) > 0 || parseFloat(rates.minimoGarantido.mes3) > 0) && (
         <Card className="mb-6 bg-slate-50 border-slate-200">
           <CardContent className="py-4">
@@ -262,7 +244,6 @@ export default function PropostaPixPublica() {
         </Card>
       )}
 
-      {/* Action Bar */}
       {['enviada', 'visualizada'].includes(proposta.status) && !isAlreadyResponded && !isExpired && (
         <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-md border-t border-slate-200 z-50 md:relative md:bg-transparent md:backdrop-blur-none md:border-none md:p-0 flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4 md:mb-8 shadow-[0_-10px_40px_rgba(0,36,67,0.08)] md:shadow-none pb-safe">
           <Button onClick={() => setShowAceiteModal(true)} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-10 h-14 rounded-2xl text-lg font-bold w-full md:w-auto shadow-lg shadow-[#2bc196]/20 transition-transform hover:scale-105">
@@ -287,13 +268,10 @@ export default function PropostaPixPublica() {
         </div>
       )}
 
-      {/* Footer */}
       <div className="text-center text-xs text-[#002443]/30 py-4 border-t border-slate-200">
         <p>&copy; {new Date().getFullYear()} Pagsmile. Proposta {proposta.codigo}</p>
-
       </div>
 
-      {/* Modals */}
       <AceiteModal open={showAceiteModal} onClose={() => setShowAceiteModal(false)} onConfirm={() => aceitarMutation.mutate()} isPending={aceitarMutation.isPending} />
       <ContrapropostaModal open={showContrapropostaModal} onClose={() => setShowContrapropostaModal(false)} proposta={proposta} onSubmit={(data) => contrapropostaMutation.mutate(data)} isPending={contrapropostaMutation.isPending} />
       <RecusaModal open={showRecusaModal} onClose={() => setShowRecusaModal(false)} onSubmit={(data) => recusarMutation.mutate(data)} isPending={recusarMutation.isPending} />

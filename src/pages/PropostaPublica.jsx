@@ -46,13 +46,11 @@ export default function PropostaPublica() {
       if (results.length > 1) {
         const current = results.find(r => r.isCurrentVersion === true);
         if (current) return current;
-        // Fallback: pick the one with highest version number
         return results.sort((a, b) => (b.version || 1) - (a.version || 1))[0];
       }
       
       const proposal = results[0];
       
-      // If this proposal is NOT the current version, find the current one via rootProposalId
       if (proposal.isCurrentVersion === false && proposal.rootProposalId) {
         const currentVersions = await base44.entities.Proposal.filter({ 
           rootProposalId: proposal.rootProposalId, 
@@ -61,7 +59,6 @@ export default function PropostaPublica() {
         if (currentVersions.length > 0) return currentVersions[0];
       }
       
-      // If this is the root and not current, find the latest version pointing to it
       if (proposal.isCurrentVersion === false) {
         const childVersions = await base44.entities.Proposal.filter({ 
           rootProposalId: proposal.id, 
@@ -75,46 +72,52 @@ export default function PropostaPublica() {
     enabled: !!token
   });
 
-  // Register view when loaded + track in LeadActivity (idempotent)
+  // Register view via public backend function (idempotent on server side)
   useEffect(() => {
     if (proposta && proposta.status === 'enviada') {
       const viewKey = `proposta_viewed_${proposta.id}`;
       if (sessionStorage.getItem(viewKey)) return;
       sessionStorage.setItem(viewKey, '1');
 
-      base44.entities.Proposal.update(proposta.id, {
-        status: 'visualizada',
-      });
-      if (proposta.leadId) {
-        base44.entities.LeadActivity.create({
-          leadId: proposta.leadId,
-          activityType: 'proposta_visualizada',
-          description: `Proposta ${proposta.codigo} visualizada pelo cliente`,
-          performedBy: 'cliente',
-          activityDate: new Date().toISOString()
-        });
-      }
+      base44.functions.invoke('publicProposalAction', {
+        token,
+        type: 'proposal',
+        action: 'view',
+      }).catch(() => {}); // non-blocking
     }
   }, [proposta?.id]);
 
-  // Mutations
+  // Helper: fetch lead (via public function) to resolve compliance model
+  const fetchLeadForCompliance = async (leadId) => {
+    if (!leadId) return null;
+    try {
+      const res = await base44.functions.invoke('publicReadData', {
+        kind: 'lead_by_id',
+        leadId,
+      });
+      return res.data?.lead || null;
+    } catch {
+      return null;
+    }
+  };
+
+  // Mutations — all go through publicProposalAction (server-side service role)
   const aceitarMutation = useMutation({
     mutationFn: async () => {
-      let complianceUrl = null;
-      let lead = null;
-      if (proposta.leadId) {
-        const leads = await base44.entities.Lead.filter({ id: proposta.leadId });
-        lead = leads[0];
-      }
+      const res = await base44.functions.invoke('publicProposalAction', {
+        token,
+        type: 'proposal',
+        action: 'accept',
+      });
+      if (res.data?.error) throw new Error(res.data.error);
 
-      // Resolve compliance model V4:
-      // A proposta.businessSubCategory tem PRIORIDADE sobre o lead/questionário,
-      // pois o comercial pode ter ajustado o segmento na geração da proposta.
+      const lead = await fetchLeadForCompliance(proposta.leadId);
+
+      // Proposta tem prioridade sobre o lead pois comercial pode ter ajustado o segmento
       const model = proposta.businessSubCategory
         ? resolveComplianceModel({ businessSubCategory: proposta.businessSubCategory })
         : resolveComplianceModel(lead || {});
 
-      // Limpar dados residuais antes de redirecionar
       const keysToClean = [
         'compliance_session_token',
         'compliance_data_merchant', 'compliance_data_gateway', 'compliance_data_marketplace',
@@ -125,28 +128,7 @@ export default function PropostaPublica() {
       if (proposta.leadId) {
         localStorage.setItem('lead_id_for_compliance', proposta.leadId);
       }
-      complianceUrl = `${window.location.origin}/ComplianceDinamico?model=${model}&leadId=${proposta.leadId || ''}`;
-
-      if (proposta.leadId) {
-        const leadUpdate = {
-          status: 'proposta_aceita',
-          lastInteractionDate: new Date().toISOString()
-        };
-        await base44.entities.Lead.update(proposta.leadId, leadUpdate);
-      }
-
-      await base44.entities.Proposal.update(proposta.id, {
-        status: 'aceita',
-        acceptedDate: new Date().toISOString(),
-      });
-
-      await base44.entities.LeadActivity.create({
-        leadId: proposta.leadId || '',
-        activityType: 'proposta_aceita',
-        description: `Proposta ${proposta.codigo} aceita pelo cliente`,
-        performedBy: 'cliente',
-        activityDate: new Date().toISOString()
-      });
+      const complianceUrl = `${window.location.origin}/ComplianceDinamico?model=${model}&leadId=${proposta.leadId || ''}`;
 
       base44.analytics.track({
         eventName: 'proposta_aceita',
@@ -166,7 +148,6 @@ export default function PropostaPublica() {
       queryClient.invalidateQueries({ queryKey: ['proposta_publica', token] });
       setShowAceiteModal(false);
       
-      // Redirect to compliance questionnaire after a brief delay
       if (complianceUrl) {
         setTimeout(() => {
           window.location.href = complianceUrl;
@@ -177,18 +158,13 @@ export default function PropostaPublica() {
 
   const contrapropostaMutation = useMutation({
     mutationFn: async (data) => {
-      await base44.entities.Proposal.update(proposta.id, {
-        status: 'contraproposta',
-        counterProposalDetails: data,
+      const res = await base44.functions.invoke('publicProposalAction', {
+        token,
+        type: 'proposal',
+        action: 'counter',
+        payload: { details: data },
       });
-
-      await base44.entities.LeadActivity.create({
-        leadId: proposta.leadId || '',
-        activityType: 'proposta_contraproposta',
-        description: `Contraproposta recebida para ${proposta.codigo}`,
-        performedBy: 'cliente',
-        activityDate: new Date().toISOString()
-      });
+      if (res.data?.error) throw new Error(res.data.error);
 
       base44.analytics.track({
         eventName: 'proposta_contraproposta',
@@ -199,13 +175,6 @@ export default function PropostaPublica() {
           success: true
         }
       });
-
-      if (proposta.leadId) {
-        await base44.entities.Lead.update(proposta.leadId, {
-          status: 'em_contato_comercial',
-          lastInteractionDate: new Date().toISOString()
-        });
-      }
     },
     onSuccess: () => {
       toast.success(t('pp.counter_sent_success'));
@@ -216,19 +185,13 @@ export default function PropostaPublica() {
 
   const recusarMutation = useMutation({
     mutationFn: async (data) => {
-      await base44.entities.Proposal.update(proposta.id, {
-        status: 'recusada',
-        rejectedDate: new Date().toISOString(),
-        rejectedReason: `${data.motivo}${data.detalhe ? `: ${data.detalhe}` : ''}`,
+      const res = await base44.functions.invoke('publicProposalAction', {
+        token,
+        type: 'proposal',
+        action: 'reject',
+        payload: { motivo: data.motivo, detalhe: data.detalhe },
       });
-
-      await base44.entities.LeadActivity.create({
-        leadId: proposta.leadId || '',
-        activityType: 'proposta_recusada',
-        description: `Proposta ${proposta.codigo} recusada: ${data.motivo}`,
-        performedBy: 'cliente',
-        activityDate: new Date().toISOString()
-      });
+      if (res.data?.error) throw new Error(res.data.error);
 
       base44.analytics.track({
         eventName: 'proposta_recusada',
@@ -240,13 +203,6 @@ export default function PropostaPublica() {
           success: true
         }
       });
-
-      if (proposta.leadId) {
-        await base44.entities.Lead.update(proposta.leadId, {
-          status: 'proposta_recusada',
-          lastInteractionDate: new Date().toISOString()
-        });
-      }
     },
     onSuccess: () => {
       toast.success(t('pp.proposal_rejected'));
@@ -277,14 +233,12 @@ export default function PropostaPublica() {
     );
   }
 
-  // Expired check (show proposal content but disable actions)
+  // Expired check
   const isExpired = proposta.status === 'expirada' || (proposta.validUntil && new Date(proposta.validUntil) < new Date() && !['aceita', 'recusada', 'contraproposta'].includes(proposta.status));
 
-  // Already responded — show banner + full proposal
   const isAlreadyResponded = ['aceita', 'recusada'].includes(proposta.status);
   const getComplianceUrl = () => {
     if (proposta.status !== 'aceita') return null;
-    // Usar businessSubCategory da proposta (pode ter sido ajustado pelo comercial)
     const model = proposta.businessSubCategory
       ? resolveComplianceModel({ businessSubCategory: proposta.businessSubCategory })
       : resolveComplianceModel({});
@@ -293,7 +247,6 @@ export default function PropostaPublica() {
   
   const complianceUrl = getComplianceUrl();
 
-  // Ao clicar no botão de compliance da proposta já aceita, limpar dados residuais
   const handleGoToCompliance = () => {
     if (!complianceUrl) return;
     const keysToClean = [
@@ -329,7 +282,7 @@ export default function PropostaPublica() {
         </div>
       )}
 
-      {/* Status Banner for already responded proposals */}
+      {/* Status Banner */}
       {isAlreadyResponded && (
         <div className={`rounded-2xl p-6 mb-6 text-center ${proposta.status === 'aceita' ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
           <div className="flex items-center justify-center gap-3 mb-2">
@@ -355,7 +308,6 @@ export default function PropostaPublica() {
 
       {/* Premium Hero Header */}
       <div className="relative overflow-hidden bg-[#002443] rounded-3xl p-8 md:p-12 mb-8 text-center shadow-xl">
-        {/* Abstract Background Details */}
         <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#2bc196 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
         <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#2bc196] rounded-full blur-3xl opacity-20 pointer-events-none"></div>
         <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-[#5cf7cf] rounded-full blur-3xl opacity-10 pointer-events-none"></div>
@@ -375,7 +327,6 @@ export default function PropostaPublica() {
           <p className="text-white/80 text-base md:text-lg max-w-lg mx-auto">
             {t('pp.prepared_for')} <span className="font-bold text-white">{proposta.clienteNome}</span>
           </p>
-
         </div>
       </div>
 
@@ -426,7 +377,7 @@ export default function PropostaPublica() {
         </Card>
       </div>
 
-      {/* TPV Mínimo Garantido em Cartão */}
+      {/* TPV Mínimo Garantido */}
       {rates.minimoGarantido && (parseFloat(rates.minimoGarantido.mes1) > 0 || parseFloat(rates.minimoGarantido.mes2) > 0 || parseFloat(rates.minimoGarantido.mes3) > 0) && (
         <Card className="mb-6 bg-slate-50 border-slate-200">
           <CardContent className="py-4">
@@ -553,7 +504,7 @@ export default function PropostaPublica() {
         )}
       </div>
 
-      {/* Seção: Prazo + Antecipação + Volume */}
+      {/* Prazo + Antecipação + Volume */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <Card>
           <CardContent className="py-5 text-center">
@@ -579,7 +530,7 @@ export default function PropostaPublica() {
         </Card>
       </div>
 
-      {/* Tabela de Parcelas Detalhada */}
+      {/* Tabela de Parcelas */}
       <Card className="mb-8">
         <CardContent className="py-4">
           <h2 className="font-bold text-base text-[#002443] mb-4">
@@ -589,17 +540,14 @@ export default function PropostaPublica() {
         </CardContent>
       </Card>
 
-      {/* International Payments */}
       <div className="mb-8">
         <InternationalPaymentsBanner />
       </div>
 
-      {/* Spacer for fixed bottom bar */}
       {['enviada', 'visualizada'].includes(proposta.status) && !isAlreadyResponded && !isExpired && (
         <div className="h-28" />
       )}
 
-      {/* Contraproposta status */}
       {proposta.status === 'contraproposta' && (
         <div className="text-center py-8">
           <MessageSquare className="w-12 h-12 mx-auto text-blue-500 mb-3" />
@@ -608,12 +556,10 @@ export default function PropostaPublica() {
         </div>
       )}
 
-      {/* Footer */}
       <div className="text-center text-xs text-[#002443]/30 py-4 border-t border-slate-200">
         <p>&copy; {new Date().getFullYear()} Pagsmile. Proposta {proposta.codigo}</p>
       </div>
 
-      {/* Fixed Bottom Action Bar */}
       {['enviada', 'visualizada'].includes(proposta.status) && !isAlreadyResponded && !isExpired && (
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,36,67,0.1)]">
           <div className="max-w-4xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4">

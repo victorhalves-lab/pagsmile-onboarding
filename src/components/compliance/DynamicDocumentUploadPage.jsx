@@ -371,11 +371,14 @@ export default function DynamicDocumentUploadPage({
         });
       }
 
-      // Mark case as docs + CAF completed so the analysis pipeline knows everything is ready
-      await base44.entities.OnboardingCase.update(onboardingCaseId, {
-        docCompleted: true,
-        cafCompleted: !!effectiveCafResult,
-        submissionDate: new Date().toISOString(),
+      // Mark case as docs + CAF completed — via public function (service role, whitelisted fields)
+      await base44.functions.invoke('publicComplianceCaseUpdate', {
+        caseId: onboardingCaseId,
+        updates: {
+          docCompleted: true,
+          cafCompleted: !!effectiveCafResult,
+          submissionDate: new Date().toISOString(),
+        }
       });
 
       // Limpar localStorage

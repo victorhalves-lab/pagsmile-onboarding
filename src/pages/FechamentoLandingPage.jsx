@@ -64,7 +64,13 @@ export default function FechamentoLandingPage() {
 
   const { data: commercialAgent } = useQuery({
     queryKey: ['commercialAgent', commercialAgentId],
-    queryFn: () => base44.entities.User.filter({ id: commercialAgentId }).then(res => res[0]),
+    queryFn: async () => {
+      const res = await base44.functions.invoke('publicReadData', {
+        kind: 'commercial_agent',
+        userId: commercialAgentId,
+      });
+      return res.data?.user || null;
+    },
     enabled: !!commercialAgentId,
   });
 
@@ -75,130 +81,18 @@ export default function FechamentoLandingPage() {
 
   const createLeadAndProposalMutation = useMutation({
     mutationFn: async (finalFormData) => {
-      const tpvReais = (finalFormData.tpvMensal || 0) / 100;
-
-      const commonFields = {
-        cnpj: finalFormData.cnpj,
-        razaoSocial: finalFormData.razaoSocial,
-        nomeFantasia: finalFormData.nomeFantasia,
-        website: finalFormData.website,
-        email: finalFormData.email,
-        phone: finalFormData.phone,
-        contactName: finalFormData.contactName,
-        contactRole: finalFormData.contactRole,
-        endereco: finalFormData.endereco,
-        tpvMensal: tpvReais,
-        distribuicaoTpv: finalFormData.distribuicaoTpv,
-        modeloNegocio: finalFormData.modeloNegocio,
-        sellersDescription: finalFormData.sellersDescription,
-        fornecedores: finalFormData.fornecedores,
-        segment: segmentName,
+      const res = await base44.functions.invoke('publicFechamentoSubmit', {
+        isFromStandardProposal,
+        fromStandardProposalToken,
+        introducerId,
+        commercialAgent: commercialAgent ? { id: commercialAgent.id, full_name: commercialAgent.full_name } : null,
+        segmentName,
         businessSubCategory: SEGMENT_LABEL_TO_ID[segmentName] || 'ecommerce',
-        status: 'novo',
-        ...(commercialAgent && { commercialAgentId: commercialAgent.id, commercialAgentName: commercialAgent.full_name }),
-      };
-
-      let createdOriginLead;
-
-      if (isFromStandardProposal) {
-        // === PROPOSTA PADRÃO ===
-        createdOriginLead = await base44.entities.StandardProposalLead.create({
-          ...commonFields,
-          standardProposalToken: fromStandardProposalToken,
-          ...(introducerId && { introducerId }),
-        });
-      } else {
-        // === LANDING PAGE ===
-        // Buscar dados do introducer
-        let introducerData = {};
-        if (introducerId) {
-          const intros = await base44.entities.Introducer.filter({ id: introducerId });
-          if (intros.length > 0) {
-            introducerData = {
-              introducerId: intros[0].id,
-              introducerName: intros[0].name,
-              introducerReferralCode: intros[0].referralCode,
-            };
-          }
-        }
-        createdOriginLead = await base44.entities.LandingPageLead.create({
-          ...commonFields,
-          slug,
-          ...introducerData,
-        });
-      }
-
-      // 2. Create Lead (para pipeline comercial)
-      const origemLead = isFromStandardProposal ? 'proposta_padrao' : 'landing_page';
-      const leadPayload = {
-        fullName: finalFormData.razaoSocial,
-        companyName: finalFormData.nomeFantasia,
-        cpfCnpj: finalFormData.cnpj,
-        email: finalFormData.email,
-        phone: finalFormData.phone,
-        contactName: finalFormData.contactName,
-        contactRole: finalFormData.contactRole,
-        website: finalFormData.website,
-        businessSubCategory: SEGMENT_LABEL_TO_ID[segmentName] || 'ecommerce',
-        status: 'questionario_preenchido',
-        origemLead,
-        tpvMensal: tpvReais,
-        questionnaireData: {
-          tpvMensal: tpvReais,
-          distribuicaoTpv: finalFormData.distribuicaoTpv,
-          modeloNegocio: finalFormData.modeloNegocio,
-          sellersDescription: finalFormData.sellersDescription,
-          fornecedores: finalFormData.fornecedores,
-          segmentoLandingPage: segmentName,
-          contactRole: finalFormData.contactRole,
-        },
-        ...(introducerId && { introducerId }),
-        ...(commercialAgent && { commercialAgentId: commercialAgent.id, commercialAgentName: commercialAgent.full_name }),
-      };
-
-      const createdLead = await base44.entities.Lead.create(leadPayload);
-
-      // 3. Create Proposal — always in Proposal entity
-      // Map introducer rates format to Proposal rates format if needed
-      let proposalRates = ratesData.rates;
-      if (ratesData.isFromIntroducer) {
-        const r = ratesData.rates;
-        const bandeira = (avista, de2a6x, de7a12x, de13a21x) => ({ avista, de2a6x, de7a12x, de13a21x });
-        const cardRates = bandeira(r.mdrAvista, r.mdr2a6x, r.mdr7a12x, r.mdr13a21x);
-        proposalRates = {
-          cartao: { visa: { ...cardRates }, mastercard: { ...cardRates }, elo: { ...cardRates }, amex: { ...cardRates }, outras: { ...cardRates } },
-          debito: {},
-          pix: r.pixTaxaPercentual ? { tipo: 'percentual', valor: r.pixTaxaPercentual } : r.pixTaxaFixa ? { tipo: 'fixo', valor: r.pixTaxaFixa } : undefined,
-          antifraude: r.antifraude,
-          feeTransacao: r.feeTransacao,
-          taxa3ds: r.taxa3ds,
-          percentualAntecipacao: r.percentualAntecipacao,
-          setup: 0,
-          boleto: undefined,
-          rav: undefined,
-          minimoGarantido: undefined,
-        };
-      }
-
-      const proposalPayload = {
-        leadId: createdLead.id,
-        status: 'rascunho',
-        rates: proposalRates,
-        clienteNome: createdLead.fullName,
-        clienteCnpj: createdLead.cpfCnpj,
-        chosenPartnerId: ratesData.partnerId,
-        businessSubCategory: SEGMENT_LABEL_TO_ID[segmentName] || 'ecommerce',
-        sourceFlow: isFromStandardProposal ? 'standard_proposal_link' : 'introducer_landing_page',
-      };
-
-      const createdProposal = await base44.entities.Proposal.create(proposalPayload);
-
-      // 4. Link everything
-      await base44.entities.Lead.update(createdLead.id, { currentProposalId: createdProposal.id });
-      const updateEntity = isFromStandardProposal ? 'StandardProposalLead' : 'LandingPageLead';
-      await base44.entities[updateEntity].update(createdOriginLead.id, { leadId: createdLead.id, proposalId: createdProposal.id });
-
-      return { lead: createdLead, proposal: createdProposal };
+        slug,
+        formData: finalFormData,
+      });
+      if (res.data?.error) throw new Error(res.data.error);
+      return { lead: res.data.lead, proposal: res.data.proposal };
     },
     onSuccess: ({ lead }) => {
       base44.analytics.track({
