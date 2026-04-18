@@ -33,10 +33,24 @@ Deno.serve(async (req) => {
     }
 
     // ── Auth: valida docLinkToken quando disponível ──
-    const cases = await base44.asServiceRole.entities.OnboardingCase.filter({ id: onboardingCaseId });
-    const theCase = cases[0];
+    // Alguns ambientes lançam exceção "Object not found" ao filtrar por id inválido —
+    // tratamos como "caso inexistente" e retornamos 200 com success:false (não crash).
+    let theCase = null;
+    try {
+      const cases = await base44.asServiceRole.entities.OnboardingCase.filter({ id: onboardingCaseId });
+      theCase = cases[0] || null;
+    } catch (lookupErr) {
+      console.warn('[cafResolvePersonData] Case lookup failed:', lookupErr?.message);
+    }
     if (!theCase) {
-      return Response.json({ error: 'Case not found' }, { status: 404 });
+      return Response.json({
+        success: false,
+        cpf: null,
+        name: null,
+        source: 'none',
+        canUseFaceAuth: false,
+        evidenceChain: [{ step: 'case_lookup', matched: false, reason: 'case_not_found' }],
+      });
     }
     if (theCase.docLinkToken && theCase.docLinkToken !== docLinkToken) {
       return Response.json({ error: 'Invalid token' }, { status: 403 });
