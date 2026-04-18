@@ -20,6 +20,66 @@ const CAF_API_BASE = 'https://api.combateafraude.com';
 const POLL_INTERVAL_MS = 2000;
 const POLL_MAX_ATTEMPTS = 10; // 20s total
 
+// ── Lastro inline (mesma lógica de cafResolvePersonData, sem chamada HTTP) ──
+async function resolvePersonInline(base44, onboardingCaseId) {
+  const isValidCpf = (s) => s && String(s).replace(/\D/g, '').length === 11;
+  const isValidName = (s) => typeof s === 'string' && s.trim().length >= 3 && /[a-zA-ZÀ-ÿ]{3,}/.test(s);
+  let cpf = null, name = null, source = 'none';
+  try {
+    const responses = await base44.asServiceRole.entities.QuestionnaireResponse.filter({ onboardingCaseId });
+    // P5 — Representante Legal explícito
+    for (const r of responses) {
+      const t = (r.questionText || '').toLowerCase();
+      const v = r.valueText;
+      if (!v) continue;
+      if (!cpf && t.includes('cpf') && t.includes('representante') && t.includes('legal') && isValidCpf(v)) {
+        cpf = v; source = 'questionnaire_explicit';
+      }
+      if (!name && t.includes('nome') && t.includes('representante') && t.includes('legal') && isValidName(v)) {
+        name = v.trim();
+      }
+    }
+    // P4 — Responsável Compliance/PLD
+    if (!cpf || !name) {
+      for (const r of responses) {
+        const t = (r.questionText || '').toLowerCase();
+        const v = r.valueText;
+        if (!v) continue;
+        if (!cpf && t.includes('cpf') && (t.includes('responsável') || t.includes('responsavel') || t.includes('compliance')) && isValidCpf(v)) {
+          cpf = v; source = source === 'none' ? 'questionnaire_explicit' : source;
+        }
+        if (!name && t.includes('nome') && (t.includes('responsável') || t.includes('responsavel') || t.includes('compliance')) && isValidName(v)) {
+          name = v.trim();
+        }
+      }
+    }
+    // P2 — Any valid CPF
+    if (!cpf) {
+      for (const r of responses) {
+        if (r.valueText && isValidCpf(r.valueText) && r.questionType === 'CPF_CNPJ') {
+          cpf = r.valueText; source = source === 'none' ? 'questionnaire_any' : source;
+          break;
+        }
+      }
+    }
+  } catch {}
+  // P1 — Lead cpf
+  if (!cpf) {
+    try {
+      const leads = await base44.asServiceRole.entities.Lead.filter({ onboardingCaseId });
+      const lead = leads[0];
+      if (lead?.cpfCnpj && isValidCpf(lead.cpfCnpj)) {
+        cpf = lead.cpfCnpj;
+        name = name || lead.fullName || lead.contactName || null;
+        source = source === 'none' ? 'lead_pf' : source;
+      }
+    } catch {}
+  }
+  if (cpf) cpf = String(cpf).replace(/\D/g, '');
+  if (name) name = String(name).trim();
+  return { cpf, name, source };
+}
+
 function stripDataUri(b64) {
   if (!b64) return '';
   // Remove data:image/png;base64, prefix if present — CAF expects raw base64
@@ -72,19 +132,20 @@ Deno.serve(async (req) => {
     }
 
     // ── Auth: valida docLinkToken ──
-    const cases = await base44.asServiceRole.entities.OnboardingCase.filter({ id: onboardingCaseId });
-    const theCase = cases[0];
+    let theCase = null;
+    try {
+      const cases = await base44.asServiceRole.entities.OnboardingCase.filter({ id: onboardingCaseId });
+      theCase = cases[0] || null;
+    } catch {
+      theCase = null;
+    }
     if (!theCase) return Response.json({ error: 'Case not found' }, { status: 404 });
     if (theCase.docLinkToken && theCase.docLinkToken !== docLinkToken) {
       return Response.json({ error: 'Invalid token' }, { status: 403 });
     }
 
-    // ── Resolve CPF/nome via lastro ──
-    const resolveRes = await base44.asServiceRole.functions.invoke('cafResolvePersonData', {
-      onboardingCaseId,
-      docLinkToken,
-    });
-    const resolved = resolveRes?.data || {};
+    // ── Resolve CPF/nome via lastro (inline — evita erro de permissão SDK) ──
+    const resolved = await resolvePersonInline(base44, onboardingCaseId);
     const cpf = resolved.cpf;
     const name = resolved.name || 'Representante Legal';
 

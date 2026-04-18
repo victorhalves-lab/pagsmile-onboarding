@@ -110,6 +110,9 @@ export default function CafLinkGeneratorModal({ open, onOpenChange, caseData, me
   };
 
   // ── Gera link do QUESTIONÁRIO COMPLETO (perguntas + docs + CAF) ──
+  // CRÍTICO: o link DEVE levar o cliente para o MESMO modelo de compliance do segmento dele.
+  // Buscamos o template vinculado ao caso para pegar o `model` correto (ex: ComplianceGatewayV4,
+  // CompliancePixMerchantV4, etc) e passamos via querystring ?model= para o ComplianceDinamico.
   const generateFullLink = async () => {
     if (!caseData?.questionnaireTemplateId) {
       toast.error('Este caso não tem template de questionário vinculado.');
@@ -117,6 +120,20 @@ export default function CafLinkGeneratorModal({ open, onOpenChange, caseData, me
     }
     setGenerating(true);
     try {
+      // 1) Carrega template pra descobrir o MODELO do segmento (ex: ComplianceGatewayV4)
+      const templates = await base44.entities.QuestionnaireTemplate.filter({ id: caseData.questionnaireTemplateId });
+      const template = templates[0];
+      if (!template) {
+        toast.error('Template do caso não foi encontrado.');
+        return;
+      }
+      const segmentModel = template.model;
+      if (!segmentModel) {
+        toast.error('Template sem modelo vinculado — não é possível gerar link aderente ao segmento.');
+        return;
+      }
+
+      // 2) Reaproveita ou cria o OnboardingLink
       let code = caseData.onboardingLinkCode;
       if (!code) {
         code = 'FULL_' + crypto.randomUUID().replace(/-/g, '').slice(0, 12);
@@ -125,18 +142,22 @@ export default function CafLinkGeneratorModal({ open, onOpenChange, caseData, me
           questionnaireTemplateId: caseData.questionnaireTemplateId,
           complianceType: 'GENERIC',
           isActive: true,
-          linkType: 'COMPLIANCE_RESUBMISSION',
+          linkType: 'LEAD_QUESTIONNAIRE',
         });
         await base44.entities.OnboardingCase.update(caseData.id, { onboardingLinkCode: code });
       }
+
+      // 3) Reseta flags pra permitir resubmissão
       await base44.entities.OnboardingCase.update(caseData.id, {
         validationsCompleted: false,
         docCompleted: false,
         cafCompleted: false,
       });
-      const link = `${window.location.origin}/ComplianceDinamico?link=${code}&resumeCaseId=${caseData.id}`;
+
+      // 4) Link com ?model= aderente ao segmento real do cliente
+      const link = `${window.location.origin}/ComplianceDinamico?model=${segmentModel}&link=${code}&resumeCaseId=${caseData.id}`;
       setFullLink(link);
-      toast.success('Link do questionário completo gerado');
+      toast.success(`Link gerado (modelo: ${segmentModel})`);
     } catch (err) {
       toast.error('Erro ao gerar link: ' + (err?.message || 'desconhecido'));
     } finally {
