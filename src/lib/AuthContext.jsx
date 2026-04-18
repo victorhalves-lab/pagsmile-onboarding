@@ -47,8 +47,34 @@ export const AuthProvider = ({ children }) => {
         setIsLoadingPublicSettings(false);
       } catch (appError) {
         console.error('App state check failed:', appError);
-        
-        // Handle app-level errors
+
+        // SECURITY: If we're on a public route (propostas, compliance, contratos, etc.),
+        // NEVER force a login redirect — anonymous users must be able to view those pages.
+        // Admin routes are gated separately inside App.jsx (AuthenticatedApp).
+        const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
+        const isPublicRoute =
+          pathname.startsWith('/p/') || pathname.startsWith('/pp/') ||
+          pathname.startsWith('/pix/') || pathname.startsWith('/c/') ||
+          pathname.startsWith('/s/') || pathname.startsWith('/parceiro/') ||
+          pathname === '/PropostaPublica' || pathname === '/PropostaPadraoPublica' ||
+          pathname === '/PropostaPixPublica' || pathname === '/ContratoPublico' ||
+          pathname === '/ComplianceDinamico' || pathname === '/ComplianceResume' ||
+          pathname === '/ComplianceDocOnly' || pathname === '/OnboardingCompletion' ||
+          pathname === '/SubsellerQuestionnaire' || pathname === '/SubsellerDocUpload' ||
+          pathname === '/QuestionarioSimplificadoPublico' ||
+          pathname === '/QuestionarioLeadsPagsmile' || pathname === '/LeadPixV4' ||
+          pathname === '/FechamentoLandingPage' || pathname === '/KickOffPublico' ||
+          pathname === '/LeadQuestionnaire' || pathname === '/LeadSuccess' ||
+          pathname.startsWith('/DocumentUpload') || pathname.startsWith('/Compliance');
+
+        if (isPublicRoute) {
+          setIsLoadingPublicSettings(false);
+          setIsLoadingAuth(false);
+          setIsAuthenticated(false);
+          return;
+        }
+
+        // Handle app-level errors (only for non-public routes)
         if (appError.status === 403 && appError.data?.extra_data?.reason) {
           const reason = appError.data.extra_data.reason;
           if (reason === 'auth_required') {
