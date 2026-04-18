@@ -45,6 +45,8 @@ import KickOffPublico from './pages/KickOffPublico';
 import SlugRedirect from './pages/SlugRedirect';
 import AccessDenied from './components/AccessDenied';
 import AdminLoginScreen from './components/admin/AdminLoginScreen';
+import TwoFactorEnrollScreen from './components/admin/TwoFactorEnrollScreen';
+import TwoFactorLoginScreen from './components/admin/TwoFactorLoginScreen';
 import GerenciarTaxasPadrao from './pages/GerenciarTaxasPadrao';
 import SubsellerDocUpload from './pages/SubsellerDocUpload';
 import Cadastro from './pages/Cadastro';
@@ -218,6 +220,9 @@ const AuthenticatedApp = () => {
   // Admin JWT state — server-signed, HMAC-validated.
   const [adminTokenState, setAdminTokenState] = React.useState({ status: 'checking', token: null });
 
+  // 2FA enrollment state (TOTP + PIN individual per user).
+  const [twoFactorState, setTwoFactorState] = React.useState({ status: 'checking', enrolled: false });
+
   // ─── Fetch the true role from the server on every mount ───
   React.useEffect(() => {
     if (!isAuthenticated) return;
@@ -243,6 +248,7 @@ const AuthenticatedApp = () => {
     // Introducers get their own dashboard — no admin token needed
     if (role === 'introducer') {
       setAdminTokenState({ status: 'verified', token: null });
+      setTwoFactorState({ status: 'ready', enrolled: true });
       return;
     }
     if (!ALLOWED_ADMIN_ROLES.has(role)) {
@@ -271,6 +277,30 @@ const AuthenticatedApp = () => {
       }
     })();
   }, [isAuthenticated, serverRole]);
+
+  // ─── Fetch 2FA enrollment status for admins ───
+  React.useEffect(() => {
+    if (!isAuthenticated || serverRole.status !== 'ready') return;
+    if (serverRole.role !== 'admin') return;
+
+    (async () => {
+      try {
+        const res = await base44.functions.invoke('twoFactorStatus', {});
+        setTwoFactorState({ status: 'ready', enrolled: !!res.data?.enrolled });
+      } catch (e) {
+        setTwoFactorState({ status: 'ready', enrolled: false });
+      }
+    })();
+  }, [isAuthenticated, serverRole]);
+
+  const refreshTwoFactorStatus = async () => {
+    try {
+      const res = await base44.functions.invoke('twoFactorStatus', {});
+      setTwoFactorState({ status: 'ready', enrolled: !!res.data?.enrolled });
+    } catch (e) {
+      setTwoFactorState({ status: 'ready', enrolled: false });
+    }
+  };
 
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
@@ -313,8 +343,8 @@ const AuthenticatedApp = () => {
     return <AccessDenied />;
   }
 
-  // Waiting for server-side JWT validation
-  if (adminTokenState.status === 'checking') {
+  // Waiting for server-side JWT validation or 2FA status check
+  if (adminTokenState.status === 'checking' || (effectiveRole === 'admin' && twoFactorState.status === 'checking')) {
     return (
       <div className="fixed inset-0 flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
@@ -322,11 +352,16 @@ const AuthenticatedApp = () => {
     );
   }
 
-  // SECURITY LAYER 2: Require valid server-signed JWT for admin pages.
+  // SECURITY LAYER 2a: Forced 2FA enrollment for admins who haven't set up TOTP+PIN yet.
+  if (effectiveRole === 'admin' && !twoFactorState.enrolled) {
+    return <TwoFactorEnrollScreen userEmail={user?.email} onComplete={refreshTwoFactorStatus} />;
+  }
+
+  // SECURITY LAYER 2b: Require valid server-signed JWT for admin pages (TOTP + PIN login).
   // Token is validated server-side on every mount — bypass via DevTools is IMPOSSIBLE.
-  // Introducers skip this gate (no admin code) but get limited access.
+  // Introducers skip this gate (no 2FA) but get limited access.
   if (effectiveRole !== 'introducer' && adminTokenState.status !== 'verified') {
-    return <AdminLoginScreen onSuccess={(token) => setAdminTokenState({ status: 'verified', token })} />;
+    return <TwoFactorLoginScreen onSuccess={(token) => setAdminTokenState({ status: 'verified', token })} />;
   }
 
   // SECURITY: Introducers are BLOCKED from admin routes — only see IntroducerDashboard.

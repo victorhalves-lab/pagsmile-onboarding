@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Users, Search, UserCog, UserPlus, Mail } from 'lucide-react';
+import { Users, Search, UserCog, UserPlus, Mail, ShieldOff } from 'lucide-react';
 import { getIcon } from '@/lib/iconMap';
 import { toast } from 'sonner';
 
@@ -61,6 +61,17 @@ export default function GestaoUsuarios() {
       toast.error(msg);
     }
     setSaving(false);
+  };
+
+  const handleReset2FA = async (u) => {
+    if (!window.confirm(`Resetar a autenticação em 2 fatores de ${u.email}?\n\nIsso remove o TOTP, o PIN e os códigos de backup. O usuário precisará reconfigurar tudo no próximo login.`)) return;
+    try {
+      await base44.functions.invoke('twoFactorResetUser', { userId: u.id, reason: 'Reset manual pelo admin' });
+      toast.success('2FA resetado. Usuário precisará reconfigurar no próximo login.');
+      load();
+    } catch (e) {
+      toast.error(e?.response?.data?.error || 'Erro ao resetar 2FA');
+    }
   };
 
   const handleInvite = async () => {
@@ -123,7 +134,7 @@ export default function GestaoUsuarios() {
               <th className="px-4 py-3">Nome</th>
               <th className="px-4 py-3">Email</th>
               <th className="px-4 py-3">Perfil Atual</th>
-              <th className="px-4 py-3 w-32">Ações</th>
+              <th className="px-4 py-3 w-40">Ações</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -152,9 +163,14 @@ export default function GestaoUsuarios() {
                     )}
                   </td>
                   <td className="px-4 py-3">
-                    <Button size="sm" variant="outline" onClick={() => openAssign(u)}>
-                      <UserCog className="w-3.5 h-3.5 mr-1.5" /> Atribuir
-                    </Button>
+                    <div className="flex gap-1.5">
+                      <Button size="sm" variant="outline" onClick={() => openAssign(u)}>
+                        <UserCog className="w-3.5 h-3.5 mr-1.5" /> Atribuir
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => handleReset2FA(u)} title="Resetar 2FA (TOTP + PIN)" className="text-amber-700 hover:bg-amber-50 border-amber-200">
+                        <ShieldOff className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               );

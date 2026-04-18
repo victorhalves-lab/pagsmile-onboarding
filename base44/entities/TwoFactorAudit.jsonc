@@ -1,0 +1,55 @@
+{
+  "name": "TwoFactorAudit",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "event": {
+      "type": "string",
+      "enum": [
+        "enroll_start",
+        "enroll_complete",
+        "totp_success",
+        "totp_fail",
+        "pin_success",
+        "pin_fail",
+        "backup_code_used",
+        "admin_reset",
+        "pin_changed",
+        "locked_out"
+      ]
+    },
+    "ip_hash": {
+      "type": "string"
+    },
+    "user_agent": {
+      "type": "string"
+    },
+    "details": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "user_email",
+    "event"
+  ],
+  "rls": {
+    "create": true,
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

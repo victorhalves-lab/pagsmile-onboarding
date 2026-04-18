@@ -1,0 +1,50 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "role": {
+      "type": "string",
+      "default": "user",
+      "description": "Role base da plataforma. O RBAC real fica em UserProfileAssignment."
+    },
+    "totp_secret": {
+      "type": "string",
+      "description": "Secret TOTP (base32) individual do usu\u00e1rio. Criptografado em repouso pela Base44."
+    },
+    "totp_enabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se true, usu\u00e1rio concluiu o enrollment do TOTP."
+    },
+    "pin_hash": {
+      "type": "string",
+      "description": "Hash SHA-256 do PIN individual de 6 d\u00edgitos + salt."
+    },
+    "pin_salt": {
+      "type": "string",
+      "description": "Salt \u00fanico usado no hash do PIN."
+    },
+    "pin_enabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se true, usu\u00e1rio concluiu a cria\u00e7\u00e3o do PIN."
+    },
+    "two_factor_enrolled_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data de conclus\u00e3o do enrollment completo (TOTP + PIN)."
+    },
+    "backup_codes_hash": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Hashes SHA-256 dos c\u00f3digos de backup. Cada item \u00e9 consumido ao uso."
+    },
+    "force_2fa_reset": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se true, pr\u00f3ximo login for\u00e7a re-enrollment completo."
+    }
+  }
+}
