@@ -183,35 +183,24 @@ export default function DynamicDocumentUploadPage({
     return { name, cpf };
   };
 
-  // Buscar template
-  const { data: template, isLoading: loadingTemplate } = useQuery({
-    queryKey: ['template', templateId, templateModel],
+  // Public-safe read: template + questions via service-role backend (no direct entity access).
+  const { data: bundle, isLoading: loadingBundle } = useQuery({
+    queryKey: ['docUploadTemplateBundle', templateId, templateModel],
     queryFn: async () => {
       const savedTemplateId = localStorage.getItem('current_template_id');
-      if (savedTemplateId) {
-        const templates = await base44.entities.QuestionnaireTemplate.filter({ id: savedTemplateId });
-        if (templates[0]) return templates[0];
-      }
-      if (templateId) {
-        const templates = await base44.entities.QuestionnaireTemplate.filter({ id: templateId });
-        return templates[0] || null;
-      } else if (templateModel) {
-        const templates = await base44.entities.QuestionnaireTemplate.filter({ model: templateModel, isActive: true });
-        return templates[0] || null;
-      }
-      return null;
-    }
+      const idToUse = savedTemplateId || templateId;
+      const payload = idToUse
+        ? { kind: 'template_with_questions', id: idToUse }
+        : { kind: 'template_with_questions', model: templateModel };
+      const res = await base44.functions.invoke('publicReadContext', payload);
+      return { template: res.data?.template || null, questions: res.data?.questions || [] };
+    },
+    enabled: !!(templateId || templateModel || localStorage.getItem('current_template_id')),
   });
-
-  // Buscar perguntas para salvar as respostas
-  const { data: questions = [], isLoading: loadingQuestions } = useQuery({
-    queryKey: ['questions', template?.id],
-    queryFn: () => base44.entities.Question.filter(
-      { questionnaireTemplateId: template.id }, 
-      'order'
-    ),
-    enabled: !!template?.id
-  });
+  const template = bundle?.template || null;
+  const questions = bundle?.questions || [];
+  const loadingTemplate = loadingBundle;
+  const loadingQuestions = loadingBundle;
 
   // Called when user finishes doc uploads and clicks "Próximo" → go to CAF step
   const handleProceedToCaf = () => {

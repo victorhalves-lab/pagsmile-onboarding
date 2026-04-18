@@ -43,19 +43,24 @@ export default function FechamentoLandingPage() {
   const introducerId = searchParams.get('introducerId');
   const commercialAgentId = searchParams.get('agentId');
 
+  // Public-safe reads via service-role backend (entities are admin-RLS).
   const { data: ratesData, isLoading: isLoadingRates } = useQuery({
     queryKey: ['fechamentoRates', fromStandardProposalToken, introducerId, segmentName],
     queryFn: async () => {
       if (fromStandardProposalToken) {
-        const proposals = await base44.entities.StandardProposal.filter({ tokenPublico: fromStandardProposalToken });
-        if (proposals.length > 0) return { rates: proposals[0].rates, partnerId: proposals[0].chosenPartnerId };
+        const res = await base44.functions.invoke('publicReadContext', {
+          kind: 'standard_proposal_rates_by_token',
+          token: fromStandardProposalToken,
+        });
+        if (res.data?.rates) return { rates: res.data.rates, partnerId: res.data.partnerId };
       }
       if (introducerId && segmentName) {
-        const introducers = await base44.entities.Introducer.filter({ id: introducerId });
-        if (introducers.length > 0) {
-          const segmentRate = introducers[0].standardRates?.find(r => r.segmentName === segmentName);
-          if (segmentRate) return { rates: segmentRate, isFromIntroducer: true };
-        }
+        const res = await base44.functions.invoke('publicReadContext', {
+          kind: 'introducer_segment_rates',
+          introducerId,
+          segmentName,
+        });
+        if (res.data?.rates) return { rates: res.data.rates, isFromIntroducer: true };
       }
       return null;
     },

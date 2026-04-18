@@ -220,30 +220,22 @@ export default function DynamicQuestionnaire({
     getResumeUrl
   } = useComplianceSession({ flowType, templateModel, storageKey });
 
-  // Buscar template
-  const { data: template, isLoading: loadingTemplate } = useQuery({
-    queryKey: ['template', templateId, templateModel],
+  // Public-safe read: template + questions in ONE round-trip via service-role backend.
+  // Admin-protected entities cannot be read directly by anonymous clients.
+  const { data: bundle, isLoading: loadingBundle } = useQuery({
+    queryKey: ['templateBundle', templateId, templateModel],
     queryFn: async () => {
-      if (templateId) {
-        const templates = await base44.entities.QuestionnaireTemplate.filter({ id: templateId });
-        return templates[0] || null;
-      } else if (templateModel) {
-        const templates = await base44.entities.QuestionnaireTemplate.filter({ model: templateModel, isActive: true });
-        return templates[0] || null;
-      }
-      return null;
-    }
+      const payload = templateId ? { kind: 'template_with_questions', id: templateId }
+                                  : { kind: 'template_with_questions', model: templateModel };
+      const res = await base44.functions.invoke('publicReadContext', payload);
+      return { template: res.data?.template || null, questions: res.data?.questions || [] };
+    },
+    enabled: !!(templateId || templateModel),
   });
-
-  // Buscar perguntas do template
-  const { data: questions = [], isLoading: loadingQuestions } = useQuery({
-    queryKey: ['questions', template?.id],
-    queryFn: () => base44.entities.Question.filter(
-      { questionnaireTemplateId: template.id }, 
-      'order'
-    ),
-    enabled: !!template?.id
-  });
+  const template = bundle?.template || null;
+  const questions = bundle?.questions || [];
+  const loadingTemplate = loadingBundle;
+  const loadingQuestions = loadingBundle;
 
   // Pré-preenchimento com dados do Lead
   const { prefillData, prefillSources, hasPrefill, lead } = useLeadPrefill(questions);
@@ -805,16 +797,21 @@ export default function DynamicQuestionnaire({
     const leadId = localStorage.getItem('lead_id_for_compliance') || localStorage.getItem('fechamento_lead_id');
     if (leadId && lead?.onboardingCaseId) { return null; }
 
-    // Detect subseller link to propagate parentMerchantId
+    // Detect subseller link (public-safe) to propagate parentMerchantId.
+    // Anonymous clients can't query OnboardingLink directly — goes through the service-role endpoint.
     let parentMerchantId = null;
     let isSubsellerLink = false;
     if (linkCode) {
-      const links = await base44.entities.OnboardingLink.filter({ uniqueCode: linkCode });
-      const link = links[0];
-      if (link?.linkType === 'SUBSELLER_COMPLIANCE' && link.parentMerchantId) {
-        parentMerchantId = link.parentMerchantId;
-        isSubsellerLink = true;
-      }
+      try {
+        const res = await base44.functions.invoke('publicReadContext', {
+          kind: 'subseller_link_info', uniqueCode: linkCode,
+        });
+        const link = res.data?.link;
+        if (link?.linkType === 'SUBSELLER_COMPLIANCE' && link.parentMerchantId) {
+          parentMerchantId = link.parentMerchantId;
+          isSubsellerLink = true;
+        }
+      } catch (_) {}
     }
 
     // Build responses array for backend

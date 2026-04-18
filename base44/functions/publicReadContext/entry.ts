@@ -210,6 +210,66 @@ Deno.serve(async (req) => {
       return Response.json({ proposal: p });
     }
 
+    // ── Template + Questions bundle (single round-trip for public compliance flows) ──
+    // Resolves either by explicit id, or by model+isActive. Returns both template and ordered questions.
+    if (kind === 'template_with_questions') {
+      const { id, model } = body;
+      let templates = [];
+      try {
+        if (id) templates = await base44.asServiceRole.entities.QuestionnaireTemplate.filter({ id });
+        else if (model) templates = await base44.asServiceRole.entities.QuestionnaireTemplate.filter({ model, isActive: true });
+      } catch (_) {}
+      const template = templates[0] || null;
+      if (!template) return Response.json({ template: null, questions: [] });
+      let questions = [];
+      try { questions = await base44.asServiceRole.entities.Question.filter({ questionnaireTemplateId: template.id }, 'order'); } catch (_) {}
+      return Response.json({ template, questions });
+    }
+
+    // ── Subseller info from onboarding link (parentMerchantId for subseller flow) ──
+    // Public-safe: only returns fields needed by the subseller flow (no partner secrets, etc.)
+    if (kind === 'subseller_link_info') {
+      const { uniqueCode } = body;
+      if (!uniqueCode) return Response.json({ error: 'uniqueCode required' }, { status: 400 });
+      let results = [];
+      try { results = await base44.asServiceRole.entities.OnboardingLink.filter({ uniqueCode }); } catch (_) {}
+      const l = results[0];
+      if (!l) return Response.json({ link: null });
+      return Response.json({
+        link: {
+          id: l.id,
+          linkType: l.linkType,
+          parentMerchantId: l.parentMerchantId || null,
+          parentMerchantName: l.parentMerchantName || null,
+          isActive: l.isActive,
+        },
+      });
+    }
+
+    // ── Introducer rates for a given segment (public — used by FechamentoLandingPage) ──
+    if (kind === 'introducer_segment_rates') {
+      const { introducerId, segmentName } = body;
+      if (!introducerId || !segmentName) return Response.json({ error: 'introducerId and segmentName required' }, { status: 400 });
+      let results = [];
+      try { results = await base44.asServiceRole.entities.Introducer.filter({ id: introducerId }); } catch (_) {}
+      const i = results[0];
+      if (!i) return Response.json({ rates: null });
+      const rate = (i.standardRates || []).find(r => r.segmentName === segmentName) || null;
+      return Response.json({ rates: rate });
+    }
+
+    // ── StandardProposal rates by token (public — used by FechamentoLandingPage) ──
+    // Returns only the rates snapshot + partner id, never exposing the full proposal object.
+    if (kind === 'standard_proposal_rates_by_token') {
+      const { token } = body;
+      if (!token) return Response.json({ error: 'token required' }, { status: 400 });
+      let results = [];
+      try { results = await base44.asServiceRole.entities.StandardProposal.filter({ tokenPublico: token }); } catch (_) {}
+      const p = results[0];
+      if (!p) return Response.json({ rates: null, partnerId: null });
+      return Response.json({ rates: p.rates || {}, partnerId: p.chosenPartnerId || null });
+    }
+
     // ── PixProposal by token ──
     if (kind === 'pix_proposal_by_token') {
       const { token } = body;
