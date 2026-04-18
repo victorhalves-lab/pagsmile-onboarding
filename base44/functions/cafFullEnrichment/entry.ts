@@ -3,7 +3,25 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 /**
  * cafFullEnrichment — Single CAF transaction with ALL available services
  *
- * UPGRADES v2:
+ * ⚠️  DISABLED (2026-04-18) — AGUARDANDO MIGRAÇÃO PARA CONNECT API / TEMPLATE ID
+ *
+ * MOTIVO: A Core API da CAF exige `templateId` (configurado no Trust Platform).
+ * Nosso payload atual (parameters + template.services inline) retorna sempre
+ * REPROVED com code 10 (PARAMS_NOT_INFORMED) → sections: {} e images: {} vazios.
+ * Transações órfãs ficam em PROCESSING indefinidamente.
+ *
+ * HOJE: KYB/KYC completo (sócios, PEP, sanções, crédito) é feito pelo BDC
+ * (bdcEnrichCase), que cobre 100% do escopo com dados oficiais da Receita Federal.
+ * Liveness, facematch e documentoscopia CONTINUAM funcionando via cafCreateOnboarding
+ * + cafWebhookHandler + cafPostCaptureAnalysis (fluxo independente, não afetado).
+ *
+ * PARA REATIVAR NO FUTURO (quando tivermos acesso ao Trust Platform CAF):
+ *   1. Criar secret CAF_CORE_ENRICHMENT_ENABLED=true
+ *   2. Criar secrets CAF_TEMPLATE_PJ e CAF_TEMPLATE_PF com os IDs do Trust
+ *   3. Trocar `cafPayload.template = { services }` por `cafPayload.templateId = ...`
+ *   4. Adicionar `?origin=TRUST` na URL do POST
+ *
+ * UPGRADES v2 (mantidos para reativação futura):
  *   1. _callbackUrl added to every transaction → garante receber webhook
  *   2. Accepts optional templateId for Trust-configured templates
  *   3. metadata includes onboardingCaseId for webhook correlation
@@ -76,6 +94,25 @@ Deno.serve(async (req) => {
 
   try {
     const base44 = createClientFromRequest(req);
+
+    // ═══ FEATURE FLAG: Disabled by default — BDC covers KYB/KYC ═══
+    // Set CAF_CORE_ENRICHMENT_ENABLED=true (and configure templateIds) to reactivate.
+    const enabled = Deno.env.get('CAF_CORE_ENRICHMENT_ENABLED') === 'true';
+    if (!enabled) {
+      console.log('[CAF-FullEnrich] SKIPPED — CAF_CORE_ENRICHMENT_ENABLED is not true. BDC (bdcEnrichCase) covers KYB/KYC.');
+      return Response.json({
+        success: true,
+        skipped: true,
+        reason: 'disabled',
+        message: 'cafFullEnrichment is disabled. KYB/KYC is handled by bdcEnrichCase. To reactivate, set CAF_CORE_ENRICHMENT_ENABLED=true and configure CAF templateIds.',
+        sections: {},
+        sectionsReturned: [],
+        redFlags: [],
+        flagCount: 0,
+        overallRisk: 'OK',
+        duration_ms: Date.now() - startTime,
+      });
+    }
 
     // Auth: allow admin users AND service-role pipeline calls
     let isAuth = false;

@@ -292,33 +292,41 @@ Deno.serve(async (req) => {
       }
     }
 
-    // ═══ STEP 1.5: CAF Full Enrichment (ITEM 3 — KYC/KYB completo) ═══
-    // For PJ: send both CNPJ (company) AND representante CPF (person) for comprehensive KYC
+    // ═══ STEP 1.5: CAF Full Enrichment — DISABLED (2026-04-18) ═══
+    // Desativado porque a Core API CAF exige templateId (Trust Platform), que ainda
+    // não temos. KYB/KYC completo (sócios, PEP, sanções, crédito) agora vem 100%
+    // do BDC (Step 1 — bdcEnrichCase). Liveness/facematch/documentoscopy continuam
+    // funcionando normalmente via cafCreateOnboarding + webhook (fluxo independente).
+    // Para reativar: setar CAF_CORE_ENRICHMENT_ENABLED=true + configurar templateIds.
     let cafEnrichSuccess = false;
-    try {
-      console.log(`[AutoEnrich] Step 1.5: CAF full enrichment...`);
-      const enrichParams = { onboardingCaseId: caseId, includeCredit: true };
-      if (merchant?.type === 'PF' || merchantCpf?.length === 11) {
-        enrichParams.cpf = merchantCpf;
-      } else if (merchant?.cpfCnpj) {
-        const doc = merchant.cpfCnpj.replace(/\D/g, '');
-        if (doc.length === 14) {
-          enrichParams.cnpj = doc;
-          // Also include representante CPF for person-level KYC on PJ
-          if (representanteCpf) enrichParams.cpf = representanteCpf;
-        } else {
-          enrichParams.cpf = doc;
+    const cafEnrichEnabled = false; // Flag local — BDC cobre KYB/KYC hoje
+    if (cafEnrichEnabled) {
+      try {
+        console.log(`[AutoEnrich] Step 1.5: CAF full enrichment...`);
+        const enrichParams = { onboardingCaseId: caseId, includeCredit: true };
+        if (merchant?.type === 'PF' || merchantCpf?.length === 11) {
+          enrichParams.cpf = merchantCpf;
+        } else if (merchant?.cpfCnpj) {
+          const doc = merchant.cpfCnpj.replace(/\D/g, '');
+          if (doc.length === 14) {
+            enrichParams.cnpj = doc;
+            if (representanteCpf) enrichParams.cpf = representanteCpf;
+          } else {
+            enrichParams.cpf = doc;
+          }
         }
+        if (enrichParams.cpf || enrichParams.cnpj) {
+          const enrichRes = await base44.asServiceRole.functions.invoke('cafFullEnrichment', enrichParams);
+          cafEnrichSuccess = enrichRes?.data?.success === true;
+          console.log(`[AutoEnrich] Step 1.5: ${cafEnrichSuccess ? 'OK' : 'FAILED'} — sections=${enrichRes?.data?.sectionsReturned?.length || 0}, flags=${enrichRes?.data?.flagCount || 0}`);
+        } else {
+          console.log(`[AutoEnrich] Step 1.5: Skipped — no CPF/CNPJ available`);
+        }
+      } catch (enrichErr) {
+        console.warn(`[AutoEnrich] Step 1.5 failed (non-blocking): ${enrichErr.message}`);
       }
-      if (enrichParams.cpf || enrichParams.cnpj) {
-        const enrichRes = await base44.asServiceRole.functions.invoke('cafFullEnrichment', enrichParams);
-        cafEnrichSuccess = enrichRes?.data?.success === true;
-        console.log(`[AutoEnrich] Step 1.5: ${cafEnrichSuccess ? 'OK' : 'FAILED'} — sections=${enrichRes?.data?.sectionsReturned?.length || 0}, flags=${enrichRes?.data?.flagCount || 0}`);
-      } else {
-        console.log(`[AutoEnrich] Step 1.5: Skipped — no CPF/CNPJ available`);
-      }
-    } catch (enrichErr) {
-      console.warn(`[AutoEnrich] Step 1.5 failed (non-blocking): ${enrichErr.message}`);
+    } else {
+      console.log(`[AutoEnrich] Step 1.5: DISABLED — BDC covers KYB/KYC (see cafFullEnrichment.js for reactivation)`);
     }
 
     // ═══ STEP 1.7: CAF Credit Analysis (ITEM 4 — segunda fonte de crédito) ═══
