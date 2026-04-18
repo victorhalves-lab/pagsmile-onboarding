@@ -4,9 +4,11 @@ import { base44 } from '@/api/base44Client';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import DynamicQuestionnaire from '../components/compliance/DynamicQuestionnaire';
 import MerchantTypeSelector from '../components/subseller/MerchantTypeSelector';
+import SubsellerSegmentSelector from '../components/subseller/SubsellerSegmentSelector';
 
 export default function SubsellerQuestionnaire() {
   const [merchantType, setMerchantType] = useState(null); // null = show selector, 'PF' or 'PJ'
+  const [selectedSegment, setSelectedSegment] = useState(null); // PJ: segmento V4 escolhido
   const urlParams = new URLSearchParams(window.location.search);
   const linkCode = urlParams.get('ref');
 
@@ -65,7 +67,7 @@ export default function SubsellerQuestionnaire() {
     );
   }
 
-  // Step 2a: PF flow — uses subseller_pf template, uploads docs via SubsellerDocUpload (with CAF SDK)
+  // Step 2a: PF flow — uses subseller_pf template (BACEN-compliant, 55 perguntas)
   if (merchantType === 'PF') {
     return (
       <DynamicQuestionnaire
@@ -82,14 +84,25 @@ export default function SubsellerQuestionnaire() {
     );
   }
 
-  // Step 2b: PJ flow — uses subseller_v2 template + document upload via SubsellerDocUpload (with CAF SDK)
+  // Step 2b: PJ flow — primeiro escolhe o segmento V4 (9 opções, sem PIX)
+  if (merchantType === 'PJ' && !selectedSegment) {
+    return (
+      <SubsellerSegmentSelector
+        onSelect={setSelectedSegment}
+        onBack={() => setMerchantType(null)}
+        branding={branding}
+      />
+    );
+  }
+
+  // Step 2c: PJ flow — carrega o template V4 do segmento escolhido (mesmo rigor que seller direto)
   return (
     <DynamicQuestionnaire
-      templateModel="subseller_v2"
-      storageKey="compliance_data_subseller_v2"
+      templateModel={selectedSegment.model}
+      storageKey={selectedSegment.storageKey}
       documentUploadPage="SubsellerDocUpload"
-      flowType="subseller"
-      badgeLabel="SUBSELLER"
+      flowType={`subseller_${selectedSegment.model}`}
+      badgeLabel={`SUBSELLER • ${selectedSegment.title.toUpperCase()}`}
       badgeColor="bg-indigo-100 text-indigo-700"
       questionsPerStep={4}
       branding={branding}
