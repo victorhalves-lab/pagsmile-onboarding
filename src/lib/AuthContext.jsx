@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { appParams } from '@/lib/app-params';
 import { createAxiosClient } from '@base44/sdk/dist/utils/axios-client';
+import { isPublicPath } from '@/lib/publicRoutes';
 
 const AuthContext = createContext();
 
@@ -48,26 +49,11 @@ export const AuthProvider = ({ children }) => {
       } catch (appError) {
         console.error('App state check failed:', appError);
 
-        // SECURITY: If we're on a public route (propostas, compliance, contratos, etc.),
-        // NEVER force a login redirect — anonymous users must be able to view those pages.
-        // Admin routes are gated separately inside App.jsx (AuthenticatedApp).
+        // SECURITY: If we're on a public route, NEVER force a login redirect —
+        // anonymous users must be able to view those pages.
+        // Single source of truth: lib/publicRoutes.js (shared with App.jsx).
         const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
-        const isPublicRoute =
-          pathname.startsWith('/p/') || pathname.startsWith('/pp/') ||
-          pathname.startsWith('/pix/') || pathname.startsWith('/c/') ||
-          pathname.startsWith('/s/') || pathname.startsWith('/parceiro/') ||
-          pathname === '/PropostaPublica' || pathname === '/PropostaPadraoPublica' ||
-          pathname === '/PropostaPixPublica' || pathname === '/ContratoPublico' ||
-          pathname === '/ComplianceDinamico' || pathname === '/ComplianceResume' ||
-          pathname === '/ComplianceDocOnly' || pathname === '/OnboardingCompletion' ||
-          pathname === '/SubsellerQuestionnaire' || pathname === '/SubsellerDocUpload' ||
-          pathname === '/QuestionarioSimplificadoPublico' ||
-          pathname === '/QuestionarioLeadsPagsmile' || pathname === '/LeadPixV4' ||
-          pathname === '/FechamentoLandingPage' || pathname === '/KickOffPublico' ||
-          pathname === '/LeadQuestionnaire' || pathname === '/LeadSuccess' ||
-          pathname.startsWith('/DocumentUpload') || pathname.startsWith('/Compliance');
-
-        if (isPublicRoute) {
+        if (isPublicPath(pathname)) {
           setIsLoadingPublicSettings(false);
           setIsLoadingAuth(false);
           setIsAuthenticated(false);

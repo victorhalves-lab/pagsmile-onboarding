@@ -71,61 +71,8 @@ const LayoutWrapper = ({ children, currentPageName }) => Layout ?
   <Layout currentPageName={currentPageName}>{children}</Layout>
   : <>{children}</>;
 
-// --- Public routes: these pages do NOT require authentication ---
-const PUBLIC_PATHS = new Set([
-  '/ComplianceDocOnly',
-  '/PropostaPublica',
-  '/PropostaPadraoPublica',
-  '/PropostaPixPublica',
-  '/ContratoPublico',
-  '/ComplianceDinamico',
-  '/ComplianceResume',
-  '/OnboardingCompletion',
-  '/SubsellerQuestionnaire',
-  '/SubsellerDocUpload',
-  '/QuestionarioSimplificadoPublico',
-  '/QuestionarioLeadsPagsmile',
-  '/LeadPixV4',
-  '/FechamentoLandingPage',
-  '/KickOffPublico',
-  // Legacy compliance flows (redirected to ComplianceDinamico)
-  '/ComplianceOnboardingStart',
-  '/ComplianceEcommerce',
-  '/ComplianceFullKYC',
-  '/ComplianceGateway',
-  '/ComplianceLite',
-  '/ComplianceMarketplace',
-  '/ComplianceMerchant',
-  '/CompliancePixOnly',
-  '/ComplianceSaaS',
-  // Document upload flows (public, client-facing)
-  '/DocumentUploadEcommerce',
-  '/DocumentUploadFull',
-  '/DocumentUploadLite',
-  '/DocumentUploadPix',
-  '/DocumentUploadSaaS',
-  // Lead questionnaire flows (public, client-facing)
-  '/LeadQuestionnaire',
-  '/LeadSuccess',
-  // Liveness flows (redirected to OnboardingCompletion)
-  '/LivenessFacematchStep',
-  '/LivenessSimulation',
-]);
-
-// Also treat /s/:slug as public
-
-
-function isPublicPath(pathname) {
-  if (PUBLIC_PATHS.has(pathname)) return true;
-  if (pathname.startsWith('/parceiro/')) return true;
-  if (pathname.startsWith('/s/')) return true;
-  // Friendly public slug routes for proposals and contracts
-  if (pathname.startsWith('/p/')) return true;
-  if (pathname.startsWith('/pp/')) return true;
-  if (pathname.startsWith('/pix/')) return true;
-  if (pathname.startsWith('/c/')) return true;
-  return false;
-}
+// --- Public routes: single source of truth in lib/publicRoutes.js ---
+import { PUBLIC_PATHS, isPublicPath } from '@/lib/publicRoutes';
 
 // --- Public pages are rendered without auth checks ---
 const PublicRoutes = () => (
