@@ -124,12 +124,12 @@ export default function RedFlagCard({ flag, defaultOpen = false }) {
             )}
           </div>
 
-          {/* Title */}
-          <p className={`text-sm font-bold ${style.text} leading-snug`}>{flag.title}</p>
+          {/* Title — ALWAYS COMPLETE, NO TRUNCATION */}
+          <p className={`text-sm font-bold ${style.text} leading-snug whitespace-normal break-words`}>{flag.title}</p>
 
-          {/* Preview of description (collapsed state) */}
+          {/* Preview of description (collapsed state) — fully visible, no line-clamp */}
           {!open && (
-            <p className={`text-[11px] ${style.textSoft} mt-1 line-clamp-2 leading-relaxed`}>
+            <p className={`text-[12px] ${style.textSoft} mt-1.5 leading-relaxed whitespace-normal break-words`}>
               {flag.whyItMatters}
             </p>
           )}
@@ -142,19 +142,26 @@ export default function RedFlagCard({ flag, defaultOpen = false }) {
       {/* Expanded body */}
       {open && (
         <div className="px-4 pb-4 space-y-3 border-t border-white/60 pt-3">
-          {/* Why it matters */}
+          {/* Texto literal do alerta — em destaque */}
+          <Section icon={FileText} title="Texto literal do alerta" style={style}>
+            <p className={`text-[12px] ${style.text} font-medium leading-relaxed whitespace-pre-wrap break-words bg-white/60 rounded-lg p-3 border border-white/80`}>
+              {flag.text}
+            </p>
+          </Section>
+
+          {/* Why it matters — detalhado */}
           <Section icon={Compass} title="Por que isso importa" style={style}>
-            <p className={`text-[12px] ${style.textSoft} leading-relaxed`}>{flag.whyItMatters}</p>
+            <p className={`text-[12px] ${style.textSoft} leading-relaxed whitespace-pre-wrap break-words`}>{flag.whyItMatters}</p>
           </Section>
 
           {/* Evidence hints */}
           {flag.evidenceHints && flag.evidenceHints.length > 0 && (
             <Section icon={FileText} title="Evidências a verificar" style={style}>
-              <ul className="space-y-1">
+              <ul className="space-y-1.5">
                 {flag.evidenceHints.map((e, i) => (
                   <li key={i} className={`text-[12px] ${style.textSoft} leading-relaxed flex items-start gap-2`}>
                     <span className={`inline-block w-1 h-1 rounded-full ${style.bar} shrink-0 mt-2`} />
-                    <span className="flex-1">{e}</span>
+                    <span className="flex-1 whitespace-normal break-words">{e}</span>
                   </li>
                 ))}
               </ul>
@@ -163,7 +170,7 @@ export default function RedFlagCard({ flag, defaultOpen = false }) {
 
           {/* Suggested action */}
           <Section icon={Target} title="Ação sugerida" style={style} highlight>
-            <p className={`text-[12px] ${style.text} font-medium leading-relaxed`}>
+            <p className={`text-[12px] ${style.text} font-medium leading-relaxed whitespace-pre-wrap break-words`}>
               {flag.suggestedAction}
             </p>
           </Section>

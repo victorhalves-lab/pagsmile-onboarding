@@ -19,6 +19,7 @@ import {
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 import CaseExpandedDetail from '@/components/compliance/CaseExpandedDetail';
+import CafLinkGeneratorModal from '@/components/compliance/CafLinkGeneratorModal';
 
 // ── Helpers ──
 const getTimeInQueue = (createdDate) => {
@@ -109,41 +110,28 @@ const getDecisionBadge = (decision) => {
   return <Badge className={`${colorClass} text-[10px] font-semibold border-0`}>{decision}</Badge>;
 };
 
-// ── DocLink button: generates a token and copies the doc+CAF link ──
-function DocLinkMenuItem({ caseData }) {
-  const [generating, setGenerating] = React.useState(false);
-
-  const handleGenerate = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setGenerating(true);
-    try {
-      let token = caseData.docLinkToken;
-      if (!token) {
-        token = crypto.randomUUID().replace(/-/g, '').slice(0, 24);
-        await base44.entities.OnboardingCase.update(caseData.id, { docLinkToken: token });
-      }
-      // Reset flags to allow re-submission
-      await base44.entities.OnboardingCase.update(caseData.id, {
-        docCompleted: false,
-        cafCompleted: false,
-      });
-      const link = `${window.location.origin}/ComplianceDocOnly?caseId=${caseData.id}&token=${token}`;
-      await navigator.clipboard.writeText(link);
-      toast.success('Link copiado! Envie ao cliente para completar docs + verificação CAF.');
-    } catch (err) {
-      console.error('Erro ao gerar link:', err);
-      toast.error('Erro ao gerar link: ' + err.message);
-    } finally {
-      setGenerating(false);
-    }
-  };
-
+// ── CAF Status Badge: 🟢 completo / 🟡 parcial / 🔴 pendente ──
+function CafStatusBadge({ caseData }) {
+  const hasDocs = caseData?.docCompleted === true;
+  const hasCaf = caseData?.cafCompleted === true;
+  if (hasDocs && hasCaf) {
+    return (
+      <Badge className="bg-green-100 text-green-700 border border-green-200 text-[10px] gap-1">
+        <CheckCircle2 className="w-3 h-3" /> CAF completo
+      </Badge>
+    );
+  }
+  if (hasDocs || hasCaf) {
+    return (
+      <Badge className="bg-yellow-100 text-yellow-800 border border-yellow-200 text-[10px] gap-1">
+        <AlertTriangle className="w-3 h-3" /> CAF parcial
+      </Badge>
+    );
+  }
   return (
-    <DropdownMenuItem onClick={handleGenerate} disabled={generating}>
-      {generating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <ScanFace className="w-4 h-4 mr-2" />}
-      {caseData.docLinkToken ? 'Copiar Link Docs + CAF' : 'Gerar Link Docs + CAF'}
-    </DropdownMenuItem>
+    <Badge className="bg-red-100 text-red-700 border border-red-200 text-[10px] gap-1">
+      <XCircle className="w-3 h-3" /> CAF pendente
+    </Badge>
   );
 }
 
@@ -185,6 +173,7 @@ export default function ComplianceCasesTable({
   currentPage, setCurrentPage, itemsPerPage, totalPages,
   templatesMap, isLoading, linksMap = {}, introducerMap = {},
 }) {
+  const [cafModalCase, setCafModalCase] = React.useState(null);
   return (
     <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm overflow-hidden">
       {isLoading ? (
@@ -231,6 +220,7 @@ export default function ComplianceCasesTable({
                 </button>
               </TableHead>
               <TableHead>Tempo na Fila</TableHead>
+              <TableHead className="text-center">CAF</TableHead>
               <TableHead>Introducer</TableHead>
               <TableHead>Analista</TableHead>
               <TableHead>
@@ -293,6 +283,11 @@ export default function ComplianceCasesTable({
                         return <span className={`text-xs font-semibold px-2 py-1 rounded-lg ${bgColor}`}>{time}</span>;
                       })()}
                     </TableCell>
+                    <TableCell className="text-center">
+                      <div className="flex justify-center">
+                        <CafStatusBadge caseData={c} />
+                      </div>
+                    </TableCell>
                     <TableCell>
                       {(() => {
                         const link = c.onboardingLinkCode ? linksMap[c.onboardingLinkCode] : null;
@@ -320,6 +315,15 @@ export default function ComplianceCasesTable({
                         <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); setExpandedRow(expandedRow === c.id ? null : c.id); }} className="text-[#002443]/50">
                           <ChevronDown className={`w-4 h-4 transition-transform ${expandedRow === c.id ? 'rotate-180' : ''}`} />
                         </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => { e.stopPropagation(); setCafModalCase(c); }}
+                          className="text-[#2bc196] hover:text-[#2bc196] hover:bg-[#2bc196]/10"
+                          title="Gerar link para o cliente"
+                        >
+                          <Link2 className="w-4 h-4 mr-1" /> Gerar Link
+                        </Button>
                         <Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`}>
                           <Button variant="ghost" size="sm" className="text-[var(--pagsmile-green)] hover:text-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/10">
                             <Eye className="w-4 h-4 mr-1" /> Analisar
@@ -332,7 +336,9 @@ export default function ComplianceCasesTable({
                             <DropdownMenuItem asChild><Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`}><FileText className="w-4 h-4 mr-2" />Ver Respostas</Link></DropdownMenuItem>
                             {merchant?.email && (<DropdownMenuItem asChild><a href={`mailto:${merchant.email}`}><Mail className="w-4 h-4 mr-2" />Enviar E-mail</a></DropdownMenuItem>)}
                             <RevalidateMenuItem caseData={c} />
-                            <DocLinkMenuItem caseData={c} />
+                            <DropdownMenuItem onClick={() => setCafModalCase(c)}>
+                              <ScanFace className="w-4 h-4 mr-2" /> Gerar Link Cliente
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
@@ -340,7 +346,7 @@ export default function ComplianceCasesTable({
                   </TableRow>
                   {expandedRow === c.id && (
                     <TableRow className="bg-[#f4f4f4]/50">
-                      <TableCell colSpan={12} className="p-4">
+                      <TableCell colSpan={13} className="p-4">
                         <CaseExpandedDetail caseData={c} scoresMap={scoresMap} templatesMap={templatesMap} merchantMap={merchantMap} />
                       </TableCell>
                     </TableRow>
@@ -369,6 +375,14 @@ export default function ComplianceCasesTable({
           </div>
         </div>
       )}
+
+      {/* Modal para gerar link do cliente */}
+      <CafLinkGeneratorModal
+        open={!!cafModalCase}
+        onOpenChange={(o) => { if (!o) setCafModalCase(null); }}
+        caseData={cafModalCase}
+        merchant={cafModalCase ? merchantMap[cafModalCase.merchantId] : null}
+      />
     </div>
   );
 }
