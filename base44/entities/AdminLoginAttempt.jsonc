@@ -1,0 +1,30 @@
+{
+  "name": "AdminLoginAttempt",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email do usu\u00e1rio que tentou login"
+    },
+    "success": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se a tentativa foi bem-sucedida"
+    },
+    "ip_hash": {
+      "type": "string",
+      "description": "Hash do IP (quando dispon\u00edvel)"
+    },
+    "user_agent": {
+      "type": "string",
+      "description": "User agent da request"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Raz\u00e3o do sucesso/falha"
+    }
+  },
+  "required": [
+    "user_email"
+  ]
+}

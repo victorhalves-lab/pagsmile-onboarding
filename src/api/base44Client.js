@@ -3,12 +3,14 @@ import { appParams } from '@/lib/app-params';
 
 const { appId, token, functionsVersion, appBaseUrl } = appParams;
 
-//Create a client with authentication required
+// SECURITY: requiresAuth=true forces the SDK to attach the user's access token
+// to every backend request. Combined with server-side role checks and JWT validation,
+// this prevents unauthenticated API access.
 export const base44 = createClient({
   appId,
   token,
   functionsVersion,
   serverUrl: '',
-  requiresAuth: false,
+  requiresAuth: true,
   appBaseUrl
 });

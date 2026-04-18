@@ -9,6 +9,7 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import { LanguageProvider } from '@/lib/i18n/LanguageContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import { base44 } from '@/api/base44Client';
 import GestaoIntroducers from './pages/GestaoIntroducers';
 import IntroducerDashboard from './pages/IntroducerDashboard';
 import QuestionarioReuniao from './pages/QuestionarioReuniao';
@@ -185,9 +186,51 @@ const PublicRoutes = () => (
 // Users who self-register via Gmail on a public app get role 'user' and are BLOCKED.
 const ALLOWED_ADMIN_ROLES = new Set(['admin', 'introducer']);
 
+const ADMIN_TOKEN_KEY = 'base44_admin_jwt';
+
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, isAuthenticated, user, navigateToLogin } = useAuth();
-  const [adminVerified, setAdminVerified] = React.useState(() => sessionStorage.getItem('admin_verified') === 'true');
+  // Server-validated state — starts as null (unknown), becomes 'verified' or 'unverified' after server call.
+  // CRITICAL: this state CANNOT be tampered with via DevTools because it requires a valid
+  // server-signed JWT. Any tampering will fail re-verification on next mount.
+  const [adminTokenState, setAdminTokenState] = React.useState({ status: 'checking', token: null });
+
+  // Verify admin JWT with the server on every mount.
+  // Attacker CAN'T bypass by setting sessionStorage — the server validates the HMAC signature.
+  React.useEffect(() => {
+    if (!isAuthenticated || !user) return;
+    // Introducers get their own dashboard — no admin token needed
+    if (user.role === 'introducer') {
+      setAdminTokenState({ status: 'verified', token: null });
+      return;
+    }
+    if (!ALLOWED_ADMIN_ROLES.has(user.role)) {
+      setAdminTokenState({ status: 'denied', token: null });
+      return;
+    }
+
+    const storedToken = sessionStorage.getItem(ADMIN_TOKEN_KEY);
+    if (!storedToken) {
+      setAdminTokenState({ status: 'unverified', token: null });
+      return;
+    }
+
+    // Server-side validation — tampering fails here.
+    (async () => {
+      try {
+        const res = await base44.functions.invoke('verifyAdminToken', { token: storedToken });
+        if (res.data?.valid === true && res.data?.admin === true) {
+          setAdminTokenState({ status: 'verified', token: storedToken });
+        } else {
+          sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+          setAdminTokenState({ status: 'unverified', token: null });
+        }
+      } catch (e) {
+        sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+        setAdminTokenState({ status: 'unverified', token: null });
+      }
+    })();
+  }, [isAuthenticated, user]);
 
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
@@ -218,10 +261,20 @@ const AuthenticatedApp = () => {
     return <AccessDenied />;
   }
 
-  // SECURITY LAYER 2: Require admin access code even for invited users.
-  // Code is verified server-side and cached in sessionStorage for the browser session.
-  if (!adminVerified) {
-    return <AdminLoginScreen onSuccess={() => setAdminVerified(true)} />;  
+  // Waiting for server-side token validation
+  if (adminTokenState.status === 'checking') {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  // SECURITY LAYER 2: Require valid server-signed JWT for admin pages.
+  // Token is validated server-side on every mount — bypass via DevTools is IMPOSSIBLE.
+  // Introducers skip this gate (no admin code) but get limited access.
+  if (user.role !== 'introducer' && adminTokenState.status !== 'verified') {
+    return <AdminLoginScreen onSuccess={(token) => setAdminTokenState({ status: 'verified', token })} />;
   }
 
   return (

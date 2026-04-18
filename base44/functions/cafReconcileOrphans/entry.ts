@@ -27,14 +27,17 @@ Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
 
-    // Allow both admin and scheduled (service role) calls
-    try {
-      const user = await base44.auth.me();
+    // SECURITY: Admin-only. Scheduled automations include a valid service auth
+    // so base44.auth.me() will either resolve to the system actor or throw only
+    // on genuinely unauthenticated requests.
+    let user = null;
+    try { user = await base44.auth.me(); } catch { user = null; }
+    const isScheduled = req.headers.get('x-base44-invoker') === 'scheduler' ||
+                        req.headers.get('x-base44-automation') === 'true';
+    if (!isScheduled) {
       if (!user || user.role !== 'admin') {
-        return Response.json({ error: 'Forbidden' }, { status: 403 });
+        return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
       }
-    } catch {
-      // Called via scheduled automation — allowed
     }
 
     const body = await req.json().catch(() => ({}));

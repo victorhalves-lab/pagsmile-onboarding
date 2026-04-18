@@ -4,6 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Shield, Lock, Eye, EyeOff, KeyRound } from 'lucide-react';
 
+// Storage key for the signed JWT. Value is useless without server secret.
+const ADMIN_TOKEN_KEY = 'base44_admin_jwt';
+
 export default function AdminLoginScreen({ onSuccess }) {
   const [code1, setCode1] = useState('');
   const [code2, setCode2] = useState('');
@@ -11,6 +14,7 @@ export default function AdminLoginScreen({ onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [showCode1, setShowCode1] = useState(false);
   const [showCode2, setShowCode2] = useState(false);
+  const [lockedSeconds, setLockedSeconds] = useState(0);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,18 +22,36 @@ export default function AdminLoginScreen({ onSuccess }) {
     setError('');
 
     try {
-      const response = await base44.functions.invoke('verifyAdminCode', { 
-        code: code1, 
-        code2: code2 
+      const response = await base44.functions.invoke('verifyAdminCode', {
+        code: code1,
+        code2: code2,
       });
-      if (response.data?.success) {
-        sessionStorage.setItem('admin_verified', 'true');
-        onSuccess();
+      const data = response.data || {};
+
+      if (data.success && data.token) {
+        // Store the signed JWT. Server will validate on every mount.
+        sessionStorage.setItem(ADMIN_TOKEN_KEY, data.token);
+        onSuccess(data.token);
+      } else if (data.locked) {
+        setLockedSeconds(data.retryAfterSeconds || 3600);
+        setError(`Muitas tentativas falhas. Aguarde ${Math.ceil((data.retryAfterSeconds || 3600) / 60)} minutos.`);
       } else {
         setError('Códigos de acesso inválidos.');
       }
     } catch (err) {
-      setError('Códigos de acesso inválidos.');
+      // Axios throws on non-2xx. Extract message if possible.
+      const status = err?.response?.status;
+      const respData = err?.response?.data;
+      if (status === 429 || respData?.locked) {
+        setLockedSeconds(respData?.retryAfterSeconds || 3600);
+        setError(`Muitas tentativas. Aguarde ${Math.ceil((respData?.retryAfterSeconds || 3600) / 60)} minutos.`);
+      } else if (status === 403) {
+        setError('Acesso negado. Sua conta não tem permissão.');
+      } else if (status === 401) {
+        setError('Você precisa estar autenticado.');
+      } else {
+        setError('Códigos de acesso inválidos.');
+      }
     } finally {
       setLoading(false);
     }
@@ -47,7 +69,6 @@ export default function AdminLoginScreen({ onSuccess }) {
         </div>
 
         <form onSubmit={handleSubmit} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 space-y-4">
-          {/* Primeiro código */}
           <div>
             <label className="text-white/50 text-xs font-medium mb-1.5 block">Código de Acesso 1</label>
             <div className="relative">
@@ -59,6 +80,8 @@ export default function AdminLoginScreen({ onSuccess }) {
                 placeholder="Primeiro código de acesso"
                 className="pl-10 pr-10 bg-white/10 border-white/10 text-white placeholder:text-white/30 h-12 rounded-xl focus:border-[#2bc196] focus:ring-[#2bc196]"
                 autoFocus
+                autoComplete="off"
+                disabled={lockedSeconds > 0}
               />
               <button
                 type="button"
@@ -70,7 +93,6 @@ export default function AdminLoginScreen({ onSuccess }) {
             </div>
           </div>
 
-          {/* Segundo código */}
           <div>
             <label className="text-white/50 text-xs font-medium mb-1.5 block">Código de Acesso 2</label>
             <div className="relative">
@@ -81,6 +103,8 @@ export default function AdminLoginScreen({ onSuccess }) {
                 onChange={(e) => setCode2(e.target.value)}
                 placeholder="Segundo código de acesso"
                 className="pl-10 pr-10 bg-white/10 border-white/10 text-white placeholder:text-white/30 h-12 rounded-xl focus:border-[#2bc196] focus:ring-[#2bc196]"
+                autoComplete="off"
+                disabled={lockedSeconds > 0}
               />
               <button
                 type="button"
@@ -98,10 +122,10 @@ export default function AdminLoginScreen({ onSuccess }) {
 
           <Button
             type="submit"
-            disabled={loading || !code1 || !code2}
+            disabled={loading || !code1 || !code2 || lockedSeconds > 0}
             className="w-full h-12 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white font-semibold rounded-xl"
           >
-            {loading ? 'Verificando...' : 'Entrar'}
+            {loading ? 'Verificando...' : lockedSeconds > 0 ? 'Bloqueado' : 'Entrar'}
           </Button>
         </form>
 
