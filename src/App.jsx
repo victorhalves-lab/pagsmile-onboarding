@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-route
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import { LanguageProvider } from '@/lib/i18n/LanguageContext';
+import { PermissionsProvider } from '@/lib/PermissionsProvider';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import { base44 } from '@/api/base44Client';
 import GestaoIntroducers from './pages/GestaoIntroducers';
@@ -410,15 +411,17 @@ const AppRoutes = () => {
 function App() {
   return (
     <AuthProvider>
-      <LanguageProvider>
-        <QueryClientProvider client={queryClientInstance}>
-          <Router>
-            <NavigationTracker />
-            <AppRoutes />
-          </Router>
-          <Toaster />
-        </QueryClientProvider>
-      </LanguageProvider>
+      <PermissionsProvider>
+        <LanguageProvider>
+          <QueryClientProvider client={queryClientInstance}>
+            <Router>
+              <NavigationTracker />
+              <AppRoutes />
+            </Router>
+            <Toaster />
+          </QueryClientProvider>
+        </LanguageProvider>
+      </PermissionsProvider>
     </AuthProvider>
   )
 }

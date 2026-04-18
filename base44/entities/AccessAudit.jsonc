@@ -1,0 +1,83 @@
+{
+  "name": "AccessAudit",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string"
+    },
+    "user_name": {
+      "type": "string"
+    },
+    "profile_slug": {
+      "type": "string"
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "page_view",
+        "tab_view",
+        "subtab_view",
+        "action_executed",
+        "access_denied",
+        "profile_changed",
+        "profile_created",
+        "profile_deleted",
+        "user_assigned",
+        "login",
+        "logout"
+      ]
+    },
+    "target_page": {
+      "type": "string"
+    },
+    "target_tab": {
+      "type": "string"
+    },
+    "target_subtab": {
+      "type": "string"
+    },
+    "target_action": {
+      "type": "string"
+    },
+    "target_entity": {
+      "type": "string"
+    },
+    "target_entity_id": {
+      "type": "string"
+    },
+    "ip_hash": {
+      "type": "string"
+    },
+    "user_agent": {
+      "type": "string"
+    },
+    "allowed": {
+      "type": "boolean"
+    },
+    "details": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "user_email",
+    "action"
+  ],
+  "rls": {
+    "create": true,
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
