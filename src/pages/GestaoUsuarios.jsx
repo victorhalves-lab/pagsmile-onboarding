@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Users, Search, UserCog } from 'lucide-react';
+import { Users, Search, UserCog, UserPlus, Mail } from 'lucide-react';
 import { getIcon } from '@/lib/iconMap';
 import { toast } from 'sonner';
 
@@ -19,6 +19,9 @@ export default function GestaoUsuarios() {
   const [newProfile, setNewProfile] = useState('');
   const [reason, setReason] = useState('');
   const [saving, setSaving] = useState(false);
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [invite, setInvite] = useState({ email: '', fullName: '', profileSlug: 'admin', reason: '' });
+  const [inviting, setInviting] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -60,6 +63,39 @@ export default function GestaoUsuarios() {
     setSaving(false);
   };
 
+  const handleInvite = async () => {
+    const email = invite.email.trim().toLowerCase();
+    if (!email || !email.includes('@')) { toast.error('Email inválido'); return; }
+    if (!invite.profileSlug) { toast.error('Selecione um perfil'); return; }
+    setInviting(true);
+    try {
+      // 1) Invite via frontend SDK (Base44 sends the email)
+      const baseRole = invite.profileSlug === 'admin' ? 'admin' : 'user';
+      await base44.users.inviteUser(email, baseRole);
+
+      // 2) Backend assigns profile + creates audit trail
+      const res = await base44.functions.invoke('adminInviteUser', {
+        email,
+        fullName: invite.fullName,
+        profileSlug: invite.profileSlug,
+        reason: invite.reason || 'Convite inicial'
+      });
+
+      if (res.data?.pending) {
+        toast.success(`Convite enviado para ${email}. O perfil será atribuído no primeiro login.`);
+      } else {
+        toast.success(`Convite enviado para ${email} com perfil atribuído.`);
+      }
+      setInviteOpen(false);
+      setInvite({ email: '', fullName: '', profileSlug: 'admin', reason: '' });
+      load();
+    } catch (e) {
+      const msg = e?.response?.data?.error || e?.message || 'Erro ao convidar';
+      toast.error(msg);
+    }
+    setInviting(false);
+  };
+
   return (
     <div className="max-w-6xl mx-auto">
       <div className="flex items-center justify-between mb-6">
@@ -69,9 +105,14 @@ export default function GestaoUsuarios() {
           </h1>
           <p className="text-sm text-[#002443]/60 mt-1">Atribua perfis de acesso aos usuários da plataforma.</p>
         </div>
-        <div className="relative">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar usuário..." className="pl-9 w-72" />
+        <div className="flex gap-2 items-center">
+          <div className="relative">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar usuário..." className="pl-9 w-72" />
+          </div>
+          <Button onClick={() => setInviteOpen(true)} className="bg-[#2bc196] hover:bg-[#2bc196]/90">
+            <UserPlus className="w-4 h-4 mr-2" /> Convidar Usuário
+          </Button>
         </div>
       </div>
 
@@ -154,6 +195,56 @@ export default function GestaoUsuarios() {
             <Button variant="outline" onClick={() => setSelected(null)}>Cancelar</Button>
             <Button onClick={handleAssign} disabled={saving} className="bg-[#2bc196]">
               {saving ? 'Salvando...' : 'Atribuir Perfil'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal: Convidar novo usuário */}
+      <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <UserPlus className="w-5 h-5 text-[#2bc196]" /> Convidar novo usuário
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-blue-800">
+              <div className="flex gap-2">
+                <Mail className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <div>
+                  <strong>Como funciona:</strong> o usuário receberá um email da Base44 e fará login com a conta Google do email informado. O perfil será atribuído automaticamente.
+                </div>
+              </div>
+            </div>
+            <div>
+              <Label className="text-xs">Email *</Label>
+              <Input type="email" value={invite.email} onChange={(e) => setInvite({ ...invite, email: e.target.value })} placeholder="usuario@empresa.com" />
+            </div>
+            <div>
+              <Label className="text-xs">Nome completo (opcional)</Label>
+              <Input value={invite.fullName} onChange={(e) => setInvite({ ...invite, fullName: e.target.value })} placeholder="Ex: Victor Alves" />
+            </div>
+            <div>
+              <Label className="text-xs">Perfil *</Label>
+              <Select value={invite.profileSlug} onValueChange={(v) => setInvite({ ...invite, profileSlug: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {data.profiles.filter(p => p.isActive).map(p => (
+                    <SelectItem key={p.slug} value={p.slug}>{p.name} ({p.slug})</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label className="text-xs">Motivo (opcional)</Label>
+              <Textarea rows={2} value={invite.reason} onChange={(e) => setInvite({ ...invite, reason: e.target.value })} placeholder="Ex: Admin inicial da plataforma" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setInviteOpen(false)} disabled={inviting}>Cancelar</Button>
+            <Button onClick={handleInvite} disabled={inviting} className="bg-[#2bc196]">
+              {inviting ? 'Enviando...' : 'Enviar Convite'}
             </Button>
           </DialogFooter>
         </DialogContent>
