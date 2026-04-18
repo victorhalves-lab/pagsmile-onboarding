@@ -190,21 +190,44 @@ const ADMIN_TOKEN_KEY = 'base44_admin_jwt';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, isAuthenticated, user, navigateToLogin } = useAuth();
-  // Server-validated state — starts as null (unknown), becomes 'verified' or 'unverified' after server call.
-  // CRITICAL: this state CANNOT be tampered with via DevTools because it requires a valid
-  // server-signed JWT. Any tampering will fail re-verification on next mount.
+
+  // SECURITY: serverRole is fetched from the server and CANNOT be tampered via DevTools.
+  // We NEVER trust `user.role` from AuthContext for security decisions — only for UX hints.
+  // Any attempt to override user.role in React DevTools will fail here because the server
+  // returns the true role bound to the auth token.
+  const [serverRole, setServerRole] = React.useState({ status: 'checking', role: null });
+
+  // Admin JWT state — server-signed, HMAC-validated.
   const [adminTokenState, setAdminTokenState] = React.useState({ status: 'checking', token: null });
 
-  // Verify admin JWT with the server on every mount.
-  // Attacker CAN'T bypass by setting sessionStorage — the server validates the HMAC signature.
+  // ─── Fetch the true role from the server on every mount ───
   React.useEffect(() => {
-    if (!isAuthenticated || !user) return;
+    if (!isAuthenticated) return;
+    (async () => {
+      try {
+        const res = await base44.functions.invoke('verifyUserAuth', {});
+        if (res.data?.authenticated && res.data?.role) {
+          setServerRole({ status: 'ready', role: res.data.role });
+        } else {
+          setServerRole({ status: 'ready', role: null });
+        }
+      } catch (e) {
+        setServerRole({ status: 'ready', role: null });
+      }
+    })();
+  }, [isAuthenticated]);
+
+  // ─── Verify admin JWT with the server on every mount ───
+  React.useEffect(() => {
+    if (!isAuthenticated || serverRole.status !== 'ready') return;
+    const role = serverRole.role;
+
     // Introducers get their own dashboard — no admin token needed
-    if (user.role === 'introducer') {
+    if (role === 'introducer') {
       setAdminTokenState({ status: 'verified', token: null });
       return;
     }
-    if (!ALLOWED_ADMIN_ROLES.has(user.role)) {
+    if (!ALLOWED_ADMIN_ROLES.has(role)) {
       setAdminTokenState({ status: 'denied', token: null });
       return;
     }
@@ -215,7 +238,6 @@ const AuthenticatedApp = () => {
       return;
     }
 
-    // Server-side validation — tampering fails here.
     (async () => {
       try {
         const res = await base44.functions.invoke('verifyAdminToken', { token: storedToken });
@@ -230,7 +252,7 @@ const AuthenticatedApp = () => {
         setAdminTokenState({ status: 'unverified', token: null });
       }
     })();
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, serverRole]);
 
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
@@ -255,13 +277,25 @@ const AuthenticatedApp = () => {
     return null;
   }
 
-  // SECURITY: Block users who self-registered (role 'user') from accessing admin pages.
-  // Only explicitly invited users (admin, introducer) can access.
-  if (user && !ALLOWED_ADMIN_ROLES.has(user.role)) {
+  // Waiting for server-side role fetch
+  if (serverRole.status !== 'ready') {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  // SECURITY: Use server-returned role, NEVER trust local user.role.
+  // An attacker with React DevTools cannot override serverRole because it comes from
+  // a fresh authenticated API call on every mount.
+  const effectiveRole = serverRole.role;
+
+  if (!effectiveRole || !ALLOWED_ADMIN_ROLES.has(effectiveRole)) {
     return <AccessDenied />;
   }
 
-  // Waiting for server-side token validation
+  // Waiting for server-side JWT validation
   if (adminTokenState.status === 'checking') {
     return (
       <div className="fixed inset-0 flex items-center justify-center">
@@ -273,8 +307,25 @@ const AuthenticatedApp = () => {
   // SECURITY LAYER 2: Require valid server-signed JWT for admin pages.
   // Token is validated server-side on every mount — bypass via DevTools is IMPOSSIBLE.
   // Introducers skip this gate (no admin code) but get limited access.
-  if (user.role !== 'introducer' && adminTokenState.status !== 'verified') {
+  if (effectiveRole !== 'introducer' && adminTokenState.status !== 'verified') {
     return <AdminLoginScreen onSuccess={(token) => setAdminTokenState({ status: 'verified', token })} />;
+  }
+
+  // SECURITY: Introducers are BLOCKED from admin routes — only see IntroducerDashboard.
+  // Without this, an introducer could type /Cadastro in the URL and hit admin pages.
+  // Note: admins/admins-pending access everything. Introducers are strictly caged.
+  if (effectiveRole === 'introducer') {
+    const path = window.location.pathname;
+    if (path !== '/IntroducerDashboard') {
+      window.location.replace('/IntroducerDashboard');
+      return null;
+    }
+    return (
+      <Routes>
+        <Route path="/IntroducerDashboard" element={<IntroducerDashboard />} />
+        <Route path="*" element={<IntroducerDashboard />} />
+      </Routes>
+    );
   }
 
   return (
