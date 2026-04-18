@@ -16,6 +16,7 @@ import PropostaRevisaoResumo from '@/components/proposals/PropostaRevisaoResumo'
 import PropostaRevisaoLink from '@/components/proposals/PropostaRevisaoLink';
 import RentabilidadeDrawer from '@/components/proposals/RentabilidadeDrawer';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
+import { generatePublicSlug } from '@/lib/publicSlug';
 
 const STATUS_CONFIG = {
   rascunho: { label: 'Rascunho', color: 'bg-slate-100 text-slate-700' },
@@ -69,6 +70,19 @@ export default function PropostaDetalhes() {
     enabled: !!proposalId,
     select: (data) => data?.[0],
   });
+
+  // ─── Auto-backfill publicSlug for legacy proposals ───
+  // If the proposal doesn't have a slug (created before the auto-slug automation
+  // or the automation failed silently), generate one now. This runs once per
+  // proposal without one and persists it, so every subsequent link is friendly.
+  useEffect(() => {
+    if (!proposta || proposta.publicSlug || proposta.status === 'rascunho') return;
+    const companyName = proposta.clienteNome || proposta.proposalName || 'proposta';
+    const slug = generatePublicSlug(companyName);
+    base44.entities.Proposal.update(proposta.id, { publicSlug: slug })
+      .then(() => queryClient.invalidateQueries({ queryKey: ['proposta-detalhes', proposalId] }))
+      .catch((err) => console.warn('Falha ao gerar slug público:', err));
+  }, [proposta, proposalId, queryClient]);
 
   const rootId = proposta?.rootProposalId || proposta?.id;
   const { data: versionHistory = [] } = useQuery({
