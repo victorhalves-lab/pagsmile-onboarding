@@ -182,14 +182,36 @@ Deno.serve(async (req) => {
 
     // ── Resolve public slug → target URL ──
     // Maps friendly URL (/p/:slug, /pp/:slug, /pix/:slug, /c/:slug) to legacy page URL.
+    // For versioned proposals (Proposal/PixProposal): always resolves to the CURRENT version's token,
+    // even if the slug was inherited from a previous version.
     if (kind === 'resolve_public_slug') {
       const { entityType, slug } = body;
       if (!entityType || !slug) return Response.json({ error: 'entityType and slug required' }, { status: 400 });
+
+      const pickCurrentVersion = async (entityName, matches) => {
+        // Prefer the version marked as current
+        let current = matches.find(m => m.isCurrentVersion === true);
+        if (current) return current;
+        // Fallback: look up by rootProposalId (the slug may belong to the root, but a newer version is current)
+        const rootIds = [...new Set(matches.map(m => m.rootProposalId || m.id).filter(Boolean))];
+        for (const rid of rootIds) {
+          try {
+            const byRoot = await base44.asServiceRole.entities[entityName].filter({ rootProposalId: rid, isCurrentVersion: true });
+            if (byRoot.length > 0) return byRoot[0];
+          } catch (_) {}
+        }
+        // Last fallback: highest version among matches
+        return matches.sort((a, b) => (b.version || 1) - (a.version || 1))[0];
+      };
+
       try {
         if (entityType === 'proposal') {
           const r = await base44.asServiceRole.entities.Proposal.filter({ publicSlug: slug });
-          if (r.length > 0 && r[0].tokenPublico) {
-            return Response.json({ redirectTo: `/PropostaPublica?token=${encodeURIComponent(r[0].tokenPublico)}` });
+          if (r.length > 0) {
+            const picked = await pickCurrentVersion('Proposal', r);
+            if (picked?.tokenPublico) {
+              return Response.json({ redirectTo: `/PropostaPublica?token=${encodeURIComponent(picked.tokenPublico)}` });
+            }
           }
         } else if (entityType === 'standardProposal') {
           const r = await base44.asServiceRole.entities.StandardProposal.filter({ publicSlug: slug });
@@ -198,8 +220,11 @@ Deno.serve(async (req) => {
           }
         } else if (entityType === 'pixProposal') {
           const r = await base44.asServiceRole.entities.PixProposal.filter({ publicSlug: slug });
-          if (r.length > 0 && r[0].tokenPublico) {
-            return Response.json({ redirectTo: `/PropostaPixPublica?token=${encodeURIComponent(r[0].tokenPublico)}` });
+          if (r.length > 0) {
+            const picked = await pickCurrentVersion('PixProposal', r);
+            if (picked?.tokenPublico) {
+              return Response.json({ redirectTo: `/PropostaPixPublica?token=${encodeURIComponent(picked.tokenPublico)}` });
+            }
           }
         } else if (entityType === 'contract') {
           const r = await base44.asServiceRole.entities.Contract.filter({ publicSlug: slug });
