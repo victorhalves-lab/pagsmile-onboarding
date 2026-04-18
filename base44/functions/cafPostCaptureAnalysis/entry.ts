@@ -133,19 +133,37 @@ Deno.serve(async (req) => {
       if (personName) ocrPayload.parameters.name = personName;
       if (resolvedCallbackUrl) ocrPayload._callbackUrl = resolvedCallbackUrl;
 
-      let ocrAttempts = 0;
-      while (ocrAttempts <= 2) {
-        ocrAttempts++;
-        const ocrResponse = await fetch(`${CAF_API_BASE}/v1/transactions`, {
-          method: 'POST',
-          headers: { 'Authorization': `Bearer ${authToken}`, 'Content-Type': 'application/json' },
-          body: JSON.stringify(ocrPayload),
-        });
-        const ocrResponseText = await ocrResponse.text();
-        try { ocrResult = JSON.parse(ocrResponseText); } catch { /* */ }
-        const ocrSection = ocrResult?.sections?.ocr;
-        if ((ocrSection && (ocrSection.name || ocrSection.cpf)) || ocrAttempts > 2) break;
-        await new Promise(r => setTimeout(r, 3000));
+      // ─── POST OCR transaction ONCE, then POLL via GET ───
+      const ocrPostRes = await fetch(`${CAF_API_BASE}/v1/transactions`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${authToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(ocrPayload),
+      });
+      const ocrPostText = await ocrPostRes.text();
+      try { ocrResult = JSON.parse(ocrPostText); } catch { /* */ }
+      const ocrTxId = ocrResult?.uuid || ocrResult?.id || null;
+
+      // Poll up to 5 times × 3s = 15s for OCR sync result
+      if (ocrPostRes.ok && ocrTxId) {
+        for (let attempt = 1; attempt <= 5; attempt++) {
+          await new Promise(r => setTimeout(r, 3000));
+          try {
+            const pollRes = await fetch(
+              `${CAF_API_BASE}/v1/transactions/${ocrTxId}?_lang=pt`,
+              { method: 'GET', headers: { 'Authorization': `Bearer ${authToken}` } }
+            );
+            if (!pollRes.ok) continue;
+            const pollText = await pollRes.text();
+            let pollResult;
+            try { pollResult = JSON.parse(pollText); } catch { continue; }
+            const ocrSection = pollResult?.sections?.ocr;
+            if (ocrSection && (ocrSection.name || ocrSection.cpf)) {
+              ocrResult = pollResult;
+              console.log(`[CAF-PostCapture] OCR ready after ${attempt} poll(s)`);
+              break;
+            }
+          } catch { /* continue */ }
+        }
       }
 
       if (ocrResult?.sections?.ocr) {
@@ -214,7 +232,32 @@ Deno.serve(async (req) => {
       });
 
       const asyncResponseText = await asyncResponse.text();
-      try { asyncResult = JSON.parse(asyncResponseText); asyncTransactionId = asyncResult?.uuid || null; } catch { /* */ }
+      try { asyncResult = JSON.parse(asyncResponseText); asyncTransactionId = asyncResult?.uuid || asyncResult?.id || null; } catch { /* */ }
+
+      // Poll up to 8 × 3s = 24s for async sections to populate (remainder arrives via webhook)
+      if (asyncResponse.ok && asyncTransactionId) {
+        for (let attempt = 1; attempt <= 8; attempt++) {
+          await new Promise(r => setTimeout(r, 3000));
+          try {
+            const pollRes = await fetch(
+              `${CAF_API_BASE}/v1/transactions/${asyncTransactionId}?_lang=pt&_includeCroppedImages=true&_includePfRelationships=true`,
+              { method: 'GET', headers: { 'Authorization': `Bearer ${authToken}` } }
+            );
+            if (!pollRes.ok) continue;
+            const pollText = await pollRes.text();
+            let pollResult;
+            try { pollResult = JSON.parse(pollText); } catch { continue; }
+            const secs = pollResult?.sections || {};
+            const hasData = Object.keys(secs).length > 0 && Object.values(secs).some(s => s && typeof s === 'object' && Object.keys(s).length > 0);
+            const terminal = ['APPROVED', 'REPROVED', 'WAITING_DOCUMENTS'].includes(pollResult?.status);
+            if (terminal || hasData) {
+              asyncResult = pollResult;
+              console.log(`[CAF-PostCapture] Async ready after ${attempt} poll(s), status=${pollResult?.status}, sections=${Object.keys(secs).length}`);
+              break;
+            }
+          } catch { /* continue */ }
+        }
+      }
 
       try {
         await base44.asServiceRole.entities.IntegrationLog.create({

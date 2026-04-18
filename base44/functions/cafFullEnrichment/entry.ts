@@ -123,6 +123,7 @@ Deno.serve(async (req) => {
       cafPayload._callbackUrl = callbackUrl;
     }
 
+    // ─── STEP 1: Create transaction (POST is ASYNC — returns only {uuid, id}) ───
     const cafResponse = await fetch(`${CAF_API_BASE}/v1/transactions`, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${authToken}`, 'Content-Type': 'application/json' },
@@ -133,11 +134,49 @@ Deno.serve(async (req) => {
     let cafResult;
     try { cafResult = JSON.parse(cafText); } catch { cafResult = { raw: cafText.substring(0, 500) }; }
 
-    const sections = cafResult?.sections || {};
+    const transactionId = cafResult?.uuid || cafResult?.id || null;
+    console.log(`[CAF-FullEnrich] POST HTTP: ${cafResponse.status}, txId: ${transactionId}`);
+
+    // ─── STEP 2: Poll GET until sections populate (CAF Core is async) ───
+    // Max 8 attempts × 3s = 24s total. If timeout, webhook + cafReconcileOrphans will recover.
+    let sections = {};
+    let finalStatus = cafResult?.status || 'PROCESSING';
+
+    if (cafResponse.ok && transactionId) {
+      for (let attempt = 1; attempt <= 8; attempt++) {
+        await new Promise(r => setTimeout(r, 3000));
+        try {
+          const pollRes = await fetch(
+            `${CAF_API_BASE}/v1/transactions/${transactionId}?_lang=pt&_includePfRelationships=true`,
+            { method: 'GET', headers: { 'Authorization': `Bearer ${authToken}` } }
+          );
+          if (!pollRes.ok) { console.log(`[CAF-FullEnrich] poll #${attempt} HTTP ${pollRes.status}`); continue; }
+          const pollText = await pollRes.text();
+          let pollResult;
+          try { pollResult = JSON.parse(pollText); } catch { continue; }
+
+          sections = pollResult?.sections || {};
+          finalStatus = pollResult?.status || finalStatus;
+          const sectionCount = Object.keys(sections).length;
+          console.log(`[CAF-FullEnrich] poll #${attempt}: status=${finalStatus}, sections=${sectionCount}`);
+
+          // Done when status is terminal OR at least one section has real data
+          const terminal = ['APPROVED', 'REPROVED', 'WAITING_DOCUMENTS'].includes(finalStatus);
+          const hasData = sectionCount > 0 && Object.values(sections).some(s => s && typeof s === 'object' && Object.keys(s).length > 0);
+          if (terminal || hasData) {
+            cafResult = pollResult;
+            break;
+          }
+        } catch (e) {
+          console.log(`[CAF-FullEnrich] poll #${attempt} error: ${e.message}`);
+        }
+      }
+    }
+
     const durationMs = Date.now() - startTime;
     const redFlags = extractRedFlags(sections);
 
-    console.log(`[CAF-FullEnrich] HTTP: ${cafResponse.status}, sections: ${Object.keys(sections).length}, flags: ${redFlags.length}`);
+    console.log(`[CAF-FullEnrich] FINAL: status=${finalStatus}, sections: ${Object.keys(sections).length}, flags: ${redFlags.length}, duration: ${durationMs}ms`);
 
     // Save results
     if (onboardingCaseId) {
@@ -147,8 +186,8 @@ Deno.serve(async (req) => {
           onboarding_case_id: onboardingCaseId,
           provider: 'CAF',
           service_type: isPJ ? 'kyb_business_identity' : 'empresas_kyc_real',
-          transaction_id: cafResult?.uuid || '',
-          status: cafResponse.ok ? 'success' : 'failed',
+          transaction_id: transactionId || '',
+          status: cafResponse.ok && Object.keys(sections).length > 0 ? 'success' : cafResponse.ok ? 'processing' : 'failed',
           request_payload: { document: `***${document.slice(-4)}`, servicesCount: services.length, templateId: templateId || null },
           response_payload: { sectionsReturned: Object.keys(sections), flagsCount: redFlags.length },
           red_flags: redFlags,
@@ -191,7 +230,8 @@ Deno.serve(async (req) => {
     return Response.json({
       success: cafResponse.ok,
       type: isPJ ? 'PJ' : 'PF',
-      transactionId: cafResult?.uuid || null,
+      transactionId,
+      cafStatus: finalStatus,
       sections,
       sectionsReturned: Object.keys(sections),
       redFlags,
