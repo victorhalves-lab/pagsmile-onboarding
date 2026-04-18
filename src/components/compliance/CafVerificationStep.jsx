@@ -236,14 +236,13 @@ export default function CafVerificationStep({
       }
       setSdkToken(data.sdkToken);
       setPersonId(data.personId);
-      setTokenType(data.tokenType || 'unknown');
+      setTokenType(data.tokenType || 'session');
       setCanUseFaceAuth(data.canUseFaceAuth !== false);
 
-      console.log('[CAF] Token info:', { 
-        tokenType: data.tokenType, 
-        canUseFaceAuth: data.canUseFaceAuth,
+      console.log('[CAF] Static mobile token ready:', { 
         strategy: data.tokenStrategy,
-        hasPersonId: !!data.personId,
+        personId: data.personId,
+        tokenLength: data.sdkToken?.length,
       });
 
       // ── FASE C: Carregar SDKs ──
