@@ -56,6 +56,10 @@ import BulkReprocess from './pages/BulkReprocess';
 import DocumentoKYCKYB from './pages/DocumentoKYCKYB';
 import EscalationsReview from './pages/EscalationsReview';
 import PublicSlugRedirect from './pages/PublicSlugRedirect';
+import GestaoPerfis from './pages/GestaoPerfis';
+import EditorPerfil from './pages/EditorPerfil';
+import GestaoUsuarios from './pages/GestaoUsuarios';
+import AuditoriaAcessos from './pages/AuditoriaAcessos';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -392,6 +396,10 @@ const AuthenticatedApp = () => {
       <Route path="/BulkReprocess" element={<LayoutWrapper currentPageName="BulkReprocess"><BulkReprocess /></LayoutWrapper>} />
       <Route path="/DocumentoKYCKYB" element={<DocumentoKYCKYB />} />
       <Route path="/EscalationsReview" element={<LayoutWrapper currentPageName="EscalationsReview"><EscalationsReview /></LayoutWrapper>} />
+      <Route path="/GestaoPerfis" element={<LayoutWrapper currentPageName="GestaoPerfis"><GestaoPerfis /></LayoutWrapper>} />
+      <Route path="/EditorPerfil" element={<LayoutWrapper currentPageName="EditorPerfil"><EditorPerfil /></LayoutWrapper>} />
+      <Route path="/GestaoUsuarios" element={<LayoutWrapper currentPageName="GestaoUsuarios"><GestaoUsuarios /></LayoutWrapper>} />
+      <Route path="/AuditoriaAcessos" element={<LayoutWrapper currentPageName="AuditoriaAcessos"><AuditoriaAcessos /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

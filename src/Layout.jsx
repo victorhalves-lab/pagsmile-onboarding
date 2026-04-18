@@ -168,6 +168,9 @@ export default function Layout({ children, currentPageName }) {
       label: t('menu.administration'),
       icon: Settings,
       items: [
+        { label: 'Perfis de Acesso', path: 'GestaoPerfis', icon: Shield, adminOnly: true },
+        { label: 'Usuários & Perfis', path: 'GestaoUsuarios', icon: Users, adminOnly: true },
+        { label: 'Auditoria de Acessos', path: 'AuditoriaAcessos', icon: History, adminOnly: true },
         { label: t('menu.settings'), path: 'Configuracoes', icon: Settings },
         { label: t('menu.audit'), path: 'Auditoria', icon: History },
       ]
@@ -301,7 +304,7 @@ export default function Layout({ children, currentPageName }) {
     const isExpanded = expandedSections.includes(section.id);
     const hasActive = sectionHasActive(section);
     const SectionIcon = section.icon;
-    const visibleItems = section.items.filter(item => !item.hidden);
+    const visibleItems = section.items.filter(item => !item.hidden && (!item.adminOnly || isAdmin));
 
     // Collapsed: show just the section icon
     if (isCollapsed) {
