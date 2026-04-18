@@ -14,60 +14,49 @@ export default function LeadQuestionnaire() {
   const linkCode = urlParams.get('ref');
   const paramTemplateId = urlParams.get('templateId');
 
-  // Buscar link de onboarding se existir
+  // Buscar link de onboarding se existir (via public function)
   const { data: onboardingLink } = useQuery({
     queryKey: ['onboardingLink', linkCode],
     queryFn: async () => {
       if (!linkCode) return null;
-      const links = await base44.entities.OnboardingLink.filter({ uniqueCode: linkCode });
-      return links[0] || null;
+      const res = await base44.functions.invoke('publicReadContext', { kind: 'onboarding_link', uniqueCode: linkCode });
+      return res.data?.link || null;
     },
     enabled: !!linkCode
   });
 
-  // Buscar template de lead ativo
+  // Buscar template de lead ativo (via backend function)
   const { data: template, isLoading } = useQuery({
-    queryKey: ['leadTemplate', onboardingLink?.questionnaireTemplateId],
+    queryKey: ['leadTemplate', onboardingLink?.questionnaireTemplateId, paramTemplateId],
     queryFn: async () => {
+      // 1. Explicit templateId from URL
       if (paramTemplateId) {
-        const templates = await base44.entities.QuestionnaireTemplate.filter({ id: paramTemplateId });
-        if (templates[0]) return templates[0];
+        const res = await base44.functions.invoke('publicReadContext', { kind: 'questionnaire_template', id: paramTemplateId });
+        if (res.data?.template) return res.data.template;
       }
+      // 2. Template from onboardingLink
       if (onboardingLink?.questionnaireTemplateId) {
-        const templates = await base44.entities.QuestionnaireTemplate.filter({ 
-          id: onboardingLink.questionnaireTemplateId 
-        });
-        if (templates[0]) return templates[0];
+        const res = await base44.functions.invoke('publicReadContext', { kind: 'questionnaire_template', id: onboardingLink.questionnaireTemplateId });
+        if (res.data?.template) return res.data.template;
       }
-      // Busca template de lead padrão ativo
-      const templates = await base44.entities.QuestionnaireTemplate.filter({ 
-        category: 'LEAD_GENERATION', 
-        isActive: true 
-      });
-      // Prioriza o template completo caso existam múltiplos
-      const fullTemplate = templates.find(t => t.model === 'full_lead_public');
-      return fullTemplate || templates[0] || null;
+      // 3. Default full_lead_public template
+      const res = await base44.functions.invoke('publicReadContext', { kind: 'questionnaire_template', model: 'full_lead_public' });
+      return res.data?.template || null;
     }
   });
 
-  // Buscar perguntas do template
+  // Buscar perguntas do template (via backend function)
   const { data: questions = [], isLoading: loadingQuestions } = useQuery({
     queryKey: ['leadQuestions', template?.id],
-    queryFn: () => base44.entities.Question.filter(
-      { questionnaireTemplateId: template.id },
-      'order'
-    ),
+    queryFn: async () => {
+      const res = await base44.functions.invoke('publicReadContext', { kind: 'questions_by_template', templateId: template.id });
+      return res.data?.questions || [];
+    },
     enabled: !!template?.id
   });
 
   const handleSubmit = async (leadData) => {
-    // Incrementar contagem de submissões do link
-    if (onboardingLink) {
-      await base44.entities.OnboardingLink.update(onboardingLink.id, {
-        submissionCount: (onboardingLink.submissionCount || 0) + 1
-      });
-    }
-
+    // Incrementing submissionCount is now handled inside publicLeadSubmit
     navigate(`/LeadSuccess?protocolo=${leadData.protocolo}`);
   };
 

@@ -273,29 +273,14 @@ export default function DynamicDocumentUploadPage({
         // Reuse existing case — no need to create Merchant/Case/Responses again
         onboardingCaseId = existingCaseId;
       } else {
-        // Fallback: create everything (for older flows without pre-creation)
+        // Fallback: create everything via publicComplianceSubmit (asServiceRole)
         const findValue = (keywords) => {
           for (const q of questions) {
-            const key = q.id;
             const text = q.text?.toLowerCase() || '';
-            if (keywords.some(kw => text.includes(kw)) && formData[key]) {
-              return formData[key];
-            }
+            if (keywords.some(kw => text.includes(kw)) && formData[q.id]) return formData[q.id];
           }
           return '';
         };
-
-        // Detect subseller link
-        let parentMerchantId = null;
-        let isSubsellerLink = false;
-        if (linkCode) {
-          const links = await base44.entities.OnboardingLink.filter({ uniqueCode: linkCode });
-          const lnk = links[0];
-          if (lnk?.linkType === 'SUBSELLER_COMPLIANCE' && lnk.parentMerchantId) {
-            parentMerchantId = lnk.parentMerchantId;
-            isSubsellerLink = true;
-          }
-        }
 
         const isPF = template?.merchantType === 'PF';
         const merchantData = {
@@ -306,60 +291,47 @@ export default function DynamicDocumentUploadPage({
           email: findValue(['e-mail', 'email']) || '',
           onboardingStatus: 'Pendente',
           paymentServices: flowType === 'pix' ? ['Pix'] : ['Pix', 'Cartão'],
-          isSubseller: isSubsellerLink,
         };
         if (isPF) {
           merchantData.dateOfBirth = findValue(['data de nascimento']) || '';
           merchantData.nationality = findValue(['nacionalidade']) || '';
           merchantData.motherName = findValue(['nome da mãe', 'nome da mae']) || '';
         }
-        if (parentMerchantId) merchantData.parentMerchantId = parentMerchantId;
 
-        const merchant = await base44.entities.Merchant.create(merchantData);
-
-        const docLinkToken = crypto.randomUUID().replace(/-/g, '').slice(0, 24);
-        const onboardingCaseData = {
-          merchantId: merchant.id,
-          questionnaireTemplateId: template?.id,
-          status: 'Pendente',
-          onboardingLinkCode: linkCode,
-          priority: 'medium',
-          isSubsellerCase: isSubsellerLink,
-          docLinkToken,
-        };
-        if (parentMerchantId) onboardingCaseData.parentMerchantId = parentMerchantId;
-        const onboardingCase = await base44.entities.OnboardingCase.create(onboardingCaseData);
-        onboardingCaseId = onboardingCase.id;
-
-        // Criar respostas do questionário
         const responsesToCreate = questions
           .filter(q => formData[q.id] !== undefined && formData[q.id] !== '')
           .map(q => ({
-            onboardingCaseId: onboardingCaseId,
             questionId: q.id,
             questionText: q.text,
             questionType: q.type,
-            valueText: typeof formData[q.id] === 'string' ? formData[q.id] : 
+            valueText: typeof formData[q.id] === 'string' ? formData[q.id] :
                        Array.isArray(formData[q.id]) ? formData[q.id].join(', ') : undefined,
             valueBoolean: typeof formData[q.id] === 'boolean' ? formData[q.id] : undefined,
             valueNumber: typeof formData[q.id] === 'number' ? formData[q.id] : undefined,
-            valueArray: Array.isArray(formData[q.id]) ? formData[q.id] : undefined
+            valueArray: Array.isArray(formData[q.id]) ? formData[q.id] : undefined,
           }));
 
-        if (responsesToCreate.length > 0) {
-          await base44.entities.QuestionnaireResponse.bulkCreate(responsesToCreate);
+        const submitRes = await base44.functions.invoke('publicComplianceSubmit', {
+          templateId: template?.id,
+          linkCode: linkCode || undefined,
+          merchantData,
+          onboardingCaseData: { status: 'Pendente', priority: 'medium' },
+          responses: responsesToCreate,
+        });
+        if (submitRes.data?.error || !submitRes.data?.ok) {
+          throw new Error(submitRes.data?.error || 'Erro ao criar caso');
         }
+        onboardingCaseId = submitRes.data.onboardingCaseId;
       }
 
-      // Criar uploads de documentos (individualmente para disparar automação CAF VerifAI em cada um)
+      // Upload documentos via publicComplianceDocUpload (asServiceRole)
       const allTemplateDocs = (template?.requiredDocuments || []).map((doc, index) => ({
         ...doc,
         _docKey: doc.documentTypeId || doc.id || `doc_${index}_${(doc.label || '').replace(/\s+/g, '_').toLowerCase().slice(0, 30)}`
       }));
-      for (const [docId, docData] of Object.entries(documents)) {
+      const docsPayload = Object.entries(documents).map(([docId, docData]) => {
         const docDef = allTemplateDocs.find(d => d._docKey === docId);
-        await base44.entities.DocumentUpload.create({
-          onboardingCaseId: onboardingCaseId,
+        return {
           documentTypeId: docId,
           documentName: docDef?.label || docDef?.name || docId,
           fileUrl: docData.url,
@@ -367,7 +339,12 @@ export default function DynamicDocumentUploadPage({
           fileSize: docData.size,
           fileType: docData.type,
           uploadDate: docData.uploadedAt,
-          validationStatus: 'Pendente'
+        };
+      });
+      if (docsPayload.length > 0) {
+        await base44.functions.invoke('publicComplianceDocUpload', {
+          caseId: onboardingCaseId,
+          documents: docsPayload,
         });
       }
 

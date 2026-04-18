@@ -35,6 +35,47 @@ Deno.serve(async (req) => {
       });
     }
 
+    // ── Lead for prefill (compliance flow) — returns fields needed by useLeadPrefill ──
+    if (kind === 'lead_for_prefill' || kind === 'lead_for_prefill_by_link') {
+      let leads = [];
+      try {
+        if (kind === 'lead_for_prefill') {
+          if (!body.leadId) return Response.json({ error: 'leadId required' }, { status: 400 });
+          leads = await base44.asServiceRole.entities.Lead.filter({ id: body.leadId });
+        } else {
+          if (!body.linkCode) return Response.json({ error: 'linkCode required' }, { status: 400 });
+          leads = await base44.asServiceRole.entities.Lead.filter({ onboardingLinkCode: body.linkCode }, '-created_date', 1);
+        }
+      } catch (_) { leads = []; }
+      if (leads.length === 0) return Response.json({ lead: null });
+      const l = leads[0];
+      // Limited PII exposure: only fields needed for pre-fill
+      return Response.json({
+        lead: {
+          id: l.id,
+          cpfCnpj: l.cpfCnpj,
+          fullName: l.fullName,
+          companyName: l.companyName,
+          email: l.email,
+          phone: l.phone,
+          website: l.website,
+          mcc: l.mcc,
+          contactName: l.contactName,
+          contactRole: l.contactRole,
+          tpvMensal: l.tpvMensal,
+          ticketMedio: l.ticketMedio,
+          transacoesMes: l.transacoesMes,
+          expectativaCrescimento: l.expectativaCrescimento,
+          businessSubCategory: l.businessSubCategory,
+          leadQuestionnaireTemplateId: l.leadQuestionnaireTemplateId,
+          questionnaireData: l.questionnaireData || null,
+          commercialAgentId: l.commercialAgentId,
+          commercialAgentName: l.commercialAgentName,
+          onboardingCaseId: l.onboardingCaseId,
+        },
+      });
+    }
+
     if (kind === 'commercial_agent') {
       const { userId } = body;
       if (!userId) return Response.json({ error: 'userId required' }, { status: 400 });

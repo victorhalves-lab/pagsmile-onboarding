@@ -817,78 +817,52 @@ export default function DynamicQuestionnaire({
       }
     }
 
-    // Create Merchant
-    const merchantData = {
-      type: merchantType,
-      cpfCnpj: cnpj,
-      fullName: fullName || companyName || 'N/A',
-      companyName: companyName || fullName || '',
-      email: email || 'nao-informado@placeholder.com',
-      phone: phone || '',
-      onboardingStatus: 'Em Análise',
-      isSubseller: isSubsellerLink,
-    };
-    if (parentMerchantId) merchantData.parentMerchantId = parentMerchantId;
-    // Add PF-specific fields
-    if (isPF) {
-      if (dateOfBirth) merchantData.dateOfBirth = dateOfBirth;
-      if (nationality) merchantData.nationality = nationality;
-      if (motherName) merchantData.motherName = motherName;
-    }
-    const merchant = await base44.entities.Merchant.create(merchantData);
-
-    // Create OnboardingCase
-    // Generate a secure docLinkToken so the client can be sent back to upload docs later
-    const docLinkToken = crypto.randomUUID().replace(/-/g, '').slice(0, 24);
-    const onboardingCaseData = {
-      merchantId: merchant.id,
-      questionnaireTemplateId: template?.id || '',
-      submissionDate: new Date().toISOString(),
-      status: 'Pendente',
-      priority: 'medium',
-      onboardingLinkCode: linkCode || '',
-      commercialAgentId: lead?.commercialAgentId || '',
-      commercialAgentName: lead?.commercialAgentName || '',
-      isSubsellerCase: isSubsellerLink,
-      docLinkToken,
-    };
-    if (parentMerchantId) onboardingCaseData.parentMerchantId = parentMerchantId;
-    const onboardingCase = await base44.entities.OnboardingCase.create(onboardingCaseData);
-
-    // Update lead with onboardingCaseId + status if lead exists
-    if (leadId) {
-      await base44.entities.Lead.update(leadId, { 
-        onboardingCaseId: onboardingCase.id,
-        status: 'kyc_iniciado',
-      });
-    }
-
-    // Save questionnaire responses for the OnboardingCase
+    // Build responses array for backend
     const responsesToCreate = [];
     questions.forEach(q => {
       const val = finalFormData[q.id];
       if (val === undefined || val === null || String(q.id).startsWith('__')) return;
-      const resp = {
-        onboardingCaseId: onboardingCase.id,
-        questionId: q.id,
-        questionText: q.text,
-        questionType: q.type,
-      };
+      const resp = { questionId: q.id, questionText: q.text, questionType: q.type };
       if (typeof val === 'boolean') resp.valueBoolean = val;
       else if (typeof val === 'number') resp.valueNumber = val;
       else if (Array.isArray(val)) resp.valueArray = val;
       else resp.valueText = String(val);
       responsesToCreate.push(resp);
     });
-    if (responsesToCreate.length > 0) {
-      await base44.entities.QuestionnaireResponse.bulkCreate(responsesToCreate);
+
+    // Submit via backend function (asServiceRole, server-side validated)
+    const res = await base44.functions.invoke('publicComplianceSubmit', {
+      templateId: template?.id || '',
+      linkCode: linkCode || undefined,
+      leadId: leadId || undefined,
+      merchantData: {
+        type: merchantType, cpfCnpj: cnpj,
+        fullName: fullName || companyName || 'N/A',
+        companyName: companyName || fullName || '',
+        email: email || 'nao-informado@placeholder.com',
+        phone: phone || '',
+        onboardingStatus: 'Em Análise',
+        ...(isPF && dateOfBirth && { dateOfBirth }),
+        ...(isPF && nationality && { nationality }),
+        ...(isPF && motherName && { motherName }),
+      },
+      onboardingCaseData: {
+        status: 'Pendente',
+        priority: 'medium',
+      },
+      responses: responsesToCreate,
+    });
+
+    if (res.data?.error || !res.data?.ok) {
+      merchantCreatedRef.current = false;
+      return null;
     }
 
     // Persist IDs so the document upload page can reuse them
-    localStorage.setItem('created_merchant_id', merchant.id);
-    localStorage.setItem('created_onboarding_case_id', onboardingCase.id);
+    localStorage.setItem('created_merchant_id', res.data.merchantId);
+    localStorage.setItem('created_onboarding_case_id', res.data.onboardingCaseId);
 
-    return { merchant, onboardingCase };
+    return { merchantId: res.data.merchantId, onboardingCaseId: res.data.onboardingCaseId };
   }, [questions, lead, template, linkCode]);
 
   // Callback quando o cliente confirma que concluiu na CAF

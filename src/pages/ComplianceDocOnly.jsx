@@ -30,40 +30,35 @@ export default function ComplianceDocOnly() {
   const [currentStep, setCurrentStep] = useState('docs_upload');
   const [cafResult, setCafResult] = useState(null);
 
-  // ── Load OnboardingCase ──
-  const { data: onboardingCase, isLoading: loadingCase, error: caseError } = useQuery({
-    queryKey: ['docOnlyCase', caseId],
+  // ── Load OnboardingCase + Template (token-protected via backend) ──
+  const { data: caseContext, isLoading: loadingCase } = useQuery({
+    queryKey: ['docOnlyCaseCtx', caseId, token],
     queryFn: async () => {
-      if (!caseId) return null;
-      const cases = await base44.entities.OnboardingCase.filter({ id: caseId });
-      return cases[0] || null;
-    },
-    enabled: !!caseId,
-  });
-
-  // ── Validate token ──
-  const isTokenValid = onboardingCase && onboardingCase.docLinkToken === token;
-
-  // ── Load Merchant (for person data) ──
-  const { data: merchant } = useQuery({
-    queryKey: ['docOnlyMerchant', onboardingCase?.merchantId],
-    queryFn: async () => {
-      const merchants = await base44.entities.Merchant.filter({ id: onboardingCase.merchantId });
-      return merchants[0] || null;
-    },
-    enabled: !!onboardingCase?.merchantId,
-  });
-
-  // ── Load Template (for required documents) ──
-  const { data: template, isLoading: loadingTemplate } = useQuery({
-    queryKey: ['docOnlyTemplate', onboardingCase?.questionnaireTemplateId],
-    queryFn: async () => {
-      const templates = await base44.entities.QuestionnaireTemplate.filter({
-        id: onboardingCase.questionnaireTemplateId,
+      if (!caseId || !token) return null;
+      const res = await base44.functions.invoke('publicReadContext', {
+        kind: 'onboarding_case_for_doc_only', caseId, token,
       });
-      return templates[0] || null;
+      return res.data || null;
     },
-    enabled: !!onboardingCase?.questionnaireTemplateId,
+    enabled: !!caseId && !!token,
+  });
+  const onboardingCase = caseContext?.case || null;
+  const template = caseContext?.template || null;
+  const loadingTemplate = loadingCase;
+
+  // Token is valid iff backend returned the case (backend enforces token match)
+  const isTokenValid = !!onboardingCase;
+
+  // ── Load Merchant via backend (token-protected) ──
+  const { data: merchant } = useQuery({
+    queryKey: ['docOnlyMerchant', caseId, token],
+    queryFn: async () => {
+      const res = await base44.functions.invoke('publicReadContext', {
+        kind: 'merchant_for_doc_only', caseId, token,
+      });
+      return res.data?.merchant || null;
+    },
+    enabled: !!onboardingCase,
   });
 
   // ── Get person data for CAF ──
@@ -115,16 +110,14 @@ export default function ComplianceDocOnly() {
     const effectiveCafResult = cafResultParam || cafResult;
     setIsSubmitting(true);
     try {
-      // Save document uploads
+      // Upload documents via publicComplianceDocUpload (asServiceRole, token-protected)
       const allTemplateDocs = (template?.requiredDocuments || []).map((doc, index) => ({
         ...doc,
         _docKey: doc.documentTypeId || doc.id || `doc_${index}_${(doc.label || '').replace(/\s+/g, '_').toLowerCase().slice(0, 30)}`,
       }));
-      // Criar individualmente para disparar automação CAF VerifAI em cada documento
-      for (const [docId, docData] of Object.entries(documents)) {
+      const docsPayload = Object.entries(documents).map(([docId, docData]) => {
         const docDef = allTemplateDocs.find(d => d._docKey === docId);
-        await base44.entities.DocumentUpload.create({
-          onboardingCaseId: caseId,
+        return {
           documentTypeId: docId,
           documentName: docDef?.label || docDef?.name || docId,
           fileUrl: docData.url,
@@ -132,17 +125,22 @@ export default function ComplianceDocOnly() {
           fileSize: docData.size,
           fileType: docData.type,
           uploadDate: docData.uploadedAt,
-          validationStatus: 'Pendente',
+        };
+      });
+      if (docsPayload.length > 0) {
+        await base44.functions.invoke('publicComplianceDocUpload', {
+          caseId, docLinkToken: token, documents: docsPayload,
         });
       }
 
-      // Mark case as doc + caf completed and trigger pipeline
-      await base44.entities.OnboardingCase.update(caseId, {
-        docCompleted: true,
-        cafCompleted: !!effectiveCafResult,
-        bigDataCorpCompleted: false,
-        validationsCompleted: false,
-        status: 'Em Processamento',
+      // Mark case as doc + caf completed (whitelisted fields only via publicComplianceCaseUpdate)
+      await base44.functions.invoke('publicComplianceCaseUpdate', {
+        caseId,
+        updates: {
+          docCompleted: true,
+          cafCompleted: !!effectiveCafResult,
+          submissionDate: new Date().toISOString(),
+        }
       });
 
       // Trigger re-analysis pipeline (non-blocking)

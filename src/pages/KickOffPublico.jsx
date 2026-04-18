@@ -12,8 +12,8 @@ export default function KickOffPublico() {
   const { data: presentation, isLoading, error } = useQuery({
     queryKey: ['kickoff-public', token],
     queryFn: async () => {
-      const results = await base44.entities.KickOffPresentation.filter({ publicToken: token, status: 'ativa' });
-      return results?.[0] || null;
+      const res = await base44.functions.invoke('publicReadContext', { kind: 'kickoff_public', token });
+      return res.data?.presentation || null;
     },
     enabled: !!token,
   });

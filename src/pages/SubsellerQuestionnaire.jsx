@@ -14,8 +14,8 @@ export default function SubsellerQuestionnaire() {
     queryKey: ['subsellerLink', linkCode],
     queryFn: async () => {
       if (!linkCode) return null;
-      const links = await base44.entities.OnboardingLink.filter({ uniqueCode: linkCode });
-      return links[0] || null;
+      const res = await base44.functions.invoke('publicReadContext', { kind: 'onboarding_link', uniqueCode: linkCode });
+      return res.data?.link || null;
     },
     enabled: !!linkCode
   });

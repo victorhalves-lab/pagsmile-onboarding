@@ -34,8 +34,8 @@ export default function LeadPixV4() {
     queryKey: ['onboardingLink-pix-v4', linkCode],
     queryFn: async () => {
       if (!linkCode) return null;
-      const links = await base44.entities.OnboardingLink.filter({ uniqueCode: linkCode });
-      return links[0] || null;
+      const res = await base44.functions.invoke('publicReadContext', { kind: 'onboarding_link', uniqueCode: linkCode });
+      return res.data?.link || null;
     },
     enabled: !!linkCode,
   });
@@ -147,17 +147,10 @@ export default function LeadPixV4() {
       'Gateway/PSP': 'GATEWAY', 'Marketplace': 'MARKETPLACE', 'Plataforma Vertical': 'GATEWAY',
     };
 
-    let introducerData = {};
-    if (onboardingLink?.introducerId) {
-      const introducers = await base44.entities.Introducer.filter({ id: onboardingLink.introducerId });
-      if (introducers.length > 0) {
-        introducerData = { introducerId: introducers[0].id, introducerReferralCode: introducers[0].referralCode, introducerName: introducers[0].name };
-      }
-    }
-
+    // Introducer + commercial agent resolved server-side by publicLeadSubmit
     const complianceTemplate = form.tipoNegocio === 'merchant' ? 'PIX_Merchants_v4' : 'PIX_Intermediarios_v4';
 
-    await base44.entities.Lead.create({
+    const leadPayload = {
       email: form.email,
       fullName: form.razaoSocial || form.nomeFantasia || form.contactName,
       cpfCnpj: form.cnpj?.replace(/\D/g, ''),
@@ -176,9 +169,6 @@ export default function LeadPixV4() {
       onboardingLinkCode: linkCode || undefined,
       leadQualifierScore: leadScore,
       leadQualifierLevel: scoreLabel.label === 'Muito Quente' ? 'EXCELENTE' : scoreLabel.label === 'Quente' ? 'BOM' : scoreLabel.label === 'Morno' ? 'REGULAR' : 'FRACO',
-      ...introducerData,
-      commercialAgentId: onboardingLink?.commercialAgentId || undefined,
-      commercialAgentName: onboardingLink?.commercialAgentName || undefined,
       lastInteractionDate: new Date().toISOString(),
       bdcEnrichmentData: bdcFullData || bdcData || null,
       bdcLeadScore: bdcResult.bdcScore,
@@ -201,13 +191,14 @@ export default function LeadPixV4() {
         _questionarioCompliancePix: complianceTemplate,
         _emailType: form.email ? (form.email.split('@')[1]?.toLowerCase() && ['gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com'].includes(form.email.split('@')[1]?.toLowerCase()) ? 'personal' : 'corporate') : null,
       },
-    });
+    };
 
-    if (onboardingLink) {
-      await base44.entities.OnboardingLink.update(onboardingLink.id, {
-        submissionCount: (onboardingLink.submissionCount || 0) + 1
-      });
-    }
+    const submitRes = await base44.functions.invoke('publicLeadSubmit', {
+      kind: 'lead',
+      linkCode: linkCode || undefined,
+      leadPayload,
+    });
+    if (submitRes.data?.error) throw new Error(submitRes.data.error);
 
     base44.analytics.track({
       eventName: 'onboarding_form_submitted',
@@ -215,7 +206,7 @@ export default function LeadPixV4() {
         form_type: 'lead_pix_v4',
         segment: form.segmentoPix || '',
         tipo_negocio: form.tipoNegocio || '',
-        has_introducer: !!introducerData.introducerId,
+        has_introducer: !!onboardingLink?.introducerId,
         link_code: linkCode || '',
         protocolo: proto,
         lead_score: leadScore,

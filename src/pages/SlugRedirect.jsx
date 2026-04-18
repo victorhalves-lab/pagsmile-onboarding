@@ -10,8 +10,10 @@ export default function SlugRedirect() {
   const { data: link, isLoading, isError } = useQuery({
     queryKey: ['slugRedirect', slug],
     queryFn: async () => {
-      const links = await base44.entities.OnboardingLink.filter({ customSlug: slug });
-      return links[0] || null;
+      const res = await base44.functions.invoke('publicReadContext', {
+        kind: 'onboarding_link_by_slug', slug,
+      });
+      return res.data?.link || null;
     },
     enabled: !!slug,
   });

@@ -42,8 +42,8 @@ export default function QuestionarioLeadsPagsmile() {
     queryKey: ['onboardingLink', linkCode],
     queryFn: async () => {
       if (!linkCode) return null;
-      const links = await base44.entities.OnboardingLink.filter({ uniqueCode: linkCode });
-      return links[0] || null;
+      const res = await base44.functions.invoke('publicReadContext', { kind: 'onboarding_link', uniqueCode: linkCode });
+      return res.data?.link || null;
     },
     enabled: !!linkCode
   });
@@ -200,20 +200,8 @@ export default function QuestionarioLeadsPagsmile() {
       saas: 'saas', educacao: 'educacao', link_pagamento: 'link_pagamento', mpe: 'mpe'
     };
 
-    // Buscar Introducer se existir
-    let introducerData = {};
-    if (onboardingLink?.introducerId) {
-      const introducers = await base44.entities.Introducer.filter({ id: onboardingLink.introducerId });
-      if (introducers.length > 0) {
-        introducerData = {
-          introducerId: introducers[0].id,
-          introducerReferralCode: introducers[0].referralCode,
-          introducerName: introducers[0].name,
-        };
-      }
-    }
-
-    const hasIntroducer = !!introducerData.introducerId;
+    // Introducer resolution happens server-side in publicLeadSubmit
+    const hasIntroducer = !!onboardingLink?.introducerId;
     const origemLead = hasIntroducer ? 'introducer' : 'questionario_completo';
 
     const leadCommonData = {
@@ -236,9 +224,6 @@ export default function QuestionarioLeadsPagsmile() {
       onboardingLinkCode: linkCode || undefined,
       leadQualifierScore: leadScore,
       leadQualifierLevel: getScoreLabel(leadScore).label === 'Muito Quente' ? 'EXCELENTE' : getScoreLabel(leadScore).label === 'Quente' ? 'BOM' : getScoreLabel(leadScore).label === 'Morno' ? 'REGULAR' : 'FRACO',
-      ...introducerData,
-      commercialAgentId: onboardingLink?.commercialAgentId || undefined,
-      commercialAgentName: onboardingLink?.commercialAgentName || undefined,
       lastInteractionDate: new Date().toISOString(),
       bdcEnrichmentData: bdcFullData || bdcData || null,
       bdcLeadScore: bdcResult.bdcScore,
@@ -271,38 +256,30 @@ export default function QuestionarioLeadsPagsmile() {
       },
     };
 
-    const createdLead = await base44.entities.Lead.create(leadCommonData);
-
-    // Se tiver introducer, salva também na entidade IntroducerLead
-    if (hasIntroducer) {
-      await base44.entities.IntroducerLead.create({
-        leadId: createdLead.id,
-        email: createdLead.email,
-        fullName: createdLead.fullName,
-        cpfCnpj: createdLead.cpfCnpj,
-        phone: createdLead.phone,
-        companyName: createdLead.companyName,
-        contactName: createdLead.contactName,
-        contactRole: createdLead.contactRole,
-        website: createdLead.website,
-        businessSubCategory: createdLead.businessSubCategory,
-        tpvMensal: createdLead.tpvMensal,
-        ticketMedio: createdLead.ticketMedio,
+    const submitRes = await base44.functions.invoke('publicLeadSubmit', {
+      kind: hasIntroducer ? 'introducer_lead' : 'lead',
+      linkCode: linkCode || undefined,
+      leadPayload: leadCommonData,
+      introducerLeadPayload: hasIntroducer ? {
+        email: leadCommonData.email,
+        fullName: leadCommonData.fullName,
+        cpfCnpj: leadCommonData.cpfCnpj,
+        phone: leadCommonData.phone,
+        companyName: leadCommonData.companyName,
+        contactName: leadCommonData.contactName,
+        contactRole: leadCommonData.contactRole,
+        website: leadCommonData.website,
+        businessSubCategory: leadCommonData.businessSubCategory,
+        tpvMensal: leadCommonData.tpvMensal,
+        ticketMedio: leadCommonData.ticketMedio,
         protocolo: proto,
-        ...introducerData,
         onboardingLinkCode: linkCode || '',
         questionnaireData: leadCommonData.questionnaireData,
         leadQualifierScore: leadScore,
-        leadQualifierLevel: createdLead.leadQualifierLevel,
-        status: 'novo',
-      });
-    }
-
-    if (onboardingLink) {
-      await base44.entities.OnboardingLink.update(onboardingLink.id, {
-        submissionCount: (onboardingLink.submissionCount || 0) + 1
-      });
-    }
+        leadQualifierLevel: leadCommonData.leadQualifierLevel,
+      } : undefined,
+    });
+    if (submitRes.data?.error) throw new Error(submitRes.data.error);
 
     base44.analytics.track({
       eventName: 'onboarding_form_submitted',

@@ -34,6 +34,7 @@ function getDeviceType() {
 }
 
 function fireAnalytics(eventType, ctx, extra = {}) {
+  // LandingPageEvent has create:true RLS — safe for anonymous visitors
   base44.entities.LandingPageEvent.create({
     introducerId: ctx.introducerId,
     referralCode: ctx.referralCode,
@@ -57,12 +58,10 @@ export default function IntroducerLandingPage() {
   const { data: introducer, isLoading } = useQuery({
     queryKey: ['introducerLP', uniqueLandingPageSlug],
     queryFn: async () => {
-      const results = await base44.entities.Introducer.filter({
-        uniqueLandingPageSlug,
-        status: 'active',
+      const res = await base44.functions.invoke('publicReadContext', {
+        kind: 'introducer_by_slug', slug: uniqueLandingPageSlug,
       });
-      if (!results || results.length === 0) return null;
-      return results[0];
+      return res.data?.introducer || null;
     },
     enabled: !!uniqueLandingPageSlug,
   });

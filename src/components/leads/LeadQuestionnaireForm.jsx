@@ -601,39 +601,9 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
     const protocolo = generateProtocolo();
     const qualityScore = calculateQualityScore();
 
-    // Buscar Introducer: priorizar onboardingLink, depois utm_source da URL
-    let introducerData = {};
+    // Introducer is resolved server-side by publicLeadSubmit. Keep only UTM source fallback.
     const urlParams = new URLSearchParams(window.location.search);
     const utmSource = urlParams.get('utm_source') || '';
-    
-    if (onboardingLink?.introducerId) {
-      const introducers = await base44.entities.Introducer.filter({ id: onboardingLink.introducerId });
-      if (introducers.length > 0) {
-        introducerData = {
-          introducerId: introducers[0].id,
-          introducerReferralCode: introducers[0].referralCode,
-          introducerName: introducers[0].name,
-        };
-      }
-    } else if (onboardingLink?.introducerReferralCode) {
-      const introducers = await base44.entities.Introducer.filter({ referralCode: onboardingLink.introducerReferralCode, status: 'active' });
-      if (introducers.length > 0) {
-        introducerData = {
-          introducerId: introducers[0].id,
-          introducerReferralCode: introducers[0].referralCode,
-          introducerName: introducers[0].name,
-        };
-      }
-    } else if (utmSource) {
-      const introducers = await base44.entities.Introducer.filter({ referralCode: utmSource, status: 'active' });
-      if (introducers.length > 0) {
-        introducerData = {
-          introducerId: introducers[0].id,
-          introducerReferralCode: introducers[0].referralCode,
-          introducerName: introducers[0].name,
-        };
-      }
-    }
 
     // Determinar businessSubCategory a partir da primeira pergunta (order 1)
     let businessSubCategory = 'MERCHAN';
@@ -649,26 +619,8 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
       }
     }
 
-    // Buscar template de compliance vinculado dinamicamente pela businessSubCategory
+    // Recommended compliance template — priorize direct link from template
     let recommendedComplianceTemplateId = template.linkedComplianceTemplateId || '';
-    if (!recommendedComplianceTemplateId || recommendedComplianceTemplateId === 'auto_by_subcategory') {
-      const complianceTemplates = await base44.entities.QuestionnaireTemplate.filter({
-        category: 'COMPLIANCE',
-        subCategory: businessSubCategory,
-        isActive: true
-      });
-      if (complianceTemplates.length > 0) {
-        // If the lead was filled via a v2.0+ template, prefer v2.0 compliance templates
-        const isV2Lead = template.model === 'LeadCompletoAutocomplete' || template.model === 'LeadCompletoAutocompleteV3';
-        const v2Template = complianceTemplates.find(t => t.version === 2.0 || (t.model || '').includes('Autocomplete'));
-        const v1Template = complianceTemplates.find(t => t.version !== 2.0 && !(t.model || '').includes('Autocomplete'));
-        if (isV2Lead && v2Template) {
-          recommendedComplianceTemplateId = v2Template.id;
-        } else {
-          recommendedComplianceTemplateId = (v1Template || complianceTemplates[0]).id;
-        }
-      }
-    }
 
     // Encontrar valores relevantes
     const findFieldValue = (keywords) => {
@@ -743,9 +695,6 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
           return 'unknown';
         })(),
       },
-      ...introducerData,
-      commercialAgentId: onboardingLink?.commercialAgentId || undefined,
-      commercialAgentName: onboardingLink?.commercialAgentName || undefined,
       expectedRates: (formData[USA_CARTAO_QUESTION_ID] === false || formData[USA_CARTAO_QUESTION_ID] === 'false')
         ? Object.fromEntries(
             EXPECTED_RATE_KEYS.map(k => [k, parseFloat((formData._expectedRates || {})[k]) || 0])
@@ -756,25 +705,23 @@ export default function LeadQuestionnaireForm({ template, questions: rawQuestion
       lastInteractionDate: new Date().toISOString()
     };
 
-    const lead = await base44.entities.Lead.create(leadData);
-
-    // Registrar atividade
-    await base44.entities.LeadActivity.create({
-      leadId: lead.id,
-      activityType: 'questionario_preenchido',
-      description: `Questionário de leads preenchido via link ${linkCode || 'direto'}. Protocolo: ${protocolo}`,
-      performedBy: leadData.email || 'cliente',
-      activityDate: new Date().toISOString()
+    // Submit Lead via publicLeadSubmit (service role, server-side sanitized)
+    const submitRes = await base44.functions.invoke('publicLeadSubmit', {
+      kind: 'lead',
+      linkCode: linkCode || undefined,
+      leadPayload: leadData,
     });
+    if (submitRes.data?.error) throw new Error(submitRes.data.error);
+    const leadId = submitRes.data.leadId;
 
     // Salvar leadId no localStorage para pré-preenchimento do compliance
-    localStorage.setItem('lead_id_for_compliance', lead.id);
+    localStorage.setItem('lead_id_for_compliance', leadId);
 
     // Limpar localStorage do questionário
     localStorage.removeItem(STORAGE_KEY);
 
     setIsSubmitting(false);
-    onSubmit({ ...leadData, id: lead.id });
+    onSubmit({ ...leadData, id: leadId });
     } catch (error) {
       console.error('Erro ao enviar questionário:', error);
       toast.error('Erro ao enviar questionário. Tente novamente.');

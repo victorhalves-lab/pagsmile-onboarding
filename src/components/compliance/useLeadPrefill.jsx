@@ -383,23 +383,20 @@ export function useLeadPrefill(complianceQuestions) {
   const { data: lead } = useQuery({
     queryKey: ['leadForCompliance', resolvedLeadId, linkCode],
     queryFn: async () => {
-      // Prioridade 1: leadId explícito (URL ou salvo)
+      // Prioridade 1: leadId explícito (URL ou salvo) — via backend function
       if (resolvedLeadId) {
-        const leads = await base44.entities.Lead.filter({ id: resolvedLeadId });
-        return leads[0] || null;
+        const res = await base44.functions.invoke('publicReadData', {
+          kind: 'lead_for_prefill', leadId: resolvedLeadId,
+        });
+        return res.data?.lead || null;
       }
-      // Prioridade 2 (fallback): linkCode do localStorage
+      // Prioridade 2 (fallback): linkCode — via backend function
       if (linkCode) {
-        const leads = await base44.entities.Lead.filter(
-          { onboardingLinkCode: linkCode },
-          '-created_date',
-          1
-        );
-        const found = leads[0] || null;
-        // Se encontrou, salvar o leadId para futuras referências
-        if (found) {
-          localStorage.setItem('lead_id_for_compliance', found.id);
-        }
+        const res = await base44.functions.invoke('publicReadData', {
+          kind: 'lead_for_prefill_by_link', linkCode,
+        });
+        const found = res.data?.lead || null;
+        if (found) localStorage.setItem('lead_id_for_compliance', found.id);
         return found;
       }
       return null;
@@ -407,13 +404,15 @@ export function useLeadPrefill(complianceQuestions) {
     enabled: !!(resolvedLeadId || linkCode)
   });
 
-  // Buscar perguntas do questionário de leads original (para mapear respostas por texto)
+  // Buscar perguntas do questionário de leads original (Question tem read:true)
   const { data: leadQuestions = [] } = useQuery({
     queryKey: ['leadTemplateQuestions', lead?.leadQuestionnaireTemplateId],
-    queryFn: () => base44.entities.Question.filter(
-      { questionnaireTemplateId: lead.leadQuestionnaireTemplateId },
-      'order'
-    ),
+    queryFn: async () => {
+      const res = await base44.functions.invoke('publicReadContext', {
+        kind: 'questions_by_template', templateId: lead.leadQuestionnaireTemplateId,
+      });
+      return res.data?.questions || [];
+    },
     enabled: !!lead?.leadQuestionnaireTemplateId
   });
 

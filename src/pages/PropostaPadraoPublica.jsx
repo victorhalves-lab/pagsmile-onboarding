@@ -29,8 +29,10 @@ export default function PropostaPadraoPublica() {
     queryKey: ['std_proposta_publica', token],
     queryFn: async () => {
       if (!token) return null;
-      const results = await base44.entities.StandardProposal.filter({ tokenPublico: token });
-      return results[0] || null;
+      const res = await base44.functions.invoke('publicReadContext', {
+        kind: 'standard_proposal_by_token', token,
+      });
+      return res.data?.proposal || null;
     },
     enabled: !!token,
   });

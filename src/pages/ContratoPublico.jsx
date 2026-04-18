@@ -12,8 +12,8 @@ export default function ContratoPublico() {
   const { data: contract, isLoading } = useQuery({
     queryKey: ['contract-public', code],
     queryFn: async () => {
-      const contracts = await base44.entities.Contract.filter({ publicLinkCode: code });
-      return contracts?.[0] || null;
+      const res = await base44.functions.invoke('publicReadContext', { kind: 'contract_public', code });
+      return res.data?.contract || null;
     },
     enabled: !!code,
   });

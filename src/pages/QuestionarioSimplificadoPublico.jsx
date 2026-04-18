@@ -72,22 +72,15 @@ export default function QuestionarioSimplificadoPublico() {
     const seq = Math.floor(10000 + Math.random() * 90000);
     const prot = `PAG-QS-${year}-${seq}`;
 
-    await base44.entities.QuestionarioSimplificado.create({
-      ...formData,
-      protocolo: prot,
-      status: 'novo',
-      onboarding_link_code: refCode || undefined,
+    await base44.functions.invoke('publicLeadSubmit', {
+      kind: 'simplified',
+      linkCode: refCode || undefined,
+      simplifiedPayload: {
+        ...formData,
+        protocolo: prot,
+        onboarding_link_code: refCode || undefined,
+      },
     });
-
-    // Increment link submission count
-    if (refCode) {
-      const links = await base44.entities.OnboardingLink.filter({ uniqueCode: refCode });
-      if (links.length > 0) {
-        await base44.entities.OnboardingLink.update(links[0].id, {
-          submissionCount: (links[0].submissionCount || 0) + 1
-        });
-      }
-    }
 
     setProtocolo(prot);
     setSubmitted(true);
