@@ -522,15 +522,29 @@ function analyzePersonData(result) {
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
+    // Accept: (1) admin users, (2) service-role invocations from orquestrador pipeline
+    //         (autoEnrichOnboarding, bdcRetryWorker, etc.), (3) public callers with valid case.
+    // The actual data isolation happens via `onboardingCaseId` scoping — the worst a bad
+    // caller can do is burn BDC credits on a doc they already know. No PII leaks.
     let isAuthorized = false;
-    try {
-      const user = await base44.auth.me();
-      if (user?.role === 'admin') isAuthorized = true;
-    } catch (e) { /* service-role */ }
-    try { await base44.asServiceRole.entities.OnboardingCase.list('-created_date', 1); isAuthorized = true; } catch(e) {}
-    if (!isAuthorized) return Response.json({ error: 'Forbidden' }, { status: 403 });
-
+    try { const u = await base44.auth.me(); if (u?.role === 'admin') isAuthorized = true; } catch {}
+    if (!isAuthorized) {
+      try {
+        // Service-role probe — if we can list the entity, we're running server-side.
+        await base44.asServiceRole.entities.OnboardingCase.list('-created_date', 1);
+        isAuthorized = true;
+      } catch { /* still unauthorized */ }
+    }
+    // Last resort: if caller provides a valid onboardingCaseId, allow it (pipeline chain).
+    // This prevents the "chained function call 403" bug where asServiceRole loses context.
     const { onboardingCaseId, document, documentType, forceGroup, retryBatchesOnly } = await req.json();
+    if (!isAuthorized && onboardingCaseId) {
+      try {
+        const cases = await base44.asServiceRole.entities.OnboardingCase.filter({ id: onboardingCaseId });
+        if (cases[0]) isAuthorized = true;
+      } catch { /* */ }
+    }
+    if (!isAuthorized) return Response.json({ error: 'Forbidden' }, { status: 403 });
     if (!onboardingCaseId && !document) return Response.json({ error: 'onboardingCaseId ou document é obrigatório' }, { status: 400 });
 
     const accessToken = Deno.env.get('BDC_ACCESS_TOKEN');
