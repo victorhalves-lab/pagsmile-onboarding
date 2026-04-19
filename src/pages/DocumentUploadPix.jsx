@@ -14,6 +14,12 @@ const MODEL_CONFIG = {
     badgeLabel: 'PIX INTERMEDIÁRIO v4',
     badgeColor: 'bg-indigo-100 text-indigo-700',
   },
+  pix_api_enterprise: {
+    formDataStorageKey: 'compliance_data_pix_api_enterprise',
+    documentsStorageKey: 'documents_pix_api_enterprise',
+    badgeLabel: 'PIX API ENTERPRISE',
+    badgeColor: 'bg-blue-100 text-blue-700',
+  },
   // Legacy fallback
   pix: {
     formDataStorageKey: 'compliance_data_pix',
