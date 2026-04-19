@@ -19,13 +19,18 @@ function loadScript(src) {
     const existing = document.querySelector(`script[data-caf-lab="${src}"]`);
     if (existing && existing.dataset.loaded === 'true') return resolve();
     if (existing) existing.remove();
+    // NO crossorigin attribute — CAF CDN doesn't set CORS headers for script tags,
+    // and crossorigin="anonymous" forces CORS mode which then fails silently.
+    // Plain <script> tag works because browser doesn't require CORS for classic scripts.
     const s = document.createElement('script');
     s.src = src;
     s.async = true;
     s.setAttribute('data-caf-lab', src);
-    s.setAttribute('crossorigin', 'anonymous');
     s.onload = () => { s.dataset.loaded = 'true'; resolve(); };
-    s.onerror = () => reject(new Error(`Falha ao carregar ${src}`));
+    s.onerror = (ev) => {
+      // Network blocked (AdBlock/CSP/DNS) — script never executes
+      reject(new Error(`Falha ao carregar ${src} — verifique bloqueadores (AdBlock/uBlock), CSP do navegador ou conectividade com repo.combateafraude.com`));
+    };
     document.body.appendChild(s);
   });
 }
@@ -90,14 +95,23 @@ export default function CafSdkTests() {
       setSdkToken(tokenRes.data.sdkToken);
       setPersonId(tokenRes.data.personId);
 
-      // 2. Load SDK scripts
+      // 2. Load SDK scripts (sequencial — assim identificamos qual falhou)
       preloadWasm(CAF_DD_WASM_URL);
-      await Promise.all([loadScript(CAF_DD_SDK_URL), loadScript(CAF_FL_SDK_URL)]);
+      try {
+        await loadScript(CAF_DD_SDK_URL);
+      } catch (e) {
+        throw new Error(`[DocumentDetector SDK] ${e.message}`);
+      }
+      try {
+        await loadScript(CAF_FL_SDK_URL);
+      } catch (e) {
+        throw new Error(`[FaceLiveness SDK] ${e.message}`);
+      }
 
       const ddModule = window['@combateafraude/document-detector'];
       const flModule = window['CafFaceLiveness'];
-      if (!ddModule?.DocumentDetector) throw new Error('DocumentDetector não disponível após load');
-      if (!flModule) throw new Error('FaceLiveness não disponível após load');
+      if (!ddModule?.DocumentDetector) throw new Error('DocumentDetector carregou mas window["@combateafraude/document-detector"].DocumentDetector está undefined');
+      if (!flModule) throw new Error('FaceLiveness carregou mas window["CafFaceLiveness"] está undefined');
 
       setSdksLoaded(true);
     } catch (err) {
