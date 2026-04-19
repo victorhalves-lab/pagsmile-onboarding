@@ -62,6 +62,7 @@ import GestaoPerfis from './pages/GestaoPerfis';
 import EditorPerfil from './pages/EditorPerfil';
 import GestaoUsuarios from './pages/GestaoUsuarios';
 import AuditoriaAcessos from './pages/AuditoriaAcessos';
+import CafTestLab from './pages/CafTestLab';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -382,6 +383,7 @@ const AuthenticatedApp = () => {
       <Route path="/EditorPerfil" element={<LayoutWrapper currentPageName="EditorPerfil"><EditorPerfil /></LayoutWrapper>} />
       <Route path="/GestaoUsuarios" element={<LayoutWrapper currentPageName="GestaoUsuarios"><GestaoUsuarios /></LayoutWrapper>} />
       <Route path="/AuditoriaAcessos" element={<LayoutWrapper currentPageName="AuditoriaAcessos"><AuditoriaAcessos /></LayoutWrapper>} />
+      <Route path="/CafTestLab" element={<LayoutWrapper currentPageName="CafTestLab"><CafTestLab /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

@@ -160,6 +160,7 @@ export default function Layout({ children, currentPageName }) {
       icon: Plug,
       items: [
         { label: t('menu.caf_bigdatacorp'), path: 'IntegracoesExternas', icon: Plug },
+        { label: 'CAF Test Lab', path: 'CafTestLab', icon: Wrench, adminOnly: true },
         { label: t('menu.helena_ai'), path: 'HelenaIA', icon: Brain },
       ]
     },
