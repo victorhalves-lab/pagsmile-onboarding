@@ -86,44 +86,67 @@ export default function PropostaPublica() {
   };
 
   // Mutations — all go through publicProposalAction (server-side service role)
+  //
+  // ROBUSTNESS NOTES (fix for "página não encontrada" bug — case: ScaleFi 2026-04-18):
+  // 1. Accept is idempotent on the server (status transitions only) — we retry once on network failure.
+  // 2. Steps after accept (lead fetch, URL build) NEVER throw — they use safe fallbacks.
+  //    If accept succeeds on the backend but a side-effect fails, the user is still redirected.
+  // 3. No setTimeout delay before redirect — if the user closes the tab, they should still be redirected.
   const aceitarMutation = useMutation({
     mutationFn: async () => {
-      const res = await base44.functions.invoke('publicProposalAction', {
+      // Step 1 — Accept on backend (with one retry on transient failures)
+      const invokeAccept = async () => base44.functions.invoke('publicProposalAction', {
         token,
         type: 'proposal',
         action: 'accept',
       });
-      if (res.data?.error) throw new Error(res.data.error);
-
-      const lead = await fetchLeadForCompliance(proposta.leadId);
-
-      // Proposta tem prioridade sobre o lead pois comercial pode ter ajustado o segmento
-      const model = proposta.businessSubCategory
-        ? resolveComplianceModel({ businessSubCategory: proposta.businessSubCategory })
-        : resolveComplianceModel(lead || {});
-
-      const keysToClean = [
-        'compliance_session_token',
-        'compliance_data_merchant', 'compliance_data_gateway', 'compliance_data_marketplace',
-        'compliance_data_merchant_v2', 'compliance_data_gateway_v2', 'compliance_data_marketplace_v2',
-        'compliance_data_pix',
-      ];
-      keysToClean.forEach(key => localStorage.removeItem(key));
-      if (proposta.leadId) {
-        localStorage.setItem('lead_id_for_compliance', proposta.leadId);
+      let res;
+      try {
+        res = await invokeAccept();
+      } catch (e) {
+        // network/timeout — retry once
+        await new Promise(r => setTimeout(r, 800));
+        res = await invokeAccept();
       }
-      const complianceUrl = `${window.location.origin}/ComplianceDinamico?model=${model}&leadId=${proposta.leadId || ''}`;
+      if (res?.data?.error) throw new Error(res.data.error);
+      if (!res?.data?.ok) throw new Error('Não foi possível registrar o aceite. Tente novamente.');
 
-      base44.analytics.track({
-        eventName: 'proposta_aceita',
-        properties: {
-          proposal_id: proposta.id,
-          proposal_code: proposta.codigo || '',
-          client_name: proposta.clienteNome || '',
-          business_sub_category: proposta.businessSubCategory || '',
-          success: true
+      // Step 2 — Build compliance URL (NEVER throw — side effects are best-effort)
+      let complianceUrl = null;
+      try {
+        const lead = await fetchLeadForCompliance(proposta.leadId); // returns null on error
+        const model = proposta.businessSubCategory
+          ? resolveComplianceModel({ businessSubCategory: proposta.businessSubCategory })
+          : resolveComplianceModel(lead || {});
+
+        const keysToClean = [
+          'compliance_session_token',
+          'compliance_data_merchant', 'compliance_data_gateway', 'compliance_data_marketplace',
+          'compliance_data_merchant_v2', 'compliance_data_gateway_v2', 'compliance_data_marketplace_v2',
+          'compliance_data_pix',
+        ];
+        keysToClean.forEach(key => { try { localStorage.removeItem(key); } catch {} });
+        if (proposta.leadId) {
+          try { localStorage.setItem('lead_id_for_compliance', proposta.leadId); } catch {}
         }
-      });
+        complianceUrl = `${window.location.origin}/ComplianceDinamico?model=${model}${proposta.leadId ? `&leadId=${proposta.leadId}` : ''}`;
+      } catch (_) {
+        // Absolute fallback: use default model, no leadId
+        complianceUrl = `${window.location.origin}/ComplianceDinamico`;
+      }
+
+      try {
+        base44.analytics.track({
+          eventName: 'proposta_aceita',
+          properties: {
+            proposal_id: proposta.id,
+            proposal_code: proposta.codigo || '',
+            client_name: proposta.clienteNome || '',
+            business_sub_category: proposta.businessSubCategory || '',
+            success: true
+          }
+        });
+      } catch {}
 
       return complianceUrl;
     },
@@ -131,12 +154,14 @@ export default function PropostaPublica() {
       toast.success(t('pp.proposal_accepted_success'));
       queryClient.invalidateQueries({ queryKey: ['proposta_publica', token] });
       setShowAceiteModal(false);
-      
+      // Redirect IMMEDIATELY — no setTimeout. If user closes the tab, they miss nothing;
+      // the accept is already persisted, and a reload shows the "accepted" state with the button.
       if (complianceUrl) {
-        setTimeout(() => {
-          window.location.href = complianceUrl;
-        }, 2000);
+        window.location.href = complianceUrl;
       }
+    },
+    onError: (err) => {
+      toast.error(err?.message || 'Erro ao registrar o aceite. Tente novamente.');
     }
   });
 

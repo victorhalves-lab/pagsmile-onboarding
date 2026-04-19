@@ -57,6 +57,14 @@ Deno.serve(async (req) => {
         break;
 
       case 'accept':
+        // Idempotent: if already accepted, return ok without re-writing (prevents duplicate activities)
+        if (proposta.status === 'aceita') {
+          return Response.json({ ok: true, skipped: true, proposta });
+        }
+        // Do not allow accepting an already-rejected/countered/expired proposal
+        if (['recusada', 'expirada', 'cancelada'].includes(proposta.status)) {
+          return Response.json({ error: `Proposta já está ${proposta.status} e não pode ser aceita.` }, { status: 409 });
+        }
         proposalUpdates = { status: 'aceita', acceptedDate: now };
         leadStatus = 'proposta_aceita';
         activityType = 'proposta_aceita';
