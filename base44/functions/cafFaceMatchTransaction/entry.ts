@@ -167,8 +167,8 @@ Deno.serve(async (req) => {
       }, { status: 200 });
     }
 
-    const authToken = Deno.env.get('CAF_CLIENT_SECRET');
-    if (!authToken) throw new Error('CAF_CLIENT_SECRET not configured');
+    const authToken = Deno.env.get('CAF_CORE_API_TOKEN');
+    if (!authToken) throw new Error('CAF_CORE_API_TOKEN not configured');
 
     // ── Cria transação com selfie ──
     const cleanB64 = stripDataUri(selfieBase64);

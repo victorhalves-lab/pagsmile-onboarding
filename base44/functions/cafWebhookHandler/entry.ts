@@ -24,8 +24,8 @@ const CAF_KNOWN_IPS = new Set([
 ]);
 
 function getCafToken() {
-  const token = Deno.env.get('CAF_CLIENT_SECRET');
-  if (!token) throw new Error('CAF_CLIENT_SECRET not configured');
+  const token = Deno.env.get('CAF_CORE_API_TOKEN');
+  if (!token) throw new Error('CAF_CORE_API_TOKEN not configured');
   return token;
 }
 

@@ -16,8 +16,8 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 const CAF_API_BASE = 'https://api.combateafraude.com';
 
 function getCafToken() {
-  const token = Deno.env.get('CAF_CLIENT_SECRET');
-  if (!token) throw new Error('CAF_CLIENT_SECRET not configured');
+  const token = Deno.env.get('CAF_CORE_API_TOKEN');
+  if (!token) throw new Error('CAF_CORE_API_TOKEN not configured');
   return token;
 }
 

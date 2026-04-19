@@ -1,18 +1,19 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 /**
- * cafTestAuth — Testa autenticação CAF com Mobile Key (client-id + client-secret cru).
+ * cafTestAuth — Testa autenticação CAF em TODOS os domínios.
  *
- * Fluxo CORRETO atual (pós troca de credenciais):
- *   1. Assina JWT HS256 com CAF_CLIENT_SECRET (iss=CAF_CLIENT_ID, exp curto)
- *   2. Usa esse JWT como Bearer token na Core API
+ * Dois contextos completamente distintos:
+ *   1. Core API (api.combateafraude.com) — usa CAF_CORE_API_TOKEN (JWT estático gerado
+ *      no Trust Platform → Tokens). Começa com "eyJhbGci..." e tem iss=ckid_...
+ *   2. SDK Web (BFF /bff/session-tokens) — usa CAF_CLIENT_ID + CAF_CLIENT_SECRET (Mobile Key)
+ *      para assinar um JWT HS256 on-demand e trocar por sessionToken.
  *
- * Antes da troca, o secret já era um JWT pré-pronto — não precisava assinar.
- * Agora o secret é o segredo cru (84 chars), então precisamos assinar a cada chamada.
+ * Doc: https://docs.caf.io/caf-api/core-api/authentication
  */
 
-// ── Helper: HS256 JWT sign ──
-async function signCafJwt(clientId, clientSecret, ttlSeconds = 300) {
+// ── Helper: assina JWT HS256 com client-secret cru da Mobile Key ──
+async function signMobileJwt(clientId, clientSecret, ttlSeconds = 300) {
   const header = { alg: 'HS256', typ: 'JWT' };
   const now = Math.floor(Date.now() / 1000);
   const payload = { iss: clientId, exp: now + ttlSeconds };
@@ -68,54 +69,59 @@ Deno.serve(async (req) => {
 
     const CAF_CLIENT_ID = Deno.env.get('CAF_CLIENT_ID');
     const CAF_CLIENT_SECRET = Deno.env.get('CAF_CLIENT_SECRET');
+    const CAF_CORE_API_TOKEN = Deno.env.get('CAF_CORE_API_TOKEN');
 
+    if (!CAF_CORE_API_TOKEN) {
+      return Response.json({ error: 'CAF_CORE_API_TOKEN não configurado (JWT estático do Trust Platform)' }, { status: 500 });
+    }
     if (!CAF_CLIENT_ID || !CAF_CLIENT_SECRET) {
-      return Response.json({ error: 'CAF_CLIENT_ID ou CAF_CLIENT_SECRET não configurados' }, { status: 500 });
+      return Response.json({ error: 'CAF_CLIENT_ID ou CAF_CLIENT_SECRET não configurados (Mobile Key)' }, { status: 500 });
     }
 
-    // ── Gerar JWT fresco assinado com o client-secret ──
-    const jwt = await signCafJwt(CAF_CLIENT_ID, CAF_CLIENT_SECRET, 300);
-    const bearer = `Bearer ${jwt}`;
+    const coreBearer = `Bearer ${CAF_CORE_API_TOKEN}`;
+    const mobileJwt = await signMobileJwt(CAF_CLIENT_ID, CAF_CLIENT_SECRET, 300);
 
     const results = [];
 
+    // ═══ CORE API (api.combateafraude.com) — usa CAF_CORE_API_TOKEN ═══
     results.push(await testEndpoint(
-      '1: Core API — List Transactions (JWT Bearer)',
+      '1: Core API — List Transactions',
       'https://api.combateafraude.com/v1/transactions?_limit=1',
-      'GET', { 'Authorization': bearer }
+      'GET', { 'Authorization': coreBearer }
     ));
 
     results.push(await testEndpoint(
       '2: Core API — Create Transaction (pfBasicData)',
       'https://api.combateafraude.com/v1/transactions',
-      'POST', { 'Authorization': bearer },
+      'POST', { 'Authorization': coreBearer },
       { template: { services: ['pfBasicData'] }, parameters: { cpf: '00000000000' } }
     ));
 
     results.push(await testEndpoint(
       '3: Core API — Get Person Profile',
       'https://api.combateafraude.com/v1/people/00000000000',
-      'GET', { 'Authorization': bearer }
+      'GET', { 'Authorization': coreBearer }
     ));
 
     results.push(await testEndpoint(
       '4: Core API — Create Onboarding (test)',
       'https://api.combateafraude.com/v1/onboardings?origin=TRUST',
-      'POST', { 'Authorization': bearer },
+      'POST', { 'Authorization': coreBearer },
       { type: 'PF', transactionTemplateId: 'test-dummy-id', noNotification: true }
     ));
 
     results.push(await testEndpoint(
       '5: Core API — Faces endpoint',
       'https://api.combateafraude.com/v1/faces',
-      'POST', { 'Authorization': bearer },
+      'POST', { 'Authorization': coreBearer },
       { personId: '00000000000', imageUrl: 'https://example.com/test.png' }
     ));
 
+    // ═══ SDK Web BFF — usa Mobile Key (JWT HS256 assinado) ═══
     results.push(await testEndpoint(
-      '6: BFF — Session Token Exchange (auth sanity)',
+      '6: BFF — Session Token Exchange (Mobile Key)',
       'https://web.us.prd.caf.io/bff/session-tokens',
-      'GET', { 'Authorization': jwt } // BFF espera SEM "Bearer"
+      'GET', { 'Authorization': mobileJwt } // BFF espera SEM "Bearer"
     ));
 
     const summary = results.map(r => ({
@@ -125,10 +131,16 @@ Deno.serve(async (req) => {
 
     return Response.json({
       credentials: {
-        clientId: CAF_CLIENT_ID,
-        clientSecretLength: CAF_CLIENT_SECRET.length,
-        clientSecretPrefix: CAF_CLIENT_SECRET.substring(0, 8) + '...',
-        jwtGeneratedLength: jwt.length,
+        coreApiToken: {
+          present: true,
+          length: CAF_CORE_API_TOKEN.length,
+          prefix: CAF_CORE_API_TOKEN.substring(0, 12) + '...',
+        },
+        mobileKey: {
+          clientId: CAF_CLIENT_ID,
+          clientSecretLength: CAF_CLIENT_SECRET.length,
+          jwtGeneratedLength: mobileJwt.length,
+        },
       },
       summary,
       details: results,
