@@ -146,6 +146,14 @@ const MODEL_CONFIG = {
     badgeLabel: 'PIX INTERMEDIÁRIO v4',
     badgeColor: 'bg-indigo-100 text-indigo-700',
   },
+  // PIX API Enterprise — fluxo simplificado para grandes contas com enriquecimento BDC massivo
+  pix_api_enterprise: {
+    storageKey: 'compliance_data_pix_api_enterprise',
+    documentUploadPage: 'DocumentUploadPix',
+    flowType: 'pix',
+    badgeLabel: 'PIX API ENTERPRISE',
+    badgeColor: 'bg-blue-100 text-blue-700',
+  },
   subseller_v2: {
     storageKey: 'compliance_data_subseller_v2',
     documentUploadPage: 'DocumentUploadFull',

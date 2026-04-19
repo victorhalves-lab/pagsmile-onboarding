@@ -52,6 +52,7 @@ const SEGMENT_BASE_SCORES = {
   'ComplianceMPEV4': 35,
   'CompliancePixMerchantV4': 65, 'pix_merchant_v4': 65,
   'pix_intermediario_v4': 155,
+  'pix_api_enterprise': 200,
   'subseller': 45, 'subseller_v2': 45, 'subseller_pf': 30,
 };
 

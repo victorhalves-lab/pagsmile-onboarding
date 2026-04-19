@@ -42,6 +42,7 @@ export default function ComplianceCaseFilters({
               <SelectItem value="ComplianceDropshippingV4">Dropshipping v4</SelectItem>
               <SelectItem value="CompliancePixMerchantV4">PIX Merchant v4</SelectItem>
               <SelectItem value="CompliancePixIntermediarioV4">PIX Intermediário v4</SelectItem>
+              <SelectItem value="pix_api_enterprise">PIX API Enterprise</SelectItem>
               <SelectItem value="subseller_v2">Subseller v2</SelectItem>
               <SelectItem value="merchant">Merchant (legado)</SelectItem>
               <SelectItem value="gateway">Gateway (legado)</SelectItem>

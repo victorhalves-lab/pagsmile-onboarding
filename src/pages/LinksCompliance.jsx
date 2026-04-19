@@ -46,6 +46,7 @@ export default function LinksCompliance() {
   const quickLinksPixV4 = [
     { key: 'PIX_MERCHANT_V4', label: 'PIX Merchant v4', desc: '40 perguntas em 8 blocos. Compliance PIX + Conta para merchants. Foco em volume, natureza, PLD/FT e UBOs. Pré-preenchimento Lead.', icon: CreditCard, color: '#2bc196', url: `${base}/ComplianceDinamico?model=CompliancePixMerchantV4` },
     { key: 'PIX_INTERMEDIARIO_V4', label: 'PIX Intermediário v4', desc: '47 perguntas em 8 blocos. Compliance PIX + Conta para intermediários (Gateway/PSP, Marketplace, Plataforma). Foco em split, anti-bolção, MED e regulatório BCB.', icon: Globe, color: '#4f46e5', url: `${base}/ComplianceDinamico?model=CompliancePixIntermediarioV4` },
+    { key: 'PIX_API_ENTERPRISE', label: 'PIX API Enterprise', desc: '~30 perguntas em 6 passos. Fluxo simplificado para grandes contas — autocomplete BDC massivo + enriquecimento automático de 40+ datasets. Liveness/Facematch + PLD/FT obrigatórios.', icon: Shield, color: '#2563eb', url: `${base}/ComplianceDinamico?model=pix_api_enterprise` },
   ];
 
   const quickLinksV4 = [

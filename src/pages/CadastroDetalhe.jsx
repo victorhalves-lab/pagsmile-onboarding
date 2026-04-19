@@ -17,6 +17,7 @@ import CadastroContratoTab from '@/components/cadastro/CadastroContratoTab';
 import CadastroHistoricoTab from '@/components/cadastro/CadastroHistoricoTab';
 import CadastroEnrichmentTab from '@/components/cadastro/CadastroEnrichmentTab';
 import CadastroRegulatoryPanel from '@/components/cadastro/CadastroRegulatoryPanel';
+import EnterpriseExecutiveSummary from '@/components/cadastro/EnterpriseExecutiveSummary';
 import DownloadDossieButton from '@/components/cadastro/DownloadDossieButton';
 import { segmentLabel } from '@/lib/segmentLabels';
 
@@ -389,7 +390,16 @@ export default function CadastroDetalhe() {
           <CadastroRegulatoryPanel merchant={merchant} latestCase={latestCase} validations={validations} integrationLogs={integrationLogs} score={latestScore} />
         </TabsContent>
         <TabsContent value="enrichment">
-          <CadastroEnrichmentTab validations={validations} integrationLogs={integrationLogs} />
+          <div className="space-y-4">
+            <EnterpriseExecutiveSummary
+              onboardingCase={latestCase}
+              merchant={merchant}
+              complianceScore={latestScore}
+              validations={validations}
+              integrationLogs={integrationLogs}
+            />
+            <CadastroEnrichmentTab validations={validations} integrationLogs={integrationLogs} />
+          </div>
         </TabsContent>
         <TabsContent value="historico">
           <CadastroHistoricoTab auditLogs={auditLogs} />
