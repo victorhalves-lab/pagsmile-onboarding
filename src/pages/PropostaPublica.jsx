@@ -539,6 +539,16 @@ export default function PropostaPublica() {
         </Card>
       </div>
 
+      {/* Disclaimer: 100% antecipação está sujeita à análise de Compliance */}
+      {parseFloat(rates.percentualAntecipacao) >= 100 && (
+        <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 flex items-start gap-3">
+          <Info className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+          <p className="text-xs text-amber-800 leading-relaxed">
+            <span className="font-semibold">Importante:</span> a antecipação de 100% do TPV, bem como casos com subcontas/subsellers, está sujeita à análise de Compliance. O volume total efetivamente antecipado poderá ser ajustado conforme o resultado dessa análise.
+          </p>
+        </div>
+      )}
+
       {/* Tabela de Parcelas */}
       <Card className="mb-8">
         <CardContent className="py-4">
