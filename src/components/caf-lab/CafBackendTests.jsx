@@ -53,6 +53,7 @@ const BACKEND_TESTS = [
     function: 'cafFaceMatchTransaction',
     payload: (ctx) => ({
       onboardingCaseId: ctx.onboardingCaseId,
+      docLinkToken: ctx.docLinkToken || undefined,
       selfieBase64: ctx.selfieBase64,
     }),
     success: (data) => data?.success === true,

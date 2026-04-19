@@ -139,9 +139,15 @@ Deno.serve(async (req) => {
     } catch {
       theCase = null;
     }
-    if (!theCase) return Response.json({ error: 'Case not found' }, { status: 404 });
+    if (!theCase) {
+      return Response.json({
+        error: 'Case not found',
+        hint: 'Use um onboardingCaseId válido. Clique em "↻ Último caso" no Lab para carregar automaticamente.',
+        receivedId: onboardingCaseId,
+      }, { status: 404 });
+    }
     if (theCase.docLinkToken && theCase.docLinkToken !== docLinkToken) {
-      return Response.json({ error: 'Invalid token' }, { status: 403 });
+      return Response.json({ error: 'Invalid docLinkToken', hint: 'Clique em "↻ Último caso" para sincronizar token e caseId.' }, { status: 403 });
     }
 
     // ── Resolve CPF/nome via lastro (inline — evita erro de permissão SDK) ──
