@@ -102,6 +102,12 @@ export default function CriarProposta() {
     enabled: !!leadId && !editId
   });
 
+  const { data: existingProposal } = useQuery({
+    queryKey: ['proposal-edit', editId],
+    queryFn: async () => { const proposals = await base44.entities.Proposal.filter({ id: editId }); return proposals[0] || null; },
+    enabled: !!editId
+  });
+
   // FIX BUG #1: When editing a proposal that has no leadId but has a CNPJ,
   // try to find the matching Lead and auto-link it. Also useful when comercial
   // creates a proposal for a CNPJ that already exists as a Lead.
@@ -123,12 +129,6 @@ export default function CriarProposta() {
 
   // Effective leadId: priority URL param → existing proposal → auto-linked by CNPJ
   const effectiveLeadId = leadId || existingProposal?.leadId || autoLinkedLeadId || '';
-
-  const { data: existingProposal } = useQuery({
-    queryKey: ['proposal-edit', editId],
-    queryFn: async () => { const proposals = await base44.entities.Proposal.filter({ id: editId }); return proposals[0] || null; },
-    enabled: !!editId
-  });
 
   // Load all active partners for the selected partner
   const { data: allPartners = [] } = useQuery({
