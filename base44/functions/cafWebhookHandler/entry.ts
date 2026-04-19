@@ -192,6 +192,61 @@ Deno.serve(async (req) => {
       } catch { /* */ }
     }
 
+    // 3rd resolver: externalId (passado no query param cadastro.io/xxx?externalId=CASE_ID)
+    // Essencial para vincular resultados do fallback oficial CAF (cadastro.io) ao case correto.
+    // externalId pode vir em attributes/variables/metadata conforme versão da API CAF.
+    if (!onboardingCaseId) {
+      const externalId =
+        body.attributes?.externalId ||
+        body.variables?.externalId ||
+        body.metadata?.externalId ||
+        body.externalId || '';
+      if (externalId) {
+        try {
+          const cases = await base44.asServiceRole.entities.OnboardingCase.filter({ id: externalId });
+          if (cases[0]) {
+            onboardingCaseId = cases[0].id;
+            console.log(`[CAF-Webhook] Case resolved via externalId: ${onboardingCaseId}`);
+          }
+        } catch (e) {
+          console.warn('[CAF-Webhook] externalId lookup failed:', e.message);
+        }
+      }
+    }
+
+    // 4th resolver: buscar CNPJ via GET /v1/transactions/{uuid} e vincular por Merchant.cpfCnpj.
+    // Usado quando o link cadastro.io é estático e o cliente não veio do nosso SDK (sem IntegrationLog prévio).
+    if (!onboardingCaseId && transactionId) {
+      try {
+        const authToken = getCafToken();
+        const txRes = await fetch(
+          `${CAF_API_BASE}/v1/transactions/${transactionId}?_lang=pt`,
+          { method: 'GET', headers: { 'Authorization': `Bearer ${authToken}` } }
+        );
+        if (txRes.ok) {
+          const tx = await txRes.json().catch(() => null);
+          const cnpj = (
+            tx?.parameters?.cnpj ||
+            tx?.attributes?.cnpj ||
+            tx?.sections?.pjData?.data?.taxIdNumber ||
+            ''
+          ).replace(/\D/g, '');
+          if (cnpj && cnpj.length === 14) {
+            const merchants = await base44.asServiceRole.entities.Merchant.filter({ cpfCnpj: cnpj });
+            if (merchants[0]) {
+              const cases = await base44.asServiceRole.entities.OnboardingCase.filter({ merchantId: merchants[0].id });
+              if (cases[0]) {
+                onboardingCaseId = cases[0].id;
+                console.log(`[CAF-Webhook] Case resolved via CNPJ ${cnpj.slice(0,8)}***: ${onboardingCaseId}`);
+              }
+            }
+          }
+        }
+      } catch (e) {
+        console.warn('[CAF-Webhook] CNPJ resolver failed:', e.message);
+      }
+    }
+
     // Update existing IntegrationLog
     if (relatedLog) {
       try {

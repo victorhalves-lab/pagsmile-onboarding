@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   AlertCircle, RefreshCw, Upload, Lightbulb, Camera, 
-  Wifi, Eye, CircleOff, FileWarning, Shield
+  Wifi, Eye, CircleOff, FileWarning, Shield, ExternalLink
 } from 'lucide-react';
 
 /**
@@ -215,6 +215,8 @@ export default function CafErrorDiagnostic({
   onRetry,
   onManualFallback,
   onBdcFallback,
+  cafFallbackUrl,          // ← URL do cadastro.io do segmento (já com ?externalId=...&cnpj=...)
+  onCafFallbackClick,      // ← callback de rastreio (log IntegrationLog) antes de abrir
 }) {
   const info = classifyError(errorName, errorMessage);
   const colors = COLOR_CLASSES[info.color] || COLOR_CLASSES.slate;
@@ -286,6 +288,21 @@ export default function CafErrorDiagnostic({
           >
             <RefreshCw className="w-4 h-4 mr-2" /> Tentar Novamente
           </Button>
+        )}
+
+        {/* Fallback CAF onboarding oficial (cadastro.io) — aparece na 2ª falha.
+             Vínculo ao cliente via externalId = onboardingCaseId (query param). */}
+        {cafFallbackUrl && attemptCount >= 2 && (
+          <a
+            href={cafFallbackUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => { try { onCafFallbackClick?.(); } catch {} }}
+            className="inline-flex items-center justify-center h-11 rounded-xl bg-[#002443] hover:bg-[#002443]/90 text-white font-semibold text-sm transition-all px-4 shadow-lg shadow-[#002443]/20"
+          >
+            <ExternalLink className="w-4 h-4 mr-2" />
+            Fazer direto no onboarding oficial CAF
+          </a>
         )}
 
         {(info.primaryAction === 'manual' || info.secondaryAction === 'manual' || attemptCount >= 2 || tokenType === 'fallback') && onManualFallback && (

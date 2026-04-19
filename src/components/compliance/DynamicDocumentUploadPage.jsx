@@ -492,6 +492,23 @@ export default function DynamicDocumentUploadPage({
             personName={getPersonData().name}
             personCpf={getPersonData().cpf}
             onboardingCaseId={localStorage.getItem('created_onboarding_case_id') || ''}
+            complianceModel={templateModel}
+            merchantCnpj={(() => {
+              const fd = JSON.parse(localStorage.getItem(formDataStorageKey) || '{}');
+              for (const q of questions) {
+                const text = (q.text || '').toLowerCase();
+                if (text.includes('cnpj') && fd[q.id]) return String(fd[q.id]);
+              }
+              return '';
+            })()}
+            merchantEmail={(() => {
+              const fd = JSON.parse(localStorage.getItem(formDataStorageKey) || '{}');
+              for (const q of questions) {
+                const text = (q.text || '').toLowerCase();
+                if ((text.includes('email') || text.includes('e-mail')) && fd[q.id]) return String(fd[q.id]);
+              }
+              return '';
+            })()}
             onComplete={(result) => {
               // Store the result in a ref so handleFinalSubmit can access it immediately
               // (setState is async so cafResult wouldn't be available yet)

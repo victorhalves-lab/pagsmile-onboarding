@@ -12,6 +12,7 @@ import CafDifficultyModal from './CafDifficultyModal';
 import CafManualSelfieUpload from './CafManualSelfieUpload';
 import BdcFallbackVerification from './BdcFallbackVerification';
 import CafErrorDiagnostic from './CafErrorDiagnostic';
+import { buildCafFallbackUrl } from '@/lib/cafOnboardingLinks';
 
 /**
  * CAF SDK Web Integration — DocumentDetector + FaceLiveness
@@ -144,7 +145,10 @@ async function persistCafResult(payload) {
 }
 
 export default function CafVerificationStep({ 
-  personName, personCpf, onComplete, onboardingCaseId 
+  personName, personCpf, onComplete, onboardingCaseId,
+  complianceModel,   // ← ex: 'ComplianceGatewayV4' — usado para montar link do cadastro.io
+  merchantCnpj,      // ← pré-preenchimento no link CAF + vínculo via CNPJ no webhook
+  merchantEmail,     // ← pré-preenchimento opcional
 }) {
   const [phase, setPhase] = useState('ready');
   const [loading, setLoading] = useState(false);
@@ -933,6 +937,31 @@ export default function CafVerificationStep({
             onRetry={handleRetry}
             onManualFallback={handleManualFallback}
             onBdcFallback={() => { setBdcFallback(true); setPhase('bdc_fallback'); setError(null); setErrorName(null); }}
+            cafFallbackUrl={buildCafFallbackUrl(complianceModel, {
+              onboardingCaseId,
+              cnpj: merchantCnpj,
+              cpf: resolvedPerson?.cpf || personCpf,
+              name: resolvedPerson?.name || personName,
+              email: merchantEmail,
+            })}
+            onCafFallbackClick={() => {
+              try {
+                base44.functions.invoke('cafFallbackLinkOpened', {
+                  onboardingCaseId: onboardingCaseId || '',
+                  docLinkToken,
+                  complianceModel: complianceModel || '',
+                  fallbackUrl: buildCafFallbackUrl(complianceModel, {
+                    onboardingCaseId, cnpj: merchantCnpj,
+                    cpf: resolvedPerson?.cpf || personCpf,
+                    name: resolvedPerson?.name || personName,
+                    email: merchantEmail,
+                  }) || '',
+                  attemptCount: Math.max(retryCount + 1, livenessAttempts),
+                  errorName: errorName || '',
+                  errorMessage: error || '',
+                }).catch(() => {});
+              } catch {}
+            }}
           />
         </div>
       )}
