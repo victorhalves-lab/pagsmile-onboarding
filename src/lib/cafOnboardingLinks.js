@@ -20,6 +20,9 @@ export const CAF_ONBOARDING_LINKS_BY_COMPLIANCE_V4 = {
   CompliancePlataformaVerticalV4: 'https://cadastro.io/c970cf175a8facad0185d452edf39ccb',
   ComplianceSaaSV4:               'https://cadastro.io/597a5b430412b83fa526211e0e9beb7e',
   ComplianceMarketplaceV4:        'https://cadastro.io/119c66a9c7f1e2618b20b3a41f656d3b',
+  // PIX — mesmo link oficial para merchant e intermediário
+  CompliancePixMerchantV4:        'https://cadastro.io/22bd30f9dfad265e9c5f8497bbbea476',
+  CompliancePixIntermediarioV4:   'https://cadastro.io/22bd30f9dfad265e9c5f8497bbbea476',
 };
 
 /**
