@@ -120,7 +120,7 @@ Deno.serve(async (req) => {
       contactRole: formData.contactRole,
       website: formData.website,
       businessSubCategory: businessSubCategory || 'ecommerce',
-      status: 'questionario_preenchido',
+      status: 'proposta_aceita',
       origemLead,
       tpvMensal: tpvReais,
       questionnaireData: {
@@ -166,9 +166,15 @@ Deno.serve(async (req) => {
     const slugSuffix = Array.from({ length: 4 }, () => 'abcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random() * 36))).join('');
     const validUntil = new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString();
 
+    // When a client submits FechamentoLandingPage, they ARE accepting the proposed rates.
+    // So the proposal must be created as "aceita" (accepted), not "rascunho" — this is
+    // a fully-closed deal, not a draft pending review.
+    const nowIso = new Date().toISOString();
     const proposalPayload = {
       leadId: createdLead.id,
-      status: 'rascunho',
+      status: 'aceita',
+      sentDate: nowIso,
+      acceptedDate: nowIso,
       rates: proposalRates,
       clienteNome: createdLead.fullName,
       clienteCnpj: createdLead.cpfCnpj,
@@ -189,11 +195,25 @@ Deno.serve(async (req) => {
     const createdProposal = await base44.asServiceRole.entities.Proposal.create(proposalPayload);
 
     // 6. Link everything
-    await base44.asServiceRole.entities.Lead.update(createdLead.id, { currentProposalId: createdProposal.id });
+    await base44.asServiceRole.entities.Lead.update(createdLead.id, {
+      currentProposalId: createdProposal.id,
+      lastInteractionDate: nowIso,
+    });
     await base44.asServiceRole.entities[originEntity].update(createdOriginLead.id, {
       leadId: createdLead.id,
       proposalId: createdProposal.id,
     });
+
+    // 7. Log proposal acceptance activity
+    try {
+      await base44.asServiceRole.entities.LeadActivity.create({
+        leadId: createdLead.id,
+        activityType: 'proposta_aceita',
+        description: `Cliente aceitou proposta padrão via landing page de fechamento (${segmentName})`,
+        performedBy: 'cliente',
+        activityDate: nowIso,
+      });
+    } catch (_) { /* non-blocking */ }
 
     return Response.json({ ok: true, lead: createdLead, proposal: createdProposal });
   } catch (error) {
