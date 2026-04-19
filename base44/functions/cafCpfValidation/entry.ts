@@ -21,6 +21,18 @@ Deno.serve(async (req) => {
     const body = await req.json();
     const { cpf, onboardingCaseId } = body;
 
+    // Auth: allow (1) admin, (2) service-role, (3) pipeline chain via onboardingCaseId
+    let isAuth = false;
+    try { const u = await base44.auth.me(); if (u?.role === 'admin') isAuth = true; } catch {}
+    if (!isAuth) { try { await base44.asServiceRole.entities.OnboardingCase.list('-created_date', 1); isAuth = true; } catch {} }
+    if (!isAuth && onboardingCaseId) {
+      try {
+        const cases = await base44.asServiceRole.entities.OnboardingCase.filter({ id: onboardingCaseId });
+        if (cases[0]) isAuth = true;
+      } catch { /* */ }
+    }
+    if (!isAuth) return Response.json({ error: 'Forbidden' }, { status: 403 });
+
     if (!cpf) return Response.json({ error: 'CPF é obrigatório' }, { status: 400 });
     const cleanCpf = cpf.replace(/\D/g, '');
 
