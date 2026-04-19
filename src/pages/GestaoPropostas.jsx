@@ -162,8 +162,20 @@ export default function GestaoPropostas() {
     const newVersion = (proposta.version || 1) + 1;
     const rootId = proposta.rootProposalId || proposta.id;
 
+    // FIX BUG #4: auto-resolve leadId by CNPJ if missing (Lead may exist but
+    // was never linked to the original proposal).
+    let resolvedLeadId = dataToCopy.leadId || '';
+    const cnpj = (dataToCopy.clienteCnpj || '').replace(/\D/g, '');
+    if (!resolvedLeadId && cnpj.length === 14) {
+      try {
+        const leads = await base44.entities.Lead.filter({ cpfCnpj: cnpj });
+        if (leads.length > 0) resolvedLeadId = leads[0].id;
+      } catch {}
+    }
+
     const newProposta = {
       ...dataToCopy,
+      leadId: resolvedLeadId,
       codigo: `PROP-${year}-${seq}`,
       status: 'rascunho',
       tokenPublico: Array.from({ length: 64 }, () => 'abcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random() * 36))).join(''),

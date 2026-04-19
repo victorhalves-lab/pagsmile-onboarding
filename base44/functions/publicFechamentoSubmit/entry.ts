@@ -155,16 +155,36 @@ Deno.serve(async (req) => {
       };
     }
 
-    // 5. Create Proposal
+    // 5. Create Proposal — FIX BUG #3: draft MUST have all required public fields
+    // (codigo, tokenPublico, validUntil, publicSlug) so that: (a) it appears
+    // properly in GestaoPropostas, (b) can be shared publicly once promoted to
+    // "enviada", (c) has a 15-day default validity like manually-created proposals.
+    const year = new Date().getFullYear();
+    const seq = String(Math.floor(Math.random() * 99999)).padStart(5, '0');
+    const randomToken = Array.from({ length: 64 }, () => 'abcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random() * 36))).join('');
+    const slugify = (s) => String(s || 'proposta').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-').slice(0, 56);
+    const slugSuffix = Array.from({ length: 4 }, () => 'abcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random() * 36))).join('');
+    const validUntil = new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString();
+
     const proposalPayload = {
       leadId: createdLead.id,
       status: 'rascunho',
       rates: proposalRates,
       clienteNome: createdLead.fullName,
       clienteCnpj: createdLead.cpfCnpj,
+      clienteContato: createdLead.contactName || '',
       chosenPartnerId,
       businessSubCategory: businessSubCategory || 'ecommerce',
       sourceFlow: isFromStandardProposal ? 'standard_proposal_link' : 'introducer_landing_page',
+      codigo: `PROP-${year}-${seq}`,
+      tokenPublico: randomToken,
+      publicSlug: `${slugify(createdLead.fullName)}-${slugSuffix}`,
+      validUntil,
+      version: 1,
+      isCurrentVersion: true,
+      proposalName: `Proposta - ${createdLead.fullName}`,
+      origem: 'manual',
+      ...(commercialAgent && { responsavelId: commercialAgent.id, responsavelNome: commercialAgent.full_name }),
     };
     const createdProposal = await base44.asServiceRole.entities.Proposal.create(proposalPayload);
 

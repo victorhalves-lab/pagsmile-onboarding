@@ -43,20 +43,36 @@ export default function PropostaDetalhes() {
     if (!proposta) return;
     setIsUpdatingStatus(true);
     const now = new Date().toISOString();
-    await base44.entities.Proposal.update(proposta.id, {
-      status: 'aceita',
-      acceptedDate: now,
-    });
+
+    // FIX BUG #2: auto-link Lead by CNPJ if leadId is missing, so the Lead's
+    // status also transitions to "proposta_aceita" (otherwise it stays in
+    // "questionario_preenchido" → comercial sees "Gerar Proposta" wrongly).
+    let resolvedLeadId = proposta.leadId || '';
+    const cnpj = (proposta.clienteCnpj || '').replace(/\D/g, '');
+    if (!resolvedLeadId && cnpj.length === 14) {
+      try {
+        const leads = await base44.entities.Lead.filter({ cpfCnpj: cnpj });
+        if (leads.length > 0) resolvedLeadId = leads[0].id;
+      } catch {}
+    }
+
+    const proposalUpdate = { status: 'aceita', acceptedDate: now };
+    if (resolvedLeadId && !proposta.leadId) proposalUpdate.leadId = resolvedLeadId;
+    await base44.entities.Proposal.update(proposta.id, proposalUpdate);
+
     let changedBy = 'admin';
     try { const user = await base44.auth.me(); changedBy = user?.email || 'admin'; } catch {}
     await base44.entities.AuditLog.create({
       entityName: 'Proposal', entityId: proposta.id, actionType: 'UPDATE',
       actionDescription: `Proposta ${proposta.codigo} marcada como aceita manualmente por ${changedBy}`,
       changedBy, changeDate: now,
-      details: { statusAnterior: proposta.status, statusNovo: 'aceita', acaoManual: true },
+      details: { statusAnterior: proposta.status, statusNovo: 'aceita', acaoManual: true, leadAutoLinked: !proposta.leadId && !!resolvedLeadId },
     });
-    if (proposta.leadId) {
-      await base44.entities.Lead.update(proposta.leadId, { status: 'proposta_aceita', lastInteractionDate: now });
+    if (resolvedLeadId) {
+      try {
+        await base44.entities.Lead.update(resolvedLeadId, { status: 'proposta_aceita', lastInteractionDate: now, currentProposalId: proposta.id });
+        await base44.entities.LeadActivity.create({ leadId: resolvedLeadId, activityType: 'proposta_aceita', description: `Proposta ${proposta.codigo} aceita (manualmente por ${changedBy})`, performedBy: changedBy, activityDate: now });
+      } catch {}
     }
     queryClient.invalidateQueries({ queryKey: ['proposta-detalhes', proposalId] });
     queryClient.invalidateQueries({ queryKey: ['propostas'] });
@@ -109,8 +125,20 @@ export default function PropostaDetalhes() {
     const { id, created_date, updated_date, created_by, tokenPublico, publicLinkCode, publicSlug, sentDate, acceptedDate, rejectedDate, rejectedReason, counterProposalDetails, ...dataToCopy } = proposta;
     const newVersion = (proposta.version || 1) + 1;
 
+    // FIX BUG #4: if the root proposal was created without leadId, auto-resolve
+    // by CNPJ so new versions are properly linked to the pipeline.
+    let resolvedLeadId = dataToCopy.leadId || '';
+    const cnpj = (dataToCopy.clienteCnpj || '').replace(/\D/g, '');
+    if (!resolvedLeadId && cnpj.length === 14) {
+      try {
+        const leads = await base44.entities.Lead.filter({ cpfCnpj: cnpj });
+        if (leads.length > 0) resolvedLeadId = leads[0].id;
+      } catch {}
+    }
+
     const newProposta = {
       ...dataToCopy,
+      leadId: resolvedLeadId,
       codigo: `PROP-${year}-${seq}`,
       status: 'rascunho',
       version: newVersion,

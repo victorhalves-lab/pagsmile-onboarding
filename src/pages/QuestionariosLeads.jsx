@@ -49,7 +49,13 @@ const getActionButtons = (lead, navigate, t) => {
   if (['questionario_preenchido', 'analisado_priscila'].includes(lead.status)) {
     actions.push({ label: t('quest_leads.start_contact'), icon: Phone, variant: 'default', action: 'contact' });
   }
-  if (['questionario_preenchido', 'analisado_priscila', 'em_contato_comercial'].includes(lead.status) && lead.priscilaRiskLevel !== 'CRITICO') {
+  // FIX BUG #5: if a proposal already exists (currentProposalId), show "View Proposal"
+  // instead of "Generate Proposal". Prevents the confusion seen in KingPay case
+  // (lead status not updated but proposal already exists).
+  const hasProposal = !!lead.currentProposalId;
+  if (hasProposal) {
+    actions.push({ label: 'Ver proposta', icon: Eye, variant: 'outline', action: 'view_proposal' });
+  } else if (['questionario_preenchido', 'analisado_priscila', 'em_contato_comercial'].includes(lead.status) && lead.priscilaRiskLevel !== 'CRITICO') {
     actions.push({ label: t('quest_leads.generate_proposal'), icon: FileText, variant: 'outline', action: 'proposal' });
   }
   if (lead.questionnaireData) {
@@ -547,6 +553,8 @@ export default function QuestionariosLeads() {
                                   toast.success(t('quest_leads.status_updated'));
                                 } else if (btn.action === 'proposal') {
                                   navigate(createPageUrl('CriarProposta') + `?lead=${lead.id}`);
+                                } else if (btn.action === 'view_proposal') {
+                                  navigate(createPageUrl('PropostaDetalhes') + `?id=${lead.currentProposalId}`);
                                 } else if (btn.action === 'responses') {
                                   setResponsesModalLead(lead);
                                 }

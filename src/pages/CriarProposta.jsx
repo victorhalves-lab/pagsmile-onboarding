@@ -102,6 +102,28 @@ export default function CriarProposta() {
     enabled: !!leadId && !editId
   });
 
+  // FIX BUG #1: When editing a proposal that has no leadId but has a CNPJ,
+  // try to find the matching Lead and auto-link it. Also useful when comercial
+  // creates a proposal for a CNPJ that already exists as a Lead.
+  const [autoLinkedLeadId, setAutoLinkedLeadId] = useState(null);
+  useEffect(() => {
+    const cnpj = (form.clienteCnpj || '').replace(/\D/g, '');
+    const alreadyHasLead = leadId || existingProposal?.leadId || autoLinkedLeadId;
+    if (alreadyHasLead || !cnpj || cnpj.length !== 14) return;
+    (async () => {
+      try {
+        const leads = await base44.entities.Lead.filter({ cpfCnpj: cnpj });
+        if (leads.length > 0) {
+          setAutoLinkedLeadId(leads[0].id);
+          toast.info(`Lead vinculado automaticamente: ${leads[0].fullName || leads[0].companyName || cnpj}`);
+        }
+      } catch {}
+    })();
+  }, [form.clienteCnpj, leadId, existingProposal?.leadId, autoLinkedLeadId]);
+
+  // Effective leadId: priority URL param → existing proposal → auto-linked by CNPJ
+  const effectiveLeadId = leadId || existingProposal?.leadId || autoLinkedLeadId || '';
+
   const { data: existingProposal } = useQuery({
     queryKey: ['proposal-edit', editId],
     queryFn: async () => { const proposals = await base44.entities.Proposal.filter({ id: editId }); return proposals[0] || null; },
@@ -211,7 +233,7 @@ export default function CriarProposta() {
     let criadoPorId = '';
     try { const user = await base44.auth.me(); criadoPor = user?.email || user?.id || 'sistema'; criadoPorNome = user?.full_name || user?.email || 'sistema'; criadoPorId = user?.id || ''; } catch (e) {}
     return {
-      leadId: leadId || '', codigo: existingProposal?.codigo || gerarCodigo(),
+      leadId: effectiveLeadId || '', codigo: existingProposal?.codigo || gerarCodigo(),
       proposalName: `Proposta - ${form.clienteNome}`, status, origem: 'manual',
       sourceFlow: templateFromId ? 'from_existing_proposal_rates' : (existingProposal?.sourceFlow || 'manual_creation'),
       businessSubCategory: form.businessSubCategory,
@@ -260,9 +282,9 @@ export default function CriarProposta() {
       changedBy: data.responsavelNome || 'admin', changeDate: new Date().toISOString(),
       details: { codigo: data.codigo, clienteNome: data.clienteNome, status: data.status }
     });
-    if (leadId) {
-      await base44.entities.Lead.update(leadId, { currentProposalId: created.id, status: 'proposta_enviada', lastInteractionDate: new Date().toISOString() });
-      await base44.entities.LeadActivity.create({ leadId, activityType: 'proposta_criada', description: `Proposta ${data.codigo} criada`, performedBy: data.responsavelNome || 'admin', activityDate: new Date().toISOString() });
+    if (effectiveLeadId) {
+      await base44.entities.Lead.update(effectiveLeadId, { currentProposalId: created.id, status: 'proposta_enviada', lastInteractionDate: new Date().toISOString() });
+      await base44.entities.LeadActivity.create({ leadId: effectiveLeadId, activityType: 'proposta_criada', description: `Proposta ${data.codigo} criada`, performedBy: data.responsavelNome || 'admin', activityDate: new Date().toISOString() });
     }
     toast.success(t('criar_prop.generated'));
     setSaving(false);

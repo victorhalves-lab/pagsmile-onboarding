@@ -96,24 +96,41 @@ Deno.serve(async (req) => {
         break;
     }
 
+    // FIX BUG #2: auto-link Lead by CNPJ if proposal has no leadId. This makes
+    // the Lead status transition ("proposta_aceita"/"proposta_recusada") reach
+    // the commercial pipeline even for proposals created without a Lead link.
+    let effectiveLeadId = proposta.leadId || '';
+    const cnpj = (proposta.clienteCnpj || '').replace(/\D/g, '');
+    if (!effectiveLeadId && cnpj.length === 14) {
+      try {
+        const leads = await base44.asServiceRole.entities.Lead.filter({ cpfCnpj: cnpj });
+        if (leads.length > 0) effectiveLeadId = leads[0].id;
+      } catch (_) {}
+    }
+    // Persist the auto-link back on the proposal so future actions don't re-search.
+    if (effectiveLeadId && !proposta.leadId) {
+      proposalUpdates.leadId = effectiveLeadId;
+    }
+
     // 3. Apply proposal update
     await base44.asServiceRole.entities[entityName].update(proposta.id, proposalUpdates);
 
-    // 4. Update Lead (if linked)
-    if (proposta.leadId && leadStatus) {
+    // 4. Update Lead (if linked or auto-linked)
+    if (effectiveLeadId && leadStatus) {
       try {
-        await base44.asServiceRole.entities.Lead.update(proposta.leadId, {
+        await base44.asServiceRole.entities.Lead.update(effectiveLeadId, {
           status: leadStatus,
           lastInteractionDate: now,
+          currentProposalId: proposta.id,
         });
       } catch (_) { /* lead may not exist, ignore */ }
     }
 
     // 5. Create LeadActivity
-    if (activityType) {
+    if (activityType && effectiveLeadId) {
       try {
         await base44.asServiceRole.entities.LeadActivity.create({
-          leadId: proposta.leadId || '',
+          leadId: effectiveLeadId,
           activityType,
           description: activityDescription,
           performedBy: 'cliente',
