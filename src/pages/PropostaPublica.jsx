@@ -544,7 +544,7 @@ export default function PropostaPublica() {
         <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 flex items-start gap-3">
           <Info className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
           <p className="text-xs text-amber-800 leading-relaxed">
-            <span className="font-semibold">Importante:</span> caso existam subcontas/subsellers, a antecipação de 100% do TPV dependerá do resultado da análise de Compliance.
+            <span className="font-semibold">Importante:</span> caso existam subcontas/subsellers, a antecipação de 100% do TPV dependerá do resultado da análise de Compliance de cada subconta/subseller.
           </p>
         </div>
       )}
