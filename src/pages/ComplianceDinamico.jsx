@@ -191,6 +191,7 @@ export default function ComplianceDinamico() {
       badgeColor={config.badgeColor}
       questionsPerStep={4}
       cafRedirectUrl={config.cafRedirectUrl}
+      isPublicView={true}
     />
   );
 }

@@ -62,8 +62,10 @@ export default function CnpjAutocompleteField({
     if (result && onAutocompleteData) {
       onAutocompleteData(result);
     }
-    // Disparar análise de enriquecimento automaticamente
-    if (result && result.situacao_cadastral === 2) {
+    // Disparar análise de enriquecimento automaticamente — APENAS para uso interno.
+    // Em views públicas (isPublicView=true), o painel nunca é renderizado,
+    // então evitamos a chamada desnecessária à função (economiza créditos e tempo).
+    if (result && result.situacao_cadastral === 2 && !isPublicView) {
       setEnrichmentLoading(true);
       setEnrichmentResult(null);
       try {
@@ -76,7 +78,7 @@ export default function CnpjAutocompleteField({
       }
       setEnrichmentLoading(false);
     }
-  }, [consultarCnpj, onAutocompleteData]);
+  }, [consultarCnpj, onAutocompleteData, isPublicView]);
 
   const isActive = data?.situacao_cadastral === 2;
   const isInactive = data && data.situacao_cadastral !== 2;
