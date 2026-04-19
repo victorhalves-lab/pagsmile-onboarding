@@ -42,7 +42,7 @@ const BACKEND_TESTS = [
     name: '4. Resolve Person Data (lastro CPF)',
     description: 'Cascata: Questionnaire → Lead → BDC. Requer onboardingCaseId.',
     function: 'cafResolvePersonData',
-    payload: (ctx) => ({ onboardingCaseId: ctx.onboardingCaseId }),
+    payload: (ctx) => ({ onboardingCaseId: ctx.onboardingCaseId, docLinkToken: ctx.docLinkToken || undefined }),
     success: (data) => !!data?.cpf,
     requiresCase: true,
   },
@@ -113,10 +113,31 @@ export default function CafBackendTests() {
   const [context, setContext] = useState({
     cpf: '',
     onboardingCaseId: '',
+    docLinkToken: '',
     selfieBase64: '',
   });
   const [results, setResults] = useState({});
   const [loadingId, setLoadingId] = useState(null);
+  const [loadingLatest, setLoadingLatest] = useState(false);
+
+  const loadLatestCase = async () => {
+    setLoadingLatest(true);
+    try {
+      const cases = await base44.entities.OnboardingCase.list('-created_date', 1);
+      const c = cases?.[0];
+      if (c) {
+        setContext((prev) => ({
+          ...prev,
+          onboardingCaseId: c.id,
+          docLinkToken: c.docLinkToken || '',
+        }));
+      }
+    } catch (e) {
+      console.warn('[Lab] loadLatestCase failed:', e.message);
+    } finally {
+      setLoadingLatest(false);
+    }
+  };
 
   const handleSelfieUpload = (e) => {
     const file = e.target.files?.[0];
@@ -185,13 +206,28 @@ export default function CafBackendTests() {
             />
           </div>
           <div>
-            <Label className="text-xs">OnboardingCase ID (para lastro/match)</Label>
+            <Label className="text-xs flex items-center justify-between">
+              <span>OnboardingCase ID (para lastro/match)</span>
+              <button
+                type="button"
+                onClick={loadLatestCase}
+                disabled={loadingLatest}
+                className="text-[10px] text-[#2bc196] hover:underline disabled:opacity-50"
+              >
+                {loadingLatest ? 'Carregando...' : '↻ Último caso'}
+              </button>
+            </Label>
             <Input
               value={context.onboardingCaseId}
               onChange={(e) => setContext({ ...context, onboardingCaseId: e.target.value })}
-              placeholder="case_abc123"
-              className="h-9 text-sm"
+              placeholder="69e3ae3d6d143ab8d697190a"
+              className="h-9 text-sm font-mono"
             />
+            {context.docLinkToken && (
+              <p className="text-[10px] text-slate-500 mt-1 font-mono truncate">
+                token: {context.docLinkToken.substring(0, 16)}...
+              </p>
+            )}
           </div>
           <div>
             <Label className="text-xs">Selfie (para face match)</Label>
