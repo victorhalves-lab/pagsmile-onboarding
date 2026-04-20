@@ -16,22 +16,8 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const body = await req.json().catch(() => ({}));
-    const { appBaseUrl } = body;
-
-    // Prioridade: payload > env var > fallback genérico
-    const baseUrl =
-      appBaseUrl?.replace(/\/$/, '') ||
-      Deno.env.get('APP_BASE_URL')?.replace(/\/$/, '') ||
-      null;
-
-    if (!baseUrl) {
-      return Response.json({
-        error: 'appBaseUrl não foi enviado e APP_BASE_URL secret não está configurado.',
-        hint: 'Chame com body { appBaseUrl: "https://app--SEU-APP.base44.app" } OU configure o secret APP_BASE_URL.',
-      }, { status: 400 });
-    }
-
+    // URL oficial fixa do webhook (domínio público da app Pagsmile Compliance)
+    const baseUrl = 'https://pagsmilecompliance.base44.app';
     const webhookUrl = `${baseUrl}/functions/cafWebhookHandler`;
     const hasSecret = !!Deno.env.get('CAF_WEBHOOK_SECRET');
 
