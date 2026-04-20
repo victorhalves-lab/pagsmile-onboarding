@@ -11,7 +11,7 @@ import {
   Clock, CheckCircle2, AlertTriangle, XCircle, FileCheck,
   Loader2, MoreHorizontal, Mail, Eye, Building2, User,
   Brain, FileText, ChevronLeft, ChevronRight, ChevronDown, UserPlus,
-  Link2, ScanFace, RefreshCw, Handshake, Calendar
+  Link2, ScanFace, RefreshCw, Handshake
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
@@ -19,7 +19,7 @@ import CaseExpandedDetail from '@/components/compliance/CaseExpandedDetail';
 import CafLinkGeneratorModal from '@/components/compliance/CafLinkGeneratorModal';
 import AssignCaseToPartnerModal from '@/components/partners-compliance/AssignCaseToPartnerModal';
 
-// ── Helpers (mantidos idênticos à tabela anterior) ──
+// ── Helpers ──
 const getTimeInQueue = (createdDate) => {
   if (!createdDate) return '-';
   const now = new Date();
@@ -42,7 +42,7 @@ const getStatusBadge = (status) => {
     'Docs Solicitados': { color: 'bg-purple-100 text-purple-800 border-purple-200', icon: FileCheck }
   };
   const { color, icon: Icon } = config[status] || config['Pendente'];
-  return <Badge className={`${color} gap-1 border text-[11px]`}><Icon className="w-3 h-3" />{status}</Badge>;
+  return <Badge className={`${color} gap-1 border text-[10px] px-1.5 py-0.5 whitespace-nowrap`}><Icon className="w-2.5 h-2.5" />{status}</Badge>;
 };
 
 const getModelBadge = (model) => {
@@ -61,21 +61,21 @@ const getModelBadge = (model) => {
     'CompliancePixIntermediarioV4': { color: 'bg-indigo-100 text-indigo-700', label: 'PIX Intermediário v4' },
     'pix_intermediario_v4': { color: 'bg-indigo-100 text-indigo-700', label: 'PIX Intermediário v4' },
     'subseller_v2': { color: 'bg-indigo-100 text-indigo-700', label: 'Subseller v2' },
-    'merchant': { color: 'bg-purple-100 text-purple-700', label: 'Merchant (legado)' },
-    'gateway': { color: 'bg-indigo-100 text-indigo-700', label: 'Gateway (legado)' },
-    'marketplace': { color: 'bg-amber-100 text-amber-700', label: 'Marketplace (legado)' },
+    'merchant': { color: 'bg-purple-100 text-purple-700', label: 'Merchant' },
+    'gateway': { color: 'bg-indigo-100 text-indigo-700', label: 'Gateway' },
+    'marketplace': { color: 'bg-amber-100 text-amber-700', label: 'Marketplace' },
     'lite': { color: 'bg-teal-100 text-teal-700', label: 'Lite' },
     'pix': { color: 'bg-blue-100 text-blue-700', label: 'Pix' },
-    'full': { color: 'bg-purple-100 text-purple-700', label: 'Full (legado)' },
+    'full': { color: 'bg-purple-100 text-purple-700', label: 'Full' },
     'ecommerce': { color: 'bg-amber-100 text-amber-700', label: 'E-commerce' },
   };
   const { color, label } = config[model] || { color: 'bg-slate-100 text-slate-700', label: model || 'Desconhecido' };
-  return <Badge className={`${color} text-[11px] font-medium border-0`}>{label}</Badge>;
+  return <Badge className={`${color} text-[10px] font-medium border-0 px-1.5 py-0.5 whitespace-nowrap`}>{label}</Badge>;
 };
 
 const getV4ScoreDisplay = (v4Score, subfaixa, subfaixaNome) => {
   if (v4Score === undefined || v4Score === null) {
-    return <span className="text-[var(--pagsmile-blue)]/50 text-sm">Sem score</span>;
+    return <span className="text-[var(--pagsmile-blue)]/50 text-xs">-</span>;
   }
   const subfaixaColors = {
     '1A': 'text-green-700 bg-green-50', '1B': 'text-green-600 bg-green-50',
@@ -86,26 +86,26 @@ const getV4ScoreDisplay = (v4Score, subfaixa, subfaixaNome) => {
   const colorClass = subfaixaColors[subfaixa] || 'text-slate-600 bg-slate-50';
   const displayName = subfaixaNome || subfaixa || '';
   return (
-    <div className="flex items-baseline gap-1.5 flex-wrap">
-      <span className={`font-bold text-xl ${colorClass.split(' ')[0]}`}>{Math.round(v4Score)}</span>
-      {displayName && <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${colorClass}`}>{displayName}</span>}
+    <div className="flex items-center gap-1 flex-wrap">
+      <span className={`font-bold text-base leading-none ${colorClass.split(' ')[0]}`}>{Math.round(v4Score)}</span>
+      {displayName && <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full ${colorClass} whitespace-nowrap`}>{displayName}</span>}
     </div>
   );
 };
 
 const getSubfaixaBadge = (subfaixa) => {
-  if (!subfaixa) return <span className="text-[var(--pagsmile-blue)]/50 text-sm">-</span>;
+  if (!subfaixa) return <span className="text-[var(--pagsmile-blue)]/50 text-xs">-</span>;
   const colorMap = {
     '1A':'bg-green-100 text-green-700','1B':'bg-green-100 text-green-700',
     '2A':'bg-blue-100 text-blue-700','2B':'bg-blue-100 text-blue-700',
     '3A':'bg-yellow-100 text-yellow-700','3B':'bg-orange-100 text-orange-700',
     '4':'bg-red-100 text-red-700','5':'bg-red-200 text-red-800'
   };
-  return <Badge className={`text-[10px] font-bold border-0 ${colorMap[subfaixa] || 'bg-slate-100 text-slate-600'}`}>{subfaixa}</Badge>;
+  return <Badge className={`text-[10px] font-bold border-0 px-1.5 py-0.5 ${colorMap[subfaixa] || 'bg-slate-100 text-slate-600'}`}>{subfaixa}</Badge>;
 };
 
 const getDecisionBadge = (decision) => {
-  if (!decision) return <span className="text-[var(--pagsmile-blue)]/50 text-sm">-</span>;
+  if (!decision) return <span className="text-[var(--pagsmile-blue)]/50 text-xs">-</span>;
   const config = {
     'Aprovado': 'bg-green-100 text-green-700',
     'Aprovado com Condições': 'bg-blue-100 text-blue-700',
@@ -113,31 +113,19 @@ const getDecisionBadge = (decision) => {
     'Recusado': 'bg-red-100 text-red-700',
   };
   const colorClass = config[decision] || 'bg-slate-100 text-slate-700';
-  return <Badge className={`${colorClass} text-[10px] font-semibold border-0`}>{decision}</Badge>;
+  return <Badge className={`${colorClass} text-[10px] font-semibold border-0 px-1.5 py-0.5 whitespace-nowrap`}>{decision}</Badge>;
 };
 
 function CafStatusBadge({ caseData }) {
   const hasDocs = caseData?.docCompleted === true;
   const hasCaf = caseData?.cafCompleted === true;
   if (hasDocs && hasCaf) {
-    return (
-      <Badge className="bg-green-100 text-green-700 border border-green-200 text-[10px] gap-1">
-        <CheckCircle2 className="w-3 h-3" /> CAF completo
-      </Badge>
-    );
+    return <Badge className="bg-green-100 text-green-700 border border-green-200 text-[10px] gap-1 px-1.5 py-0.5 whitespace-nowrap"><CheckCircle2 className="w-2.5 h-2.5" />Completo</Badge>;
   }
   if (hasDocs || hasCaf) {
-    return (
-      <Badge className="bg-yellow-100 text-yellow-800 border border-yellow-200 text-[10px] gap-1">
-        <AlertTriangle className="w-3 h-3" /> CAF parcial
-      </Badge>
-    );
+    return <Badge className="bg-yellow-100 text-yellow-800 border border-yellow-200 text-[10px] gap-1 px-1.5 py-0.5 whitespace-nowrap"><AlertTriangle className="w-2.5 h-2.5" />Parcial</Badge>;
   }
-  return (
-    <Badge className="bg-red-100 text-red-700 border border-red-200 text-[10px] gap-1">
-      <XCircle className="w-3 h-3" /> CAF pendente
-    </Badge>
-  );
+  return <Badge className="bg-red-100 text-red-700 border border-red-200 text-[10px] gap-1 px-1.5 py-0.5 whitespace-nowrap"><XCircle className="w-2.5 h-2.5" />Pendente</Badge>;
 }
 
 function RevalidateMenuItem({ caseData }) {
@@ -168,8 +156,8 @@ function RevalidateMenuItem({ caseData }) {
   );
 }
 
-// ── Card individual do cliente ──
-function CaseCard({
+// ── Linha horizontal por cliente ──
+function CaseRow({
   c, merchant, scoresMap, templatesMap, merchantMap, getCaseModel,
   linksMap, introducerMap,
   selectedRows, setSelectedRows,
@@ -188,137 +176,143 @@ function CaseCard({
   else if (days >= 1) timeBg = 'bg-yellow-100 text-yellow-700';
 
   return (
-    <div className={`bg-white rounded-xl border shadow-sm hover:shadow-md transition-all ${
+    <div className={`bg-white rounded-lg border shadow-sm hover:shadow-md transition-all ${
       isSelected ? 'border-[#2bc196] ring-1 ring-[#2bc196]/30' : 'border-[#002443]/10'
     }`}>
-      {/* Header: checkbox + merchant + status + modelo */}
-      <div className="p-4 flex items-start gap-3 border-b border-[#002443]/5">
-        <Checkbox
-          checked={isSelected}
-          onCheckedChange={(checked) => setSelectedRows(prev => checked ? [...prev, c.id] : prev.filter(id => id !== c.id))}
-          className="mt-1"
-        />
-        <div className={`p-2 rounded-lg flex-shrink-0 ${merchant?.type === 'PF' ? 'bg-blue-100' : 'bg-purple-100'}`}>
-          {merchant?.type === 'PF' ? <User className="w-4 h-4 text-blue-600" /> : <Building2 className="w-4 h-4 text-purple-600" />}
+      {/* Linha horizontal compacta — 12 colunas proporcionais, sem scroll */}
+      <div className="flex items-center gap-2 px-3 py-2.5 min-w-0">
+        {/* Checkbox */}
+        <div className="flex-shrink-0">
+          <Checkbox
+            checked={isSelected}
+            onCheckedChange={(checked) => setSelectedRows(prev => checked ? [...prev, c.id] : prev.filter(id => id !== c.id))}
+          />
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="font-semibold text-[var(--pagsmile-blue)] text-sm truncate" title={merchant?.fullName}>
-            {merchant?.fullName || 'N/A'}
-          </p>
-          <p className="text-xs text-[var(--pagsmile-blue)]/70 truncate">{merchant?.cpfCnpj || '-'}</p>
-          <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-            {getStatusBadge(c.status)}
-            {getModelBadge(getCaseModel(c))}
+
+        {/* Merchant (nome + cpf/cnpj) — flex maior */}
+        <div className="flex items-center gap-2 min-w-0 flex-[2]">
+          <div className={`p-1.5 rounded flex-shrink-0 ${merchant?.type === 'PF' ? 'bg-blue-100' : 'bg-purple-100'}`}>
+            {merchant?.type === 'PF' ? <User className="w-3.5 h-3.5 text-blue-600" /> : <Building2 className="w-3.5 h-3.5 text-purple-600" />}
+          </div>
+          <div className="min-w-0">
+            <p className="font-semibold text-[var(--pagsmile-blue)] text-xs truncate" title={merchant?.fullName}>
+              {merchant?.fullName || 'N/A'}
+            </p>
+            <p className="text-[10px] text-[var(--pagsmile-blue)]/60 truncate">{merchant?.cpfCnpj || '-'}</p>
           </div>
         </div>
-      </div>
 
-      {/* Grid de informações: Score / Subfaixa / Decisão / Tempo */}
-      <div className="grid grid-cols-2 gap-3 p-4 border-b border-[#002443]/5">
-        <div>
-          <p className="text-[10px] uppercase tracking-wider text-[var(--pagsmile-blue)]/50 font-semibold mb-1">Score V4</p>
+        {/* Modelo */}
+        <div className="flex-shrink-0 w-[110px] min-w-0">
+          {getModelBadge(getCaseModel(c))}
+        </div>
+
+        {/* Status */}
+        <div className="flex-shrink-0 w-[110px] min-w-0">
+          {getStatusBadge(c.status)}
+        </div>
+
+        {/* Score V4 */}
+        <div className="flex-shrink-0 w-[95px] min-w-0">
           {getV4ScoreDisplay(c.riskScoreV4, c.subfaixa, c.subfaixaNome)}
         </div>
-        <div>
-          <p className="text-[10px] uppercase tracking-wider text-[var(--pagsmile-blue)]/50 font-semibold mb-1">Subfaixa</p>
+
+        {/* Subfaixa */}
+        <div className="flex-shrink-0 w-[40px] text-center">
           {getSubfaixaBadge(c.subfaixa)}
         </div>
-        <div>
-          <p className="text-[10px] uppercase tracking-wider text-[var(--pagsmile-blue)]/50 font-semibold mb-1 flex items-center gap-1">
-            <Brain className="w-3 h-3" /> Decisão IA
-          </p>
+
+        {/* Decisão IA */}
+        <div className="flex-shrink-0 w-[105px] min-w-0" title="Decisão IA">
           {getDecisionBadge(scoresMap[c.id]?.recomendacao_final || c.iaDecision)}
         </div>
-        <div>
-          <p className="text-[10px] uppercase tracking-wider text-[var(--pagsmile-blue)]/50 font-semibold mb-1">Tempo na fila</p>
-          <span className={`text-[11px] font-semibold px-2 py-1 rounded-lg ${timeBg}`}>{time}</span>
-        </div>
-      </div>
 
-      {/* CAF / Introducer / Analista / Submissão */}
-      <div className="p-4 space-y-2 border-b border-[#002443]/5 text-xs">
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-[var(--pagsmile-blue)]/60 font-medium">CAF</span>
+        {/* Tempo na fila */}
+        <div className="flex-shrink-0 w-[55px] text-center">
+          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${timeBg} whitespace-nowrap`}>{time}</span>
+        </div>
+
+        {/* CAF */}
+        <div className="flex-shrink-0 w-[85px]">
           <CafStatusBadge caseData={c} />
         </div>
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-[var(--pagsmile-blue)]/60 font-medium">Introducer</span>
+
+        {/* Introducer */}
+        <div className="flex-shrink-0 w-[90px] min-w-0" title={introducer?.name || 'Sem introducer'}>
           {introducer ? (
-            <span className="flex items-center gap-1 text-[var(--pagsmile-blue)] font-medium truncate">
+            <div className="flex items-center gap-1 min-w-0">
               <UserPlus className="w-3 h-3 text-[#2bc196] flex-shrink-0" />
-              <span className="truncate">{introducer.name}</span>
-            </span>
+              <span className="text-[10px] text-[var(--pagsmile-blue)] truncate">{introducer.name}</span>
+            </div>
           ) : (
-            <span className="text-[var(--pagsmile-blue)]/40">-</span>
+            <span className="text-[10px] text-[var(--pagsmile-blue)]/40">-</span>
           )}
         </div>
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-[var(--pagsmile-blue)]/60 font-medium">Analista</span>
-          <span className="text-[var(--pagsmile-blue)]/80 truncate">{c.assignedAnalystName || '-'}</span>
-        </div>
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-[var(--pagsmile-blue)]/60 font-medium flex items-center gap-1">
-            <Calendar className="w-3 h-3" /> Submissão
-          </span>
-          <span className="text-[var(--pagsmile-blue)]/80">
-            {c.created_date
-              ? `${new Date(c.created_date).toLocaleDateString('pt-BR')} ${new Date(c.created_date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`
-              : '-'}
-          </span>
-        </div>
-      </div>
 
-      {/* Ações */}
-      <div className="p-3 flex items-center gap-1.5 flex-wrap">
-        <Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`} className="flex-1 min-w-[90px]">
-          <Button variant="ghost" size="sm" className="w-full text-[var(--pagsmile-green)] hover:text-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/10">
-            <Eye className="w-4 h-4 mr-1" /> Analisar
+        {/* Analista */}
+        <div className="flex-shrink-0 w-[80px] min-w-0" title={c.assignedAnalystName || 'Sem analista'}>
+          <span className="text-[10px] text-[var(--pagsmile-blue)]/80 truncate block">{c.assignedAnalystName || '-'}</span>
+        </div>
+
+        {/* Submissão */}
+        <div className="flex-shrink-0 w-[75px] min-w-0">
+          <p className="text-[10px] text-[var(--pagsmile-blue)]/80 leading-tight">
+            {c.created_date ? new Date(c.created_date).toLocaleDateString('pt-BR') : '-'}
+          </p>
+          <p className="text-[9px] text-[var(--pagsmile-blue)]/50 leading-tight">
+            {c.created_date ? new Date(c.created_date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : ''}
+          </p>
+        </div>
+
+        {/* Ações — icon-only */}
+        <div className="flex items-center gap-0.5 flex-shrink-0 ml-auto">
+          <Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`} title="Analisar">
+            <Button variant="ghost" size="icon" className="h-7 w-7 text-[var(--pagsmile-green)] hover:text-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/10">
+              <Eye className="w-3.5 h-3.5" />
+            </Button>
+          </Link>
+          <Button
+            variant="ghost" size="icon"
+            onClick={() => onOpenAssignModal(c.id)}
+            className="h-7 w-7 text-[#002443] hover:bg-[#2bc196]/10"
+            title="Atribuir a parceiro"
+          >
+            <Handshake className="w-3.5 h-3.5" />
           </Button>
-        </Link>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onOpenAssignModal(c.id)}
-          className="flex-1 min-w-[90px] text-[#002443] hover:text-[#002443] hover:bg-[#2bc196]/10 border border-[#2bc196]/30"
-          title="Atribuir a parceiro"
-        >
-          <Handshake className="w-4 h-4 mr-1" /> Atribuir a parceiro
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onOpenCafModal(c)}
-          className="flex-1 min-w-[90px] text-[#2bc196] hover:text-[#2bc196] hover:bg-[#2bc196]/10"
-          title="Gerar link para o cliente"
-        >
-          <Link2 className="w-4 h-4 mr-1" /> Gerar Link
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setExpandedRow(isExpanded ? null : c.id)}
-          className="text-[#002443]/60"
-          title={isExpanded ? 'Recolher' : 'Expandir'}
-        >
-          <ChevronDown className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
-        </Button>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon"><MoreHorizontal className="w-4 h-4" /></Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem asChild><Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`}><Eye className="w-4 h-4 mr-2" />Ver Detalhes</Link></DropdownMenuItem>
-            <DropdownMenuItem asChild><Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`}><FileText className="w-4 h-4 mr-2" />Ver Respostas</Link></DropdownMenuItem>
-            {merchant?.email && (<DropdownMenuItem asChild><a href={`mailto:${merchant.email}`}><Mail className="w-4 h-4 mr-2" />Enviar E-mail</a></DropdownMenuItem>)}
-            <RevalidateMenuItem caseData={c} />
-            <DropdownMenuItem onClick={() => onOpenCafModal(c)}>
-              <ScanFace className="w-4 h-4 mr-2" /> Gerar Link Cliente
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onOpenAssignModal(c.id)}>
-              <Handshake className="w-4 h-4 mr-2" /> Atribuir a parceiro
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          <Button
+            variant="ghost" size="icon"
+            onClick={() => onOpenCafModal(c)}
+            className="h-7 w-7 text-[#2bc196] hover:bg-[#2bc196]/10"
+            title="Gerar link cliente"
+          >
+            <Link2 className="w-3.5 h-3.5" />
+          </Button>
+          <Button
+            variant="ghost" size="icon"
+            onClick={() => setExpandedRow(isExpanded ? null : c.id)}
+            className="h-7 w-7 text-[#002443]/60"
+            title={isExpanded ? 'Recolher' : 'Expandir'}
+          >
+            <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-7 w-7"><MoreHorizontal className="w-3.5 h-3.5" /></Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild><Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`}><Eye className="w-4 h-4 mr-2" />Ver Detalhes</Link></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`}><FileText className="w-4 h-4 mr-2" />Ver Respostas</Link></DropdownMenuItem>
+              {merchant?.email && (<DropdownMenuItem asChild><a href={`mailto:${merchant.email}`}><Mail className="w-4 h-4 mr-2" />Enviar E-mail</a></DropdownMenuItem>)}
+              <RevalidateMenuItem caseData={c} />
+              <DropdownMenuItem onClick={() => onOpenCafModal(c)}>
+                <ScanFace className="w-4 h-4 mr-2" /> Gerar Link Cliente
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onOpenAssignModal(c.id)}>
+                <Handshake className="w-4 h-4 mr-2" /> Atribuir a parceiro
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       {/* Expandido */}
@@ -344,7 +338,7 @@ export default function ComplianceCasesCardsGrid({
   const toggleAll = (checked) => setSelectedRows(checked ? paginatedCases.map(c => c.id) : []);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {isLoading ? (
         <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm flex items-center justify-center py-12">
           <Loader2 className="w-8 h-8 animate-spin text-[var(--pagsmile-green)]" />
@@ -357,20 +351,27 @@ export default function ComplianceCasesCardsGrid({
         </div>
       ) : (
         <>
-          {/* Barra de seleção total */}
-          <div className="bg-white rounded-xl border border-[#002443]/5 px-4 py-2.5 flex items-center gap-3 text-sm">
-            <Checkbox checked={allSelected} onCheckedChange={toggleAll} />
-            <span className="text-[var(--pagsmile-blue)]/70">
-              {selectedRows.length > 0
-                ? `${selectedRows.length} selecionado(s)`
-                : `Selecionar todos desta página (${paginatedCases.length})`}
-            </span>
+          {/* Cabeçalho: colunas identificadas + seleção total */}
+          <div className="bg-white rounded-lg border border-[#002443]/10 px-3 py-2 flex items-center gap-2 text-[10px] uppercase tracking-wider font-semibold text-[var(--pagsmile-blue)]/60">
+            <div className="flex-shrink-0"><Checkbox checked={allSelected} onCheckedChange={toggleAll} /></div>
+            <div className="flex-[2] min-w-0">Merchant</div>
+            <div className="flex-shrink-0 w-[110px]">Modelo</div>
+            <div className="flex-shrink-0 w-[110px]">Status</div>
+            <div className="flex-shrink-0 w-[95px]">Score V4</div>
+            <div className="flex-shrink-0 w-[40px] text-center">Subf.</div>
+            <div className="flex-shrink-0 w-[105px]">Decisão IA</div>
+            <div className="flex-shrink-0 w-[55px] text-center">Fila</div>
+            <div className="flex-shrink-0 w-[85px]">CAF</div>
+            <div className="flex-shrink-0 w-[90px]">Introducer</div>
+            <div className="flex-shrink-0 w-[80px]">Analista</div>
+            <div className="flex-shrink-0 w-[75px]">Submissão</div>
+            <div className="flex-shrink-0 ml-auto">Ações</div>
           </div>
 
-          {/* Grid responsivo de cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+          {/* Linhas */}
+          <div className="space-y-2">
             {paginatedCases.map((c) => (
-              <CaseCard
+              <CaseRow
                 key={c.id}
                 c={c}
                 merchant={merchantMap[c.merchantId]}
@@ -394,7 +395,7 @@ export default function ComplianceCasesCardsGrid({
 
       {/* Paginação */}
       {filteredCasesCount > 0 && (
-        <div className="bg-white rounded-xl border border-[#002443]/5 px-4 py-3 flex items-center justify-between flex-wrap gap-2">
+        <div className="bg-white rounded-lg border border-[#002443]/5 px-4 py-3 flex items-center justify-between flex-wrap gap-2">
           <p className="text-sm text-[var(--pagsmile-blue)]/70">
             Mostrando {((currentPage - 1) * itemsPerPage) + 1} a {Math.min(currentPage * itemsPerPage, filteredCasesCount)} de {filteredCasesCount} questionários
           </p>
@@ -410,7 +411,6 @@ export default function ComplianceCasesCardsGrid({
         </div>
       )}
 
-      {/* Modal CAF */}
       <CafLinkGeneratorModal
         open={!!cafModalCase}
         onOpenChange={(o) => { if (!o) setCafModalCase(null); }}
@@ -418,7 +418,6 @@ export default function ComplianceCasesCardsGrid({
         merchant={cafModalCase ? merchantMap[cafModalCase.merchantId] : null}
       />
 
-      {/* Modal Atribuir a Parceiro */}
       <AssignCaseToPartnerModal
         open={!!assignModalCaseId}
         onClose={() => setAssignModalCaseId(null)}
