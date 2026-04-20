@@ -2,7 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Building2, User, Mail, Phone, MapPin, Globe, Calendar, Shield, FileText, Users, FileCheck, Stamp, BarChart3, History, Database, Microscope } from 'lucide-react';
+import { ArrowLeft, Building2, User, Mail, Phone, MapPin, Globe, Calendar, Shield, FileText, Users, FileCheck, Stamp, BarChart3, History, Database, Microscope, Handshake } from 'lucide-react';
+import CasePartnerAssignments from '@/components/partners-compliance/CasePartnerAssignments';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -363,6 +364,7 @@ export default function CadastroDetalhe() {
           <TabsTrigger value="regulatory" className="text-xs gap-1"><Shield className="w-3 h-3" />Regulatório</TabsTrigger>
           <TabsTrigger value="enrichment" className="text-xs gap-1"><Database className="w-3 h-3" />BDC / CAF{(validations.length + integrationLogs.length) > 0 ? ` (${validations.length + integrationLogs.length})` : ''}</TabsTrigger>
           <TabsTrigger value="historico" className="text-xs gap-1"><History className="w-3 h-3" />Histórico{auditLogs.length > 0 ? ` (${auditLogs.length})` : ''}</TabsTrigger>
+          <TabsTrigger value="parceiros" className="text-xs gap-1"><Handshake className="w-3 h-3" />Parceiros</TabsTrigger>
           {!merchant.isSubseller && (
             <TabsTrigger value="subsellers" className="text-xs gap-1"><Users className="w-3 h-3" />Subsellers ({subsellers.length})</TabsTrigger>
           )}
@@ -403,6 +405,15 @@ export default function CadastroDetalhe() {
         </TabsContent>
         <TabsContent value="historico">
           <CadastroHistoricoTab auditLogs={auditLogs} />
+        </TabsContent>
+        <TabsContent value="parceiros">
+          {latestCase?.id ? (
+            <CasePartnerAssignments onboardingCaseId={latestCase.id} />
+          ) : (
+            <div className="bg-white rounded-xl p-8 text-center text-sm text-slate-500">
+              Este merchant ainda não possui um caso de onboarding para ser atribuído a parceiros.
+            </div>
+          )}
         </TabsContent>
         {!merchant.isSubseller && (
           <TabsContent value="subsellers">

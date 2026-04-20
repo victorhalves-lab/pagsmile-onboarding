@@ -131,6 +131,7 @@ export default function Layout({ children, currentPageName }) {
         { label: 'Escalações Questionáveis', path: 'EscalationsReview', icon: AlertTriangle, highlight: true },
         { label: 'Reprocessar Compliance', path: 'BulkReprocess', icon: RotateCcw },
         { label: 'Documento KYC/KYB', path: 'DocumentoKYCKYB', icon: FileText },
+        { label: 'Compliance Parceiro', path: 'ComplianceParceiro', icon: Handshake, highlight: true },
       ]
     },
     {
@@ -171,6 +172,7 @@ export default function Layout({ children, currentPageName }) {
       items: [
         { label: 'Perfis de Acesso', path: 'GestaoPerfis', icon: Shield, adminOnly: true },
         { label: 'Usuários & Perfis', path: 'GestaoUsuarios', icon: Users, adminOnly: true },
+        { label: 'Parceiros de Compliance', path: 'AdminGestaoParceiros', icon: Handshake, adminOnly: true },
         { label: 'Auditoria de Acessos', path: 'AuditoriaAcessos', icon: History, adminOnly: true },
         { label: t('menu.settings'), path: 'Configuracoes', icon: Settings },
         { label: t('menu.audit'), path: 'Auditoria', icon: History },

@@ -1,0 +1,83 @@
+{
+  "name": "CompliancePartnerUser",
+  "type": "object",
+  "properties": {
+    "userId": {
+      "type": "string",
+      "description": "ID do User vinculado"
+    },
+    "userEmail": {
+      "type": "string",
+      "description": "Email do usu\u00e1rio (desnormalizado para queries r\u00e1pidas)"
+    },
+    "userFullName": {
+      "type": "string",
+      "description": "Nome completo do usu\u00e1rio (desnormalizado)"
+    },
+    "partnerId": {
+      "type": "string",
+      "description": "ID do CompliancePartner"
+    },
+    "partnerName": {
+      "type": "string",
+      "description": "Nome do parceiro (desnormalizado)"
+    },
+    "partnerRole": {
+      "type": "string",
+      "enum": [
+        "viewer",
+        "analyst",
+        "manager"
+      ],
+      "default": "analyst",
+      "description": "Papel do usu\u00e1rio dentro do parceiro"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true
+    },
+    "assignedBy": {
+      "type": "string",
+      "description": "Email do admin que vinculou"
+    },
+    "assignedByName": {
+      "type": "string"
+    },
+    "assignedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "revokedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "revokedBy": {
+      "type": "string"
+    },
+    "revokeReason": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "userId",
+    "partnerId"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": true,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

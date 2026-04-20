@@ -63,6 +63,9 @@ import EditorPerfil from './pages/EditorPerfil';
 import GestaoUsuarios from './pages/GestaoUsuarios';
 import AuditoriaAcessos from './pages/AuditoriaAcessos';
 import CafTestLab from './pages/CafTestLab';
+import ComplianceParceiro from './pages/ComplianceParceiro';
+import ComplianceParceiroDetalhe from './pages/ComplianceParceiroDetalhe';
+import AdminGestaoParceiros from './pages/AdminGestaoParceiros';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -384,6 +387,9 @@ const AuthenticatedApp = () => {
       <Route path="/GestaoUsuarios" element={<LayoutWrapper currentPageName="GestaoUsuarios"><GestaoUsuarios /></LayoutWrapper>} />
       <Route path="/AuditoriaAcessos" element={<LayoutWrapper currentPageName="AuditoriaAcessos"><AuditoriaAcessos /></LayoutWrapper>} />
       <Route path="/CafTestLab" element={<LayoutWrapper currentPageName="CafTestLab"><CafTestLab /></LayoutWrapper>} />
+      <Route path="/ComplianceParceiro" element={<LayoutWrapper currentPageName="ComplianceParceiro"><ComplianceParceiro /></LayoutWrapper>} />
+      <Route path="/ComplianceParceiroDetalhe" element={<LayoutWrapper currentPageName="ComplianceParceiroDetalhe"><ComplianceParceiroDetalhe /></LayoutWrapper>} />
+      <Route path="/AdminGestaoParceiros" element={<LayoutWrapper currentPageName="AdminGestaoParceiros"><AdminGestaoParceiros /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

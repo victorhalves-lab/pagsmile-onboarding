@@ -1,0 +1,71 @@
+{
+  "name": "PartnerAssignmentActivity",
+  "type": "object",
+  "properties": {
+    "assignmentId": {
+      "type": "string",
+      "description": "ID do PartnerAssignment"
+    },
+    "partnerId": {
+      "type": "string"
+    },
+    "onboardingCaseId": {
+      "type": "string"
+    },
+    "activityType": {
+      "type": "string",
+      "enum": [
+        "assigned",
+        "viewed",
+        "commented",
+        "documents_downloaded",
+        "recommendation_submitted",
+        "recommendation_changed",
+        "revoked",
+        "sla_warning_sent",
+        "sla_breached",
+        "status_changed"
+      ]
+    },
+    "performedBy": {
+      "type": "string",
+      "description": "Email do usu\u00e1rio/admin (ou 'system')"
+    },
+    "performedByName": {
+      "type": "string"
+    },
+    "performedByRole": {
+      "type": "string",
+      "enum": [
+        "admin",
+        "partner",
+        "system"
+      ]
+    },
+    "description": {
+      "type": "string"
+    },
+    "details": {
+      "type": "object",
+      "description": "Payload adicional em JSON"
+    }
+  },
+  "required": [
+    "assignmentId",
+    "activityType"
+  ],
+  "rls": {
+    "create": true,
+    "read": true,
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

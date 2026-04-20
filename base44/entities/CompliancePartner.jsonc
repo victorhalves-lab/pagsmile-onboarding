@@ -1,0 +1,109 @@
+{
+  "name": "CompliancePartner",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nome fantasia do parceiro de compliance"
+    },
+    "legalName": {
+      "type": "string",
+      "description": "Raz\u00e3o Social"
+    },
+    "cnpj": {
+      "type": "string",
+      "description": "CNPJ do parceiro"
+    },
+    "logoUrl": {
+      "type": "string",
+      "description": "URL do logo (opcional, para white-label)"
+    },
+    "contactEmail": {
+      "type": "string",
+      "format": "email",
+      "description": "E-mail principal de contato"
+    },
+    "contactPhone": {
+      "type": "string",
+      "description": "Telefone principal de contato"
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se o parceiro est\u00e1 ativo"
+    },
+    "slaHours": {
+      "type": "number",
+      "default": 48,
+      "description": "Prazo em horas para o parceiro analisar um caso atribu\u00eddo"
+    },
+    "notificationChannels": {
+      "type": "object",
+      "description": "Configura\u00e7\u00f5es de notifica\u00e7\u00f5es",
+      "properties": {
+        "slack": {
+          "type": "object",
+          "properties": {
+            "channelId": {
+              "type": "string",
+              "description": "ID do canal Slack do parceiro"
+            },
+            "userIds": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "IDs de usu\u00e1rios Slack para DM"
+            }
+          }
+        }
+      }
+    },
+    "allowedOnboardingCaseModels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Modelos de question\u00e1rio que este parceiro pode visualizar (ex: pix_merchant, ecommerce_full)"
+    },
+    "defaultVisibilityLevel": {
+      "type": "string",
+      "enum": [
+        "full",
+        "redacted",
+        "summary_only"
+      ],
+      "default": "full",
+      "description": "N\u00edvel de visibilidade padr\u00e3o aplicado em novas atribui\u00e7\u00f5es"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es internas sobre o parceiro"
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
