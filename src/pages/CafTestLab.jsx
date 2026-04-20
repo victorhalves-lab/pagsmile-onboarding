@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { FlaskConical, Server, Camera, ShieldAlert, Plug } from 'lucide-react';
+import { FlaskConical, Server, Camera, ShieldAlert, Plug, Send } from 'lucide-react';
 import CafBackendTests from '@/components/caf-lab/CafBackendTests';
 import CafSdkTests from '@/components/caf-lab/CafSdkTests';
 import CafConnectTests from '@/components/caf-lab/CafConnectTests';
+import CafComplianceSubmitTests from '@/components/caf-lab/CafComplianceSubmitTests';
 
 /**
  * CafTestLab — página admin para testar cada camada CAF isoladamente.
@@ -61,6 +62,9 @@ export default function CafTestLab() {
           <TabsTrigger value="connect" className="data-[state=active]:bg-white data-[state=active]:text-[#002443]">
             <Plug className="w-4 h-4 mr-2" /> Connect API <Badge className="ml-2 bg-purple-100 text-purple-700 text-[9px] h-4">novo</Badge>
           </TabsTrigger>
+          <TabsTrigger value="submit" className="data-[state=active]:bg-white data-[state=active]:text-[#002443]">
+            <Send className="w-4 h-4 mr-2" /> Submit Compliance <Badge className="ml-2 bg-emerald-100 text-emerald-700 text-[9px] h-4">PF/PJ</Badge>
+          </TabsTrigger>
           <TabsTrigger value="sdk" className="data-[state=active]:bg-white data-[state=active]:text-[#002443]">
             <Camera className="w-4 h-4 mr-2" /> Frontend SDK (câmera)
           </TabsTrigger>
@@ -72,6 +76,10 @@ export default function CafTestLab() {
 
         <TabsContent value="connect" className="mt-4">
           <CafConnectTests />
+        </TabsContent>
+
+        <TabsContent value="submit" className="mt-4">
+          <CafComplianceSubmitTests />
         </TabsContent>
 
         <TabsContent value="sdk" className="mt-4">
