@@ -5,6 +5,7 @@ import {
   ScanFace, FileCheck, CheckCircle2, XCircle, AlertCircle, Eye, ChevronDown, ChevronUp,
   Shield, Camera, Image, Clock, Fingerprint
 } from 'lucide-react';
+import CafResyncButton from './CafResyncButton';
 
 /**
  * Displays detailed CAF verification results (DocumentDetector + FaceLiveness)
@@ -262,18 +263,23 @@ function RawDataViewer({ data }) {
   );
 }
 
-export default function CafResultsPanel({ validations, integrationLogs = [] }) {
+export default function CafResultsPanel({ validations, integrationLogs = [], onboardingCaseId, onResync }) {
   const cafValidations = validations.filter(v => v.provider === 'CAF');
   const cafLogs = integrationLogs.filter(l => l.provider === 'CAF');
 
   if (cafValidations.length === 0) {
     return (
       <div className="bg-white rounded-xl border border-slate-200 p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="p-2 rounded-lg bg-purple-50">
-            <ScanFace className="w-5 h-5 text-purple-600" />
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-purple-50">
+              <ScanFace className="w-5 h-5 text-purple-600" />
+            </div>
+            <h3 className="text-lg font-bold text-[#002443]">Resultados CAF</h3>
           </div>
-          <h3 className="text-lg font-bold text-[#002443]">Resultados CAF</h3>
+          {onboardingCaseId && (
+            <CafResyncButton onboardingCaseId={onboardingCaseId} onSuccess={onResync} />
+          )}
         </div>
         <div className="text-center py-8">
           <ScanFace className="w-12 h-12 mx-auto text-slate-300 mb-3" />
@@ -306,13 +312,18 @@ export default function CafResultsPanel({ validations, integrationLogs = [] }) {
             <p className="text-xs text-[#002443]/50">{cafValidations.length} verificação(ões) encontrada(s)</p>
           </div>
         </div>
-        <Badge className={allApproved ? 'bg-green-100 text-green-800 border-green-200' : 'bg-orange-100 text-orange-800 border-orange-200'}>
-          {allApproved ? (
-            <><CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Todas aprovadas</>
-          ) : (
-            <><XCircle className="w-3.5 h-3.5 mr-1" /> Atenção necessária</>
+        <div className="flex items-center gap-2">
+          {onboardingCaseId && (
+            <CafResyncButton onboardingCaseId={onboardingCaseId} onSuccess={onResync} />
           )}
-        </Badge>
+          <Badge className={allApproved ? 'bg-green-100 text-green-800 border-green-200' : 'bg-orange-100 text-orange-800 border-orange-200'}>
+            {allApproved ? (
+              <><CheckCircle2 className="w-3.5 h-3.5 mr-1" /> Todas aprovadas</>
+            ) : (
+              <><XCircle className="w-3.5 h-3.5 mr-1" /> Atenção necessária</>
+            )}
+          </Badge>
+        </div>
       </div>
 
       {/* Summary bar */}
