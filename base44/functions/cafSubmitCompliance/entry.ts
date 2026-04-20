@@ -139,6 +139,9 @@ Deno.serve(async (req) => {
     const accessToken = await getAccessToken();
 
     // ── ETAPA 1: upload de cada arquivo ──
+    // Estratégia: tenta upload multipart (/v1/transactions/files). Se 403 (permissão
+    // "Create Transaction Files" não concedida no Trust), faz fallback inline com base64
+    // direto no payload da transação — que é um formato oficialmente aceito pela CAF.
     const savedImageUrls = [];
     const cafFiles = [];
 
@@ -173,7 +176,7 @@ Deno.serve(async (req) => {
           console.warn(`[cafSubmit] Falha ao salvar ${f.type} no storage (prosseguindo p/ CAF):`, e.message);
         }
 
-        // 1b. Upload multipart para CAF
+        // 1b. Tenta upload multipart na CAF
         const form = new FormData();
         form.append('file', blob, filename);
         const up = await fetch(`${CONNECT_BASE}/v1/transactions/files`, {
@@ -184,23 +187,29 @@ Deno.serve(async (req) => {
         const upText = await up.text();
         let upJson; try { upJson = JSON.parse(upText); } catch { upJson = { raw: upText.substring(0, 300) }; }
 
-        attempts.push({
-          step: `upload_${f.type}`,
-          status: up.status,
-          ok: up.ok,
-          duration_ms: Date.now() - stepStart,
-          cafFilename: upJson?.data?.filename || null,
-          error: up.ok ? null : upJson,
-        });
-
-        if (!up.ok) {
-          throw new Error(`CAF upload falhou (${f.type}): HTTP ${up.status} — ${upText.substring(0, 200)}`);
+        if (up.ok && upJson?.data?.filename) {
+          // Sucesso no multipart — usa o filename retornado
+          attempts.push({
+            step: `upload_${f.type}`, mode: 'multipart',
+            status: up.status, ok: true,
+            duration_ms: Date.now() - stepStart,
+            cafFilename: upJson.data.filename,
+          });
+          cafFiles.push({ data: upJson.data.filename, type: f.type });
+        } else {
+          // Fallback: envia base64 direto no payload da transação
+          console.warn(`[cafSubmit] Multipart upload falhou (HTTP ${up.status}), usando fallback base64 inline para ${f.type}`);
+          attempts.push({
+            step: `upload_${f.type}`, mode: 'multipart_fallback_to_inline',
+            status: up.status, ok: false,
+            duration_ms: Date.now() - stepStart,
+            error: upJson,
+            note: 'Fallback: usando base64 inline no payload da transação',
+          });
+          // Remove prefixo data:...;base64, se existir
+          const b64Only = f.base64.replace(/^data:[^;]+;base64,/, '');
+          cafFiles.push({ data: b64Only, type: f.type });
         }
-
-        const cafFilename = upJson?.data?.filename;
-        if (!cafFilename) throw new Error(`CAF upload retornou sem filename: ${JSON.stringify(upJson)}`);
-
-        cafFiles.push({ data: cafFilename, type: f.type });
       } catch (e) {
         attempts.push({ step: `upload_${f.type}`, ok: false, duration_ms: Date.now() - stepStart, error: e.message });
         throw e;
