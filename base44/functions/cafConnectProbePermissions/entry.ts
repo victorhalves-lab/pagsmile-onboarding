@@ -95,6 +95,11 @@ Deno.serve(async (req) => {
       }),
       // Read Face Authentication Attempts
       probe('Read Face Attempt', 'GET', '/v1/faces/attempts/00000000000000000000000000', { _token: token }),
+      // Create Transaction Files (upload) — probe without multipart → 400 if allowed, 403 if denied
+      probe('Create Transaction Files (upload)', 'POST', '/v1/transactions/files', {
+        _token: token,
+        body: {}, // missing multipart file — should 400 if allowed
+      }),
     ]);
 
     const allowed = results.filter(r => r.verdict === 'ALLOWED').map(r => r.name);

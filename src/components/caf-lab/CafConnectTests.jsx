@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   Loader2, Play, CheckCircle2, XCircle, ChevronDown, ChevronRight,
-  KeyRound, ShieldCheck, ShieldAlert, Zap, Info
+  KeyRound, ShieldCheck, ShieldAlert, Zap, Info, Upload, Search
 } from 'lucide-react';
 
 /**
@@ -49,9 +49,20 @@ function ResultBlock({ result }) {
 }
 
 export default function CafConnectTests() {
-  const [ctx, setCtx] = useState({ cnpj: '', cpf: '', templateId: '' });
+  const [ctx, setCtx] = useState({ cnpj: '', cpf: '', templateId: '', onboardingCaseId: '', transactionId: '' });
+  const [selfieB64, setSelfieB64] = useState('');
+  const [docFrontB64, setDocFrontB64] = useState('');
+  const [docBackB64, setDocBackB64] = useState('');
   const [results, setResults] = useState({});
   const [loadingId, setLoadingId] = useState(null);
+
+  const handleFile = (setter) => (e) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onloadend = () => setter(r.result);
+    r.readAsDataURL(f);
+  };
 
   const runTest = async (id, fn, successCheck = () => true) => {
     setLoadingId(id);
@@ -248,6 +259,127 @@ export default function CafConnectTests() {
           </Button>
         </div>
         <ResultBlock result={results.suite} />
+      </Card>
+
+      {/* TEST 4: Create Transaction with documents (main flow) */}
+      <Card className="p-4 border-[#2bc196] bg-[#2bc196]/5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1">
+            <div className="flex items-center gap-2">
+              <Upload className="w-4 h-4 text-[#2bc196]" />
+              <h4 className="text-sm font-bold text-[#002443]">
+                4. Create Transaction COM documentos (fluxo principal) ⚠️
+              </h4>
+              <Badge className="bg-[#2bc196] text-white text-[9px]">MAIN</Badge>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Upload multipart de cada imagem em <code className="bg-white/60 px-1">/v1/transactions/files</code> +
+              criação da transação em <code className="bg-white/60 px-1">/v1/transactions?origin=TRUST</code>.
+              <strong className="text-[#002443]"> Este é o endpoint que será usado em produção.</strong>
+            </p>
+            <p className="text-[10px] text-slate-400 mt-1 font-mono">→ cafConnectCreateTransaction</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
+          <div>
+            <Label className="text-xs">OnboardingCase ID</Label>
+            <Input
+              value={ctx.onboardingCaseId}
+              onChange={(e) => setCtx({ ...ctx, onboardingCaseId: e.target.value })}
+              placeholder="69e65d61f5e31d7556f62ebc"
+              className="h-9 text-sm font-mono"
+            />
+          </div>
+          <div>
+            <Label className="text-xs">Selfie (file)</Label>
+            <Input type="file" accept="image/*" onChange={handleFile(setSelfieB64)} className="h-9 text-xs" />
+            {selfieB64 && <p className="text-[10px] text-green-600 mt-0.5">✓ {Math.round(selfieB64.length / 1024)}KB</p>}
+          </div>
+          <div>
+            <Label className="text-xs">Documento Frente (file)</Label>
+            <Input type="file" accept="image/*" onChange={handleFile(setDocFrontB64)} className="h-9 text-xs" />
+            {docFrontB64 && <p className="text-[10px] text-green-600 mt-0.5">✓ {Math.round(docFrontB64.length / 1024)}KB</p>}
+          </div>
+          <div>
+            <Label className="text-xs">Documento Verso (file)</Label>
+            <Input type="file" accept="image/*" onChange={handleFile(setDocBackB64)} className="h-9 text-xs" />
+            {docBackB64 && <p className="text-[10px] text-green-600 mt-0.5">✓ {Math.round(docBackB64.length / 1024)}KB</p>}
+          </div>
+        </div>
+
+        <div className="flex items-center justify-end mt-4">
+          <Button
+            onClick={() => {
+              const images = [];
+              if (selfieB64) images.push({ type: 'SELFIE', base64: selfieB64 });
+              if (docFrontB64) images.push({ type: 'FRONT', base64: docFrontB64 });
+              if (docBackB64) images.push({ type: 'BACK', base64: docBackB64 });
+              return runTest('createTx',
+                () => base44.functions.invoke('cafConnectCreateTransaction', {
+                  onboardingCaseId: ctx.onboardingCaseId,
+                  templateId: ctx.templateId,
+                  attributes: {
+                    ...(ctx.cpf ? { cpf: ctx.cpf.replace(/\D/g, '') } : {}),
+                    ...(ctx.cnpj ? { cnpj: ctx.cnpj.replace(/\D/g, '') } : {}),
+                  },
+                  images,
+                }),
+                (d) => d?.success === true
+              );
+            }}
+            disabled={
+              loadingId === 'createTx' ||
+              !ctx.onboardingCaseId ||
+              !ctx.templateId ||
+              (!selfieB64 && !docFrontB64 && !docBackB64)
+            }
+            size="sm"
+            className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
+          >
+            {loadingId === 'createTx' ? (
+              <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Enviando...</>
+            ) : (
+              <><Play className="w-3.5 h-3.5 mr-1.5" /> Enviar Transação CAF (real)</>
+            )}
+          </Button>
+        </div>
+        {(!ctx.onboardingCaseId || !ctx.templateId) && (
+          <p className="text-[10px] text-amber-700 mt-2">⚠ Precisa: onboardingCaseId + templateId + pelo menos 1 imagem</p>
+        )}
+        <ResultBlock result={results.createTx} />
+
+        {/* Se sucesso, mostra campo pra buscar resultado */}
+        {results.createTx?.data?.transactionId && (
+          <div className="mt-3 pt-3 border-t border-[#2bc196]/20">
+            <p className="text-xs text-[#002443] font-semibold mb-1">
+              ✅ Transaction criada: <code className="font-mono bg-white/60 px-1">{results.createTx.data.transactionId}</code>
+            </p>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                setCtx((p) => ({ ...p, transactionId: results.createTx.data.transactionId }));
+                runTest('getTx',
+                  () => base44.functions.invoke('cafConnectGetTransaction', {
+                    transactionId: results.createTx.data.transactionId,
+                    includeCroppedImages: true,
+                  }),
+                  (d) => d?.success === true
+                );
+              }}
+              disabled={loadingId === 'getTx'}
+              className="mt-1"
+            >
+              {loadingId === 'getTx' ? (
+                <><Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" /> Buscando...</>
+              ) : (
+                <><Search className="w-3.5 h-3.5 mr-1.5" /> Buscar resultado dessa tx</>
+              )}
+            </Button>
+            <ResultBlock result={results.getTx} />
+          </div>
+        )}
       </Card>
 
       {/* TEST 3: KYB real (consume credits) */}
