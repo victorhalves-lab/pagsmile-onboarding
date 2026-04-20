@@ -1,5 +1,19 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
+// Fire-and-forget VerifAI analysis for a newly created DocumentUpload.
+// Errors here NEVER block the upload response — VerifAI is best-effort; the pipeline
+// will re-try for any doc still in validationStatus="Pendente" later.
+async function triggerVerifaiAsync(base44, documentUploadId, onboardingCaseId) {
+  try {
+    await base44.asServiceRole.functions.invoke('cafVerifaiDocs', {
+      documentUploadId,
+      onboardingCaseId,
+    });
+  } catch (err) {
+    console.warn('[publicComplianceDocUpload] VerifAI trigger failed (non-blocking):', err?.message);
+  }
+}
+
 /**
  * PUBLIC endpoint — creates DocumentUpload records for a given OnboardingCase.
  *
@@ -77,6 +91,12 @@ Deno.serve(async (req) => {
         const createdDoc = await base44.asServiceRole.entities.DocumentUpload.create(payload);
         console.log(`[publicComplianceDocUpload] CREATED idx=${i} id=${createdDoc?.id} documentTypeId=${d.documentTypeId} file=${d.fileName}`);
         created.push({ id: createdDoc?.id, documentTypeId: d.documentTypeId, documentName: payload.documentName });
+        // Fire-and-forget VerifAI analysis — CAF VerifAI Docs checks for digital manipulation.
+        // Skipped internally for CAF-captured docs (documentTypeId starts with 'caf_').
+        // Does NOT block the response; failures are logged but don't affect the result.
+        if (createdDoc?.id) {
+          triggerVerifaiAsync(base44, createdDoc.id, caseId);
+        }
       } catch (createErr) {
         console.error(`[publicComplianceDocUpload] CREATE_FAILED idx=${i} documentTypeId=${d.documentTypeId} error=${createErr.message}`);
         failed.push({

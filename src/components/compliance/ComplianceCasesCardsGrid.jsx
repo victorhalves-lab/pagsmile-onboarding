@@ -11,12 +11,13 @@ import {
   Clock, CheckCircle2, AlertTriangle, XCircle, FileCheck,
   Loader2, MoreHorizontal, Mail, Eye, Building2, User,
   FileText, ChevronLeft, ChevronRight, ChevronDown, UserPlus,
-  Link2, ScanFace, RefreshCw, Handshake, Calendar, Brain
+  Link2, ScanFace, RefreshCw, Handshake, Calendar, Brain, FileUp
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 import CaseExpandedDetail from '@/components/compliance/CaseExpandedDetail';
 import CafLinkGeneratorModal from '@/components/compliance/CafLinkGeneratorModal';
+import DocOnlyLinkModal from '@/components/compliance/DocOnlyLinkModal';
 import AssignCaseToPartnerModal from '@/components/partners-compliance/AssignCaseToPartnerModal';
 
 // ── Helpers ──
@@ -171,7 +172,7 @@ function CaseCard({
   linksMap, introducerMap,
   selectedRows, setSelectedRows,
   expandedRow, setExpandedRow,
-  onOpenCafModal, onOpenAssignModal
+  onOpenCafModal, onOpenAssignModal, onOpenDocOnlyModal
 }) {
   const isSelected = selectedRows.includes(c.id);
   const isExpanded = expandedRow === c.id;
@@ -234,6 +235,15 @@ function CaseCard({
           </Button>
           <Button
             variant="ghost" size="icon"
+            onClick={() => onOpenDocOnlyModal(c)}
+            className="h-8 w-8 text-[#002443] hover:bg-[#2bc196]/10"
+            title="Gerar link só de documentos"
+            disabled={c.docCompleted === true}
+          >
+            <FileUp className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="ghost" size="icon"
             onClick={() => setExpandedRow(isExpanded ? null : c.id)}
             className="h-8 w-8 text-[#002443]/60"
             title={isExpanded ? 'Recolher' : 'Expandir'}
@@ -251,6 +261,12 @@ function CaseCard({
               <RevalidateMenuItem caseData={c} />
               <DropdownMenuItem onClick={() => onOpenCafModal(c)}>
                 <ScanFace className="w-4 h-4 mr-2" /> Gerar Link Cliente
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => onOpenDocOnlyModal(c)}
+                disabled={c.docCompleted === true}
+              >
+                <FileUp className="w-4 h-4 mr-2" /> Gerar Link só de Documentos
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onOpenAssignModal(c.id)}>
                 <Handshake className="w-4 h-4 mr-2" /> Atribuir a parceiro
@@ -307,6 +323,7 @@ export default function ComplianceCasesCardsGrid({
   templatesMap, isLoading, linksMap = {}, introducerMap = {},
 }) {
   const [cafModalCase, setCafModalCase] = React.useState(null);
+  const [docOnlyModalCase, setDocOnlyModalCase] = React.useState(null);
   const [assignModalCaseId, setAssignModalCaseId] = React.useState(null);
 
   const allSelected = selectedRows.length === paginatedCases.length && paginatedCases.length > 0;
@@ -352,6 +369,7 @@ export default function ComplianceCasesCardsGrid({
                 expandedRow={expandedRow}
                 setExpandedRow={setExpandedRow}
                 onOpenCafModal={setCafModalCase}
+                onOpenDocOnlyModal={setDocOnlyModalCase}
                 onOpenAssignModal={setAssignModalCaseId}
               />
             ))}
@@ -382,6 +400,13 @@ export default function ComplianceCasesCardsGrid({
         onOpenChange={(o) => { if (!o) setCafModalCase(null); }}
         caseData={cafModalCase}
         merchant={cafModalCase ? merchantMap[cafModalCase.merchantId] : null}
+      />
+
+      <DocOnlyLinkModal
+        open={!!docOnlyModalCase}
+        onOpenChange={(o) => { if (!o) setDocOnlyModalCase(null); }}
+        caseData={docOnlyModalCase}
+        merchant={docOnlyModalCase ? merchantMap[docOnlyModalCase.merchantId] : null}
       />
 
       <AssignCaseToPartnerModal

@@ -23,6 +23,11 @@ export default function ComplianceDocOnly() {
   const urlParams = new URLSearchParams(window.location.search);
   const caseId = urlParams.get('caseId');
   const token = urlParams.get('token');
+  // When mode=docs_only, the CAF identity SDK (RG/CNH + selfie + liveness) is SKIPPED.
+  // The uploaded business documents are STILL analyzed by CAF VerifAI in the backend
+  // (digital manipulation detection) — VerifAI runs automatically on each DocumentUpload
+  // created by publicComplianceDocUpload.
+  const skipCafIdentity = urlParams.get('mode') === 'docs_only';
 
   const [documents, setDocuments] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -90,7 +95,7 @@ export default function ComplianceDocOnly() {
     return labels[model] || model || 'Compliance';
   };
 
-  // ── Proceed to CAF step ──
+  // ── Proceed to CAF step (or submit directly in docs_only mode) ──
   const handleProceedToCaf = () => {
     const requiredDocs = (template?.requiredDocuments || []).map((doc, index) => ({
       ...doc,
@@ -100,6 +105,12 @@ export default function ComplianceDocOnly() {
     const missingDocs = mandatoryDocs.filter(d => !documents[d._docKey]?.url);
     if (missingDocs.length > 0) {
       toast.error(`Faltam ${missingDocs.length} documentos obrigatórios: ${missingDocs.map(d => d.label || d.name).join(', ')}`);
+      return;
+    }
+    // In docs_only mode, skip CAF identity SDK and submit directly.
+    // Uploaded docs will still be analyzed by CAF VerifAI (server-side, automatic).
+    if (skipCafIdentity) {
+      handleFinalSubmit(null);
       return;
     }
     setCurrentStep('caf_verification');
@@ -229,7 +240,7 @@ export default function ComplianceDocOnly() {
           )}
         </div>
 
-        {/* Step indicator */}
+        {/* Step indicator — in docs_only mode, hide the CAF identity step */}
         <div className="flex items-center justify-center gap-3 mb-4">
           <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
             currentStep === 'docs_upload' ? 'bg-blue-100 text-blue-700 ring-2 ring-blue-300' : 'bg-green-100 text-green-700'
@@ -237,19 +248,23 @@ export default function ComplianceDocOnly() {
             {currentStep !== 'docs_upload' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <span className="w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center">1</span>}
             Documentos
           </div>
-          <div className="w-8 h-0.5 bg-slate-200" />
-          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-            currentStep === 'caf_verification' ? 'bg-purple-100 text-purple-700 ring-2 ring-purple-300' :
-            currentStep === 'completed' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'
-          }`}>
-            {currentStep === 'completed' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <span className="w-5 h-5 rounded-full bg-slate-300 text-white text-[10px] flex items-center justify-center">2</span>}
-            Verificação CAF
-          </div>
+          {!skipCafIdentity && (
+            <>
+              <div className="w-8 h-0.5 bg-slate-200" />
+              <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                currentStep === 'caf_verification' ? 'bg-purple-100 text-purple-700 ring-2 ring-purple-300' :
+                currentStep === 'completed' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'
+              }`}>
+                {currentStep === 'completed' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <span className="w-5 h-5 rounded-full bg-slate-300 text-white text-[10px] flex items-center justify-center">2</span>}
+                Verificação CAF
+              </div>
+            </>
+          )}
           <div className="w-8 h-0.5 bg-slate-200" />
           <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold ${
             currentStep === 'completed' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'
           }`}>
-            {currentStep === 'completed' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <span className="w-5 h-5 rounded-full bg-slate-300 text-white text-[10px] flex items-center justify-center">3</span>}
+            {currentStep === 'completed' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <span className="w-5 h-5 rounded-full bg-slate-300 text-white text-[10px] flex items-center justify-center">{skipCafIdentity ? '2' : '3'}</span>}
             Conclusão
           </div>
         </div>
@@ -331,6 +346,8 @@ export default function ComplianceDocOnly() {
           >
             {isSubmitting ? (
               <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Enviando...</>
+            ) : skipCafIdentity ? (
+              <><CheckCircle2 className="w-4 h-4 mr-2" /> Enviar Documentos</>
             ) : (
               <><ScanFace className="w-4 h-4 mr-2" /> Próximo: Verificação de Identidade</>
             )}
