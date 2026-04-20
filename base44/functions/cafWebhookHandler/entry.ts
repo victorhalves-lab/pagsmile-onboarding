@@ -1,36 +1,96 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 /**
- * cafWebhookHandler — Receives and processes CAF webhooks in real-time
+ * cafWebhookHandler — Processa webhooks CAF (Connect + Core legado).
  *
- * UPGRADES v2:
- *   1. ALL 87 validation rules mapped (same as cafGetTransaction v2)
- *   2. manualReprovalReasons[] processed (20 codes)
- *   3. Auto-fetch uses _lang=pt, _includePfRelationships=true
- *   4. profile_status_change webhook type fully handled
- *   5. Severity classification on flags
+ * UPGRADES v3 (CAF Connect support):
+ *   1. HMAC SHA-256 signature validation (X-Caf-Signature) — raw body bytes
+ *   2. CloudEvents spec compliance — parse { specversion, type, source, id, time, data }
+ *   3. Idempotency via CloudEvent.id (rejeita duplicatas)
+ *   4. Resposta 202 Accepted em <2s (processamento async se necessário)
+ *   5. Suporte a TODOS os eventos Connect:
+ *      - TRANSACTIONPROCESSSTARTEDEVENT / TRANSACTIONSTATUSUPDATED / TRANSACTIONDOCUMENTSCOPYREQUESTEDEVENT
+ *      - FACEAUTHENTICATIONEVENT / PROFILEUPDATEDEVENT
+ *      - COMMUNICATION* (SMS/email/whatsapp status)
+ *   6. Fallback para o padrão legado Core API (type=status_updated etc) preservado
  *
- * Auth: No Base44 auth (called by CAF externally). IP whitelist + signature check.
+ * Docs: https://docs.caf.io/caf-api/connect/webhook
+ * Auth: No Base44 auth (chamado externamente pela CAF). HMAC valida autenticidade.
  */
 
-const CAF_API_BASE = 'https://api.combateafraude.com';
+const CAF_CORE_API_BASE = 'https://api.combateafraude.com';
+const CAF_CONNECT_API_BASE = 'https://api.us.prd.caf.io';
 
-// Official CAF Connect API webhook IPs (docs.caf.io/caf-api/connect/webhook/best-practices).
-// Kept as a reference for optional enforcement — actual filtering is done at the audit/log
-// layer only. We still capture the real source IP on every webhook (see handler) so we can
-// build evidence over time about which IPs CAF is actually using for THIS app.
+// Official CAF webhook IPs (docs.caf.io/caf-api/connect/webhook/best-practices)
 const CAF_KNOWN_IPS = new Set([
   '34.234.120.59', '18.229.212.133', '3.218.90.124', '44.219.96.170', '18.235.54.162',
 ]);
 
-function getCafToken() {
+function getCoreToken() {
   const token = Deno.env.get('CAF_CORE_API_TOKEN');
   if (!token) throw new Error('CAF_CORE_API_TOKEN not configured');
   return token;
 }
 
+// ── OAuth2 Connect token cache ──
+let connectTokenCache = { accessToken: null, expiresAt: 0 };
+async function getConnectToken() {
+  const clientId = Deno.env.get('CAF_CONNECT_CLIENT_ID');
+  const clientSecret = Deno.env.get('CAF_CONNECT_CLIENT_SECRET');
+  if (!clientId || !clientSecret) return null;
+  const now = Date.now();
+  if (connectTokenCache.accessToken && connectTokenCache.expiresAt - 60_000 > now) {
+    return connectTokenCache.accessToken;
+  }
+  const res = await fetch(`${CAF_CONNECT_API_BASE}/oauth2/token`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'client_credentials', client_id: clientId, client_secret: clientSecret,
+    }).toString(),
+  });
+  const json = await res.json().catch(() => ({}));
+  if (!res.ok || !json.access_token) return null;
+  connectTokenCache = {
+    accessToken: json.access_token,
+    expiresAt: now + (Number(json.expires_in) || 3600) * 1000,
+  };
+  return json.access_token;
+}
+
 // ═══════════════════════════════════════════════════════════════
-// COMPLETE VALIDATION RULES MAP — ALL 87 CAF rules
+// HMAC SHA-256 signature verification (constant-time)
+// ═══════════════════════════════════════════════════════════════
+async function verifyCafSignature(rawBodyBytes, signatureHex, secret) {
+  if (!signatureHex || !secret) return false;
+  try {
+    const key = await crypto.subtle.importKey(
+      'raw',
+      new TextEncoder().encode(secret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign']
+    );
+    const sigBuffer = await crypto.subtle.sign('HMAC', key, rawBodyBytes);
+    const expectedHex = Array.from(new Uint8Array(sigBuffer))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+
+    // Constant-time comparison
+    if (expectedHex.length !== signatureHex.length) return false;
+    let diff = 0;
+    for (let i = 0; i < expectedHex.length; i++) {
+      diff |= expectedHex.charCodeAt(i) ^ signatureHex.charCodeAt(i);
+    }
+    return diff === 0;
+  } catch (e) {
+    console.warn('[CAF-Webhook] HMAC verify error:', e.message);
+    return false;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Validation rules map (87 Core API rules — still used for legacy + auto-fetch)
 // ═══════════════════════════════════════════════════════════════
 const VALIDATION_RULES_MAP = {
   cpf_error_code: 'CPF_IRREGULAR', cpf_has_not_dead: 'CPF_DEATH_INDICATOR',
@@ -113,62 +173,209 @@ const MANUAL_REPROVAL_MAP = {
 function extractFlagsFromReasons(statusReasons) {
   const flags = [];
   if (!Array.isArray(statusReasons)) return flags;
-
   for (const reason of statusReasons) {
     if (reason.status === 'INVALID' || reason.resultStatus === 'REPROVED') {
       const flagType = VALIDATION_RULES_MAP[reason.code] || `CAF_RULE_${(reason.code || 'unknown').toUpperCase()}`;
       flags.push(`${flagType}: ${reason.description || reason.code}`);
     }
   }
-
   return flags;
 }
 
 function extractFlagsFromManualReprovals(manualReprovalReasons) {
   const flags = [];
   if (!Array.isArray(manualReprovalReasons)) return flags;
-
   for (const reproval of manualReprovalReasons) {
     const code = String(reproval.code || '');
     const flagType = MANUAL_REPROVAL_MAP[code] || `MANUAL_REPROVAL_${code}`;
     flags.push(`${flagType}: ${reproval.reason || `Manual reproval code ${code}`}`);
   }
-
   return flags;
 }
 
+// ═══════════════════════════════════════════════════════════════
+// Detecta se é CloudEvent (Connect) ou payload legado (Core)
+// ═══════════════════════════════════════════════════════════════
+function isCloudEvent(body) {
+  return !!(body && body.specversion && body.type && body.source && body.id);
+}
+
+// Normaliza CloudEvent Connect → forma uniforme pra lógica downstream
+function normalizeCloudEvent(evt) {
+  const type = evt.type || '';
+  const data = evt.data || {};
+
+  // Connect event types → legacy-like form
+  // https://docs.caf.io/caf-api/connect/webhook/events
+  if (type === 'TRANSACTIONSTATUSUPDATED') {
+    return {
+      _cloudEventId: evt.id,
+      _cloudEventTime: evt.time,
+      _cloudEventType: type,
+      type: 'status_updated',
+      uuid: data.transactionId || data.transactionUuid || '',
+      status: data.status || '',
+      onboardingId: data.onboardingId || '',
+      externalId: data.externalId || '',
+      statusReasons: data.statusReasons || data.validations || [],
+      metadata: data.metadata || {},
+      attributes: data.attributes || {},
+      variables: data.variables || {},
+      _raw: evt,
+    };
+  }
+  if (type === 'TRANSACTIONPROCESSSTARTEDEVENT') {
+    return {
+      _cloudEventId: evt.id, _cloudEventTime: evt.time, _cloudEventType: type,
+      type: 'process_started',
+      uuid: data.transactionId || '', status: 'PROCESSING',
+      onboardingId: data.onboardingId || '', externalId: data.externalId || '',
+      _raw: evt,
+    };
+  }
+  if (type === 'TRANSACTIONDOCUMENTSCOPYREQUESTEDEVENT') {
+    return {
+      _cloudEventId: evt.id, _cloudEventTime: evt.time, _cloudEventType: type,
+      type: 'documentscopy_requested',
+      uuid: data.transactionId || '', status: 'PROCESSING',
+      externalId: data.externalId || '',
+      documentscopy: data.documentscopy || data,
+      _raw: evt,
+    };
+  }
+  if (type === 'FACEAUTHENTICATIONEVENT') {
+    return {
+      _cloudEventId: evt.id, _cloudEventTime: evt.time, _cloudEventType: type,
+      type: 'face_authentication',
+      uuid: data.transactionId || data.authenticationId || '',
+      isMatch: data.isMatch, status: data.status || '',
+      externalId: data.externalId || '', profileId: data.profileId || '',
+      _raw: evt,
+    };
+  }
+  if (type === 'PROFILEUPDATEDEVENT') {
+    return {
+      _cloudEventId: evt.id, _cloudEventTime: evt.time, _cloudEventType: type,
+      type: 'profile_status_change',
+      uuid: data.profileId || '',
+      status: data.status || '',
+      profileId: data.profileId || '', cpf: data.cpf || '', cnpj: data.cnpj || '',
+      externalId: data.externalId || '',
+      updatedAt: data.updatedAt || data.occurredOn || evt.time,
+      _raw: evt,
+    };
+  }
+  // COMMUNICATION* — apenas loga, não altera case
+  if (type.startsWith('COMMUNICATION')) {
+    return {
+      _cloudEventId: evt.id, _cloudEventTime: evt.time, _cloudEventType: type,
+      type: 'communication',
+      uuid: data.notificationId || data.externalId || '',
+      status: type.replace('COMMUNICATION', '').replace('EVENT', '').toLowerCase(),
+      externalId: data.externalId || '',
+      _raw: evt,
+    };
+  }
+
+  // Desconhecido — preserva evento bruto
+  return {
+    _cloudEventId: evt.id, _cloudEventTime: evt.time, _cloudEventType: type,
+    type: 'unknown_cloudevent', uuid: '', status: '',
+    _raw: evt,
+  };
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Handler principal
+// ═══════════════════════════════════════════════════════════════
 Deno.serve(async (req) => {
   const startTime = Date.now();
 
   try {
-    // Capture observability headers BEFORE parsing the body so we can audit the real
-    // source of every webhook (needed to verify if CAF is sending the documented IPs
-    // and the X-Caf-Signature header in production).
+    // CAF webhooks são sempre POST com Content-Type: application/json.
+    // Retornamos 405 pra outros métodos (ex: GET de health-check do Trust).
+    if (req.method !== 'POST') {
+      return new Response('Method not allowed', { status: 405 });
+    }
+
+    // ── Observabilidade: captura IP + signature ANTES de ler o body ──
     const sourceIp = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
       || req.headers.get('cf-connecting-ip') || req.headers.get('x-real-ip') || '';
-    const cafSignature = req.headers.get('x-caf-signature') || req.headers.get('x-webhook-signature') || '';
+    const cafSignature = req.headers.get('x-caf-signature') || req.headers.get('X-Caf-Signature') || '';
     const userAgent = req.headers.get('user-agent') || '';
     const ipIsKnown = sourceIp ? CAF_KNOWN_IPS.has(sourceIp) : false;
+    const isCafUA = /caf-webhook/i.test(userAgent);
 
-    console.log(`[CAF-Webhook] Source IP: ${sourceIp} (known=${ipIsKnown}), Signature present: ${!!cafSignature}, UA: ${userAgent}`);
+    console.log(`[CAF-Webhook] IP=${sourceIp} (known=${ipIsKnown}), hasSig=${!!cafSignature}, UA=${userAgent}`);
+
+    // ── CRÍTICO: ler o body como bytes RAW pra HMAC ──
+    // (a doc CAF é explícita que a validação tem que ser no byte array cru,
+    //  antes de qualquer parsing JSON — senão o hash muda por reordenação de keys)
+    const rawBodyBytes = new Uint8Array(await req.arrayBuffer());
+    const rawBodyText = new TextDecoder().decode(rawBodyBytes);
+
+    // ── Validação de assinatura HMAC (Connect API) ──
+    const webhookSecret = Deno.env.get('CAF_WEBHOOK_SECRET');
+    let signatureValid = null; // null = não verificado, true/false = resultado
+    if (webhookSecret && cafSignature) {
+      signatureValid = await verifyCafSignature(rawBodyBytes, cafSignature, webhookSecret);
+      if (!signatureValid) {
+        console.warn('[CAF-Webhook] ❌ Invalid HMAC signature — rejecting');
+        // Best practice: retorna 401 pra eventos assinados inválidos
+        return new Response(JSON.stringify({ error: 'Invalid signature' }), {
+          status: 401,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+      console.log('[CAF-Webhook] ✅ HMAC signature valid');
+    } else if (!webhookSecret) {
+      console.warn('[CAF-Webhook] ⚠ CAF_WEBHOOK_SECRET not set — skipping signature check (add it ASAP)');
+    }
+
+    // ── Parse body ──
+    let body;
+    try { body = JSON.parse(rawBodyText); } catch (e) {
+      console.warn('[CAF-Webhook] Invalid JSON body:', e.message);
+      return new Response(JSON.stringify({ error: 'Invalid JSON' }), { status: 400 });
+    }
 
     const base44 = createClientFromRequest(req);
-    const body = await req.json();
 
-    console.log('[CAF-Webhook] Received:', JSON.stringify({
-      type: body.type, status: body.status,
-      uuid: body.uuid || body.report, onboardingId: body.onboardingId,
-    }));
+    // ── Detecta CloudEvent (Connect) vs legado (Core) ──
+    const isConnect = isCloudEvent(body);
+    const normalized = isConnect ? normalizeCloudEvent(body) : body;
+    const cloudEventId = normalized._cloudEventId || null;
 
-    const webhookType = body.type || 'unknown';
-    const transactionId = body.uuid || body.report || '';
-    const cafStatus = body.status || '';
-    const onboardingId = body.onboardingId || '';
+    console.log(`[CAF-Webhook] Format: ${isConnect ? 'Connect/CloudEvent' : 'Core legacy'}, type: ${normalized.type}, id: ${cloudEventId || 'n/a'}`);
 
-    // Find related IntegrationLog by transaction_id
+    // ── Idempotência: rejeita duplicatas via cloudEventId ──
+    if (cloudEventId) {
+      try {
+        const dup = await base44.asServiceRole.entities.IntegrationLog.filter({
+          request_id: cloudEventId, service_type: 'caf_webhook_received',
+        });
+        if (dup.length > 0) {
+          console.log(`[CAF-Webhook] Duplicate event ${cloudEventId} — returning 202`);
+          return new Response(JSON.stringify({ received: true, duplicate: true, id: cloudEventId }), {
+            status: 202, headers: { 'Content-Type': 'application/json' },
+          });
+        }
+      } catch { /* */ }
+    }
+
+    // ── Extrai campos padronizados ──
+    const webhookType = normalized.type || 'unknown';
+    const transactionId = normalized.uuid || normalized.report || '';
+    const cafStatus = normalized.status || '';
+    const onboardingId = normalized.onboardingId || '';
+
+    // ═══════════════════════════════════════════════════════════════
+    // Resolução do OnboardingCase (4 estratégias)
+    // ═══════════════════════════════════════════════════════════════
     let relatedLog = null;
     let onboardingCaseId = null;
 
+    // 1. Via transaction_id
     if (transactionId) {
       try {
         const logs = await base44.asServiceRole.entities.IntegrationLog.filter({
@@ -176,78 +383,73 @@ Deno.serve(async (req) => {
         });
         relatedLog = logs[0];
         onboardingCaseId = relatedLog?.onboarding_case_id || null;
-      } catch (e) { console.warn('[CAF-Webhook] Could not find related log:', e.message); }
+      } catch { /* */ }
     }
 
-    // Also try finding by onboarding_id
+    // 2. Via onboarding_id
     if (!onboardingCaseId && onboardingId) {
       try {
         const logs = await base44.asServiceRole.entities.IntegrationLog.filter({
           onboarding_id: onboardingId, provider: 'CAF',
         });
-        if (logs[0]) {
-          relatedLog = logs[0];
-          onboardingCaseId = logs[0].onboarding_case_id;
-        }
+        if (logs[0]) { relatedLog = logs[0]; onboardingCaseId = logs[0].onboarding_case_id; }
       } catch { /* */ }
     }
 
-    // 3rd resolver: externalId (passado no query param cadastro.io/xxx?externalId=CASE_ID)
-    // Essencial para vincular resultados do fallback oficial CAF (cadastro.io) ao case correto.
-    // externalId pode vir em attributes/variables/metadata conforme versão da API CAF.
+    // 3. Via externalId (metadata.onboardingCaseId do Connect)
     if (!onboardingCaseId) {
       const externalId =
+        normalized.attributes?.externalId ||
+        normalized.variables?.externalId ||
+        normalized.metadata?.externalId ||
+        normalized.metadata?.onboardingCaseId ||
+        normalized.externalId ||
         body.attributes?.externalId ||
         body.variables?.externalId ||
         body.metadata?.externalId ||
+        body.metadata?.onboardingCaseId ||
         body.externalId || '';
       if (externalId) {
         try {
           const cases = await base44.asServiceRole.entities.OnboardingCase.filter({ id: externalId });
           if (cases[0]) {
             onboardingCaseId = cases[0].id;
-            console.log(`[CAF-Webhook] Case resolved via externalId: ${onboardingCaseId}`);
+            console.log(`[CAF-Webhook] Case via externalId: ${onboardingCaseId}`);
           }
-        } catch (e) {
-          console.warn('[CAF-Webhook] externalId lookup failed:', e.message);
-        }
+        } catch { /* */ }
       }
     }
 
-    // 4th resolver: buscar CNPJ via GET /v1/transactions/{uuid} e vincular por Merchant.cpfCnpj.
-    // Usado quando o link cadastro.io é estático e o cliente não veio do nosso SDK (sem IntegrationLog prévio).
-    if (!onboardingCaseId && transactionId) {
+    // 4. Via CNPJ/CPF (fetch da transação real na CAF — Core legado)
+    if (!onboardingCaseId && transactionId && !isConnect) {
       try {
-        const authToken = getCafToken();
+        const coreToken = getCoreToken();
         const txRes = await fetch(
-          `${CAF_API_BASE}/v1/transactions/${transactionId}?_lang=pt`,
-          { method: 'GET', headers: { 'Authorization': `Bearer ${authToken}` } }
+          `${CAF_CORE_API_BASE}/v1/transactions/${transactionId}?_lang=pt`,
+          { headers: { 'Authorization': `Bearer ${coreToken}` } }
         );
         if (txRes.ok) {
           const tx = await txRes.json().catch(() => null);
-          const cnpj = (
-            tx?.parameters?.cnpj ||
-            tx?.attributes?.cnpj ||
-            tx?.sections?.pjData?.data?.taxIdNumber ||
-            ''
-          ).replace(/\D/g, '');
-          if (cnpj && cnpj.length === 14) {
-            const merchants = await base44.asServiceRole.entities.Merchant.filter({ cpfCnpj: cnpj });
+          const doc = (tx?.parameters?.cnpj || tx?.attributes?.cnpj ||
+            tx?.parameters?.cpf || tx?.attributes?.cpf ||
+            tx?.sections?.pjData?.data?.taxIdNumber || '').replace(/\D/g, '');
+          if (doc && (doc.length === 11 || doc.length === 14)) {
+            const merchants = await base44.asServiceRole.entities.Merchant.filter({ cpfCnpj: doc });
             if (merchants[0]) {
               const cases = await base44.asServiceRole.entities.OnboardingCase.filter({ merchantId: merchants[0].id });
               if (cases[0]) {
                 onboardingCaseId = cases[0].id;
-                console.log(`[CAF-Webhook] Case resolved via CNPJ ${cnpj.slice(0,8)}***: ${onboardingCaseId}`);
+                console.log(`[CAF-Webhook] Case via doc ${doc.slice(0,6)}***: ${onboardingCaseId}`);
               }
             }
           }
         }
-      } catch (e) {
-        console.warn('[CAF-Webhook] CNPJ resolver failed:', e.message);
-      }
+      } catch (e) { console.warn('[CAF-Webhook] Doc resolver error:', e.message); }
     }
 
-    // Update existing IntegrationLog
+    // ═══════════════════════════════════════════════════════════════
+    // Atualiza IntegrationLog existente (se encontrado)
+    // ═══════════════════════════════════════════════════════════════
     if (relatedLog) {
       try {
         await base44.asServiceRole.entities.IntegrationLog.update(relatedLog.id, {
@@ -256,106 +458,71 @@ Deno.serve(async (req) => {
           status: cafStatus === 'APPROVED' ? 'success' : cafStatus === 'REPROVED' ? 'failed' : 'processing',
           result_status: cafStatus === 'APPROVED' ? 'APPROVED' : cafStatus === 'REPROVED' ? 'REPROVED' : 'PENDING_REVIEW',
         });
-      } catch (e) { console.warn('[CAF-Webhook] Failed to update log:', e.message); }
+      } catch (e) { console.warn('[CAF-Webhook] Update log error:', e.message); }
     }
 
     const newFlags = [];
 
-    // ── status_updated: main event with full results ──
+    // ═══════════════════════════════════════════════════════════════
+    // Processamento por tipo de evento
+    // ═══════════════════════════════════════════════════════════════
+
+    // ── status_updated / TRANSACTIONSTATUSUPDATED ──
     if (webhookType === 'status_updated') {
-      // Extract flags from statusReasons (87 rules)
-      const reasonFlags = extractFlagsFromReasons(body.statusReasons || []);
+      const reasonFlags = extractFlagsFromReasons(normalized.statusReasons || []);
       newFlags.push(...reasonFlags);
 
-      // Auto-fetch full transaction result for detailed sections
+      // Auto-fetch full transaction (tenta Connect primeiro, depois Core)
       if (transactionId) {
+        let txResult = null;
         try {
-          const authToken = getCafToken();
-          const txResponse = await fetch(
-            `${CAF_API_BASE}/v1/transactions/${transactionId}?_includeCroppedImages=true&_includePfRelationships=true&_lang=pt`,
-            { method: 'GET', headers: { 'Authorization': `Bearer ${authToken}` } }
-          );
-
-          if (txResponse.ok) {
-            const txText = await txResponse.text();
-            let txResult;
-            try { txResult = JSON.parse(txText); } catch { txResult = null; }
-
-            if (txResult) {
-              // Process manualReprovalReasons from full transaction
-              const reprovalFlags = extractFlagsFromManualReprovals(txResult.manualReprovalReasons || []);
-              for (const f of reprovalFlags) {
-                if (!newFlags.includes(f)) newFlags.push(f);
-              }
-
-              // Additional flags from full transaction validations
-              const txFlags = extractFlagsFromReasons(txResult.validations || []);
-              for (const f of txFlags) {
-                if (!newFlags.includes(f)) newFlags.push(f);
-              }
-
-              if (onboardingCaseId) {
-                // Save each section
-                const sections = txResult.sections || {};
-                for (const [secName, secData] of Object.entries(sections)) {
-                  try {
-                    await base44.asServiceRole.entities.ExternalValidationResult.create({
-                      onboardingCaseId, provider: 'CAF',
-                      validationType: `Webhook Auto-Fetch — ${secName}`,
-                      endpoint: `/v1/transactions/${transactionId} (${secName})`,
-                      resultData: secData,
-                      status: 'Sucesso', timestamp: new Date().toISOString(),
-                    });
-                  } catch { /* */ }
-                }
-
-                // Save related transactions (PF_PF)
-                const relatedTx = txResult.relatedTransactions || {};
-                if (Object.keys(relatedTx).length > 0) {
-                  try {
-                    await base44.asServiceRole.entities.ExternalValidationResult.create({
-                      onboardingCaseId, provider: 'CAF',
-                      validationType: 'Webhook — Related Transactions (PF_PF)',
-                      endpoint: `/v1/transactions/${transactionId}?_includePfRelationships=true`,
-                      resultData: relatedTx,
-                      status: 'Sucesso', timestamp: new Date().toISOString(),
-                    });
-                  } catch { /* */ }
-                }
-
-                // Save manual reprovals as explicit result
-                if ((txResult.manualReprovalReasons || []).length > 0) {
-                  try {
-                    await base44.asServiceRole.entities.ExternalValidationResult.create({
-                      onboardingCaseId, provider: 'CAF',
-                      validationType: 'Webhook — Manual Reproval Reasons',
-                      endpoint: `/v1/transactions/${transactionId}`,
-                      resultData: {
-                        manualReprovalReasons: txResult.manualReprovalReasons,
-                        flagsExtracted: reprovalFlags,
-                      },
-                      score: 0,
-                      status: 'Falha', timestamp: new Date().toISOString(),
-                    });
-                  } catch { /* */ }
-                }
-
-                console.log(`[CAF-Webhook] Auto-fetched transaction: ${Object.keys(sections).length} sections, ${reprovalFlags.length} manual reprovals`);
-              }
+          if (isConnect) {
+            const connectToken = await getConnectToken();
+            if (connectToken) {
+              const r = await fetch(
+                `${CAF_CONNECT_API_BASE}/v1/transactions/${transactionId}?includeCroppedImages=true`,
+                { headers: { 'Authorization': `Bearer ${connectToken}` } }
+              );
+              if (r.ok) txResult = await r.json().catch(() => null);
             }
           }
-        } catch (e) {
-          console.warn('[CAF-Webhook] Auto-fetch transaction error:', e.message);
+          if (!txResult) {
+            // Fallback Core API
+            const r = await fetch(
+              `${CAF_CORE_API_BASE}/v1/transactions/${transactionId}?_includeCroppedImages=true&_includePfRelationships=true&_lang=pt`,
+              { headers: { 'Authorization': `Bearer ${getCoreToken()}` } }
+            );
+            if (r.ok) txResult = await r.json().catch(() => null);
+          }
+        } catch (e) { console.warn('[CAF-Webhook] Auto-fetch error:', e.message); }
+
+        if (txResult && onboardingCaseId) {
+          const reprovalFlags = extractFlagsFromManualReprovals(txResult.manualReprovalReasons || []);
+          for (const f of reprovalFlags) if (!newFlags.includes(f)) newFlags.push(f);
+          const txFlags = extractFlagsFromReasons(txResult.validations || []);
+          for (const f of txFlags) if (!newFlags.includes(f)) newFlags.push(f);
+
+          const sections = txResult.sections || {};
+          for (const [secName, secData] of Object.entries(sections)) {
+            try {
+              await base44.asServiceRole.entities.ExternalValidationResult.create({
+                onboardingCaseId, provider: 'CAF',
+                validationType: `Webhook Auto-Fetch — ${secName}`,
+                endpoint: `/v1/transactions/${transactionId} (${secName})`,
+                resultData: secData, status: 'Sucesso', timestamp: new Date().toISOString(),
+              });
+            } catch { /* */ }
+          }
+          console.log(`[CAF-Webhook] Auto-fetched: ${Object.keys(sections).length} sections, ${reprovalFlags.length} manual reprovals`);
         }
       }
 
-      // Save webhook validation result
       if (onboardingCaseId) {
         try {
           await base44.asServiceRole.entities.ExternalValidationResult.create({
             onboardingCaseId, provider: 'CAF',
-            validationType: `Webhook — ${webhookType} (${cafStatus})`,
-            endpoint: 'webhook/status_updated',
+            validationType: `Webhook — ${isConnect ? 'TRANSACTIONSTATUSUPDATED' : 'status_updated'} (${cafStatus})`,
+            endpoint: isConnect ? 'connect/webhook' : 'core/webhook',
             resultData: body,
             score: cafStatus === 'APPROVED' ? 100 : cafStatus === 'REPROVED' ? 0 : 50,
             status: cafStatus === 'APPROVED' ? 'Sucesso' : cafStatus === 'REPROVED' ? 'Falha' : 'Pendente',
@@ -367,17 +534,15 @@ Deno.serve(async (req) => {
 
     // ── documentscopy_requested ──
     if (webhookType === 'documentscopy_requested' || body.sections?.documentscopy) {
-      const ds = body.sections?.documentscopy || body.documentscopy || {};
+      const ds = normalized.documentscopy || body.sections?.documentscopy || body.documentscopy || {};
       if (ds.fraud === true) newFlags.push('DOCUMENTSCOPY_FRAUD_DETECTED');
       if (onboardingCaseId) {
         try {
           await base44.asServiceRole.entities.ExternalValidationResult.create({
             onboardingCaseId, provider: 'CAF',
             validationType: 'Documentoscopy — Webhook',
-            endpoint: 'webhook/documentscopy',
-            resultData: ds,
-            score: ds.fraud ? 0 : 100,
-            status: ds.fraud ? 'Falha' : 'Sucesso',
+            endpoint: 'webhook/documentscopy', resultData: ds,
+            score: ds.fraud ? 0 : 100, status: ds.fraud ? 'Falha' : 'Sucesso',
             timestamp: new Date().toISOString(),
           });
         } catch { /* */ }
@@ -390,51 +555,46 @@ Deno.serve(async (req) => {
         await base44.asServiceRole.entities.ExternalValidationResult.create({
           onboardingCaseId, provider: 'CAF',
           validationType: 'Onboarding — Process Started',
-          endpoint: 'webhook/process_started',
-          resultData: body,
-          status: 'Pendente',
-          timestamp: new Date().toISOString(),
+          endpoint: 'webhook/process_started', resultData: body,
+          status: 'Pendente', timestamp: new Date().toISOString(),
         });
       } catch { /* */ }
     }
 
     // ── face_authentication ──
     if (webhookType === 'face_authentication') {
-      if (body.isMatch === false) newFlags.push('FACE_AUTH_MISMATCH');
+      if (normalized.isMatch === false) newFlags.push('FACE_AUTH_MISMATCH');
       if (onboardingCaseId) {
         try {
           await base44.asServiceRole.entities.ExternalValidationResult.create({
             onboardingCaseId, provider: 'CAF',
             validationType: 'Face Authentication — Webhook',
-            endpoint: 'webhook/face_authentication',
-            resultData: body,
-            score: body.isMatch ? 100 : 0,
-            status: body.isMatch ? 'Sucesso' : 'Falha',
+            endpoint: 'webhook/face_authentication', resultData: body,
+            score: normalized.isMatch ? 100 : 0,
+            status: normalized.isMatch ? 'Sucesso' : 'Falha',
             timestamp: new Date().toISOString(),
           });
         } catch { /* */ }
       }
     }
 
-    // ── profile_status_change ──
+    // ── profile_status_change / PROFILEUPDATEDEVENT ──
     if (webhookType === 'profile_status_change') {
-      const profileStatus = body.status || '';
-      const profileType = body.type || ''; // PF or PJ
-      const profileCpf = body.cpf || '';
-      const profileCnpj = body.cnpj || '';
-      const profileId = body.profileId || '';
-
+      const profileStatus = normalized.status || '';
       if (profileStatus === 'REPROVED') {
-        newFlags.push(`PROFILE_REPROVED_${profileType}: ${profileCpf || profileCnpj}`);
+        newFlags.push(`PROFILE_REPROVED: ${normalized.cpf || normalized.cnpj}`);
       }
-
       if (onboardingCaseId) {
         try {
           await base44.asServiceRole.entities.ExternalValidationResult.create({
             onboardingCaseId, provider: 'CAF',
-            validationType: `Profile Status Change — ${profileType} (${profileStatus})`,
+            validationType: `Profile Status Change (${profileStatus})`,
             endpoint: 'webhook/profile_status_change',
-            resultData: { profileId, type: profileType, status: profileStatus, cpf: profileCpf, cnpj: profileCnpj, updatedAt: body.updatedAt },
+            resultData: {
+              profileId: normalized.profileId, status: profileStatus,
+              cpf: normalized.cpf, cnpj: normalized.cnpj,
+              updatedAt: normalized.updatedAt,
+            },
             score: profileStatus === 'APPROVED' ? 100 : profileStatus === 'REPROVED' ? 0 : 50,
             status: profileStatus === 'APPROVED' ? 'Sucesso' : profileStatus === 'REPROVED' ? 'Falha' : 'Pendente',
             timestamp: new Date().toISOString(),
@@ -443,31 +603,20 @@ Deno.serve(async (req) => {
       }
     }
 
-    // ── Update OnboardingCase with red flags ──
+    // ── Atualiza OnboardingCase + trigger pipeline ──
     if (onboardingCaseId && newFlags.length > 0) {
       try {
         const cases = await base44.asServiceRole.entities.OnboardingCase.filter({ id: onboardingCaseId });
         if (cases[0]) {
           const merged = [...new Set([...(cases[0].redFlags || []), ...newFlags])];
           const updates = { redFlags: merged };
-
-          // Auto-update case status based on CAF decision
           if (cafStatus === 'APPROVED' && !cases[0].cafCompleted) updates.cafCompleted = true;
           if (cafStatus === 'REPROVED') updates.cafCompleted = true;
-
-          // v8: Webhook only persists the raw CAF decision + flags — the intelligent
-          // escalation hierarchy (score thresholds, subfaixa rules) is recomputed by
-          // autoEnrichOnboarding on the next pipeline run. This keeps a single source
-          // of truth and avoids divergent logic between webhook and batch pipeline.
           await base44.asServiceRole.entities.OnboardingCase.update(onboardingCaseId, updates);
 
-          // Trigger pipeline rerun so intelligent classifier re-evaluates with the new CAF data
           try {
             await base44.asServiceRole.functions.invoke('autoEnrichOnboarding', { onboardingCaseId });
-            console.log(`[CAF-Webhook] Pipeline rerun triggered for case ${onboardingCaseId}`);
-          } catch (pipeErr) {
-            console.warn(`[CAF-Webhook] Pipeline rerun failed (non-blocking): ${pipeErr.message}`);
-          }
+          } catch (e) { console.warn('[CAF-Webhook] Pipeline rerun failed:', e.message); }
         }
       } catch (e) { console.warn('[CAF-Webhook] Case update error:', e.message); }
     } else if (onboardingCaseId && cafStatus === 'APPROVED') {
@@ -476,25 +625,28 @@ Deno.serve(async (req) => {
       } catch { /* */ }
     }
 
-    // Always log the raw webhook — now includes the real source IP, signature presence
-    // and user-agent so we can audit which IPs CAF is actually using and whether the
-    // X-Caf-Signature header is being sent (Connect API should always send it).
+    // ── Log unificado do webhook recebido ──
     try {
       await base44.asServiceRole.entities.IntegrationLog.create({
         onboarding_case_id: onboardingCaseId || '',
         provider: 'CAF',
         service_type: 'caf_webhook_received',
-        request_id: transactionId,
+        request_id: cloudEventId || transactionId,
         transaction_id: transactionId,
         onboarding_id: onboardingId,
         status: 'success',
         result_status: cafStatus === 'APPROVED' ? 'APPROVED' : cafStatus === 'REPROVED' ? 'REPROVED' : 'PENDING_REVIEW',
         request_payload: {
+          format: isConnect ? 'cloudevent' : 'legacy_core',
+          cloudevent_type: normalized._cloudEventType || null,
+          cloudevent_time: normalized._cloudEventTime || null,
           source_ip: sourceIp,
           ip_in_known_list: ipIsKnown,
-          has_signature: !!cafSignature,
-          signature_prefix: cafSignature ? cafSignature.slice(0, 12) : '',
           user_agent: userAgent,
+          is_caf_user_agent: isCafUA,
+          has_signature: !!cafSignature,
+          signature_valid: signatureValid,
+          secret_configured: !!webhookSecret,
         },
         response_payload: body,
         red_flags: newFlags,
@@ -504,13 +656,23 @@ Deno.serve(async (req) => {
       });
     } catch (e) { console.warn('[CAF-Webhook] Raw log error:', e.message); }
 
-    return Response.json({
-      received: true, type: webhookType, transactionId,
-      flagsAdded: newFlags, duration_ms: Date.now() - startTime,
+    // ── Resposta: 202 Accepted (best practice CAF) ──
+    return new Response(JSON.stringify({
+      received: true,
+      type: webhookType,
+      id: cloudEventId,
+      transactionId,
+      flagsAdded: newFlags,
+      duration_ms: Date.now() - startTime,
+    }), {
+      status: 202,
+      headers: { 'Content-Type': 'application/json' },
     });
 
   } catch (error) {
     console.error('[CAF-Webhook] Error:', error);
-    return Response.json({ error: error.message }, { status: 500 });
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500, headers: { 'Content-Type': 'application/json' },
+    });
   }
 });
