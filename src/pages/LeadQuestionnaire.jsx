@@ -82,6 +82,44 @@ export default function LeadQuestionnaire() {
     );
   }
 
+  // ── SAFETY NET: templates hardcoded (V5 e PIX V4) não usam entidade Question.
+  // Se o usuário chegou aqui com um desses templates, redirecionar para a rota correta
+  // preservando o ref. Isso evita leads-fantasma sem dados preenchidos.
+  const tplModel = template.model || '';
+  if (tplModel === 'LEAD_PAGSMILE_V5') {
+    const qs = linkCode ? `?ref=${linkCode}` : '';
+    window.location.replace(`/QuestionarioLeadsPagsmile${qs}`);
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-10 h-10 animate-spin text-[var(--pagsmile-green)]" />
+      </div>
+    );
+  }
+  if (tplModel === 'LEAD_PIX_V4') {
+    const qs = linkCode ? `?ref=${linkCode}` : '';
+    window.location.replace(`/LeadPixV4${qs}`);
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-10 h-10 animate-spin text-[var(--pagsmile-green)]" />
+      </div>
+    );
+  }
+
+  // ── SAFETY NET 2: se o template não tem perguntas cadastradas (caso da V5/PIX V4 fora do redirect),
+  // não renderizar um form vazio que só captura aceites. Mostrar erro explícito.
+  if (!questions || questions.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center max-w-md px-6">
+          <h2 className="text-xl font-bold text-[var(--pagsmile-blue)] mb-2">Questionário indisponível</h2>
+          <p className="text-[var(--pagsmile-blue)]/70 text-sm">
+            Este questionário não está configurado corretamente. Por favor, entre em contato com quem enviou o link para receber um link atualizado.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <LeadQuestionnaireForm 
       template={template}

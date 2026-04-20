@@ -42,11 +42,19 @@ export default function IntroducerLinkGeneratorModal({ open, onOpenChange }) {
   const selectedIntroducer = introducers.find(i => i.id === selectedIntroducerId);
 
   const getPageForTemplate = (template) => {
-    if (!template) return 'LeadQuestionnaire';
-    const model = (template.model || '').toLowerCase();
-    if (model === 'pix_lead' || model.includes('pix')) return 'LeadQuestionnairePix';
-    if (model === 'lite' || model.includes('simplificado')) return 'QuestionarioSimplificadoPublico';
-    return 'LeadQuestionnaire';
+    if (!template) return 'QuestionarioLeadsPagsmile';
+    // Use EXACT model match — templates hardcoded no frontend precisam de rota específica
+    const model = template.model || '';
+    // Pagsmile V5 — hardcoded em QuestionarioLeadsPagsmile (não usa entidade Question)
+    if (model === 'LEAD_PAGSMILE_V5') return 'QuestionarioLeadsPagsmile';
+    // PIX V4 — hardcoded em LeadPixV4 (não usa entidade Question)
+    if (model === 'LEAD_PIX_V4') return 'LeadPixV4';
+    // Legados genéricos baseados em entidade Question
+    const modelLower = model.toLowerCase();
+    if (modelLower === 'pix_lead' || modelLower.includes('pix')) return 'LeadPixV4';
+    if (modelLower === 'lite' || modelLower.includes('simplificado')) return 'QuestionarioSimplificadoPublico';
+    // Default: V5 é o questionário padrão atual
+    return 'QuestionarioLeadsPagsmile';
   };
 
   const createMutation = useMutation({

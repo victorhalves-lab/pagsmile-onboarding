@@ -54,6 +54,20 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'leadPayload required' }, { status: 400 });
     }
 
+    // ── ANTI-FANTASMA: bloquear submissões completamente vazias.
+    // Um lead precisa ter pelo menos UM dado identificável (nome, e-mail OU CPF/CNPJ).
+    // Isso previne bugs de frontend (ex: rota errada renderizando form sem perguntas)
+    // de criar leads vazios que poluem o CRM e gastam quota de IA inutilmente.
+    const hasFullName = (leadPayload.fullName || '').trim().length > 0;
+    const hasEmail = (leadPayload.email || '').trim().length > 0;
+    const hasCpfCnpj = (leadPayload.cpfCnpj || '').trim().length > 0;
+    if (!hasFullName && !hasEmail && !hasCpfCnpj) {
+      return Response.json({
+        error: 'Dados insuficientes. O questionário não capturou as informações do cliente. Verifique se o link está correto e tente novamente.',
+        code: 'EMPTY_LEAD_BLOCKED'
+      }, { status: 400 });
+    }
+
     // Force status to allowed value
     const safeLeadPayload = {
       ...leadPayload,
