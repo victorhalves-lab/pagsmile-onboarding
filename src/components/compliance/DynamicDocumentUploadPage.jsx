@@ -334,12 +334,30 @@ export default function DynamicDocumentUploadPage({
         };
       });
       if (docsPayload.length > 0) {
-        await base44.functions.invoke('publicComplianceDocUpload', {
+        const uploadRes = await base44.functions.invoke('publicComplianceDocUpload', {
           caseId: onboardingCaseId,
+          docLinkToken: localStorage.getItem('created_doc_link_token') || undefined,
           documents: docsPayload,
         });
+        const uploadData = uploadRes?.data || {};
+        // CRITICAL: server returns { ok, createdCount, requestedCount, failed: [...] }.
+        // If not ALL documents were saved, ABORT and do NOT mark docCompleted=true.
+        if (!uploadData.ok || uploadData.createdCount !== docsPayload.length) {
+          const failedList = Array.isArray(uploadData.failed) && uploadData.failed.length > 0
+            ? uploadData.failed.map(f => `${f.documentName || f.documentTypeId}: ${f.error}`).join('; ')
+            : (uploadData.error || 'erro desconhecido');
+          console.error('[DynamicDocumentUploadPage] Upload incomplete', uploadData);
+          toast.error(
+            `Falha ao salvar documentos (${uploadData.createdCount || 0}/${docsPayload.length}). ` +
+            `Detalhes: ${failedList}. Tente novamente ou contate o suporte.`,
+            { duration: 10000 }
+          );
+          setIsSubmitting(false);
+          return; // ABORT — do not mark docCompleted
+        }
       }
 
+      // Only reached if ALL documents were successfully persisted.
       // Mark case as docs + CAF completed — via public function (service role, whitelisted fields).
       // The docLinkToken authenticates the update so anonymous clients can't flip case fields.
       await base44.functions.invoke('publicComplianceCaseUpdate', {

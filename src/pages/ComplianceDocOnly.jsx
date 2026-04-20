@@ -128,14 +128,32 @@ export default function ComplianceDocOnly() {
         };
       });
       if (docsPayload.length > 0) {
-        await base44.functions.invoke('publicComplianceDocUpload', {
+        const uploadRes = await base44.functions.invoke('publicComplianceDocUpload', {
           caseId, docLinkToken: token, documents: docsPayload,
         });
+        const uploadData = uploadRes?.data || {};
+        // CRITICAL: server returns { ok, createdCount, requestedCount, failed: [...] }.
+        // If not ALL documents were saved, ABORT and do NOT mark docCompleted=true.
+        if (!uploadData.ok || uploadData.createdCount !== docsPayload.length) {
+          const failedList = Array.isArray(uploadData.failed) && uploadData.failed.length > 0
+            ? uploadData.failed.map(f => `${f.documentName || f.documentTypeId}: ${f.error}`).join('; ')
+            : 'erro desconhecido';
+          console.error('[ComplianceDocOnly] Upload incomplete', uploadData);
+          toast.error(
+            `Falha ao salvar documentos (${uploadData.createdCount || 0}/${docsPayload.length}). ` +
+            `Detalhes: ${failedList}. Tente novamente ou contate o suporte.`,
+            { duration: 10000 }
+          );
+          setIsSubmitting(false);
+          return; // ABORT — do not mark docCompleted
+        }
       }
 
+      // Only reached if ALL documents were successfully persisted.
       // Mark case as doc + caf completed (whitelisted fields only via publicComplianceCaseUpdate)
       await base44.functions.invoke('publicComplianceCaseUpdate', {
         caseId,
+        docLinkToken: token,
         updates: {
           docCompleted: true,
           cafCompleted: !!effectiveCafResult,
@@ -150,7 +168,7 @@ export default function ComplianceDocOnly() {
       setCurrentStep('completed');
     } catch (error) {
       console.error('Erro ao submeter:', error);
-      toast.error('Erro ao enviar: ' + error.message);
+      toast.error('Erro ao enviar: ' + (error?.message || 'erro desconhecido'));
     } finally {
       setIsSubmitting(false);
     }
