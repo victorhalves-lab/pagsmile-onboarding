@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Download, RefreshCw, Shield, FileCheck, FileEdit, Users } from 'lucide-react';
 import ComplianceStatsCards from '@/components/compliance/ComplianceStatsCards';
 import ComplianceCaseFilters from '@/components/compliance/ComplianceCaseFilters';
-import ComplianceCasesTable from '@/components/compliance/ComplianceCasesTable';
+import ComplianceCasesCardsGrid from '@/components/compliance/ComplianceCasesCardsGrid';
 import BulkActionsBar from '@/components/compliance/BulkActionsBar';
 import DraftsTab from '@/components/compliance/DraftsTab';
 import SubsellerCasesTab from '@/components/compliance/SubsellerCasesTab';
@@ -290,12 +290,11 @@ export default function QuestionariosRecebidos() {
             statusFilter={statusFilter} analysts={analysts} onClearFilters={clearFilters}
           />
 
-          <ComplianceCasesTable
+          <ComplianceCasesCardsGrid
             paginatedCases={paginatedCases} filteredCasesCount={filteredCases.length}
             merchantMap={merchantMap} scoresMap={scoresMap} getCaseModel={getCaseModel}
             selectedRows={selectedRows} setSelectedRows={setSelectedRows}
             expandedRow={expandedRow} setExpandedRow={setExpandedRow}
-            sortField={sortField} sortOrder={sortOrder} setSortField={setSortField} setSortOrder={setSortOrder}
             currentPage={currentPage} setCurrentPage={setCurrentPage}
             itemsPerPage={itemsPerPage} totalPages={totalPages}
             templatesMap={templatesMap} isLoading={isLoadingAll}
