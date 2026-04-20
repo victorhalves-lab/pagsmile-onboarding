@@ -10,8 +10,8 @@ import {
 import {
   Clock, CheckCircle2, AlertTriangle, XCircle, FileCheck,
   Loader2, MoreHorizontal, Mail, Eye, Building2, User,
-  Brain, FileText, ChevronLeft, ChevronRight, ChevronDown, UserPlus,
-  Link2, ScanFace, RefreshCw, Handshake
+  FileText, ChevronLeft, ChevronRight, ChevronDown, UserPlus,
+  Link2, ScanFace, RefreshCw, Handshake, Calendar, Brain
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
@@ -41,8 +41,8 @@ const getStatusBadge = (status) => {
     'Recusado': { color: 'bg-red-100 text-red-800 border-red-200', icon: XCircle },
     'Docs Solicitados': { color: 'bg-purple-100 text-purple-800 border-purple-200', icon: FileCheck }
   };
-  const { color, icon: Icon } = config[status] || config['Pendente'];
-  return <Badge className={`${color} gap-1 border text-[10px] px-1.5 py-0.5 whitespace-nowrap`}><Icon className="w-2.5 h-2.5" />{status}</Badge>;
+  const { color, icon: IconCmp } = config[status] || config['Pendente'];
+  return <Badge className={`${color} gap-1 border text-[10px] px-1.5 py-0.5 whitespace-nowrap`}><IconCmp className="w-2.5 h-2.5" />{status}</Badge>;
 };
 
 const getModelBadge = (model) => {
@@ -78,17 +78,16 @@ const getV4ScoreDisplay = (v4Score, subfaixa, subfaixaNome) => {
     return <span className="text-[var(--pagsmile-blue)]/50 text-xs">-</span>;
   }
   const subfaixaColors = {
-    '1A': 'text-green-700 bg-green-50', '1B': 'text-green-600 bg-green-50',
-    '2A': 'text-blue-700 bg-blue-50', '2B': 'text-blue-600 bg-blue-50',
-    '3A': 'text-yellow-700 bg-yellow-50', '3B': 'text-orange-700 bg-orange-50',
-    '4': 'text-red-600 bg-red-50', '5': 'text-red-800 bg-red-100',
+    '1A': 'text-green-700', '1B': 'text-green-600',
+    '2A': 'text-blue-700', '2B': 'text-blue-600',
+    '3A': 'text-yellow-700', '3B': 'text-orange-700',
+    '4': 'text-red-600', '5': 'text-red-800',
   };
-  const colorClass = subfaixaColors[subfaixa] || 'text-slate-600 bg-slate-50';
-  const displayName = subfaixaNome || subfaixa || '';
+  const colorClass = subfaixaColors[subfaixa] || 'text-slate-600';
   return (
-    <div className="flex items-center gap-1 flex-wrap">
-      <span className={`font-bold text-base leading-none ${colorClass.split(' ')[0]}`}>{Math.round(v4Score)}</span>
-      {displayName && <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full ${colorClass} whitespace-nowrap`}>{displayName}</span>}
+    <div className="flex items-baseline gap-1">
+      <span className={`font-bold text-sm leading-none ${colorClass}`}>{Math.round(v4Score)}</span>
+      {subfaixaNome && <span className="text-[9px] font-semibold text-[var(--pagsmile-blue)]/60 whitespace-nowrap">{subfaixaNome}</span>}
     </div>
   );
 };
@@ -156,8 +155,18 @@ function RevalidateMenuItem({ caseData }) {
   );
 }
 
-// ── Linha horizontal por cliente ──
-function CaseRow({
+// ── Campo de info (label + valor) ──
+function Field({ label, children }) {
+  return (
+    <div className="min-w-0">
+      <p className="text-[9px] font-semibold uppercase tracking-wide text-[var(--pagsmile-blue)]/50 mb-0.5">{label}</p>
+      <div className="min-w-0 truncate">{children}</div>
+    </div>
+  );
+}
+
+// ── Card compacto por cliente (sem scroll lateral) ──
+function CaseCard({
   c, merchant, scoresMap, templatesMap, merchantMap, getCaseModel,
   linksMap, introducerMap,
   selectedRows, setSelectedRows,
@@ -176,128 +185,64 @@ function CaseRow({
   else if (days >= 1) timeBg = 'bg-yellow-100 text-yellow-700';
 
   return (
-    <div className={`bg-white rounded-lg border shadow-sm hover:shadow-md transition-all ${
+    <div className={`bg-white rounded-xl border shadow-sm hover:shadow-md transition-all ${
       isSelected ? 'border-[#2bc196] ring-1 ring-[#2bc196]/30' : 'border-[#002443]/10'
     }`}>
-      {/* Linha horizontal compacta — 12 colunas proporcionais, sem scroll */}
-      <div className="flex items-center gap-2 px-3 py-2.5 min-w-0">
-        {/* Checkbox */}
-        <div className="flex-shrink-0">
-          <Checkbox
-            checked={isSelected}
-            onCheckedChange={(checked) => setSelectedRows(prev => checked ? [...prev, c.id] : prev.filter(id => id !== c.id))}
-          />
+      {/* HEADER: check + avatar + nome/cpf + modelo + status + ações */}
+      <div className="flex items-start gap-3 px-4 pt-3 pb-2 border-b border-[#002443]/5">
+        <Checkbox
+          className="mt-1 flex-shrink-0"
+          checked={isSelected}
+          onCheckedChange={(checked) => setSelectedRows(prev => checked ? [...prev, c.id] : prev.filter(id => id !== c.id))}
+        />
+        <div className={`p-2 rounded-lg flex-shrink-0 ${merchant?.type === 'PF' ? 'bg-blue-100' : 'bg-purple-100'}`}>
+          {merchant?.type === 'PF' ? <User className="w-4 h-4 text-blue-600" /> : <Building2 className="w-4 h-4 text-purple-600" />}
         </div>
-
-        {/* Merchant (nome + cpf/cnpj) — flex maior */}
-        <div className="flex items-center gap-2 min-w-0 flex-[2]">
-          <div className={`p-1.5 rounded flex-shrink-0 ${merchant?.type === 'PF' ? 'bg-blue-100' : 'bg-purple-100'}`}>
-            {merchant?.type === 'PF' ? <User className="w-3.5 h-3.5 text-blue-600" /> : <Building2 className="w-3.5 h-3.5 text-purple-600" />}
-          </div>
-          <div className="min-w-0">
-            <p className="font-semibold text-[var(--pagsmile-blue)] text-xs truncate" title={merchant?.fullName}>
-              {merchant?.fullName || 'N/A'}
-            </p>
-            <p className="text-[10px] text-[var(--pagsmile-blue)]/60 truncate">{merchant?.cpfCnpj || '-'}</p>
+        <div className="flex-1 min-w-0">
+          <p className="font-bold text-[var(--pagsmile-blue)] text-sm leading-tight truncate" title={merchant?.fullName}>
+            {merchant?.fullName || 'N/A'}
+          </p>
+          <p className="text-xs text-[var(--pagsmile-blue)]/60 leading-tight mt-0.5">{merchant?.cpfCnpj || '-'}</p>
+          <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+            {getModelBadge(getCaseModel(c))}
+            {getStatusBadge(c.status)}
           </div>
         </div>
 
-        {/* Modelo */}
-        <div className="flex-shrink-0 w-[110px] min-w-0">
-          {getModelBadge(getCaseModel(c))}
-        </div>
-
-        {/* Status */}
-        <div className="flex-shrink-0 w-[110px] min-w-0">
-          {getStatusBadge(c.status)}
-        </div>
-
-        {/* Score V4 */}
-        <div className="flex-shrink-0 w-[95px] min-w-0">
-          {getV4ScoreDisplay(c.riskScoreV4, c.subfaixa, c.subfaixaNome)}
-        </div>
-
-        {/* Subfaixa */}
-        <div className="flex-shrink-0 w-[40px] text-center">
-          {getSubfaixaBadge(c.subfaixa)}
-        </div>
-
-        {/* Decisão IA */}
-        <div className="flex-shrink-0 w-[105px] min-w-0" title="Decisão IA">
-          {getDecisionBadge(scoresMap[c.id]?.recomendacao_final || c.iaDecision)}
-        </div>
-
-        {/* Tempo na fila */}
-        <div className="flex-shrink-0 w-[55px] text-center">
-          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${timeBg} whitespace-nowrap`}>{time}</span>
-        </div>
-
-        {/* CAF */}
-        <div className="flex-shrink-0 w-[85px]">
-          <CafStatusBadge caseData={c} />
-        </div>
-
-        {/* Introducer */}
-        <div className="flex-shrink-0 w-[90px] min-w-0" title={introducer?.name || 'Sem introducer'}>
-          {introducer ? (
-            <div className="flex items-center gap-1 min-w-0">
-              <UserPlus className="w-3 h-3 text-[#2bc196] flex-shrink-0" />
-              <span className="text-[10px] text-[var(--pagsmile-blue)] truncate">{introducer.name}</span>
-            </div>
-          ) : (
-            <span className="text-[10px] text-[var(--pagsmile-blue)]/40">-</span>
-          )}
-        </div>
-
-        {/* Analista */}
-        <div className="flex-shrink-0 w-[80px] min-w-0" title={c.assignedAnalystName || 'Sem analista'}>
-          <span className="text-[10px] text-[var(--pagsmile-blue)]/80 truncate block">{c.assignedAnalystName || '-'}</span>
-        </div>
-
-        {/* Submissão */}
-        <div className="flex-shrink-0 w-[75px] min-w-0">
-          <p className="text-[10px] text-[var(--pagsmile-blue)]/80 leading-tight">
-            {c.created_date ? new Date(c.created_date).toLocaleDateString('pt-BR') : '-'}
-          </p>
-          <p className="text-[9px] text-[var(--pagsmile-blue)]/50 leading-tight">
-            {c.created_date ? new Date(c.created_date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : ''}
-          </p>
-        </div>
-
-        {/* Ações — icon-only */}
-        <div className="flex items-center gap-0.5 flex-shrink-0 ml-auto">
+        {/* Ações primárias */}
+        <div className="flex items-center gap-0.5 flex-shrink-0">
           <Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`} title="Analisar">
-            <Button variant="ghost" size="icon" className="h-7 w-7 text-[var(--pagsmile-green)] hover:text-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/10">
-              <Eye className="w-3.5 h-3.5" />
+            <Button variant="ghost" size="icon" className="h-8 w-8 text-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/10">
+              <Eye className="w-4 h-4" />
             </Button>
           </Link>
           <Button
             variant="ghost" size="icon"
             onClick={() => onOpenAssignModal(c.id)}
-            className="h-7 w-7 text-[#002443] hover:bg-[#2bc196]/10"
+            className="h-8 w-8 text-[#002443] hover:bg-[#2bc196]/10"
             title="Atribuir a parceiro"
           >
-            <Handshake className="w-3.5 h-3.5" />
+            <Handshake className="w-4 h-4" />
           </Button>
           <Button
             variant="ghost" size="icon"
             onClick={() => onOpenCafModal(c)}
-            className="h-7 w-7 text-[#2bc196] hover:bg-[#2bc196]/10"
+            className="h-8 w-8 text-[#2bc196] hover:bg-[#2bc196]/10"
             title="Gerar link cliente"
           >
-            <Link2 className="w-3.5 h-3.5" />
+            <Link2 className="w-4 h-4" />
           </Button>
           <Button
             variant="ghost" size="icon"
             onClick={() => setExpandedRow(isExpanded ? null : c.id)}
-            className="h-7 w-7 text-[#002443]/60"
+            className="h-8 w-8 text-[#002443]/60"
             title={isExpanded ? 'Recolher' : 'Expandir'}
           >
-            <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-7 w-7"><MoreHorizontal className="w-3.5 h-3.5" /></Button>
+              <Button variant="ghost" size="icon" className="h-8 w-8"><MoreHorizontal className="w-4 h-4" /></Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem asChild><Link to={createPageUrl('AnaliseDeCasos') + `?id=${c.id}`}><Eye className="w-4 h-4 mr-2" />Ver Detalhes</Link></DropdownMenuItem>
@@ -313,6 +258,36 @@ function CaseRow({
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+      </div>
+
+      {/* INFOS em GRID responsivo — nunca estoura largura, aumenta altura */}
+      <div className="px-4 py-3 grid gap-3 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
+        <Field label="Score V4">{getV4ScoreDisplay(c.riskScoreV4, c.subfaixa, c.subfaixaNome)}</Field>
+        <Field label="Subfaixa">{getSubfaixaBadge(c.subfaixa)}</Field>
+        <Field label="Decisão IA">{getDecisionBadge(scoresMap[c.id]?.recomendacao_final || c.iaDecision)}</Field>
+        <Field label="Tempo Fila">
+          <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${timeBg} whitespace-nowrap inline-block`}>{time}</span>
+        </Field>
+        <Field label="CAF"><CafStatusBadge caseData={c} /></Field>
+        <Field label="Introducer">
+          {introducer ? (
+            <div className="flex items-center gap-1 min-w-0">
+              <UserPlus className="w-3 h-3 text-[#2bc196] flex-shrink-0" />
+              <span className="text-xs text-[var(--pagsmile-blue)] truncate">{introducer.name}</span>
+            </div>
+          ) : (
+            <span className="text-xs text-[var(--pagsmile-blue)]/40">-</span>
+          )}
+        </Field>
+        <Field label="Analista">
+          <span className="text-xs text-[var(--pagsmile-blue)]/80 truncate block" title={c.assignedAnalystName}>{c.assignedAnalystName || '-'}</span>
+        </Field>
+        <Field label="Submissão">
+          <div className="flex items-center gap-1 text-xs text-[var(--pagsmile-blue)]/80">
+            <Calendar className="w-3 h-3 flex-shrink-0" />
+            <span>{c.created_date ? new Date(c.created_date).toLocaleDateString('pt-BR') : '-'}</span>
+          </div>
+        </Field>
       </div>
 
       {/* Expandido */}
@@ -351,27 +326,18 @@ export default function ComplianceCasesCardsGrid({
         </div>
       ) : (
         <>
-          {/* Cabeçalho: colunas identificadas + seleção total */}
-          <div className="bg-white rounded-lg border border-[#002443]/10 px-3 py-2 flex items-center gap-2 text-[10px] uppercase tracking-wider font-semibold text-[var(--pagsmile-blue)]/60">
-            <div className="flex-shrink-0"><Checkbox checked={allSelected} onCheckedChange={toggleAll} /></div>
-            <div className="flex-[2] min-w-0">Merchant</div>
-            <div className="flex-shrink-0 w-[110px]">Modelo</div>
-            <div className="flex-shrink-0 w-[110px]">Status</div>
-            <div className="flex-shrink-0 w-[95px]">Score V4</div>
-            <div className="flex-shrink-0 w-[40px] text-center">Subf.</div>
-            <div className="flex-shrink-0 w-[105px]">Decisão IA</div>
-            <div className="flex-shrink-0 w-[55px] text-center">Fila</div>
-            <div className="flex-shrink-0 w-[85px]">CAF</div>
-            <div className="flex-shrink-0 w-[90px]">Introducer</div>
-            <div className="flex-shrink-0 w-[80px]">Analista</div>
-            <div className="flex-shrink-0 w-[75px]">Submissão</div>
-            <div className="flex-shrink-0 ml-auto">Ações</div>
+          {/* Seletor global */}
+          <div className="bg-white rounded-lg border border-[#002443]/10 px-4 py-2 flex items-center gap-3">
+            <Checkbox checked={allSelected} onCheckedChange={toggleAll} />
+            <span className="text-xs font-semibold text-[var(--pagsmile-blue)]/70">
+              {selectedRows.length > 0 ? `${selectedRows.length} selecionado(s)` : `Selecionar todos (${paginatedCases.length})`}
+            </span>
           </div>
 
-          {/* Linhas */}
+          {/* Cards — cada um ocupa 100% da largura, sem scroll lateral */}
           <div className="space-y-2">
             {paginatedCases.map((c) => (
-              <CaseRow
+              <CaseCard
                 key={c.id}
                 c={c}
                 merchant={merchantMap[c.merchantId]}
