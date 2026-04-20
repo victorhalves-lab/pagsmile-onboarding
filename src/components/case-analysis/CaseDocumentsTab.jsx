@@ -5,8 +5,9 @@ import { FileText, Loader2, Eye, Archive } from 'lucide-react';
 import { toast } from 'sonner';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import CafDocsSection from './CafDocsSection';
 
-export default function CaseDocumentsTab({ documents, caseId, merchantName }) {
+export default function CaseDocumentsTab({ documents, caseId, merchantName, integrationLogs = [] }) {
   const [isDownloadingZip, setIsDownloadingZip] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState('');
 
@@ -62,9 +63,13 @@ export default function CaseDocumentsTab({ documents, caseId, merchantName }) {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-6">
+    <div className="space-y-0">
+      {/* Seção Docs CAF (imagens + metadados da última tentativa) */}
+      <CafDocsSection documents={documents} integrationLogs={integrationLogs} />
+
+      <div className="bg-white rounded-xl border border-slate-200 p-6">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-bold text-[var(--pagsmile-blue)]">Documentos Enviados</h3>
+        <h3 className="text-lg font-bold text-[var(--pagsmile-blue)]">Documentos Enviados pelo Cliente</h3>
         {documents.length > 0 && (
           <Button variant="outline" size="sm" onClick={handleDownloadAllDocuments} disabled={isDownloadingZip}>
             {isDownloadingZip ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Archive className="w-4 h-4 mr-2" />}
@@ -115,6 +120,7 @@ export default function CaseDocumentsTab({ documents, caseId, merchantName }) {
           ))}
         </div>
       )}
+      </div>
     </div>
   );
 }

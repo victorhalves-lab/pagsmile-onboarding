@@ -203,13 +203,13 @@ export default function AnaliseDeCasos() {
           </div>
           {merchant?.type === 'PF' && documents.length > 0 && (
             <div className="mt-4">
-              <CaseDocumentsTab documents={documents} caseId={caseId} merchantName={merchant?.fullName} />
+              <CaseDocumentsTab documents={documents} caseId={caseId} merchantName={merchant?.fullName} integrationLogs={integrationLogs} />
             </div>
           )}
         </TabsContent>
 
         <TabsContent value="documents">
-          <CaseDocumentsTab documents={documents} caseId={caseId} merchantName={merchant?.fullName} />
+          <CaseDocumentsTab documents={documents} caseId={caseId} merchantName={merchant?.fullName} integrationLogs={integrationLogs} />
         </TabsContent>
 
         <TabsContent value="validations">
