@@ -18,6 +18,8 @@ import DocMonitoramento from '@/components/kyc-doc/DocMonitoramento';
 import DocPainelAnalista from '@/components/kyc-doc/DocPainelAnalista';
 import DocAcessos from '@/components/kyc-doc/DocAcessos';
 import DocEscalacoes from '@/components/kyc-doc/DocEscalacoes';
+import DocParceirosCompliance from '@/components/kyc-doc/DocParceirosCompliance';
+import DocDocOnlyLink from '@/components/kyc-doc/DocDocOnlyLink';
 
 const TOC = [
   { id: 's1', n: '1', label: 'Visão Geral — Arquitetura Completa do Pipeline KYC/KYB' },
@@ -35,6 +37,8 @@ const TOC = [
   { id: 's13', n: '13', label: 'Painel de Análise de Risco — Visão Completa do Analista' },
   { id: 's14', n: '14', label: 'Governança de Acesso — Perfis, 2FA e Auditoria' },
   { id: 's15', n: '15', label: 'Escalações Questionáveis — Monitoramento de Qualidade da Decisão' },
+  { id: 's16', n: '16', label: 'Módulo de Parceiros de Compliance — Colaboração Externa' },
+  { id: 's17', n: '17', label: 'Link de Documentos Exclusivos — Fluxo Acelerado' },
 ];
 
 export default function DocumentoKYCKYB() {
@@ -197,6 +201,8 @@ export default function DocumentoKYCKYB() {
         <div id="s13"><DocPainelAnalista /></div>
         <div id="s14" className="doc-break"><DocAcessos /></div>
         <div id="s15"><DocEscalacoes /></div>
+        <div id="s16" className="doc-break"><DocParceirosCompliance /></div>
+        <div id="s17" className="doc-break"><DocDocOnlyLink /></div>
       </div>
 
       {/* ═══ FOOTER ═══ */}
