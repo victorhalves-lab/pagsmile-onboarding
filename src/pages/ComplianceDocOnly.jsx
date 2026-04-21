@@ -25,21 +25,63 @@ export default function ComplianceDocOnly() {
   const caseId = urlParams.get('caseId');
   const token = urlParams.get('token');
   const mode = urlParams.get('mode');
-  // When mode=docs_only, the CAF identity SDK (RG/CNH + selfie + liveness) is SKIPPED.
-  // The uploaded business documents are STILL analyzed by CAF VerifAI in the backend
-  // (digital manipulation detection) — VerifAI runs automatically on each DocumentUpload
-  // created by publicComplianceDocUpload.
+  // MODES:
+  //   - docs_only: Upload business docs only; CAF identity SDK is SKIPPED (VerifAI still runs server-side)
+  //   - caf_only: Skip docs; go straight to CAF identity SDK (for clients who already uploaded docs)
+  //   - docs_and_caf (DEFAULT): Full recovery flow — upload docs, then do CAF identity verification
   const skipCafIdentity = mode === 'docs_only';
-  // When mode=caf_only, the document upload step is SKIPPED.
-  // The client goes straight to the CAF identity SDK (RG/CNH + selfie + liveness).
-  // Used when client already uploaded docs but got stuck at the identity verification.
   const cafOnlyMode = mode === 'caf_only';
+  // "docs_and_caf" is the default — treated the same as no mode specified.
 
   const [documents, setDocuments] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [allRequiredUploaded, setAllRequiredUploaded] = useState(false);
   const [currentStep, setCurrentStep] = useState(cafOnlyMode ? 'caf_verification' : 'docs_upload');
   const [cafResult, setCafResult] = useState(null);
+
+  // ── Session token for server-side progress persistence ──
+  // Enables the client to resume from where they stopped if they close the browser.
+  const sessionToken = React.useMemo(() => {
+    if (!caseId) return '';
+    const key = `compliance_session_token_doc_only_${caseId}`;
+    let t = localStorage.getItem(key);
+    if (!t) {
+      t = `docs_${caseId}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+      localStorage.setItem(key, t);
+    }
+    return t;
+  }, [caseId]);
+
+  // ── Save documents progress to server (debounced) whenever docs change ──
+  React.useEffect(() => {
+    if (!sessionToken || !caseId || Object.keys(documents).length === 0) return;
+    const timer = setTimeout(() => {
+      base44.functions.invoke('saveComplianceProgress', {
+        sessionToken,
+        flowType: cafOnlyMode ? 'caf_only_recovery' : (skipCafIdentity ? 'docs_only_recovery' : 'docs_and_caf_recovery'),
+        templateModel: template?.model || '',
+        currentPhase: currentStep === 'caf_verification' ? 'caf' : 'documents',
+        documentsData: documents,
+        clientEmail: merchant?.email || '',
+        clientName: merchant?.fullName || '',
+      }).catch(() => {});
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [documents, sessionToken, caseId, currentStep, cafOnlyMode, skipCafIdentity, template, merchant]);
+
+  // ── Restore documents from server on mount (if session exists) ──
+  React.useEffect(() => {
+    if (!sessionToken || !caseId) return;
+    (async () => {
+      try {
+        const res = await base44.functions.invoke('loadComplianceProgress', { sessionToken });
+        if (res.data?.session?.documentsData && Object.keys(res.data.session.documentsData).length > 0) {
+          setDocuments(res.data.session.documentsData);
+        }
+      } catch {}
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionToken]);
 
   // ── Load OnboardingCase + Template (token-protected via backend) ──
   const { data: caseContext, isLoading: loadingCase } = useQuery({

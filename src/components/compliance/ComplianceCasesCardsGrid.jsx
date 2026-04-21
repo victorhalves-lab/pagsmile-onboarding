@@ -11,7 +11,7 @@ import {
   Clock, CheckCircle2, AlertTriangle, XCircle, FileCheck,
   Loader2, MoreHorizontal, Mail, Eye, Building2, User,
   FileText, ChevronLeft, ChevronRight, ChevronDown, UserPlus,
-  Link2, ScanFace, RefreshCw, Handshake, Calendar, Brain, FileUp
+  Link2, ScanFace, RefreshCw, Handshake, Calendar, Brain, FileUp, Workflow
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
@@ -19,6 +19,7 @@ import CaseExpandedDetail from '@/components/compliance/CaseExpandedDetail';
 import CafLinkGeneratorModal from '@/components/compliance/CafLinkGeneratorModal';
 import DocOnlyLinkModal from '@/components/compliance/DocOnlyLinkModal';
 import CafOnlyLinkModal from '@/components/compliance/CafOnlyLinkModal';
+import DocsAndCafLinkModal from '@/components/compliance/DocsAndCafLinkModal';
 import AssignCaseToPartnerModal from '@/components/partners-compliance/AssignCaseToPartnerModal';
 
 // ── Helpers ──
@@ -173,7 +174,7 @@ function CaseCard({
   linksMap, introducerMap,
   selectedRows, setSelectedRows,
   expandedRow, setExpandedRow,
-  onOpenCafModal, onOpenAssignModal, onOpenDocOnlyModal, onOpenCafOnlyModal
+  onOpenCafModal, onOpenAssignModal, onOpenDocOnlyModal, onOpenCafOnlyModal, onOpenDocsAndCafModal
 }) {
   const isSelected = selectedRows.includes(c.id);
   const isExpanded = expandedRow === c.id;
@@ -253,6 +254,14 @@ function CaseCard({
           </Button>
           <Button
             variant="ghost" size="icon"
+            onClick={() => onOpenDocsAndCafModal(c)}
+            className="h-8 w-8 text-indigo-600 hover:bg-indigo-100"
+            title="Gerar link COMPLETO (Docs + CAF) — para clientes que não completaram upload"
+          >
+            <Workflow className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="ghost" size="icon"
             onClick={() => setExpandedRow(isExpanded ? null : c.id)}
             className="h-8 w-8 text-[#002443]/60"
             title={isExpanded ? 'Recolher' : 'Expandir'}
@@ -279,6 +288,9 @@ function CaseCard({
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onOpenCafOnlyModal(c)}>
                 <ScanFace className="w-4 h-4 mr-2" /> Gerar Link só de Verificação de Identidade
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onOpenDocsAndCafModal(c)}>
+                <Workflow className="w-4 h-4 mr-2" /> Gerar Link COMPLETO (Docs + CAF)
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onOpenAssignModal(c.id)}>
                 <Handshake className="w-4 h-4 mr-2" /> Atribuir a parceiro
@@ -337,6 +349,7 @@ export default function ComplianceCasesCardsGrid({
   const [cafModalCase, setCafModalCase] = React.useState(null);
   const [docOnlyModalCase, setDocOnlyModalCase] = React.useState(null);
   const [cafOnlyModalCase, setCafOnlyModalCase] = React.useState(null);
+  const [docsAndCafModalCase, setDocsAndCafModalCase] = React.useState(null);
   const [assignModalCaseId, setAssignModalCaseId] = React.useState(null);
 
   const allSelected = selectedRows.length === paginatedCases.length && paginatedCases.length > 0;
@@ -384,6 +397,7 @@ export default function ComplianceCasesCardsGrid({
                 onOpenCafModal={setCafModalCase}
                 onOpenDocOnlyModal={setDocOnlyModalCase}
                 onOpenCafOnlyModal={setCafOnlyModalCase}
+                onOpenDocsAndCafModal={setDocsAndCafModalCase}
                 onOpenAssignModal={setAssignModalCaseId}
               />
             ))}
@@ -428,6 +442,13 @@ export default function ComplianceCasesCardsGrid({
         onOpenChange={(o) => { if (!o) setCafOnlyModalCase(null); }}
         caseData={cafOnlyModalCase}
         merchant={cafOnlyModalCase ? merchantMap[cafOnlyModalCase.merchantId] : null}
+      />
+
+      <DocsAndCafLinkModal
+        open={!!docsAndCafModalCase}
+        onOpenChange={(o) => { if (!o) setDocsAndCafModalCase(null); }}
+        caseData={docsAndCafModalCase}
+        merchant={docsAndCafModalCase ? merchantMap[docsAndCafModalCase.merchantId] : null}
       />
 
       <AssignCaseToPartnerModal

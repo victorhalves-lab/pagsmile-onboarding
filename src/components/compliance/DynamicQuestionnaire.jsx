@@ -710,8 +710,22 @@ export default function DynamicQuestionnaire({
       return null;
     })();
 
-    // Se o modelo usa redirecionamento CAF, salvar dados e mostrar tela de redirect
-    if (resolvedCafUrl) {
+    // ── STRUCTURAL FIX (2026-04-21) ──
+    // Previously: if a template had `cafRedirectUrl`, the questionnaire jumped STRAIGHT to the
+    // external CAF URL (cadastro.io), SKIPPING the internal document upload step. This caused
+    // clients to never upload the mandatory business documents (contrato social, balanço, PLD
+    // policies, etc.) defined in template.requiredDocuments.
+    //
+    // New rule: if the template has ANY required documents, ALWAYS pass through the internal
+    // upload page first (/DocumentUploadFull). Only after documents are satisfied (uploaded
+    // OR justified via "não tenho"), the client proceeds to CAF identity verification.
+    //
+    // This guarantees the full compliance funnel: Questionnaire → Documents → CAF → Done.
+    const templateHasRequiredDocs = Array.isArray(template?.requiredDocuments) && template.requiredDocuments.length > 0;
+
+    // Only redirect directly to external CAF if the template has NO required docs.
+    // Otherwise, always go through the internal upload flow.
+    if (resolvedCafUrl && !templateHasRequiredDocs) {
       saveProgressNow({
         currentStep,
         currentPhase: 'questionnaire',
@@ -719,8 +733,6 @@ export default function DynamicQuestionnaire({
         clientEmail: clientInfo.email,
         clientName: clientInfo.name,
       });
-      // Create Merchant + OnboardingCase NOW (before CAF redirect), so it appears in "Recebidos"
-      // even if the client never comes back to click "Já concluí"
       createMerchantAndCase(finalFormData);
       setResolvedCafRedirectUrl(resolvedCafUrl);
       setShowCafRedirect(true);

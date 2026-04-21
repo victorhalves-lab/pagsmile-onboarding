@@ -71,9 +71,21 @@ Deno.serve(async (req) => {
 
     for (let i = 0; i < documents.length; i++) {
       const d = documents[i];
-      if (!d || !d.documentTypeId || !d.fileUrl) {
-        console.warn(`[publicComplianceDocUpload] SKIP idx=${i} reason=missing_required_fields documentTypeId=${d?.documentTypeId} hasFileUrl=${!!d?.fileUrl}`);
-        skipped.push({ index: i, documentTypeId: d?.documentTypeId || null, reason: 'missing documentTypeId or fileUrl' });
+      // Must have documentTypeId always. fileUrl is required ONLY when notAvailable is false.
+      const isNotAvailable = d?.notAvailable === true;
+      if (!d || !d.documentTypeId) {
+        console.warn(`[publicComplianceDocUpload] SKIP idx=${i} reason=missing_documentTypeId`);
+        skipped.push({ index: i, documentTypeId: d?.documentTypeId || null, reason: 'missing documentTypeId' });
+        continue;
+      }
+      if (!isNotAvailable && !d.fileUrl) {
+        console.warn(`[publicComplianceDocUpload] SKIP idx=${i} reason=missing_fileUrl_for_available_doc documentTypeId=${d.documentTypeId}`);
+        skipped.push({ index: i, documentTypeId: d.documentTypeId, reason: 'missing fileUrl (and not marked notAvailable)' });
+        continue;
+      }
+      if (isNotAvailable && (!d.notAvailableReason || String(d.notAvailableReason).trim().length < 10)) {
+        console.warn(`[publicComplianceDocUpload] SKIP idx=${i} reason=notAvailable_without_reason documentTypeId=${d.documentTypeId}`);
+        skipped.push({ index: i, documentTypeId: d.documentTypeId, reason: 'notAvailable requires a reason of at least 10 chars' });
         continue;
       }
       try {
@@ -81,24 +93,26 @@ Deno.serve(async (req) => {
           onboardingCaseId: caseId,
           documentTypeId: d.documentTypeId,
           documentName: d.documentName || d.documentTypeId,
-          fileUrl: d.fileUrl,
-          fileName: d.fileName || '',
-          fileSize: typeof d.fileSize === 'number' ? d.fileSize : 0,
-          fileType: d.fileType || '',
+          fileUrl: isNotAvailable ? '' : d.fileUrl,
+          fileName: isNotAvailable ? '' : (d.fileName || ''),
+          fileSize: isNotAvailable ? 0 : (typeof d.fileSize === 'number' ? d.fileSize : 0),
+          fileType: isNotAvailable ? '' : (d.fileType || ''),
           uploadDate: d.uploadDate || new Date().toISOString(),
-          validationStatus: 'Pendente',
+          validationStatus: isNotAvailable ? 'Pendente' : 'Pendente',
           // FIX LGPD (2026-04-21): persiste flag isPrivate — documentos KYC são privados
           // e precisam de signed URL para download. Ver getPrivateDocumentUrl function.
-          isPrivate: d.isPrivate === true,
-          fileUri: d.fileUri || (d.isPrivate === true ? d.fileUrl : ''),
+          isPrivate: isNotAvailable ? false : (d.isPrivate === true),
+          fileUri: isNotAvailable ? '' : (d.fileUri || (d.isPrivate === true ? d.fileUrl : '')),
+          // NEW (2026-04-21): "not available + justification" flow
+          notAvailable: isNotAvailable,
+          notAvailableReason: isNotAvailable ? String(d.notAvailableReason).trim() : '',
+          notAvailableReviewStatus: isNotAvailable ? 'Pendente' : undefined,
         };
         const createdDoc = await base44.asServiceRole.entities.DocumentUpload.create(payload);
-        console.log(`[publicComplianceDocUpload] CREATED idx=${i} id=${createdDoc?.id} documentTypeId=${d.documentTypeId} file=${d.fileName}`);
-        created.push({ id: createdDoc?.id, documentTypeId: d.documentTypeId, documentName: payload.documentName });
-        // Fire-and-forget VerifAI analysis — CAF VerifAI Docs checks for digital manipulation.
-        // Skipped internally for CAF-captured docs (documentTypeId starts with 'caf_').
-        // Does NOT block the response; failures are logged but don't affect the result.
-        if (createdDoc?.id) {
+        console.log(`[publicComplianceDocUpload] CREATED idx=${i} id=${createdDoc?.id} documentTypeId=${d.documentTypeId} notAvailable=${isNotAvailable} file=${d.fileName || 'N/A'}`);
+        created.push({ id: createdDoc?.id, documentTypeId: d.documentTypeId, documentName: payload.documentName, notAvailable: isNotAvailable });
+        // Fire-and-forget VerifAI analysis — skip for notAvailable docs (nothing to verify).
+        if (createdDoc?.id && !isNotAvailable) {
           triggerVerifaiAsync(base44, createdDoc.id, caseId);
         }
       } catch (createErr) {
