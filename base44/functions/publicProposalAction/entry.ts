@@ -52,6 +52,39 @@ Deno.serve(async (req) => {
       const current = results.find(r => r.isCurrentVersion === true);
       proposta = current || results.sort((a, b) => (b.version || 1) - (a.version || 1))[0];
     }
+
+    // VERSION REDIRECT: se o token/slug bateu numa versão antiga, substituir
+    // silenciosamente pela versão atual do mesmo rootProposalId. Assim qualquer
+    // link antigo continua funcionando, mas SEMPRE opera sobre a versão mais
+    // recente — impede cliente aceitar/recusar condições obsoletas.
+    if (proposta.isCurrentVersion === false) {
+      const rootId = proposta.rootProposalId || proposta.id;
+      try {
+        const currentMatches = await base44.asServiceRole.entities[entityName].filter({
+          rootProposalId: rootId,
+          isCurrentVersion: true,
+        });
+        if (currentMatches.length > 0) {
+          proposta = currentMatches[0];
+        } else {
+          // Fallback: talvez o "proposta" atual seja a raiz (rootId === proposta.id)
+          const childCurrent = await base44.asServiceRole.entities[entityName].filter({
+            rootProposalId: proposta.id,
+            isCurrentVersion: true,
+          });
+          if (childCurrent.length > 0) proposta = childCurrent[0];
+        }
+      } catch (_) { /* se falhar, segue com a proposta original */ }
+    }
+
+    // Edge case: a versão current está recusada/cancelada — não permite reabertura
+    // por link antigo. Mensagem clara para o cliente.
+    if (['recusada', 'cancelada'].includes(proposta.status) && action !== 'view') {
+      return Response.json({
+        error: `Esta proposta não está mais ativa (${proposta.status}). Entre em contato com seu consultor.`
+      }, { status: 409 });
+    }
+
     const now = new Date().toISOString();
 
     // 2. Build updates based on action
