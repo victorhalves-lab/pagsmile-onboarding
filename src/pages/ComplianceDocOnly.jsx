@@ -10,6 +10,8 @@ import { toast } from 'sonner';
 import DynamicDocumentUploader from '@/components/compliance/DynamicDocumentUploader';
 import CafVerificationStep from '@/components/compliance/CafVerificationStep';
 import CafOnlyWelcomeBanner from '@/components/compliance/CafOnlyWelcomeBanner';
+import ComplianceReviewStep from '@/components/compliance/ComplianceReviewStep';
+import { StepPill, StepSep } from '@/components/compliance/StepIndicator';
 
 /**
  * Public page: /ComplianceDocOnly?caseId=XXX&token=YYY
@@ -36,6 +38,10 @@ export default function ComplianceDocOnly() {
   const [documents, setDocuments] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [allRequiredUploaded, setAllRequiredUploaded] = useState(false);
+  // Steps (dependem do mode):
+  //   docs_only      : docs_upload → review → completed
+  //   caf_only       : caf_verification → completed
+  //   docs_and_caf   : docs_upload → review → caf_verification → completed
   const [currentStep, setCurrentStep] = useState(cafOnlyMode ? 'caf_verification' : 'docs_upload');
   const [cafResult, setCafResult] = useState(null);
 
@@ -189,6 +195,13 @@ export default function ComplianceDocOnly() {
         return;
       }
     }
+    // Always go to the review screen first — gives the client one last look before submitting.
+    // From the review screen we either go to CAF (docs_and_caf) or submit directly (docs_only).
+    setCurrentStep('review');
+  };
+
+  // From review screen: advance to CAF or submit (depending on mode).
+  const handleReviewConfirm = () => {
     if (skipCafIdentity) {
       handleFinalSubmit(null);
       return;
@@ -355,44 +368,55 @@ export default function ComplianceDocOnly() {
         </div>
 
         {/* Step indicator — adapts to mode: docs_only hides CAF step, caf_only hides Docs step */}
-        <div className="flex items-center justify-center gap-3 mb-4">
+        <div className="flex items-center justify-center gap-2 md:gap-3 mb-4 flex-wrap">
           {!cafOnlyMode && (
             <>
-              <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                currentStep === 'docs_upload' ? 'bg-blue-100 text-blue-700 ring-2 ring-blue-300' : 'bg-green-100 text-green-700'
-              }`}>
-                {currentStep !== 'docs_upload' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <span className="w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center">1</span>}
-                Documentos
-              </div>
-              {!skipCafIdentity && <div className="w-8 h-0.5 bg-slate-200" />}
+              <StepPill
+                active={currentStep === 'docs_upload'}
+                done={['review', 'caf_verification', 'completed'].includes(currentStep)}
+                label="Documentos"
+                number={1}
+              />
+              <StepSep />
+              <StepPill
+                active={currentStep === 'review'}
+                done={['caf_verification', 'completed'].includes(currentStep)}
+                label="Revisão"
+                number={2}
+              />
+              {!skipCafIdentity && <StepSep />}
             </>
           )}
           {!skipCafIdentity && (
-            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-              currentStep === 'caf_verification' ? 'bg-purple-100 text-purple-700 ring-2 ring-purple-300' :
-              currentStep === 'completed' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'
-            }`}>
-              {currentStep === 'completed' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <span className="w-5 h-5 rounded-full bg-slate-300 text-white text-[10px] flex items-center justify-center">{cafOnlyMode ? '1' : '2'}</span>}
-              Verificação CAF
-            </div>
+            <StepPill
+              active={currentStep === 'caf_verification'}
+              done={currentStep === 'completed'}
+              label="Verificação CAF"
+              number={cafOnlyMode ? 1 : 3}
+              tone="purple"
+            />
           )}
-          <div className="w-8 h-0.5 bg-slate-200" />
-          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold ${
-            currentStep === 'completed' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'
-          }`}>
-            {currentStep === 'completed' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <span className="w-5 h-5 rounded-full bg-slate-300 text-white text-[10px] flex items-center justify-center">{cafOnlyMode || skipCafIdentity ? '2' : '3'}</span>}
-            Conclusão
-          </div>
+          <StepSep />
+          <StepPill
+            active={currentStep === 'completed'}
+            done={currentStep === 'completed'}
+            label="Conclusão"
+            number={cafOnlyMode ? 2 : (skipCafIdentity ? 3 : 4)}
+          />
         </div>
 
         <h1 className="text-2xl md:text-3xl font-bold text-[var(--pagsmile-blue)] mb-2">
-          {currentStep === 'caf_verification' ? 'Verificação de Identidade' : 'Complemento de Documentos'}
+          {currentStep === 'caf_verification' ? 'Verificação de Identidade'
+            : currentStep === 'review' ? 'Resumo antes de enviar'
+            : 'Complemento de Documentos'}
         </h1>
         <p className="text-[var(--pagsmile-blue)]/70 max-w-lg mx-auto">
           {cafOnlyMode
             ? 'Você está a um passo de concluir seu cadastro. Capture seu documento de identidade (frente e verso) e faça a prova de vida.'
             : currentStep === 'caf_verification'
             ? 'Capture seu documento e realize a prova de vida para verificar sua identidade.'
+            : currentStep === 'review'
+            ? 'Confira as informações abaixo. Depois de confirmar, seus dados seguem para análise.'
             : 'Envie os documentos solicitados e complete a verificação de identidade para finalizar o onboarding.'}
         </p>
 
@@ -421,7 +445,30 @@ export default function ComplianceDocOnly() {
         />
       )}
 
-      {/* Step 2: CAF Verification */}
+      {/* Step 2: Review (resumo final antes de enviar) — skipped in caf_only mode */}
+      {currentStep === 'review' && !cafOnlyMode && (
+        <ComplianceReviewStep
+          merchant={merchant}
+          template={template}
+          documents={documents}
+          modeLabel={
+            skipCafIdentity
+              ? 'Apenas documentos'
+              : 'Documentos + Verificação de identidade'
+          }
+          nextStepLabel={
+            skipCafIdentity
+              ? 'Confirmar e Enviar Documentos'
+              : 'Próximo: Verificação de Identidade'
+          }
+          NextStepIcon={skipCafIdentity ? CheckCircle2 : ScanFace}
+          onBack={() => setCurrentStep('docs_upload')}
+          onConfirm={handleReviewConfirm}
+          isSubmitting={isSubmitting}
+        />
+      )}
+
+      {/* Step 3: CAF Verification */}
       {currentStep === 'caf_verification' && (
         <div className="mb-8">
           <CafVerificationStep
@@ -464,10 +511,8 @@ export default function ComplianceDocOnly() {
           >
             {isSubmitting ? (
               <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Enviando...</>
-            ) : skipCafIdentity ? (
-              <><CheckCircle2 className="w-4 h-4 mr-2" /> Enviar Documentos</>
             ) : (
-              <><ScanFace className="w-4 h-4 mr-2" /> Próximo: Verificação de Identidade</>
+              <><FileUp className="w-4 h-4 mr-2" /> Revisar antes de enviar</>
             )}
           </Button>
         </div>
