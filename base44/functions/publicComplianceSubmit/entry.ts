@@ -65,6 +65,22 @@ Deno.serve(async (req) => {
       }
     }
 
+    // BUG-004 fix: validate commercialAgentId from client (if sent) by looking up the User.
+    // If it doesn't exist, drop it silently. Never trust the client-provided name.
+    let verifiedClientAgent = null;
+    const clientAgentId = onboardingCaseData.commercialAgentId;
+    if (!linkCommercialAgent?.id && clientAgentId && typeof clientAgentId === 'string' && clientAgentId.length >= 10) {
+      try {
+        const users = await base44.asServiceRole.entities.User.filter({ id: clientAgentId });
+        if (users.length > 0) {
+          const u = users[0];
+          if (u.role === 'admin' || u.role === 'user') {
+            verifiedClientAgent = { id: u.id, name: u.full_name };
+          }
+        }
+      } catch (_) { /* agent lookup failed — drop silently */ }
+    }
+
     // Sanitize merchant (force-allowed status)
     const safeMerchantStatus = ALLOWED_MERCHANT_STATUSES.has(merchantData.onboardingStatus)
       ? merchantData.onboardingStatus : 'Em Análise';
@@ -77,7 +93,7 @@ Deno.serve(async (req) => {
       email: merchantData.email || 'nao-informado@placeholder.com',
       phone: merchantData.phone || '',
       onboardingStatus: safeMerchantStatus,
-      isSubseller: !!isSubsellerLink || !!merchantData.isSubseller,
+      isSubseller: !!isSubsellerLink, // server-trusted only — ignore client-provided flag
     };
     if (Array.isArray(merchantData.paymentServices)) merchantPayload.paymentServices = merchantData.paymentServices;
     if (merchantData.type === 'PF') {
@@ -98,6 +114,13 @@ Deno.serve(async (req) => {
     // Use crypto.randomUUID — Deno native
     const docLinkToken = crypto.randomUUID().replace(/-/g, '').slice(0, 24);
 
+    // Attribution sources (precedence):
+    //   1. Link-resolved agent (from OnboardingLink — server-trusted)
+    //   2. Client-provided agent (only if validated against User entity)
+    //   3. empty
+    // `isSubsellerCase` is ONLY trusted when it comes from a SUBSELLER_COMPLIANCE linkCode.
+    const resolvedAgent = linkCommercialAgent?.id ? linkCommercialAgent : verifiedClientAgent;
+
     const casePayload = {
       merchantId: merchant.id,
       questionnaireTemplateId: templateId,
@@ -105,9 +128,9 @@ Deno.serve(async (req) => {
       status: safeCaseStatus,
       priority: safePriority,
       onboardingLinkCode: linkCode || onboardingCaseData.onboardingLinkCode || '',
-      commercialAgentId: linkCommercialAgent?.id || onboardingCaseData.commercialAgentId || '',
-      commercialAgentName: linkCommercialAgent?.name || onboardingCaseData.commercialAgentName || '',
-      isSubsellerCase: !!isSubsellerLink || !!onboardingCaseData.isSubsellerCase,
+      commercialAgentId: resolvedAgent?.id || '',
+      commercialAgentName: resolvedAgent?.name || '',
+      isSubsellerCase: !!isSubsellerLink, // server-trusted only — ignore client
       docLinkToken,
     };
     if (parentMerchantId) casePayload.parentMerchantId = parentMerchantId;
