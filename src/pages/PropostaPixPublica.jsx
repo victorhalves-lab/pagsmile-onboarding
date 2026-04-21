@@ -20,6 +20,7 @@ import { resolvePixComplianceModel } from '@/components/compliance/segmentToComp
 import { canonicalizeSlugUrl } from '@/lib/publicSlug';
 import { usePublicProposalQuery } from '@/hooks/usePublicProposalQuery';
 import PublicProposalErrorState from '@/components/proposals/PublicProposalErrorState';
+import { enqueueAccept, startAcceptWorker } from '@/lib/acceptQueue';
 
 export default function PropostaPixPublica() {
   const { t } = useTranslation();
@@ -42,6 +43,9 @@ export default function PropostaPixPublica() {
     if (proposta?.publicSlug) canonicalizeSlugUrl('pixProposal', proposta.publicSlug);
   }, [proposta?.publicSlug]);
 
+  // Inicia worker da fila de aceite persistente
+  useEffect(() => { startAcceptWorker(); }, []);
+
   // Track view via public function (idempotent on server)
   useEffect(() => {
     if (proposta && proposta.status === 'enviada') {
@@ -63,32 +67,46 @@ export default function PropostaPixPublica() {
     } catch { return null; }
   };
 
+  // ACEITE OTIMISTA + FILA PERSISTENTE — aceite nunca se perde, mesmo com rede ruim
   const aceitarMutation = useMutation({
     mutationFn: async () => {
-      const res = await base44.functions.invoke('publicProposalAction', {
-        token: effectiveToken, slug: proposta?.publicSlug || null, type: 'pix_proposal', action: 'accept',
+      if (!proposta?.id || !effectiveToken) {
+        throw new Error('Proposta não carregada completamente. Atualize a página e tente novamente.');
+      }
+
+      // Step 1 — Enfileira o aceite (sincroniza em background até conseguir)
+      enqueueAccept({
+        proposalId: proposta.id,
+        token: effectiveToken,
+        slug: proposta.publicSlug || null,
+        type: 'pix_proposal',
+        action: 'accept',
       });
-      if (res.data?.error) throw new Error(res.data.error);
 
-      const lead = await fetchLeadForCompliance(proposta.leadId);
-
-      base44.analytics.track({ eventName: 'pix_proposta_aceita', properties: { proposal_id: proposta.id, proposal_code: proposta.codigo || '', client_name: proposta.clienteNome || '', success: true } });
-
+      // Step 2 — Build compliance URL localmente (não depende do servidor)
       let complianceUrl = null;
       if (proposta.leadId) {
         const keysToClean = ['compliance_session_token', 'compliance_data_pix', 'compliance_data_pix_merchant_v4', 'compliance_data_pix_intermediario_v4'];
-        keysToClean.forEach(key => localStorage.removeItem(key));
-        localStorage.setItem('lead_id_for_compliance', proposta.leadId);
-        const pixModel = resolvePixComplianceModel(lead);
+        keysToClean.forEach(key => { try { localStorage.removeItem(key); } catch {} });
+        try { localStorage.setItem('lead_id_for_compliance', proposta.leadId); } catch {}
+        // resolvePixComplianceModel aceita objeto vazio — segue com default se sem lead
+        const pixModel = resolvePixComplianceModel({});
         complianceUrl = `${window.location.origin}/ComplianceDinamico?model=${pixModel}&leadId=${proposta.leadId}`;
       }
+
+      try {
+        base44.analytics.track({ eventName: 'pix_proposta_aceita', properties: { proposal_id: proposta.id, proposal_code: proposta.codigo || '', client_name: proposta.clienteNome || '', success: true } });
+      } catch {}
+
       return complianceUrl;
     },
     onSuccess: (complianceUrl) => {
       toast.success(t('pxp.pix_accepted'));
-      queryClient.invalidateQueries({ queryKey: ['public_proposal', 'pix_proposal'] });
       setShowAceiteModal(false);
-      if (complianceUrl) { setTimeout(() => { window.location.href = complianceUrl; }, 2000); }
+      if (complianceUrl) window.location.href = complianceUrl;
+    },
+    onError: (err) => {
+      toast.error(err?.message || 'Erro ao registrar o aceite. Tente novamente.');
     }
   });
 
@@ -248,9 +266,9 @@ export default function PropostaPixPublica() {
         </Card>
       )}
 
-      {['enviada', 'visualizada'].includes(proposta.status) && !isAlreadyResponded && !isExpired && (
+      {['enviada', 'visualizada'].includes(proposta.status) && !isAlreadyResponded && (
         <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/90 backdrop-blur-md border-t border-slate-200 z-50 md:relative md:bg-transparent md:backdrop-blur-none md:border-none md:p-0 flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4 md:mb-8 shadow-[0_-10px_40px_rgba(0,36,67,0.08)] md:shadow-none pb-safe">
-          <Button onClick={() => setShowAceiteModal(true)} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-10 h-14 rounded-2xl text-lg font-bold w-full md:w-auto shadow-lg shadow-[#2bc196]/20 transition-transform hover:scale-105">
+          <Button onClick={() => setShowAceiteModal(true)} disabled={!proposta?.id || !effectiveToken} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-10 h-14 rounded-2xl text-lg font-bold w-full md:w-auto shadow-lg shadow-[#2bc196]/20 transition-transform hover:scale-105 disabled:opacity-60 disabled:cursor-not-allowed">
             <Shield className="w-5 h-5 mr-2" /> {t('pp.accept_proposal')}
           </Button>
           <div className="flex w-full md:w-auto gap-3">
