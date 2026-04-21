@@ -77,12 +77,29 @@ Deno.serve(async (req) => {
       } catch (_) { /* se falhar, segue com a proposta original */ }
     }
 
-    // Edge case: a versão current está recusada/cancelada — não permite reabertura
-    // por link antigo. Mensagem clara para o cliente.
-    if (['recusada', 'cancelada'].includes(proposta.status) && action !== 'view') {
-      return Response.json({
-        error: `Esta proposta não está mais ativa (${proposta.status}). Entre em contato com seu consultor.`
-      }, { status: 409 });
+    // Edge case: a versão current está em estado TERMINAL (recusada/cancelada/aceita/expirada)
+    // — não permite regressão de estado por ação pública. Mensagem clara para o cliente.
+    // BUG-009 fix: anteriormente apenas recusada/cancelada eram bloqueadas, o que permitia
+    // um cliente com o token público transformar uma proposta ACEITA em RECUSADA ou
+    // CONTRAPROPOSTA, quebrando o pipeline comercial.
+    //
+    // Transições permitidas por ação pública:
+    //   - view:    sempre permitido (idempotente)
+    //   - accept:  apenas se status ∈ {enviada, visualizada, contraproposta, expirada(grace)}
+    //   - reject:  apenas se status ∈ {enviada, visualizada, contraproposta}
+    //   - counter: apenas se status ∈ {enviada, visualizada}
+    //
+    // Estados terminais (aceita/recusada/cancelada) não podem mais ser modificados
+    // por link público — só o admin pode cancelar/reverter via interface interna.
+    const terminalStates = new Set(['aceita', 'recusada', 'cancelada']);
+    if (terminalStates.has(proposta.status) && action !== 'view') {
+      // "accept" em proposta já aceita é idempotente (tratado abaixo no switch);
+      // deixamos passar para retornar o { skipped: true }.
+      if (!(action === 'accept' && proposta.status === 'aceita')) {
+        return Response.json({
+          error: `Esta proposta não está mais ativa (${proposta.status}). Entre em contato com seu consultor.`
+        }, { status: 409 });
+      }
     }
 
     const now = new Date().toISOString();
