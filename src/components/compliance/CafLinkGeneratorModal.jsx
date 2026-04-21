@@ -99,7 +99,7 @@ export default function CafLinkGeneratorModal({ open, onOpenChange, caseData, me
         docCompleted: false,
         cafCompleted: false,
       });
-      const link = `${window.location.origin}/ComplianceDocOnly?caseId=${caseData.id}&token=${token}`;
+      const link = `${window.location.origin}/ComplianceDocOnly?caseId=${caseData.id}&token=${token}&mode=docs_and_caf`;
       setDocLink(link);
       toast.success('Link Docs + CAF gerado');
     } catch (err) {

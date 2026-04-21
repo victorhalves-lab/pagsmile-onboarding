@@ -52,37 +52,6 @@ export default function ComplianceDocOnly() {
     return t;
   }, [caseId]);
 
-  // ── Save documents progress to server (debounced) whenever docs change ──
-  React.useEffect(() => {
-    if (!sessionToken || !caseId || Object.keys(documents).length === 0) return;
-    const timer = setTimeout(() => {
-      base44.functions.invoke('saveComplianceProgress', {
-        sessionToken,
-        flowType: cafOnlyMode ? 'caf_only_recovery' : (skipCafIdentity ? 'docs_only_recovery' : 'docs_and_caf_recovery'),
-        templateModel: template?.model || '',
-        currentPhase: currentStep === 'caf_verification' ? 'caf' : 'documents',
-        documentsData: documents,
-        clientEmail: merchant?.email || '',
-        clientName: merchant?.fullName || '',
-      }).catch(() => {});
-    }, 1500);
-    return () => clearTimeout(timer);
-  }, [documents, sessionToken, caseId, currentStep, cafOnlyMode, skipCafIdentity, template, merchant]);
-
-  // ── Restore documents from server on mount (if session exists) ──
-  React.useEffect(() => {
-    if (!sessionToken || !caseId) return;
-    (async () => {
-      try {
-        const res = await base44.functions.invoke('loadComplianceProgress', { sessionToken });
-        if (res.data?.session?.documentsData && Object.keys(res.data.session.documentsData).length > 0) {
-          setDocuments(res.data.session.documentsData);
-        }
-      } catch {}
-    })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionToken]);
-
   // ── Load OnboardingCase + Template (token-protected via backend) ──
   const { data: caseContext, isLoading: loadingCase } = useQuery({
     queryKey: ['docOnlyCaseCtx', caseId, token],
@@ -113,6 +82,39 @@ export default function ComplianceDocOnly() {
     },
     enabled: !!onboardingCase,
   });
+
+  // ── Save documents progress to server (debounced) whenever docs change ──
+  // CRITICAL: this useEffect MUST come AFTER the useQuery declarations for `template` and `merchant`,
+  // otherwise we get ReferenceError: Cannot access 'template'/'merchant' before initialization.
+  React.useEffect(() => {
+    if (!sessionToken || !caseId || Object.keys(documents).length === 0) return;
+    const timer = setTimeout(() => {
+      base44.functions.invoke('saveComplianceProgress', {
+        sessionToken,
+        flowType: cafOnlyMode ? 'caf_only_recovery' : (skipCafIdentity ? 'docs_only_recovery' : 'docs_and_caf_recovery'),
+        templateModel: template?.model || '',
+        currentPhase: currentStep === 'caf_verification' ? 'caf' : 'documents',
+        documentsData: documents,
+        clientEmail: merchant?.email || '',
+        clientName: merchant?.fullName || '',
+      }).catch(() => {});
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [documents, sessionToken, caseId, currentStep, cafOnlyMode, skipCafIdentity, template, merchant]);
+
+  // ── Restore documents from server on mount (if session exists) ──
+  React.useEffect(() => {
+    if (!sessionToken || !caseId) return;
+    (async () => {
+      try {
+        const res = await base44.functions.invoke('loadComplianceProgress', { sessionToken });
+        if (res.data?.session?.documentsData && Object.keys(res.data.session.documentsData).length > 0) {
+          setDocuments(res.data.session.documentsData);
+        }
+      } catch {}
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionToken]);
 
   // ── Get person data for CAF ──
   const getPersonData = () => {
