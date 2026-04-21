@@ -76,9 +76,20 @@ Deno.serve(async (req) => {
         if (proposta.status === 'aceita') {
           return Response.json({ ok: true, skipped: true, proposta });
         }
-        // Do not allow accepting an already-rejected/countered/expired proposal
-        if (['recusada', 'expirada', 'cancelada'].includes(proposta.status)) {
+        // Do not allow accepting an already-rejected/cancelled proposal
+        if (['recusada', 'cancelada'].includes(proposta.status)) {
           return Response.json({ error: `Proposta já está ${proposta.status} e não pode ser aceita.` }, { status: 409 });
+        }
+        // GRACE PERIOD: se a proposta expirou há menos de 7 dias, ainda aceita.
+        // Isso protege o cliente que recebeu o link sexta e clicou segunda, ou
+        // que enfrentou rede ruim e só conseguiu aceitar horas depois.
+        if (proposta.status === 'expirada') {
+          const expiredAt = proposta.validUntil ? new Date(proposta.validUntil).getTime() : null;
+          const daysSinceExpiry = expiredAt ? (Date.now() - expiredAt) / (1000 * 60 * 60 * 24) : 999;
+          if (daysSinceExpiry > 7) {
+            return Response.json({ error: 'Proposta expirada há mais de 7 dias. Entre em contato com seu consultor.' }, { status: 409 });
+          }
+          // dentro do grace period: aceita normalmente
         }
         proposalUpdates = { status: 'aceita', acceptedDate: now };
         leadStatus = 'proposta_aceita';

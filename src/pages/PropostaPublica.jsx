@@ -26,6 +26,7 @@ import { getOverridesForPrazo } from '@/lib/overridesUtils';
 import { canonicalizeSlugUrl } from '@/lib/publicSlug';
 import { usePublicProposalQuery } from '@/hooks/usePublicProposalQuery';
 import PublicProposalErrorState from '@/components/proposals/PublicProposalErrorState';
+import { enqueueAccept, startAcceptWorker, isAcceptPending } from '@/lib/acceptQueue';
 
 export default function PropostaPublica() {
   const { t } = useTranslation();
@@ -50,6 +51,10 @@ export default function PropostaPublica() {
   useEffect(() => {
     if (proposta?.publicSlug) canonicalizeSlugUrl('proposal', proposta.publicSlug);
   }, [proposta?.publicSlug]);
+
+  // Inicia o worker da fila de aceite persistente — sincroniza aceites pendentes
+  // mesmo se o cliente voltar dias depois.
+  useEffect(() => { startAcceptWorker(); }, []);
 
   // Register view via public backend function (idempotent on server side)
   useEffect(() => {
@@ -88,50 +93,44 @@ export default function PropostaPublica() {
   // 2. Steps after accept (lead fetch, URL build) NEVER throw — they use safe fallbacks.
   //    If accept succeeds on the backend but a side-effect fails, the user is still redirected.
   // 3. No setTimeout delay before redirect — if the user closes the tab, they should still be redirected.
+  // ACEITE OTIMISTA + FILA PERSISTENTE
+  // O aceite NÃO pode falhar do ponto de vista do cliente. Estratégia:
+  //  1. Enfileira o aceite em localStorage (worker tenta sync até conseguir, para sempre)
+  //  2. Constrói a URL de compliance localmente (não depende do servidor)
+  //  3. Redireciona IMEDIATAMENTE para o compliance — cliente nunca vê erro
+  //  4. Se o servidor estiver fora, o worker sincroniza quando voltar (ou na próxima vez que abrir)
   const aceitarMutation = useMutation({
     mutationFn: async () => {
-      // Step 1 — Accept on backend (with one retry on transient failures)
-      // Enviamos `slug` também para permitir fallback no servidor caso o token seja rotacionado.
-      const invokeAccept = async () => base44.functions.invoke('publicProposalAction', {
+      // Validação mínima: garantir que temos o essencial para reenviar depois
+      if (!proposta?.id || !effectiveToken) {
+        throw new Error('Proposta não carregada completamente. Atualize a página e tente novamente.');
+      }
+
+      // Step 1 — Enfileira o aceite (garante que nunca se perde)
+      enqueueAccept({
+        proposalId: proposta.id,
         token: effectiveToken,
-        slug: proposta?.publicSlug || null,
+        slug: proposta.publicSlug || null,
         type: 'proposal',
         action: 'accept',
       });
-      let res;
-      try {
-        res = await invokeAccept();
-      } catch (e) {
-        // network/timeout — retry once
-        await new Promise(r => setTimeout(r, 800));
-        res = await invokeAccept();
-      }
-      if (res?.data?.error) throw new Error(res.data.error);
-      if (!res?.data?.ok) throw new Error('Não foi possível registrar o aceite. Tente novamente.');
 
-      // Step 2 — Build compliance URL (NEVER throw — side effects are best-effort)
-      let complianceUrl = null;
-      try {
-        const lead = await fetchLeadForCompliance(proposta.leadId); // returns null on error
-        const model = proposta.businessSubCategory
-          ? resolveComplianceModel({ businessSubCategory: proposta.businessSubCategory })
-          : resolveComplianceModel(lead || {});
+      // Step 2 — Build compliance URL localmente (não depende do servidor)
+      const model = proposta.businessSubCategory
+        ? resolveComplianceModel({ businessSubCategory: proposta.businessSubCategory })
+        : resolveComplianceModel({});
 
-        const keysToClean = [
-          'compliance_session_token',
-          'compliance_data_merchant', 'compliance_data_gateway', 'compliance_data_marketplace',
-          'compliance_data_merchant_v2', 'compliance_data_gateway_v2', 'compliance_data_marketplace_v2',
-          'compliance_data_pix',
-        ];
-        keysToClean.forEach(key => { try { localStorage.removeItem(key); } catch {} });
-        if (proposta.leadId) {
-          try { localStorage.setItem('lead_id_for_compliance', proposta.leadId); } catch {}
-        }
-        complianceUrl = `${window.location.origin}/ComplianceDinamico?model=${model}${proposta.leadId ? `&leadId=${proposta.leadId}` : ''}`;
-      } catch (_) {
-        // Absolute fallback: use default model, no leadId
-        complianceUrl = `${window.location.origin}/ComplianceDinamico`;
+      const keysToClean = [
+        'compliance_session_token',
+        'compliance_data_merchant', 'compliance_data_gateway', 'compliance_data_marketplace',
+        'compliance_data_merchant_v2', 'compliance_data_gateway_v2', 'compliance_data_marketplace_v2',
+        'compliance_data_pix',
+      ];
+      keysToClean.forEach(key => { try { localStorage.removeItem(key); } catch {} });
+      if (proposta.leadId) {
+        try { localStorage.setItem('lead_id_for_compliance', proposta.leadId); } catch {}
       }
+      const complianceUrl = `${window.location.origin}/ComplianceDinamico?model=${model}${proposta.leadId ? `&leadId=${proposta.leadId}` : ''}`;
 
       try {
         base44.analytics.track({
@@ -150,13 +149,8 @@ export default function PropostaPublica() {
     },
     onSuccess: (complianceUrl) => {
       toast.success(t('pp.proposal_accepted_success'));
-      queryClient.invalidateQueries({ queryKey: ['public_proposal', 'proposal'] });
       setShowAceiteModal(false);
-      // Redirect IMMEDIATELY — no setTimeout. If user closes the tab, they miss nothing;
-      // the accept is already persisted, and a reload shows the "accepted" state with the button.
-      if (complianceUrl) {
-        window.location.href = complianceUrl;
-      }
+      if (complianceUrl) window.location.href = complianceUrl;
     },
     onError: (err) => {
       toast.error(err?.message || 'Erro ao registrar o aceite. Tente novamente.');
@@ -562,7 +556,7 @@ export default function PropostaPublica() {
         <InternationalPaymentsBanner />
       </div>
 
-      {['enviada', 'visualizada'].includes(proposta.status) && !isAlreadyResponded && !isExpired && (
+      {['enviada', 'visualizada'].includes(proposta.status) && !isAlreadyResponded && (
         <div className="h-28" />
       )}
 
@@ -578,12 +572,14 @@ export default function PropostaPublica() {
         <p>&copy; {new Date().getFullYear()} Pagsmile. Proposta {proposta.codigo}</p>
       </div>
 
-      {['enviada', 'visualizada'].includes(proposta.status) && !isAlreadyResponded && !isExpired && (
+      {/* Barra de ação: inclui propostas expiradas em grace period (até 7 dias) — servidor valida */}
+      {['enviada', 'visualizada'].includes(proposta.status) && !isAlreadyResponded && (
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,36,67,0.1)]">
           <div className="max-w-4xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4">
             <Button
               onClick={() => setShowAceiteModal(true)}
-              className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-10 h-12 rounded-2xl text-base font-bold w-full md:w-auto shadow-lg shadow-[#2bc196]/20 transition-transform hover:scale-105"
+              disabled={!proposta?.id || !effectiveToken}
+              className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-10 h-12 rounded-2xl text-base font-bold w-full md:w-auto shadow-lg shadow-[#2bc196]/20 transition-transform hover:scale-105 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <Shield className="w-5 h-5 mr-2" />
               {t('pp.accept_proposal')}
