@@ -8,7 +8,7 @@
 
 **Última atualização:** 2026-04-21
 **Fase ativa:** 5 (Compliance V4)
-**Próximo micro-passo:** 5.3 — Definir próximo item da checklist de Compliance V4 (sugestões: revisar RLS de DocumentUpload/IntegrationLog, validar fileUri vs fileUrl, ou avançar para Fase 6)
+**Próximo micro-passo:** 5.4 — Definir próximo item (sugestões: validar fileUri vs fileUrl em DocumentUpload existentes, revisar RLS de OnboardingCase/Merchant, ou avançar para Fase 6)
 
 ---
 
@@ -227,5 +227,6 @@ Pages: `DashboardCEO`, `DashboardComercial`, `AdminDashboard`, `DadosInsights`, 
 - ✅ Criação do log persistente `docs/AUDIT_LOG.md`
 - ✅ **Passo 5.1** — Purga de órfãos em 4 entidades + automation diária criada
 - ✅ **Passo 5.2** — LGPD hardening: 3 funções críticas agora admin-only + partnerDownloadDocument não confia mais em URL do cliente
+- ✅ **Passo 5.3** — RLS `DocumentUpload.create` fechado para admin-only (backend público usa asServiceRole, não quebra fluxo)
 
 _(todos os passos futuros serão registrados aqui)_
