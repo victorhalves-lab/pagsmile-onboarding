@@ -34,7 +34,7 @@ export default function useLandingAnalytics({ introducerId, referralCode, slug }
       ...extra,
     };
     // Fire and forget — don't block UI
-    base44.entities.LandingPageEvent.create(data).catch(() => {});
+    base44.functions.invoke('trackLandingPageEvent', data).catch(() => {});
   }, [introducerId, referralCode, slug, sessionId]);
 
   // Track page view once on mount

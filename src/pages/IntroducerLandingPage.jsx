@@ -34,8 +34,8 @@ function getDeviceType() {
 }
 
 function fireAnalytics(eventType, ctx, extra = {}) {
-  // LandingPageEvent has create:true RLS — safe for anonymous visitors
-  base44.entities.LandingPageEvent.create({
+  // Analytics routed through backend function (asServiceRole) — RLS is admin-only.
+  base44.functions.invoke('trackLandingPageEvent', {
     introducerId: ctx.introducerId,
     referralCode: ctx.referralCode,
     slug: ctx.slug,
