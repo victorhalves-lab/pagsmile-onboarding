@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
 import { Progress } from '@/components/ui/progress';
 import {
   FileUp, AlertCircle, Shield, Lock, File, HelpCircle, MessageSquareWarning
@@ -7,6 +6,8 @@ import {
 import { toast } from 'sonner';
 import DocumentNotAvailableModal from './DocumentNotAvailableModal';
 import DocumentCard from './DocumentCard';
+import { uploadPrivateFileWithRetry } from '@/lib/uploadWithRetry';
+import { compressImageIfNeeded } from '@/lib/imageCompression';
 
 /**
  * Multi-file document uploader with per-document actions:
@@ -64,23 +65,39 @@ export default function DynamicDocumentUploader({
     }
   }, [documents, storageKey]);
 
-  // ── Upload multiple files at once ──
+  // ── Upload multiple files at once (with compression + retry) ──
   const handleUpload = async (docId, filesList) => {
     const fileArray = Array.isArray(filesList) ? filesList : [filesList];
     setUploadingDoc(docId);
     try {
       const uploadedFiles = [];
-      for (const file of fileArray) {
-        const { file_uri } = await base44.integrations.Core.UploadPrivateFile({ file });
-        uploadedFiles.push({
-          url: file_uri,
-          uri: file_uri,
-          isPrivate: true,
-          name: file.name,
-          size: file.size,
-          type: file.type,
-          uploadedAt: new Date().toISOString(),
-        });
+      const failedFiles = [];
+      for (const original of fileArray) {
+        try {
+          // Compress images > 5MB to speed up uploads
+          const file = await compressImageIfNeeded(original, 5);
+          const { file_uri } = await uploadPrivateFileWithRetry(file);
+          uploadedFiles.push({
+            url: file_uri,
+            uri: file_uri,
+            isPrivate: true,
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            uploadedAt: new Date().toISOString(),
+            _localFile: original, // keep reference for thumbnail preview (not persisted)
+          });
+        } catch (err) {
+          failedFiles.push({ name: original.name, error: err?.message || 'falha' });
+        }
+      }
+      if (failedFiles.length > 0) {
+        toast.error(
+          `Falha ao enviar ${failedFiles.length} arquivo(s) após 3 tentativas: ${failedFiles.map(f => f.name).join(', ')}. ` +
+          `Verifique sua conexão e tente novamente.`,
+          { duration: 8000 }
+        );
+        if (uploadedFiles.length === 0) { setUploadingDoc(null); return; }
       }
       setDocuments(prev => {
         const existing = prev[docId];
@@ -105,7 +122,9 @@ export default function DynamicDocumentUploader({
           },
         };
       });
-      toast.success(`${uploadedFiles.length} arquivo${uploadedFiles.length > 1 ? 's' : ''} enviado${uploadedFiles.length > 1 ? 's' : ''}!`);
+      if (uploadedFiles.length > 0) {
+        toast.success(`${uploadedFiles.length} arquivo${uploadedFiles.length > 1 ? 's' : ''} enviado${uploadedFiles.length > 1 ? 's' : ''}!`);
+      }
     } catch (error) {
       toast.error('Erro ao enviar: ' + error.message);
     } finally {

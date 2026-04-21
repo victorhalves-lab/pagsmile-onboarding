@@ -165,11 +165,27 @@ export default function ComplianceDocOnly() {
       toast.error(`Faltam ${missingMandatory.length} documentos obrigatórios: ${missingMandatory.map(d => d.label || d.name).join(', ')}`);
       return;
     }
-    // SAFETY NET: if template has any required docs configured but NOTHING was acted on,
-    // block the advance. Prevents the BCK bug (empty documents {} → passed to CAF).
+    // SAFETY NET: template has docs configured but nothing was acted on → block.
     if (allTemplateDocs.length > 0 && Object.keys(documents).length === 0) {
-      toast.error('Você precisa enviar os documentos ou justificar a indisponibilidade antes de prosseguir.');
+      toast.error(
+        `Este fluxo exige o envio de ${allTemplateDocs.length} documento(s). ` +
+        `Anexe cada documento solicitado ou clique em "Não tenho este documento" para justificar.`,
+        { duration: 8000 }
+      );
       return;
+    }
+    // Extra safety: if NONE are explicitly required: true, require 80% action rate.
+    if (mandatoryDocs.length === 0 && allTemplateDocs.length >= 3) {
+      const acted = allTemplateDocs.filter(isSatisfied).length;
+      const minRequired = Math.ceil(allTemplateDocs.length * 0.8);
+      if (acted < minRequired) {
+        toast.error(
+          `Envie ou justifique pelo menos ${minRequired} dos ${allTemplateDocs.length} documentos. ` +
+          `Faltam ${allTemplateDocs.length - acted}.`,
+          { duration: 8000 }
+        );
+        return;
+      }
     }
     if (skipCafIdentity) {
       handleFinalSubmit(null);

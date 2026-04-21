@@ -944,6 +944,7 @@ export default function CafVerificationStep({
             errorMessage={error}
             attemptCount={Math.max(retryCount + 1, livenessAttempts)}
             tokenType={tokenType}
+            resolvedPerson={resolvedPerson}
             onRetry={handleRetry}
             onManualFallback={handleManualFallback}
             onBdcFallback={() => { setBdcFallback(true); setPhase('bdc_fallback'); setError(null); setErrorName(null); }}

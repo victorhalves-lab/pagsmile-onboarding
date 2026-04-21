@@ -241,6 +241,21 @@ Deno.serve(async (req) => {
       duration_ms: Date.now() - startTime,
     });
 
+    // ── Slack alert if face match failed ──
+    if (finalStatus === 'REPROVED' || (similarity !== null && similarity < 0.7)) {
+      try {
+        await base44.asServiceRole.functions.invoke('notifyCafFaceMatchFailed', {
+          onboardingCaseId,
+          transactionId,
+          similarity,
+          status: finalStatus,
+          reason: `Similaridade ${similarity !== null ? Math.round(similarity * 100) + '%' : 'N/A'} (mínimo 70%)`,
+        });
+      } catch (slackErr) {
+        console.warn('[cafFaceMatchTransaction] Slack notify failed (non-blocking):', slackErr?.message);
+      }
+    }
+
     return Response.json({
       success: true,
       transactionId,

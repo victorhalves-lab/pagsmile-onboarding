@@ -575,6 +575,17 @@ Deno.serve(async (req) => {
             timestamp: new Date().toISOString(),
           });
         } catch { /* */ }
+        // Slack alert on mismatch
+        if (normalized.isMatch === false) {
+          try {
+            await base44.asServiceRole.functions.invoke('notifyCafFaceMatchFailed', {
+              onboardingCaseId,
+              transactionId,
+              status: 'REPROVED',
+              reason: 'Webhook CAF reportou isMatch=false',
+            });
+          } catch {}
+        }
       }
     }
 

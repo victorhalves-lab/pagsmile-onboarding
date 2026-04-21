@@ -5,6 +5,7 @@ import {
   File, HelpCircle, MessageSquareWarning, Plus, FileText
 } from 'lucide-react';
 import { toast } from 'sonner';
+import FileThumbnail from './FileThumbnail';
 
 /**
  * Individual document upload card.
@@ -56,6 +57,7 @@ function fileIcon(name = '') {
 
 export default function DocumentCard({ doc, uploadedFile, onUpload, onRemoveAll, onRemoveSingle, onMarkNotAvailable, isUploading }) {
   const inputRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
   const docKey = doc._docKey || doc.documentTypeId || doc.id;
 
   // Normalize to files[] shape
@@ -71,8 +73,7 @@ export default function DocumentCard({ doc, uploadedFile, onUpload, onRemoveAll,
   const allowedFormats = doc.allowedFormats || DEFAULT_ALLOWED;
   const maxSizeMB = doc.maxSizeMB || 15;
 
-  const handleFilesSelect = async (e) => {
-    const selected = Array.from(e.target.files || []);
+  const validateAndUpload = (selected) => {
     if (selected.length === 0) return;
 
     const validFiles = [];
@@ -99,13 +100,34 @@ export default function DocumentCard({ doc, uploadedFile, onUpload, onRemoveAll,
     }
 
     if (validFiles.length > 0) {
-      onUpload(docKey, validFiles); // parent handles actual upload of MULTIPLE files
+      onUpload(docKey, validFiles);
     }
+  };
+
+  const handleFilesSelect = (e) => {
+    const selected = Array.from(e.target.files || []);
+    validateAndUpload(selected);
     e.target.value = '';
   };
 
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (isUploading || isNotAvailable) return;
+    const dropped = Array.from(e.dataTransfer?.files || []);
+    validateAndUpload(dropped);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    if (!isUploading && !isNotAvailable) setIsDragging(true);
+  };
+  const handleDragLeave = () => setIsDragging(false);
+
   // Border style
-  const borderClass = files.length > 0
+  const borderClass = isDragging
+    ? 'border-[#2bc196] bg-[#2bc196]/5 ring-2 ring-[#2bc196]/20'
+    : files.length > 0
     ? 'border-green-200 bg-green-50/50'
     : isNotAvailable
     ? 'border-amber-300 bg-amber-50/60'
@@ -114,7 +136,12 @@ export default function DocumentCard({ doc, uploadedFile, onUpload, onRemoveAll,
     : 'border-slate-200 hover:border-slate-300';
 
   return (
-    <div className={`bg-white rounded-xl border-2 p-4 transition-all duration-200 ${borderClass}`}>
+    <div
+      className={`bg-white rounded-xl border-2 p-4 transition-all duration-200 ${borderClass}`}
+      onDrop={handleDrop}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+    >
       <div className="flex items-start justify-between gap-3 mb-2">
         <div className="flex items-center gap-2 min-w-0 flex-1">
           {files.length > 0 ? (
@@ -146,8 +173,8 @@ export default function DocumentCard({ doc, uploadedFile, onUpload, onRemoveAll,
       {files.length > 0 && (
         <div className="space-y-1.5 mb-3">
           {files.map((f, idx) => (
-            <div key={`${f.url}_${idx}`} className="flex items-center gap-2 bg-white border border-green-200 rounded-lg px-2.5 py-1.5">
-              {fileIcon(f.name)}
+            <div key={`${f.url}_${idx}`} className="flex items-center gap-2 bg-white border border-green-200 rounded-lg p-1.5">
+              <FileThumbnail name={f.name} type={f.type} localFile={f._localFile} size="sm" />
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-medium text-[#002443] truncate">{f.name}</p>
                 <p className="text-[10px] text-slate-500">{formatSize(f.size)}</p>
@@ -161,6 +188,14 @@ export default function DocumentCard({ doc, uploadedFile, onUpload, onRemoveAll,
               </Button>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* ── Drag & drop hint ── */}
+      {isDragging && (
+        <div className="mb-3 py-3 border-2 border-dashed border-[#2bc196] rounded-lg bg-[#2bc196]/5 text-center">
+          <Upload className="w-5 h-5 mx-auto text-[#2bc196] mb-1" />
+          <p className="text-xs font-semibold text-[#2bc196]">Solte para enviar</p>
         </div>
       )}
 

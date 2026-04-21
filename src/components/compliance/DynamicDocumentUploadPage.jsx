@@ -11,6 +11,7 @@ import DynamicDocumentUploader from './DynamicDocumentUploader';
 import CafVerificationStep from './CafVerificationStep';
 import { useComplianceSession } from '../../hooks/useComplianceSession';
 import AutoSaveIndicator from './AutoSaveIndicator';
+import PhaseProgressBar from './PhaseProgressBar';
 
 export default function DynamicDocumentUploadPage({
   templateId,
@@ -222,10 +223,29 @@ export default function DynamicDocumentUploadPage({
       toast.error(`Envie todos os documentos obrigatórios. Faltam ${missingDocs.length}: ${missingDocs.map(d => d.label || d.name).join(', ')}`);
       return;
     }
-    // Safety net: template has required docs, but nothing was acted on → block.
+    // Safety net: template has docs configured, but nothing was acted on → block.
     if (allTemplateDocs.length > 0 && Object.keys(documents).length === 0) {
-      toast.error('Você precisa enviar os documentos ou justificar a indisponibilidade antes de prosseguir.');
+      toast.error(
+        `Este fluxo exige o envio de ${allTemplateDocs.length} documento(s). ` +
+        `Anexe cada documento solicitado ou clique em "Não tenho este documento" para justificar a indisponibilidade.`,
+        { duration: 8000 }
+      );
       return;
+    }
+    // Extra safety: if NONE of the docs in the template are marked required: true,
+    // we still require that the client acted on at least 80% of them (uploaded or justified).
+    // Prevents bypassing when the template admin forgot to mark required: true.
+    if (mandatoryDocs.length === 0 && allTemplateDocs.length >= 3) {
+      const acted = allTemplateDocs.filter(isSatisfied).length;
+      const minRequired = Math.ceil(allTemplateDocs.length * 0.8);
+      if (acted < minRequired) {
+        toast.error(
+          `Envie ou justifique pelo menos ${minRequired} dos ${allTemplateDocs.length} documentos listados. ` +
+          `Você ainda tem ${allTemplateDocs.length - acted} documento(s) sem ação.`,
+          { duration: 8000 }
+        );
+        return;
+      }
     }
     // Save docs progress immediately on transition
     saveProgressNow({ currentPhase: 'caf', documentsData: documents });
@@ -455,6 +475,14 @@ export default function DynamicDocumentUploadPage({
 
   return (
     <div className="max-w-4xl mx-auto">
+      {/* Phase progress bar — always visible at top */}
+      <div className="mb-6">
+        <PhaseProgressBar
+          current={currentStep === 'caf_verification' ? 'caf' : currentStep === 'done' ? 'done' : 'documents'}
+          showCaf={!skipCaf}
+        />
+      </div>
+
       {/* Header */}
       <div className="text-center mb-8">
         <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-[var(--pagsmile-green)]/10 mb-4">

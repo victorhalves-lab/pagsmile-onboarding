@@ -217,6 +217,8 @@ export default function CafErrorDiagnostic({
   onBdcFallback,
   cafFallbackUrl,          // ← URL do cadastro.io do segmento (já com ?externalId=...&cnpj=...)
   onCafFallbackClick,      // ← callback de rastreio (log IntegrationLog) antes de abrir
+  resolvedPerson,          // ← { cpf, name, source } — pra cliente verificar se é mesmo o doc dele
+  similarity = null,       // ← 0-1 — se disponível, mostra ao cliente
 }) {
   const info = classifyError(errorName, errorMessage);
   const colors = COLOR_CLASSES[info.color] || COLOR_CLASSES.slate;
@@ -224,6 +226,8 @@ export default function CafErrorDiagnostic({
 
   // Se token é fallback, força exibir ajuda específica
   const showTokenWarning = tokenType === 'fallback' && info.category !== 'TOKEN_FALLBACK';
+  const isFaceMismatch = info.category === 'FACE_MISMATCH';
+  const similarityPct = similarity !== null && similarity !== undefined ? Math.round(similarity * 100) : null;
 
   return (
     <div className="space-y-4">
@@ -251,6 +255,34 @@ export default function CafErrorDiagnostic({
           </div>
         </div>
       </div>
+
+      {/* Face mismatch: mostra CPF/nome usado + similarity pra cliente confirmar */}
+      {isFaceMismatch && resolvedPerson?.cpf && (
+        <div className="bg-white border-2 border-amber-300 rounded-xl p-4">
+          <p className="text-xs font-bold text-amber-900 mb-2">🔍 Verifique: estamos comparando contra este CPF</p>
+          <div className="flex items-center justify-between gap-3 bg-amber-50 rounded-lg p-3">
+            <div className="min-w-0">
+              {resolvedPerson.name && (
+                <p className="text-sm font-semibold text-[#002443] truncate">{resolvedPerson.name}</p>
+              )}
+              <p className="text-xs text-[#002443]/70 font-mono">
+                CPF: {String(resolvedPerson.cpf).replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.***.***-$4')}
+              </p>
+            </div>
+            {similarityPct !== null && (
+              <div className="text-right shrink-0">
+                <p className="text-[10px] text-amber-700 font-semibold uppercase">Similaridade</p>
+                <p className="text-lg font-bold text-amber-900">{similarityPct}%</p>
+                <p className="text-[10px] text-amber-700">mínimo 70%</p>
+              </div>
+            )}
+          </div>
+          <p className="text-[11px] text-amber-800 mt-2">
+            ⚠️ Se este CPF <strong>não é seu</strong>, é provável que o documento ou a selfie sejam de pessoa diferente.
+            Use "Enviar Selfie Manualmente" e nossa equipe valida em até 24h.
+          </p>
+        </div>
+      )}
 
       {/* Aviso extra se token está em fallback mode */}
       {showTokenWarning && (
