@@ -1,9 +1,16 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 /**
- * Entity automation — auto-generates publicSlug on CREATE for Proposal,
- * StandardProposal, PixProposal and Contract. Idempotent: if slug is already
- * present, does nothing.
+ * Entity automation — auto-generates unique publicSlug on CREATE for Proposal,
+ * StandardProposal, PixProposal and Contract.
+ *
+ * Uniqueness guarantee: queries the entity by `publicSlug` and retries with a
+ * fresh random suffix until a free slot is found (up to 8 attempts).
+ *
+ * Also FIXES cases where a slug was COPIED from another record (e.g. version
+ * spread via spread operator) — when this happens, the create event fires with
+ * `publicSlug` already set but pointing at a non-unique value. We detect it by
+ * counting how many records share that slug and forcing a regeneration.
  *
  * Payload shape (from entity automation):
  *   - event: { type, entity_name, entity_id }
@@ -32,9 +39,9 @@ function randomSuffix(len = 4) {
   return out;
 }
 
-function generateSlug(companyName) {
+function buildSlug(companyName, suffixLen = 4) {
   const base = slugifyText(companyName);
-  const suffix = randomSuffix(4);
+  const suffix = randomSuffix(suffixLen);
   if (!base) return `proposta-${randomSuffix(8)}`;
   return `${base}-${suffix}`;
 }
@@ -45,6 +52,28 @@ const NAME_FIELD = {
   PixProposal: 'clienteNome',
   Contract: 'clientName',
 };
+
+async function isSlugTaken(base44, entityName, slug, excludeId) {
+  try {
+    const hits = await base44.asServiceRole.entities[entityName].filter({ publicSlug: slug });
+    if (!Array.isArray(hits) || hits.length === 0) return false;
+    // Taken if any OTHER record has it
+    return hits.some(r => r.id !== excludeId);
+  } catch (_) {
+    return false;
+  }
+}
+
+async function generateUniqueSlug(base44, entityName, companyName, excludeId) {
+  for (let attempt = 0; attempt < 8; attempt++) {
+    const suffixLen = attempt < 3 ? 4 : attempt < 6 ? 6 : 8;
+    const candidate = buildSlug(companyName, suffixLen);
+    const taken = await isSlugTaken(base44, entityName, candidate, excludeId);
+    if (!taken) return candidate;
+  }
+  // Last resort: timestamp-based fallback
+  return `${slugifyText(companyName) || 'proposta'}-${Date.now().toString(36)}`;
+}
 
 Deno.serve(async (req) => {
   try {
@@ -60,14 +89,22 @@ Deno.serve(async (req) => {
       entity = await base44.asServiceRole.entities[event.entity_name].get(event.entity_id);
     }
     if (!entity) return Response.json({ ok: true, skipped: 'not found' });
-    if (entity.publicSlug) return Response.json({ ok: true, skipped: 'already has slug' });
-
-    // RULE: Every proposal version gets its OWN unique slug. All old links remain
-    // active because the public resolver (publicReadContext: resolve_public_slug)
-    // always follows rootProposalId → isCurrentVersion=true to render the latest data.
 
     const nameField = NAME_FIELD[event.entity_name];
-    const slug = generateSlug(entity[nameField] || '');
+    if (!nameField) return Response.json({ ok: true, skipped: 'unsupported entity' });
+
+    // Case 1: no slug yet → generate a fresh unique one.
+    // Case 2: slug already set but COLLIDES with another record (usually caused
+    // by version spread operator copying the slug) → regenerate.
+    if (entity.publicSlug) {
+      const collides = await isSlugTaken(base44, event.entity_name, entity.publicSlug, entity.id);
+      if (!collides) {
+        return Response.json({ ok: true, skipped: 'already has unique slug' });
+      }
+      console.log(`⚠️ Slug collision detected for ${event.entity_name}/${entity.id}: "${entity.publicSlug}" — regenerating`);
+    }
+
+    const slug = await generateUniqueSlug(base44, event.entity_name, entity[nameField] || '', entity.id);
     await base44.asServiceRole.entities[event.entity_name].update(event.entity_id, { publicSlug: slug });
     return Response.json({ ok: true, slug });
   } catch (error) {

@@ -232,9 +232,11 @@ export default function CriarProposta() {
     let criadoPorNome = 'sistema';
     let criadoPorId = '';
     try { const user = await base44.auth.me(); criadoPor = user?.email || user?.id || 'sistema'; criadoPorNome = user?.full_name || user?.email || 'sistema'; criadoPorId = user?.id || ''; } catch (e) {}
+    const isSending = status === 'enviada';
     return {
       leadId: effectiveLeadId || '', codigo: existingProposal?.codigo || gerarCodigo(),
       proposalName: `Proposta - ${form.clienteNome}`, status, origem: 'manual',
+      sentDate: isSending ? (existingProposal?.sentDate || new Date().toISOString()) : (existingProposal?.sentDate || null),
       sourceFlow: templateFromId ? 'from_existing_proposal_rates' : (existingProposal?.sourceFlow || 'manual_creation'),
       businessSubCategory: form.businessSubCategory,
       chosenPartnerId: selectedPartnerId || '',

@@ -131,24 +131,28 @@ export default function GestaoPropostas() {
   const duplicar = async (proposta) => {
     const year = new Date().getFullYear();
     const seq = String(Math.floor(Math.random() * 99999)).padStart(5, '0');
+    // Strip identity, link and lifecycle fields so the duplicate is a brand-new
+    // proposal (no inherited leadId, slug, token, version chain or dates).
+    const {
+      id, created_date, updated_date, created_by, _entityType,
+      publicSlug, publicLinkCode, tokenPublico,
+      sentDate, acceptedDate, rejectedDate, rejectedReason, counterProposalDetails,
+      version, previousVersionId, rootProposalId, isCurrentVersion,
+      leadId,
+      ...dataToCopy
+    } = proposta;
     const newProposta = {
-      ...proposta,
+      ...dataToCopy,
+      leadId: '',
       codigo: `PROP-${year}-${seq}`,
       status: 'rascunho',
       tokenPublico: Array.from({ length: 64 }, () => 'abcdefghijklmnopqrstuvwxyz0123456789'.charAt(Math.floor(Math.random() * 36))).join(''),
-      sentDate: null,
-      acceptedDate: null,
-      rejectedDate: null,
       version: 1,
       previousVersionId: null,
       rootProposalId: null,
       isCurrentVersion: true,
+      sourceFlow: 'from_existing_proposal_rates',
     };
-    delete newProposta.id;
-    delete newProposta.created_date;
-    delete newProposta.updated_date;
-    delete newProposta.created_by;
-    delete newProposta._entityType;
     const created = await base44.entities.Proposal.create(newProposta);
     queryClient.invalidateQueries({ queryKey: ['propostas'] });
     toast.success(t('gestao_propostas.duplicated'));
@@ -158,7 +162,7 @@ export default function GestaoPropostas() {
   const criarNovaVersao = async (proposta) => {
     const year = new Date().getFullYear();
     const seq = String(Math.floor(Math.random() * 99999)).padStart(5, '0');
-    const { id, created_date, updated_date, created_by, publicLinkCode, tokenPublico, sentDate, acceptedDate, rejectedDate, rejectedReason, counterProposalDetails, _entityType, ...dataToCopy } = proposta;
+    const { id, created_date, updated_date, created_by, publicLinkCode, publicSlug, tokenPublico, sentDate, acceptedDate, rejectedDate, rejectedReason, counterProposalDetails, _entityType, ...dataToCopy } = proposta;
     const newVersion = (proposta.version || 1) + 1;
     const rootId = proposta.rootProposalId || proposta.id;
 
