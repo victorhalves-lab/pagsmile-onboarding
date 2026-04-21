@@ -22,7 +22,23 @@ export const AuthProvider = ({ children }) => {
     try {
       setIsLoadingPublicSettings(true);
       setAuthError(null);
-      
+
+      // ⚡ SHORT-CIRCUIT for public routes:
+      // On public paths (like /ComplianceDocOnly), we MUST NOT:
+      //   1. Call base44.auth.me() → triggers 401 on /entities/User/me
+      //   2. Call getMyPermissions → triggers 401 on /getMyPermissions
+      //   3. Attempt any token-based API call that throws a SDK TypeError
+      // These errors break the page even though the route is public.
+      // An anonymous client with the link should NEVER hit any authenticated endpoint.
+      const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
+      if (isPublicPath(pathname)) {
+        setIsLoadingPublicSettings(false);
+        setIsLoadingAuth(false);
+        setIsAuthenticated(false);
+        setUser(null);
+        return;
+      }
+
       // First, check app public settings (with token if available)
       // This will tell us if auth is required, user not registered, etc.
       const appClient = createAxiosClient({

@@ -43,12 +43,42 @@ export function clearPermissionsCache() {
   try { sessionStorage.removeItem(CACHE_KEY); } catch {}
 }
 
-export function PermissionsProvider({ children }) {
-  // Em rotas públicas, não tem user autenticado → não fazer fetch (evita 401 e polução de logs).
-  const isPublic = typeof window !== 'undefined' && isPublicPath(window.location.pathname);
+// ⚡ Value estático para rotas públicas — NÃO usa hooks, NÃO faz fetch, NÃO toca cache.
+const PUBLIC_PERMISSIONS_VALUE = {
+  isAdmin: false,
+  profile: null,
+  user: null,
+  pagePermissions: [],
+  canAccessPage: () => false,
+  canViewTab: () => false,
+  canEditTab: () => false,
+  canViewSubTab: () => false,
+  canEditSubTab: () => false,
+  can: () => false,
+  refresh: async () => {},
+  loading: false,
+  error: null,
+  hasData: false
+};
 
-  const [data, setData] = useState(() => (isPublic ? null : loadCache()));
-  const [loading, setLoading] = useState(isPublic ? false : !data);
+// Wrapper: decide qual provider renderizar. Evita chamar hooks do componente autenticado
+// quando estamos em rota pública (senão quebra as rules-of-hooks).
+export function PermissionsProvider({ children }) {
+  const isPublic = typeof window !== 'undefined' && isPublicPath(window.location.pathname);
+  if (isPublic) {
+    return (
+      <PermissionsContext.Provider value={PUBLIC_PERMISSIONS_VALUE}>
+        {children}
+      </PermissionsContext.Provider>
+    );
+  }
+  return <AuthenticatedPermissionsProvider>{children}</AuthenticatedPermissionsProvider>;
+}
+
+// Componente interno: só é montado em rotas autenticadas. Todos os hooks vivem aqui.
+function AuthenticatedPermissionsProvider({ children }) {
+  const [data, setData] = useState(() => loadCache());
+  const [loading, setLoading] = useState(!data);
   const [error, setError] = useState(null);
 
   const fetchPermissions = useCallback(async () => {
@@ -71,8 +101,6 @@ export function PermissionsProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    // Skip em rotas públicas — não tem user pra autorizar.
-    if (isPublic) return;
     // Se já temos cache fresco, não refetch
     if (!data) fetchPermissions();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
