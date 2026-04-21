@@ -477,8 +477,17 @@ Deno.serve(async (req) => {
       const v4Score = freshCase?.riskScoreV4;
 
       // Load ComplianceScore for metadata (SENTINEL is read-only — no decision power)
+      // v11 FIX: Sort ASC and pick the ORIGINAL score (which has V4 fields populated by BDC).
+      // Delete orphans to prevent UI confusion.
       const scores = await base44.asServiceRole.entities.ComplianceScore.filter({ onboarding_case_id: caseId });
+      scores.sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
       const latestScore = scores[0];
+      if (scores.length > 1) {
+        console.warn(`[AutoEnrich] Step 4: Found ${scores.length} ComplianceScore records for case ${caseId} — cleaning orphans`);
+        for (let i = 1; i < scores.length; i++) {
+          try { await base44.asServiceRole.entities.ComplianceScore.delete(scores[i].id); } catch {}
+        }
+      }
 
       if (subfaixa && v4Score != null) {
         // ═══ MAPS BY SUBFAIXA ═══

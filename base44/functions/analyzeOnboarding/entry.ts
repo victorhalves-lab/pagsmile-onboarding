@@ -645,12 +645,28 @@ Deno.serve(async (req) => {
       data_analise_fase_3: hasExternalData ? now : null,
     };
 
-    if (existingScore) {
-      await base44.asServiceRole.entities.ComplianceScore.update(existingScore.id, sentinelData);
-      console.log(`[SENTINEL v7.0] Score updated: ${existingScore.id}`);
+    // v7.1 FIX: Re-read ComplianceScore right before write to avoid race condition
+    // with bdcEnrichCase creating it concurrently. Also dedupe orphan scores.
+    const freshScores = await base44.asServiceRole.entities.ComplianceScore.filter({ onboarding_case_id: caseId });
+    // Sort by created_date ASC — oldest first (most likely has V4 fields populated by BDC)
+    freshScores.sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
+    const primaryScore = freshScores[0];
+
+    if (primaryScore) {
+      await base44.asServiceRole.entities.ComplianceScore.update(primaryScore.id, sentinelData);
+      console.log(`[SENTINEL v7.0] Score updated: ${primaryScore.id} (freshRead, ${freshScores.length} total)`);
+      // Delete orphan duplicates created by race
+      if (freshScores.length > 1) {
+        for (let i = 1; i < freshScores.length; i++) {
+          try {
+            await base44.asServiceRole.entities.ComplianceScore.delete(freshScores[i].id);
+            console.warn(`[SENTINEL v7.0] Deleted orphan ComplianceScore: ${freshScores[i].id}`);
+          } catch (delErr) { console.warn(`[SENTINEL v7.0] Failed to delete orphan: ${delErr.message}`); }
+        }
+      }
     } else {
       await base44.asServiceRole.entities.ComplianceScore.create(sentinelData);
-      console.log(`[SENTINEL v7.0] Score created`);
+      console.log(`[SENTINEL v7.0] Score created (no existing)`);
     }
 
     await base44.asServiceRole.entities.OnboardingCase.update(caseId, {
