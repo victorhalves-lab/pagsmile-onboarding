@@ -127,9 +127,22 @@ export default function CaseDocumentsTab({ documents, caseId, merchantName, inte
                 }>
                   {doc.validationStatus || 'Pendente'}
                 </Badge>
-                {doc.fileUrl && (
-                  <Button variant="outline" size="sm" asChild>
-                    <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer"><Eye className="w-4 h-4 mr-1" /> Ver</a>
+                {(doc.fileUrl || doc.fileUri) && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={async () => {
+                      // FIX LGPD (2026-04-21): docs privados → signed URL on-click
+                      const url = await resolveDocUrl(doc);
+                      if (!url) {
+                        toast.error('Não foi possível gerar o link do documento.');
+                        return;
+                      }
+                      window.open(url, '_blank', 'noopener,noreferrer');
+                    }}
+                  >
+                    {doc.isPrivate ? <Lock className="w-4 h-4 mr-1" /> : <Eye className="w-4 h-4 mr-1" />}
+                    Ver
                   </Button>
                 )}
               </div>
