@@ -84,7 +84,7 @@ Deno.serve(async (req) => {
           iaDecision: null, iaExplanation: null, redFlags: [], bloqueiosAtivos: [],
           rollingReservePercent: 0, monitoramentoNivel: null, condicoesAutomaticas: [],
           bigDataCorpCompleted: false, cafCompleted: false, validationsCompleted: false,
-          finalDecisionDate: null, status: 'Pendente',
+          finalDecisionDate: null, status: 'Em Processamento',
         });
         resetCount++;
       }

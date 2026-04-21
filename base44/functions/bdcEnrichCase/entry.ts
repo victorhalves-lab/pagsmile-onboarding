@@ -1125,34 +1125,6 @@ Deno.serve(async (req) => {
           bloqueiosAtivos: analysis.blocks.map(b => `${b.code}_${b.label}`),
         });
 
-        // If all batches succeeded, mark queue as success (or CREATE if missing — v11 2026-04-21)
-        // This is needed so autoEnrichOnboarding v11 can detect that BDC completed successfully
-        // and skip re-execution on subsequent runs.
-        const allSuccess = Object.values(batchStatuses).every(s => s.success);
-        if (allSuccess) {
-          const existingQueue = await base44.asServiceRole.entities.BdcRetryQueue.filter({ onboarding_case_id: onboardingCaseId });
-          const successData = {
-            onboarding_case_id: onboardingCaseId,
-            merchant_id: merchant?.id || '',
-            document: cleanDoc,
-            document_type: isPF ? 'cpf' : 'cnpj',
-            template_model: templateModel || '',
-            dataset_group: groupKey,
-            batches_pending: [],
-            batches_success: Object.keys(batchStatuses),
-            attempt_count: 1,
-            first_attempt_at: new Date().toISOString(),
-            last_success_at: new Date().toISOString(),
-            status: 'success',
-          };
-          if (existingQueue.length > 0) {
-            await base44.asServiceRole.entities.BdcRetryQueue.update(existingQueue[0].id, {
-              status: 'success', last_success_at: new Date().toISOString(),
-            });
-          } else {
-            await base44.asServiceRole.entities.BdcRetryQueue.create(successData);
-          }
-        }
       } catch (e) { console.warn('Error saving results:', e.message); }
 
       try {
