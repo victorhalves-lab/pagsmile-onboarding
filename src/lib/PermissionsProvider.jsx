@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
+import { isPublicPath } from '@/lib/publicRoutes';
 
 // ══════════════════════════════════════════════════════════════════
 // PermissionsProvider — fonte de permissões no frontend
@@ -43,8 +44,11 @@ export function clearPermissionsCache() {
 }
 
 export function PermissionsProvider({ children }) {
-  const [data, setData] = useState(() => loadCache());
-  const [loading, setLoading] = useState(!data);
+  // Em rotas públicas, não tem user autenticado → não fazer fetch (evita 401 e polução de logs).
+  const isPublic = typeof window !== 'undefined' && isPublicPath(window.location.pathname);
+
+  const [data, setData] = useState(() => (isPublic ? null : loadCache()));
+  const [loading, setLoading] = useState(isPublic ? false : !data);
   const [error, setError] = useState(null);
 
   const fetchPermissions = useCallback(async () => {
@@ -67,6 +71,8 @@ export function PermissionsProvider({ children }) {
   }, []);
 
   useEffect(() => {
+    // Skip em rotas públicas — não tem user pra autorizar.
+    if (isPublic) return;
     // Se já temos cache fresco, não refetch
     if (!data) fetchPermissions();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
