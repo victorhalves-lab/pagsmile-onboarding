@@ -4,8 +4,8 @@ Deno.serve(async (req) => {
   const base44 = createClientFromRequest(req);
 
   const user = await base44.auth.me();
-  if (!user) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!user || user.role !== 'admin') {
+    return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
   }
 
   const { onboardingCaseId } = await req.json();
@@ -35,7 +35,7 @@ Deno.serve(async (req) => {
       if (doc.fileUrl.startsWith('b44s://') || doc.fileUrl.includes('/private/')) {
         const { signed_url } = await base44.asServiceRole.integrations.Core.CreateFileSignedUrl({
           file_uri: doc.fileUrl,
-          expires_in: 300
+          expires_in: 120
         });
         downloadUrl = signed_url;
       }

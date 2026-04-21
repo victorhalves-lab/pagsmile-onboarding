@@ -287,9 +287,7 @@ function PartnerDocumentsList({ documents, assignmentId }) {
     try {
       const res = await base44.functions.invoke('partnerDownloadDocument', {
         assignmentId,
-        documentId: doc.id,
-        documentName: doc.fileName || doc.label,
-        documentUrl: doc.fileUrl || doc.file_url || doc.url
+        documentId: doc.id
       });
       if (res.data?.url) {
         window.open(res.data.url, '_blank');

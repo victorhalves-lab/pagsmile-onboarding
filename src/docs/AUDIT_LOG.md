@@ -8,7 +8,7 @@
 
 **Última atualização:** 2026-04-21
 **Fase ativa:** 5 (Compliance V4)
-**Próximo micro-passo:** 5.2 — LGPD remaining (auditar downloadCaseDocuments, getCaseDocumentUrls, partnerDownloadDocument, exportCadastroReport, generateCadastroPdf)
+**Próximo micro-passo:** 5.3 — Definir próximo item da checklist de Compliance V4 (sugestões: revisar RLS de DocumentUpload/IntegrationLog, validar fileUri vs fileUrl, ou avançar para Fase 6)
 
 ---
 
@@ -109,6 +109,14 @@ _nenhuma no momento_
   - Órfãos deletados: 15 `ExternalValidationResult` + 258 `IntegrationLog` + 1 `DocumentUpload` = **274 órfãos totais**
   - Estado final: ZERO órfãos em todas as 4 entidades (verificado em run de confirmação)
   - Rate-limit safe: batch de 3 paralelos + sleep 250ms
+
+- ✅ **5.2** — LGPD audit: proteção de download de documentos KYC [CONCLUÍDO 2026-04-21]
+  - 🔴 `downloadCaseDocuments`: auth-only → **admin-only** (era CRÍTICO: qualquer user baixava ZIP de KYC de qualquer caso)
+  - 🔴 `getCaseDocumentUrls`: auth-only → **admin-only** + signed URL TTL reduzido 300s → 120s (era CRÍTICO)
+  - 🔴 `generateCadastroPdf`: auth-only → **admin-only** (era CRÍTICO: user podia gerar dossiê completo de qualquer merchant)
+  - 🟠 `partnerDownloadDocument`: corrigido para **buscar documento server-side pelo documentId** (antes confiava em `documentUrl` do cliente — forjável). Agora valida que documento pertence ao assignment + gera signed URL fresh (120s TTL).
+  - ✅ `exportCadastroReport`: já tinha admin-check (OK)
+  - Frontend atualizado: `ComplianceParceiroDetalhe.jsx` não envia mais `documentUrl` ao backend
 - ⏳ **5.2** — LGPD remaining: auditar `downloadCaseDocuments`, `getCaseDocumentUrls`, `partnerDownloadDocument`, `exportCadastroReport`, `generateCadastroPdf` para não vazar URLs públicas de KYC
 - ⏳ **5.3** — Race conditions:
   - `autoEnrichOnboarding` → lock por case_id (flag `_lockedAt` no DB)
@@ -218,5 +226,6 @@ Pages: `DashboardCEO`, `DashboardComercial`, `AdminDashboard`, `DadosInsights`, 
 ### Sessão 2026-04-21 (atual)
 - ✅ Criação do log persistente `docs/AUDIT_LOG.md`
 - ✅ **Passo 5.1** — Purga de órfãos em 4 entidades + automation diária criada
+- ✅ **Passo 5.2** — LGPD hardening: 3 funções críticas agora admin-only + partnerDownloadDocument não confia mais em URL do cliente
 
 _(todos os passos futuros serão registrados aqui)_
