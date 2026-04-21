@@ -149,7 +149,30 @@ export default function PropostaDetalhes() {
 
     const created = await base44.entities.Proposal.create(newProposta);
     await base44.entities.Proposal.update(proposta.id, { isCurrentVersion: false });
+
+    // Audit trail: record who created the new version
+    let performedBy = 'admin';
+    try { const user = await base44.auth.me(); performedBy = user?.email || 'admin'; } catch {}
+    const now = new Date().toISOString();
+    try {
+      await base44.entities.AuditLog.create({
+        entityName: 'Proposal', entityId: created.id, actionType: 'CREATE',
+        actionDescription: `Nova versão V${newVersion} da proposta ${proposta.codigo} criada por ${performedBy}`,
+        changedBy: performedBy, changeDate: now,
+        details: { previousProposalId: proposta.id, rootProposalId: rootId, version: newVersion },
+      });
+      if (resolvedLeadId) {
+        await base44.entities.LeadActivity.create({
+          leadId: resolvedLeadId, activityType: 'proposta_criada',
+          description: `Nova versão V${newVersion} criada (${created.codigo}) a partir de ${proposta.codigo}`,
+          performedBy, activityDate: now,
+          details: { proposalId: created.id, previousProposalId: proposta.id, version: newVersion },
+        });
+      }
+    } catch (e) { console.warn('Falha ao registrar auditoria de nova versão:', e); }
+
     queryClient.invalidateQueries({ queryKey: ['propostas'] });
+    queryClient.invalidateQueries({ queryKey: ['lead-activities', resolvedLeadId] });
     toast.success(`Nova versão V${newVersion} criada!`);
     navigate(createPageUrl('CriarProposta') + `?edit=${created.id}`);
   };
