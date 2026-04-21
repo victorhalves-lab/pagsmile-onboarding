@@ -49,6 +49,22 @@ Deno.serve(async (req) => {
       }
     }
 
+    // FIX LGPD (2026-04-21): Se o documento é privado (UploadPrivateFile), precisa gerar
+    // signed URL temporária para o CAF conseguir baixar. Senão CAF recebe 401/403 no fetch.
+    if (docUpload?.isPrivate && (docUpload.fileUri || docUpload.fileUrl)) {
+      try {
+        const { signed_url } = await base44.asServiceRole.integrations.Core.CreateFileSignedUrl({
+          file_uri: docUpload.fileUri || docUpload.fileUrl,
+          expires_in: 900, // 15min — mais que suficiente para CAF fazer fetch
+        });
+        fileUrl = signed_url;
+        console.log('[VerifAI] Using signed URL for private document');
+      } catch (signErr) {
+        console.warn('[VerifAI] Failed to generate signed URL:', signErr.message);
+        return Response.json({ error: 'Failed to generate signed URL for private document' }, { status: 500 });
+      }
+    }
+
     if (docUpload?.documentTypeId?.startsWith('caf_')) {
       console.log('[VerifAI] Skipping CAF-captured document:', docUpload.documentTypeId);
       return Response.json({ skipped: true, reason: 'caf_captured_document' });

@@ -815,6 +815,8 @@ export default function DynamicQuestionnaire({
     }
 
     // Build responses array for backend
+    // Note: Redact any accidental file/URL values from questionnaire responses — uploads
+    // are separately handled via DocumentUpload entity.
     const responsesToCreate = [];
     questions.forEach(q => {
       const val = finalFormData[q.id];

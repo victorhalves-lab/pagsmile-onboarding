@@ -859,11 +859,26 @@ Deno.serve(async (req) => {
     }
     // Last resort: if caller provides a valid onboardingCaseId, allow it (pipeline chain).
     // This prevents the "chained function call 403" bug where asServiceRole loses context.
+    //
+    // FIX SECURITY (2026-04-21): Apenas aceita se o caso foi criado nos últimos 24h E
+    // ainda não teve BDC rodado (bigDataCorpCompleted=false). Isso impede ataque onde
+    // um atacante descobre um caseId antigo e tenta queimar créditos BDC em re-run.
     const { onboardingCaseId, document, documentType, forceGroup, retryBatchesOnly } = await req.json();
     if (!isAuthorized && onboardingCaseId) {
       try {
         const cases = await base44.asServiceRole.entities.OnboardingCase.filter({ id: onboardingCaseId });
-        if (cases[0]) isAuthorized = true;
+        const caseRec = cases[0];
+        if (caseRec) {
+          const caseAgeHours = (Date.now() - new Date(caseRec.created_date).getTime()) / 3600000;
+          const isRecent = caseAgeHours < 24;
+          const bdcNotRun = !caseRec.bigDataCorpCompleted;
+          const inProcessing = caseRec.status === 'Pendente' || caseRec.status === 'Em Processamento';
+          if (isRecent && bdcNotRun && inProcessing) {
+            isAuthorized = true;
+          } else {
+            console.warn(`[BDC] Rejecting anonymous request for case ${onboardingCaseId} — age=${caseAgeHours.toFixed(1)}h bdcDone=${caseRec.bigDataCorpCompleted} status=${caseRec.status}`);
+          }
+        }
       } catch { /* */ }
     }
     if (!isAuthorized) return Response.json({ error: 'Forbidden' }, { status: 403 });

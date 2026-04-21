@@ -471,8 +471,22 @@ Deno.serve(async (req) => {
     console.log(`[SENTINEL v7.0] Iniciando análise: ${caseId}`);
 
     // ═══ LOAD ALL DATA ═══
+    // FIX CRITICAL (2026-04-21): verify case exists BEFORE running expensive LLM calls.
+    // Previously, if the case was deleted after pipeline start, we'd waste 4 LLM calls
+    // (~$$$) and only fail at the final update step.
     const [onboardingCase] = await base44.asServiceRole.entities.OnboardingCase.filter({ id: caseId });
-    if (!onboardingCase) return Response.json({ error: "Caso não encontrado" }, { status: 404 });
+    if (!onboardingCase) {
+      console.warn(`[SENTINEL v7.0] Case ${caseId} not found — aborting before LLM calls`);
+      // Clean up any orphan ComplianceScore pointing to this deleted case
+      try {
+        const orphanScores = await base44.asServiceRole.entities.ComplianceScore.filter({ onboarding_case_id: caseId });
+        for (const score of orphanScores) {
+          await base44.asServiceRole.entities.ComplianceScore.delete(score.id);
+          console.log(`[SENTINEL v7.0] Deleted orphan ComplianceScore: ${score.id}`);
+        }
+      } catch (cleanupErr) { console.warn(`[SENTINEL v7.0] Orphan cleanup failed: ${cleanupErr.message}`); }
+      return Response.json({ error: "Caso não encontrado", cleaned: true }, { status: 404 });
+    }
 
     const existingScores = await base44.asServiceRole.entities.ComplianceScore.filter({ onboarding_case_id: caseId });
     const existingScore = existingScores[0];
@@ -616,7 +630,29 @@ Deno.serve(async (req) => {
       console.warn(`[SENTINEL v7.0] SAFETY CAP: LLM returned "Recusado", capped to "Revisão Manual" (informative only).`);
     }
 
+    // FIX CRITICAL (2026-04-21): preserve V4 fields from BDC so SENTINEL update doesn't
+    // leave them null. sentinelData is merged with V4 fields from existingScore (if any)
+    // so score_final, subfaixa, etc. are always persisted when BDC ran before SENTINEL.
+    const v4FieldsToPreserve = existingScore ? {
+      score_final: existingScore.score_final,
+      subfaixa: existingScore.subfaixa,
+      subfaixa_nome: existingScore.subfaixa_nome,
+      score_base_segmento: existingScore.score_base_segmento,
+      score_variaveis: existingScore.score_variaveis,
+      score_enriquecimento: existingScore.score_enriquecimento,
+      segmento: existingScore.segmento,
+      variaveis_aplicadas: existingScore.variaveis_aplicadas,
+      bloqueios_ativos: existingScore.bloqueios_ativos,
+      rolling_reserve_percent: existingScore.rolling_reserve_percent,
+      monitoramento_nivel: existingScore.monitoramento_nivel,
+      condicoes_automaticas: existingScore.condicoes_automaticas,
+      recomendacao_final: existingScore.recomendacao_final,
+      decisao_automatica: existingScore.decisao_automatica,
+      framework_version: existingScore.framework_version || 'v4.0',
+    } : {};
+
     const sentinelData = {
+      ...v4FieldsToPreserve,
       onboarding_case_id: caseId,
       versao_agente: "SENTINEL v7.0 (RELATOR)",
       sentinel_recommendation: cappedRecommendation,
@@ -669,9 +705,18 @@ Deno.serve(async (req) => {
       console.log(`[SENTINEL v7.0] Score created (no existing)`);
     }
 
-    await base44.asServiceRole.entities.OnboardingCase.update(caseId, {
-      iaExplanation: llmResponse.sumario_executivo,
-    });
+    // FIX (2026-04-21): guard against case deletion during pipeline execution
+    try {
+      await base44.asServiceRole.entities.OnboardingCase.update(caseId, {
+        iaExplanation: llmResponse.sumario_executivo,
+      });
+    } catch (updateErr) {
+      if (updateErr?.data?.message?.includes('not found')) {
+        console.warn(`[SENTINEL v7.0] Case ${caseId} deleted during pipeline — skipping iaExplanation update`);
+      } else {
+        throw updateErr;
+      }
+    }
 
     const duration = Date.now() - startTime;
     console.log(`[SENTINEL v7.0] Concluído em ${duration}ms`);

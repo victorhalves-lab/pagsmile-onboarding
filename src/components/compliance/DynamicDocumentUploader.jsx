@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -7,6 +7,14 @@ import {
   Shield, Lock, Loader2, Upload, File
 } from 'lucide-react';
 import { toast } from 'sonner';
+
+// Map of valid mime-types per extension — guards against renamed malicious files
+const ALLOWED_MIME_BY_EXT = {
+  PDF: ['application/pdf'],
+  JPG: ['image/jpeg', 'image/jpg'],
+  JPEG: ['image/jpeg', 'image/jpg'],
+  PNG: ['image/png'],
+};
 
 // Card individual de documento
 function DocumentCard({ doc, uploadedFile, onUpload, onRemove, isUploading }) {
@@ -17,18 +25,31 @@ function DocumentCard({ doc, uploadedFile, onUpload, onRemove, isUploading }) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validar tamanho
+    // Validar tamanho mínimo — prevents 1-byte / corrupted files
+    if (file.size < 1024) {
+      toast.error('Arquivo muito pequeno ou corrompido. Envie o documento completo.');
+      return;
+    }
+
+    // Validar tamanho máximo
     const maxSize = (doc.maxSizeMB || 10) * 1024 * 1024;
     if (file.size > maxSize) {
       toast.error(`Arquivo muito grande. Máximo: ${doc.maxSizeMB || 10}MB`);
       return;
     }
 
-    // Validar formato
+    // Validar formato por extensão
     const allowedFormats = doc.allowedFormats || ['PDF', 'JPG', 'JPEG', 'PNG'];
     const fileExt = file.name.split('.').pop().toUpperCase();
     if (!allowedFormats.includes(fileExt)) {
       toast.error(`Formato não permitido. Use: ${allowedFormats.join(', ')}`);
+      return;
+    }
+
+    // FIX (2026-04-21): Validar mime-type REAL vs extensão — impede arquivos maliciosos renomeados
+    const expectedMimes = ALLOWED_MIME_BY_EXT[fileExt] || [];
+    if (expectedMimes.length > 0 && file.type && !expectedMimes.includes(file.type)) {
+      toast.error(`Tipo de arquivo inválido: extensão .${fileExt.toLowerCase()} mas conteúdo é ${file.type}. Verifique o arquivo.`);
       return;
     }
 
@@ -168,11 +189,16 @@ export default function DynamicDocumentUploader({
   const handleUpload = async (docId, file) => {
     setUploadingDoc(docId);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      // FIX CRITICAL LGPD (2026-04-21): KYC documents (RG, CNH, contrato social, comprovante
+      // de endereço) são PII sensível e não podem ter URL pública. Uso UploadPrivateFile +
+      // CreateFileSignedUrl para gerar URL temporária apenas para o analista.
+      const { file_uri } = await base44.integrations.Core.UploadPrivateFile({ file });
       setDocuments(prev => ({
         ...prev,
         [docId]: {
-          url: file_url,
+          url: file_uri,        // private URI — requer signed URL para download
+          uri: file_uri,        // alias para retrocompatibilidade
+          isPrivate: true,      // flag para o backend gerar signed URL quando precisar ler
           name: file.name,
           size: file.size,
           type: file.type,

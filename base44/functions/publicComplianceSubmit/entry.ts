@@ -103,7 +103,45 @@ Deno.serve(async (req) => {
     }
     if (parentMerchantId) merchantPayload.parentMerchantId = parentMerchantId;
 
-    const merchant = await base44.asServiceRole.entities.Merchant.create(merchantPayload);
+    // FIX (2026-04-21): Dedup backend — evita criação de Merchants duplicados quando
+    // cliente dá duplo-submit, tem problema de rede, ou abre múltiplas abas.
+    // Reusa Merchant existente se o mesmo CNPJ/CPF foi submetido nos últimos 10min
+    // com o mesmo email (ou com leadId igual). Caso contrário, cria novo.
+    let merchant = null;
+    const cleanCpfCnpj = (merchantPayload.cpfCnpj || '').replace(/\D/g, '');
+    if (cleanCpfCnpj.length >= 11) {
+      try {
+        const recentSameDoc = await base44.asServiceRole.entities.Merchant.filter({ cpfCnpj: cleanCpfCnpj });
+        const tenMinAgo = Date.now() - 10 * 60 * 1000;
+        const existing = recentSameDoc.find(m => {
+          const isRecent = new Date(m.created_date).getTime() > tenMinAgo;
+          const sameEmail = m.email && merchantPayload.email &&
+            m.email.toLowerCase() === merchantPayload.email.toLowerCase();
+          return isRecent && (sameEmail || m.email === 'nao-informado@placeholder.com');
+        });
+        if (existing) {
+          // Check if the existing merchant already has a case for this template —
+          // if yes, return it instead of creating duplicate.
+          const existingCases = await base44.asServiceRole.entities.OnboardingCase.filter({
+            merchantId: existing.id, questionnaireTemplateId: templateId,
+          });
+          if (existingCases[0]) {
+            console.log(`[publicComplianceSubmit] Dedup hit — reusing Merchant ${existing.id} + Case ${existingCases[0].id}`);
+            return Response.json({
+              ok: true,
+              merchantId: existing.id,
+              onboardingCaseId: existingCases[0].id,
+              docLinkToken: existingCases[0].docLinkToken,
+              deduped: true,
+            });
+          }
+          merchant = existing; // reuse merchant, but create new case below
+        }
+      } catch (dedupErr) { console.warn('[publicComplianceSubmit] Dedup check failed:', dedupErr.message); }
+    }
+    if (!merchant) {
+      merchant = await base44.asServiceRole.entities.Merchant.create(merchantPayload);
+    }
 
     // Sanitize OnboardingCase (force-allowed status + priority)
     const safeCaseStatus = ALLOWED_CASE_STATUSES.has(onboardingCaseData.status)

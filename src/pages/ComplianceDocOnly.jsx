@@ -132,6 +132,8 @@ export default function ComplianceDocOnly() {
           documentTypeId: docId,
           documentName: docDef?.label || docDef?.name || docId,
           fileUrl: docData.url,
+          fileUri: docData.uri || docData.url,
+          isPrivate: docData.isPrivate === true,
           fileName: docData.name,
           fileSize: docData.size,
           fileType: docData.type,

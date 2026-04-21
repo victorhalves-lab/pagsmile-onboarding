@@ -1,11 +1,28 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { FileText, Loader2, Eye, Archive } from 'lucide-react';
+import { FileText, Loader2, Eye, Archive, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import { base44 } from '@/api/base44Client';
 import CafDocsSection from './CafDocsSection';
+
+// Resolve a readable URL: for private docs, request a short-lived signed URL from backend.
+async function resolveDocUrl(doc) {
+  if (!doc) return null;
+  if (doc.isPrivate && (doc.fileUri || doc.fileUrl)) {
+    try {
+      const res = await base44.functions.invoke('getPrivateDocumentUrl', {
+        file_uri: doc.fileUri || doc.fileUrl,
+        documentUploadId: doc.id,
+        expiresIn: 600,
+      });
+      return res.data?.signed_url || null;
+    } catch (e) { console.warn('Signed URL failed:', e?.message); return null; }
+  }
+  return doc.fileUrl || null;
+}
 
 export default function CaseDocumentsTab({ documents, caseId, merchantName, integrationLogs = [] }) {
   const [isDownloadingZip, setIsDownloadingZip] = useState(false);

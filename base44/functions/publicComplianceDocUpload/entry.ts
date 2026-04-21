@@ -87,6 +87,10 @@ Deno.serve(async (req) => {
           fileType: d.fileType || '',
           uploadDate: d.uploadDate || new Date().toISOString(),
           validationStatus: 'Pendente',
+          // FIX LGPD (2026-04-21): persiste flag isPrivate — documentos KYC são privados
+          // e precisam de signed URL para download. Ver getPrivateDocumentUrl function.
+          isPrivate: d.isPrivate === true,
+          fileUri: d.fileUri || (d.isPrivate === true ? d.fileUrl : ''),
         };
         const createdDoc = await base44.asServiceRole.entities.DocumentUpload.create(payload);
         console.log(`[publicComplianceDocUpload] CREATED idx=${i} id=${createdDoc?.id} documentTypeId=${d.documentTypeId} file=${d.fileName}`);

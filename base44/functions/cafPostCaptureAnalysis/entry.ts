@@ -93,13 +93,29 @@ Deno.serve(async (req) => {
     let back = backImageUrl;
     let selfie = selfieImageUrl;
 
+    // FIX LGPD (2026-04-21): helper para resolver URL pública ou gerar signed URL para
+    // documentos privados antes de enviar pro CAF.
+    async function resolveFileUrl(doc) {
+      if (!doc) return null;
+      if (doc.isPrivate && (doc.fileUri || doc.fileUrl)) {
+        try {
+          const { signed_url } = await base44.asServiceRole.integrations.Core.CreateFileSignedUrl({
+            file_uri: doc.fileUri || doc.fileUrl,
+            expires_in: 900,
+          });
+          return signed_url;
+        } catch (e) { console.warn('[CAF-PostCapture] Signed URL failed:', e.message); return null; }
+      }
+      return doc.fileUrl || null;
+    }
+
     if ((!front || !back || !selfie) && onboardingCaseId) {
       try {
         const docs = await base44.asServiceRole.entities.DocumentUpload.filter({ onboardingCaseId });
         for (const doc of docs) {
-          if (doc.documentTypeId === 'caf_doc_front' && !front) front = doc.fileUrl;
-          if (doc.documentTypeId === 'caf_doc_back' && !back) back = doc.fileUrl;
-          if (doc.documentTypeId === 'caf_selfie_liveness' && !selfie) selfie = doc.fileUrl;
+          if (doc.documentTypeId === 'caf_doc_front' && !front) front = await resolveFileUrl(doc);
+          if (doc.documentTypeId === 'caf_doc_back' && !back) back = await resolveFileUrl(doc);
+          if (doc.documentTypeId === 'caf_selfie_liveness' && !selfie) selfie = await resolveFileUrl(doc);
         }
       } catch (e) { console.warn('[CAF-PostCapture] Could not load documents:', e.message); }
     }
