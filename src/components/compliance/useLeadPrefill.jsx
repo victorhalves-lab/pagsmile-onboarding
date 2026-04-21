@@ -376,21 +376,30 @@ export function useLeadPrefill(complianceQuestions) {
   // Ler fontes de identificação do lead (após possível atualização acima)
   const leadIdForCompliance = typeof window !== 'undefined' ? localStorage.getItem('lead_id_for_compliance') : null;
   const linkCode = typeof window !== 'undefined' ? localStorage.getItem('onboarding_link_code') : null;
-  
+  // Proposal token saved by PropostaPublica at accept — used as proof-of-possession
+  // when the Lead came from an accepted proposal (no linkCode flow).
+  const proposalToken = typeof window !== 'undefined' ? localStorage.getItem('proposal_token_for_compliance') : null;
+
   // leadId resolvido: URL > localStorage > linkCode
   const resolvedLeadId = leadIdFromUrl || leadIdForCompliance;
 
   const { data: lead } = useQuery({
-    queryKey: ['leadForCompliance', resolvedLeadId, linkCode],
+    queryKey: ['leadForCompliance', resolvedLeadId, linkCode, proposalToken],
     queryFn: async () => {
-      // Prioridade 1: leadId explícito (URL ou salvo) — via backend function
+      // Prioridade 1: leadId explícito (URL ou salvo) — via backend function.
+      // SECURITY (BUG-007): enviamos linkCode OU proposalToken como proof-of-possession.
+      //   - linkCode: cliente veio do link de onboarding (questionário Lead)
+      //   - proposalToken: cliente veio de uma proposta aceita (PropostaPublica)
       if (resolvedLeadId) {
         const res = await base44.functions.invoke('publicReadData', {
-          kind: 'lead_for_prefill', leadId: resolvedLeadId,
+          kind: 'lead_for_prefill',
+          leadId: resolvedLeadId,
+          linkCode: linkCode || undefined,
+          proposalToken: proposalToken || undefined,
         });
         return res.data?.lead || null;
       }
-      // Prioridade 2 (fallback): linkCode — via backend function
+      // Prioridade 2 (fallback): linkCode — via backend function (self-authenticating)
       if (linkCode) {
         const res = await base44.functions.invoke('publicReadData', {
           kind: 'lead_for_prefill_by_link', linkCode,

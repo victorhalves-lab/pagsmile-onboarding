@@ -72,13 +72,16 @@ export default function PropostaPublica() {
     }
   }, [proposta?.id]);
 
-  // Helper: fetch lead (via public function) to resolve compliance model
+  // Helper: fetch lead (via public function) to resolve compliance model.
+  // SECURITY: proposalToken acts as proof-of-possession so the backend can safely
+  // return lead data without exposing it to random enumeration attacks.
   const fetchLeadForCompliance = async (leadId) => {
     if (!leadId) return null;
     try {
       const res = await base44.functions.invoke('publicReadData', {
         kind: 'lead_by_id',
         leadId,
+        proposalToken: effectiveToken,
       });
       return res.data?.lead || null;
     } catch {
@@ -129,6 +132,11 @@ export default function PropostaPublica() {
       keysToClean.forEach(key => { try { localStorage.removeItem(key); } catch {} });
       if (proposta.leadId) {
         try { localStorage.setItem('lead_id_for_compliance', proposta.leadId); } catch {}
+      }
+      // Save the proposal token so useLeadPrefill can prove possession of the lead
+      // (BUG-007 LGPD fix — lead reads now require proof-of-possession).
+      if (effectiveToken) {
+        try { localStorage.setItem('proposal_token_for_compliance', effectiveToken); } catch {}
       }
       const complianceUrl = `${window.location.origin}/ComplianceDinamico?model=${model}${proposta.leadId ? `&leadId=${proposta.leadId}` : ''}`;
 
@@ -260,6 +268,10 @@ export default function PropostaPublica() {
     keysToClean.forEach(key => localStorage.removeItem(key));
     if (proposta.leadId) {
       localStorage.setItem('lead_id_for_compliance', proposta.leadId);
+    }
+    // Save the proposal token so useLeadPrefill can prove possession (BUG-007).
+    if (effectiveToken) {
+      try { localStorage.setItem('proposal_token_for_compliance', effectiveToken); } catch {}
     }
     window.location.href = complianceUrl;
   };
