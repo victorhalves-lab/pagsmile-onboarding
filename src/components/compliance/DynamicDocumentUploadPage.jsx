@@ -203,23 +203,35 @@ export default function DynamicDocumentUploadPage({
   const loadingQuestions = loadingBundle;
 
   // Called when user finishes doc uploads and clicks "Próximo" → go to CAF step
+  // CRITICAL: a doc is satisfied if has files OR has not-available justification.
+  // Plus safety net: if template has docs but client didn't act on any, block.
   const handleProceedToCaf = () => {
-    // Validate required docs first
-    const requiredDocs = (template?.requiredDocuments || []).map((doc, index) => ({
+    const allTemplateDocs = (template?.requiredDocuments || []).map((doc, index) => ({
       ...doc,
       _docKey: doc.documentTypeId || doc.id || `doc_${index}_${(doc.label || '').replace(/\s+/g, '_').toLowerCase().slice(0, 30)}`
     }));
-    const mandatoryDocs = requiredDocs.filter(d => d.required);
-    const missingDocs = mandatoryDocs.filter(d => !documents[d._docKey]?.url);
+    const isSatisfied = (d) => {
+      const e = documents[d._docKey];
+      if (!e) return false;
+      const hasFiles = Array.isArray(e.files) ? e.files.length > 0 : !!e.url;
+      return hasFiles || (e.notAvailable && e.notAvailableReason);
+    };
+    const mandatoryDocs = allTemplateDocs.filter(d => d.required);
+    const missingDocs = mandatoryDocs.filter(d => !isSatisfied(d));
     if (missingDocs.length > 0) {
       toast.error(`Envie todos os documentos obrigatórios. Faltam ${missingDocs.length}: ${missingDocs.map(d => d.label || d.name).join(', ')}`);
       return;
     }
-    // Go to CAF verification
+    // Safety net: template has required docs, but nothing was acted on → block.
+    if (allTemplateDocs.length > 0 && Object.keys(documents).length === 0) {
+      toast.error('Você precisa enviar os documentos ou justificar a indisponibilidade antes de prosseguir.');
+      return;
+    }
+    // Save docs progress immediately on transition
+    saveProgressNow({ currentPhase: 'caf', documentsData: documents });
     if (!skipCaf) {
       setCurrentStep('caf_verification');
     } else {
-      // Skip CAF, submit directly
       handleFinalSubmit();
     }
   };
@@ -321,17 +333,34 @@ export default function DynamicDocumentUploadPage({
         ...doc,
         _docKey: doc.documentTypeId || doc.id || `doc_${index}_${(doc.label || '').replace(/\s+/g, '_').toLowerCase().slice(0, 30)}`
       }));
-      const docsPayload = Object.entries(documents).map(([docId, docData]) => {
+      // Flatten multi-file docs + handle not-available entries
+      const docsPayload = Object.entries(documents).flatMap(([docId, docData]) => {
         const docDef = allTemplateDocs.find(d => d._docKey === docId);
-        return {
-          documentTypeId: docId,
-          documentName: docDef?.label || docDef?.name || docId,
-          fileUrl: docData.url,
-          fileName: docData.name,
-          fileSize: docData.size,
-          fileType: docData.type,
-          uploadDate: docData.uploadedAt,
-        };
+        const docName = docDef?.label || docDef?.name || docId;
+        if (docData.notAvailable && docData.notAvailableReason) {
+          return [{
+            documentTypeId: docId,
+            documentName: docName,
+            fileUrl: '',
+            notAvailable: true,
+            notAvailableReason: docData.notAvailableReason,
+            uploadDate: docData.uploadedAt,
+          }];
+        }
+        const files = Array.isArray(docData.files) && docData.files.length > 0
+          ? docData.files
+          : (docData.url ? [{ url: docData.url, uri: docData.uri, isPrivate: docData.isPrivate, name: docData.name, size: docData.size, type: docData.type, uploadedAt: docData.uploadedAt }] : []);
+        return files.map((f, idx) => ({
+          documentTypeId: files.length > 1 ? `${docId}__part${idx + 1}` : docId,
+          documentName: files.length > 1 ? `${docName} (parte ${idx + 1}/${files.length})` : docName,
+          fileUrl: f.url,
+          fileUri: f.uri || f.url,
+          isPrivate: f.isPrivate === true,
+          fileName: f.name,
+          fileSize: f.size,
+          fileType: f.type,
+          uploadDate: f.uploadedAt,
+        }));
       });
       if (docsPayload.length > 0) {
         const uploadRes = await base44.functions.invoke('publicComplianceDocUpload', {
@@ -340,20 +369,19 @@ export default function DynamicDocumentUploadPage({
           documents: docsPayload,
         });
         const uploadData = uploadRes?.data || {};
-        // CRITICAL: server returns { ok, createdCount, requestedCount, failed: [...] }.
-        // If not ALL documents were saved, ABORT and do NOT mark docCompleted=true.
-        if (!uploadData.ok || uploadData.createdCount !== docsPayload.length) {
+        // Fail only on hard failures (failedCount>0). Skipped entries are OK (usually dedupe).
+        if (!uploadData.ok && (uploadData.failedCount || 0) > 0) {
           const failedList = Array.isArray(uploadData.failed) && uploadData.failed.length > 0
             ? uploadData.failed.map(f => `${f.documentName || f.documentTypeId}: ${f.error}`).join('; ')
             : (uploadData.error || 'erro desconhecido');
-          console.error('[DynamicDocumentUploadPage] Upload incomplete', uploadData);
+          console.error('[DynamicDocumentUploadPage] Upload failed', uploadData);
           toast.error(
             `Falha ao salvar documentos (${uploadData.createdCount || 0}/${docsPayload.length}). ` +
             `Detalhes: ${failedList}. Tente novamente ou contate o suporte.`,
             { duration: 10000 }
           );
           setIsSubmitting(false);
-          return; // ABORT — do not mark docCompleted
+          return;
         }
       }
 

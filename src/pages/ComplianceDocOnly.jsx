@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -41,7 +41,7 @@ export default function ComplianceDocOnly() {
 
   // ── Session token for server-side progress persistence ──
   // Enables the client to resume from where they stopped if they close the browser.
-  const sessionToken = React.useMemo(() => {
+  const sessionToken = useMemo(() => {
     if (!caseId) return '';
     const key = `compliance_session_token_doc_only_${caseId}`;
     let t = localStorage.getItem(key);
@@ -144,19 +144,33 @@ export default function ComplianceDocOnly() {
   };
 
   // ── Proceed to CAF step (or submit directly in docs_only mode) ──
+  // CRITICAL: A doc is "satisfied" if it has files OR has a not-available justification.
+  // Also enforce that ALL docs must have an explicit action (prevents empty-state bypass
+  // for templates where requiredDocuments are not marked `required: true` individually).
   const handleProceedToCaf = () => {
-    const requiredDocs = (template?.requiredDocuments || []).map((doc, index) => ({
+    const allTemplateDocs = (template?.requiredDocuments || []).map((doc, index) => ({
       ...doc,
       _docKey: doc.documentTypeId || doc.id || `doc_${index}_${(doc.label || '').replace(/\s+/g, '_').toLowerCase().slice(0, 30)}`,
     }));
-    const mandatoryDocs = requiredDocs.filter(d => d.required);
-    const missingDocs = mandatoryDocs.filter(d => !documents[d._docKey]?.url);
-    if (missingDocs.length > 0) {
-      toast.error(`Faltam ${missingDocs.length} documentos obrigatórios: ${missingDocs.map(d => d.label || d.name).join(', ')}`);
+    const isSatisfied = (d) => {
+      const e = documents[d._docKey];
+      if (!e) return false;
+      const hasFiles = Array.isArray(e.files) ? e.files.length > 0 : !!e.url;
+      return hasFiles || (e.notAvailable && e.notAvailableReason);
+    };
+    // Explicitly required docs
+    const mandatoryDocs = allTemplateDocs.filter(d => d.required);
+    const missingMandatory = mandatoryDocs.filter(d => !isSatisfied(d));
+    if (missingMandatory.length > 0) {
+      toast.error(`Faltam ${missingMandatory.length} documentos obrigatórios: ${missingMandatory.map(d => d.label || d.name).join(', ')}`);
       return;
     }
-    // In docs_only mode, skip CAF identity SDK and submit directly.
-    // Uploaded docs will still be analyzed by CAF VerifAI (server-side, automatic).
+    // SAFETY NET: if template has any required docs configured but NOTHING was acted on,
+    // block the advance. Prevents the BCK bug (empty documents {} → passed to CAF).
+    if (allTemplateDocs.length > 0 && Object.keys(documents).length === 0) {
+      toast.error('Você precisa enviar os documentos ou justificar a indisponibilidade antes de prosseguir.');
+      return;
+    }
     if (skipCafIdentity) {
       handleFinalSubmit(null);
       return;
@@ -179,39 +193,57 @@ export default function ComplianceDocOnly() {
         ...doc,
         _docKey: doc.documentTypeId || doc.id || `doc_${index}_${(doc.label || '').replace(/\s+/g, '_').toLowerCase().slice(0, 30)}`,
       }));
-      const docsPayload = isCafOnly ? [] : Object.entries(documents).map(([docId, docData]) => {
+      // ── Build payload: one entry per uploaded FILE (multi-file support) ──
+      // A single document slot may have multiple files (e.g. 3 PDFs of balanço).
+      // We flatten so the backend persists each as a separate DocumentUpload row.
+      const docsPayload = isCafOnly ? [] : Object.entries(documents).flatMap(([docId, docData]) => {
         const docDef = allTemplateDocs.find(d => d._docKey === docId);
-        return {
-          documentTypeId: docId,
-          documentName: docDef?.label || docDef?.name || docId,
-          fileUrl: docData.url,
-          fileUri: docData.uri || docData.url,
-          isPrivate: docData.isPrivate === true,
-          fileName: docData.name,
-          fileSize: docData.size,
-          fileType: docData.type,
-          uploadDate: docData.uploadedAt,
-        };
+        const docName = docDef?.label || docDef?.name || docId;
+        // Not-available: single entry with the justification
+        if (docData.notAvailable && docData.notAvailableReason) {
+          return [{
+            documentTypeId: docId,
+            documentName: docName,
+            fileUrl: '',
+            notAvailable: true,
+            notAvailableReason: docData.notAvailableReason,
+            uploadDate: docData.uploadedAt,
+          }];
+        }
+        // Multi-file shape
+        const files = Array.isArray(docData.files) && docData.files.length > 0
+          ? docData.files
+          : (docData.url ? [{ url: docData.url, uri: docData.uri, isPrivate: docData.isPrivate, name: docData.name, size: docData.size, type: docData.type, uploadedAt: docData.uploadedAt }] : []);
+        return files.map((f, idx) => ({
+          documentTypeId: files.length > 1 ? `${docId}__part${idx + 1}` : docId,
+          documentName: files.length > 1 ? `${docName} (parte ${idx + 1}/${files.length})` : docName,
+          fileUrl: f.url,
+          fileUri: f.uri || f.url,
+          isPrivate: f.isPrivate === true,
+          fileName: f.name,
+          fileSize: f.size,
+          fileType: f.type,
+          uploadDate: f.uploadedAt,
+        }));
       });
       if (docsPayload.length > 0) {
         const uploadRes = await base44.functions.invoke('publicComplianceDocUpload', {
           caseId, docLinkToken: token, documents: docsPayload,
         });
         const uploadData = uploadRes?.data || {};
-        // CRITICAL: server returns { ok, createdCount, requestedCount, failed: [...] }.
-        // If not ALL documents were saved, ABORT and do NOT mark docCompleted=true.
-        if (!uploadData.ok || uploadData.createdCount !== docsPayload.length) {
+        // Accept partial-success only if failedCount=0 (skipped is OK — usually duplicates).
+        if (!uploadData.ok && (uploadData.failedCount || 0) > 0) {
           const failedList = Array.isArray(uploadData.failed) && uploadData.failed.length > 0
             ? uploadData.failed.map(f => `${f.documentName || f.documentTypeId}: ${f.error}`).join('; ')
             : 'erro desconhecido';
-          console.error('[ComplianceDocOnly] Upload incomplete', uploadData);
+          console.error('[ComplianceDocOnly] Upload failed', uploadData);
           toast.error(
             `Falha ao salvar documentos (${uploadData.createdCount || 0}/${docsPayload.length}). ` +
             `Detalhes: ${failedList}. Tente novamente ou contate o suporte.`,
             { duration: 10000 }
           );
           setIsSubmitting(false);
-          return; // ABORT — do not mark docCompleted
+          return;
         }
       }
 
