@@ -18,6 +18,7 @@ import CaseHistoryTab from '../components/case-analysis/CaseHistoryTab';
 import CaseReviewTab from '../components/case-analysis/CaseReviewTab';
 import CaseReviewDialogs from '../components/case-analysis/CaseReviewDialogs';
 import CaseSubsellersTab from '../components/case-analysis/CaseSubsellersTab';
+import CaseDocumentJustifications from '../components/case-analysis/CaseDocumentJustifications';
 import BDCEnrichmentPanel from '../components/bdc-enrichment/BDCEnrichmentPanel';
 import BDCRawDataTab from '../components/bdc-enrichment/BDCRawDataTab';
 import UnifiedRiskAnalysis from '../components/case-analysis/UnifiedRiskAnalysis';
@@ -208,7 +209,8 @@ export default function AnaliseDeCasos() {
           )}
         </TabsContent>
 
-        <TabsContent value="documents">
+        <TabsContent value="documents" className="space-y-4">
+          <CaseDocumentJustifications caseId={caseId} />
           <CaseDocumentsTab documents={documents} caseId={caseId} merchantName={merchant?.fullName} integrationLogs={integrationLogs} />
         </TabsContent>
 
