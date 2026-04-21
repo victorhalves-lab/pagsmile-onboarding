@@ -18,19 +18,12 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
  * Auth: No Base44 auth (chamado externamente pela CAF). HMAC valida autenticidade.
  */
 
-const CAF_CORE_API_BASE = 'https://api.combateafraude.com';
 const CAF_CONNECT_API_BASE = 'https://api.us.prd.caf.io';
 
 // Official CAF webhook IPs (docs.caf.io/caf-api/connect/webhook/best-practices)
 const CAF_KNOWN_IPS = new Set([
   '34.234.120.59', '18.229.212.133', '3.218.90.124', '44.219.96.170', '18.235.54.162',
 ]);
-
-function getCoreToken() {
-  const token = Deno.env.get('CAF_CORE_API_TOKEN');
-  if (!token) throw new Error('CAF_CORE_API_TOKEN not configured');
-  return token;
-}
 
 // ── OAuth2 Connect token cache ──
 let connectTokenCache = { accessToken: null, expiresAt: 0 };
@@ -420,26 +413,28 @@ Deno.serve(async (req) => {
       }
     }
 
-    // 4. Via CNPJ/CPF (fetch da transação real na CAF — Core legado)
-    if (!onboardingCaseId && transactionId && !isConnect) {
+    // 4. Via CNPJ/CPF (fetch da transação real na CAF Connect)
+    if (!onboardingCaseId && transactionId) {
       try {
-        const coreToken = getCoreToken();
-        const txRes = await fetch(
-          `${CAF_CORE_API_BASE}/v1/transactions/${transactionId}?_lang=pt`,
-          { headers: { 'Authorization': `Bearer ${coreToken}` } }
-        );
-        if (txRes.ok) {
-          const tx = await txRes.json().catch(() => null);
-          const doc = (tx?.parameters?.cnpj || tx?.attributes?.cnpj ||
-            tx?.parameters?.cpf || tx?.attributes?.cpf ||
-            tx?.sections?.pjData?.data?.taxIdNumber || '').replace(/\D/g, '');
-          if (doc && (doc.length === 11 || doc.length === 14)) {
-            const merchants = await base44.asServiceRole.entities.Merchant.filter({ cpfCnpj: doc });
-            if (merchants[0]) {
-              const cases = await base44.asServiceRole.entities.OnboardingCase.filter({ merchantId: merchants[0].id });
-              if (cases[0]) {
-                onboardingCaseId = cases[0].id;
-                console.log(`[CAF-Webhook] Case via doc ${doc.slice(0,6)}***: ${onboardingCaseId}`);
+        const connectToken = await getConnectToken();
+        if (connectToken) {
+          const txRes = await fetch(
+            `${CAF_CONNECT_API_BASE}/v1/transactions/${transactionId}?_lang=pt`,
+            { headers: { 'Authorization': `Bearer ${connectToken}` } }
+          );
+          if (txRes.ok) {
+            const tx = await txRes.json().catch(() => null);
+            const doc = (tx?.parameters?.cnpj || tx?.attributes?.cnpj ||
+              tx?.parameters?.cpf || tx?.attributes?.cpf ||
+              tx?.sections?.pjData?.data?.taxIdNumber || '').replace(/\D/g, '');
+            if (doc && (doc.length === 11 || doc.length === 14)) {
+              const merchants = await base44.asServiceRole.entities.Merchant.filter({ cpfCnpj: doc });
+              if (merchants[0]) {
+                const cases = await base44.asServiceRole.entities.OnboardingCase.filter({ merchantId: merchants[0].id });
+                if (cases[0]) {
+                  onboardingCaseId = cases[0].id;
+                  console.log(`[CAF-Webhook] Case via doc ${doc.slice(0,6)}***: ${onboardingCaseId}`);
+                }
               }
             }
           }
@@ -472,25 +467,15 @@ Deno.serve(async (req) => {
       const reasonFlags = extractFlagsFromReasons(normalized.statusReasons || []);
       newFlags.push(...reasonFlags);
 
-      // Auto-fetch full transaction (tenta Connect primeiro, depois Core)
+      // Auto-fetch full transaction via Connect API
       if (transactionId) {
         let txResult = null;
         try {
-          if (isConnect) {
-            const connectToken = await getConnectToken();
-            if (connectToken) {
-              const r = await fetch(
-                `${CAF_CONNECT_API_BASE}/v1/transactions/${transactionId}?includeCroppedImages=true`,
-                { headers: { 'Authorization': `Bearer ${connectToken}` } }
-              );
-              if (r.ok) txResult = await r.json().catch(() => null);
-            }
-          }
-          if (!txResult) {
-            // Fallback Core API
+          const connectToken = await getConnectToken();
+          if (connectToken) {
             const r = await fetch(
-              `${CAF_CORE_API_BASE}/v1/transactions/${transactionId}?_includeCroppedImages=true&_includePfRelationships=true&_lang=pt`,
-              { headers: { 'Authorization': `Bearer ${getCoreToken()}` } }
+              `${CAF_CONNECT_API_BASE}/v1/transactions/${transactionId}?_includeCroppedImages=true&_includePfRelationships=true&_lang=pt`,
+              { headers: { 'Authorization': `Bearer ${connectToken}` } }
             );
             if (r.ok) txResult = await r.json().catch(() => null);
           }

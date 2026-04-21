@@ -551,41 +551,10 @@ export default function CafVerificationStep({
 
         setSavedResults(prev => ({ ...prev, liveness: true }));
 
-        // ── Face Match REAL via /v1/transactions (peopleFaceAuthenticator) ──
-        // A selfie foi baixada e armazenada por cafVerifyResult → uploadedImageUrl.
-        // Agora disparamos o match server-side contra a base oficial do CPF (Receita/TSE).
-        const selfieUrl = persistResult?.uploadedImageUrl;
-        if (selfieUrl) {
-          toast.info('Comparando selfie com a base oficial do CPF...', { duration: 3000 });
-          try {
-            const imgRes = await fetch(selfieUrl);
-            const imgBlob = await imgRes.blob();
-            const selfieB64 = await blobToBase64(imgBlob);
-            const matchRes = await base44.functions.invoke('cafFaceMatchTransaction', {
-              onboardingCaseId: onboardingCaseId || '',
-              docLinkToken,
-              selfieBase64: selfieB64,
-            });
-            const matchData = matchRes?.data || {};
-            console.log('[CAF] Face match result:', {
-              status: matchData.status,
-              isMatch: matchData.isMatch,
-              similarity: matchData.similarity,
-            });
-            if (matchData.isMatch) {
-              toast.success('Identidade confirmada!');
-            } else if (matchData.completed) {
-              toast.warning('Verificação concluída — será revisada manualmente.');
-            } else {
-              toast.info('Prova de vida salva. Match facial em processamento.');
-            }
-          } catch (matchErr) {
-            console.warn('[CAF] Face match transaction failed (non-blocking):', matchErr.message);
-          }
-        } else {
-          toast.success('Prova de vida concluída e salva com sucesso!');
-        }
-
+        // ── Face match já foi feito pelo SDK ──
+        // O JWT retornado por CafFaceLivenessSdk.run() contém isAlive + isMatch + similarity,
+        // e cafVerifyResult.js já decodificou e persistiu esses campos. Nada mais a fazer aqui.
+        toast.success('Prova de vida concluída e salva com sucesso!');
         setPhase('done');
       } catch (err) {
         if (cancelled) return;
