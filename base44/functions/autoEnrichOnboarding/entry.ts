@@ -122,13 +122,13 @@ Deno.serve(async (req) => {
         }
 
         // Source 2: ComplianceSession.formData.socios
-        if (repCpfPriority < 2 || repNamePriority < 2) {
+        if ((repCpfPriority < 2 || repNamePriority < 2) && onboardingCase.onboardingLinkCode) {
           try {
-            const sessions = await base44.asServiceRole.entities.ComplianceSession.filter({ status: 'completed' });
-            let sessionFormData = null;
-            for (const s of sessions) {
-              if (s.linkCode === onboardingCase.onboardingLinkCode) { sessionFormData = s.formData; break; }
-            }
+            const sessions = await base44.asServiceRole.entities.ComplianceSession.filter({
+              status: 'completed',
+              linkCode: onboardingCase.onboardingLinkCode,
+            });
+            const sessionFormData = sessions[0]?.formData || null;
             const socios = sessionFormData?.socios || [];
             if (Array.isArray(socios) && socios.length > 0) {
               for (const socio of socios) {
