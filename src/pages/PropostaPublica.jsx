@@ -24,6 +24,8 @@ import InternationalPaymentsBanner from '@/components/landing/InternationalPayme
 import { resolveComplianceModel } from '@/components/compliance/segmentToComplianceV4Map';
 import { getOverridesForPrazo } from '@/lib/overridesUtils';
 import { canonicalizeSlugUrl } from '@/lib/publicSlug';
+import { usePublicProposalQuery } from '@/hooks/usePublicProposalQuery';
+import PublicProposalErrorState from '@/components/proposals/PublicProposalErrorState';
 
 export default function PropostaPublica() {
   const { t } = useTranslation();
@@ -36,20 +38,13 @@ export default function PropostaPublica() {
   const [showContrapropostaModal, setShowContrapropostaModal] = useState(false);
   const [showRecusaModal, setShowRecusaModal] = useState(false);
 
-  // Public read via backend function (service role, validates token).
-  // Frontend is anonymous — NO RLS, NO auth, works for any client with the URL.
-  const { data: proposta, isLoading, error } = useQuery({
-    queryKey: ['proposta_publica', token],
-    queryFn: async () => {
-      if (!token) return null;
-      const res = await base44.functions.invoke('publicReadContext', {
-        kind: 'proposal_by_token',
-        token,
-      });
-      return res.data?.proposal || null;
-    },
-    enabled: !!token
-  });
+  // ROBUSTO: hook com 5 tentativas, fallback por slug, e distinção clara entre
+  // "erro de rede" e "não encontrada". Resolve o bug onde clientes viam
+  // "proposta não encontrada" apenas por instabilidade transitória de rede.
+  const { status: loadStatus, proposal: proposta, refetch, error } = usePublicProposalQuery('proposal', token);
+  const isLoading = loadStatus === 'loading';
+  // Token efetivo: se o hook resolveu por slug, usa o token da proposta resolvida
+  const effectiveToken = proposta?.tokenPublico || token;
 
   // Canonicalize URL to /p/:slug when coming from legacy ?token= link
   useEffect(() => {
@@ -64,7 +59,8 @@ export default function PropostaPublica() {
       sessionStorage.setItem(viewKey, '1');
 
       base44.functions.invoke('publicProposalAction', {
-        token,
+        token: effectiveToken,
+        slug: proposta?.publicSlug || null,
         type: 'proposal',
         action: 'view',
       }).catch(() => {}); // non-blocking
@@ -95,8 +91,10 @@ export default function PropostaPublica() {
   const aceitarMutation = useMutation({
     mutationFn: async () => {
       // Step 1 — Accept on backend (with one retry on transient failures)
+      // Enviamos `slug` também para permitir fallback no servidor caso o token seja rotacionado.
       const invokeAccept = async () => base44.functions.invoke('publicProposalAction', {
-        token,
+        token: effectiveToken,
+        slug: proposta?.publicSlug || null,
         type: 'proposal',
         action: 'accept',
       });
@@ -152,7 +150,7 @@ export default function PropostaPublica() {
     },
     onSuccess: (complianceUrl) => {
       toast.success(t('pp.proposal_accepted_success'));
-      queryClient.invalidateQueries({ queryKey: ['proposta_publica', token] });
+      queryClient.invalidateQueries({ queryKey: ['public_proposal', 'proposal'] });
       setShowAceiteModal(false);
       // Redirect IMMEDIATELY — no setTimeout. If user closes the tab, they miss nothing;
       // the accept is already persisted, and a reload shows the "accepted" state with the button.
@@ -168,7 +166,8 @@ export default function PropostaPublica() {
   const contrapropostaMutation = useMutation({
     mutationFn: async (data) => {
       const res = await base44.functions.invoke('publicProposalAction', {
-        token,
+        token: effectiveToken,
+        slug: proposta?.publicSlug || null,
         type: 'proposal',
         action: 'counter',
         payload: { details: data },
@@ -187,7 +186,7 @@ export default function PropostaPublica() {
     },
     onSuccess: () => {
       toast.success(t('pp.counter_sent_success'));
-      queryClient.invalidateQueries({ queryKey: ['proposta_publica', token] });
+      queryClient.invalidateQueries({ queryKey: ['public_proposal', 'proposal'] });
       setShowContrapropostaModal(false);
     }
   });
@@ -195,7 +194,8 @@ export default function PropostaPublica() {
   const recusarMutation = useMutation({
     mutationFn: async (data) => {
       const res = await base44.functions.invoke('publicProposalAction', {
-        token,
+        token: effectiveToken,
+        slug: proposta?.publicSlug || null,
         type: 'proposal',
         action: 'reject',
         payload: { motivo: data.motivo, detalhe: data.detalhe },
@@ -215,7 +215,7 @@ export default function PropostaPublica() {
     },
     onSuccess: () => {
       toast.success(t('pp.proposal_rejected'));
-      queryClient.invalidateQueries({ queryKey: ['proposta_publica', token] });
+      queryClient.invalidateQueries({ queryKey: ['public_proposal', 'proposal'] });
       setShowRecusaModal(false);
     }
   });
@@ -231,15 +231,14 @@ export default function PropostaPublica() {
     );
   }
 
-  // Not found
-  if (!proposta) {
-    return (
-      <div className="max-w-lg mx-auto py-20 text-center">
-        <AlertTriangle className="w-16 h-16 mx-auto text-amber-500 mb-4" />
-        <h1 className="text-2xl font-bold text-[#002443] mb-2">{t('pp.not_found_title')}</h1>
-        <p className="text-[#002443]/60">{t('pp.not_found_desc')}</p>
-      </div>
-    );
+  // Erro de rede (após 5 retries) — NÃO fala "não encontrada", oferece retry
+  if (loadStatus === 'error') {
+    return <PublicProposalErrorState status="error" onRetry={refetch} />;
+  }
+
+  // Realmente não existe
+  if (loadStatus === 'notfound' || !proposta) {
+    return <PublicProposalErrorState status="notfound" />;
   }
 
   // Expired check

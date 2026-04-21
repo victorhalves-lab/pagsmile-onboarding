@@ -15,7 +15,7 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json().catch(() => ({}));
-    const { token, type, action, payload } = body;
+    const { token, type, action, payload, slug } = body;
 
     if (!token || !type || !action) {
       return Response.json({ error: 'Missing required params: token, type, action' }, { status: 400 });
@@ -31,12 +31,27 @@ Deno.serve(async (req) => {
     const entityName = type === 'proposal' ? 'Proposal' : 'PixProposal';
     const actLabel   = type === 'proposal' ? 'Proposta'  : 'Proposta PIX';
 
-    // 1. Lookup proposal by token (service role, never trust payload IDs)
-    const results = await base44.asServiceRole.entities[entityName].filter({ tokenPublico: token });
+    // 1. Lookup proposal (service role, never trust payload IDs).
+    // Busca por token primeiro; se falhar, tenta por publicSlug como fallback.
+    // Isso protege contra clientes usando links antigos cujo token foi rotacionado.
+    let results = await base44.asServiceRole.entities[entityName].filter({ tokenPublico: token });
+
+    if ((!results || results.length === 0) && slug) {
+      try {
+        results = await base44.asServiceRole.entities[entityName].filter({ publicSlug: slug });
+      } catch (_) { /* ignore */ }
+    }
+
     if (!results || results.length === 0) {
       return Response.json({ error: 'Proposta não encontrada' }, { status: 404 });
     }
-    const proposta = results[0];
+
+    // Se múltiplos matches (versionamento), prefere a versão atual
+    let proposta = results[0];
+    if (results.length > 1) {
+      const current = results.find(r => r.isCurrentVersion === true);
+      proposta = current || results.sort((a, b) => (b.version || 1) - (a.version || 1))[0];
+    }
     const now = new Date().toISOString();
 
     // 2. Build updates based on action

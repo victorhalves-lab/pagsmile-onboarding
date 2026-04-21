@@ -15,6 +15,8 @@ import { useTranslation } from '@/lib/i18n/LanguageContext';
 import SEGMENT_TO_COMPLIANCE from '@/components/fechamento/segmentComplianceMap';
 import InternationalPaymentsBanner from '@/components/landing/InternationalPaymentsBanner';
 import { canonicalizeSlugUrl } from '@/lib/publicSlug';
+import { usePublicProposalQuery } from '@/hooks/usePublicProposalQuery';
+import PublicProposalErrorState from '@/components/proposals/PublicProposalErrorState';
 
 const QUESTIONNAIRE_URL = 'https://pagsmilecompliance.base44.app/QuestionarioLeadsPagsmile';
 
@@ -24,19 +26,9 @@ export default function PropostaPadraoPublica() {
   const token = urlParams.get('token');
   const propostaContentRef = useRef(null);
 
-
-
-  const { data: proposta, isLoading } = useQuery({
-    queryKey: ['std_proposta_publica', token],
-    queryFn: async () => {
-      if (!token) return null;
-      const res = await base44.functions.invoke('publicReadContext', {
-        kind: 'standard_proposal_by_token', token,
-      });
-      return res.data?.proposal || null;
-    },
-    enabled: !!token,
-  });
+  // ROBUSTO: hook com 5 tentativas + fallback por slug.
+  const { status: loadStatus, proposal: proposta, refetch } = usePublicProposalQuery('standard_proposal', token);
+  const isLoading = loadStatus === 'loading';
 
   // Canonicalize URL to /pp/:slug when coming from legacy ?token= link
   React.useEffect(() => {
@@ -53,14 +45,12 @@ export default function PropostaPadraoPublica() {
     );
   }
 
-  if (!proposta) {
-    return (
-      <div className="max-w-lg mx-auto py-20 text-center">
-        <AlertTriangle className="w-16 h-16 mx-auto text-amber-500 mb-4" />
-        <h1 className="text-2xl font-bold text-[#002443] mb-2">{t('spp.not_found')}</h1>
-        <p className="text-[#002443]/60">{t('spp.not_found_desc')}</p>
-      </div>
-    );
+  if (loadStatus === 'error') {
+    return <PublicProposalErrorState status="error" onRetry={refetch} />;
+  }
+
+  if (loadStatus === 'notfound' || !proposta) {
+    return <PublicProposalErrorState status="notfound" />;
   }
 
   if (proposta.status !== 'ativa') {

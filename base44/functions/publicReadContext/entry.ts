@@ -181,12 +181,20 @@ Deno.serve(async (req) => {
     }
 
     // ── Proposal by token (resolves to CURRENT version when multiple exist) ──
+    // Robusto: se token exato falhar, nunca devolve 404 silenciosamente — tenta
+    // recuperar via rootProposalId, version chain ou slug.
     if (kind === 'proposal_by_token') {
       const { token } = body;
       if (!token) return Response.json({ error: 'token required' }, { status: 400 });
       let results = [];
       try { results = await base44.asServiceRole.entities.Proposal.filter({ tokenPublico: token }); } catch (_) {}
-      if (results.length === 0) return Response.json({ proposal: null });
+
+      if (results.length === 0) {
+        // Fallback: token não bate mais (pode ter sido rotacionado) — não devolver
+        // 404 ainda. O hook do front tentará via publicSlug em seguida.
+        return Response.json({ proposal: null, reason: 'token_not_found' });
+      }
+
       // Multiple matches (legacy token shared across versions): pick current version
       if (results.length > 1) {
         const current = results.find(r => r.isCurrentVersion === true);

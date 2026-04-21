@@ -18,6 +18,8 @@ import RecusaModal from '@/components/proposals/RecusaModal';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 import { resolvePixComplianceModel } from '@/components/compliance/segmentToComplianceV4Map';
 import { canonicalizeSlugUrl } from '@/lib/publicSlug';
+import { usePublicProposalQuery } from '@/hooks/usePublicProposalQuery';
+import PublicProposalErrorState from '@/components/proposals/PublicProposalErrorState';
 
 export default function PropostaPixPublica() {
   const { t } = useTranslation();
@@ -30,19 +32,10 @@ export default function PropostaPixPublica() {
   const [showContrapropostaModal, setShowContrapropostaModal] = useState(false);
   const [showRecusaModal, setShowRecusaModal] = useState(false);
 
-  // Public read via backend function (service role, validates token).
-  const { data: proposta, isLoading } = useQuery({
-    queryKey: ['pix_proposta_publica', token],
-    queryFn: async () => {
-      if (!token) return null;
-      const res = await base44.functions.invoke('publicReadContext', {
-        kind: 'pix_proposal_by_token',
-        token,
-      });
-      return res.data?.proposal || null;
-    },
-    enabled: !!token
-  });
+  // ROBUSTO: hook com 5 tentativas + fallback por slug. Distingue erro de rede de "não encontrada".
+  const { status: loadStatus, proposal: proposta, refetch } = usePublicProposalQuery('pix_proposal', token);
+  const isLoading = loadStatus === 'loading';
+  const effectiveToken = proposta?.tokenPublico || token;
 
   // Canonicalize URL to /pix/:slug when coming from legacy ?token= link
   useEffect(() => {
@@ -56,7 +49,7 @@ export default function PropostaPixPublica() {
       if (sessionStorage.getItem(viewKey)) return;
       sessionStorage.setItem(viewKey, '1');
       base44.functions.invoke('publicProposalAction', {
-        token, type: 'pix_proposal', action: 'view',
+        token: effectiveToken, slug: proposta?.publicSlug || null, type: 'pix_proposal', action: 'view',
       }).catch(() => {});
     }
   }, [proposta?.id]);
@@ -73,7 +66,7 @@ export default function PropostaPixPublica() {
   const aceitarMutation = useMutation({
     mutationFn: async () => {
       const res = await base44.functions.invoke('publicProposalAction', {
-        token, type: 'pix_proposal', action: 'accept',
+        token: effectiveToken, slug: proposta?.publicSlug || null, type: 'pix_proposal', action: 'accept',
       });
       if (res.data?.error) throw new Error(res.data.error);
 
@@ -93,7 +86,7 @@ export default function PropostaPixPublica() {
     },
     onSuccess: (complianceUrl) => {
       toast.success(t('pxp.pix_accepted'));
-      queryClient.invalidateQueries({ queryKey: ['pix_proposta_publica', token] });
+      queryClient.invalidateQueries({ queryKey: ['public_proposal', 'pix_proposal'] });
       setShowAceiteModal(false);
       if (complianceUrl) { setTimeout(() => { window.location.href = complianceUrl; }, 2000); }
     }
@@ -102,21 +95,21 @@ export default function PropostaPixPublica() {
   const contrapropostaMutation = useMutation({
     mutationFn: async (data) => {
       const res = await base44.functions.invoke('publicProposalAction', {
-        token, type: 'pix_proposal', action: 'counter', payload: { details: data },
+        token: effectiveToken, slug: proposta?.publicSlug || null, type: 'pix_proposal', action: 'counter', payload: { details: data },
       });
       if (res.data?.error) throw new Error(res.data.error);
     },
-    onSuccess: () => { toast.success(t('pp.counter_sent_success')); queryClient.invalidateQueries({ queryKey: ['pix_proposta_publica', token] }); setShowContrapropostaModal(false); }
+    onSuccess: () => { toast.success(t('pp.counter_sent_success')); queryClient.invalidateQueries({ queryKey: ['public_proposal', 'pix_proposal'] }); setShowContrapropostaModal(false); }
   });
 
   const recusarMutation = useMutation({
     mutationFn: async (data) => {
       const res = await base44.functions.invoke('publicProposalAction', {
-        token, type: 'pix_proposal', action: 'reject', payload: { motivo: data.motivo, detalhe: data.detalhe },
+        token: effectiveToken, slug: proposta?.publicSlug || null, type: 'pix_proposal', action: 'reject', payload: { motivo: data.motivo, detalhe: data.detalhe },
       });
       if (res.data?.error) throw new Error(res.data.error);
     },
-    onSuccess: () => { toast.success(t('pp.proposal_rejected')); queryClient.invalidateQueries({ queryKey: ['pix_proposta_publica', token] }); setShowRecusaModal(false); }
+    onSuccess: () => { toast.success(t('pp.proposal_rejected')); queryClient.invalidateQueries({ queryKey: ['public_proposal', 'pix_proposal'] }); setShowRecusaModal(false); }
   });
 
   // Fetch lead (via public function) to resolve compliance model for the "already accepted" banner
@@ -127,7 +120,8 @@ export default function PropostaPixPublica() {
   });
 
   if (isLoading) return <div className="max-w-4xl mx-auto py-12 px-4 space-y-6"><Skeleton className="h-20 w-full rounded-xl" /><Skeleton className="h-12 w-3/4" /><Skeleton className="h-96 w-full rounded-xl" /></div>;
-  if (!proposta) return <div className="max-w-lg mx-auto py-20 text-center"><AlertTriangle className="w-16 h-16 mx-auto text-amber-500 mb-4" /><h1 className="text-2xl font-bold text-[#002443] mb-2">{t('pp.not_found_title')}</h1><p className="text-[#002443]/60">{t('pp.not_found_desc')}</p></div>;
+  if (loadStatus === 'error') return <PublicProposalErrorState status="error" onRetry={refetch} />;
+  if (loadStatus === 'notfound' || !proposta) return <PublicProposalErrorState status="notfound" />;
 
   const isExpired = proposta.status === 'expirada' || (proposta.validUntil && new Date(proposta.validUntil) < new Date() && !['aceita', 'recusada', 'contraproposta'].includes(proposta.status));
   const isAlreadyResponded = ['aceita', 'recusada'].includes(proposta.status);
