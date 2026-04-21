@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -15,7 +15,12 @@ export default function FollowUpModal({ open, onClose, lead }) {
   const [date, setDate] = useState('');
   const [time, setTime] = useState('09:00');
   const [description, setDescription] = useState('');
+  const [userEmail, setUserEmail] = useState('admin');
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    base44.auth.me().then(u => setUserEmail(u?.email || 'admin')).catch(() => {});
+  }, []);
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -24,7 +29,7 @@ export default function FollowUpModal({ open, onClose, lead }) {
         leadId: lead.id,
         activityType: 'nota_adicionada',
         description: `📅 Follow-up agendado para ${followUpDate.toLocaleDateString('pt-BR')} às ${time}${description ? `. ${description}` : ''}`,
-        performedBy: 'admin',
+        performedBy: userEmail,
         activityDate: new Date().toISOString(),
         details: { followUpDate: followUpDate.toISOString(), type: 'follow_up' }
       });
@@ -33,6 +38,7 @@ export default function FollowUpModal({ open, onClose, lead }) {
       });
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['pipeline-leads'] });
       queryClient.invalidateQueries({ queryKey: ['leads-pipeline'] });
       toast.success('Follow-up agendado!');
       onClose();

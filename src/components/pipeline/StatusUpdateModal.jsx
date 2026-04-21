@@ -30,7 +30,12 @@ const STATUS_OPTIONS = [
 export default function StatusUpdateModal({ open, onClose, lead }) {
   const [newStatus, setNewStatus] = useState(lead?.status || '');
   const [note, setNote] = useState('');
+  const [userEmail, setUserEmail] = useState('admin');
   const queryClient = useQueryClient();
+
+  React.useEffect(() => {
+    base44.auth.me().then(u => setUserEmail(u?.email || 'admin')).catch(() => {});
+  }, []);
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -42,7 +47,7 @@ export default function StatusUpdateModal({ open, onClose, lead }) {
         leadId: lead.id,
         activityType: 'status_alterado_manual',
         description: `Status alterado para "${STATUS_OPTIONS.find(s => s.value === newStatus)?.label || newStatus}"${note ? `. Nota: ${note}` : ''}`,
-        performedBy: 'admin',
+        performedBy: userEmail,
         activityDate: new Date().toISOString()
       });
     },

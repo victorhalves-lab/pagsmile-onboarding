@@ -73,13 +73,17 @@ export default function ReassignComplianceModal({
           };
         }
         await base44.entities.Lead.update(lead.id, updateData);
-        await base44.entities.LeadActivity.create({
-          leadId: lead.id,
-          activityType: 'segmento_alterado',
-          description: `Segmento alterado de "${getSegmentLabel(currentSegment)}" para "${getSegmentLabel(newSegment)}" — link de compliance reagendado`,
-          performedBy: 'admin',
-          activityDate: new Date().toISOString(),
-        });
+        try {
+          const me = await base44.auth.me();
+          await base44.entities.LeadActivity.create({
+            leadId: lead.id,
+            activityType: 'nota_adicionada',
+            description: `🔀 Segmento alterado de "${getSegmentLabel(currentSegment)}" para "${getSegmentLabel(newSegment)}" — link de compliance reagendado`,
+            performedBy: me?.email || 'admin',
+            activityDate: new Date().toISOString(),
+            details: { event: 'segment_changed', from: currentSegment, to: newSegment },
+          });
+        } catch (_) {}
       } else if (entityName === 'LandingPageLead') {
         updateData.segment = getSegmentLabel(newSegment);
         updateData.businessSubCategory = newSegment;

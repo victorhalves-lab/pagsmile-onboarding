@@ -295,6 +295,8 @@ export default function PipelineComercial() {
 
   const moveMutation = useMutation({
     mutationFn: async ({ leadId, newStatus }) => {
+      let performedBy = 'admin';
+      try { performedBy = (await base44.auth.me())?.email || 'admin'; } catch (_) {}
       await base44.entities.Lead.update(leadId, {
         status: newStatus,
         lastInteractionDate: new Date().toISOString()
@@ -303,7 +305,7 @@ export default function PipelineComercial() {
         leadId,
         activityType: 'status_alterado_manual',
         description: `Lead movido para: ${newStatus}`,
-        performedBy: 'admin',
+        performedBy,
         activityDate: new Date().toISOString()
       });
     },
@@ -316,8 +318,10 @@ export default function PipelineComercial() {
   const handleCardAction = async (action, lead) => {
     if (lead._isVirtual) return; // Virtual leads can't be modified
     if (action === 'contact') {
+      let performedBy = 'admin';
+      try { performedBy = (await base44.auth.me())?.email || 'admin'; } catch (_) {}
       await base44.entities.Lead.update(lead.id, { status: 'em_contato_comercial', lastInteractionDate: new Date().toISOString() });
-      await base44.entities.LeadActivity.create({ leadId: lead.id, activityType: 'contato_iniciado', description: 'Contato iniciado via pipeline', performedBy: 'admin', activityDate: new Date().toISOString() });
+      await base44.entities.LeadActivity.create({ leadId: lead.id, activityType: 'contato_iniciado', description: 'Contato iniciado via pipeline', performedBy, activityDate: new Date().toISOString() });
       queryClient.invalidateQueries({ queryKey: ['pipeline-leads'] });
       toast.success(t('pipeline_page.contact_started'));
     }
