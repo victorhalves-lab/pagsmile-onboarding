@@ -107,7 +107,11 @@ export function useOnboardingAnalytics({
       }
     };
 
-    await base44.entities.OnboardingAnalytics.create(eventData);
+    try {
+      await base44.functions.invoke('trackOnboardingEvent', eventData);
+    } catch (e) {
+      // Silent fail — analytics should never break the user flow
+    }
   }, [pageName, stepNumber, totalSteps, flowType, linkId, linkCode, merchantId, onboardingCaseId]);
 
   const trackPageComplete = useCallback((additionalData = {}) => {
@@ -141,18 +145,21 @@ export function useOnboardingAnalytics({
 // Função utilitária para rastrear clique no link (usar na página inicial)
 export async function trackLinkClick(linkCode) {
   const linkData = getLinkDataFromUrl();
-  
-  await base44.entities.OnboardingAnalytics.create({
-    eventType: 'link_click',
-    sessionId: getSessionId(),
-    onboardingLinkCode: linkCode || linkData.linkCode,
-    pageName: 'ComplianceOnboardingStart',
-    metadata: {
-      userAgent: navigator.userAgent,
-      referrer: document.referrer,
-      utmSource: linkData.utmSource,
-      utmMedium: linkData.utmMedium,
-      utmCampaign: linkData.utmCampaign
-    }
-  });
+  try {
+    await base44.functions.invoke('trackOnboardingEvent', {
+      eventType: 'link_click',
+      sessionId: getSessionId(),
+      onboardingLinkCode: linkCode || linkData.linkCode,
+      pageName: 'ComplianceOnboardingStart',
+      metadata: {
+        userAgent: navigator.userAgent,
+        referrer: document.referrer,
+        utmSource: linkData.utmSource,
+        utmMedium: linkData.utmMedium,
+        utmCampaign: linkData.utmCampaign
+      }
+    });
+  } catch (e) {
+    // Silent fail — analytics should never break the user flow
+  }
 }
