@@ -8,7 +8,7 @@
 
 **Última atualização:** 2026-04-21
 **Fase ativa:** 5 (Compliance V4)
-**Próximo micro-passo:** 5.1 — Purga de órfãos em ExternalValidationResult, IntegrationLog, BdcRetryQueue, DocumentUpload
+**Próximo micro-passo:** 5.2 — LGPD remaining (auditar downloadCaseDocuments, getCaseDocumentUrls, partnerDownloadDocument, exportCadastroReport, generateCadastroPdf)
 
 ---
 
@@ -103,7 +103,12 @@ _nenhuma no momento_
 
 ### Falta para selar (ordem de execução):
 
-- ⏳ **5.1** — Purgar órfãos em `ExternalValidationResult`, `IntegrationLog`, `BdcRetryQueue`, `DocumentUpload` + expandir automation daily cleanup
+- ✅ **5.1** — Purga de órfãos em 4 entidades [CONCLUÍDO 2026-04-21]
+  - Função criada: `functions/cleanupOrphanIntegrationData`
+  - Automation criada: `Cleanup Orphan Integration Data (daily)` — 03:15 BRT — ID `69e757921f228740c3f86b1e`
+  - Órfãos deletados: 15 `ExternalValidationResult` + 258 `IntegrationLog` + 1 `DocumentUpload` = **274 órfãos totais**
+  - Estado final: ZERO órfãos em todas as 4 entidades (verificado em run de confirmação)
+  - Rate-limit safe: batch de 3 paralelos + sleep 250ms
 - ⏳ **5.2** — LGPD remaining: auditar `downloadCaseDocuments`, `getCaseDocumentUrls`, `partnerDownloadDocument`, `exportCadastroReport`, `generateCadastroPdf` para não vazar URLs públicas de KYC
 - ⏳ **5.3** — Race conditions:
   - `autoEnrichOnboarding` → lock por case_id (flag `_lockedAt` no DB)
@@ -211,6 +216,7 @@ Pages: `DashboardCEO`, `DashboardComercial`, `AdminDashboard`, `DadosInsights`, 
 ## 📜 HISTÓRICO DE PASSOS EXECUTADOS
 
 ### Sessão 2026-04-21 (atual)
-- Criação deste arquivo de log persistente — primeiro registro
+- ✅ Criação do log persistente `docs/AUDIT_LOG.md`
+- ✅ **Passo 5.1** — Purga de órfãos em 4 entidades + automation diária criada
 
 _(todos os passos futuros serão registrados aqui)_
