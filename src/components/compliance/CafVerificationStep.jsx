@@ -13,7 +13,7 @@ import CafManualSelfieUpload from './CafManualSelfieUpload';
 import BdcFallbackVerification from './BdcFallbackVerification';
 import CafErrorDiagnostic from './CafErrorDiagnostic';
 import CafMobileProgressBar from './CafMobileProgressBar';
-import { buildCafFallbackUrl } from '@/lib/cafOnboardingLinks';
+import { buildCafFallbackUrl, fetchCafFallbackLinks } from '@/lib/cafOnboardingLinks';
 
 /**
  * CAF SDK Web Integration — DocumentDetector + FaceLiveness
@@ -174,9 +174,67 @@ export default function CafVerificationStep({
   const [showDifficultyModal, setShowDifficultyModal] = useState(false);
   const [manualFallback, setManualFallback] = useState(false);
   const [bdcFallback, setBdcFallback] = useState(false);
+  const [cafLinksOverride, setCafLinksOverride] = useState(null); // mapa custom do admin
   const flContainerRef = useRef(null);
 
+  // Tracking de engajamento (abandono vs falha técnica) — refs pra não re-renderizar
+  const sdkOpenCountRef = useRef(0);
+  const didCaptureAnythingRef = useRef(false);
+  const abandonLoggedRef = useRef(false);
+
   const docLinkToken = (typeof localStorage !== 'undefined' && localStorage.getItem('created_doc_link_token')) || undefined;
+
+  // Carrega overrides de links do admin (se houver)
+  useEffect(() => {
+    fetchCafFallbackLinks().then(setCafLinksOverride).catch(() => {});
+  }, []);
+
+  // Helper: loga evento de engajamento (abertura / abandono) — separado de cafLogSdkError
+  const logSdkEvent = useCallback((eventType, stage) => {
+    if (!onboardingCaseId) return;
+    try {
+      base44.functions.invoke('cafLogSdkEvent', {
+        onboardingCaseId,
+        docLinkToken,
+        eventType,
+        stage: stage || 'unknown',
+        attemptNumber: sdkOpenCountRef.current,
+      }).catch(() => {});
+    } catch {}
+  }, [onboardingCaseId, docLinkToken]);
+
+  // ── Detecção de abandono: cliente fecha a aba sem capturar NADA ──
+  // Só conta como abandono se o SDK foi aberto E nada foi salvo (nem doc frente).
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      const isInCapture = ['doc_front', 'doc_back', 'liveness_prep', 'liveness'].includes(phase);
+      if (isInCapture && !didCaptureAnythingRef.current && !abandonLoggedRef.current) {
+        abandonLoggedRef.current = true;
+        // sendBeacon garante envio mesmo durante unload
+        try {
+          const payload = JSON.stringify({
+            onboardingCaseId,
+            docLinkToken,
+            eventType: 'sdk_abandoned',
+            stage: phase,
+            attemptNumber: sdkOpenCountRef.current,
+          });
+          const blob = new Blob([payload], { type: 'application/json' });
+          const url = `${window.location.origin}/api/apps/functions/cafLogSdkEvent`;
+          navigator.sendBeacon?.(url, blob);
+        } catch {}
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [phase, onboardingCaseId, docLinkToken]);
+
+  // Marca que algo foi capturado (bloqueia envio de abandono na saída)
+  useEffect(() => {
+    if (savedResults.front || savedResults.back || savedResults.liveness) {
+      didCaptureAnythingRef.current = true;
+    }
+  }, [savedResults]);
 
   // Helper: log SDK errors to backend (fire-and-forget)
   const logSdkError = useCallback((stage, err, attemptNumber = 1) => {
@@ -210,6 +268,10 @@ export default function CafVerificationStep({
     setError(null);
     setErrorName(null);
     setPhase('loading');
+    // ── Engagement tracking: registra abertura do SDK (não é tentativa técnica) ──
+    sdkOpenCountRef.current += 1;
+    abandonLoggedRef.current = false;
+    logSdkEvent('sdk_opened', 'init');
     try {
       // ── FASE A: Resolver CPF + Nome via LASTRO do backend ──
       let effectiveCpf = personCpf || '';
@@ -923,6 +985,7 @@ export default function CafVerificationStep({
               cpf: resolvedPerson?.cpf || personCpf,
               name: resolvedPerson?.name || personName,
               email: merchantEmail,
+              linksOverride: cafLinksOverride,
             })}
             onCafFallbackClick={() => {
               try {
@@ -935,6 +998,7 @@ export default function CafVerificationStep({
                     cpf: resolvedPerson?.cpf || personCpf,
                     name: resolvedPerson?.name || personName,
                     email: merchantEmail,
+                    linksOverride: cafLinksOverride,
                   }) || '',
                   attemptCount: Math.max(retryCount + 1, livenessAttempts),
                   errorName: errorName || '',

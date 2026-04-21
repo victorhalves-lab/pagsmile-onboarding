@@ -8,7 +8,38 @@
  * Uso: quando o cliente falha 2x no FaceMatch/Liveness via SDK embarcado, oferecer
  * o link do segmento como fallback. Passamos externalId=<onboardingCaseId> na query
  * string para garantir vínculo determinístico do resultado ao cliente correto.
+ *
+ * ⚠️ Estes são os DEFAULTS hardcoded. Admin pode sobrescrever cada link via UI
+ * (IntegracoesExternas → aba "Fallback CAF"), que salva em ComplianceConfig.
+ * Em runtime, use `fetchCafFallbackLinks()` para pegar o mapa mesclado (overrides
+ * da ComplianceConfig + defaults daqui).
  */
+
+import { base44 } from '@/api/base44Client';
+
+// Cache simples in-memory (TTL 60s) para não bater o backend toda hora
+let _linksCache = null;
+let _linksCacheAt = 0;
+const LINKS_CACHE_TTL_MS = 60_000;
+
+export async function fetchCafFallbackLinks({ force = false } = {}) {
+  const now = Date.now();
+  if (!force && _linksCache && (now - _linksCacheAt) < LINKS_CACHE_TTL_MS) {
+    return _linksCache;
+  }
+  try {
+    const res = await base44.functions.invoke('getCafFallbackLinks', {});
+    if (res?.data?.links) {
+      _linksCache = res.data.links;
+      _linksCacheAt = now;
+      return _linksCache;
+    }
+  } catch (err) {
+    console.warn('[cafOnboardingLinks] Falha ao buscar overrides, usando defaults:', err?.message);
+  }
+  return CAF_ONBOARDING_LINKS_BY_COMPLIANCE_V4;
+}
+
 export const CAF_ONBOARDING_LINKS_BY_COMPLIANCE_V4 = {
   ComplianceGatewayV4:            'https://cadastro.io/9b998e4d45055dac959680cf3dcfc1c9',
   ComplianceDropshippingV4:       'https://cadastro.io/11b31cdf4650c56126d766671e15e8d4',
@@ -29,11 +60,15 @@ export const CAF_ONBOARDING_LINKS_BY_COMPLIANCE_V4 = {
  * Monta a URL do fallback CAF com pré-preenchimento + vínculo via externalId.
  *
  * @param {string} complianceModel - Ex: 'ComplianceGatewayV4'
- * @param {object} context - { onboardingCaseId, cnpj, cpf, name, email }
+ * @param {object} context - { onboardingCaseId, cnpj, cpf, name, email, linksOverride? }
  * @returns {string|null} URL completa ou null se modelo não mapeado
+ *
+ * Se context.linksOverride for passado (mapa já carregado via fetchCafFallbackLinks),
+ * ele é usado em vez dos defaults — permite respeitar customizações do admin.
  */
 export function buildCafFallbackUrl(complianceModel, context = {}) {
-  const baseUrl = CAF_ONBOARDING_LINKS_BY_COMPLIANCE_V4[complianceModel];
+  const linksMap = context.linksOverride || CAF_ONBOARDING_LINKS_BY_COMPLIANCE_V4;
+  const baseUrl = linksMap[complianceModel];
   if (!baseUrl) return null;
 
   const params = new URLSearchParams();

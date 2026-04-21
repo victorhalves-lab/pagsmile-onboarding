@@ -17,9 +17,11 @@ import {
   Plug, Settings, Activity, CheckCircle2, XCircle, Clock,
   RefreshCw, ExternalLink, Eye, Play, Loader2, AlertTriangle,
   Copy, FileText, Users, Building2, Fingerprint, ScanFace, FileSearch, Database, Shield,
+  Link2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
+import CafFallbackLinksConfig from '@/components/integrations/CafFallbackLinksConfig';
 
 export default function IntegracoesExternas() {
   const { t } = useTranslation();
@@ -116,10 +118,15 @@ export default function IntegracoesExternas() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="bg-[#f4f4f4] border border-[#002443]/5">
-          {['overview', 'caf', 'bigdatacorp', 'webhooks', 'logs'].map(tab => (
+        <TabsList className="bg-[#f4f4f4] border border-[#002443]/5 flex-wrap h-auto">
+          {['overview', 'caf', 'caf_fallback', 'bigdatacorp', 'webhooks', 'logs'].map(tab => (
             <TabsTrigger key={tab} value={tab} className="data-[state=active]:bg-white data-[state=active]:text-[#002443] data-[state=active]:shadow-sm">
-              {tab === 'overview' ? t('ie.tab_overview') : tab === 'caf' ? t('ie.tab_caf') : tab === 'bigdatacorp' ? t('ie.tab_bigdatacorp') : tab === 'webhooks' ? t('ie.tab_webhooks') : t('ie.tab_logs')}
+              {tab === 'overview' ? t('ie.tab_overview')
+                : tab === 'caf' ? t('ie.tab_caf')
+                : tab === 'caf_fallback' ? <span className="flex items-center gap-1.5"><Link2 className="w-3.5 h-3.5" />Fallback CAF</span>
+                : tab === 'bigdatacorp' ? t('ie.tab_bigdatacorp')
+                : tab === 'webhooks' ? t('ie.tab_webhooks')
+                : t('ie.tab_logs')}
             </TabsTrigger>
           ))}
         </TabsList>
@@ -316,6 +323,11 @@ export default function IntegracoesExternas() {
               </a>
             ))}
           </div>
+        </TabsContent>
+
+        {/* CAF Fallback Links Tab */}
+        <TabsContent value="caf_fallback" className="space-y-6 mt-6">
+          <CafFallbackLinksConfig />
         </TabsContent>
 
         {/* BigDataCorp Tab */}

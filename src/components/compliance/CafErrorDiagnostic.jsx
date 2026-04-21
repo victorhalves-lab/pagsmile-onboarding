@@ -322,19 +322,47 @@ export default function CafErrorDiagnostic({
           </Button>
         )}
 
-        {/* Fallback CAF onboarding oficial (cadastro.io) — aparece na 2ª falha.
-             Vínculo ao cliente via externalId = onboardingCaseId (query param). */}
+        {/* Fallback CAF onboarding oficial (cadastro.io) — aparece na 2ª falha técnica.
+             Vínculo ao cliente via externalId = onboardingCaseId (query param).
+             ⚠️ Aviso destacado: compliance só é aprovado após conclusão completa. */}
         {cafFallbackUrl && attemptCount >= 2 && (
-          <a
-            href={cafFallbackUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => { try { onCafFallbackClick?.(); } catch {} }}
-            className="inline-flex items-center justify-center h-11 rounded-xl bg-[#002443] hover:bg-[#002443]/90 text-white font-semibold text-sm transition-all px-4 shadow-lg shadow-[#002443]/20"
-          >
-            <ExternalLink className="w-4 h-4 mr-2" />
-            Fazer direto no onboarding oficial CAF
-          </a>
+          <div className="rounded-xl border-2 border-[#002443] bg-gradient-to-br from-[#002443]/5 to-[#2bc196]/5 p-4 space-y-3">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-[#002443] flex items-center justify-center">
+                <Shield className="w-5 h-5 text-white" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-[#002443]">
+                  Alternativa: concluir pelo onboarding oficial CAF
+                </p>
+                <p className="text-xs text-[#002443]/70 mt-1 leading-relaxed">
+                  Você será direcionado ao portal seguro da CAF para completar a verificação.
+                  <strong className="text-[#002443]"> Use o mesmo CPF e CNPJ do seu cadastro</strong> — o resultado volta automaticamente para nós.
+                </p>
+              </div>
+            </div>
+
+            {/* Aviso CRÍTICO destacado */}
+            <div className="rounded-lg bg-amber-50 border border-amber-300 px-3 py-2.5 flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+              <p className="text-[11px] text-amber-900 leading-relaxed">
+                <strong>Atenção:</strong> seu compliance só será aprovado após você concluir
+                <strong> completamente </strong> a prova de vida + facematch pelo link abaixo.
+                Não feche a janela antes de terminar.
+              </p>
+            </div>
+
+            <a
+              href={cafFallbackUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => { try { onCafFallbackClick?.(); } catch {} }}
+              className="inline-flex items-center justify-center w-full h-12 rounded-xl bg-[#002443] hover:bg-[#002443]/90 text-white font-semibold text-sm transition-all px-4 shadow-lg shadow-[#002443]/20"
+            >
+              <ExternalLink className="w-4 h-4 mr-2" />
+              Abrir onboarding oficial CAF
+            </a>
+          </div>
         )}
 
         {(info.primaryAction === 'manual' || info.secondaryAction === 'manual' || attemptCount >= 2 || tokenType === 'fallback') && onManualFallback && (

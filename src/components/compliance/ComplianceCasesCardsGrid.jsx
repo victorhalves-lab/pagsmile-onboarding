@@ -16,6 +16,7 @@ import {
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 import CaseExpandedDetail from '@/components/compliance/CaseExpandedDetail';
+import CafEngagementBadges from '@/components/compliance/CafEngagementBadges';
 import CafLinkGeneratorModal from '@/components/compliance/CafLinkGeneratorModal';
 import DocOnlyLinkModal from '@/components/compliance/DocOnlyLinkModal';
 import CafOnlyLinkModal from '@/components/compliance/CafOnlyLinkModal';
@@ -308,7 +309,12 @@ function CaseCard({
         <Field label="Tempo Fila">
           <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${timeBg} whitespace-nowrap inline-block`}>{time}</span>
         </Field>
-        <Field label="CAF"><CafStatusBadge caseData={c} /></Field>
+        <Field label="CAF">
+          <div className="flex flex-col gap-1">
+            <CafStatusBadge caseData={c} />
+            <CafEngagementBadges onboardingCaseId={c.id} />
+          </div>
+        </Field>
         <Field label="Introducer">
           {introducer ? (
             <div className="flex items-center gap-1 min-w-0">
