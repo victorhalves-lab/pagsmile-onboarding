@@ -15,8 +15,8 @@ import { Loader2, Play, CheckCircle2, XCircle, ChevronDown, ChevronRight } from 
 const BACKEND_TESTS = [
   {
     id: 'generateToken',
-    name: '1. Generate Session Token',
-    description: 'Assina JWT HS256 + troca em /bff/session-tokens. Deve retornar sessionToken.',
+    name: '1. Generate SDK Session Token',
+    description: 'Assina JWT HS256 (CAF_CLIENT_ID/SECRET) + troca em /bff/session-tokens. Usado pelo SDK Web (DocumentDetector + FaceLiveness).',
     function: 'cafGenerateToken',
     payload: (ctx) => ({ personCpf: ctx.cpf || '12345678909' }),
     success: (data) => !!data?.sdkToken,

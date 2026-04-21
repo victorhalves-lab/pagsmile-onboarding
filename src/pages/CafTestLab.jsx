@@ -18,7 +18,7 @@ import CafWebhookSetup from '@/components/caf-lab/CafWebhookSetup';
  */
 
 export default function CafTestLab() {
-  const [tab, setTab] = useState('backend');
+  const [tab, setTab] = useState('connect');
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
@@ -46,9 +46,10 @@ export default function CafTestLab() {
           <div className="text-xs text-amber-900">
             <p className="font-bold">Atenção — testes reais consomem créditos CAF</p>
             <p className="mt-1 opacity-80">
-              Cada teste de Face Match ou Full Enrichment cria uma transação real na CAF. Use CPFs
-              de teste (12345678909) quando possível. Os testes de SDK (câmera) não consomem créditos
-              apenas para inicialização — só quando você conclui a captura.
+              Toda a integração usa a <strong>Connect API</strong> (api.us.prd.caf.io) via OAuth2 client_credentials.
+              Cada Submit Compliance ou Create Transaction cria uma transação real na CAF e consome créditos.
+              Use CPFs de teste (12345678909) quando possível. Os testes de SDK (câmera) só consomem créditos
+              quando você conclui a captura.
             </p>
           </div>
         </div>
@@ -57,26 +58,22 @@ export default function CafTestLab() {
       {/* Tabs */}
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="bg-slate-100">
-          <TabsTrigger value="backend" className="data-[state=active]:bg-white data-[state=active]:text-[#002443]">
-            <Server className="w-4 h-4 mr-2" /> Core API (atual)
-          </TabsTrigger>
           <TabsTrigger value="connect" className="data-[state=active]:bg-white data-[state=active]:text-[#002443]">
-            <Plug className="w-4 h-4 mr-2" /> Connect API <Badge className="ml-2 bg-purple-100 text-purple-700 text-[9px] h-4">novo</Badge>
+            <Plug className="w-4 h-4 mr-2" /> Connect API <Badge className="ml-2 bg-[#2bc196] text-white text-[9px] h-4">principal</Badge>
           </TabsTrigger>
           <TabsTrigger value="submit" className="data-[state=active]:bg-white data-[state=active]:text-[#002443]">
             <Send className="w-4 h-4 mr-2" /> Submit Compliance <Badge className="ml-2 bg-emerald-100 text-emerald-700 text-[9px] h-4">PF/PJ</Badge>
           </TabsTrigger>
-          <TabsTrigger value="webhook" className="data-[state=active]:bg-white data-[state=active]:text-[#002443]">
-            <Webhook className="w-4 h-4 mr-2" /> Webhook Setup <Badge className="ml-2 bg-blue-100 text-blue-700 text-[9px] h-4">novo</Badge>
-          </TabsTrigger>
           <TabsTrigger value="sdk" className="data-[state=active]:bg-white data-[state=active]:text-[#002443]">
             <Camera className="w-4 h-4 mr-2" /> Frontend SDK (câmera)
           </TabsTrigger>
+          <TabsTrigger value="webhook" className="data-[state=active]:bg-white data-[state=active]:text-[#002443]">
+            <Webhook className="w-4 h-4 mr-2" /> Webhook Setup
+          </TabsTrigger>
+          <TabsTrigger value="backend" className="data-[state=active]:bg-white data-[state=active]:text-[#002443]">
+            <Server className="w-4 h-4 mr-2" /> Backend Helpers
+          </TabsTrigger>
         </TabsList>
-
-        <TabsContent value="backend" className="mt-4">
-          <CafBackendTests />
-        </TabsContent>
 
         <TabsContent value="connect" className="mt-4">
           <CafConnectTests />
@@ -86,12 +83,16 @@ export default function CafTestLab() {
           <CafComplianceSubmitTests />
         </TabsContent>
 
+        <TabsContent value="sdk" className="mt-4">
+          <CafSdkTests />
+        </TabsContent>
+
         <TabsContent value="webhook" className="mt-4">
           <CafWebhookSetup />
         </TabsContent>
 
-        <TabsContent value="sdk" className="mt-4">
-          <CafSdkTests />
+        <TabsContent value="backend" className="mt-4">
+          <CafBackendTests />
         </TabsContent>
       </Tabs>
     </div>
