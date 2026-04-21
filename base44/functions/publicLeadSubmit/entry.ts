@@ -15,6 +15,30 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
  */
 const ALLOWED_LEAD_STATUSES = new Set(['questionario_preenchido']);
 
+// SECURITY: allowlist of fields the public client is allowed to send.
+// ALL other fields (introducerId, commercialAgentId, leadQualifierScore, priscila*, ia*, bdc*,
+// onboardingCaseId, currentProposalId, etc.) are derived SERVER-SIDE from linkCode or by
+// post-create automations. Never trust the client for scoring/attribution/IA fields.
+const CLIENT_ALLOWED_LEAD_FIELDS = [
+  'email', 'fullName', 'cpfCnpj', 'phone',
+  'companyName', 'website', 'mcc',
+  'contactName', 'contactRole',
+  'businessSubCategory',
+  'tpvMensal', 'ticketMedio', 'transacoesMes',
+  'expectativaCrescimento',
+  'protocolo', 'origemLead',
+  'questionnaireData', 'expectedRates',
+  'lastInteractionDate',
+];
+
+function sanitizeLeadPayload(raw) {
+  const safe = {};
+  for (const key of CLIENT_ALLOWED_LEAD_FIELDS) {
+    if (raw[key] !== undefined) safe[key] = raw[key];
+  }
+  return safe;
+}
+
 Deno.serve(async (req) => {
   try {
     if (req.method !== 'POST') {
@@ -68,11 +92,10 @@ Deno.serve(async (req) => {
       }, { status: 400 });
     }
 
-    // Force status to allowed value
-    const safeLeadPayload = {
-      ...leadPayload,
-      status: ALLOWED_LEAD_STATUSES.has(leadPayload.status) ? leadPayload.status : 'questionario_preenchido',
-    };
+    // SECURITY: apply allowlist — only trusted client fields pass through.
+    // Sensitive fields (scoring, attribution, IA reports) are derived server-side.
+    const safeLeadPayload = sanitizeLeadPayload(leadPayload);
+    safeLeadPayload.status = ALLOWED_LEAD_STATUSES.has(leadPayload.status) ? leadPayload.status : 'questionario_preenchido';
 
     // Resolve introducer + agent from link (server-side, don't trust client)
     if (linkCode) {
