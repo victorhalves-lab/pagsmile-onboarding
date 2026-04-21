@@ -95,28 +95,15 @@ export default function ComplianceDocOnly() {
   React.useEffect(() => {
     if (!sessionToken || !caseId || Object.keys(documents).length === 0) return;
     const timer = setTimeout(() => {
-      // Strip _localFile (browser File object) before sending to backend — it
-      // serializes to {} and pollutes the saved state.
-      const cleanDocs = {};
-      for (const [k, v] of Object.entries(documents)) {
-        if (v && Array.isArray(v.files)) {
-          cleanDocs[k] = { ...v, files: v.files.map(({ _localFile, ...rest }) => rest) };
-        } else {
-          const { _localFile, ...rest } = v || {};
-          cleanDocs[k] = rest;
-        }
-      }
       base44.functions.invoke('saveComplianceProgress', {
         sessionToken,
         flowType: cafOnlyMode ? 'caf_only_recovery' : (skipCafIdentity ? 'docs_only_recovery' : 'docs_and_caf_recovery'),
         templateModel: template?.model || '',
         currentPhase: currentStep === 'caf_verification' ? 'caf' : 'documents',
-        documentsData: cleanDocs,
+        documentsData: documents,
         clientEmail: merchant?.email || '',
         clientName: merchant?.fullName || '',
-      }).catch((err) => {
-        console.warn('[ComplianceDocOnly] autosave falhou:', err?.message);
-      });
+      }).catch(() => {});
     }, 1500);
     return () => clearTimeout(timer);
   }, [documents, sessionToken, caseId, currentStep, cafOnlyMode, skipCafIdentity, template, merchant]);
@@ -315,17 +302,6 @@ export default function ComplianceDocOnly() {
     } catch (error) {
       console.error('Erro ao submeter:', error);
       toast.error('Erro ao enviar: ' + (error?.message || 'erro desconhecido'));
-      // Log failure so admins can see what happened without the client's console
-      try {
-        await base44.functions.invoke('logPublicClientError', {
-          stage: 'compliance_doc_only_submit',
-          errorMessage: error?.message || String(error),
-          caseId,
-          merchantId: merchant?.id,
-          userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : null,
-          extra: { currentStep, mode, docsCount: Object.keys(documents).length },
-        });
-      } catch (_) {}
     } finally {
       setIsSubmitting(false);
     }

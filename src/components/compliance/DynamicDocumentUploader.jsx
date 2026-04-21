@@ -58,28 +58,10 @@ export default function DynamicDocumentUploader({
     }
   }, [storageKey, setDocuments]);
 
-  // Persist to localStorage whenever docs change.
-  // CRITICAL: strip `_localFile` (browser File object) before serializing — File objects
-  // serialize to `{}`, which pollutes the state when restored and can break subsequent uploads.
+  // Persist to localStorage whenever docs change
   useEffect(() => {
     if (storageKey && documents && Object.keys(documents).length > 0) {
-      try {
-        const clean = {};
-        for (const [k, v] of Object.entries(documents)) {
-          if (v && Array.isArray(v.files)) {
-            clean[k] = {
-              ...v,
-              files: v.files.map(({ _localFile, ...rest }) => rest),
-            };
-          } else {
-            const { _localFile, ...rest } = v || {};
-            clean[k] = rest;
-          }
-        }
-        localStorage.setItem(storageKey, JSON.stringify(clean));
-      } catch (err) {
-        console.warn('[DocUploader] Falha ao salvar em localStorage:', err?.message);
-      }
+      localStorage.setItem(storageKey, JSON.stringify(documents));
     }
   }, [documents, storageKey]);
 
@@ -94,12 +76,7 @@ export default function DynamicDocumentUploader({
         try {
           // Compress images > 5MB to speed up uploads
           const file = await compressImageIfNeeded(original, 5);
-          const { file_uri } = await uploadPrivateFileWithRetry(file, {
-            context: {
-              stage: 'document_upload',
-              documentSlot: docId,
-            },
-          });
+          const { file_uri } = await uploadPrivateFileWithRetry(file);
           uploadedFiles.push({
             url: file_uri,
             uri: file_uri,
