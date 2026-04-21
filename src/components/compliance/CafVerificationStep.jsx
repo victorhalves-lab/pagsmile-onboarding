@@ -39,11 +39,17 @@ function loadScript(src, retries = 2) {
       // Previous script tag exists but didn't finish — remove and reload fresh
       existing.remove();
     }
+    // Note: we intentionally do NOT set `crossorigin="anonymous"` here.
+    // The CAF official docs example does not use it, and setting it causes the
+    // browser to require an Access-Control-Allow-Origin header on the CDN response.
+    // When the header varies (CDN region, CDN edge, network policy), the browser
+    // rejects the script and fires `onerror` even when the HTTP response is 200.
+    // Observed in production with BCK PAGAMENTOS (2026-04-21): script loaded fine
+    // in curl but failed in browser due to CORS rejection.
     const script = document.createElement('script');
     script.src = src;
     script.async = true;
     script.setAttribute('data-caf-src', src);
-    script.setAttribute('crossorigin', 'anonymous');
     script.onload = () => { script.dataset.loaded = 'true'; resolve(); };
     script.onerror = () => {
       script.remove();

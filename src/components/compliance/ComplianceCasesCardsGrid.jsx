@@ -18,6 +18,7 @@ import { toast } from 'sonner';
 import CaseExpandedDetail from '@/components/compliance/CaseExpandedDetail';
 import CafLinkGeneratorModal from '@/components/compliance/CafLinkGeneratorModal';
 import DocOnlyLinkModal from '@/components/compliance/DocOnlyLinkModal';
+import CafOnlyLinkModal from '@/components/compliance/CafOnlyLinkModal';
 import AssignCaseToPartnerModal from '@/components/partners-compliance/AssignCaseToPartnerModal';
 
 // ── Helpers ──
@@ -172,7 +173,7 @@ function CaseCard({
   linksMap, introducerMap,
   selectedRows, setSelectedRows,
   expandedRow, setExpandedRow,
-  onOpenCafModal, onOpenAssignModal, onOpenDocOnlyModal
+  onOpenCafModal, onOpenAssignModal, onOpenDocOnlyModal, onOpenCafOnlyModal
 }) {
   const isSelected = selectedRows.includes(c.id);
   const isExpanded = expandedRow === c.id;
@@ -244,6 +245,14 @@ function CaseCard({
           </Button>
           <Button
             variant="ghost" size="icon"
+            onClick={() => onOpenCafOnlyModal(c)}
+            className="h-8 w-8 text-purple-600 hover:bg-purple-100"
+            title="Gerar link só de verificação de identidade (CAF RG + selfie + liveness)"
+          >
+            <ScanFace className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="ghost" size="icon"
             onClick={() => setExpandedRow(isExpanded ? null : c.id)}
             className="h-8 w-8 text-[#002443]/60"
             title={isExpanded ? 'Recolher' : 'Expandir'}
@@ -267,6 +276,9 @@ function CaseCard({
                 disabled={c.docCompleted === true}
               >
                 <FileUp className="w-4 h-4 mr-2" /> Gerar Link só de Documentos
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onOpenCafOnlyModal(c)}>
+                <ScanFace className="w-4 h-4 mr-2" /> Gerar Link só de Verificação de Identidade
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onOpenAssignModal(c.id)}>
                 <Handshake className="w-4 h-4 mr-2" /> Atribuir a parceiro
@@ -324,6 +336,7 @@ export default function ComplianceCasesCardsGrid({
 }) {
   const [cafModalCase, setCafModalCase] = React.useState(null);
   const [docOnlyModalCase, setDocOnlyModalCase] = React.useState(null);
+  const [cafOnlyModalCase, setCafOnlyModalCase] = React.useState(null);
   const [assignModalCaseId, setAssignModalCaseId] = React.useState(null);
 
   const allSelected = selectedRows.length === paginatedCases.length && paginatedCases.length > 0;
@@ -370,6 +383,7 @@ export default function ComplianceCasesCardsGrid({
                 setExpandedRow={setExpandedRow}
                 onOpenCafModal={setCafModalCase}
                 onOpenDocOnlyModal={setDocOnlyModalCase}
+                onOpenCafOnlyModal={setCafOnlyModalCase}
                 onOpenAssignModal={setAssignModalCaseId}
               />
             ))}
@@ -407,6 +421,13 @@ export default function ComplianceCasesCardsGrid({
         onOpenChange={(o) => { if (!o) setDocOnlyModalCase(null); }}
         caseData={docOnlyModalCase}
         merchant={docOnlyModalCase ? merchantMap[docOnlyModalCase.merchantId] : null}
+      />
+
+      <CafOnlyLinkModal
+        open={!!cafOnlyModalCase}
+        onOpenChange={(o) => { if (!o) setCafOnlyModalCase(null); }}
+        caseData={cafOnlyModalCase}
+        merchant={cafOnlyModalCase ? merchantMap[cafOnlyModalCase.merchantId] : null}
       />
 
       <AssignCaseToPartnerModal

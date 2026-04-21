@@ -23,16 +23,21 @@ export default function ComplianceDocOnly() {
   const urlParams = new URLSearchParams(window.location.search);
   const caseId = urlParams.get('caseId');
   const token = urlParams.get('token');
+  const mode = urlParams.get('mode');
   // When mode=docs_only, the CAF identity SDK (RG/CNH + selfie + liveness) is SKIPPED.
   // The uploaded business documents are STILL analyzed by CAF VerifAI in the backend
   // (digital manipulation detection) — VerifAI runs automatically on each DocumentUpload
   // created by publicComplianceDocUpload.
-  const skipCafIdentity = urlParams.get('mode') === 'docs_only';
+  const skipCafIdentity = mode === 'docs_only';
+  // When mode=caf_only, the document upload step is SKIPPED.
+  // The client goes straight to the CAF identity SDK (RG/CNH + selfie + liveness).
+  // Used when client already uploaded docs but got stuck at the identity verification.
+  const cafOnlyMode = mode === 'caf_only';
 
   const [documents, setDocuments] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [allRequiredUploaded, setAllRequiredUploaded] = useState(false);
-  const [currentStep, setCurrentStep] = useState('docs_upload');
+  const [currentStep, setCurrentStep] = useState(cafOnlyMode ? 'caf_verification' : 'docs_upload');
   const [cafResult, setCafResult] = useState(null);
 
   // ── Load OnboardingCase + Template (token-protected via backend) ──
@@ -121,12 +126,17 @@ export default function ComplianceDocOnly() {
     const effectiveCafResult = cafResultParam || cafResult;
     setIsSubmitting(true);
     try {
+      // In caf_only mode, skip document upload entirely — only the CAF identity results
+      // need to be persisted (which already happened inside CafVerificationStep).
+      // We just need to flip cafCompleted=true on the case.
+      const isCafOnly = cafOnlyMode;
+
       // Upload documents via publicComplianceDocUpload (asServiceRole, token-protected)
       const allTemplateDocs = (template?.requiredDocuments || []).map((doc, index) => ({
         ...doc,
         _docKey: doc.documentTypeId || doc.id || `doc_${index}_${(doc.label || '').replace(/\s+/g, '_').toLowerCase().slice(0, 30)}`,
       }));
-      const docsPayload = Object.entries(documents).map(([docId, docData]) => {
+      const docsPayload = isCafOnly ? [] : Object.entries(documents).map(([docId, docData]) => {
         const docDef = allTemplateDocs.find(d => d._docKey === docId);
         return {
           documentTypeId: docId,
@@ -162,16 +172,20 @@ export default function ComplianceDocOnly() {
         }
       }
 
-      // Only reached if ALL documents were successfully persisted.
-      // Mark case as doc + caf completed (whitelisted fields only via publicComplianceCaseUpdate)
+      // Only reached if ALL documents were successfully persisted (or docs_only/caf_only mode).
+      // In caf_only mode, we ONLY flip cafCompleted — docCompleted stays as-is (docs were already uploaded earlier).
+      const updates = {
+        cafCompleted: !!effectiveCafResult || cafOnlyMode,
+        submissionDate: new Date().toISOString(),
+      };
+      if (!cafOnlyMode) {
+        // Only set docCompleted=true when we actually uploaded documents in this session.
+        updates.docCompleted = true;
+      }
       await base44.functions.invoke('publicComplianceCaseUpdate', {
         caseId,
         docLinkToken: token,
-        updates: {
-          docCompleted: true,
-          cafCompleted: !!effectiveCafResult,
-          submissionDate: new Date().toISOString(),
-        }
+        updates,
       });
 
       // Trigger re-analysis pipeline (non-blocking)
@@ -242,31 +256,33 @@ export default function ComplianceDocOnly() {
           )}
         </div>
 
-        {/* Step indicator — in docs_only mode, hide the CAF identity step */}
+        {/* Step indicator — adapts to mode: docs_only hides CAF step, caf_only hides Docs step */}
         <div className="flex items-center justify-center gap-3 mb-4">
-          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-            currentStep === 'docs_upload' ? 'bg-blue-100 text-blue-700 ring-2 ring-blue-300' : 'bg-green-100 text-green-700'
-          }`}>
-            {currentStep !== 'docs_upload' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <span className="w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center">1</span>}
-            Documentos
-          </div>
-          {!skipCafIdentity && (
+          {!cafOnlyMode && (
             <>
-              <div className="w-8 h-0.5 bg-slate-200" />
               <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                currentStep === 'caf_verification' ? 'bg-purple-100 text-purple-700 ring-2 ring-purple-300' :
-                currentStep === 'completed' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'
+                currentStep === 'docs_upload' ? 'bg-blue-100 text-blue-700 ring-2 ring-blue-300' : 'bg-green-100 text-green-700'
               }`}>
-                {currentStep === 'completed' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <span className="w-5 h-5 rounded-full bg-slate-300 text-white text-[10px] flex items-center justify-center">2</span>}
-                Verificação CAF
+                {currentStep !== 'docs_upload' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <span className="w-5 h-5 rounded-full bg-blue-600 text-white text-[10px] flex items-center justify-center">1</span>}
+                Documentos
               </div>
+              {!skipCafIdentity && <div className="w-8 h-0.5 bg-slate-200" />}
             </>
+          )}
+          {!skipCafIdentity && (
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+              currentStep === 'caf_verification' ? 'bg-purple-100 text-purple-700 ring-2 ring-purple-300' :
+              currentStep === 'completed' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'
+            }`}>
+              {currentStep === 'completed' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <span className="w-5 h-5 rounded-full bg-slate-300 text-white text-[10px] flex items-center justify-center">{cafOnlyMode ? '1' : '2'}</span>}
+              Verificação CAF
+            </div>
           )}
           <div className="w-8 h-0.5 bg-slate-200" />
           <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold ${
             currentStep === 'completed' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'
           }`}>
-            {currentStep === 'completed' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <span className="w-5 h-5 rounded-full bg-slate-300 text-white text-[10px] flex items-center justify-center">{skipCafIdentity ? '2' : '3'}</span>}
+            {currentStep === 'completed' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <span className="w-5 h-5 rounded-full bg-slate-300 text-white text-[10px] flex items-center justify-center">{cafOnlyMode || skipCafIdentity ? '2' : '3'}</span>}
             Conclusão
           </div>
         </div>
@@ -275,7 +291,9 @@ export default function ComplianceDocOnly() {
           {currentStep === 'caf_verification' ? 'Verificação de Identidade' : 'Complemento de Documentos'}
         </h1>
         <p className="text-[var(--pagsmile-blue)]/70 max-w-lg mx-auto">
-          {currentStep === 'caf_verification'
+          {cafOnlyMode
+            ? 'Você está a um passo de concluir seu cadastro. Capture seu documento de identidade (frente e verso) e faça a prova de vida.'
+            : currentStep === 'caf_verification'
             ? 'Capture seu documento e realize a prova de vida para verificar sua identidade.'
             : 'Envie os documentos solicitados e complete a verificação de identidade para finalizar o onboarding.'}
         </p>
@@ -293,8 +311,8 @@ export default function ComplianceDocOnly() {
         </div>
       </div>
 
-      {/* Step 1: Upload de Documentos */}
-      {currentStep === 'docs_upload' && (
+      {/* Step 1: Upload de Documentos (skipped in caf_only mode) */}
+      {currentStep === 'docs_upload' && !cafOnlyMode && (
         <DynamicDocumentUploader
           template={template}
           documents={documents}
