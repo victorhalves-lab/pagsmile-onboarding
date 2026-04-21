@@ -3,13 +3,32 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 /**
  * PUBLIC endpoint — submission of FechamentoLandingPage (step 3).
  * Creates: LandingPageLead OR StandardProposalLead + Lead + Proposal, and links them.
- * The payload must include rates already-resolved (client picked them from public data).
  *
- * Guarantees:
- *   - No auth required.
- *   - Rate data is re-fetched server-side from the referenced source (StandardProposal token or Introducer id)
- *     to prevent a malicious client from injecting arbitrary rates.
+ * SECURITY HARDENING (BUG-003 fix):
+ *   - Rate data is ALWAYS re-fetched server-side from the referenced source
+ *     (StandardProposal token or Introducer id) to prevent rate injection.
+ *   - Attribution (introducer, commercial agent) is ALWAYS resolved server-side
+ *     from the DB. Client-submitted agent/introducer metadata is IGNORED.
+ *   - formData is passed through an allowlist — no arbitrary field can be injected.
  */
+
+// ─── Allowlist: only these fields are accepted from client formData ───
+const ALLOWED_FORM_FIELDS = new Set([
+  'cnpj', 'razaoSocial', 'nomeFantasia', 'website',
+  'email', 'phone', 'contactName', 'contactRole',
+  'endereco', 'tpvMensal', 'distribuicaoTpv',
+  'modeloNegocio', 'sellersDescription', 'fornecedores',
+]);
+
+function sanitizeFormData(raw) {
+  if (!raw || typeof raw !== 'object') return {};
+  const clean = {};
+  for (const k of Object.keys(raw)) {
+    if (ALLOWED_FORM_FIELDS.has(k)) clean[k] = raw[k];
+  }
+  return clean;
+}
+
 Deno.serve(async (req) => {
   try {
     if (req.method !== 'POST') {
@@ -20,16 +39,24 @@ Deno.serve(async (req) => {
     const {
       isFromStandardProposal,
       fromStandardProposalToken,
-      introducerId,
-      commercialAgent, // {id, full_name}
+      introducerId: rawIntroducerId,
+      commercialAgent: rawCommercialAgent, // DO NOT TRUST — resolve server-side
       segmentName,
       businessSubCategory,
       slug,
-      formData,
+      formData: rawFormData,
     } = body;
+
+    // ── Sanitize formData (allowlist) ──
+    const formData = sanitizeFormData(rawFormData);
 
     if (!formData || !segmentName) {
       return Response.json({ error: 'Missing formData or segmentName' }, { status: 400 });
+    }
+
+    // ── Anti-ghost: require minimal contact data ──
+    if (!formData.email && !formData.phone && !formData.cnpj) {
+      return Response.json({ error: 'EMPTY_LEAD_BLOCKED: missing contact identifier' }, { status: 400 });
     }
 
     const base44 = createClientFromRequest(req);
@@ -39,21 +66,50 @@ Deno.serve(async (req) => {
     let ratesSource = null;
     let chosenPartnerId = null;
     let isFromIntroducer = false;
+    let verifiedIntroducer = null; // server-resolved introducer object
 
     if (isFromStandardProposal && fromStandardProposalToken) {
       const props = await base44.asServiceRole.entities.StandardProposal.filter({ tokenPublico: fromStandardProposalToken });
       if (props.length === 0) return Response.json({ error: 'Proposta padrão não encontrada' }, { status: 404 });
       ratesSource = props[0].rates;
       chosenPartnerId = props[0].chosenPartnerId;
-    } else if (introducerId && segmentName) {
-      const intros = await base44.asServiceRole.entities.Introducer.filter({ id: introducerId });
+
+      // If the standard proposal links to an introducer, load it server-side
+      if (rawIntroducerId && typeof rawIntroducerId === 'string') {
+        const intros = await base44.asServiceRole.entities.Introducer.filter({ id: rawIntroducerId }).catch(() => []);
+        if (intros.length > 0) verifiedIntroducer = intros[0];
+      }
+    } else if (rawIntroducerId && segmentName) {
+      // Validate introducer exists
+      if (typeof rawIntroducerId !== 'string' || rawIntroducerId.length < 10) {
+        return Response.json({ error: 'Introducer inválido' }, { status: 400 });
+      }
+      const intros = await base44.asServiceRole.entities.Introducer.filter({ id: rawIntroducerId }).catch(() => []);
       if (intros.length === 0) return Response.json({ error: 'Introducer não encontrado' }, { status: 404 });
-      const segRate = intros[0].standardRates?.find(r => r.segmentName === segmentName);
+      verifiedIntroducer = intros[0];
+
+      const segRate = verifiedIntroducer.standardRates?.find(r => r.segmentName === segmentName);
       if (!segRate) return Response.json({ error: 'Taxas do segmento não encontradas' }, { status: 404 });
       ratesSource = segRate;
       isFromIntroducer = true;
     } else {
       return Response.json({ error: 'Origem das taxas inválida' }, { status: 400 });
+    }
+
+    // ── Resolve commercial agent server-side ──
+    // We IGNORE full_name from the client. Only the id is used as a lookup,
+    // and we validate the user exists and has a commercial role before attributing.
+    let verifiedAgent = null;
+    const clientAgentId = rawCommercialAgent?.id;
+    if (clientAgentId && typeof clientAgentId === 'string' && clientAgentId.length >= 10) {
+      const users = await base44.asServiceRole.entities.User.filter({ id: clientAgentId }).catch(() => []);
+      if (users.length > 0) {
+        const u = users[0];
+        // Only accept users that are legitimately able to be commercial agents
+        if (u.role === 'admin' || u.role === 'user') {
+          verifiedAgent = { id: u.id, full_name: u.full_name };
+        }
+      }
     }
 
     // 2. Build common fields for origin lead entity
@@ -75,7 +131,7 @@ Deno.serve(async (req) => {
       segment: segmentName,
       businessSubCategory: businessSubCategory || 'ecommerce',
       status: 'novo',
-      ...(commercialAgent && { commercialAgentId: commercialAgent.id, commercialAgentName: commercialAgent.full_name }),
+      ...(verifiedAgent && { commercialAgentId: verifiedAgent.id, commercialAgentName: verifiedAgent.full_name }),
     };
 
     let createdOriginLead;
@@ -86,21 +142,15 @@ Deno.serve(async (req) => {
       createdOriginLead = await base44.asServiceRole.entities.StandardProposalLead.create({
         ...commonFields,
         standardProposalToken: fromStandardProposalToken,
-        ...(introducerId && { introducerId }),
+        ...(verifiedIntroducer && { introducerId: verifiedIntroducer.id }),
       });
     } else {
       originEntity = 'LandingPageLead';
-      let introducerData = {};
-      if (introducerId) {
-        const intros = await base44.asServiceRole.entities.Introducer.filter({ id: introducerId });
-        if (intros.length > 0) {
-          introducerData = {
-            introducerId: intros[0].id,
-            introducerName: intros[0].name,
-            introducerReferralCode: intros[0].referralCode,
-          };
-        }
-      }
+      const introducerData = verifiedIntroducer ? {
+        introducerId: verifiedIntroducer.id,
+        introducerName: verifiedIntroducer.name,
+        introducerReferralCode: verifiedIntroducer.referralCode,
+      } : {};
       createdOriginLead = await base44.asServiceRole.entities.LandingPageLead.create({
         ...commonFields,
         slug: slug || '',
@@ -132,8 +182,12 @@ Deno.serve(async (req) => {
         segmentoLandingPage: segmentName,
         contactRole: formData.contactRole,
       },
-      ...(introducerId && { introducerId }),
-      ...(commercialAgent && { commercialAgentId: commercialAgent.id, commercialAgentName: commercialAgent.full_name }),
+      ...(verifiedIntroducer && {
+        introducerId: verifiedIntroducer.id,
+        introducerName: verifiedIntroducer.name,
+        introducerReferralCode: verifiedIntroducer.referralCode,
+      }),
+      ...(verifiedAgent && { commercialAgentId: verifiedAgent.id, commercialAgentName: verifiedAgent.full_name }),
     };
     const createdLead = await base44.asServiceRole.entities.Lead.create(leadPayload);
 
@@ -190,7 +244,7 @@ Deno.serve(async (req) => {
       isCurrentVersion: true,
       proposalName: `Proposta - ${createdLead.fullName}`,
       origem: 'manual',
-      ...(commercialAgent && { responsavelId: commercialAgent.id, responsavelNome: commercialAgent.full_name }),
+      ...(verifiedAgent && { responsavelId: verifiedAgent.id, responsavelNome: verifiedAgent.full_name }),
     };
     const createdProposal = await base44.asServiceRole.entities.Proposal.create(proposalPayload);
 
