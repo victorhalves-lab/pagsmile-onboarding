@@ -206,7 +206,27 @@ Deno.serve(async (req) => {
     let bdcEnqueued = false;
     let bdcSkipped = false;
 
+    // v10 (2026-04-21): Re-executa BDC se queue completou APÓS o último score.
+    // Isso garante que quando bdcRetryWorker completa lotes non-critical, o score
+    // V4 é recalculado com todos os 13 analyzers populados.
+    let shouldSkipBdc = false;
     if (onboardingCase.bigDataCorpCompleted === true && onboardingCase.riskScoreV4 != null) {
+      try {
+        const queues = await base44.asServiceRole.entities.BdcRetryQueue.filter({ onboarding_case_id: caseId });
+        const queue = queues[0];
+        const existingScores = await base44.asServiceRole.entities.ComplianceScore.filter({ onboarding_case_id: caseId });
+        const existingScore = existingScores[0];
+        const queueSuccessAt = queue?.last_success_at ? new Date(queue.last_success_at).getTime() : 0;
+        const lastScoreAt = existingScore?.data_analise_fase_2 ? new Date(existingScore.data_analise_fase_2).getTime() : 0;
+        const queueCompletedAfterScore = queueSuccessAt > 0 && queueSuccessAt > lastScoreAt;
+        if (!queueCompletedAfterScore) shouldSkipBdc = true;
+        else console.log(`[AutoEnrich] Step 1: Re-running BDC — queue completed (${new Date(queueSuccessAt).toISOString()}) after last score (${new Date(lastScoreAt).toISOString()})`);
+      } catch (e) {
+        shouldSkipBdc = true; // fallback: comportamento antigo
+      }
+    }
+
+    if (shouldSkipBdc) {
       console.log(`[AutoEnrich] Step 1: SKIPPED — BDC já completo (score V4=${onboardingCase.riskScoreV4}, subfaixa=${onboardingCase.subfaixa})`);
       bdcSuccess = true;
       bdcSkipped = true;
@@ -215,15 +235,16 @@ Deno.serve(async (req) => {
         console.log(`[AutoEnrich] Step 1: BDC enrichment (V4 scoring)...`);
         const bdcRes = await base44.asServiceRole.functions.invoke('bdcEnrichCase', { onboardingCaseId: caseId });
         bdcSuccess = bdcRes?.data?.success === true;
-        bdcEnqueued = bdcRes?.data?.reason === 'critical_batches_failed_enqueued';
+        const enqueueReason = bdcRes?.data?.reason;
+        bdcEnqueued = enqueueReason === 'critical_batches_failed_enqueued' || enqueueReason === 'non_critical_batches_failed_enqueued';
 
         if (bdcEnqueued) {
-          console.warn(`[AutoEnrich] ⏸️  Step 1: CRITICAL batches failed — BDC enqueued for retry. BLOCKING pipeline.`);
+          console.warn(`[AutoEnrich] ⏸️  Step 1: Batches failed (${enqueueReason}) — BDC enqueued for retry. BLOCKING pipeline.`);
           console.warn(`[AutoEnrich] Failed batches: ${(bdcRes?.data?.failedBatches || []).join(', ')}`);
           return Response.json({
-            success: false, blocked: true, reason: 'bdc_critical_failed',
+            success: false, blocked: true, reason: enqueueReason,
             failedBatches: bdcRes?.data?.failedBatches,
-            message: 'Pipeline bloqueado — aguardando BDC. Retry automático em andamento.',
+            message: 'Pipeline bloqueado — aguardando BDC completar todos os lotes. Retry automático em andamento.',
           });
         }
         console.log(`[AutoEnrich] Step 1: ${bdcSuccess ? 'OK' : 'FAILED'} — V4 score=${bdcRes?.data?.analysis?.scoring?.finalScore}`);

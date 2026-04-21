@@ -454,14 +454,335 @@ function analyzeESG(result) {
   return { score, items };
 }
 
-function analyzeEvolution() { return { score: 0, items: [] }; }
-function analyzeReputation() { return { score: 0, items: [] }; }
-function analyzeFinancial() { return { score: 0, items: [] }; }
-function analyzeContacts() { return { score: 0, items: [] }; }
-function analyzeEmployeesKyc() { return { score: 0, items: [] }; }
-function analyzeSectorial() { return { score: 0, items: [] }; }
-function analyzeAssets() { return { score: 0, items: [] }; }
-function analyzeCreditRisk() { return { score: 0, items: [] }; }
+// ══════════════════════════════════════════════════════════════════
+// REAL ANALYZERS (v2 — 2026-04-21)
+// Cada analyzer lê o dataset BDC correspondente e gera score + items.
+// Todos envelopados em try/catch: se parse falhar, retorna {score:0,items:[]}
+// para não quebrar o pipeline.
+// ══════════════════════════════════════════════════════════════════
+
+function analyzeEvolution(result) {
+  try {
+    const items = []; let score = 0;
+    const hbd = result?.HistoryBasicData || result?.history_basic_data;
+    if (!hbd) { items.push({ label: 'Evolução histórica', value: 'Dataset não consultado', risk: 'INFO', points: 0 }); return { score, items }; }
+    const histItems = flattenBDCArray(hbd);
+    const first = histItems[0] || (typeof hbd === 'object' ? hbd : {});
+
+    const cnaeChanges = Number(first?.CnaeTotalChanges ?? 0);
+    if (cnaeChanges >= 5) { score += 25; items.push({ label: 'Mudanças de CNAE', value: `${cnaeChanges} alterações`, risk: 'ALTO', points: 25 }); }
+    else if (cnaeChanges >= 3) { score += 15; items.push({ label: 'Mudanças de CNAE', value: `${cnaeChanges} alterações`, risk: 'MEDIO', points: 15 }); }
+    else items.push({ label: 'Mudanças de CNAE', value: `${cnaeChanges} alterações`, risk: 'OK', points: 0 });
+
+    const tradeChanges = Number(first?.TradeNameTotalChanges ?? 0);
+    if (tradeChanges >= 3) { score += 15; items.push({ label: 'Mudanças de nome fantasia', value: `${tradeChanges}`, risk: 'ALTO', points: 15 }); }
+    else if (tradeChanges >= 2) { score += 5; items.push({ label: 'Mudanças de nome fantasia', value: `${tradeChanges}`, risk: 'MEDIO', points: 5 }); }
+    else items.push({ label: 'Mudanças de nome fantasia', value: `${tradeChanges}`, risk: 'OK', points: 0 });
+
+    const regimeChanges = Number(first?.TaxRegimeTotalChanges ?? 0);
+    if (regimeChanges >= 3) { score += 15; items.push({ label: 'Mudanças de regime tributário', value: `${regimeChanges}`, risk: 'ALTO', points: 15 }); }
+    else items.push({ label: 'Mudanças de regime tributário', value: `${regimeChanges}`, risk: 'OK', points: 0 });
+
+    const capitalChanges = Number(first?.CapitalTotalChanges ?? 0);
+    if (capitalChanges >= 4) { score += 10; items.push({ label: 'Mudanças de capital social', value: `${capitalChanges}`, risk: 'MEDIO', points: 10 }); }
+    else items.push({ label: 'Mudanças de capital social', value: `${capitalChanges}`, risk: 'OK', points: 0 });
+
+    const totalChanges = Number(first?.TotalChanges ?? 0);
+    items.push({ label: 'Total de alterações cadastrais', value: `${totalChanges}`, risk: totalChanges > 30 ? 'MEDIO' : 'OK', points: 0 });
+
+    return { score, items };
+  } catch (e) { return { score: 0, items: [{ label: 'Evolução', value: `Erro parse: ${e.message}`, risk: 'INFO', points: 0 }] }; }
+}
+
+function analyzeReputation(result) {
+  try {
+    const items = []; let score = 0;
+    const rep = result?.ReputationsAndReviews || result?.reputations_and_reviews;
+    const media = result?.MediaProfileAndExposure || result?.media_profile_and_exposure;
+    let any = false;
+
+    if (rep) {
+      any = true;
+      const repItems = flattenBDCArray(rep);
+      for (const r of repItems) {
+        const raScore = Number(r?.ReclameAquiScore ?? r?.ReclameAquiRating ?? r?.OverallRating);
+        if (!isNaN(raScore) && raScore > 0) {
+          if (raScore < 5) { score += 30; items.push({ label: 'Reclame Aqui', value: `Score ${raScore.toFixed(1)}`, risk: 'ALTO', points: 30 }); }
+          else if (raScore < 7) { score += 10; items.push({ label: 'Reclame Aqui', value: `Score ${raScore.toFixed(1)}`, risk: 'MEDIO', points: 10 }); }
+          else items.push({ label: 'Reclame Aqui', value: `Score ${raScore.toFixed(1)}`, risk: 'OK', points: 0 });
+          break;
+        }
+      }
+    }
+
+    if (media) {
+      any = true;
+      const medItems = flattenBDCArray(media);
+      for (const m of medItems) {
+        const sentiment = String(m?.Sentiment || m?.OverallSentiment || '').toUpperCase();
+        if (sentiment.includes('NEGATIVE') && !sentiment.includes('VERY_NEGATIVE')) {
+          score += 15;
+          items.push({ label: 'Sentimento em mídia', value: 'NEGATIVE', risk: 'MEDIO', points: 15 });
+        } else if (sentiment.includes('POSITIVE')) {
+          items.push({ label: 'Sentimento em mídia', value: sentiment, risk: 'OK', points: 0 });
+        }
+        const mentions = Number(m?.TotalMentions ?? m?.MentionsCount ?? 0);
+        if (mentions > 0) items.push({ label: 'Menções em mídia', value: `${mentions}`, risk: 'INFO', points: 0 });
+      }
+    }
+
+    if (!any) items.push({ label: 'Reputação', value: 'Dataset não consultado', risk: 'INFO', points: 0 });
+    return { score, items };
+  } catch (e) { return { score: 0, items: [{ label: 'Reputação', value: `Erro parse: ${e.message}`, risk: 'INFO', points: 0 }] }; }
+}
+
+function analyzeFinancial(result) {
+  try {
+    const items = []; let score = 0;
+    const fm = result?.FinancialMarket || result?.financial_market;
+    const evol = result?.CompanyEvolution || result?.company_evolution;
+    let any = false;
+
+    if (fm) {
+      any = true;
+      const fmItems = flattenBDCArray(fm);
+      for (const f of fmItems) {
+        const revenue = Number(f?.TotalRevenue ?? f?.EstimatedRevenue ?? f?.Revenue);
+        if (!isNaN(revenue) && revenue > 0) {
+          items.push({ label: 'Receita estimada anual', value: `R$ ${revenue.toLocaleString('pt-BR')}`, risk: 'INFO', points: 0 });
+        }
+        const hasBankruptcy = f?.HasBankruptcy === true || f?.Bankruptcy === true;
+        if (hasBankruptcy) { score += 50; items.push({ label: 'Falência/Recuperação judicial', value: 'SIM', risk: 'CRITICO', points: 50 }); }
+      }
+    }
+
+    if (evol) {
+      any = true;
+      const evItems = flattenBDCArray(evol);
+      for (const e of evItems) {
+        const growth = Number(e?.RevenueGrowthPercentage ?? e?.YoYGrowth);
+        if (!isNaN(growth)) {
+          if (growth < -30) { score += 20; items.push({ label: 'Crescimento YoY', value: `${growth.toFixed(0)}%`, risk: 'ALTO', points: 20 }); }
+          else items.push({ label: 'Crescimento YoY', value: `${growth.toFixed(0)}%`, risk: 'OK', points: 0 });
+        }
+      }
+    }
+
+    if (!any) items.push({ label: 'Financeiro', value: 'Dataset não consultado', risk: 'INFO', points: 0 });
+    return { score, items };
+  } catch (e) { return { score: 0, items: [{ label: 'Financeiro', value: `Erro parse: ${e.message}`, risk: 'INFO', points: 0 }] }; }
+}
+
+function analyzeContacts(result) {
+  try {
+    const items = []; let score = 0;
+    const FREE_PROVIDERS = ['gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com', 'yahoo.com.br', 'bol.com.br', 'uol.com.br', 'icloud.com', 'protonmail.com', 'live.com'];
+
+    const emails = result?.EmailsExtended || result?.emails_extended;
+    const phones = result?.PhonesExtended || result?.phones_extended;
+    const addresses = result?.AddressesExtended || result?.addresses_extended;
+    let any = false;
+
+    if (emails) {
+      any = true;
+      const emItems = flattenBDCArray(emails);
+      const emailList = [];
+      for (const e of emItems) {
+        const list = e?.Emails || e?.EmailsList || (Array.isArray(e) ? e : []);
+        if (Array.isArray(list)) for (const item of list) emailList.push(item?.EmailAddress || item?.Email || item);
+      }
+      const onlyFree = emailList.length > 0 && emailList.every(em => {
+        const dom = String(em || '').toLowerCase().split('@')[1];
+        return FREE_PROVIDERS.includes(dom);
+      });
+      if (emailList.length === 0) { score += 10; items.push({ label: 'E-mails registrados', value: 'Nenhum encontrado', risk: 'MEDIO', points: 10 }); }
+      else if (onlyFree) { score += 15; items.push({ label: 'E-mails', value: `${emailList.length} (apenas provedores gratuitos)`, risk: 'MEDIO', points: 15 }); }
+      else items.push({ label: 'E-mails', value: `${emailList.length} registrados`, risk: 'OK', points: 0 });
+    }
+
+    if (phones) {
+      any = true;
+      const phItems = flattenBDCArray(phones);
+      let phoneCount = 0;
+      for (const p of phItems) {
+        const list = p?.Phones || p?.PhonesList || (Array.isArray(p) ? p : []);
+        if (Array.isArray(list)) phoneCount += list.length;
+      }
+      if (phoneCount === 0) { score += 10; items.push({ label: 'Telefones registrados', value: 'Nenhum', risk: 'MEDIO', points: 10 }); }
+      else items.push({ label: 'Telefones registrados', value: `${phoneCount}`, risk: 'OK', points: 0 });
+    }
+
+    if (addresses) {
+      any = true;
+      const adItems = flattenBDCArray(addresses);
+      let addrCount = 0;
+      for (const a of adItems) {
+        const list = a?.Addresses || a?.AddressesList || (Array.isArray(a) ? a : []);
+        if (Array.isArray(list)) addrCount += list.length;
+      }
+      items.push({ label: 'Endereços registrados', value: `${addrCount}`, risk: addrCount === 0 ? 'MEDIO' : 'OK', points: addrCount === 0 ? 5 : 0 });
+      if (addrCount === 0) score += 5;
+    }
+
+    if (!any) items.push({ label: 'Contatos', value: 'Datasets não consultados', risk: 'INFO', points: 0 });
+    return { score, items };
+  } catch (e) { return { score: 0, items: [{ label: 'Contatos', value: `Erro parse: ${e.message}`, risk: 'INFO', points: 0 }] }; }
+}
+
+function analyzeEmployeesKyc(result) {
+  try {
+    const items = []; let score = 0;
+    const rel = result?.RelatedPeopleKyc || result?.related_people_kyc;
+    const infl = result?.OwnersInfluence || result?.owners_influence;
+    let any = false;
+
+    if (rel) {
+      any = true;
+      const relItems = flattenBDCArray(rel);
+      let pepCount = 0, sanctionedCount = 0;
+      for (const item of relItems) {
+        if (item?.IsPEP || item?.IsPep) pepCount++;
+        const sanctions = item?.Sanctions || [];
+        if (Array.isArray(sanctions) && sanctions.length > 0) sanctionedCount++;
+      }
+      if (pepCount > 0) { score += 25; items.push({ label: 'PEPs em funcionários-chave', value: `${pepCount}`, risk: 'ALTO', points: 25 }); }
+      if (sanctionedCount > 0) { score += 40; items.push({ label: 'Funcionários sancionados', value: `${sanctionedCount}`, risk: 'CRITICO', points: 40 }); }
+      if (pepCount === 0 && sanctionedCount === 0) items.push({ label: 'KYC de funcionários-chave', value: 'Limpo', risk: 'OK', points: 0 });
+    }
+
+    if (infl) {
+      any = true;
+      const infItems = flattenBDCArray(infl);
+      for (const i of infItems) {
+        const infLevel = Number(i?.InfluenceLevel ?? i?.PoliticalInfluenceScore);
+        if (!isNaN(infLevel) && infLevel > 0.7) { score += 15; items.push({ label: 'Influência política de sócios', value: `${(infLevel * 100).toFixed(0)}%`, risk: 'MEDIO', points: 15 }); }
+      }
+    }
+
+    if (!any) items.push({ label: 'KYC funcionários', value: 'Datasets não consultados', risk: 'INFO', points: 0 });
+    return { score, items };
+  } catch (e) { return { score: 0, items: [{ label: 'KYC funcionários', value: `Erro parse: ${e.message}`, risk: 'INFO', points: 0 }] }; }
+}
+
+function analyzeSectorial(result) {
+  try {
+    const items = []; let score = 0;
+    const mcc = result?.Mcc || result?.mcc;
+    const mk = result?.MarketplaceData || result?.marketplace_data;
+    const bd = extractBasicData(result);
+    let any = false;
+
+    if (mcc) {
+      any = true;
+      const mccItems = flattenBDCArray(mcc);
+      for (const m of mccItems) {
+        const code = m?.MccCode || m?.Code;
+        if (code) items.push({ label: 'MCC (categoria)', value: String(code), risk: 'INFO', points: 0 });
+      }
+    }
+
+    if (bd) {
+      any = true;
+      const activities = bd?.Activities || [];
+      const mainCnae = activities.find(a => a?.IsMain)?.Code || bd?.MainEconomicActivity;
+      if (mainCnae) items.push({ label: 'CNAE principal (BDC)', value: String(mainCnae), risk: 'INFO', points: 0 });
+      if (activities.length > 8) { score += 10; items.push({ label: 'CNAEs secundários', value: `${activities.length - 1}`, risk: 'MEDIO', points: 10 }); }
+      else if (activities.length > 0) items.push({ label: 'CNAEs secundários', value: `${activities.length - 1}`, risk: 'OK', points: 0 });
+    }
+
+    if (mk) {
+      any = true;
+      const mkItems = flattenBDCArray(mk);
+      for (const m of mkItems) {
+        const hasMkp = m?.IsMarketplaceSeller || m?.SellerCount > 0;
+        if (hasMkp) items.push({ label: 'Presença em marketplace', value: 'Detectada', risk: 'INFO', points: 0 });
+      }
+    }
+
+    if (!any) items.push({ label: 'Setorial', value: 'Datasets não consultados', risk: 'INFO', points: 0 });
+    return { score, items };
+  } catch (e) { return { score: 0, items: [{ label: 'Setorial', value: `Erro parse: ${e.message}`, risk: 'INFO', points: 0 }] }; }
+}
+
+function analyzeAssets(result) {
+  try {
+    const items = []; let score = 0;
+    const ip = result?.IndustrialProperty || result?.industrial_property;
+    const oip = result?.OwnersIndustrialProperty || result?.owners_industrial_property;
+    let any = false;
+
+    if (ip) {
+      any = true;
+      const ipItems = flattenBDCArray(ip);
+      let brands = 0, patents = 0;
+      for (const item of ipItems) {
+        brands += Number(item?.TotalBrands ?? item?.BrandCount ?? 0);
+        patents += Number(item?.TotalPatents ?? item?.PatentCount ?? 0);
+      }
+      items.push({ label: 'Marcas registradas', value: `${brands}`, risk: 'INFO', points: 0 });
+      items.push({ label: 'Patentes', value: `${patents}`, risk: 'INFO', points: 0 });
+    }
+
+    if (oip) {
+      any = true;
+      const oipItems = flattenBDCArray(oip);
+      let ownerBrands = 0;
+      for (const item of oipItems) ownerBrands += Number(item?.TotalBrands ?? 0);
+      if (ownerBrands > 0) items.push({ label: 'Marcas dos sócios', value: `${ownerBrands}`, risk: 'INFO', points: 0 });
+    }
+
+    if (!any) items.push({ label: 'Propriedade industrial', value: 'Datasets não consultados', risk: 'INFO', points: 0 });
+    return { score, items };
+  } catch (e) { return { score: 0, items: [{ label: 'Propriedade industrial', value: `Erro parse: ${e.message}`, risk: 'INFO', points: 0 }] }; }
+}
+
+function analyzeCreditRisk(result) {
+  try {
+    const items = []; let score = 0;
+    const cr = result?.CreditRisk || result?.credit_risk;
+    const cs = result?.CreditScore || result?.credit_score;
+    const scrPos = result?.ScrPositiveScore || result?.scr_positive_score;
+    let any = false;
+
+    if (cs) {
+      any = true;
+      const csItems = flattenBDCArray(cs);
+      for (const c of csItems) {
+        const s = Number(c?.Score ?? c?.CreditScoreValue ?? c?.Value);
+        if (!isNaN(s) && s > 0) {
+          if (s < 200) { score += 50; items.push({ label: 'Credit Score', value: `${s}`, risk: 'CRITICO', points: 50 }); }
+          else if (s < 400) { score += 30; items.push({ label: 'Credit Score', value: `${s}`, risk: 'ALTO', points: 30 }); }
+          else if (s < 600) { score += 15; items.push({ label: 'Credit Score', value: `${s}`, risk: 'MEDIO', points: 15 }); }
+          else items.push({ label: 'Credit Score', value: `${s}`, risk: 'OK', points: 0 });
+          break;
+        }
+      }
+    }
+
+    if (cr) {
+      any = true;
+      const crItems = flattenBDCArray(cr);
+      for (const c of crItems) {
+        const level = String(c?.RiskLevel || c?.Level || '').toUpperCase();
+        if (level.includes('HIGH') || level.includes('ALTO')) { score += 25; items.push({ label: 'Nível de risco de crédito', value: level, risk: 'ALTO', points: 25 }); }
+        else if (level.includes('MEDIUM') || level.includes('MEDIO')) { score += 10; items.push({ label: 'Nível de risco de crédito', value: level, risk: 'MEDIO', points: 10 }); }
+        else if (level) items.push({ label: 'Nível de risco de crédito', value: level, risk: 'OK', points: 0 });
+      }
+    }
+
+    if (scrPos) {
+      any = true;
+      const scrItems = flattenBDCArray(scrPos);
+      for (const s of scrItems) {
+        const val = Number(s?.Score ?? s?.ScoreValue);
+        if (!isNaN(val) && val > 0) items.push({ label: 'SCR BCB (positivo)', value: `${val}`, risk: val < 300 ? 'ALTO' : 'OK', points: 0 });
+      }
+    }
+
+    if (!any) items.push({ label: 'Risco de crédito', value: 'Datasets não consultados', risk: 'INFO', points: 0 });
+    return { score, items };
+  } catch (e) { return { score: 0, items: [{ label: 'Risco de crédito', value: `Erro parse: ${e.message}`, risk: 'INFO', points: 0 }] }; }
+}
 
 function analyzePersonBlocks(result) {
   const blocks = [];
@@ -669,9 +990,14 @@ Deno.serve(async (req) => {
 
     console.log(`[BDC] ═══ Batches complete: ${successfulBatches}/${totalBatches} success (${totalElapsed}ms) ═══`);
 
-    // If non-critical batches failed, enqueue retry for those ONLY
+    // ═══ ALL-OR-ENQUEUE (v2 — 2026-04-21) ═══
+    // Política: qualquer batch pendente (mesmo non-critical) bloqueia o pipeline.
+    // Score só é calculado com 100% dos datasets disponíveis.
+    // Worker (bdcRetryWorker) continua retentando em background.
     const failedNonCritical = Object.entries(batchStatuses).filter(([_, s]) => !s.success && s.priority !== 'CRITICAL');
     if (failedNonCritical.length > 0 && onboardingCaseId) {
+      console.warn(`[BDC] ⏸️  Non-critical batches failed: ${failedNonCritical.map(([id]) => id).join(', ')} — enqueueing retry + BLOCKING pipeline`);
+
       const batchesPending = Object.entries(batchDefs).map(([batchId, def]) => ({
         batch_id: batchId, priority: def.priority, datasets: def.datasets,
         attempts: batchStatuses[batchId]?.attempts || 0,
@@ -695,6 +1021,20 @@ Deno.serve(async (req) => {
       } else {
         await base44.asServiceRole.entities.BdcRetryQueue.create(queueData);
       }
+
+      // BLOCK pipeline — retorna 202, autoEnrichOnboarding entende como enqueued
+      await base44.asServiceRole.entities.OnboardingCase.update(onboardingCaseId, {
+        status: 'Em Processamento',
+        iaExplanation: `Aguardando dados BDC — ${failedNonCritical.length} lote(s) não-crítico(s) em retry automático. Pipeline bloqueado até completude.`,
+      });
+
+      return Response.json({
+        success: false,
+        reason: 'non_critical_batches_failed_enqueued',
+        failedBatches: failedNonCritical.map(([id]) => id),
+        batchStatuses,
+        willRetry: true,
+      }, { status: 202 });
     }
 
     // ═══ ANALYZE ═══

@@ -1,0 +1,21 @@
+{
+  "backup_date": "2026-04-21",
+  "backup_reason": "Antes da cirurgia: implementar 8 analyzers BDC faltantes + política all-or-enqueue non-critical + ajustes autoEnrichOnboarding",
+  "files_modified": [
+    "functions/bdcEnrichCase.js",
+    "functions/autoEnrichOnboarding.js"
+  ],
+  "cases_snapshot": "Ver entity OnboardingCase + ComplianceScore antes de 2026-04-21T03:30:00Z",
+  "notes": [
+    "Casos OMEGPAY (69e3ae3d6d143ab8d697190a) e BCK (69e65d61f5e31d7556f62ebc) — ambos aprovados 1B/175 com BDC 'null' — são casos típicos que demonstram o bug atual.",
+    "Caso REDE MARKETPLACE (69dfb5f16d7ad46adb9265af) — recusado em 5/BLOQUEIO por B02 age<6mo — comportamento correto mantido.",
+    "Caso LOWIFY (69df027aeaea350bc491e9a1) — aprovado 1A/85 com score BDC null — outro candidato a reprocessar.",
+    "Para reverter: pode-se restaurar os status via BulkReprocess?action=clean apenas nos casos listados, OU via find_replace nos dois arquivos modificados."
+  ],
+  "rollback_plan": {
+    "step_1": "Restaurar functions/bdcEnrichCase.js via find_replace invertendo as 8 analyzer implementations",
+    "step_2": "Restaurar functions/autoEnrichOnboarding.js via find_replace invertendo os ajustes nos blocos Step 1",
+    "step_3": "Rodar BulkReprocess?action=clean nos IDs dos casos afetados pós-deploy",
+    "step_4": "O worker bdcRetryWorker e a automação entity continuam funcionando normalmente em ambos os estados"
+  }
+}
