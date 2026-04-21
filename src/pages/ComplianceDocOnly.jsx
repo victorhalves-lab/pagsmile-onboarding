@@ -9,6 +9,7 @@ import {
 import { toast } from 'sonner';
 import DynamicDocumentUploader from '@/components/compliance/DynamicDocumentUploader';
 import CafVerificationStep from '@/components/compliance/CafVerificationStep';
+import CafOnlyWelcomeBanner from '@/components/compliance/CafOnlyWelcomeBanner';
 
 /**
  * Public page: /ComplianceDocOnly?caseId=XXX&token=YYY
@@ -245,9 +246,14 @@ export default function ComplianceDocOnly() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4">
+    <div className="max-w-4xl mx-auto py-4 md:py-8 px-4">
+      {/* Welcome banner for caf_only mode — contextualizes the client */}
+      {cafOnlyMode && (
+        <CafOnlyWelcomeBanner merchantName={merchant?.fullName} />
+      )}
+
       {/* Header */}
-      <div className="text-center mb-8">
+      <div className="text-center mb-6 md:mb-8">
         <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-[var(--pagsmile-green)]/10 mb-4">
           {currentStep === 'caf_verification' ? (
             <ScanFace className="w-8 h-8 text-purple-600" />

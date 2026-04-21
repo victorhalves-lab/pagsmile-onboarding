@@ -12,6 +12,7 @@ import CafDifficultyModal from './CafDifficultyModal';
 import CafManualSelfieUpload from './CafManualSelfieUpload';
 import BdcFallbackVerification from './BdcFallbackVerification';
 import CafErrorDiagnostic from './CafErrorDiagnostic';
+import CafMobileProgressBar from './CafMobileProgressBar';
 import { buildCafFallbackUrl } from '@/lib/cafOnboardingLinks';
 
 /**
@@ -690,6 +691,9 @@ export default function CafVerificationStep({
 
   return (
     <div className="space-y-6">
+      {/* Sticky mobile-first progress bar — visible during all capture phases */}
+      <CafMobileProgressBar phase={phase} savedResults={savedResults} />
+
       {/* Header */}
       <div className="text-center">
         <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-purple-50 mb-4">
