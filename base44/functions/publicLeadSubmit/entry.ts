@@ -31,12 +31,44 @@ const CLIENT_ALLOWED_LEAD_FIELDS = [
   'lastInteractionDate',
 ];
 
-function sanitizeLeadPayload(raw) {
+// SECURITY: IntroducerLead allowlist — client CANNOT set leadId, introducerId,
+// introducerName, introducerReferralCode, status, or scoring fields directly.
+// Those are derived server-side from linkCode resolution + Lead creation.
+const CLIENT_ALLOWED_INTRODUCER_LEAD_FIELDS = [
+  'email', 'fullName', 'cpfCnpj', 'phone',
+  'companyName', 'contactName', 'contactRole', 'website',
+  'businessSubCategory',
+  'tpvMensal', 'ticketMedio',
+  'protocolo', 'onboardingLinkCode',
+  'questionnaireData',
+];
+
+// SECURITY: QuestionarioSimplificado allowlist — client CANNOT set lead_id or status.
+// `lead_id` is linked post-creation by admin; `status` is always 'novo' on creation.
+const CLIENT_ALLOWED_SIMPLIFIED_FIELDS = [
+  'protocolo',
+  'nome_empresa', 'cnpj',
+  'contato_nome', 'contato_email', 'contato_telefone', 'contato_cargo',
+  'taxas_credito_1x', 'taxas_credito_2_6x', 'taxas_credito_7_12x',
+  'usa_antecipacao', 'percentual_antecipacao', 'taxa_antecipacao',
+  'distribuicao_avista', 'distribuicao_2_6x', 'distribuicao_7_12x',
+  'pix_tipo', 'pix_valor',
+  'taxa_antifraude_centavos',
+  'usa_fee_transacao', 'fee_transacao_centavos',
+  'onboarding_link_code',
+];
+
+function pickAllowed(raw, allowlist) {
   const safe = {};
-  for (const key of CLIENT_ALLOWED_LEAD_FIELDS) {
+  if (!raw || typeof raw !== 'object') return safe;
+  for (const key of allowlist) {
     if (raw[key] !== undefined) safe[key] = raw[key];
   }
   return safe;
+}
+
+function sanitizeLeadPayload(raw) {
+  return pickAllowed(raw, CLIENT_ALLOWED_LEAD_FIELDS);
 }
 
 Deno.serve(async (req) => {
@@ -54,10 +86,9 @@ Deno.serve(async (req) => {
       if (!simplifiedPayload) {
         return Response.json({ error: 'simplifiedPayload required' }, { status: 400 });
       }
-      const safePayload = {
-        ...simplifiedPayload,
-        status: 'novo',
-      };
+      // SECURITY: apply allowlist — client cannot set lead_id or status
+      const safePayload = pickAllowed(simplifiedPayload, CLIENT_ALLOWED_SIMPLIFIED_FIELDS);
+      safePayload.status = 'novo';
       const created = await base44.asServiceRole.entities.QuestionarioSimplificado.create(safePayload);
 
       if (linkCode) {
@@ -125,14 +156,14 @@ Deno.serve(async (req) => {
     // Create IntroducerLead if requested
     let createdIntroducerLead = null;
     if (kind === 'introducer_lead' && introducerLeadPayload && safeLeadPayload.introducerId) {
-      const safeIntroducerLeadPayload = {
-        ...introducerLeadPayload,
-        leadId: createdLead.id,
-        introducerId: safeLeadPayload.introducerId,
-        introducerName: safeLeadPayload.introducerName,
-        introducerReferralCode: safeLeadPayload.introducerReferralCode,
-        status: 'novo',
-      };
+      // SECURITY: apply allowlist — client cannot inject leadId, introducerId,
+      // status, or scoring fields. Those are set server-side below.
+      const safeIntroducerLeadPayload = pickAllowed(introducerLeadPayload, CLIENT_ALLOWED_INTRODUCER_LEAD_FIELDS);
+      safeIntroducerLeadPayload.leadId = createdLead.id;
+      safeIntroducerLeadPayload.introducerId = safeLeadPayload.introducerId;
+      safeIntroducerLeadPayload.introducerName = safeLeadPayload.introducerName;
+      safeIntroducerLeadPayload.introducerReferralCode = safeLeadPayload.introducerReferralCode;
+      safeIntroducerLeadPayload.status = 'novo';
       createdIntroducerLead = await base44.asServiceRole.entities.IntroducerLead.create(safeIntroducerLeadPayload);
     }
 
