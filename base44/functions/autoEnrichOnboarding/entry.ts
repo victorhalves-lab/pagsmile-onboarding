@@ -213,14 +213,21 @@ Deno.serve(async (req) => {
     if (onboardingCase.bigDataCorpCompleted === true && onboardingCase.riskScoreV4 != null) {
       try {
         const queues = await base44.asServiceRole.entities.BdcRetryQueue.filter({ onboarding_case_id: caseId });
-        const queue = queues[0];
-        const existingScores = await base44.asServiceRole.entities.ComplianceScore.filter({ onboarding_case_id: caseId });
-        const existingScore = existingScores[0];
-        const queueSuccessAt = queue?.last_success_at ? new Date(queue.last_success_at).getTime() : 0;
-        const lastScoreAt = existingScore?.data_analise_fase_2 ? new Date(existingScore.data_analise_fase_2).getTime() : 0;
-        const queueCompletedAfterScore = queueSuccessAt > 0 && queueSuccessAt > lastScoreAt;
-        if (!queueCompletedAfterScore) shouldSkipBdc = true;
-        else console.log(`[AutoEnrich] Step 1: Re-running BDC — queue completed (${new Date(queueSuccessAt).toISOString()}) after last score (${new Date(lastScoreAt).toISOString()})`);
+        // v11 (2026-04-21): Se não há BdcRetryQueue, é estado residual de run antigo
+        // (provavelmente após clean via bulkReprocessCompliance). Força re-execução.
+        if (queues.length === 0) {
+          console.log(`[AutoEnrich] Step 1: No BdcRetryQueue found — treating as fresh run, BDC will re-execute`);
+          shouldSkipBdc = false;
+        } else {
+          const queue = queues[0];
+          const existingScores = await base44.asServiceRole.entities.ComplianceScore.filter({ onboarding_case_id: caseId });
+          const existingScore = existingScores[0];
+          const queueSuccessAt = queue?.last_success_at ? new Date(queue.last_success_at).getTime() : 0;
+          const lastScoreAt = existingScore?.data_analise_fase_2 ? new Date(existingScore.data_analise_fase_2).getTime() : 0;
+          const queueCompletedAfterScore = queueSuccessAt > 0 && queueSuccessAt > lastScoreAt;
+          if (!queueCompletedAfterScore) shouldSkipBdc = true;
+          else console.log(`[AutoEnrich] Step 1: Re-running BDC — queue completed (${new Date(queueSuccessAt).toISOString()}) after last score (${new Date(lastScoreAt).toISOString()})`);
+        }
       } catch (e) {
         shouldSkipBdc = true; // fallback: comportamento antigo
       }
