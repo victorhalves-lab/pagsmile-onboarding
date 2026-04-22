@@ -59,16 +59,27 @@ export default function ComplianceDocOnly() {
   }, [caseId]);
 
   // ── Load OnboardingCase + Template (token-protected via backend) ──
+  // HARDENED: any network error is captured locally (returns null) — it must NEVER
+  // escalate to the ErrorBoundary. The UI handles null gracefully via the "invalid link" branch.
   const { data: caseContext, isLoading: loadingCase } = useQuery({
     queryKey: ['docOnlyCaseCtx', caseId, token],
     queryFn: async () => {
       if (!caseId || !token) return null;
-      const res = await base44.functions.invoke('publicReadContext', {
-        kind: 'onboarding_case_for_doc_only', caseId, token,
-      });
-      return res.data || null;
+      try {
+        const res = await base44.functions.invoke('publicReadContext', {
+          kind: 'onboarding_case_for_doc_only', caseId, token,
+        });
+        return res.data || null;
+      } catch (err) {
+        console.warn('[ComplianceDocOnly] publicReadContext failed (non-fatal):', err?.message);
+        return null;
+      }
     },
     enabled: !!caseId && !!token,
+    retry: 1,
+    retryDelay: 500,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
   });
   const onboardingCase = caseContext?.case || null;
   const template = caseContext?.template || null;
@@ -78,15 +89,24 @@ export default function ComplianceDocOnly() {
   const isTokenValid = !!onboardingCase;
 
   // ── Load Merchant via backend (token-protected) ──
+  // HARDENED: errors are swallowed — missing merchant is handled gracefully downstream.
   const { data: merchant } = useQuery({
     queryKey: ['docOnlyMerchant', caseId, token],
     queryFn: async () => {
-      const res = await base44.functions.invoke('publicReadContext', {
-        kind: 'merchant_for_doc_only', caseId, token,
-      });
-      return res.data?.merchant || null;
+      try {
+        const res = await base44.functions.invoke('publicReadContext', {
+          kind: 'merchant_for_doc_only', caseId, token,
+        });
+        return res.data?.merchant || null;
+      } catch (err) {
+        console.warn('[ComplianceDocOnly] merchant fetch failed (non-fatal):', err?.message);
+        return null;
+      }
     },
     enabled: !!onboardingCase,
+    retry: 1,
+    retryDelay: 500,
+    refetchOnWindowFocus: false,
   });
 
   // ── Save documents progress to server (debounced) whenever docs change ──

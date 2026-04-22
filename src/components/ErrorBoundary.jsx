@@ -15,6 +15,28 @@ export default class ErrorBoundary extends React.Component {
   }
 
   static getDerivedStateFromError(error) {
+    // COSMETIC ERRORS — swallow instead of escalating to a full-page recovery UI.
+    //
+    // 1. "NotFoundError: Failed to execute 'insertBefore' on 'Node'" is a React DOM
+    //    transient error that fires when a portal/toast/animation unmounts concurrently
+    //    with a parent re-render. It is NOT a real crash — the app continues working.
+    //    If we show the recovery screen here, the user loses their upload progress
+    //    for a purely cosmetic issue.
+    //
+    // 2. "removeChild" variants of the same class of bug get the same treatment.
+    //
+    // 3. Any error containing "User/me" or "401" on a public route is a stale-token
+    //    side effect — the page itself is fine, only a background fetch died.
+    const msg = String(error?.message || error || '');
+    const name = String(error?.name || '');
+    const isDomTransient =
+      (name === 'NotFoundError' && /insertBefore|removeChild/i.test(msg)) ||
+      /Failed to execute 'insertBefore'/i.test(msg) ||
+      /Failed to execute 'removeChild'/i.test(msg);
+    if (isDomTransient) {
+      console.warn('[ErrorBoundary] Ignoring cosmetic DOM error:', msg);
+      return null; // Don't update state → children keep rendering.
+    }
     return { hasError: true, error };
   }
 
