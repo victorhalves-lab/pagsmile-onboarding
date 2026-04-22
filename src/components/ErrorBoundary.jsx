@@ -41,10 +41,34 @@ export default class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    // Log to console for debugging. We don't report to backend because
-    // this might be a pre-auth crash where even fetch() is unreliable.
+    // Log to console for debugging.
     console.error('[ErrorBoundary] Caught error:', error);
     console.error('[ErrorBoundary] Stack:', errorInfo?.componentStack);
+
+    // Report to backend so we can diagnose real client crashes without asking
+    // the user to screenshot DevTools. Uses fetch directly (no SDK) to work
+    // even when the app is in a broken state.
+    try {
+      const payload = {
+        stage: 'error_boundary',
+        errorMessage: String(error?.message || error || 'unknown'),
+        extra: {
+          errorName: String(error?.name || ''),
+          componentStack: String(errorInfo?.componentStack || '').slice(0, 2000),
+          url: typeof window !== 'undefined' ? window.location.href : '',
+          search: typeof window !== 'undefined' ? window.location.search : '',
+        },
+        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
+      };
+      const urlParams = typeof window !== 'undefined'
+        ? new URLSearchParams(window.location.search) : null;
+      if (urlParams?.get('caseId')) payload.caseId = urlParams.get('caseId');
+      fetch('/functions/logPublicClientError', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }).catch(() => {}); // fire-and-forget
+    } catch {}
   }
 
   handleReload = () => {

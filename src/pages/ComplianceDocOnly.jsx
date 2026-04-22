@@ -26,7 +26,8 @@ export default function ComplianceDocOnly() {
   const urlParams = new URLSearchParams(window.location.search);
   const caseId = urlParams.get('caseId');
   const token = urlParams.get('token');
-  const mode = urlParams.get('mode');
+  // Accept both `mode` (correct) and `ca_mode` (seen in malformed links that leak through).
+  const mode = urlParams.get('mode') || urlParams.get('ca_mode');
   // MODES:
   //   - docs_only: Upload business docs only; CAF identity SDK is SKIPPED (VerifAI still runs server-side)
   //   - caf_only: Skip docs; go straight to CAF identity SDK (for clients who already uploaded docs)

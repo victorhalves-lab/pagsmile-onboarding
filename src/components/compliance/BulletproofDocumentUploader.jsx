@@ -156,6 +156,24 @@ export default function BulletproofDocumentUploader({
           name: original?.name || 'arquivo',
           error: err?.message || 'falha desconhecida',
         });
+        // Report failure server-side (fire-and-forget) so we can diagnose without
+        // asking the client for a screenshot. Uses raw fetch — no SDK dependency.
+        try {
+          fetch('/functions/logPublicClientError', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              stage: 'bulletproof_upload_failed',
+              errorMessage: String(err?.message || err || 'unknown'),
+              caseId,
+              fileName: original?.name || null,
+              fileSize: typeof original?.size === 'number' ? original.size : null,
+              fileType: original?.type || null,
+              userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
+              extra: { documentTypeId: docId, documentName, url: window.location.href },
+            }),
+          }).catch(() => {});
+        } catch {}
       }
     }
 
