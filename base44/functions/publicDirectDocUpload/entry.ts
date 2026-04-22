@@ -3,29 +3,28 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 /**
  * PUBLIC endpoint — BULLETPROOF direct document upload.
  *
- * Receives raw multipart/form-data from the browser via native fetch (no SDK dependency
- * on the client side). The server handles the upload via asServiceRole and creates the
- * DocumentUpload entity, then fires VerifAI analysis asynchronously.
+ * Receives the file as BASE64 inside a JSON body (via base44.functions.invoke).
+ * This approach is 100% reliable on public routes because:
+ *   - base44.functions.invoke is the SDK's native public-safe channel (already works anonymous)
+ *   - We avoid the fragile SDK client-side UploadPrivateFile/UploadFile path
+ *   - Server decodes base64 → File → uses asServiceRole.integrations.Core.UploadPrivateFile
  *
- * This is the 100%-reliable replacement for publicComplianceDocUpload + client-side
- * SDK.integrations.Core.UploadPrivateFile — eliminating the two most common failure modes:
- *   1. SDK initialization crashes on public routes (legacy session tokens)
- *   2. Obscure SDK errors during upload (e.g. "instanceof is not callable")
+ * Request JSON body:
+ *   - caseId              (string, required)
+ *   - documentTypeId      (string, required)
+ *   - documentName        (string, optional)
+ *   - docLinkToken        (string, required when ComplianceDocOnly)
+ *   - notAvailable        (boolean, optional)
+ *   - notAvailableReason  (string, required when notAvailable=true, ≥10 chars)
+ *   - fileBase64          (string, required unless notAvailable=true)
+ *   - fileName            (string, required when fileBase64)
+ *   - fileType            (string, required when fileBase64)
+ *   - fileSize            (number, optional)
+ *   - uploadDate          (ISO string, optional)
  *
- * Multipart fields expected:
- *   - file             (File, required unless notAvailable=true)
- *   - caseId           (string, required)
- *   - documentTypeId   (string, required)
- *   - documentName     (string, optional)
- *   - docLinkToken     (string, required when called from ComplianceDocOnly)
- *   - notAvailable     ("true"/"false", optional — defaults false)
- *   - notAvailableReason (string, required when notAvailable=true)
- *   - uploadDate       (ISO string, optional)
+ * Response: { ok, documentUploadId, fileUri, fileUrl, fileName, fileSize, fileType } | { ok:false, error }
  *
- * Response: { ok: true, documentUploadId, fileUri, fileUrl } or { ok: false, error }
- *
- * FIRE-AND-FORGET side effects (never block the response):
- *   - cafVerifaiDocs (documentoscopia) — same as publicComplianceDocUpload
+ * Side effect (fire-and-forget): triggers cafVerifaiDocs for documentoscopia.
  */
 
 async function triggerVerifaiAsync(base44, documentUploadId, onboardingCaseId) {
@@ -39,6 +38,16 @@ async function triggerVerifaiAsync(base44, documentUploadId, onboardingCaseId) {
   }
 }
 
+// Decode base64 (data URL or raw) into a Uint8Array
+function base64ToBytes(b64) {
+  const commaIdx = b64.indexOf(',');
+  const raw = commaIdx >= 0 ? b64.slice(commaIdx + 1) : b64;
+  const bin = atob(raw);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+}
+
 Deno.serve(async (req) => {
   const startedAt = Date.now();
   try {
@@ -46,38 +55,38 @@ Deno.serve(async (req) => {
       return Response.json({ ok: false, error: 'Method not allowed' }, { status: 405 });
     }
 
-    const contentType = req.headers.get('content-type') || '';
-    if (!contentType.includes('multipart/form-data')) {
-      return Response.json({ ok: false, error: 'Content-Type must be multipart/form-data' }, { status: 400 });
-    }
+    const body = await req.json().catch(() => ({}));
+    const {
+      caseId,
+      documentTypeId,
+      documentName,
+      docLinkToken,
+      notAvailable = false,
+      notAvailableReason = '',
+      fileBase64,
+      fileName,
+      fileType,
+      fileSize,
+      uploadDate,
+    } = body || {};
 
-    const form = await req.formData();
-    const caseId = String(form.get('caseId') || '');
-    const documentTypeId = String(form.get('documentTypeId') || '');
-    const documentName = String(form.get('documentName') || documentTypeId);
-    const docLinkToken = String(form.get('docLinkToken') || '');
-    const notAvailable = String(form.get('notAvailable') || '') === 'true';
-    const notAvailableReason = String(form.get('notAvailableReason') || '').trim();
-    const uploadDate = String(form.get('uploadDate') || new Date().toISOString());
-    const file = form.get('file');
-
-    console.log(`[publicDirectDocUpload] START caseId=${caseId} docType=${documentTypeId} notAvailable=${notAvailable} hasFile=${!!file} hasToken=${!!docLinkToken}`);
+    console.log(`[publicDirectDocUpload] START caseId=${caseId} docType=${documentTypeId} notAvailable=${notAvailable} hasB64=${!!fileBase64} hasToken=${!!docLinkToken}`);
 
     if (!caseId || !documentTypeId) {
       return Response.json({ ok: false, error: 'caseId and documentTypeId are required' }, { status: 400 });
     }
 
-    if (!notAvailable && !(file instanceof File)) {
-      return Response.json({ ok: false, error: 'file is required when not marked as unavailable' }, { status: 400 });
+    if (!notAvailable && !fileBase64) {
+      return Response.json({ ok: false, error: 'fileBase64 is required when not marked as unavailable' }, { status: 400 });
     }
 
-    if (notAvailable && notAvailableReason.length < 10) {
+    if (notAvailable && String(notAvailableReason).trim().length < 10) {
       return Response.json({ ok: false, error: 'notAvailableReason must be at least 10 characters' }, { status: 400 });
     }
 
     const base44 = createClientFromRequest(req);
 
-    // ── Validate case + token ──
+    // Validate case + token
     let cases = [];
     try {
       cases = await base44.asServiceRole.entities.OnboardingCase.filter({ id: caseId });
@@ -94,22 +103,22 @@ Deno.serve(async (req) => {
       return Response.json({ ok: false, error: 'Token inválido' }, { status: 403 });
     }
 
-    // ── Branch A: Not-available justification (no file upload) ──
+    // Branch A: not-available justification
     if (notAvailable) {
       const createdDoc = await base44.asServiceRole.entities.DocumentUpload.create({
         onboardingCaseId: caseId,
         documentTypeId,
-        documentName,
+        documentName: documentName || documentTypeId,
         fileUrl: '',
         fileName: '',
         fileSize: 0,
         fileType: '',
-        uploadDate,
+        uploadDate: uploadDate || new Date().toISOString(),
         validationStatus: 'Pendente',
         isPrivate: false,
         fileUri: '',
         notAvailable: true,
-        notAvailableReason,
+        notAvailableReason: String(notAvailableReason).trim(),
         notAvailableReviewStatus: 'Pendente',
       });
       console.log(`[publicDirectDocUpload] CREATED_NOT_AVAILABLE id=${createdDoc?.id} docType=${documentTypeId} duration=${Date.now() - startedAt}ms`);
@@ -121,13 +130,21 @@ Deno.serve(async (req) => {
       });
     }
 
-    // ── Branch B: Real file upload ──
-    // Use server-side asServiceRole to upload the file — bypasses all client SDK risk.
+    // Branch B: decode base64 → File → upload server-side via asServiceRole
+    let fileBlob;
+    try {
+      const bytes = base64ToBytes(fileBase64);
+      fileBlob = new File([bytes], fileName || 'arquivo', { type: fileType || 'application/octet-stream' });
+    } catch (decodeErr) {
+      console.error('[publicDirectDocUpload] BASE64_DECODE_ERROR:', decodeErr?.message);
+      return Response.json({ ok: false, error: 'Falha ao decodificar arquivo: ' + decodeErr?.message }, { status: 400 });
+    }
+
     let uploadResult;
     try {
-      uploadResult = await base44.asServiceRole.integrations.Core.UploadPrivateFile({ file });
+      uploadResult = await base44.asServiceRole.integrations.Core.UploadPrivateFile({ file: fileBlob });
     } catch (uploadErr) {
-      console.error(`[publicDirectDocUpload] UPLOAD_FAILED caseId=${caseId} docType=${documentTypeId} name=${file?.name}:`, uploadErr?.message);
+      console.error(`[publicDirectDocUpload] UPLOAD_FAILED caseId=${caseId} docType=${documentTypeId} name=${fileName}:`, uploadErr?.message);
       return Response.json({ ok: false, error: 'Falha ao salvar arquivo: ' + (uploadErr?.message || 'erro desconhecido') }, { status: 500 });
     }
 
@@ -136,20 +153,19 @@ Deno.serve(async (req) => {
       return Response.json({ ok: false, error: 'Servidor não retornou URI do arquivo' }, { status: 500 });
     }
 
-    // Create DocumentUpload entity
     let createdDoc;
     try {
       createdDoc = await base44.asServiceRole.entities.DocumentUpload.create({
         onboardingCaseId: caseId,
         documentTypeId,
-        documentName,
+        documentName: documentName || documentTypeId,
         fileUrl: fileUri,
         fileUri,
         isPrivate: true,
-        fileName: file.name || '',
-        fileSize: typeof file.size === 'number' ? file.size : 0,
-        fileType: file.type || '',
-        uploadDate,
+        fileName: fileName || '',
+        fileSize: typeof fileSize === 'number' ? fileSize : 0,
+        fileType: fileType || '',
+        uploadDate: uploadDate || new Date().toISOString(),
         validationStatus: 'Pendente',
         notAvailable: false,
         notAvailableReason: '',
@@ -159,9 +175,8 @@ Deno.serve(async (req) => {
       return Response.json({ ok: false, error: 'Falha ao registrar documento: ' + (createErr?.message || 'erro desconhecido') }, { status: 500 });
     }
 
-    console.log(`[publicDirectDocUpload] CREATED id=${createdDoc?.id} docType=${documentTypeId} size=${file.size} duration=${Date.now() - startedAt}ms`);
+    console.log(`[publicDirectDocUpload] CREATED id=${createdDoc?.id} docType=${documentTypeId} size=${fileSize} duration=${Date.now() - startedAt}ms`);
 
-    // Fire-and-forget VerifAI (documentoscopia) — same pipeline as publicComplianceDocUpload
     if (createdDoc?.id) {
       triggerVerifaiAsync(base44, createdDoc.id, caseId);
     }
@@ -171,9 +186,9 @@ Deno.serve(async (req) => {
       documentUploadId: createdDoc?.id,
       fileUri,
       fileUrl: fileUri,
-      fileName: file.name,
-      fileSize: file.size,
-      fileType: file.type,
+      fileName,
+      fileSize,
+      fileType,
       duration_ms: Date.now() - startedAt,
     });
   } catch (error) {

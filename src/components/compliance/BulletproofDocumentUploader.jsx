@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import DocumentNotAvailableModal from './DocumentNotAvailableModal';
 import DocumentCard from './DocumentCard';
 import { directUploadDocument } from '@/lib/directUpload';
+import { compressImageIfNeeded } from '@/lib/imageCompression';
 
 /**
  * BULLETPROOF Multi-file document uploader.
@@ -105,8 +106,17 @@ export default function BulletproofDocumentUploader({
 
     for (const original of fileArray) {
       try {
+        // Compress images >5MB to stay within the 7MB JSON payload limit
+        let toUpload = original;
+        try {
+          toUpload = await compressImageIfNeeded(original, 5);
+        } catch (compressErr) {
+          console.warn('[BulletproofUploader] compression failed, using original:', compressErr?.message);
+          toUpload = original;
+        }
+
         const result = await directUploadDocument({
-          file: original,
+          file: toUpload,
           caseId,
           documentTypeId: docId,
           documentName,
@@ -118,9 +128,9 @@ export default function BulletproofDocumentUploader({
           url: result.fileUri,
           uri: result.fileUri,
           isPrivate: true,
-          name: original.name,
-          size: original.size,
-          type: original.type,
+          name: toUpload.name || original.name,
+          size: toUpload.size || original.size,
+          type: toUpload.type || original.type,
           uploadedAt: new Date().toISOString(),
           documentUploadId: result.documentUploadId,
           persisted: true,
