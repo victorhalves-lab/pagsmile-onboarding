@@ -343,42 +343,54 @@ export default function ComplianceDocOnly() {
           )}
         </div>
 
-        {/* Step indicator — adapts to mode: docs_only hides CAF step, caf_only hides Docs step */}
+        {/* Step indicator — built from a stable array with explicit keys to prevent
+            React reconciliation errors (NotFoundError: insertBefore) that happen when
+            conditional siblings change visibility without keys. FIX 2026-04-22. */}
         <div className="flex items-center justify-center gap-2 md:gap-3 mb-4 flex-wrap">
-          {!cafOnlyMode && (
-            <>
-              <StepPill
-                active={currentStep === 'docs_upload'}
-                done={['review', 'caf_verification', 'completed'].includes(currentStep)}
-                label="Documentos"
-                number={1}
-              />
-              <StepSep />
-              <StepPill
-                active={currentStep === 'review'}
-                done={['caf_verification', 'completed'].includes(currentStep)}
-                label="Revisão"
-                number={2}
-              />
-              {!skipCafIdentity && <StepSep />}
-            </>
-          )}
-          {!skipCafIdentity && (
-            <StepPill
-              active={currentStep === 'caf_verification'}
-              done={currentStep === 'completed'}
-              label="Verificação CAF"
-              number={cafOnlyMode ? 1 : 3}
-              tone="purple"
-            />
-          )}
-          <StepSep />
-          <StepPill
-            active={currentStep === 'completed'}
-            done={currentStep === 'completed'}
-            label="Conclusão"
-            number={cafOnlyMode ? 2 : (skipCafIdentity ? 3 : 4)}
-          />
+          {(() => {
+            const steps = [];
+            if (!cafOnlyMode) {
+              steps.push({
+                key: 'docs',
+                label: 'Documentos',
+                active: currentStep === 'docs_upload',
+                done: ['review', 'caf_verification', 'completed'].includes(currentStep),
+              });
+              steps.push({
+                key: 'review',
+                label: 'Revisão',
+                active: currentStep === 'review',
+                done: ['caf_verification', 'completed'].includes(currentStep),
+              });
+            }
+            if (!skipCafIdentity) {
+              steps.push({
+                key: 'caf',
+                label: 'Verificação CAF',
+                active: currentStep === 'caf_verification',
+                done: currentStep === 'completed',
+                tone: 'purple',
+              });
+            }
+            steps.push({
+              key: 'done',
+              label: 'Conclusão',
+              active: currentStep === 'completed',
+              done: currentStep === 'completed',
+            });
+            return steps.map((s, i) => (
+              <React.Fragment key={s.key}>
+                {i > 0 && <StepSep />}
+                <StepPill
+                  active={s.active}
+                  done={s.done}
+                  label={s.label}
+                  number={i + 1}
+                  tone={s.tone}
+                />
+              </React.Fragment>
+            ));
+          })()}
         </div>
 
         <h1 className="text-2xl md:text-3xl font-bold text-[var(--pagsmile-blue)] mb-2">
