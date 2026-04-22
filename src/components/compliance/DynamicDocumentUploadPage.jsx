@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import DynamicDocumentUploader from './DynamicDocumentUploader';
+import BulletproofDocumentUploader from './BulletproofDocumentUploader';
 import CafVerificationStep from './CafVerificationStep';
 import { useComplianceSession } from '../../hooks/useComplianceSession';
 import AutoSaveIndicator from './AutoSaveIndicator';
@@ -349,12 +350,15 @@ export default function DynamicDocumentUploadPage({
       }
 
       // Upload documentos via publicComplianceDocUpload (asServiceRole)
+      // BULLETPROOF: se TODOS os docs já foram persistidos no upload individual
+      // (entry.persisted === true), pulamos o re-envio em lote — docs já estão salvos.
       const allTemplateDocs = (template?.requiredDocuments || []).map((doc, index) => ({
         ...doc,
         _docKey: doc.documentTypeId || doc.id || `doc_${index}_${(doc.label || '').replace(/\s+/g, '_').toLowerCase().slice(0, 30)}`
       }));
+      const allAlreadyPersisted = Object.values(documents).every(d => d?.persisted === true);
       // Flatten multi-file docs + handle not-available entries
-      const docsPayload = Object.entries(documents).flatMap(([docId, docData]) => {
+      const docsPayload = allAlreadyPersisted ? [] : Object.entries(documents).flatMap(([docId, docData]) => {
         const docDef = allTemplateDocs.find(d => d._docKey === docId);
         const docName = docDef?.label || docDef?.name || docId;
         if (docData.notAvailable && docData.notAvailableReason) {
@@ -559,17 +563,38 @@ export default function DynamicDocumentUploadPage({
         </div>
       </div>
 
-      {/* Step 1: Upload de Documentos */}
-      {currentStep === 'docs_upload' && (
-        <DynamicDocumentUploader
-          template={template}
-          documents={documents}
-          setDocuments={setDocuments}
-          storageKey={documentsStorageKey}
-          onAllRequiredUploaded={setAllRequiredUploaded}
-          formData={JSON.parse(localStorage.getItem(formDataStorageKey) || '{}')}
-        />
-      )}
+      {/* Step 1: Upload de Documentos — usa BULLETPROOF (fetch nativo, zero SDK) quando
+          o OnboardingCase já foi criado pelo DynamicQuestionnaire. Senão cai no legado. */}
+      {currentStep === 'docs_upload' && (() => {
+        const existingCaseId = localStorage.getItem('created_onboarding_case_id');
+        const existingDocToken = localStorage.getItem('created_doc_link_token');
+        const formDataParsed = JSON.parse(localStorage.getItem(formDataStorageKey) || '{}');
+        if (existingCaseId && existingDocToken) {
+          return (
+            <BulletproofDocumentUploader
+              template={template}
+              documents={documents}
+              setDocuments={setDocuments}
+              storageKey={documentsStorageKey}
+              caseId={existingCaseId}
+              docLinkToken={existingDocToken}
+              onAllRequiredUploaded={setAllRequiredUploaded}
+              formData={formDataParsed}
+            />
+          );
+        }
+        // Fallback legado (caso raro: questionário não criou caso ainda)
+        return (
+          <DynamicDocumentUploader
+            template={template}
+            documents={documents}
+            setDocuments={setDocuments}
+            storageKey={documentsStorageKey}
+            onAllRequiredUploaded={setAllRequiredUploaded}
+            formData={formDataParsed}
+          />
+        );
+      })()}
 
       {/* Step 2: CAF Verification (DocumentDetector + FaceLiveness) */}
       {currentStep === 'caf_verification' && (

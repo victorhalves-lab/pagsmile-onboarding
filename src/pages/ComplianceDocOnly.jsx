@@ -7,7 +7,7 @@ import {
   ArrowLeft, FileUp, Loader2, CheckCircle2, AlertTriangle, ScanFace, ShieldAlert
 } from 'lucide-react';
 import { toast } from 'sonner';
-import DynamicDocumentUploader from '@/components/compliance/DynamicDocumentUploader';
+import BulletproofDocumentUploader from '@/components/compliance/BulletproofDocumentUploader';
 import CafVerificationStep from '@/components/compliance/CafVerificationStep';
 import CafOnlyWelcomeBanner from '@/components/compliance/CafOnlyWelcomeBanner';
 import ComplianceReviewStep from '@/components/compliance/ComplianceReviewStep';
@@ -220,86 +220,15 @@ export default function ComplianceDocOnly() {
   };
 
   // ── Final submit ──
+  // NOTA IMPORTANTE (bulletproof):
+  //   Os documentos JÁ foram persistidos como DocumentUpload rows no momento do upload
+  //   (via BulletproofDocumentUploader → publicDirectDocUpload). O CAF VerifAI também
+  //   já foi disparado server-side na mesma requisição. Portanto aqui só precisamos
+  //   flipar os flags `docCompleted` / `cafCompleted` no OnboardingCase.
   const handleFinalSubmit = async (cafResultParam) => {
     const effectiveCafResult = cafResultParam || cafResult;
     setIsSubmitting(true);
     try {
-      // In caf_only mode, skip document upload entirely — only the CAF identity results
-      // need to be persisted (which already happened inside CafVerificationStep).
-      // We just need to flip cafCompleted=true on the case.
-      const isCafOnly = cafOnlyMode;
-
-      // Upload documents via publicComplianceDocUpload (asServiceRole, token-protected)
-      const allTemplateDocs = (template?.requiredDocuments || []).map((doc, index) => ({
-        ...doc,
-        _docKey: doc.documentTypeId || doc.id || `doc_${index}_${(doc.label || '').replace(/\s+/g, '_').toLowerCase().slice(0, 30)}`,
-      }));
-      // ── Build payload: one entry per uploaded FILE (multi-file support) ──
-      // A single document slot may have multiple files (e.g. 3 PDFs of balanço).
-      // We flatten so the backend persists each as a separate DocumentUpload row.
-      const docsPayload = isCafOnly ? [] : Object.entries(documents).flatMap(([docId, docData]) => {
-        const docDef = allTemplateDocs.find(d => d._docKey === docId);
-        const docName = docDef?.label || docDef?.name || docId;
-        // Not-available: single entry with the justification
-        if (docData.notAvailable && docData.notAvailableReason) {
-          return [{
-            documentTypeId: docId,
-            documentName: docName,
-            fileUrl: '',
-            notAvailable: true,
-            notAvailableReason: docData.notAvailableReason,
-            uploadDate: docData.uploadedAt,
-          }];
-        }
-        // Multi-file shape
-        const files = Array.isArray(docData.files) && docData.files.length > 0
-          ? docData.files
-          : (docData.url ? [{ url: docData.url, uri: docData.uri, isPrivate: docData.isPrivate, name: docData.name, size: docData.size, type: docData.type, uploadedAt: docData.uploadedAt }] : []);
-        return files.map((f, idx) => ({
-          documentTypeId: files.length > 1 ? `${docId}__part${idx + 1}` : docId,
-          documentName: files.length > 1 ? `${docName} (parte ${idx + 1}/${files.length})` : docName,
-          fileUrl: f.url,
-          fileUri: f.uri || f.url,
-          isPrivate: f.isPrivate === true,
-          fileName: f.name,
-          fileSize: f.size,
-          fileType: f.type,
-          uploadDate: f.uploadedAt,
-        }));
-      });
-      if (docsPayload.length > 0) {
-        let uploadRes;
-        try {
-          uploadRes = await base44.functions.invoke('publicComplianceDocUpload', {
-            caseId, docLinkToken: token, documents: docsPayload,
-          });
-        } catch (invokeErr) {
-          console.error('[ComplianceDocOnly] invoke failed:', invokeErr);
-          toast.error(
-            'Falha ao comunicar com o servidor. Verifique sua conexão e clique em Enviar novamente. ' +
-            `Detalhe: ${invokeErr?.message || 'erro de rede'}`,
-            { duration: 10000 }
-          );
-          setIsSubmitting(false);
-          return;
-        }
-        const uploadData = uploadRes?.data || {};
-        // Accept partial-success only if failedCount=0 (skipped is OK — usually duplicates).
-        if (!uploadData.ok && (uploadData.failedCount || 0) > 0) {
-          const failedList = Array.isArray(uploadData.failed) && uploadData.failed.length > 0
-            ? uploadData.failed.map(f => `${f.documentName || f.documentTypeId}: ${f.error}`).join('; ')
-            : 'erro desconhecido';
-          console.error('[ComplianceDocOnly] Upload failed', uploadData);
-          toast.error(
-            `Falha ao salvar documentos (${uploadData.createdCount || 0}/${docsPayload.length}). ` +
-            `Detalhes: ${failedList}. Tente novamente ou contate o suporte.`,
-            { duration: 10000 }
-          );
-          setIsSubmitting(false);
-          return;
-        }
-      }
-
       // Only reached if ALL documents were successfully persisted (or docs_only/caf_only mode).
       // In caf_only mode, we ONLY flip cafCompleted — docCompleted stays as-is (docs were already uploaded earlier).
       const updates = {
@@ -455,13 +384,15 @@ export default function ComplianceDocOnly() {
         </div>
       </div>
 
-      {/* Step 1: Upload de Documentos (skipped in caf_only mode) */}
+      {/* Step 1: Upload de Documentos (skipped in caf_only mode) — BULLETPROOF uploader (zero SDK) */}
       {currentStep === 'docs_upload' && !cafOnlyMode && (
-        <DynamicDocumentUploader
+        <BulletproofDocumentUploader
           template={template}
           documents={documents}
           setDocuments={setDocuments}
           storageKey={`doc_only_${caseId}`}
+          caseId={caseId}
+          docLinkToken={token}
           onAllRequiredUploaded={setAllRequiredUploaded}
           formData={{}}
         />
