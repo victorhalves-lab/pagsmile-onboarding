@@ -10,6 +10,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import { LanguageProvider } from '@/lib/i18n/LanguageContext';
 import { PermissionsProvider } from '@/lib/PermissionsProvider';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import ErrorBoundary from '@/components/ErrorBoundary';
 import { base44 } from '@/api/base44Client';
 import GestaoIntroducers from './pages/GestaoIntroducers';
 import IntroducerDashboard from './pages/IntroducerDashboard';
@@ -408,19 +409,21 @@ const AppRoutes = () => {
 
 function App() {
   return (
-    <AuthProvider>
-      <PermissionsProvider>
-        <LanguageProvider>
-          <QueryClientProvider client={queryClientInstance}>
-            <Router>
-              <NavigationTracker />
-              <AppRoutes />
-            </Router>
-            <Toaster />
-          </QueryClientProvider>
-        </LanguageProvider>
-      </PermissionsProvider>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <PermissionsProvider>
+          <LanguageProvider>
+            <QueryClientProvider client={queryClientInstance}>
+              <Router>
+                <NavigationTracker />
+                <AppRoutes />
+              </Router>
+              <Toaster />
+            </QueryClientProvider>
+          </LanguageProvider>
+        </PermissionsProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   )
 }
 

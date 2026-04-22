@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import { base44 } from '@/api/base44Client';
 import { pagesConfig } from '@/pages.config';
+import { isPublicPath } from './publicRoutes';
 
 export default function NavigationTracker() {
     const location = useLocation();
@@ -12,6 +13,10 @@ export default function NavigationTracker() {
 
     // Log user activity when navigating to a page
     useEffect(() => {
+        // ⚡ On public routes, NEVER attempt to log user activity — would trigger
+        // authenticated API calls that crash anonymous visitors.
+        if (isPublicPath(location.pathname)) return;
+
         // Extract page name from pathname
         const pathname = location.pathname;
         let pageName;
@@ -32,9 +37,11 @@ export default function NavigationTracker() {
         }
 
         if (isAuthenticated && pageName) {
-            base44.appLogs.logUserInApp(pageName).catch(() => {
+            try {
+                base44.appLogs?.logUserInApp?.(pageName)?.catch?.(() => {});
+            } catch {
                 // Silently fail - logging shouldn't break the app
-            });
+            }
         }
     }, [location, isAuthenticated, Pages, mainPageKey]);
 
