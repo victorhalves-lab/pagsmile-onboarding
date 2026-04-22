@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/tabs';
 import {
   Search, Plus, Eye, Pencil, Send, Link2, Copy, Trash2,
-  Loader2, X, AlertTriangle, FileText, List, Clock, CheckCircle, XCircle, History, FilePlus2, Building2, GitBranch, DollarSign
+  Loader2, X, AlertTriangle, FileText, List, Clock, CheckCircle, XCircle, History, FilePlus2, Building2, GitBranch, DollarSign, MessageSquareWarning
 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
@@ -30,6 +30,7 @@ import ProposalHistoryModal from '../components/proposals/ProposalHistoryModal';
 import ProposalsByCompanyTab from '../components/proposals/ProposalsByCompanyTab';
 import RentabilidadeDrawer from '../components/proposals/RentabilidadeDrawer';
 import AssignSellerModal from '../components/proposals/AssignSellerModal';
+import ContrapropostasPendentesTab from '../components/proposals/ContrapropostasPendentesTab';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function GestaoPropostas() {
@@ -236,6 +237,15 @@ export default function GestaoPropostas() {
         <TabsList className="bg-white border border-[#002443]/5">
           <TabsTrigger value="lista" className="gap-2 data-[state=active]:bg-[#2bc196]/10 data-[state=active]:text-[#002443]">
             <List className="w-4 h-4" /> {t('gestao_propostas.list_tab')}
+          </TabsTrigger>
+          <TabsTrigger value="contrapropostas" className="gap-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 relative">
+            <MessageSquareWarning className="w-4 h-4" /> Contrapropostas
+            {(() => {
+              const count = propostas.filter(p => p.status === 'contraproposta' && p._entityType !== 'PixProposal').length;
+              return count > 0 ? (
+                <span className="ml-1 text-[10px] bg-blue-600 text-white rounded-full px-1.5 py-0.5 font-bold">{count}</span>
+              ) : null;
+            })()}
           </TabsTrigger>
           <TabsTrigger value="empresa" className="gap-2 data-[state=active]:bg-[#2bc196]/10 data-[state=active]:text-[#002443]">
             <Building2 className="w-4 h-4" /> {t('gestao_propostas.by_company_tab')}
@@ -450,6 +460,10 @@ export default function GestaoPropostas() {
               </Table>
             </div>
           </div>
+        </TabsContent>
+
+        <TabsContent value="contrapropostas" className="mt-4">
+          <ContrapropostasPendentesTab propostas={propostas} />
         </TabsContent>
 
         <TabsContent value="empresa" className="mt-4">
