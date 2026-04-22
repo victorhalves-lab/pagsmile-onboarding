@@ -92,32 +92,42 @@ export default function ComplianceDocOnly() {
   // ── Save documents progress to server (debounced) whenever docs change ──
   // CRITICAL: this useEffect MUST come AFTER the useQuery declarations for `template` and `merchant`,
   // otherwise we get ReferenceError: Cannot access 'template'/'merchant' before initialization.
+  // HARDENED (2026-04-22): .catch swallows ALL errors — auto-save failures NEVER block the upload flow.
   React.useEffect(() => {
     if (!sessionToken || !caseId || Object.keys(documents).length === 0) return;
     const timer = setTimeout(() => {
-      base44.functions.invoke('saveComplianceProgress', {
-        sessionToken,
-        flowType: cafOnlyMode ? 'caf_only_recovery' : (skipCafIdentity ? 'docs_only_recovery' : 'docs_and_caf_recovery'),
-        templateModel: template?.model || '',
-        currentPhase: currentStep === 'caf_verification' ? 'caf' : 'documents',
-        documentsData: documents,
-        clientEmail: merchant?.email || '',
-        clientName: merchant?.fullName || '',
-      }).catch(() => {});
+      try {
+        base44.functions.invoke('saveComplianceProgress', {
+          sessionToken,
+          flowType: cafOnlyMode ? 'caf_only_recovery' : (skipCafIdentity ? 'docs_only_recovery' : 'docs_and_caf_recovery'),
+          templateModel: template?.model || '',
+          currentPhase: currentStep === 'caf_verification' ? 'caf' : 'documents',
+          documentsData: documents,
+          clientEmail: merchant?.email || '',
+          clientName: merchant?.fullName || '',
+        }).catch((err) => {
+          console.warn('[ComplianceDocOnly] auto-save failed (non-fatal):', err?.message);
+        });
+      } catch (e) {
+        console.warn('[ComplianceDocOnly] auto-save threw (non-fatal):', e?.message);
+      }
     }, 1500);
     return () => clearTimeout(timer);
   }, [documents, sessionToken, caseId, currentStep, cafOnlyMode, skipCafIdentity, template, merchant]);
 
   // ── Restore documents from server on mount (if session exists) ──
+  // HARDENED: any error here is swallowed — user can still upload from scratch.
   React.useEffect(() => {
     if (!sessionToken || !caseId) return;
     (async () => {
       try {
         const res = await base44.functions.invoke('loadComplianceProgress', { sessionToken });
-        if (res.data?.session?.documentsData && Object.keys(res.data.session.documentsData).length > 0) {
+        if (res?.data?.session?.documentsData && Object.keys(res.data.session.documentsData).length > 0) {
           setDocuments(res.data.session.documentsData);
         }
-      } catch {}
+      } catch (err) {
+        console.warn('[ComplianceDocOnly] restore session failed (non-fatal):', err?.message);
+      }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionToken]);
@@ -258,9 +268,21 @@ export default function ComplianceDocOnly() {
         }));
       });
       if (docsPayload.length > 0) {
-        const uploadRes = await base44.functions.invoke('publicComplianceDocUpload', {
-          caseId, docLinkToken: token, documents: docsPayload,
-        });
+        let uploadRes;
+        try {
+          uploadRes = await base44.functions.invoke('publicComplianceDocUpload', {
+            caseId, docLinkToken: token, documents: docsPayload,
+          });
+        } catch (invokeErr) {
+          console.error('[ComplianceDocOnly] invoke failed:', invokeErr);
+          toast.error(
+            'Falha ao comunicar com o servidor. Verifique sua conexão e clique em Enviar novamente. ' +
+            `Detalhe: ${invokeErr?.message || 'erro de rede'}`,
+            { duration: 10000 }
+          );
+          setIsSubmitting(false);
+          return;
+        }
         const uploadData = uploadRes?.data || {};
         // Accept partial-success only if failedCount=0 (skipped is OK — usually duplicates).
         if (!uploadData.ok && (uploadData.failedCount || 0) > 0) {

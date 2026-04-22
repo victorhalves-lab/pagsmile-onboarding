@@ -383,11 +383,23 @@ export default function DynamicDocumentUploadPage({
         }));
       });
       if (docsPayload.length > 0) {
-        const uploadRes = await base44.functions.invoke('publicComplianceDocUpload', {
-          caseId: onboardingCaseId,
-          docLinkToken: localStorage.getItem('created_doc_link_token') || undefined,
-          documents: docsPayload,
-        });
+        let uploadRes;
+        try {
+          uploadRes = await base44.functions.invoke('publicComplianceDocUpload', {
+            caseId: onboardingCaseId,
+            docLinkToken: localStorage.getItem('created_doc_link_token') || undefined,
+            documents: docsPayload,
+          });
+        } catch (invokeErr) {
+          console.error('[DynamicDocumentUploadPage] invoke failed:', invokeErr);
+          toast.error(
+            'Falha ao comunicar com o servidor. Verifique sua conexão e clique em Enviar novamente. ' +
+            `Detalhe: ${invokeErr?.message || 'erro de rede'}`,
+            { duration: 10000 }
+          );
+          setIsSubmitting(false);
+          return;
+        }
         const uploadData = uploadRes?.data || {};
         // Fail only on hard failures (failedCount>0). Skipped entries are OK (usually dedupe).
         if (!uploadData.ok && (uploadData.failedCount || 0) > 0) {

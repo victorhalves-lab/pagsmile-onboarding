@@ -103,7 +103,7 @@ export function useComplianceSession({ flowType, templateModel, storageKey }) {
     init();
   }, [flowType, templateModel, storageKey]);
 
-  // Save progress (debounced)
+  // Save progress (debounced) — HARDENED: ALL errors swallowed, NEVER blocks the UI.
   const saveProgress = useCallback(({ currentStep, currentPhase, formData, documentsData, clientEmail, clientName }) => {
     if (!sessionToken) return;
 
@@ -113,25 +113,26 @@ export function useComplianceSession({ flowType, templateModel, storageKey }) {
     }
 
     saveTimeoutRef.current = setTimeout(async () => {
-      const payload = {
-        sessionToken,
-        flowType,
-        templateModel,
-        linkCode: localStorage.getItem('onboarding_link_code') || ''
-      };
-      
-      if (currentStep !== undefined) payload.currentStep = currentStep;
-      if (currentPhase !== undefined) payload.currentPhase = currentPhase;
-      if (formData !== undefined) payload.formData = formData;
-      if (documentsData !== undefined) payload.documentsData = documentsData;
-      if (clientEmail) payload.clientEmail = clientEmail;
-      if (clientName) payload.clientName = clientName;
-
       try {
+        const payload = {
+          sessionToken,
+          flowType,
+          templateModel,
+          linkCode: localStorage.getItem('onboarding_link_code') || ''
+        };
+
+        if (currentStep !== undefined) payload.currentStep = currentStep;
+        if (currentPhase !== undefined) payload.currentPhase = currentPhase;
+        if (formData !== undefined) payload.formData = formData;
+        if (documentsData !== undefined) payload.documentsData = documentsData;
+        if (clientEmail) payload.clientEmail = clientEmail;
+        if (clientName) payload.clientName = clientName;
+
         await base44.functions.invoke('saveComplianceProgress', payload);
         lastSavedRef.current = new Date();
       } catch (e) {
-        console.warn('Failed to save progress:', e);
+        // Auto-save failures are NON-FATAL — user's data is still in localStorage.
+        console.warn('[useComplianceSession] auto-save failed (non-fatal):', e?.message);
       }
     }, 1500); // 1.5s debounce
   }, [sessionToken, flowType, templateModel]);

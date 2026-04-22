@@ -19,6 +19,9 @@ import { compressImageIfNeeded } from '@/lib/imageCompression';
  *   { files: [{ url, uri, isPrivate, name, size, type, uploadedAt }, ...] }
  *   OR
  *   { notAvailable: true, notAvailableReason: "...", uploadedAt }
+ *
+ * HARDENED (2026-04-22): every async step is wrapped — NO failure here can crash
+ * the page. Every error produces a user-facing toast with actionable message.
  */
 export default function DynamicDocumentUploader({
   template,
@@ -51,9 +54,11 @@ export default function DynamicDocumentUploader({
   // Load saved docs from localStorage on mount
   useEffect(() => {
     if (storageKey) {
-      const savedDocs = localStorage.getItem(storageKey);
-      if (savedDocs) {
-        try { setDocuments(JSON.parse(savedDocs)); } catch (e) { console.error('Erro ao carregar documentos salvos:', e); }
+      try {
+        const savedDocs = localStorage.getItem(storageKey);
+        if (savedDocs) setDocuments(JSON.parse(savedDocs));
+      } catch (e) {
+        console.error('[DynamicDocumentUploader] Erro ao carregar documentos salvos:', e);
       }
     }
   }, [storageKey, setDocuments]);
@@ -61,44 +66,65 @@ export default function DynamicDocumentUploader({
   // Persist to localStorage whenever docs change
   useEffect(() => {
     if (storageKey && documents && Object.keys(documents).length > 0) {
-      localStorage.setItem(storageKey, JSON.stringify(documents));
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(documents));
+      } catch (e) {
+        // localStorage full / disabled — non-fatal, just log
+        console.warn('[DynamicDocumentUploader] localStorage.setItem failed:', e?.message);
+      }
     }
   }, [documents, storageKey]);
 
   // ── Upload multiple files at once (with compression + retry) ──
+  // BULLETPROOF: each file is processed independently. One failure never aborts the others.
+  // Every error surfaces to the user with the file name + actionable message.
   const handleUpload = async (docId, filesList) => {
     const fileArray = Array.isArray(filesList) ? filesList : [filesList];
+    if (fileArray.length === 0) return;
+
     setUploadingDoc(docId);
-    try {
-      const uploadedFiles = [];
-      const failedFiles = [];
-      for (const original of fileArray) {
+    const uploadedFiles = [];
+    const failedFiles = [];
+
+    for (const original of fileArray) {
+      try {
+        // Step A: compress (never throws — compressImageIfNeeded catches internally)
+        let file = original;
         try {
-          // Compress images > 5MB to speed up uploads
-          const file = await compressImageIfNeeded(original, 5);
-          const { file_uri } = await uploadPrivateFileWithRetry(file);
-          uploadedFiles.push({
-            url: file_uri,
-            uri: file_uri,
-            isPrivate: true,
-            name: file.name,
-            size: file.size,
-            type: file.type,
-            uploadedAt: new Date().toISOString(),
-            _localFile: original, // keep reference for thumbnail preview (not persisted)
-          });
-        } catch (err) {
-          failedFiles.push({ name: original.name, error: err?.message || 'falha' });
+          file = await compressImageIfNeeded(original, 5);
+        } catch (compressErr) {
+          console.warn('[DynamicDocumentUploader] compression failed, using original:', compressErr?.message);
+          file = original;
         }
+
+        // Step B: upload with retry (throws on final failure)
+        const result = await uploadPrivateFileWithRetry(file);
+        const fileUri = result?.file_uri;
+        if (!fileUri) {
+          throw new Error('Servidor não retornou URI do arquivo');
+        }
+
+        uploadedFiles.push({
+          url: fileUri,
+          uri: fileUri,
+          isPrivate: true,
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          uploadedAt: new Date().toISOString(),
+          _localFile: original, // keep reference for thumbnail preview (not persisted)
+        });
+      } catch (err) {
+        console.error('[DynamicDocumentUploader] upload failed for', original?.name, err);
+        failedFiles.push({
+          name: original?.name || 'arquivo',
+          error: err?.message || 'falha desconhecida',
+        });
       }
-      if (failedFiles.length > 0) {
-        toast.error(
-          `Falha ao enviar ${failedFiles.length} arquivo(s) após 3 tentativas: ${failedFiles.map(f => f.name).join(', ')}. ` +
-          `Verifique sua conexão e tente novamente.`,
-          { duration: 8000 }
-        );
-        if (uploadedFiles.length === 0) { setUploadingDoc(null); return; }
-      }
+    }
+
+    // Persist successfully uploaded files (never lose partial progress)
+    if (uploadedFiles.length > 0) {
       setDocuments(prev => {
         const existing = prev[docId];
         const existingFiles = Array.isArray(existing?.files)
@@ -122,14 +148,22 @@ export default function DynamicDocumentUploader({
           },
         };
       });
-      if (uploadedFiles.length > 0) {
-        toast.success(`${uploadedFiles.length} arquivo${uploadedFiles.length > 1 ? 's' : ''} enviado${uploadedFiles.length > 1 ? 's' : ''}!`);
-      }
-    } catch (error) {
-      toast.error('Erro ao enviar: ' + error.message);
-    } finally {
-      setUploadingDoc(null);
+      toast.success(`${uploadedFiles.length} arquivo${uploadedFiles.length > 1 ? 's' : ''} enviado${uploadedFiles.length > 1 ? 's' : ''} com sucesso!`);
     }
+
+    // Report failures with actionable info
+    if (failedFiles.length > 0) {
+      const names = failedFiles.map(f => f.name).join(', ');
+      const firstError = failedFiles[0].error;
+      toast.error(
+        `Falha ao enviar ${failedFiles.length} arquivo(s): ${names}. ` +
+        `Motivo: ${firstError}. ` +
+        `Verifique sua conexão e tente novamente. Se persistir, use outro navegador ou entre em contato com o suporte.`,
+        { duration: 12000 }
+      );
+    }
+
+    setUploadingDoc(null);
   };
 
   // Remove all files / entire entry
