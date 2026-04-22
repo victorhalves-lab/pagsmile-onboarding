@@ -95,7 +95,18 @@ Deno.serve(async (req) => {
       return Response.json({ ok: false, error: 'notAvailableReason must be at least 10 characters' }, { status: 400 });
     }
 
-    const base44 = createClientFromRequest(req);
+    // Tolerante a tokens de cliente inválidos/expirados: fallback para client anônimo.
+    // Todas as operações usam asServiceRole, então não dependem do user context.
+    let base44;
+    try {
+      base44 = createClientFromRequest(req);
+    } catch (_) {
+      const { createClient } = await import('npm:@base44/sdk@0.8.25');
+      base44 = createClient({
+        appId: Deno.env.get('BASE44_APP_ID'),
+        requiresAuth: false,
+      });
+    }
 
     // Validate case + token
     let cases = [];

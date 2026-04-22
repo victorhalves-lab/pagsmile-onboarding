@@ -29,7 +29,18 @@ Deno.serve(async (req) => {
   const startTime = Date.now();
   
   try {
-    const base44 = createClientFromRequest(req);
+    // Tolerante a tokens de cliente inválidos/expirados — este endpoint é chamado após
+    // cada etapa do CAF SDK (documento frente, verso, liveness) e o cliente é anônimo.
+    let base44;
+    try {
+      base44 = createClientFromRequest(req);
+    } catch (_) {
+      const { createClient } = await import('npm:@base44/sdk@0.8.25');
+      base44 = createClient({
+        appId: Deno.env.get('BASE44_APP_ID'),
+        requiresAuth: false,
+      });
+    }
     const body = await req.json();
     const { 
       onboardingCaseId, 

@@ -31,7 +31,18 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'No allowed fields in updates' }, { status: 400 });
     }
 
-    const base44 = createClientFromRequest(req);
+    // Tolerante a requests anônimos: se o token do cliente estiver inválido/expirado,
+    // criamos um cliente "limpo" (sem auth). As operações usam asServiceRole.
+    let base44;
+    try {
+      base44 = createClientFromRequest(req);
+    } catch (_) {
+      const { createClient } = await import('npm:@base44/sdk@0.8.25');
+      base44 = createClient({
+        appId: Deno.env.get('BASE44_APP_ID'),
+        requiresAuth: false,
+      });
+    }
 
     // Verify case exists (service role) and check the docLinkToken matches.
     // The token is generated server-side at publicComplianceSubmit and returned to the
