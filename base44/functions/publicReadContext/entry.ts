@@ -25,7 +25,19 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => ({}));
     const { kind } = body;
-    const base44 = createClientFromRequest(req);
+    // Tolerante a requests anônimos: se o token do cliente estiver inválido/expirado,
+    // criamos um cliente "limpo" (sem auth). Todas as operações abaixo usam
+    // asServiceRole mesmo, então não precisamos do user context.
+    let base44;
+    try {
+      base44 = createClientFromRequest(req);
+    } catch (_) {
+      const { createClient } = await import('npm:@base44/sdk@0.8.25');
+      base44 = createClient({
+        appId: Deno.env.get('BASE44_APP_ID'),
+        requiresAuth: false,
+      });
+    }
 
     // ── Introducer by slug (for IntroducerLandingPage) ──
     if (kind === 'introducer_by_slug') {

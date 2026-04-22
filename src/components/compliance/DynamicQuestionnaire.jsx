@@ -761,7 +761,16 @@ export default function DynamicQuestionnaire({
     if (onComplete) {
       onComplete({ formData: finalFormData, template, questions });
     } else {
-      navigate(`/${documentUploadPage}`);
+      // Passa model + templateId + caseId na URL para que a página de upload
+      // funcione mesmo se o cliente limpar cache ou recarregar direto naquela URL.
+      // O localStorage vira apenas um fallback, não a única fonte de verdade.
+      const params = new URLSearchParams();
+      if (templateModel) params.set('model', templateModel);
+      if (template?.id) params.set('templateId', template.id);
+      const existingCaseId = localStorage.getItem('created_onboarding_case_id');
+      if (existingCaseId) params.set('caseId', existingCaseId);
+      const qs = params.toString();
+      navigate(`/${documentUploadPage}${qs ? `?${qs}` : ''}`);
     }
   };
 

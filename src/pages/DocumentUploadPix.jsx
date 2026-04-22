@@ -1,48 +1,54 @@
 import React from 'react';
 import DynamicDocumentUploadPage from '../components/compliance/DynamicDocumentUploadPage';
-
-const MODEL_CONFIG = {
-  CompliancePixMerchantV4: {
-    formDataStorageKey: 'compliance_data_pix_merchant_v4',
-    documentsStorageKey: 'documents_pix_merchant_v4',
-    badgeLabel: 'PIX MERCHANT v4',
-    badgeColor: 'bg-emerald-100 text-emerald-700',
-  },
-  CompliancePixIntermediarioV4: {
-    formDataStorageKey: 'compliance_data_pix_intermediario_v4',
-    documentsStorageKey: 'documents_pix_intermediario_v4',
-    badgeLabel: 'PIX INTERMEDIÁRIO v4',
-    badgeColor: 'bg-indigo-100 text-indigo-700',
-  },
-  pix_api_enterprise: {
-    formDataStorageKey: 'compliance_data_pix_api_enterprise',
-    documentsStorageKey: 'documents_pix_api_enterprise',
-    badgeLabel: 'PIX API ENTERPRISE',
-    badgeColor: 'bg-blue-100 text-blue-700',
-  },
-  // Legacy fallback
-  pix: {
-    formDataStorageKey: 'compliance_data_pix',
-    documentsStorageKey: 'documents_pix',
-    badgeLabel: 'PIX',
-    badgeColor: 'bg-blue-100 text-blue-700',
-  },
-};
+import NoContextRecoveryScreen from '../components/compliance/NoContextRecoveryScreen';
+import { getComplianceModelConfig, resolveCurrentModel } from '@/lib/complianceModelRegistry';
 
 export default function DocumentUploadPix() {
-  const savedTemplateId = localStorage.getItem('current_template_id');
-  const savedModel = localStorage.getItem('current_compliance_model');
-  const config = MODEL_CONFIG[savedModel] || MODEL_CONFIG.pix;
+  // Prioridade: URL (?model=XXX) > localStorage > default PIX
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlModel = urlParams.get('model');
+  const urlCaseId = urlParams.get('caseId');
+  const urlTemplateId = urlParams.get('templateId');
+
+  const hasContext = !!(
+    urlModel ||
+    urlTemplateId ||
+    urlCaseId ||
+    (typeof window !== 'undefined' && (
+      localStorage.getItem('current_compliance_model') ||
+      localStorage.getItem('current_template_id') ||
+      localStorage.getItem('created_onboarding_case_id')
+    ))
+  );
+
+  const resolvedModel = urlModel || resolveCurrentModel() || 'CompliancePixMerchantV4';
+  const config = getComplianceModelConfig(resolvedModel);
+
+  // IMPORTANTE: hook declarado ANTES de qualquer early return (regras de hooks).
+  React.useEffect(() => {
+    if (!hasContext) return;
+    try {
+      localStorage.setItem('current_compliance_model', config._resolvedKey);
+      if (urlTemplateId) localStorage.setItem('current_template_id', urlTemplateId);
+      if (urlCaseId) localStorage.setItem('created_onboarding_case_id', urlCaseId);
+    } catch (_) {}
+  }, [hasContext, config._resolvedKey, urlTemplateId, urlCaseId]);
+
+  if (!hasContext) {
+    return <NoContextRecoveryScreen linkSupport="compliance@pagsmile.com" />;
+  }
+
+  const savedTemplateId = urlTemplateId || localStorage.getItem('current_template_id');
 
   return (
     <DynamicDocumentUploadPage
       templateId={savedTemplateId}
-      templateModel={savedModel || 'pix'}
-      formDataStorageKey={config.formDataStorageKey}
+      templateModel={config._resolvedKey}
+      formDataStorageKey={config.storageKey}
       documentsStorageKey={config.documentsStorageKey}
       questionnairePageName="ComplianceDinamico"
       nextPageName="OnboardingCompletion"
-      flowType="pix"
+      flowType={config.flowType}
       badgeLabel={config.badgeLabel}
       badgeColor={config.badgeColor}
     />

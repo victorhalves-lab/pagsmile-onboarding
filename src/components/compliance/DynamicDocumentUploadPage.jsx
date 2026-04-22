@@ -189,8 +189,11 @@ export default function DynamicDocumentUploadPage({
   const { data: bundle, isLoading: loadingBundle } = useQuery({
     queryKey: ['docUploadTemplateBundle', templateId, templateModel],
     queryFn: async () => {
+      // Prioridade: prop templateId (vem da URL) > localStorage > model
+      // Isso garante que links com ?templateId=... ou ?model=... funcionem
+      // sempre, mesmo após "limpar cache".
       const savedTemplateId = localStorage.getItem('current_template_id');
-      const idToUse = savedTemplateId || templateId;
+      const idToUse = templateId || savedTemplateId;
       const payload = idToUse
         ? { kind: 'template_with_questions', id: idToUse }
         : { kind: 'template_with_questions', model: templateModel };
