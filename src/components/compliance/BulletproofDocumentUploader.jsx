@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Progress } from '@/components/ui/progress';
 import {
   FileUp, AlertCircle, Shield, Lock, File, HelpCircle, MessageSquareWarning
@@ -67,16 +67,30 @@ export default function BulletproofDocumentUploader({
     return true;
   });
 
+  // ── Load from localStorage ONCE on mount only ──
+  // CRITICAL BUG FIX (2026-04-22): This useEffect used to depend on [storageKey, setDocuments].
+  // `setDocuments` changes reference on every parent render, causing this effect to re-run
+  // MID-UPLOAD and overwrite fresh in-memory state with stale localStorage data — making
+  // successfully uploaded files appear to vanish from the UI. Clients then re-uploaded the
+  // same doc 3-4 times (see Omega Pay case 69e65d61f5e31d7556f62ebc — 7 uploads across 5h).
+  // The ref-based guard ensures this runs exactly once per storageKey.
+  const hasLoadedRef = React.useRef(null);
   useEffect(() => {
-    if (storageKey) {
-      try {
-        const saved = localStorage.getItem(storageKey);
-        if (saved) setDocuments(JSON.parse(saved));
-      } catch (e) {
-        console.warn('[BulletproofUploader] load from localStorage failed:', e?.message);
+    if (!storageKey) return;
+    if (hasLoadedRef.current === storageKey) return; // already loaded for this key
+    hasLoadedRef.current = storageKey;
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Only restore if current state is empty — never overwrite in-flight uploads
+        setDocuments(prev => (prev && Object.keys(prev).length > 0) ? prev : parsed);
       }
+    } catch (e) {
+      console.warn('[BulletproofUploader] load from localStorage failed:', e?.message);
     }
-  }, [storageKey, setDocuments]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storageKey]);
 
   useEffect(() => {
     if (storageKey && documents && Object.keys(documents).length > 0) {
