@@ -162,6 +162,42 @@ Deno.serve(async (req) => {
       return Response.json({ ok: false, error: 'Falha ao decodificar arquivo: ' + decodeErr?.message }, { status: 400 });
     }
 
+    // IDEMPOTENCY CHECK — if the client retries (e.g. due to a perceived network timeout
+    // while the server was still processing), we must NOT create a duplicate DocumentUpload.
+    // We check: same case + same documentTypeId + same fileSize + same fileName created in the
+    // last 60 seconds → return the existing doc as if the current upload had just succeeded.
+    // This solves the "cliente reenvia várias vezes porque viu erro mas o upload deu certo" loop.
+    try {
+      const recentDocs = await base44.asServiceRole.entities.DocumentUpload.filter({
+        onboardingCaseId: caseId,
+        documentTypeId,
+      });
+      const sixtySecondsAgo = Date.now() - 60_000;
+      const duplicate = (recentDocs || []).find((d) => {
+        if (!d?.fileName || !d?.fileSize) return false;
+        if (d.fileName !== fileName) return false;
+        if (Number(d.fileSize) !== Number(fileSize)) return false;
+        const createdMs = d.created_date ? new Date(d.created_date).getTime() : 0;
+        return createdMs >= sixtySecondsAgo;
+      });
+      if (duplicate) {
+        console.log(`[publicDirectDocUpload] DUPLICATE_DETECTED returning existing id=${duplicate.id} docType=${documentTypeId}`);
+        return Response.json({
+          ok: true,
+          documentUploadId: duplicate.id,
+          fileUri: duplicate.fileUri || duplicate.fileUrl,
+          fileUrl: duplicate.fileUri || duplicate.fileUrl,
+          fileName: duplicate.fileName,
+          fileSize: duplicate.fileSize,
+          fileType: duplicate.fileType,
+          deduped: true,
+          duration_ms: Date.now() - startedAt,
+        });
+      }
+    } catch (dedupErr) {
+      console.warn(`[publicDirectDocUpload] DEDUP_CHECK_FAILED (non-fatal):`, dedupErr?.message);
+    }
+
     let uploadResult;
     try {
       uploadResult = await base44.asServiceRole.integrations.Core.UploadPrivateFile({ file: fileBlob });

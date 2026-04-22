@@ -113,8 +113,12 @@ export async function directUploadDocument({
     tickStop = () => clearInterval(interval);
   }
 
-  try {
-    const res = await base44.functions.invoke('publicDirectDocUpload', {
+  // RETRY STRATEGY: server-side uploads of large base64 payloads can take 15-25s,
+  // and the SDK/network layer sometimes aborts before the server finishes. Because
+  // the backend is now idempotent (same case+docType+fileName+fileSize within 60s
+  // returns the existing record), retrying on transient failures is SAFE — no dupes.
+  const invokeWithRetry = async () => {
+    const payload = {
       caseId,
       documentTypeId,
       documentName: documentName || documentTypeId,
@@ -124,11 +128,30 @@ export async function directUploadDocument({
       fileType: file.type || 'application/octet-stream',
       fileSize: file.size || 0,
       uploadDate: new Date().toISOString(),
-    });
+    };
+    let lastErr;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const res = await base44.functions.invoke('publicDirectDocUpload', payload);
+        const data = res?.data || {};
+        if (!data.ok) throw new Error(data.error || 'Falha ao enviar arquivo');
+        return data;
+      } catch (err) {
+        lastErr = err;
+        const msg = String(err?.message || '').toLowerCase();
+        const isRetryable = msg.includes('network') || msg.includes('timeout') || msg.includes('aborted') || msg.includes('failed to fetch') || msg.includes('load failed');
+        if (!isRetryable || attempt === 2) throw err;
+        // backoff 1.5s, then 3s
+        await new Promise(r => setTimeout(r, 1500 * (attempt + 1)));
+      }
+    }
+    throw lastErr;
+  };
+
+  try {
+    const data = await invokeWithRetry();
     if (tickStop) tickStop();
     if (typeof onProgress === 'function') { try { onProgress(100); } catch (_) {} }
-    const data = res?.data || {};
-    if (!data.ok) throw new Error(data.error || 'Falha ao enviar arquivo');
     return data;
   } catch (err) {
     if (tickStop) tickStop();
