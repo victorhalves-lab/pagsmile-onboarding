@@ -396,10 +396,11 @@ export default function BulletproofDocumentUploader({
           <div>
             <h4 className="font-medium text-[#002443] text-sm">Requisitos dos Arquivos</h4>
             <ul className="text-sm text-slate-500 mt-1 space-y-1 list-disc pl-4">
-              <li>Formatos aceitos: <strong>PDF, JPG, PNG, DOC, DOCX</strong></li>
-              <li>Tamanho máximo: <strong>15MB</strong> por arquivo</li>
+              <li>Formatos aceitos: <strong>PDF, JPG e PNG</strong> <span className="text-amber-700">(Word/DOCX não é aceito)</span></li>
+              <li>Tamanho máximo: <strong>7MB</strong> por arquivo</li>
               <li>Você pode enviar <strong>vários arquivos</strong> por tipo de documento</li>
               <li>Documentos devem estar legíveis e dentro da validade</li>
+              <li className="text-[11px] text-slate-400">Se tiver um arquivo em Word, exporte como PDF antes de enviar</li>
             </ul>
           </div>
         </div>

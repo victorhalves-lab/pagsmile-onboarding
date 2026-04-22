@@ -19,14 +19,15 @@ import FileThumbnail from './FileThumbnail';
  *   NotAvail: { notAvailable: true, notAvailableReason: "..." }
  */
 
-// Valid mime-types per extension — guards against renamed malicious files
+// Valid mime-types per extension — guards against renamed malicious files.
+// NOTE (2026-04-22): DOC/DOCX removed — only PDF and images are accepted.
+// Reason: VerifAI/CAF documentoscopia only analyzes PDF/JPG/PNG, and Word docs
+// can contain macros or non-visual content that hides identity info.
 const ALLOWED_MIME_BY_EXT = {
   PDF: ['application/pdf'],
   JPG: ['image/jpeg', 'image/jpg'],
   JPEG: ['image/jpeg', 'image/jpg'],
   PNG: ['image/png'],
-  DOC: ['application/msword'],
-  DOCX: ['application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
 };
 
 // Documents that CANNOT be marked as "not available" — essential for KYC/identity
@@ -39,7 +40,7 @@ const MANDATORY_NO_SKIP = new Set([
   'doc_base_comprovante_endereco',
 ]);
 
-const DEFAULT_ALLOWED = ['PDF', 'JPG', 'JPEG', 'PNG', 'DOC', 'DOCX'];
+const DEFAULT_ALLOWED = ['PDF', 'JPG', 'JPEG', 'PNG'];
 
 function formatSize(bytes) {
   if (!bytes) return '';
@@ -51,7 +52,6 @@ function formatSize(bytes) {
 function fileIcon(name = '') {
   const ext = name.split('.').pop()?.toUpperCase();
   if (ext === 'PDF') return <FileText className="w-4 h-4 text-red-500" />;
-  if (['DOC', 'DOCX'].includes(ext)) return <FileText className="w-4 h-4 text-blue-500" />;
   return <File className="w-4 h-4 text-slate-400" />;
 }
 
@@ -89,11 +89,8 @@ export default function DocumentCard({ doc, uploadedFile, onUpload, onRemoveAll,
       if (file.size > maxSizeMB * 1024 * 1024) {
         const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
         const isPdf = /\.pdf$/i.test(file.name);
-        const isDoc = /\.docx?$/i.test(file.name);
         const hint = isPdf
           ? ' Reduza o PDF (ex: smallpdf.com/compress-pdf) ou envie como foto JPG/PNG.'
-          : isDoc
-          ? ' Converta o arquivo para PDF e reduza o tamanho, ou envie como imagem.'
           : ' Use uma foto/imagem menor — imagens grandes são comprimidas automaticamente.';
         toast.error(`${file.name} (${sizeMB}MB) ultrapassa o limite de ${maxSizeMB}MB.${hint}`, { duration: 10000 });
         continue;
