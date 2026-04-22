@@ -1,13 +1,17 @@
 import React from 'react';
-import { 
-  ShoppingCart, Server, Store, Cloud, BookOpen, GraduationCap, 
-  Truck, Briefcase, Link2 
-} from 'lucide-react';
+import { ShoppingCart, Cloud, BookOpen, Truck } from 'lucide-react';
 
 /**
- * Seletor de segmento para subsellers PJ — aplica paridade com sellers diretos.
- * Exibe os 9 modelos V4 disponíveis (exclui PIX Merchant e PIX Intermediário).
- * Cada segmento resolve para um QuestionnaireTemplate V4 completo.
+ * Seletor de segmento para subsellers PJ.
+ *
+ * REGRA DE NEGÓCIO: subsellers/subcontas são SEMPRE vendedores finais dentro de
+ * um seller principal (gateway/marketplace). Portanto só fazem sentido 4 segmentos
+ * de operação de venda direta: E-commerce, Dropshipping, Infoprodutos e SaaS.
+ *
+ * Segmentos como Gateway, Marketplace, MPE, Educação e Link de Pagamento NÃO
+ * existem no contexto de subseller — quem opera esses modelos é o seller principal.
+ *
+ * Cada segmento resolve para um QuestionnaireTemplate V4 completo (mesmo rigor do seller direto).
  */
 const SEGMENTS = [
   {
@@ -19,28 +23,12 @@ const SEGMENTS = [
     color: '#3b82f6',
   },
   {
-    model: 'ComplianceGatewayV4',
-    storageKey: 'compliance_data_subseller_gateway',
-    title: 'Gateway de Pagamento',
-    description: 'Plataforma que processa pagamentos para terceiros',
-    icon: Server,
-    color: '#8b5cf6',
-  },
-  {
-    model: 'ComplianceMarketplaceV4',
-    storageKey: 'compliance_data_subseller_marketplace',
-    title: 'Marketplace',
-    description: 'Plataforma com múltiplos vendedores',
-    icon: Store,
-    color: '#ec4899',
-  },
-  {
-    model: 'ComplianceSaaSV4',
-    storageKey: 'compliance_data_subseller_saas',
-    title: 'SaaS',
-    description: 'Software como serviço — assinatura recorrente',
-    icon: Cloud,
-    color: '#06b6d4',
+    model: 'ComplianceDropshippingV4',
+    storageKey: 'compliance_data_subseller_dropshipping',
+    title: 'Dropshipping',
+    description: 'Venda sem estoque próprio',
+    icon: Truck,
+    color: '#ef4444',
   },
   {
     model: 'ComplianceInfoprodutosV4',
@@ -51,36 +39,12 @@ const SEGMENTS = [
     color: '#f59e0b',
   },
   {
-    model: 'ComplianceEducacaoV4',
-    storageKey: 'compliance_data_subseller_educacao',
-    title: 'Educação',
-    description: 'Instituições e plataformas educacionais',
-    icon: GraduationCap,
-    color: '#10b981',
-  },
-  {
-    model: 'ComplianceDropshippingV4',
-    storageKey: 'compliance_data_subseller_dropshipping',
-    title: 'Dropshipping',
-    description: 'Venda sem estoque próprio',
-    icon: Truck,
-    color: '#ef4444',
-  },
-  {
-    model: 'ComplianceMPEV4',
-    storageKey: 'compliance_data_subseller_mpe',
-    title: 'MEI / ME / EPP',
-    description: 'Micro e pequenas empresas',
-    icon: Briefcase,
-    color: '#84cc16',
-  },
-  {
-    model: 'ComplianceLinkPagamentoV4',
-    storageKey: 'compliance_data_subseller_link',
-    title: 'Link de Pagamento',
-    description: 'Vendas por link direto ao consumidor',
-    icon: Link2,
-    color: '#f97316',
+    model: 'ComplianceSaaSV4',
+    storageKey: 'compliance_data_subseller_saas',
+    title: 'SaaS',
+    description: 'Software como serviço — assinatura recorrente',
+    icon: Cloud,
+    color: '#06b6d4',
   },
 ];
 
@@ -90,7 +54,7 @@ export default function SubsellerSegmentSelector({ onSelect, onBack, branding })
   const hasBranding = !!branding?.name;
 
   return (
-    <div className="max-w-5xl mx-auto">
+    <div className="max-w-3xl mx-auto">
       {/* Header */}
       <div className="text-center mb-8">
         {hasBranding ? (
@@ -117,7 +81,7 @@ export default function SubsellerSegmentSelector({ onSelect, onBack, branding })
       </div>
 
       {/* Grid de segmentos */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {SEGMENTS.map(seg => {
           const Icon = seg.icon;
           return (
