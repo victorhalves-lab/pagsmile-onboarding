@@ -53,6 +53,8 @@ import SubsellerDocUpload from './pages/SubsellerDocUpload';
 import Cadastro from './pages/Cadastro';
 import CadastroDetalhe from './pages/CadastroDetalhe';
 import ComplianceDocOnly from './pages/ComplianceDocOnly';
+import ComplianceDocOnlyRedirect from './pages/ComplianceDocOnlyRedirect';
+import PublicOnboarding from './pages/PublicOnboarding';
 import BDCHealthDashboard from './pages/BDCHealthDashboard';
 import AnaliseCompleta from './pages/AnaliseCompleta';
 import BulkReprocess from './pages/BulkReprocess';
@@ -131,7 +133,8 @@ const PublicRoutes = () => (
     {/* Subseller */}
     <Route path="/SubsellerQuestionnaire" element={<LayoutWrapper currentPageName="SubsellerQuestionnaire"><SubsellerQuestionnaire /></LayoutWrapper>} />
     <Route path="/SubsellerDocUpload" element={<LayoutWrapper currentPageName="SubsellerDocUpload"><SubsellerDocUpload /></LayoutWrapper>} />
-    <Route path="/ComplianceDocOnly" element={<ComplianceDocOnly />} />
+    <Route path="/ComplianceDocOnly" element={<ComplianceDocOnlyRedirect />} />
+    <Route path="/onboarding" element={<PublicOnboarding />} />
 
     {/* Questionário Simplificado */}
     {Pages['QuestionarioSimplificadoPublico'] && <Route path="/QuestionarioSimplificadoPublico" element={<LayoutWrapper currentPageName="QuestionarioSimplificadoPublico"><Pages.QuestionarioSimplificadoPublico /></LayoutWrapper>} />}

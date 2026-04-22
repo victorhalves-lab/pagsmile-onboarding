@@ -55,10 +55,15 @@ Deno.serve(async (req) => {
     try { existing = await base44.asServiceRole.entities.ComplianceSession.filter({ sessionToken }); }
     catch (_) {}
 
+    // Entity expects currentStep as a number. Coerce anything else to a fallback.
+    // The V2 flow uses string step keys ("q"/"d"/"r"/"c"/"done") persisted inside
+    // formData.__onboardingStep — the numeric field is just "how far has the user gone".
+    const numericStep = typeof currentStep === 'number' && Number.isFinite(currentStep) ? currentStep : 1;
+
     if (existing.length > 0) {
       const updates = { lastAccessDate: new Date().toISOString() };
       if (currentPhase !== undefined) updates.currentPhase = currentPhase;
-      if (currentStep !== undefined) updates.currentStep = currentStep;
+      if (currentStep !== undefined) updates.currentStep = numericStep;
       if (formData !== undefined) updates.formData = formData;
       if (documentsData !== undefined) updates.documentsData = documentsData;
       await base44.asServiceRole.entities.ComplianceSession.update(existing[0].id, updates);
@@ -70,7 +75,7 @@ Deno.serve(async (req) => {
       flowType: `onboarding_v2_${mode}`,
       templateModel: cases[0].questionnaireTemplateId || '',
       currentPhase: currentPhase || (mode === 'full' ? 'questionnaire' : 'documents'),
-      currentStep: currentStep || 1,
+      currentStep: numericStep,
       formData: formData || {},
       documentsData: documentsData || {},
       lastAccessDate: new Date().toISOString(),

@@ -79,7 +79,8 @@ Deno.serve(async (req) => {
     }
 
     const origin = (baseUrl || '').replace(/\/+$/, '') || 'https://app.base44.com';
-    const url = `${origin}/ComplianceDocOnly?caseId=${encodeURIComponent(caseId)}&token=${encodeURIComponent(docLinkToken)}&mode=caf_only`;
+    // V2 URL — unified /onboarding route. Legacy /ComplianceDocOnly still redirects here.
+    const url = `${origin}/onboarding?case=${encodeURIComponent(caseId)}&token=${encodeURIComponent(docLinkToken)}&mode=caf_only`;
 
     return Response.json({
       success: true,

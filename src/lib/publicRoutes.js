@@ -3,6 +3,7 @@
 // ANY page listed here is accessible to ANYONE with the link — no login, no 2FA, no role.
 
 export const PUBLIC_PATHS = new Set([
+  '/onboarding',
   '/ComplianceDocOnly',
   '/PropostaPublica',
   '/PropostaPadraoPublica',
