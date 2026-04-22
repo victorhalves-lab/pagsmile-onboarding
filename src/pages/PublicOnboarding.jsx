@@ -5,8 +5,47 @@ import StepQuestionnaireV2 from '@/components/public-onboarding/StepQuestionnair
 import StepDocumentsV2 from '@/components/public-onboarding/StepDocumentsV2';
 import StepCafV2 from '@/components/public-onboarding/StepCafV2';
 import StepDoneV2 from '@/components/public-onboarding/StepDoneV2';
+import SelfHealingBoundary from '@/components/public-onboarding/SelfHealingBoundary';
 import ComplianceReviewStep from '@/components/compliance/ComplianceReviewStep';
 import { toast } from 'sonner';
+
+/**
+ * Neutralize browser extensions & auto-translate for the /onboarding page.
+ * Chrome Translate, Grammarly and most A11y extensions respect these hints and
+ * stop mutating the DOM — which is the #1 cause of React's `insertBefore` error.
+ * Runs once on mount, reverts on unmount so it doesn't leak to other pages.
+ */
+function useDomIsolation() {
+  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    const prev = {
+      htmlTranslate: html.getAttribute('translate'),
+      htmlClass: html.className,
+      bodyTranslate: body.getAttribute('translate'),
+      bodyClass: body.className,
+    };
+    html.setAttribute('translate', 'no');
+    html.classList.add('notranslate');
+    body.setAttribute('translate', 'no');
+    body.classList.add('notranslate');
+    // Grammarly honors this attribute on any element; Chrome Translate honors
+    // translate="no" + the notranslate class on <html>/<body>.
+    body.setAttribute('data-gramm', 'false');
+    body.setAttribute('data-gramm_editor', 'false');
+
+    return () => {
+      if (prev.htmlTranslate === null) html.removeAttribute('translate');
+      else html.setAttribute('translate', prev.htmlTranslate);
+      html.className = prev.htmlClass;
+      if (prev.bodyTranslate === null) body.removeAttribute('translate');
+      else body.setAttribute('translate', prev.bodyTranslate);
+      body.className = prev.bodyClass;
+      body.removeAttribute('data-gramm');
+      body.removeAttribute('data-gramm_editor');
+    };
+  }, []);
+}
 
 /**
  * Public onboarding V2 — single page, 4 modes.
@@ -47,9 +86,10 @@ function useUrlParams() {
   }, []);
 }
 
-export default function PublicOnboarding() {
+function PublicOnboardingInner() {
   const { caseId, token, mode } = useUrlParams();
   const ob = useOnboarding({ caseId, token, mode });
+  useDomIsolation();
 
   const [step, setStep] = useState(() => getInitialStep(mode));
   const [submitting, setSubmitting] = useState(false);
@@ -157,5 +197,19 @@ export default function PublicOnboarding() {
 
       {step === 'done' && <StepDoneV2 mode={mode} />}
     </OnboardingShell>
+  );
+}
+
+/**
+ * Public entry point — wraps the whole page in a self-healing boundary so that
+ * DOM manipulation from extensions never results in a visible crash.
+ * The boundary sits OUTSIDE OnboardingShell, so even errors in the shell's
+ * header/step-pills are caught and auto-recovered.
+ */
+export default function PublicOnboarding() {
+  return (
+    <SelfHealingBoundary>
+      <PublicOnboardingInner />
+    </SelfHealingBoundary>
   );
 }
