@@ -269,8 +269,18 @@ export default function DynamicDocumentUploadPage({
       _docKey: doc.documentTypeId || doc.id || `doc_${index}_${(doc.label || '').replace(/\s+/g, '_').toLowerCase().slice(0, 30)}`
     }));
     const mandatoryDocs = requiredDocs.filter(d => d.required);
-    const missingDocs = mandatoryDocs.filter(d => !documents[d._docKey]?.url);
-    
+    // FIX (2026-04-22): a doc is satisfied if it has ANY file (files[] OR url)
+    // OR has a not-available justification. Previous check `!documents[d._docKey]?.url`
+    // wrongly blocked clients who: (1) uploaded multiple files (files[] populated but url
+    // may race), or (2) marked the doc as not-available with reason.
+    const isSubmitSatisfied = (d) => {
+      const e = documents[d._docKey];
+      if (!e) return false;
+      const hasFiles = Array.isArray(e.files) ? e.files.length > 0 : !!e.url;
+      return hasFiles || (e.notAvailable && e.notAvailableReason);
+    };
+    const missingDocs = mandatoryDocs.filter(d => !isSubmitSatisfied(d));
+
     if (missingDocs.length > 0) {
       toast.error(`Envie todos os documentos obrigatórios. Faltam ${missingDocs.length}: ${missingDocs.map(d => d.label || d.name).join(', ')}`);
       return;
