@@ -7,8 +7,8 @@ import {
   ArrowLeft, FileUp, Loader2, CheckCircle2, AlertTriangle, ScanFace 
 } from 'lucide-react';
 import { toast } from 'sonner';
-import DynamicDocumentUploader from './DynamicDocumentUploader';
 import BulletproofDocumentUploader from './BulletproofDocumentUploader';
+import BulletproofUploaderWithLazyCase from './BulletproofUploaderWithLazyCase';
 import CafVerificationStep from './CafVerificationStep';
 import { useComplianceSession } from '../../hooks/useComplianceSession';
 import AutoSaveIndicator from './AutoSaveIndicator';
@@ -566,38 +566,24 @@ export default function DynamicDocumentUploadPage({
         </div>
       </div>
 
-      {/* Step 1: Upload de Documentos — usa BULLETPROOF (fetch nativo, zero SDK) quando
-          o OnboardingCase já foi criado pelo DynamicQuestionnaire. Senão cai no legado. */}
-      {currentStep === 'docs_upload' && (() => {
-        const existingCaseId = localStorage.getItem('created_onboarding_case_id');
-        const existingDocToken = localStorage.getItem('created_doc_link_token');
-        const formDataParsed = JSON.parse(localStorage.getItem(formDataStorageKey) || '{}');
-        if (existingCaseId && existingDocToken) {
-          return (
-            <BulletproofDocumentUploader
-              template={template}
-              documents={documents}
-              setDocuments={setDocuments}
-              storageKey={documentsStorageKey}
-              caseId={existingCaseId}
-              docLinkToken={existingDocToken}
-              onAllRequiredUploaded={setAllRequiredUploaded}
-              formData={formDataParsed}
-            />
-          );
-        }
-        // Fallback legado (caso raro: questionário não criou caso ainda)
-        return (
-          <DynamicDocumentUploader
-            template={template}
-            documents={documents}
-            setDocuments={setDocuments}
-            storageKey={documentsStorageKey}
-            onAllRequiredUploaded={setAllRequiredUploaded}
-            formData={formDataParsed}
-          />
-        );
-      })()}
+      {/* Step 1: Upload de Documentos — ALWAYS uses BULLETPROOF uploader.
+          If the OnboardingCase doesn't exist yet, we lazy-create it here via
+          publicComplianceSubmit BEFORE rendering the uploader. This eliminates
+          the legacy DynamicDocumentUploader path that was failing on public
+          routes (tried to call SDK's UploadPrivateFile without an auth token). */}
+      {currentStep === 'docs_upload' && (
+        <BulletproofUploaderWithLazyCase
+          template={template}
+          questions={questions}
+          templateModel={templateModel}
+          formDataStorageKey={formDataStorageKey}
+          documentsStorageKey={documentsStorageKey}
+          flowType={flowType}
+          documents={documents}
+          setDocuments={setDocuments}
+          onAllRequiredUploaded={setAllRequiredUploaded}
+        />
+      )}
 
       {/* Step 2: CAF Verification (DocumentDetector + FaceLiveness) */}
       {currentStep === 'caf_verification' && (
