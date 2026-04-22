@@ -173,6 +173,10 @@ export default function ComplianceDocOnly() {
     const isSatisfied = (d) => {
       const e = documents[d._docKey];
       if (!e) return false;
+      // FIX (2026-04-22): Only count as satisfied if the entry was actually PERSISTED to the
+      // server. Files/justifications that failed to upload remain in local state without the
+      // `persisted` flag — we must NOT let the client advance to CAF with ghost documents.
+      if (e.persisted !== true) return false;
       const hasFiles = Array.isArray(e.files) ? e.files.length > 0 : !!e.url;
       return hasFiles || (e.notAvailable && e.notAvailableReason);
     };

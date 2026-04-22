@@ -71,7 +71,11 @@ export default function DocumentCard({ doc, uploadedFile, onUpload, onRemoveAll,
   const hasAny = files.length > 0 || isNotAvailable;
   const canSkip = !MANDATORY_NO_SKIP.has(docKey);
   const allowedFormats = doc.allowedFormats || DEFAULT_ALLOWED;
-  const maxSizeMB = doc.maxSizeMB || 15;
+  // IMPORTANT: Must align with MAX_FILE_SIZE_MB in lib/directUpload.js (hard cap=7MB due to
+  // base64 overhead on JSON payload). Images >5MB are auto-compressed by the uploader,
+  // but PDFs/DOCX cannot be compressed client-side — so the hard cap here protects the user
+  // from selecting a file that will fail at upload time. 7MB is generous for KYC docs.
+  const maxSizeMB = Math.min(doc.maxSizeMB || 7, 7);
 
   const validateAndUpload = (selected) => {
     if (selected.length === 0) return;
@@ -83,7 +87,15 @@ export default function DocumentCard({ doc, uploadedFile, onUpload, onRemoveAll,
         continue;
       }
       if (file.size > maxSizeMB * 1024 * 1024) {
-        toast.error(`${file.name}: maior que ${maxSizeMB}MB.`);
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+        const isPdf = /\.pdf$/i.test(file.name);
+        const isDoc = /\.docx?$/i.test(file.name);
+        const hint = isPdf
+          ? ' Reduza o PDF (ex: smallpdf.com/compress-pdf) ou envie como foto JPG/PNG.'
+          : isDoc
+          ? ' Converta o arquivo para PDF e reduza o tamanho, ou envie como imagem.'
+          : ' Use uma foto/imagem menor — imagens grandes são comprimidas automaticamente.';
+        toast.error(`${file.name} (${sizeMB}MB) ultrapassa o limite de ${maxSizeMB}MB.${hint}`, { duration: 10000 });
         continue;
       }
       const fileExt = file.name.split('.').pop()?.toUpperCase();
@@ -272,7 +284,7 @@ export default function DocumentCard({ doc, uploadedFile, onUpload, onRemoveAll,
 
       {allowedFormats.length > 0 && !hasAny && (
         <p className="text-[10px] text-slate-400 mt-2">
-          Aceita: {allowedFormats.join(', ')} · até {maxSizeMB}MB cada
+          Aceita: {allowedFormats.join(', ')} · até {maxSizeMB}MB cada · imagens grandes são comprimidas automaticamente
         </p>
       )}
     </div>

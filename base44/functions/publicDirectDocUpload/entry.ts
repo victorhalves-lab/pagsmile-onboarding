@@ -27,14 +27,25 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
  * Side effect (fire-and-forget): triggers cafVerifaiDocs for documentoscopia.
  */
 
-async function triggerVerifaiAsync(base44, documentUploadId, onboardingCaseId) {
+// FIX (2026-04-22): base44.asServiceRole.functions.invoke does NOT exist in the SDK.
+// We must call the cafVerifaiDocs endpoint over plain HTTP using the app's internal URL.
+// This runs fire-and-forget — documentoscopia must never block the client's upload response.
+async function triggerVerifaiAsync(documentUploadId, onboardingCaseId, req) {
   try {
-    await base44.asServiceRole.functions.invoke('cafVerifaiDocs', {
-      documentUploadId,
-      onboardingCaseId,
+    const reqUrl = new URL(req.url);
+    // Build sibling function URL from the current request URL (same host/app path)
+    const verifaiUrl = reqUrl.href.replace(/\/publicDirectDocUpload(\?.*)?$/, '/cafVerifaiDocs');
+    // Non-awaited: we truly want fire-and-forget. If the caller aborts, this may get cut
+    // off, but that's acceptable — cafReconcilePendingTransactions picks up stragglers.
+    fetch(verifaiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ documentUploadId, onboardingCaseId }),
+    }).catch((err) => {
+      console.warn('[publicDirectDocUpload] VerifAI trigger fetch failed:', err?.message);
     });
   } catch (err) {
-    console.warn('[publicDirectDocUpload] VerifAI trigger failed (non-blocking):', err?.message);
+    console.warn('[publicDirectDocUpload] VerifAI trigger setup failed:', err?.message);
   }
 }
 
@@ -178,7 +189,7 @@ Deno.serve(async (req) => {
     console.log(`[publicDirectDocUpload] CREATED id=${createdDoc?.id} docType=${documentTypeId} size=${fileSize} duration=${Date.now() - startedAt}ms`);
 
     if (createdDoc?.id) {
-      triggerVerifaiAsync(base44, createdDoc.id, caseId);
+      triggerVerifaiAsync(createdDoc.id, caseId, req);
     }
 
     return Response.json({
