@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { FileQuestion, FileCheck2, Layers, Filter, ChevronDown, ChevronRight } from 'lucide-react';
+import { FileQuestion, FileCheck2, Layers, Filter, ChevronDown, ChevronRight, Download } from 'lucide-react';
 
 /**
  * Sub-aba "Modelo Dinâmico KYC/KYB"
@@ -27,8 +27,57 @@ export default function DocModeloDinamicoKYC({ templates = [], questionsByTempla
 
   const analysis = useMemo(() => analyzeTemplates(complianceTemplates, questionsByTemplate), [complianceTemplates, questionsByTemplate]);
 
+  const handleDownloadPdf = () => {
+    // Expande tudo antes de imprimir (sinaliza via classe no container)
+    document.body.classList.add('printing-dinamico-kyc');
+    setTimeout(() => {
+      window.print();
+      setTimeout(() => document.body.classList.remove('printing-dinamico-kyc'), 500);
+    }, 100);
+  };
+
   return (
-    <div className="max-w-[1200px] mx-auto px-6 py-8 space-y-12">
+    <div id="doc-dinamico-kyc" className="max-w-[1200px] mx-auto px-6 py-8 space-y-12">
+      <style>{`
+        @media print {
+          *, *::before, *::after { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+          body { margin: 0 !important; padding: 0 !important; background: white !important; }
+          body > * { visibility: hidden !important; }
+          body #doc-dinamico-kyc, body #doc-dinamico-kyc * { visibility: visible !important; }
+          #doc-dinamico-kyc {
+            position: absolute !important; left: 0 !important; top: 0 !important;
+            width: 100% !important; max-width: 100% !important;
+            padding: 12pt 16pt !important; margin: 0 !important;
+            font-size: 9pt !important;
+          }
+          #doc-dinamico-kyc .no-print { display: none !important; }
+          #doc-dinamico-kyc section { page-break-inside: auto !important; }
+          #doc-dinamico-kyc h1 { font-size: 16pt !important; }
+          #doc-dinamico-kyc h2 { font-size: 12pt !important; page-break-after: avoid !important; }
+          #doc-dinamico-kyc table { page-break-inside: auto !important; font-size: 8pt !important; }
+          #doc-dinamico-kyc thead { display: table-header-group !important; }
+          #doc-dinamico-kyc tr { page-break-inside: avoid !important; }
+          #doc-dinamico-kyc td, #doc-dinamico-kyc th { padding: 3pt 5pt !important; }
+          /* Garante que painéis colapsáveis fiquem abertos na impressão */
+          body.printing-dinamico-kyc #doc-dinamico-kyc [data-collapsible-body] { display: block !important; }
+          body.printing-dinamico-kyc #doc-dinamico-kyc [data-collapsible-toggle] { pointer-events: none; }
+        }
+        @media screen {
+          body.printing-dinamico-kyc #doc-dinamico-kyc [data-collapsible-body] { display: block !important; }
+        }
+      `}</style>
+
+      {/* Barra de ação (não imprime) */}
+      <div className="no-print flex justify-end -mb-6">
+        <button
+          onClick={handleDownloadPdf}
+          className="inline-flex items-center gap-2 px-4 py-2 bg-[#002443] hover:bg-[#003366] text-white rounded-lg text-sm font-bold transition-colors shadow-sm"
+        >
+          <Download className="w-4 h-4" />
+          Baixar PDF
+        </button>
+      </div>
+
       <Header totalTemplates={complianceTemplates.length} stats={analysis.stats} />
 
       {/* Seção 1 — Perguntas comuns */}
@@ -425,6 +474,7 @@ function ConditionalQuestionsBySegment({ bySegment, allSegmentIds, allSegmentLab
         return (
           <div key={segId} className="bg-white border border-[#e8e8e8] rounded-xl overflow-hidden">
             <button
+              data-collapsible-toggle
               onClick={() => toggle(segId)}
               className="w-full flex items-center justify-between px-5 py-4 hover:bg-[#f9fafb] transition-colors"
             >
@@ -439,7 +489,7 @@ function ConditionalQuestionsBySegment({ bySegment, allSegmentIds, allSegmentLab
                 {questions.length} {questions.length === 1 ? 'pergunta' : 'perguntas'}
               </span>
             </button>
-            {isOpen && (
+            <div data-collapsible-body style={{ display: isOpen ? 'block' : 'none' }}>
               <div className="border-t border-[#e8e8e8] bg-[#fafbfc]">
                 <table className="w-full text-sm">
                   <thead className="bg-white border-b border-[#e8e8e8]">
@@ -468,7 +518,7 @@ function ConditionalQuestionsBySegment({ bySegment, allSegmentIds, allSegmentLab
                   </tbody>
                 </table>
               </div>
-            )}
+            </div>
           </div>
         );
       })}
@@ -500,6 +550,7 @@ function ConditionalDocsBySegment({ bySegment, allSegmentIds, allSegmentLabels }
         return (
           <div key={segId} className="bg-white border border-[#e8e8e8] rounded-xl overflow-hidden">
             <button
+              data-collapsible-toggle
               onClick={() => toggle(segId)}
               className="w-full flex items-center justify-between px-5 py-4 hover:bg-[#f9fafb] transition-colors"
             >
@@ -514,7 +565,7 @@ function ConditionalDocsBySegment({ bySegment, allSegmentIds, allSegmentLabels }
                 {docs.length} {docs.length === 1 ? 'documento' : 'documentos'}
               </span>
             </button>
-            {isOpen && (
+            <div data-collapsible-body style={{ display: isOpen ? 'block' : 'none' }}>
               <div className="border-t border-[#e8e8e8] bg-[#fafbfc]">
                 <table className="w-full text-sm">
                   <thead className="bg-white border-b border-[#e8e8e8]">
@@ -553,7 +604,7 @@ function ConditionalDocsBySegment({ bySegment, allSegmentIds, allSegmentLabels }
                   </tbody>
                 </table>
               </div>
-            )}
+            </div>
           </div>
         );
       })}
