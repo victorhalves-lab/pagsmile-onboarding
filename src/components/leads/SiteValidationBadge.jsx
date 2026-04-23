@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+// SDK-FREE for public routes.
+import { callPublicFunction } from '@/lib/publicApi';
 import { CheckCircle, AlertTriangle, Globe, Loader2, Lock, ShoppingCart } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
@@ -19,16 +20,20 @@ export default function SiteValidationBadge({ siteUrl, updateField }) {
     const timeout = setTimeout(async () => {
       setLoading(true);
       setLastUrl(siteUrl);
-      const resp = await base44.functions.invoke('validateLeadFields', {
-        type: 'site',
-        value: siteUrl
-      });
-      setResult(resp.data);
-      setLoading(false);
-      // Salvar no formData para enriquecimento
-      if (updateField) {
-        updateField('_siteValidation', resp.data);
+      try {
+        const body = await callPublicFunction('validateLeadFields', {
+          type: 'site',
+          value: siteUrl,
+        });
+        const payload = body?.data ?? body;
+        setResult(payload);
+        if (updateField) {
+          updateField('_siteValidation', payload);
+        }
+      } catch (e) {
+        console.warn('Site validation failed:', e?.message);
       }
+      setLoading(false);
     }, 1500); // Debounce 1.5s
 
     return () => clearTimeout(timeout);

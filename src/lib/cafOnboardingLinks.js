@@ -15,7 +15,10 @@
  * da ComplianceConfig + defaults daqui).
  */
 
-import { base44 } from '@/api/base44Client';
+// SDK-FREE: this module may be imported from PUBLIC routes (CafVerificationStep).
+// callPublicFunction works for anonymous clients; getCafFallbackLinks is safe to
+// expose (returns a read-only map of fallback URLs configured by the admin).
+import { callPublicFunction } from '@/lib/publicApi';
 
 // Cache simples in-memory (TTL 60s) para não bater o backend toda hora
 let _linksCache = null;
@@ -28,9 +31,10 @@ export async function fetchCafFallbackLinks({ force = false } = {}) {
     return _linksCache;
   }
   try {
-    const res = await base44.functions.invoke('getCafFallbackLinks', {});
-    if (res?.data?.links) {
-      _linksCache = res.data.links;
+    const body = await callPublicFunction('getCafFallbackLinks', {});
+    const payload = body?.data ?? body;
+    if (payload?.links) {
+      _linksCache = payload.links;
       _linksCacheAt = now;
       return _linksCache;
     }

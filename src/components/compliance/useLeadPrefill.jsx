@@ -1,5 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+// SDK-FREE: this hook runs on PUBLIC compliance pages (anonymous clients).
+// The @base44/sdk mock on public routes blocks functions.invoke by design.
+// callPublicFunction hits /functions/* directly via fetch; backend validates
+// the proof-of-possession (linkCode / proposalToken) via asServiceRole.
+import { callPublicFunction } from '@/lib/publicApi';
 
 /**
  * Mapeamento ASSERTIVO de Lead → Compliance.
@@ -390,39 +394,52 @@ export function useLeadPrefill(complianceQuestions) {
       // SECURITY (BUG-007): enviamos linkCode OU proposalToken como proof-of-possession.
       //   - linkCode: cliente veio do link de onboarding (questionário Lead)
       //   - proposalToken: cliente veio de uma proposta aceita (PropostaPublica)
-      if (resolvedLeadId) {
-        const res = await base44.functions.invoke('publicReadData', {
-          kind: 'lead_for_prefill',
-          leadId: resolvedLeadId,
-          linkCode: linkCode || undefined,
-          proposalToken: proposalToken || undefined,
-        });
-        return res.data?.lead || null;
-      }
-      // Prioridade 2 (fallback): linkCode — via backend function (self-authenticating)
-      if (linkCode) {
-        const res = await base44.functions.invoke('publicReadData', {
-          kind: 'lead_for_prefill_by_link', linkCode,
-        });
-        const found = res.data?.lead || null;
-        if (found) localStorage.setItem('lead_id_for_compliance', found.id);
-        return found;
+      // Prefill is OPTIONAL — if backend is unreachable, return null instead of throwing.
+      // Throwing here propagates to ErrorBoundary and crashes the whole compliance page.
+      try {
+        if (resolvedLeadId) {
+          const res = await callPublicFunction('publicReadData', {
+            kind: 'lead_for_prefill',
+            leadId: resolvedLeadId,
+            linkCode: linkCode || undefined,
+            proposalToken: proposalToken || undefined,
+          });
+          // callPublicFunction returns body directly (no .data wrapper)
+          return res?.data?.lead || res?.lead || null;
+        }
+        if (linkCode) {
+          const res = await callPublicFunction('publicReadData', {
+            kind: 'lead_for_prefill_by_link', linkCode,
+          });
+          const found = res?.data?.lead || res?.lead || null;
+          if (found) localStorage.setItem('lead_id_for_compliance', found.id);
+          return found;
+        }
+      } catch (e) {
+        console.warn('[useLeadPrefill] lead fetch failed (non-fatal):', e?.message);
       }
       return null;
     },
-    enabled: !!(resolvedLeadId || linkCode)
+    enabled: !!(resolvedLeadId || linkCode),
+    retry: false, // fail fast — prefill is optional
   });
 
   // Buscar perguntas do questionário de leads original (Question tem read:true)
   const { data: leadQuestions = [] } = useQuery({
     queryKey: ['leadTemplateQuestions', lead?.leadQuestionnaireTemplateId],
     queryFn: async () => {
-      const res = await base44.functions.invoke('publicReadContext', {
-        kind: 'questions_by_template', templateId: lead.leadQuestionnaireTemplateId,
-      });
-      return res.data?.questions || [];
+      try {
+        const res = await callPublicFunction('publicReadContext', {
+          kind: 'questions_by_template', templateId: lead.leadQuestionnaireTemplateId,
+        });
+        return res?.data?.questions || res?.questions || [];
+      } catch (e) {
+        console.warn('[useLeadPrefill] lead questions fetch failed (non-fatal):', e?.message);
+        return [];
+      }
     },
-    enabled: !!lead?.leadQuestionnaireTemplateId
+    enabled: !!lead?.leadQuestionnaireTemplateId,
+    retry: false,
   });
 
   // Computar mapeamento

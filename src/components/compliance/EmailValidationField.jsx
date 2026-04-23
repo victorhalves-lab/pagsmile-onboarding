@@ -3,7 +3,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, CheckCircle, AlertTriangle, Mail, Info } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+// SDK-FREE for public routes.
+import { callPublicFunction } from '@/lib/publicApi';
 
 export default function EmailValidationField({
   value,
@@ -29,13 +30,17 @@ export default function EmailValidationField({
     if (val.includes('@') && val.split('@')[1]?.includes('.')) {
       debounceRef.current = setTimeout(async () => {
         setIsLoading(true);
-        const res = await base44.functions.invoke('complianceValidations', {
-          action: 'validateEmail',
-          email: val,
-          emailReceitaFederal: emailReceitaFederal || null
-        });
+        try {
+          const body = await callPublicFunction('complianceValidations', {
+            action: 'validateEmail',
+            email: val,
+            emailReceitaFederal: emailReceitaFederal || null,
+          });
+          setValidation(body?.data ?? body);
+        } catch (e) {
+          console.warn('Email validation failed:', e?.message);
+        }
         setIsLoading(false);
-        setValidation(res.data);
       }, 1000);
     }
   }, [questionId, onChange, emailReceitaFederal]);

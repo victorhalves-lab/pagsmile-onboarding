@@ -1,5 +1,7 @@
 import React, { useState, useRef } from 'react';
-import { base44 } from '@/api/base44Client';
+// SDK-FREE for public routes.
+import { callPublicFunction } from '@/lib/publicApi';
+import { directUploadDocument } from '@/lib/directUpload';
 import { Button } from '@/components/ui/button';
 import { 
   Upload, Camera, CheckCircle2, Loader2, AlertCircle, 
@@ -79,7 +81,7 @@ export default function BdcFallbackVerification({ onboardingCaseId, personCpf, o
       const livenessBase64 = livenessFile ? await fileToBase64(livenessFile) : null;
 
       // Upload via BDC Documentoscopia + Facematch + Liveness
-      const response = await base44.functions.invoke('bdcBigIdFallback', {
+      const body = await callPublicFunction('bdcBigIdFallback', {
         action: 'full_verification',
         onboardingCaseId: onboardingCaseId || '',
         documentImageBase64: docBase64,
@@ -87,15 +89,15 @@ export default function BdcFallbackVerification({ onboardingCaseId, personCpf, o
         livenessImageBase64: livenessBase64 || selfieBase64,
       });
 
-      const data = response.data;
+      const data = body?.data ?? body;
       setResult(data);
 
-      if (data.success) {
+      if (data?.success) {
         // Also upload doc back if provided
         if (docBackFile) {
           const backBase64 = await fileToBase64(docBackFile);
           try {
-            await base44.functions.invoke('bdcBigIdFallback', {
+            await callPublicFunction('bdcBigIdFallback', {
               action: 'documentoscopia',
               onboardingCaseId: onboardingCaseId || '',
               documentImageBase64: backBase64,
@@ -103,22 +105,25 @@ export default function BdcFallbackVerification({ onboardingCaseId, personCpf, o
           } catch (e) { console.warn('Doc back upload failed:', e); }
         }
 
-        // Upload files to storage
+        // Upload files via publicDirectDocUpload (server creates DocumentUpload row).
+        const docLinkToken = (typeof localStorage !== 'undefined' && localStorage.getItem('created_doc_link_token')) || undefined;
         try {
-          const { file_url: frontUrl } = await base44.integrations.Core.UploadFile({ file: docFrontFile });
-          await base44.asServiceRole?.entities?.DocumentUpload?.create?.({
-            onboardingCaseId, documentTypeId: 'doc_front_bdc', documentName: 'Documento Frente (BDC)',
-            fileUrl: frontUrl, fileName: docFrontFile.name, fileSize: docFrontFile.size,
-            fileType: docFrontFile.type, validationStatus: 'Validado',
+          await directUploadDocument({
+            file: docFrontFile,
+            caseId: onboardingCaseId,
+            documentTypeId: 'doc_front_bdc',
+            documentName: 'Documento Frente (BDC)',
+            docLinkToken,
           });
         } catch (e) { console.warn('File upload failed:', e); }
 
         try {
-          const { file_url: selfieUrl } = await base44.integrations.Core.UploadFile({ file: selfieFile });
-          await base44.asServiceRole?.entities?.DocumentUpload?.create?.({
-            onboardingCaseId, documentTypeId: 'selfie_bdc', documentName: 'Selfie (BDC Facematch)',
-            fileUrl: selfieUrl, fileName: selfieFile.name, fileSize: selfieFile.size,
-            fileType: selfieFile.type, validationStatus: 'Validado',
+          await directUploadDocument({
+            file: selfieFile,
+            caseId: onboardingCaseId,
+            documentTypeId: 'selfie_bdc',
+            documentName: 'Selfie (BDC Facematch)',
+            docLinkToken,
           });
         } catch (e) { console.warn('Selfie upload failed:', e); }
 

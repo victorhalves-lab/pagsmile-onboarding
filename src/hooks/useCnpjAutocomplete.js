@@ -1,5 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
-import { base44 } from '@/api/base44Client';
+// SDK-FREE: this hook runs on PUBLIC compliance pages (anonymous clients).
+// @base44/sdk is blocked on public routes — use callPublicFunction (raw fetch).
+import { callPublicFunction } from '@/lib/publicApi';
 
 // Validação local de CNPJ (módulo 11)
 function validarCnpj(cnpj) {
@@ -67,16 +69,19 @@ export default function useCnpjAutocomplete() {
     lastCnpjRef.current = cnpj;
 
     try {
-      const response = await base44.functions.invoke('brasilApiCnpj', { cnpj });
+      // callPublicFunction returns the response body directly (no .data wrapper).
+      const body = await callPublicFunction('brasilApiCnpj', { cnpj });
       setIsLoading(false);
-      
-      if (response.data?.error) {
-        setError(response.data.error);
+
+      // Accept both legacy ({ data: {...} }) and direct shapes for safety.
+      const payload = body?.data ?? body;
+      if (payload?.error) {
+        setError(payload.error);
         return null;
       }
-      
-      setData(response.data);
-      return response.data;
+
+      setData(payload);
+      return payload;
     } catch (err) {
       setIsLoading(false);
       console.error('[CNPJ] API error:', err?.message || err);

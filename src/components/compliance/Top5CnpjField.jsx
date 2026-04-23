@@ -4,7 +4,8 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Loader2, CheckCircle, AlertTriangle, Building2, Plus, X, Shield, ShieldAlert } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+// SDK-FREE for public routes.
+import { callPublicFunction } from '@/lib/publicApi';
 import { formatCnpj } from '@/hooks/useCnpjAutocomplete';
 
 // CNAEs proibidos (Anexo I PagSmile)
@@ -54,13 +55,22 @@ export default function Top5CnpjField({
 
     if (digits.length === 14 && validarCnpj(digits)) {
       setLoadingIdx(idx);
-      const res = await base44.functions.invoke('brasilApiCnpj', { cnpj: digits });
+      let body = null;
+      try {
+        body = await callPublicFunction('brasilApiCnpj', { cnpj: digits });
+      } catch (e) {
+        newItems[idx] = { ...newItems[idx], status: 'error', error: 'Falha ao consultar CNPJ.' };
+        setLoadingIdx(null);
+        updateItems([...newItems]);
+        return;
+      }
       setLoadingIdx(null);
 
-      if (res.data?.error) {
-        newItems[idx] = { ...newItems[idx], status: 'error', error: res.data.error };
+      const payload = body?.data ?? body;
+      if (payload?.error) {
+        newItems[idx] = { ...newItems[idx], status: 'error', error: payload.error };
       } else {
-        const d = res.data;
+        const d = payload;
         const isActive = d.situacao_cadastral === 2;
         const cnaeFiscalStr = String(d.cnae_fiscal || '');
         const allCnaes = [cnaeFiscalStr, ...(d.cnaes_secundarios || []).map(c => String(c.codigo))];
@@ -84,12 +94,13 @@ export default function Top5CnpjField({
         };
         
         // Background screening (CEIS/CNEP) — non-blocking
-        base44.functions.invoke('sanctionsScreening', { action: 'screenCnpj', cnpj: digits }).then(screenRes => {
-          if (screenRes.data?.hasFlags) {
+        callPublicFunction('sanctionsScreening', { action: 'screenCnpj', cnpj: digits }).then(body2 => {
+          const p2 = body2?.data ?? body2;
+          if (p2?.hasFlags) {
             setItems(prev => {
               const updated = [...prev];
               if (updated[idx]) {
-                updated[idx] = { ...updated[idx], screeningFlags: screenRes.data.flags };
+                updated[idx] = { ...updated[idx], screeningFlags: p2.flags };
               }
               return updated;
             });

@@ -4,7 +4,8 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, CheckCircle, AlertTriangle, Building2, XCircle } from 'lucide-react';
 import useCnpjAutocomplete, { formatCnpj } from '@/hooks/useCnpjAutocomplete';
-import { base44 } from '@/api/base44Client';
+// SDK-FREE for public routes.
+import { callPublicFunction } from '@/lib/publicApi';
 import CnpjEnrichmentPanel from './CnpjEnrichmentPanel';
 
 export default function CnpjAutocompleteField({
@@ -69,12 +70,12 @@ export default function CnpjAutocompleteField({
       setEnrichmentLoading(true);
       setEnrichmentResult(null);
       try {
-        const enrichRes = await base44.functions.invoke('analyzeCnpjEnrichment', {
+        const body = await callPublicFunction('analyzeCnpjEnrichment', {
           cnpjDataArray: { ...result, cnpj },
         });
-        setEnrichmentResult(enrichRes.data);
+        setEnrichmentResult(body?.data ?? body);
       } catch (e) {
-        console.warn('Enrichment analysis failed:', e.message);
+        console.warn('Enrichment analysis failed:', e?.message);
       }
       setEnrichmentLoading(false);
     }

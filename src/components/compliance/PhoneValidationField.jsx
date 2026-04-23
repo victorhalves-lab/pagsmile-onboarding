@@ -3,7 +3,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, CheckCircle, AlertTriangle, Phone, Info } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+// SDK-FREE for public routes.
+import { callPublicFunction } from '@/lib/publicApi';
 
 function formatPhone(val) {
   const d = val.replace(/\D/g, '').slice(0, 11);
@@ -36,13 +37,17 @@ export default function PhoneValidationField({
     if (raw.length >= 10) {
       debounceRef.current = setTimeout(async () => {
         setIsLoading(true);
-        const res = await base44.functions.invoke('complianceValidations', {
-          action: 'validatePhone',
-          phone: raw,
-          empresaUf: empresaUf || null
-        });
+        try {
+          const body = await callPublicFunction('complianceValidations', {
+            action: 'validatePhone',
+            phone: raw,
+            empresaUf: empresaUf || null,
+          });
+          setValidation(body?.data ?? body);
+        } catch (e) {
+          console.warn('Phone validation failed:', e?.message);
+        }
         setIsLoading(false);
-        setValidation(res.data);
       }, 800);
     }
   }, [questionId, onChange, empresaUf]);

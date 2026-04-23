@@ -1,6 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { base44 } from '@/api/base44Client';
+// SDK-FREE for public routes.
+import { callPublicFunction } from '@/lib/publicApi';
+import { directUploadDocument } from '@/lib/directUpload';
 import { Camera, Upload, Loader2, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -24,13 +26,23 @@ export default function CafManualSelfieUpload({ onboardingCaseId, onComplete }) 
 
     setUploading(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      // Upload the selfie via public direct upload (creates DocumentUpload + returns private URI)
+      const docLinkToken = (typeof localStorage !== 'undefined' && localStorage.getItem('created_doc_link_token')) || undefined;
+      const uploaded = await directUploadDocument({
+        file,
+        caseId: onboardingCaseId,
+        documentTypeId: 'manual_selfie',
+        documentName: 'Selfie Manual (fallback)',
+        docLinkToken,
+      });
+      const fileUri = uploaded?.fileUri || '';
 
-      // Save as integration log
-      await base44.functions.invoke('cafVerifyResult', {
+      // Log the manual selfie result — backend validates via docLinkToken
+      await callPublicFunction('cafVerifyResult', {
         onboardingCaseId: onboardingCaseId || '',
+        docLinkToken,
         module: 'manual_selfie',
-        imageUrl: file_url,
+        imageUrl: fileUri,
         manualUpload: true,
       });
 

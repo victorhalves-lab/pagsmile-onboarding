@@ -106,7 +106,16 @@ function createPublicMockClient() {
       if (prop === 'functions') {
         return { invoke: throwOnUse('functions.invoke') };
       }
-      if (prop === 'entities' || prop === 'asServiceRole' || prop === 'integrations' || prop === 'analytics' || prop === 'agents' || prop === 'users' || prop === 'connectors' || prop === 'appLogs') {
+      // Analytics is fire-and-forget telemetry — must NEVER throw or crash
+      // the page on public routes. Return silent no-ops.
+      if (prop === 'analytics') {
+        return {
+          track: () => {},
+          identify: () => {},
+          page: () => {},
+        };
+      }
+      if (prop === 'entities' || prop === 'asServiceRole' || prop === 'integrations' || prop === 'agents' || prop === 'users' || prop === 'connectors' || prop === 'appLogs') {
         return new Proxy({}, handler);
       }
       // Unknown prop — return another proxy that also blocks calls.

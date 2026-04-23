@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Loader2, AlertTriangle } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+// SDK-FREE: public route — callPublicFunction hits /functions/* directly via fetch.
+import { callPublicFunction } from '@/lib/publicApi';
 import { toast } from 'sonner';
 import BulletproofDocumentUploader from './BulletproofDocumentUploader';
 
@@ -91,23 +92,26 @@ export default function BulletproofUploaderWithLazyCase({
             valueArray: Array.isArray(formData[q.id]) ? formData[q.id] : undefined,
           }));
 
-        const res = await base44.functions.invoke('publicComplianceSubmit', {
+        const body = await callPublicFunction('publicComplianceSubmit', {
           templateId: template?.id,
           linkCode,
           merchantData,
           onboardingCaseData: { status: 'Pendente', priority: 'medium' },
           responses,
         });
+        // callPublicFunction returns the response body directly (no .data wrapper).
+        // Accept both legacy ({ data: {...} }) and direct shapes for safety.
+        const payload = body?.data ?? body;
 
-        if (res.data?.error || !res.data?.ok) {
-          throw new Error(res.data?.error || 'Erro ao criar caso de onboarding');
+        if (payload?.error || !payload?.ok) {
+          throw new Error(payload?.error || 'Erro ao criar caso de onboarding');
         }
 
-        const newCaseId = res.data.onboardingCaseId;
-        const newToken = res.data.docLinkToken;
+        const newCaseId = payload.onboardingCaseId;
+        const newToken = payload.docLinkToken;
 
         localStorage.setItem('created_onboarding_case_id', newCaseId);
-        localStorage.setItem('created_merchant_id', res.data.merchantId);
+        localStorage.setItem('created_merchant_id', payload.merchantId);
         if (newToken) localStorage.setItem('created_doc_link_token', newToken);
 
         setCaseId(newCaseId);

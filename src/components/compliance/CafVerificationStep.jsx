@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { base44 } from '@/api/base44Client';
+// SDK-FREE: page is PUBLIC (anonymous client running CAF SDK).
+// callPublicFunction hits /functions/* directly — no @base44/sdk dependency.
+import { callPublicFunction } from '@/lib/publicApi';
 import { Button } from '@/components/ui/button';
 import { 
   ScanFace, FileCheck, CheckCircle2, Loader2, AlertCircle,
@@ -132,17 +134,19 @@ async function persistCafResult(payload) {
     docLinkToken: (typeof localStorage !== 'undefined' && localStorage.getItem('created_doc_link_token')) || undefined,
   };
   try {
-    const response = await base44.functions.invoke('cafVerifyResult', authedPayload);
-    console.log('[CAF] Result persisted:', response.data);
-    return response.data;
+    const body = await callPublicFunction('cafVerifyResult', authedPayload);
+    const payload2 = body?.data ?? body;
+    console.log('[CAF] Result persisted:', payload2);
+    return payload2;
   } catch (err) {
     console.error('[CAF] CRITICAL: Failed to persist result:', err);
     toast.error('Erro ao salvar resultado da verificação. Tentando novamente...');
     // Retry once
     try {
-      const response = await base44.functions.invoke('cafVerifyResult', authedPayload);
-      console.log('[CAF] Result persisted on retry:', response.data);
-      return response.data;
+      const body2 = await callPublicFunction('cafVerifyResult', authedPayload);
+      const payload3 = body2?.data ?? body2;
+      console.log('[CAF] Result persisted on retry:', payload3);
+      return payload3;
     } catch (retryErr) {
       console.error('[CAF] CRITICAL: Retry also failed:', retryErr);
       toast.error('Não foi possível salvar o resultado. Entre em contato com o suporte.');
@@ -192,15 +196,13 @@ export default function CafVerificationStep({
   // Helper: loga evento de engajamento (abertura / abandono) — separado de cafLogSdkError
   const logSdkEvent = useCallback((eventType, stage) => {
     if (!onboardingCaseId) return;
-    try {
-      base44.functions.invoke('cafLogSdkEvent', {
-        onboardingCaseId,
-        docLinkToken,
-        eventType,
-        stage: stage || 'unknown',
-        attemptNumber: sdkOpenCountRef.current,
-      }).catch(() => {});
-    } catch {}
+    callPublicFunction('cafLogSdkEvent', {
+      onboardingCaseId,
+      docLinkToken,
+      eventType,
+      stage: stage || 'unknown',
+      attemptNumber: sdkOpenCountRef.current,
+    }).catch(() => {});
   }, [onboardingCaseId, docLinkToken]);
 
   // ── Detecção de abandono: cliente fecha a aba sem capturar NADA ──
@@ -239,17 +241,15 @@ export default function CafVerificationStep({
   // Helper: log SDK errors to backend (fire-and-forget)
   const logSdkError = useCallback((stage, err, attemptNumber = 1) => {
     if (!onboardingCaseId) return;
-    try {
-      base44.functions.invoke('cafLogSdkError', {
-        onboardingCaseId,
-        docLinkToken,
-        stage,
-        errorName: err?.name || 'Unknown',
-        errorMessage: err?.message || String(err),
-        attemptNumber,
-        tokenType,
-      }).catch(() => {});
-    } catch {}
+    callPublicFunction('cafLogSdkError', {
+      onboardingCaseId,
+      docLinkToken,
+      stage,
+      errorName: err?.name || 'Unknown',
+      errorMessage: err?.message || String(err),
+      attemptNumber,
+      tokenType,
+    }).catch(() => {});
   }, [onboardingCaseId, docLinkToken, tokenType]);
 
   const stepIndex = phase === 'ready' || phase === 'loading' ? 0 
@@ -280,11 +280,11 @@ export default function CafVerificationStep({
       
       if (onboardingCaseId) {
         try {
-          const resolveRes = await base44.functions.invoke('cafResolvePersonData', {
+          const rBody = await callPublicFunction('cafResolvePersonData', {
             onboardingCaseId,
             docLinkToken,
           });
-          resolveData = resolveRes.data;
+          resolveData = rBody?.data ?? rBody;
           if (resolveData?.cpf) {
             effectiveCpf = resolveData.cpf;
             effectiveName = resolveData.name || effectiveName;
@@ -294,16 +294,16 @@ export default function CafVerificationStep({
             console.warn('[CAF] Backend lastro did NOT find CPF — falling back to frontend CPF:', personCpf);
           }
         } catch (resolveErr) {
-          console.warn('[CAF] cafResolvePersonData failed, using frontend CPF:', resolveErr.message);
+          console.warn('[CAF] cafResolvePersonData failed, using frontend CPF:', resolveErr?.message);
         }
       }
 
       // ── FASE B: Gerar token CAF com o CPF resolvido ──
-      const response = await base44.functions.invoke('cafGenerateToken', {
+      const body = await callPublicFunction('cafGenerateToken', {
         personCpf: effectiveCpf,
         onboardingCaseId: onboardingCaseId || '',
       });
-      const data = response.data;
+      const data = body?.data ?? body;
       if (data.error) {
         throw new Error(data.error + (data.details ? ': ' + data.details : ''));
       }
@@ -988,23 +988,21 @@ export default function CafVerificationStep({
               linksOverride: cafLinksOverride,
             })}
             onCafFallbackClick={() => {
-              try {
-                base44.functions.invoke('cafFallbackLinkOpened', {
-                  onboardingCaseId: onboardingCaseId || '',
-                  docLinkToken,
-                  complianceModel: complianceModel || '',
-                  fallbackUrl: buildCafFallbackUrl(complianceModel, {
-                    onboardingCaseId, cnpj: merchantCnpj,
-                    cpf: resolvedPerson?.cpf || personCpf,
-                    name: resolvedPerson?.name || personName,
-                    email: merchantEmail,
-                    linksOverride: cafLinksOverride,
-                  }) || '',
-                  attemptCount: Math.max(retryCount + 1, livenessAttempts),
-                  errorName: errorName || '',
-                  errorMessage: error || '',
-                }).catch(() => {});
-              } catch {}
+              callPublicFunction('cafFallbackLinkOpened', {
+                onboardingCaseId: onboardingCaseId || '',
+                docLinkToken,
+                complianceModel: complianceModel || '',
+                fallbackUrl: buildCafFallbackUrl(complianceModel, {
+                  onboardingCaseId, cnpj: merchantCnpj,
+                  cpf: resolvedPerson?.cpf || personCpf,
+                  name: resolvedPerson?.name || personName,
+                  email: merchantEmail,
+                  linksOverride: cafLinksOverride,
+                }) || '',
+                attemptCount: Math.max(retryCount + 1, livenessAttempts),
+                errorName: errorName || '',
+                errorMessage: error || '',
+              }).catch(() => {});
             }}
           />
         </div>

@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { base44 } from '@/api/base44Client';
+// SDK-FREE analytics client — public pages must not touch @base44/sdk.
+// callPublicFunction hits /functions/* directly via fetch (credentials:'omit').
+// Any error here is SWALLOWED — analytics must never break the user flow.
+import { callPublicFunction } from '@/lib/publicApi';
 
 // Gera um ID de sessão único
 const getSessionId = () => {
@@ -22,15 +25,24 @@ const getLinkDataFromUrl = () => {
   };
 };
 
-export function useOnboardingAnalytics({ 
-  pageName, 
-  stepNumber, 
-  totalSteps, 
+// Internal: best-effort telemetry POST. Never throws.
+async function fireAndForget(payload) {
+  try {
+    await callPublicFunction('trackOnboardingEvent', payload);
+  } catch (_) {
+    // Silent — analytics must never break the user flow.
+  }
+}
+
+export function useOnboardingAnalytics({
+  pageName,
+  stepNumber,
+  totalSteps,
   flowType,
   linkId,
   linkCode,
   merchantId,
-  onboardingCaseId 
+  onboardingCaseId
 }) {
   const pageStartTime = useRef(Date.now());
   const hasTrackedView = useRef(false);
@@ -41,14 +53,16 @@ export function useOnboardingAnalytics({
     hasTrackedView.current = true;
 
     const linkData = getLinkDataFromUrl();
-    
-    trackEvent('page_view', {
+
+    fireAndForget({
+      eventType: 'page_view',
+      sessionId: getSessionId(),
       pageName,
       stepNumber,
       totalSteps,
       flowType,
-      linkId,
-      linkCode: linkCode || linkData.linkCode,
+      onboardingLinkId: linkId,
+      onboardingLinkCode: linkCode || linkData.linkCode,
       merchantId,
       onboardingCaseId,
       metadata: {
@@ -63,7 +77,6 @@ export function useOnboardingAnalytics({
     // Rastreia abandono ao sair da página
     const handleBeforeUnload = () => {
       const timeOnPage = Math.round((Date.now() - pageStartTime.current) / 1000);
-      // Usa sendBeacon para garantir que o evento seja enviado
       const abandonData = {
         eventType: 'onboarding_abandoned',
         sessionId: getSessionId(),
@@ -77,18 +90,16 @@ export function useOnboardingAnalytics({
         onboardingCaseId,
         metadata: { timeOnPage }
       };
-      
-      // Armazena para verificar se foi abandonado de verdade
       sessionStorage.setItem('last_page_data', JSON.stringify(abandonData));
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageName]);
 
   const trackEvent = useCallback(async (eventType, data = {}) => {
     const linkData = getLinkDataFromUrl();
-    
     const eventData = {
       eventType,
       sessionId: getSessionId(),
@@ -106,12 +117,7 @@ export function useOnboardingAnalytics({
         timeOnPage: Math.round((Date.now() - pageStartTime.current) / 1000)
       }
     };
-
-    try {
-      await base44.functions.invoke('trackOnboardingEvent', eventData);
-    } catch (e) {
-      // Silent fail — analytics should never break the user flow
-    }
+    await fireAndForget(eventData);
   }, [pageName, stepNumber, totalSteps, flowType, linkId, linkCode, merchantId, onboardingCaseId]);
 
   const trackPageComplete = useCallback((additionalData = {}) => {
@@ -123,7 +129,6 @@ export function useOnboardingAnalytics({
   }, [trackEvent]);
 
   const trackOnboardingComplete = useCallback((additionalData = {}) => {
-    // Limpa flag de abandono
     sessionStorage.removeItem('last_page_data');
     return trackEvent('onboarding_complete', additionalData);
   }, [trackEvent]);
@@ -145,21 +150,17 @@ export function useOnboardingAnalytics({
 // Função utilitária para rastrear clique no link (usar na página inicial)
 export async function trackLinkClick(linkCode) {
   const linkData = getLinkDataFromUrl();
-  try {
-    await base44.functions.invoke('trackOnboardingEvent', {
-      eventType: 'link_click',
-      sessionId: getSessionId(),
-      onboardingLinkCode: linkCode || linkData.linkCode,
-      pageName: 'ComplianceOnboardingStart',
-      metadata: {
-        userAgent: navigator.userAgent,
-        referrer: document.referrer,
-        utmSource: linkData.utmSource,
-        utmMedium: linkData.utmMedium,
-        utmCampaign: linkData.utmCampaign
-      }
-    });
-  } catch (e) {
-    // Silent fail — analytics should never break the user flow
-  }
+  await fireAndForget({
+    eventType: 'link_click',
+    sessionId: getSessionId(),
+    onboardingLinkCode: linkCode || linkData.linkCode,
+    pageName: 'ComplianceOnboardingStart',
+    metadata: {
+      userAgent: navigator.userAgent,
+      referrer: document.referrer,
+      utmSource: linkData.utmSource,
+      utmMedium: linkData.utmMedium,
+      utmCampaign: linkData.utmCampaign
+    }
+  });
 }

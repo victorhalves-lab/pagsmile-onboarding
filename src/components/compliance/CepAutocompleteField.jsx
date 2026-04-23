@@ -3,7 +3,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, CheckCircle, MapPin, AlertTriangle } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+// SDK-FREE for public routes.
+import { callPublicFunction } from '@/lib/publicApi';
 
 export default function CepAutocompleteField({
   value,
@@ -31,17 +32,21 @@ export default function CepAutocompleteField({
 
     if (raw.length === 8) {
       setIsLoading(true);
-      const res = await base44.functions.invoke('complianceValidations', {
-        action: 'viacep', cep: raw
-      });
-      setIsLoading(false);
-
-      if (res.data?.error) {
-        setError(res.data.error);
-      } else if (res.data?.logradouro) {
-        setAddressFound(true);
-        if (onAddressData) onAddressData(res.data);
+      try {
+        const body = await callPublicFunction('complianceValidations', {
+          action: 'viacep', cep: raw,
+        });
+        const payload = body?.data ?? body;
+        if (payload?.error) {
+          setError(payload.error);
+        } else if (payload?.logradouro) {
+          setAddressFound(true);
+          if (onAddressData) onAddressData(payload);
+        }
+      } catch (e) {
+        setError('Falha ao consultar CEP. Tente novamente.');
       }
+      setIsLoading(false);
     }
   }, [questionId, onChange, onAddressData]);
 
