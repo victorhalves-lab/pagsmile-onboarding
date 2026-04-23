@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+// SDK-FREE: page is PUBLIC (anonymous clients uploading docs + CAF liveness).
+// The @base44/sdk fails with 401 on private apps when there's no auth session.
+// callPublicFunction hits /functions/* directly via fetch with credentials:'omit'.
+import { callPublicFunction } from '@/lib/publicApi';
 import { Button } from '@/components/ui/button';
 import { 
   ArrowLeft, FileUp, Loader2, CheckCircle2, AlertTriangle, ScanFace 
@@ -51,38 +54,8 @@ export default function DynamicDocumentUploadPage({
     storageKey: formDataStorageKey
   });
 
-  // Track stage entry
-  const hasTrackedEntry = useRef(false);
-  useEffect(() => {
-    if (!hasTrackedEntry.current) {
-      hasTrackedEntry.current = true;
-      base44.analytics.track({
-        eventName: 'compliance_stage_entered',
-        properties: {
-          stage: 'documents',
-          flow_type: flowType || templateModel || '',
-          template_model: templateModel || '',
-        }
-      });
-    }
-  }, [flowType, templateModel]);
-
-  // Track drop-off on page unload
-  useEffect(() => {
-    const handleUnload = () => {
-      base44.analytics.track({
-        eventName: 'compliance_stage_dropoff',
-        properties: {
-          stage: 'documents',
-          flow_type: flowType || templateModel || '',
-          template_model: templateModel || '',
-          docs_uploaded: Object.keys(documents).length,
-        }
-      });
-    };
-    window.addEventListener('beforeunload', handleUnload);
-    return () => window.removeEventListener('beforeunload', handleUnload);
-  }, [flowType, templateModel, documents]);
+  // Analytics SDK removidos: base44.analytics depende do SDK autenticado (falha em públicas).
+  // O tracking de funil é feito server-side via onboardingTracker / função pública.
 
   // Restore documents from session
   useEffect(() => {
@@ -197,8 +170,8 @@ export default function DynamicDocumentUploadPage({
       const payload = idToUse
         ? { kind: 'template_with_questions', id: idToUse }
         : { kind: 'template_with_questions', model: templateModel };
-      const res = await base44.functions.invoke('publicReadContext', payload);
-      return { template: res.data?.template || null, questions: res.data?.questions || [] };
+      const res = await callPublicFunction('publicReadContext', payload);
+      return { template: res?.template || null, questions: res?.questions || [] };
     },
     enabled: !!(templateId || templateModel || localStorage.getItem('current_template_id')),
   });
@@ -346,19 +319,19 @@ export default function DynamicDocumentUploadPage({
             valueArray: Array.isArray(formData[q.id]) ? formData[q.id] : undefined,
           }));
 
-        const submitRes = await base44.functions.invoke('publicComplianceSubmit', {
+        const submitRes = await callPublicFunction('publicComplianceSubmit', {
           templateId: template?.id,
           linkCode: linkCode || undefined,
           merchantData,
           onboardingCaseData: { status: 'Pendente', priority: 'medium' },
           responses: responsesToCreate,
         });
-        if (submitRes.data?.error || !submitRes.data?.ok) {
-          throw new Error(submitRes.data?.error || 'Erro ao criar caso');
+        if (submitRes?.error || !submitRes?.ok) {
+          throw new Error(submitRes?.error || 'Erro ao criar caso');
         }
-        onboardingCaseId = submitRes.data.onboardingCaseId;
-        if (submitRes.data?.docLinkToken) {
-          localStorage.setItem('created_doc_link_token', submitRes.data.docLinkToken);
+        onboardingCaseId = submitRes.onboardingCaseId;
+        if (submitRes.docLinkToken) {
+          localStorage.setItem('created_doc_link_token', submitRes.docLinkToken);
         }
       }
 
@@ -400,9 +373,9 @@ export default function DynamicDocumentUploadPage({
         }));
       });
       if (docsPayload.length > 0) {
-        let uploadRes;
+        let uploadData;
         try {
-          uploadRes = await base44.functions.invoke('publicComplianceDocUpload', {
+          uploadData = await callPublicFunction('publicComplianceDocUpload', {
             caseId: onboardingCaseId,
             docLinkToken: localStorage.getItem('created_doc_link_token') || undefined,
             documents: docsPayload,
@@ -417,7 +390,7 @@ export default function DynamicDocumentUploadPage({
           setIsSubmitting(false);
           return;
         }
-        const uploadData = uploadRes?.data || {};
+        uploadData = uploadData || {};
         // Fail only on hard failures (failedCount>0). Skipped entries are OK (usually dedupe).
         if (!uploadData.ok && (uploadData.failedCount || 0) > 0) {
           const failedList = Array.isArray(uploadData.failed) && uploadData.failed.length > 0
@@ -437,7 +410,7 @@ export default function DynamicDocumentUploadPage({
       // Only reached if ALL documents were successfully persisted.
       // Mark case as docs + CAF completed — via public function (service role, whitelisted fields).
       // The docLinkToken authenticates the update so anonymous clients can't flip case fields.
-      await base44.functions.invoke('publicComplianceCaseUpdate', {
+      await callPublicFunction('publicComplianceCaseUpdate', {
         caseId: onboardingCaseId,
         docLinkToken: localStorage.getItem('created_doc_link_token') || undefined,
         updates: {
@@ -456,16 +429,7 @@ export default function DynamicDocumentUploadPage({
       localStorage.removeItem('created_onboarding_case_id');
       localStorage.removeItem('created_doc_link_token');
 
-      base44.analytics.track({
-        eventName: 'compliance_stage_completed',
-        properties: {
-          stage: 'documents_and_caf',
-          flow_type: flowType || templateModel || '',
-          template_model: templateModel || '',
-          docs_uploaded: Object.keys(documents).length,
-          caf_completed: !!cafResult,
-        }
-      });
+      // Analytics SDK removido: o caseId já marca 'completed' server-side via publicComplianceCaseUpdate acima.
 
       toast.success('Documentos e verificação enviados com sucesso!');
 

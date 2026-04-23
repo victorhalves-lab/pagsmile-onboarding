@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+// SDK-FREE: this component runs on PUBLIC pages (anonymous clients filling compliance).
+// The @base44/sdk fails with 401 on a private app when there's no auth session.
+// callPublicFunction hits /functions/* directly via fetch with credentials:'omit'.
+import { callPublicFunction } from '@/lib/publicApi';
 
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Check, Loader2, ShieldCheck } from 'lucide-react';
@@ -227,8 +230,8 @@ export default function DynamicQuestionnaire({
     queryFn: async () => {
       const payload = templateId ? { kind: 'template_with_questions', id: templateId }
                                   : { kind: 'template_with_questions', model: templateModel };
-      const res = await base44.functions.invoke('publicReadContext', payload);
-      return { template: res.data?.template || null, questions: res.data?.questions || [] };
+      const res = await callPublicFunction('publicReadContext', payload);
+      return { template: res?.template || null, questions: res?.questions || [] };
     },
     enabled: !!(templateId || templateModel),
   });
@@ -264,15 +267,8 @@ export default function DynamicQuestionnaire({
     if (steps.length > 0 && !hasTrackedStart.current) {
       hasTrackedStart.current = true;
       trackOnboardingStarted({ totalSteps: steps.length, flowType, templateModel });
-      base44.analytics.track({
-        eventName: 'compliance_stage_entered',
-        properties: {
-          stage: 'questionnaire',
-          flow_type: flowType || templateModel || '',
-          template_model: templateModel || '',
-          total_steps: steps.length,
-        }
-      });
+      // Analytics removido: base44.analytics depende do SDK autenticado (falha em públicas).
+      // O tracking de funil é feito via onboardingTracker (server-side via função pública).
     }
   }, [steps.length, flowType, templateModel]);
 
@@ -420,12 +416,12 @@ export default function DynamicQuestionnaire({
         const cnpjQ = questions.find(q => (q.text || '').toLowerCase() === 'cnpj' && q.type === 'CPF_CNPJ');
         const cnpj = cnpjQ ? (formData[cnpjQ.id] || '') : '';
         if (cnpj && cnpj.length >= 14) {
-          base44.functions.invoke('sanctionsScreening', {
+          callPublicFunction('sanctionsScreening', {
             action: 'fullScreening',
             cnpj,
             qsa: apiData.qsa
           }).then(res => {
-            setFormData(prev => ({ ...prev, __screening_result: res.data }));
+            setFormData(prev => ({ ...prev, __screening_result: res }));
           }).catch(() => {});
         }
       }
@@ -591,17 +587,7 @@ export default function DynamicQuestionnaire({
           stepTitle: currentStepData?.title, flowType, templateModel,
           missingFieldsCount: missing.length,
         });
-        base44.analytics.track({
-          eventName: 'compliance_validation_error_by_field',
-          properties: {
-            flow_type: flowType || templateModel || '',
-            step_number: currentStep,
-            step_title: currentStepData?.title || '',
-            failed_fields: missing.map(q => q.text || q.id).slice(0, 10).join(' | '),
-            failed_field_types: missing.map(q => q.type).slice(0, 10).join(','),
-            field_count: missing.length,
-          }
-        });
+        // Analytics SDK removido (já rastreado via trackOnboardingValidationFailed).
         toast.error(`Preencha todos os campos obrigatórios (${missing.length} campo${missing.length > 1 ? 's' : ''} pendente${missing.length > 1 ? 's' : ''}).`);
         return;
       }
@@ -646,17 +632,7 @@ export default function DynamicQuestionnaire({
         stepTitle: currentStepData?.title, flowType, templateModel,
         missingFieldsCount: missing.length,
       });
-      base44.analytics.track({
-        eventName: 'compliance_validation_error_by_field',
-        properties: {
-          flow_type: flowType || templateModel || '',
-          step_number: currentStep,
-          step_title: currentStepData?.title || '',
-          failed_fields: missing.map(q => q.text || q.id).slice(0, 10).join(' | '),
-          failed_field_types: missing.map(q => q.type).slice(0, 10).join(','),
-          field_count: missing.length,
-        }
-      });
+      // Analytics SDK removido (já rastreado via trackOnboardingValidationFailed).
       toast.error(`Preencha todos os campos obrigatórios (${missing.length} campo${missing.length > 1 ? 's' : ''} pendente${missing.length > 1 ? 's' : ''}).`);
       return;
     }
@@ -669,16 +645,7 @@ export default function DynamicQuestionnaire({
     });
     const totalTime = Math.round((Date.now() - onboardingStartTimeRef.current) / 1000);
     trackOnboardingCompleted({ totalSteps: steps.length, flowType, templateModel, totalTimeSec: totalTime });
-    base44.analytics.track({
-      eventName: 'compliance_stage_completed',
-      properties: {
-        stage: 'questionnaire',
-        flow_type: flowType || templateModel || '',
-        template_model: templateModel || '',
-        total_steps: steps.length,
-        total_time_sec: totalTime,
-      }
-    });
+    // Analytics SDK removido (já rastreado via trackOnboardingCompleted que usa função pública).
     // Salvar flags de compliance no formData para análise interna
     const finalFormData = { ...formData, __complianceFlags: complianceAlerts };
     if (storageKey) {
@@ -824,10 +791,10 @@ export default function DynamicQuestionnaire({
     let isSubsellerLink = false;
     if (linkCode) {
       try {
-        const res = await base44.functions.invoke('publicReadContext', {
+        const res = await callPublicFunction('publicReadContext', {
           kind: 'subseller_link_info', uniqueCode: linkCode,
         });
-        const link = res.data?.link;
+        const link = res?.link;
         if (link?.linkType === 'SUBSELLER_COMPLIANCE' && link.parentMerchantId) {
           parentMerchantId = link.parentMerchantId;
           isSubsellerLink = true;
@@ -851,7 +818,7 @@ export default function DynamicQuestionnaire({
     });
 
     // Submit via backend function (asServiceRole, server-side validated)
-    const res = await base44.functions.invoke('publicComplianceSubmit', {
+    const res = await callPublicFunction('publicComplianceSubmit', {
       templateId: template?.id || '',
       linkCode: linkCode || undefined,
       leadId: leadId || undefined,
@@ -873,21 +840,21 @@ export default function DynamicQuestionnaire({
       responses: responsesToCreate,
     });
 
-    if (res.data?.error || !res.data?.ok) {
+    if (res?.error || !res?.ok) {
       merchantCreatedRef.current = false;
       return null;
     }
 
     // Persist IDs so the document upload page can reuse them
-    localStorage.setItem('created_merchant_id', res.data.merchantId);
-    localStorage.setItem('created_onboarding_case_id', res.data.onboardingCaseId);
+    localStorage.setItem('created_merchant_id', res.merchantId);
+    localStorage.setItem('created_onboarding_case_id', res.onboardingCaseId);
     // Persist docLinkToken so public endpoints (publicComplianceCaseUpdate, cafVerifyResult)
     // can authenticate updates for this specific case instead of accepting anonymous writes.
-    if (res.data.docLinkToken) {
-      localStorage.setItem('created_doc_link_token', res.data.docLinkToken);
+    if (res.docLinkToken) {
+      localStorage.setItem('created_doc_link_token', res.docLinkToken);
     }
 
-    return { merchantId: res.data.merchantId, onboardingCaseId: res.data.onboardingCaseId, docLinkToken: res.data.docLinkToken };
+    return { merchantId: res.merchantId, onboardingCaseId: res.onboardingCaseId, docLinkToken: res.docLinkToken };
   }, [questions, lead, template, linkCode]);
 
   // Callback quando o cliente confirma que concluiu na CAF
