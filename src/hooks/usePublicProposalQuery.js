@@ -12,7 +12,11 @@
  *   - status === 'ok'       → proposta carregada
  */
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+// SDK-FREE: these pages are PUBLIC and the app is private on Base44.
+// Using the @base44/sdk on anonymous sessions crashes the page with a 401 envelope
+// (or a MessagePort instanceof TypeError on some browsers) before React renders.
+// callPublicFunction hits /functions/* directly via fetch with credentials:'omit'.
+import { callPublicFunction } from '@/lib/publicApi';
 
 const KIND_BY_TYPE = {
   proposal: 'proposal_by_token',
@@ -40,9 +44,9 @@ function extractSlugFromUrl() {
  */
 async function fetchProposalByToken(type, token) {
   const kind = KIND_BY_TYPE[type];
-  const res = await base44.functions.invoke('publicReadContext', { kind, token });
-  if (res.data?.error) throw new Error(res.data.error);
-  return res.data?.proposal || null;
+  const res = await callPublicFunction('publicReadContext', { kind, token });
+  if (res?.error) throw new Error(res.error);
+  return res?.proposal || null;
 }
 
 /**
@@ -51,12 +55,12 @@ async function fetchProposalByToken(type, token) {
  */
 async function fetchProposalBySlug(type, slug) {
   const entityType = SLUG_ENTITY_BY_TYPE[type];
-  const res = await base44.functions.invoke('publicReadContext', {
+  const res = await callPublicFunction('publicReadContext', {
     kind: 'resolve_public_slug',
     entityType,
     slug,
   });
-  const redirectTo = res.data?.redirectTo;
+  const redirectTo = res?.redirectTo;
   if (!redirectTo) return null;
   // redirectTo é "/PropostaPublica?token=XYZ" — extrair o token
   const url = new URL(redirectTo, window.location.origin);

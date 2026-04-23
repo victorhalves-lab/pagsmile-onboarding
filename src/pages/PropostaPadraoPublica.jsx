@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+// SDK-FREE: this page is PUBLIC. The useQuery import was removed because
+// all data fetching goes through usePublicProposalQuery which uses callPublicFunction.
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

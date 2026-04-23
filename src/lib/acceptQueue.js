@@ -19,7 +19,9 @@
  * Idempotência: o servidor (publicProposalAction) já é idempotente — aceitar 2x
  * retorna {ok:true, skipped:true}. Então reenvios repetidos são seguros.
  */
-import { base44 } from '@/api/base44Client';
+// SDK-FREE: this worker runs on PUBLIC pages (anonymous visitors).
+// The @base44/sdk fails with 401 for unauthenticated users on a private app.
+import { callPublicFunction } from '@/lib/publicApi';
 
 const QUEUE_KEY = 'pagsmile_accept_queue_v1';
 const MAX_QUEUE_AGE_MS = 30 * 24 * 60 * 60 * 1000; // 30 dias
@@ -128,7 +130,7 @@ export async function processQueue() {
       writeQueue(readQueue().map(i => i.id === item.id ? item : i));
 
       try {
-        const res = await base44.functions.invoke('publicProposalAction', {
+        const res = await callPublicFunction('publicProposalAction', {
           token: item.token,
           slug: item.slug,
           type: item.type,
@@ -136,12 +138,12 @@ export async function processQueue() {
           payload: item.payload,
         });
         // Sucesso: ok:true (com ou sem skipped) OU erro 409 "já aceita" (idempotente)
-        if (res?.data?.ok) {
+        if (res?.ok) {
           removeFromQueue(item.id);
           continue;
         }
         // Erro de negócio que NÃO adianta reenviar: proposta expirada/cancelada
-        const err = (res?.data?.error || '').toLowerCase();
+        const err = (res?.error || '').toLowerCase();
         if (err.includes('expirada') || err.includes('cancelada') || err.includes('recusada')) {
           // Guarda como "failed" mas não reagenda indefinidamente
           removeFromQueue(item.id);

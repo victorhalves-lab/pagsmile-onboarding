@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+// SDK-FREE: this page is PUBLIC. Anonymous visitors can't use @base44/sdk on a private app.
+import { callPublicFunction } from '@/lib/publicApi';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -52,7 +53,7 @@ export default function PropostaPixPublica() {
       const viewKey = `pix_proposta_viewed_${proposta.id}`;
       if (sessionStorage.getItem(viewKey)) return;
       sessionStorage.setItem(viewKey, '1');
-      base44.functions.invoke('publicProposalAction', {
+      callPublicFunction('publicProposalAction', {
         token: effectiveToken, slug: proposta?.publicSlug || null, type: 'pix_proposal', action: 'view',
       }).catch(() => {});
     }
@@ -62,8 +63,8 @@ export default function PropostaPixPublica() {
   const fetchLeadForCompliance = async (leadId) => {
     if (!leadId) return null;
     try {
-      const res = await base44.functions.invoke('publicReadData', { kind: 'lead_by_id', leadId });
-      return res.data?.lead || null;
+      const res = await callPublicFunction('publicReadData', { kind: 'lead_by_id', leadId });
+      return res?.lead || null;
     } catch { return null; }
   };
 
@@ -94,9 +95,7 @@ export default function PropostaPixPublica() {
         complianceUrl = `${window.location.origin}/ComplianceDinamico?model=${pixModel}&leadId=${proposta.leadId}`;
       }
 
-      try {
-        base44.analytics.track({ eventName: 'pix_proposta_aceita', properties: { proposal_id: proposta.id, proposal_code: proposta.codigo || '', client_name: proposta.clienteNome || '', success: true } });
-      } catch {}
+      // Analytics removido: base44.analytics depende do SDK autenticado (falha em páginas públicas).
 
       return complianceUrl;
     },
@@ -112,20 +111,20 @@ export default function PropostaPixPublica() {
 
   const contrapropostaMutation = useMutation({
     mutationFn: async (data) => {
-      const res = await base44.functions.invoke('publicProposalAction', {
+      const res = await callPublicFunction('publicProposalAction', {
         token: effectiveToken, slug: proposta?.publicSlug || null, type: 'pix_proposal', action: 'counter', payload: { details: data },
       });
-      if (res.data?.error) throw new Error(res.data.error);
+      if (res?.error) throw new Error(res.error);
     },
     onSuccess: () => { toast.success(t('pp.counter_sent_success')); queryClient.invalidateQueries({ queryKey: ['public_proposal', 'pix_proposal'] }); setShowContrapropostaModal(false); }
   });
 
   const recusarMutation = useMutation({
     mutationFn: async (data) => {
-      const res = await base44.functions.invoke('publicProposalAction', {
+      const res = await callPublicFunction('publicProposalAction', {
         token: effectiveToken, slug: proposta?.publicSlug || null, type: 'pix_proposal', action: 'reject', payload: { motivo: data.motivo, detalhe: data.detalhe },
       });
-      if (res.data?.error) throw new Error(res.data.error);
+      if (res?.error) throw new Error(res.error);
     },
     onSuccess: () => { toast.success(t('pp.proposal_rejected')); queryClient.invalidateQueries({ queryKey: ['public_proposal', 'pix_proposal'] }); setShowRecusaModal(false); }
   });

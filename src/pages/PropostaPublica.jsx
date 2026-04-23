@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+// SDK-FREE: this page is PUBLIC. The @base44/sdk fails with 401 for anonymous
+// visitors on a private app. callPublicFunction uses raw fetch with credentials:'omit'.
+import { callPublicFunction } from '@/lib/publicApi';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -63,7 +65,7 @@ export default function PropostaPublica() {
       if (sessionStorage.getItem(viewKey)) return;
       sessionStorage.setItem(viewKey, '1');
 
-      base44.functions.invoke('publicProposalAction', {
+      callPublicFunction('publicProposalAction', {
         token: effectiveToken,
         slug: proposta?.publicSlug || null,
         type: 'proposal',
@@ -78,12 +80,12 @@ export default function PropostaPublica() {
   const fetchLeadForCompliance = async (leadId) => {
     if (!leadId) return null;
     try {
-      const res = await base44.functions.invoke('publicReadData', {
+      const res = await callPublicFunction('publicReadData', {
         kind: 'lead_by_id',
         leadId,
         proposalToken: effectiveToken,
       });
-      return res.data?.lead || null;
+      return res?.lead || null;
     } catch {
       return null;
     }
@@ -140,18 +142,8 @@ export default function PropostaPublica() {
       }
       const complianceUrl = `${window.location.origin}/ComplianceDinamico?model=${model}${proposta.leadId ? `&leadId=${proposta.leadId}` : ''}`;
 
-      try {
-        base44.analytics.track({
-          eventName: 'proposta_aceita',
-          properties: {
-            proposal_id: proposta.id,
-            proposal_code: proposta.codigo || '',
-            client_name: proposta.clienteNome || '',
-            business_sub_category: proposta.businessSubCategory || '',
-            success: true
-          }
-        });
-      } catch {}
+      // Analytics removido daqui: base44.analytics também depende do SDK autenticado.
+      // A ação de aceite já está rastreada server-side via publicProposalAction.
 
       return complianceUrl;
     },
@@ -167,24 +159,14 @@ export default function PropostaPublica() {
 
   const contrapropostaMutation = useMutation({
     mutationFn: async (data) => {
-      const res = await base44.functions.invoke('publicProposalAction', {
+      const res = await callPublicFunction('publicProposalAction', {
         token: effectiveToken,
         slug: proposta?.publicSlug || null,
         type: 'proposal',
         action: 'counter',
         payload: { details: data },
       });
-      if (res.data?.error) throw new Error(res.data.error);
-
-      base44.analytics.track({
-        eventName: 'proposta_contraproposta',
-        properties: {
-          proposal_id: proposta.id,
-          proposal_code: proposta.codigo || '',
-          client_name: proposta.clienteNome || '',
-          success: true
-        }
-      });
+      if (res?.error) throw new Error(res.error);
     },
     onSuccess: () => {
       toast.success(t('pp.counter_sent_success'));
@@ -195,25 +177,14 @@ export default function PropostaPublica() {
 
   const recusarMutation = useMutation({
     mutationFn: async (data) => {
-      const res = await base44.functions.invoke('publicProposalAction', {
+      const res = await callPublicFunction('publicProposalAction', {
         token: effectiveToken,
         slug: proposta?.publicSlug || null,
         type: 'proposal',
         action: 'reject',
         payload: { motivo: data.motivo, detalhe: data.detalhe },
       });
-      if (res.data?.error) throw new Error(res.data.error);
-
-      base44.analytics.track({
-        eventName: 'proposta_recusada',
-        properties: {
-          proposal_id: proposta.id,
-          proposal_code: proposta.codigo || '',
-          client_name: proposta.clienteNome || '',
-          motivo: data.motivo || '',
-          success: true
-        }
-      });
+      if (res?.error) throw new Error(res.error);
     },
     onSuccess: () => {
       toast.success(t('pp.proposal_rejected'));
