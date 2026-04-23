@@ -220,6 +220,22 @@ export function InvalidLinkScreen({ reason }) {
         {reason && (
           <p className="text-[10px] text-[#002443]/30 mt-4 font-mono">código: {reason}</p>
         )}
+        {reason === 'network' && (() => {
+          try {
+            const raw = sessionStorage.getItem('__onboardingBootstrapError');
+            if (!raw) return null;
+            const info = JSON.parse(raw);
+            return (
+              <details className="mt-3 text-left">
+                <summary className="text-[10px] text-[#002443]/40 cursor-pointer">detalhes técnicos</summary>
+                <pre className="text-[9px] text-[#002443]/50 mt-2 whitespace-pre-wrap break-all bg-slate-100 p-2 rounded">
+{info.message}
+{`\n`}URL: {typeof window !== 'undefined' ? window.location.href : ''}
+              </pre>
+              </details>
+            );
+          } catch { return null; }
+        })()}
       </div>
     </div>
   );

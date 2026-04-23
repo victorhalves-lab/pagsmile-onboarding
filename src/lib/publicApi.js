@@ -19,28 +19,64 @@
  */
 
 /**
- * Build the correct base44 functions endpoint URL.
+ * Build candidate URLs to hit the backend function.
  *
- * Base44 apps are NOT served from the same domain as the functions gateway.
- * The SDK builds URLs like:
- *   {appBaseUrl}/api/apps/{appId}/functions/{functionName}
- * where `appBaseUrl` is injected via VITE_BASE44_APP_BASE_URL or the `app_base_url`
- * query param when the app is embedded. If we use a plain `/functions/{name}`
- * path, the request hits the hosting origin (e.g. the Base44 preview shell or
- * the user's custom domain) and returns HTML 404 — which the caller then treats
- * as "network error" and the UI shows "Link inválido ou expirado".
+ * Base44 apps may be served from different origins depending on environment:
+ *   - Preview: https://preview-sandbox--{appId}.base44.app
+ *   - Production custom domain: e.g. https://app.pagsmile.com
+ *   - Embedded shell: appBaseUrl passed via query param
+ *
+ * The functions gateway lives at `{appBaseUrl}/api/apps/{appId}/functions/{name}`.
+ * We try, in order:
+ *   1. {appBaseUrl}/api/apps/{appId}/functions/{name}  (when appBaseUrl is known)
+ *   2. /api/apps/{appId}/functions/{name}              (same-origin — works on preview.base44.app)
+ *   3. /functions/{name}                                (legacy same-origin)
+ * and return the first that yields a JSON body.
  */
-function resolveFunctionUrl(functionName) {
+function buildCandidateUrls(functionName) {
+  const urls = [];
   try {
-    const appId = (typeof window !== 'undefined' && window.localStorage.getItem('base44_app_id')) || import.meta.env.VITE_BASE44_APP_ID;
-    const appBaseUrl = (typeof window !== 'undefined' && window.localStorage.getItem('base44_app_base_url')) || import.meta.env.VITE_BASE44_APP_BASE_URL;
+    const appId =
+      (typeof window !== 'undefined' && window.localStorage.getItem('base44_app_id')) ||
+      import.meta.env.VITE_BASE44_APP_ID;
+    const appBaseUrl =
+      (typeof window !== 'undefined' && window.localStorage.getItem('base44_app_base_url')) ||
+      import.meta.env.VITE_BASE44_APP_BASE_URL;
     if (appId && appBaseUrl) {
       const base = String(appBaseUrl).replace(/\/+$/, '');
-      return `${base}/api/apps/${appId}/functions/${functionName}`;
+      urls.push(`${base}/api/apps/${appId}/functions/${functionName}`);
+    }
+    if (appId) {
+      urls.push(`/api/apps/${appId}/functions/${functionName}`);
     }
   } catch (_) {}
-  // Fallback — same-origin (works in dev / when app is served by the gateway).
-  return `/functions/${functionName}`;
+  urls.push(`/functions/${functionName}`);
+  return urls;
+}
+
+async function fetchFunction(functionName, payload) {
+  const urls = buildCandidateUrls(functionName);
+  let lastError = null;
+  for (const url of urls) {
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload || {}),
+        credentials: 'omit',
+      });
+      // Server replied with HTML (wrong endpoint) → skip to next candidate.
+      const contentType = res.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        lastError = new Error(`non-json response from ${url} (status ${res.status})`);
+        continue;
+      }
+      return res;
+    } catch (err) {
+      lastError = err;
+    }
+  }
+  throw lastError || new Error('all function endpoints failed');
 }
 
 /**
@@ -54,12 +90,7 @@ function resolveFunctionUrl(functionName) {
 export async function callPublicFunction(functionName, payload = {}) {
   if (!functionName) throw new Error('functionName é obrigatório');
 
-  const res = await fetch(resolveFunctionUrl(functionName), {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload || {}),
-    credentials: 'omit', // never send cookies — public endpoints are fully stateless
-  });
+  const res = await fetchFunction(functionName, payload);
 
   // Even for 4xx/5xx we try to parse JSON so callers can read { ok: false, reason }
   let body = null;

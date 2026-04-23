@@ -47,7 +47,16 @@ export function useOnboarding({ caseId, token, mode }) {
         setStatus('ready');
       } catch (err) {
         if (cancelled) return;
-        console.warn('[useOnboarding] bootstrap failed:', err?.message);
+        const msg = err?.message || String(err);
+        console.error('[useOnboarding] bootstrap failed:', msg, err);
+        // Surface full error in sessionStorage so we can inspect it from the UI.
+        try {
+          sessionStorage.setItem('__onboardingBootstrapError', JSON.stringify({
+            message: msg,
+            caseId, token, mode,
+            at: new Date().toISOString(),
+          }));
+        } catch {}
         setStatus('error'); setErrorReason('network');
       }
     })();
