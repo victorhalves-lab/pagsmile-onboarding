@@ -69,6 +69,8 @@ import CafTestLab from './pages/CafTestLab';
 import ComplianceParceiro from './pages/ComplianceParceiro';
 import ComplianceParceiroDetalhe from './pages/ComplianceParceiroDetalhe';
 import AdminGestaoParceiros from './pages/AdminGestaoParceiros';
+import DocCompParceiros from './pages/DocCompParceiros';
+import BankDataCollect from './pages/BankDataCollect';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -144,6 +146,9 @@ const PublicRoutes = () => (
     <Route path="/LeadPixV4" element={<LayoutWrapper currentPageName="LeadPixV4"><LeadPixV4 /></LayoutWrapper>} />
     <Route path="/FechamentoLandingPage" element={<LayoutWrapper currentPageName="FechamentoLandingPage"><FechamentoLandingPage /></LayoutWrapper>} />
     <Route path="/KickOffPublico" element={<LayoutWrapper currentPageName="KickOffPublico"><KickOffPublico /></LayoutWrapper>} />
+
+    {/* Bank Data Collection (public, client-facing) */}
+    <Route path="/BankDataCollect" element={<LayoutWrapper currentPageName="BankDataCollect"><BankDataCollect /></LayoutWrapper>} />
 
     {/* Slug redirect — short URLs */}
     <Route path="/s/:slug" element={<LayoutWrapper currentPageName="SlugRedirect"><SlugRedirect /></LayoutWrapper>} />
@@ -394,6 +399,7 @@ const AuthenticatedApp = () => {
       <Route path="/ComplianceParceiro" element={<LayoutWrapper currentPageName="ComplianceParceiro"><ComplianceParceiro /></LayoutWrapper>} />
       <Route path="/ComplianceParceiroDetalhe" element={<LayoutWrapper currentPageName="ComplianceParceiroDetalhe"><ComplianceParceiroDetalhe /></LayoutWrapper>} />
       <Route path="/AdminGestaoParceiros" element={<LayoutWrapper currentPageName="AdminGestaoParceiros"><AdminGestaoParceiros /></LayoutWrapper>} />
+      <Route path="/DocCompParceiros" element={<LayoutWrapper currentPageName="DocCompParceiros"><DocCompParceiros /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

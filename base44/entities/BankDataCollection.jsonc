@@ -1,0 +1,88 @@
+{
+  "name": "BankDataCollection",
+  "type": "object",
+  "properties": {
+    "onboardingCaseId": {
+      "type": "string",
+      "description": "ID do OnboardingCase ao qual este registro banc\u00e1rio est\u00e1 vinculado"
+    },
+    "merchantId": {
+      "type": "string",
+      "description": "ID do Merchant"
+    },
+    "cpfCnpj": {
+      "type": "string",
+      "description": "CPF ou CNPJ do cliente (redundante para facilitar queries)"
+    },
+    "token": {
+      "type": "string",
+      "description": "Token \u00fanico do link p\u00fablico (N\u00c3O exp\u00f5e o ID da case)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pendente",
+        "preenchido",
+        "expirado"
+      ],
+      "default": "pendente",
+      "description": "Status do preenchimento"
+    },
+    "linkSentAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Quando o link foi gerado/enviado"
+    },
+    "filledAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Quando o cliente preencheu"
+    },
+    "banco": {
+      "type": "string",
+      "description": "Nome ou c\u00f3digo do banco"
+    },
+    "agencia": {
+      "type": "string"
+    },
+    "digitoAgencia": {
+      "type": "string"
+    },
+    "conta": {
+      "type": "string"
+    },
+    "digitoConta": {
+      "type": "string"
+    },
+    "clientIp": {
+      "type": "string",
+      "description": "IP do cliente quando preencheu (auditoria)"
+    }
+  },
+  "required": [
+    "onboardingCaseId",
+    "token"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -42,6 +42,8 @@ export const PUBLIC_PATHS = new Set([
   // Liveness flows (redirected to OnboardingCompletion)
   '/LivenessFacematchStep',
   '/LivenessSimulation',
+  // Bank data collection (partner doc flow)
+  '/BankDataCollect',
 ]);
 
 // Case-insensitive lookup set.

@@ -34,7 +34,8 @@ import {
   Presentation,
   Database,
   RotateCcw,
-  AlertTriangle
+  AlertTriangle,
+  FileSpreadsheet
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -78,7 +79,7 @@ export default function Layout({ children, currentPageName }) {
     'ComplianceDinamico','ComplianceResume','SubsellerQuestionnaire',
     'QuestionarioSimplificadoPublico',
     'QuestionarioLeadsPagsmile','LeadPixV4','FechamentoLandingPage','KickOffPublico',
-    'SubsellerDocUpload'
+    'SubsellerDocUpload','BankDataCollect'
   ];
   const isPublicPage = publicPages.includes(currentPageName);
 
@@ -140,6 +141,7 @@ export default function Layout({ children, currentPageName }) {
         { label: 'Reprocessar Compliance', path: 'BulkReprocess', icon: RotateCcw },
         { label: 'Documento KYC/KYB', path: 'DocumentoKYCKYB', icon: FileText },
         { label: 'Compliance Parceiro', path: 'ComplianceParceiro', icon: Handshake, highlight: true },
+        { label: 'Doc Compliance Parceiros', path: 'DocCompParceiros', icon: FileSpreadsheet, highlight: true },
       ]
     },
     {
