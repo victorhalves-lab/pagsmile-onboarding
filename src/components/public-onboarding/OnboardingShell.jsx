@@ -8,9 +8,39 @@ import { ShieldCheck, Loader2, ShieldAlert } from 'lucide-react';
  * - Self-contained error boundary that prevents React reconciliation issues from
  *   ever bubbling up and showing a white screen to the client.
  */
+/**
+ * Returns true for known transient errors that should NOT immediately show a
+ * crash screen to the client — they self-heal on remount:
+ *  1. Base44 SDK's "X is not a function. (evaluating 'Y instanceof X')" —
+ *     happens on Safari iOS when the SDK worker tries to validate an anonymous
+ *     token and hits a minified identifier that's been tree-shaken.
+ *  2. DOM mutation errors from browser extensions (Translate, Grammarly).
+ */
+function isTransientBoundaryError(err) {
+  const msg = String(err?.message || err || '');
+  const name = String(err?.name || '');
+  const stack = String(err?.stack || '');
+  // SDK instanceof crash (both Chrome wording AND Safari wording)
+  if (msg.includes("Right-hand side of 'instanceof' is not callable")) return true;
+  if (/is not a function.*evaluating.*instanceof/i.test(msg)) return true;
+  if (name === 'TypeError' && /instanceof/i.test(msg)) return true;
+  if (/MessagePort/i.test(stack) && /instanceof/i.test(stack)) return true;
+  // DOM-mutation errors from extensions
+  if (name === 'NotFoundError' && /insertBefore|removeChild|appendChild/i.test(msg)) return true;
+  if (/Failed to execute '(insertBefore|removeChild|appendChild)'/i.test(msg)) return true;
+  return false;
+}
+
 class LocalErrorBoundary extends React.Component {
-  constructor(props) { super(props); this.state = { err: null }; }
-  static getDerivedStateFromError(err) { return { err }; }
+  constructor(props) {
+    super(props);
+    this.state = { err: null, healKey: 0 };
+    this._transientCount = 0;
+  }
+  static getDerivedStateFromError(err) {
+    if (isTransientBoundaryError(err)) return {}; // let componentDidCatch decide
+    return { err };
+  }
   componentDidCatch(err, info) {
     try {
       fetch('/functions/logPublicClientError', {
@@ -25,6 +55,20 @@ class LocalErrorBoundary extends React.Component {
         }),
       }).catch(() => {});
     } catch (_) {}
+
+    // Self-heal transient errors — bump key to remount. Only escalate to the
+    // crash screen after 3 repeats in a row, which means it's NOT transient.
+    if (isTransientBoundaryError(err)) {
+      this._transientCount += 1;
+      if (this._transientCount < 3) {
+        setTimeout(() => {
+          this.setState(s => ({ healKey: s.healKey + 1 }));
+        }, 50);
+        return;
+      }
+      // Repeated → not transient anymore, show fallback.
+      this.setState({ err });
+    }
   }
   render() {
     if (this.state.err) {
@@ -46,7 +90,13 @@ class LocalErrorBoundary extends React.Component {
         </div>
       );
     }
-    return this.props.children;
+    // healKey forces a full remount of children after a transient error,
+    // clearing stale DOM refs and letting the SDK recover silently.
+    return (
+      <div key={this.state.healKey} style={{ display: 'contents' }}>
+        {this.props.children}
+      </div>
+    );
   }
 }
 
