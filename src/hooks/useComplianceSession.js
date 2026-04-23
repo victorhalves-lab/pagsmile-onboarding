@@ -1,5 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { base44 } from '@/api/base44Client';
+// SDK-FREE: compliance session runs on PUBLIC pages (anonymous clients).
+// The @base44/sdk mock on public routes blocks functions.invoke by design.
+// callPublicFunction hits /functions/* directly via fetch — the session backend
+// functions (loadComplianceProgress, saveComplianceProgress) validate the
+// sessionToken server-side via asServiceRole, so anonymous POST is safe.
+import { callPublicFunction } from '@/lib/publicApi';
 
 // Generate a unique session token
 function generateSessionToken() {
@@ -52,9 +57,10 @@ export function useComplianceSession({ flowType, templateModel, storageKey }) {
       if (token) {
         // Try to load existing session
         try {
-          const response = await base44.functions.invoke('loadComplianceProgress', { sessionToken: token });
-          if (response.data?.found && response.data.session.status === 'active') {
-            const session = response.data.session;
+          const response = await callPublicFunction('loadComplianceProgress', { sessionToken: token });
+          // callPublicFunction returns the body directly (no .data wrapper).
+          if (response?.found && response?.session?.status === 'active') {
+            const session = response.session;
             setSessionToken(token);
             localStorage.setItem(SESSION_TOKEN_KEY, token);
             setSavedFormData(session.formData || {});
@@ -82,7 +88,7 @@ export function useComplianceSession({ flowType, templateModel, storageKey }) {
       localStorage.setItem(getSessionTokenKey(), newToken);
       
       try {
-        await base44.functions.invoke('saveComplianceProgress', {
+        await callPublicFunction('saveComplianceProgress', {
           sessionToken: newToken,
           flowType,
           templateModel,
@@ -128,7 +134,7 @@ export function useComplianceSession({ flowType, templateModel, storageKey }) {
         if (clientEmail) payload.clientEmail = clientEmail;
         if (clientName) payload.clientName = clientName;
 
-        await base44.functions.invoke('saveComplianceProgress', payload);
+        await callPublicFunction('saveComplianceProgress', payload);
         lastSavedRef.current = new Date();
       } catch (e) {
         // Auto-save failures are NON-FATAL — user's data is still in localStorage.
@@ -160,7 +166,7 @@ export function useComplianceSession({ flowType, templateModel, storageKey }) {
     if (clientName) payload.clientName = clientName;
 
     try {
-      await base44.functions.invoke('saveComplianceProgress', payload);
+      await callPublicFunction('saveComplianceProgress', payload);
       lastSavedRef.current = new Date();
     } catch (e) {
       console.warn('Failed to save progress:', e);
@@ -171,7 +177,7 @@ export function useComplianceSession({ flowType, templateModel, storageKey }) {
   const completeSession = useCallback(async () => {
     if (!sessionToken) return;
     try {
-      await base44.functions.invoke('saveComplianceProgress', {
+      await callPublicFunction('saveComplianceProgress', {
         sessionToken,
         currentPhase: 'completed',
         flowType,
