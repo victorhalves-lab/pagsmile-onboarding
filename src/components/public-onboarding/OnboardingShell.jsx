@@ -200,6 +200,8 @@ export function InvalidLinkScreen({ reason }) {
     template_not_found: 'O questionário desse cadastro não está mais disponível.',
     invalid_mode: 'Tipo de link não reconhecido.',
     missing_params: 'Link incompleto. Verifique se você copiou a URL inteira.',
+    network: 'Não conseguimos contatar o servidor. Verifique sua conexão e tente recarregar.',
+    server_error: 'Houve um erro temporário no servidor. Tente recarregar em alguns segundos.',
   };
   return (
     <div className="min-h-screen flex items-center justify-center p-6">
@@ -209,6 +211,15 @@ export function InvalidLinkScreen({ reason }) {
         <p className="text-sm text-[#002443]/60 mb-4">
           {messages[reason] || 'Não foi possível abrir este link. Entre em contato com seu consultor comercial para receber um novo.'}
         </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-5 h-10 rounded-lg bg-[#2bc196] text-white text-sm font-semibold hover:opacity-90"
+        >
+          Recarregar
+        </button>
+        {reason && (
+          <p className="text-[10px] text-[#002443]/30 mt-4 font-mono">código: {reason}</p>
+        )}
       </div>
     </div>
   );

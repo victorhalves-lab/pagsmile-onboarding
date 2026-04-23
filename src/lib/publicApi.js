@@ -19,6 +19,31 @@
  */
 
 /**
+ * Build the correct base44 functions endpoint URL.
+ *
+ * Base44 apps are NOT served from the same domain as the functions gateway.
+ * The SDK builds URLs like:
+ *   {appBaseUrl}/api/apps/{appId}/functions/{functionName}
+ * where `appBaseUrl` is injected via VITE_BASE44_APP_BASE_URL or the `app_base_url`
+ * query param when the app is embedded. If we use a plain `/functions/{name}`
+ * path, the request hits the hosting origin (e.g. the Base44 preview shell or
+ * the user's custom domain) and returns HTML 404 — which the caller then treats
+ * as "network error" and the UI shows "Link inválido ou expirado".
+ */
+function resolveFunctionUrl(functionName) {
+  try {
+    const appId = (typeof window !== 'undefined' && window.localStorage.getItem('base44_app_id')) || import.meta.env.VITE_BASE44_APP_ID;
+    const appBaseUrl = (typeof window !== 'undefined' && window.localStorage.getItem('base44_app_base_url')) || import.meta.env.VITE_BASE44_APP_BASE_URL;
+    if (appId && appBaseUrl) {
+      const base = String(appBaseUrl).replace(/\/+$/, '');
+      return `${base}/api/apps/${appId}/functions/${functionName}`;
+    }
+  } catch (_) {}
+  // Fallback — same-origin (works in dev / when app is served by the gateway).
+  return `/functions/${functionName}`;
+}
+
+/**
  * Call a backend function with a JSON payload.
  * Returns the parsed JSON response. Throws on network failure or non-2xx.
  *
@@ -29,7 +54,7 @@
 export async function callPublicFunction(functionName, payload = {}) {
   if (!functionName) throw new Error('functionName é obrigatório');
 
-  const res = await fetch(`/functions/${functionName}`, {
+  const res = await fetch(resolveFunctionUrl(functionName), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload || {}),
