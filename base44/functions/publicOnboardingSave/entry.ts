@@ -16,12 +16,8 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 const SUPPORTED_MODES = new Set(['full', 'docs_caf', 'docs_only', 'caf_only']);
 
-async function getClient(req) {
-  try { return createClientFromRequest(req); }
-  catch (_) {
-    const { createClient } = await import('npm:@base44/sdk@0.8.25');
-    return createClient({ appId: Deno.env.get('BASE44_APP_ID'), requiresAuth: false });
-  }
+function getClient(req) {
+  return createClientFromRequest(req);
 }
 
 function sessionKey(caseId, mode) {

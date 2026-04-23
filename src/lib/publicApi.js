@@ -44,6 +44,14 @@ export async function callPublicFunction(functionName, payload = {}) {
     body = null;
   }
 
+  // ⚡ Base44 gateway edge case: on anonymous requests it sometimes wraps the function
+  // response with a 401 "Authentication required" envelope even though the function
+  // itself ran successfully and returned a valid body. If the body already looks like
+  // a valid function response ({ ok: true/false, ... }), trust the body over the status.
+  if (body && typeof body === 'object' && 'ok' in body) {
+    return body;
+  }
+
   if (!res.ok) {
     const msg = (body && (body.error || body.message)) || `HTTP ${res.status}`;
     throw new Error(msg);
