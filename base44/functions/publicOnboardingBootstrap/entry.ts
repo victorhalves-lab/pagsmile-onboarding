@@ -20,6 +20,14 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 const SUPPORTED_MODES = new Set(['full', 'docs_caf', 'docs_only', 'caf_only']);
 
+// Legacy mode aliases emitted by older links. Normalize before validation.
+const MODE_ALIASES = {
+  docs_and_caf: 'docs_caf',
+  docsAndCaf: 'docs_caf',
+  docs: 'docs_only',
+  caf: 'caf_only',
+};
+
 function getClient(req) {
   return createClientFromRequest(req);
 }
@@ -32,7 +40,9 @@ Deno.serve(async (req) => {
   try {
     if (req.method !== 'POST') return Response.json({ ok: false, reason: 'method_not_allowed' });
     const body = await req.json().catch(() => ({}));
-    const { caseId, token, mode } = body;
+    const { caseId, token } = body;
+    const rawMode = body.mode;
+    const mode = MODE_ALIASES[rawMode] || rawMode;
 
     if (!caseId || !token) return Response.json({ ok: false, reason: 'missing_params' });
     if (!SUPPORTED_MODES.has(mode)) return Response.json({ ok: false, reason: 'invalid_mode' });
