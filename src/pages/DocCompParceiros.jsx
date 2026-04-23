@@ -7,7 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/components/ui/use-toast';
-import { Loader2, Download, Link as LinkIcon, Copy, FileSpreadsheet, RefreshCw, CheckCircle2, Clock } from 'lucide-react';
+import { Loader2, Download, Link as LinkIcon, Copy, FileSpreadsheet, RefreshCw, CheckCircle2, Clock, ChevronDown, ChevronRight, Building2, Users } from 'lucide-react';
+import CaseRow from '@/components/doc-comp-parceiros/CaseRow';
 
 /**
  * Admin page — "Doc Compliance Parceiros" tab.
@@ -38,9 +39,11 @@ export default function DocCompParceiros() {
   const [bankMap, setBankMap] = useState({}); // caseId -> BankDataCollection
   const [selected, setSelected] = useState(new Set());
   const [statusFilter, setStatusFilter] = useState('auto');
+  const [hierarchyFilter, setHierarchyFilter] = useState('all'); // all | sellers | subsellers
   const [search, setSearch] = useState('');
   const [generatingLinks, setGeneratingLinks] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [expandedSellers, setExpandedSellers] = useState(new Set()); // sellerMerchantId -> expanded?
 
   useEffect(() => { load(); }, []);
 
@@ -50,13 +53,27 @@ export default function DocCompParceiros() {
       const allCases = await base44.entities.OnboardingCase.list('-updated_date', 1000);
       setCases(allCases || []);
 
-      // Fetch merchants in one go
+      // Fetch merchants in one go (and also fetch parent merchants so we can show seller names)
       const merchantIds = [...new Set((allCases || []).map(c => c.merchantId).filter(Boolean))];
       const merchantMap = {};
       await Promise.all(merchantIds.map(async (id) => {
         try { merchantMap[id] = await base44.entities.Merchant.get(id); } catch { /* ignore */ }
       }));
+      // Fetch any parent merchants not already loaded (subsellers whose seller has no case)
+      const parentIdsToFetch = [...new Set(
+        Object.values(merchantMap)
+          .map(m => m?.parentMerchantId)
+          .filter(pid => pid && !merchantMap[pid])
+      )];
+      await Promise.all(parentIdsToFetch.map(async (id) => {
+        try { merchantMap[id] = await base44.entities.Merchant.get(id); } catch { /* ignore */ }
+      }));
       setMerchants(merchantMap);
+      // Default: expand all sellers that have subsellers
+      const sellerIdsWithSubs = new Set(
+        Object.values(merchantMap).map(m => m?.parentMerchantId).filter(Boolean)
+      );
+      setExpandedSellers(sellerIdsWithSubs);
 
       // Fetch bank data for all cases (in chunks to be nice)
       const bankData = await base44.entities.BankDataCollection.list('-created_date', 2000);
@@ -142,7 +159,8 @@ export default function DocCompParceiros() {
     }
   }
 
-  const visible = useMemo(() => {
+  // Step 1: cases after status + search filter
+  const filteredCases = useMemo(() => {
     let list = cases;
     if (statusFilter === 'auto') list = list.filter(c => AUTO_STATUSES.includes(c.status));
     else if (statusFilter === 'all') list = list;
@@ -164,21 +182,106 @@ export default function DocCompParceiros() {
     return list;
   }, [cases, merchants, statusFilter, search, resolvedDocs]);
 
+  // Step 2: group cases by seller.
+  // - Each row in filteredCases is a case of a merchant.
+  // - If merchant.isSubseller => the row is a subseller, grouped under merchant.parentMerchantId
+  // - Else => the row is a seller (top-level). Its subsellers (if any) come from other cases
+  //   whose merchant.parentMerchantId matches this merchant.id.
+  // - "Orphan" subsellers (parent has no case in the filtered list) still get rendered under
+  //   a placeholder seller group so nothing is hidden.
+  const groups = useMemo(() => {
+    const sellerCaseByMerchantId = new Map(); // sellerMerchantId -> case
+    const subsellerCasesBySellerId = new Map(); // sellerMerchantId -> [cases]
+    const orphanSubsellerCases = []; // subsellers whose parent merchant isn't in scope
+
+    for (const c of filteredCases) {
+      const m = merchants[c.merchantId] || {};
+      if (m.isSubseller && m.parentMerchantId) {
+        const arr = subsellerCasesBySellerId.get(m.parentMerchantId) || [];
+        arr.push(c);
+        subsellerCasesBySellerId.set(m.parentMerchantId, arr);
+      } else {
+        // Top-level seller case. Keep the latest if multiple.
+        const prev = sellerCaseByMerchantId.get(c.merchantId);
+        if (!prev || new Date(c.updated_date || c.created_date) > new Date(prev.updated_date || prev.created_date)) {
+          sellerCaseByMerchantId.set(c.merchantId, c);
+        }
+      }
+    }
+
+    // Detect orphans: subseller groups whose seller isn't in sellerCaseByMerchantId
+    for (const [sellerId, subs] of subsellerCasesBySellerId.entries()) {
+      if (!sellerCaseByMerchantId.has(sellerId)) {
+        orphanSubsellerCases.push({ sellerId, subs });
+      }
+    }
+
+    // Build groups array in the order of sellerCaseByMerchantId (which follows filteredCases order)
+    const out = [];
+    for (const [sellerId, sellerCase] of sellerCaseByMerchantId.entries()) {
+      out.push({
+        sellerMerchantId: sellerId,
+        sellerCase,
+        subsellerCases: subsellerCasesBySellerId.get(sellerId) || [],
+      });
+    }
+    // Append orphans at the end
+    for (const { sellerId, subs } of orphanSubsellerCases) {
+      out.push({
+        sellerMerchantId: sellerId,
+        sellerCase: null, // no case for the seller in the filtered view
+        subsellerCases: subs,
+      });
+    }
+
+    // Apply hierarchy filter
+    if (hierarchyFilter === 'sellers') {
+      return out.filter(g => g.sellerCase).map(g => ({ ...g, subsellerCases: [] }));
+    }
+    if (hierarchyFilter === 'subsellers') {
+      return out.filter(g => g.subsellerCases.length > 0).map(g => ({ ...g, sellerCase: null }));
+    }
+    return out;
+  }, [filteredCases, merchants, hierarchyFilter]);
+
+  // Flat list of all case IDs currently visible (for "select all" and stats)
+  const visibleCaseIds = useMemo(() => {
+    const ids = [];
+    for (const g of groups) {
+      if (g.sellerCase) ids.push(g.sellerCase.id);
+      for (const s of g.subsellerCases) ids.push(s.id);
+    }
+    return ids;
+  }, [groups]);
+  const visibleCount = visibleCaseIds.length;
+
   const toggleOne = (id) => {
     const next = new Set(selected);
     if (next.has(id)) next.delete(id); else next.add(id);
     setSelected(next);
   };
   const toggleAll = () => {
-    if (visible.every(c => selected.has(c.id))) {
-      const next = new Set(selected);
-      visible.forEach(c => next.delete(c.id));
-      setSelected(next);
-    } else {
-      const next = new Set(selected);
-      visible.forEach(c => next.add(c.id));
-      setSelected(next);
-    }
+    const allChecked = visibleCaseIds.length > 0 && visibleCaseIds.every(id => selected.has(id));
+    const next = new Set(selected);
+    if (allChecked) visibleCaseIds.forEach(id => next.delete(id));
+    else visibleCaseIds.forEach(id => next.add(id));
+    setSelected(next);
+  };
+  const toggleSellerGroup = (sellerMerchantId) => {
+    const next = new Set(expandedSellers);
+    if (next.has(sellerMerchantId)) next.delete(sellerMerchantId); else next.add(sellerMerchantId);
+    setExpandedSellers(next);
+  };
+  const toggleAllInGroup = (group) => {
+    const ids = [
+      ...(group.sellerCase ? [group.sellerCase.id] : []),
+      ...group.subsellerCases.map(s => s.id),
+    ];
+    const allChecked = ids.every(id => selected.has(id));
+    const next = new Set(selected);
+    if (allChecked) ids.forEach(id => next.delete(id));
+    else ids.forEach(id => next.add(id));
+    setSelected(next);
   };
 
   const generateLink = async (caseIds) => {
@@ -266,7 +369,7 @@ export default function DocCompParceiros() {
     return { label: b.status, tone: 'gray' };
   };
 
-  const allVisibleChecked = visible.length > 0 && visible.every(c => selected.has(c.id));
+  const allVisibleChecked = visibleCaseIds.length > 0 && visibleCaseIds.every(id => selected.has(id));
 
   return (
     <div className="space-y-6">
@@ -297,6 +400,17 @@ export default function DocCompParceiros() {
                 <SelectItem value="Docs Solicitados">Docs Solicitados</SelectItem>
                 <SelectItem value="Em Processamento">Em Processamento</SelectItem>
                 <SelectItem value="Pendente">Pendente</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="w-44">
+            <label className="text-xs font-semibold text-[#002443] mb-1 block">Hierarquia</label>
+            <Select value={hierarchyFilter} onValueChange={setHierarchyFilter}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Sellers + Subsellers</SelectItem>
+                <SelectItem value="sellers">Apenas Sellers</SelectItem>
+                <SelectItem value="subsellers">Apenas Subsellers</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -331,7 +445,7 @@ export default function DocCompParceiros() {
             <Loader2 className="w-6 h-6 animate-spin mx-auto text-[#2bc196]" />
             <p className="text-sm text-muted-foreground mt-2">Carregando casos...</p>
           </div>
-        ) : visible.length === 0 ? (
+        ) : visibleCount === 0 ? (
           <div className="p-12 text-center text-muted-foreground text-sm">Nenhum caso encontrado.</div>
         ) : (
           <table className="w-full text-sm">
@@ -348,63 +462,80 @@ export default function DocCompParceiros() {
               </tr>
             </thead>
             <tbody>
-              {visible.map(c => {
-                const m = merchants[c.merchantId] || {};
-                const bs = bankStatus(c.id);
-                const hasLink = !!bankMap[c.id]?.token;
+              {groups.map((g) => {
+                const sellerMerchant = merchants[g.sellerMerchantId] || {};
+                const isExpanded = expandedSellers.has(g.sellerMerchantId);
+                const subCount = g.subsellerCases.length;
+
                 return (
-                  <tr key={c.id} className="border-b hover:bg-gray-50/50">
-                    <td className="p-3"><Checkbox checked={selected.has(c.id)} onCheckedChange={() => toggleOne(c.id)} /></td>
-                    <td className="p-3">
-                      <div className="font-medium text-[#002443]">{m.companyName || m.fullName || '—'}</div>
-                      {m.email && <div className="text-xs text-muted-foreground">{m.email}</div>}
-                    </td>
-                    <td className="p-3 font-mono text-xs">
-                      {(() => {
-                        const r = resolvedDocs[c.id];
-                        const isPJ = r?.isPJ ?? (m.type === 'PJ');
-                        const doc = r?.doc || c.cpfCnpj || m.cpfCnpj || '';
-                        const isValid = isPJ ? isCnpj(doc) : isCpf(doc);
-                        return (
-                          <div className="flex items-center gap-2">
-                            <span>{formatDoc(doc)}</span>
-                            {isPJ && !isValid && (
-                              <Badge className="bg-red-50 text-red-700 border-red-200 text-[10px]">CNPJ não encontrado</Badge>
-                            )}
-                            {isPJ && isValid && <Badge variant="outline" className="text-[10px]">CNPJ</Badge>}
-                            {!isPJ && isValid && <Badge variant="outline" className="text-[10px]">CPF</Badge>}
-                          </div>
-                        );
-                      })()}
-                    </td>
-                    <td className="p-3">
-                      <Badge variant="outline">{c.status}</Badge>
-                    </td>
-                    <td className="p-3">
-                      <Badge
-                        className={
-                          bs.tone === 'green' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                          bs.tone === 'amber' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                          'bg-gray-50 text-gray-600 border-gray-200'
-                        }
-                      >
-                        {bs.tone === 'green' && <CheckCircle2 className="w-3 h-3 mr-1" />}
-                        {bs.tone === 'amber' && <Clock className="w-3 h-3 mr-1" />}
-                        {bs.label}
-                      </Badge>
-                    </td>
-                    <td className="p-3 text-right space-x-2">
-                      {hasLink ? (
-                        <Button size="sm" variant="outline" onClick={() => copyLink(c.id)}>
-                          <Copy className="w-3 h-3 mr-1" /> Copiar link
-                        </Button>
-                      ) : (
-                        <Button size="sm" variant="outline" onClick={() => generateLink([c.id])} disabled={generatingLinks}>
-                          <LinkIcon className="w-3 h-3 mr-1" /> Gerar link
-                        </Button>
-                      )}
-                    </td>
-                  </tr>
+                  <React.Fragment key={g.sellerMerchantId}>
+                    {/* Divider / group header when there are subsellers */}
+                    {subCount > 0 && (
+                      <tr className="bg-gradient-to-r from-blue-50/60 to-transparent border-b">
+                        <td className="p-2 pl-3" colSpan={6}>
+                          <button
+                            onClick={() => toggleSellerGroup(g.sellerMerchantId)}
+                            className="flex items-center gap-2 text-xs font-semibold text-[#002443] hover:text-[#2bc196] transition-colors"
+                          >
+                            {isExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+                            <Building2 className="w-3.5 h-3.5" />
+                            <span>{sellerMerchant.companyName || sellerMerchant.fullName || 'Seller'}</span>
+                            <span className="text-[#002443]/50 font-normal">→</span>
+                            <Users className="w-3.5 h-3.5 text-purple-500" />
+                            <span className="text-purple-700">{subCount} subseller{subCount > 1 ? 's' : ''}</span>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-6 ml-2 text-[10px]"
+                              onClick={(e) => { e.stopPropagation(); toggleAllInGroup(g); }}
+                            >
+                              Selecionar grupo
+                            </Button>
+                          </button>
+                        </td>
+                      </tr>
+                    )}
+
+                    {/* Seller row — or placeholder if seller has no case in scope but has subsellers */}
+                    {g.sellerCase ? (
+                      <CaseRow
+                        caseRecord={g.sellerCase}
+                        merchant={sellerMerchant}
+                        role="seller"
+                        resolvedDoc={resolvedDocs[g.sellerCase.id]}
+                        bankRecord={bankMap[g.sellerCase.id]}
+                        selected={selected.has(g.sellerCase.id)}
+                        onToggleSelect={toggleOne}
+                        onGenerateLink={generateLink}
+                        onCopyLink={copyLink}
+                        generatingLinks={generatingLinks}
+                        subsellerCount={subCount}
+                      />
+                    ) : subCount > 0 ? (
+                      <CaseRow
+                        role="seller-placeholder"
+                        merchant={sellerMerchant}
+                        subsellerCount={subCount}
+                      />
+                    ) : null}
+
+                    {/* Subseller rows (only when expanded) */}
+                    {isExpanded && g.subsellerCases.map((sc) => (
+                      <CaseRow
+                        key={sc.id}
+                        caseRecord={sc}
+                        merchant={merchants[sc.merchantId] || {}}
+                        role="subseller"
+                        resolvedDoc={resolvedDocs[sc.id]}
+                        bankRecord={bankMap[sc.id]}
+                        selected={selected.has(sc.id)}
+                        onToggleSelect={toggleOne}
+                        onGenerateLink={generateLink}
+                        onCopyLink={copyLink}
+                        generatingLinks={generatingLinks}
+                      />
+                    ))}
+                  </React.Fragment>
                 );
               })}
             </tbody>
@@ -412,8 +543,11 @@ export default function DocCompParceiros() {
         )}
       </Card>
 
-      <div className="text-xs text-muted-foreground">
-        <strong>{visible.length}</strong> casos visíveis • <strong>{selected.size}</strong> selecionados.
+      <div className="text-xs text-muted-foreground flex flex-wrap gap-4">
+        <span><strong>{visibleCount}</strong> casos visíveis</span>
+        <span><strong>{groups.filter(g => g.sellerCase).length}</strong> sellers</span>
+        <span><strong>{groups.reduce((acc, g) => acc + g.subsellerCases.length, 0)}</strong> subsellers</span>
+        <span><strong>{selected.size}</strong> selecionados</span>
       </div>
     </div>
   );
