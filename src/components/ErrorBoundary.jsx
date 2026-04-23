@@ -11,36 +11,66 @@ import React from 'react';
 export default class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = { hasError: false, error: null, healKey: 0, _transient: false };
+    this._recentTransients = [];
   }
 
   static getDerivedStateFromError(error) {
-    // COSMETIC ERRORS — swallow instead of escalating to a full-page recovery UI.
+    // DOM-mutation errors caused by external extensions (Google Translate,
+    // Grammarly, LastPass, ad-blockers) that move/remove DOM nodes underneath
+    // React. These are NOT real crashes — the app state is intact.
     //
-    // 1. "NotFoundError: Failed to execute 'insertBefore' on 'Node'" is a React DOM
-    //    transient error that fires when a portal/toast/animation unmounts concurrently
-    //    with a parent re-render. It is NOT a real crash — the app continues working.
-    //    If we show the recovery screen here, the user loses their upload progress
-    //    for a purely cosmetic issue.
-    //
-    // 2. "removeChild" variants of the same class of bug get the same treatment.
-    //
-    // 3. Any error containing "User/me" or "401" on a public route is a stale-token
-    //    side effect — the page itself is fine, only a background fetch died.
+    // Strategy: trigger a silent remount (bumping `healKey`) instead of showing
+    // the scary "Limpar cache e recarregar" screen. The client keeps their
+    // upload progress and just sees a brief flicker.
     const msg = String(error?.message || error || '');
     const name = String(error?.name || '');
     const isDomTransient =
-      (name === 'NotFoundError' && /insertBefore|removeChild/i.test(msg)) ||
+      (name === 'NotFoundError' && /insertBefore|removeChild|appendChild/i.test(msg)) ||
       /Failed to execute 'insertBefore'/i.test(msg) ||
-      /Failed to execute 'removeChild'/i.test(msg);
+      /Failed to execute 'removeChild'/i.test(msg) ||
+      /Failed to execute 'appendChild'/i.test(msg) ||
+      /The node .* is not a child of this node/i.test(msg);
     if (isDomTransient) {
-      console.warn('[ErrorBoundary] Ignoring cosmetic DOM error:', msg);
-      return null; // Don't update state → children keep rendering.
+      // Don't show fatal UI. Signal to componentDidCatch to schedule a remount.
+      return { hasError: false, error, _transient: true };
     }
     return { hasError: true, error };
   }
 
   componentDidCatch(error, errorInfo) {
+    const msg = String(error?.message || error || '');
+    const name = String(error?.name || '');
+    const isDomTransient =
+      (name === 'NotFoundError' && /insertBefore|removeChild|appendChild/i.test(msg)) ||
+      /Failed to execute 'insertBefore'/i.test(msg) ||
+      /Failed to execute 'removeChild'/i.test(msg) ||
+      /Failed to execute 'appendChild'/i.test(msg) ||
+      /The node .* is not a child of this node/i.test(msg);
+
+    if (isDomTransient) {
+      // Track rolling window. If we keep crashing with the same DOM error,
+      // the extension is clearly still active — escalate to a friendly recovery
+      // screen (ask user to open in anonymous mode / disable translator).
+      const now = Date.now();
+      this._recentTransients = this._recentTransients.filter(t => now - t < 10000);
+      this._recentTransients.push(now);
+
+      if (this._recentTransients.length >= 4) {
+        // 4 transients in 10s = extension is actively fighting us. Show recovery.
+        console.warn('[ErrorBoundary] Repeated DOM transients — escalating to recovery UI');
+        this.setState({ hasError: true, error });
+        return;
+      }
+
+      // Silent self-heal: schedule a remount so stale DOM references clear.
+      console.warn('[ErrorBoundary] DOM transient — auto-healing (attempt', this._recentTransients.length, ')');
+      setTimeout(() => {
+        this.setState(s => ({ healKey: s.healKey + 1, _transient: false }));
+      }, 50);
+      return;
+    }
+
     // Log to console for debugging.
     console.error('[ErrorBoundary] Caught error:', error);
     console.error('[ErrorBoundary] Stack:', errorInfo?.componentStack);
@@ -225,6 +255,11 @@ export default class ErrorBoundary extends React.Component {
       );
     }
 
-    return this.props.children;
+    // Key bump remounts the tree after a DOM transient, clearing stale refs.
+    return (
+      <React.Fragment key={this.state.healKey}>
+        {this.props.children}
+      </React.Fragment>
+    );
   }
 }
