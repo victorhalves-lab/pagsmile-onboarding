@@ -49,13 +49,14 @@ export default function DocScoring() {
 
       <H2>7.3. Camada 3 — Fórmula Final e Subfaixas</H2>
       <InfoBox title="Fórmula Matemática do Score V4" color="green">
-        <p className="font-mono text-sm"><strong>Score Final = max(0, min(849, Score_Base + Σ(Score_Dimensão_i × Peso_Dimensão_i)))</strong></p>
+        <p className="font-mono text-sm"><strong>Score Final = max(0, min(850, Score_Base + Σ(Score_Dimensão_i × Peso_Dimensão_i)))</strong></p>
         <p className="mt-2">Onde:</p>
         <p>• Score_Base = valor fixo do segmento (ex: 175 para Gateway)</p>
         <p>• Score_Dimensão_i = soma de todos os pontos positivos e negativos daquela dimensão</p>
         <p>• Peso_Dimensão_i = peso percentual (ex: 0.20 para Compliance)</p>
-        <p>• O resultado é limitado ao intervalo [0, 849]</p>
-        <p>• Se QUALQUER bloqueio (B01-B10) estiver ativo → Score = 850, Subfaixa = 5</p>
+        <p>• O resultado é limitado ao intervalo <strong>[0, 850]</strong> (valor máximo reservado para bloqueios).</p>
+        <p>• Se QUALQUER bloqueio (B01-B10) estiver ativo → Score = 850 (valor sentinela), Subfaixa = 5 (BLOQUEIO).</p>
+        <p>• Para casos SEM bloqueio, o score orgânico máximo é 849 (cai na subfaixa 5 se acima de 700).</p>
         <p className="mt-2 font-bold">Nota: pontos negativos (ex: marketplace -10, prêmios -15) REDUZEM o score, ou seja, melhoram a avaliação.</p>
       </InfoBox>
 

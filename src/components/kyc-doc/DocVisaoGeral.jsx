@@ -7,7 +7,7 @@ export default function DocVisaoGeral() {
       <H1>1. Visão Geral — Arquitetura Completa do Pipeline KYC/KYB</H1>
 
       <H2>1.1. O que é o pipeline KYC/KYB da PagSmile</H2>
-      <P>O pipeline de compliance da PagSmile é um sistema automatizado end-to-end que avalia o risco de cada empresa ou pessoa física que deseja processar pagamentos através da nossa plataforma. O objetivo é cumprir todas as obrigações regulatórias (Circular BCB 3.978/2020, Lei 9.613/1998) e ao mesmo tempo oferecer uma experiência rápida e eficiente para o cliente.</P>
+      <P>O pipeline de compliance da PagSmile é um sistema automatizado end-to-end que avalia o risco de cada empresa ou pessoa física que deseja processar pagamentos através da nossa plataforma. O objetivo é cumprir todas as obrigações regulatórias (Circular BCB 3.978/2020, Lei 9.613/1998) e ao mesmo tempo oferecer uma experiência rápida e eficiente para o cliente. <strong>Termos técnicos (KYC, KYB, EDD, UBO, PEP, Score V4, Subfaixa, Bloqueio, Safety Net, Veto Biométrico, etc.) estão definidos no Glossário (Seção 0)</strong> — consulte-o sempre que necessário.</P>
       <P>O processo inteiro — desde o momento em que o cliente começa a preencher o questionário até a decisão final automatizada — leva em média entre 2 e 5 minutos de interação do cliente (preenchimento + documentos + verificação biométrica), seguidos de 30 a 60 segundos de processamento automatizado no backend. A decisão é emitida sem intervenção humana em 95% dos casos.</P>
 
       <H2>1.2. Princípio Arquitetural Fundamental — Data-First v7.0</H2>

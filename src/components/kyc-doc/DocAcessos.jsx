@@ -20,6 +20,10 @@ export default function DocAcessos() {
         ['Introducer', 'introducer', '/IntroducerDashboard', 'Apenas o portal de Introducers (seus leads, comissões, landing page). ISOLADO — não pode acessar páginas administrativas mesmo digitando URL direta.'],
       ]} />
 
+      <InfoBox title="Usuários de Parceiros Externos (fora de AccessProfile)">
+        <p>Usuários de parceiros de compliance (Seção 16) NÃO são registrados em <code>AccessProfile</code>. Eles vivem em uma entidade separada — <code>CompliancePartnerUser</code> — vinculada à entidade <code>CompliancePartner</code>. Têm 3 papéis possíveis: <code>viewer</code> (só leitura), <code>analyst</code> (pode submeter recomendação) e <code>manager</code> (pode reatribuir casos dentro do parceiro). Esses usuários acessam apenas <code>/ComplianceParceiro</code> e <code>/ComplianceParceiroDetalhe</code>, com visibilidade controlada por <code>PartnerAssignment.partnerVisibilityLevel</code> (full/redacted/summary_only). Eles NÃO aparecem na tela /GestaoUsuarios.</p>
+      </InfoBox>
+
       <H3>Estrutura de Permissões</H3>
       <P>Cada perfil contém um array <code>pagePermissions</code> que detalha, para cada página do sistema:</P>
       <ul className="list-disc ml-6 space-y-1 mb-4">

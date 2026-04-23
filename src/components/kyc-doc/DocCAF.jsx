@@ -53,6 +53,10 @@ export default function DocCAF() {
         ['sharedFaceset', 'Assíncrono', 'Verifica se o rosto consta na base de fraude compartilhada entre TODOS os clientes da CAF (milhares de empresas). Se um rosto foi marcado como fraudulento em qualquer outro cliente CAF, aparece aqui.', 'FACE_IN_FRAUD_DATABASE → red flag gravíssimo, indica fraudador conhecido.'],
       ]} />
 
+      <InfoBox title="Mapa completo dos serviços CAF no pipeline — cross-reference com Seção 8">
+        <p>O pipeline (Seção 8) executa <strong>7 steps que envolvem a CAF</strong>, numerados: 0 (post-capture), 0.5 (check profile), 1.5 (full enrichment), 1.7 (credit analysis), 2 (screening internacional), 2.5 (CPF cross-validation — só PF), 2.7 (VerifAI docs). Os serviços listados em 6.3 são disparados pelo step 0. Os demais serviços listados em 6.4 abaixo são disparados pelos steps 0.5, 1.5, 1.7, 2, 2.5 e 2.7 respectivamente.</p>
+      </InfoBox>
+
       <H2>6.4. Serviços CAF Adicionais Executados pelo Pipeline</H2>
       <Table headers={['Serviço', 'Função', 'O que retorna', 'Quando é executado']} rows={[
         ['CAF Full Enrichment', 'KYC/KYB completo — segunda fonte independente de dados cadastrais para cross-validation com BDC.', 'Dados cadastrais, sócios, endereços, situação cadastral — tudo via CAF.', 'Step 1.5 do pipeline'],
