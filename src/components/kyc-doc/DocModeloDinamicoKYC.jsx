@@ -1,34 +1,87 @@
 import React, { useMemo, useState } from 'react';
-import { FileQuestion, FileCheck2, Layers, Filter, ChevronDown, ChevronRight, Download } from 'lucide-react';
+import { FileQuestion, FileCheck2, Layers, Filter, Download, HelpCircle, Sparkles, Target, Check, Minus } from 'lucide-react';
 
 /**
- * Sub-aba "Modelo Dinâmico KYC/KYB"
+ * Sub-aba "Modelo Dinâmico KYC/KYB" — Visão microscópica.
  *
- * 4 seções:
- *   1. Perguntas COMUNS a todos os segmentos (compliance V4)
- *   2. Perguntas CONDICIONANTES por segmento (quem tem, quem não tem)
+ * Estrutura (o usuário pediu exatamente isso):
+ *   1. Perguntas COMUNS a todos os segmentos
+ *   2. Perguntas CONDICIONAIS por segmento
  *   3. Documentos COMUNS a todos os segmentos
- *   4. Documentos CONDICIONANTES por segmento
+ *   4. Documentos CONDICIONAIS por segmento
  *
- * "Comum" = presente em TODOS os templates COMPLIANCE V4 ativos (exceto os de PIX se a
- *           pergunta não existir lá — tratamos PIX como segmento próprio também).
- * "Condicionante" = presente em pelo menos 1 segmento mas não em todos.
+ * UX:
+ *   - Filtro de FAMÍLIA (Cartão V4 / PIX V4) — essencial: PIX e Cartão pedem
+ *     coisas muito diferentes, então "comum" só faz sentido dentro de uma família.
+ *   - MATRIZ visual: linhas = pergunta/doc, colunas = segmentos, células com ✓/—.
+ *     É a forma mais microscópica e comparativa possível.
+ *   - Destaque para "exclusivos" (item presente em 1 único segmento).
  *
  * Props:
  *   templates: QuestionnaireTemplate[] (category=COMPLIANCE, isActive=true)
  *   questionsByTemplate: { [templateId]: Question[] }
  */
+
+// ─── Agrupamento por família (baseado no model) ────────────────────────
+const CARTAO_V4 = new Set([
+  'ComplianceGatewayV4', 'ComplianceMarketplaceV4', 'CompliancePlataformaVerticalV4',
+  'ComplianceEcommerceV4', 'ComplianceSaaSV4', 'ComplianceInfoprodutosV4',
+  'ComplianceDropshippingV4', 'ComplianceEducacaoV4', 'ComplianceLinkPagamentoV4',
+  'ComplianceMerchantLinkV4', 'ComplianceMPEV4',
+]);
+const PIX_V4 = new Set([
+  'CompliancePixIntermediarioV4', 'pix_intermediario_v4',
+  'CompliancePixMerchantV4', 'pix_merchant_v4',
+  'pix_api_enterprise',
+]);
+
+const SHORT_LABELS = {
+  ComplianceGatewayV4: 'Gateway',
+  ComplianceMarketplaceV4: 'Marketplace',
+  CompliancePlataformaVerticalV4: 'Plat. Vertical',
+  ComplianceEcommerceV4: 'E-commerce',
+  ComplianceSaaSV4: 'SaaS',
+  ComplianceInfoprodutosV4: 'Infoprodutos',
+  ComplianceDropshippingV4: 'Dropshipping',
+  ComplianceEducacaoV4: 'Educação',
+  ComplianceLinkPagamentoV4: 'Link Pgto.',
+  ComplianceMerchantLinkV4: 'Merchant Link',
+  ComplianceMPEV4: 'MPE',
+  CompliancePixIntermediarioV4: 'PIX Interm.',
+  pix_intermediario_v4: 'PIX Interm.',
+  CompliancePixMerchantV4: 'PIX Merchant',
+  pix_merchant_v4: 'PIX Merchant',
+  pix_api_enterprise: 'PIX API Ent.',
+};
+
+const familyOfModel = (m) => {
+  if (CARTAO_V4.has(m)) return 'CARTAO';
+  if (PIX_V4.has(m)) return 'PIX';
+  return 'OUTRO';
+};
+
 export default function DocModeloDinamicoKYC({ templates = [], questionsByTemplate = {} }) {
-  // Só templates de COMPLIANCE V4 (exclui LEAD_GENERATION)
-  const complianceTemplates = useMemo(
+  const [family, setFamily] = useState('CARTAO'); // 'CARTAO' | 'PIX'
+
+  // Só COMPLIANCE V4 ativos
+  const allCompliance = useMemo(
     () => templates.filter(t => t.category === 'COMPLIANCE' && t.isActive !== false),
     [templates]
   );
 
-  const analysis = useMemo(() => analyzeTemplates(complianceTemplates, questionsByTemplate), [complianceTemplates, questionsByTemplate]);
+  // Templates da família selecionada
+  const familyTemplates = useMemo(() => {
+    return allCompliance
+      .filter(t => familyOfModel(t.model) === family)
+      .sort((a, b) => (a.name || '').localeCompare(b.name || '', 'pt-BR'));
+  }, [allCompliance, family]);
+
+  const analysis = useMemo(
+    () => analyzeTemplates(familyTemplates, questionsByTemplate),
+    [familyTemplates, questionsByTemplate]
+  );
 
   const handleDownloadPdf = () => {
-    // Expande tudo antes de imprimir (sinaliza via classe no container)
     document.body.classList.add('printing-dinamico-kyc');
     setTimeout(() => {
       window.print();
@@ -36,118 +89,120 @@ export default function DocModeloDinamicoKYC({ templates = [], questionsByTempla
     }, 100);
   };
 
+  const countsByFamily = useMemo(() => ({
+    CARTAO: allCompliance.filter(t => familyOfModel(t.model) === 'CARTAO').length,
+    PIX: allCompliance.filter(t => familyOfModel(t.model) === 'PIX').length,
+  }), [allCompliance]);
+
   return (
-    <div id="doc-dinamico-kyc" className="max-w-[1200px] mx-auto px-6 py-8 space-y-12">
-      <style>{`
-        @media print {
-          *, *::before, *::after { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-          body { margin: 0 !important; padding: 0 !important; background: white !important; }
-          body > * { visibility: hidden !important; }
-          body #doc-dinamico-kyc, body #doc-dinamico-kyc * { visibility: visible !important; }
-          #doc-dinamico-kyc {
-            position: absolute !important; left: 0 !important; top: 0 !important;
-            width: 100% !important; max-width: 100% !important;
-            padding: 12pt 16pt !important; margin: 0 !important;
-            font-size: 9pt !important;
-          }
-          #doc-dinamico-kyc .no-print { display: none !important; }
-          #doc-dinamico-kyc section { page-break-inside: auto !important; }
-          #doc-dinamico-kyc h1 { font-size: 16pt !important; }
-          #doc-dinamico-kyc h2 { font-size: 12pt !important; page-break-after: avoid !important; }
-          #doc-dinamico-kyc table { page-break-inside: auto !important; font-size: 8pt !important; }
-          #doc-dinamico-kyc thead { display: table-header-group !important; }
-          #doc-dinamico-kyc tr { page-break-inside: avoid !important; }
-          #doc-dinamico-kyc td, #doc-dinamico-kyc th { padding: 3pt 5pt !important; }
-          /* Garante que painéis colapsáveis fiquem abertos na impressão */
-          body.printing-dinamico-kyc #doc-dinamico-kyc [data-collapsible-body] { display: block !important; }
-          body.printing-dinamico-kyc #doc-dinamico-kyc [data-collapsible-toggle] { pointer-events: none; }
-        }
-        @media screen {
-          body.printing-dinamico-kyc #doc-dinamico-kyc [data-collapsible-body] { display: block !important; }
-        }
-      `}</style>
+    <div id="doc-dinamico-kyc" className="max-w-[1400px] mx-auto px-6 py-8 space-y-10">
+      <PrintStyles />
 
-      {/* Barra de ação (não imprime) */}
-      <div className="no-print flex justify-end -mb-6">
-        <button
-          onClick={handleDownloadPdf}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[#002443] hover:bg-[#003366] text-white rounded-lg text-sm font-bold transition-colors shadow-sm"
-        >
-          <Download className="w-4 h-4" />
-          Baixar PDF
-        </button>
-      </div>
+      {/* ═══ Header + Filtro família + PDF ═══ */}
+      <Header
+        family={family}
+        setFamily={setFamily}
+        countsByFamily={countsByFamily}
+        activeTemplates={familyTemplates}
+        stats={analysis.stats}
+        onDownloadPdf={handleDownloadPdf}
+      />
 
-      <Header totalTemplates={complianceTemplates.length} stats={analysis.stats} />
+      {familyTemplates.length === 0 ? (
+        <EmptyBox message={`Nenhum template V4 ativo encontrado para a família ${family === 'PIX' ? 'PIX' : 'Cartão'}.`} />
+      ) : (
+        <>
+          {/* ═══ Legenda global ═══ */}
+          <Legend segmentLabels={analysis.segmentLabels} segmentIds={analysis.segmentIds} />
 
-      {/* Seção 1 — Perguntas comuns */}
-      <Section
-        icon={Layers}
-        num="1"
-        title="Perguntas Comuns a Todos os Segmentos"
-        subtitle={`${analysis.commonQuestions.length} perguntas aparecem em TODOS os ${complianceTemplates.length} segmentos de compliance V4`}
-        color="#2bc196"
-      >
-        <CommonQuestionsTable items={analysis.commonQuestions} />
-      </Section>
+          {/* ═══ 1. Perguntas COMUNS ═══ */}
+          <Section
+            icon={Layers}
+            num="1"
+            title="Perguntas Comuns a Todos os Segmentos"
+            subtitle={`${analysis.commonQuestions.length} perguntas aparecem em TODOS os ${familyTemplates.length} segmentos desta família.`}
+            color="#2bc196"
+          >
+            <CommonItemsTable
+              items={analysis.commonQuestions}
+              kind="question"
+              totalSegments={familyTemplates.length}
+            />
+          </Section>
 
-      {/* Seção 2 — Perguntas condicionantes */}
-      <Section
-        icon={Filter}
-        num="2"
-        title="Perguntas Condicionantes por Segmento"
-        subtitle={`${analysis.conditionalQuestions.length} perguntas aparecem em alguns segmentos mas não em todos`}
-        color="#f59e0b"
-      >
-        <ConditionalQuestionsBySegment
-          bySegment={analysis.conditionalQuestionsBySegment}
-          allSegmentIds={analysis.segmentIds}
-          allSegmentLabels={analysis.segmentLabels}
-        />
-      </Section>
+          {/* ═══ 2. Perguntas CONDICIONAIS — Matriz ═══ */}
+          <Section
+            icon={Filter}
+            num="2"
+            title="Perguntas Condicionais por Segmento"
+            subtitle={`${analysis.conditionalQuestions.length} perguntas aparecem em alguns segmentos mas não em todos. A matriz mostra exatamente onde cada uma entra.`}
+            color="#f59e0b"
+          >
+            <ConditionalMatrix
+              items={analysis.conditionalQuestions}
+              segmentIds={analysis.segmentIds}
+              segmentLabels={analysis.segmentLabels}
+              kind="question"
+            />
+            <ExclusiveItemsCard
+              items={analysis.conditionalQuestions.filter(i => i.presentCount === 1)}
+              segmentLabels={analysis.segmentLabels}
+              kind="question"
+            />
+          </Section>
 
-      {/* Seção 3 — Documentos comuns */}
-      <Section
-        icon={FileCheck2}
-        num="3"
-        title="Documentos Comuns a Todos os Segmentos"
-        subtitle={`${analysis.commonDocs.length} documentos são solicitados em TODOS os segmentos`}
-        color="#2bc196"
-      >
-        <CommonDocsTable items={analysis.commonDocs} />
-      </Section>
+          {/* ═══ 3. Documentos COMUNS ═══ */}
+          <Section
+            icon={FileCheck2}
+            num="3"
+            title="Documentos Comuns a Todos os Segmentos"
+            subtitle={`${analysis.commonDocs.length} documentos são solicitados em TODOS os ${familyTemplates.length} segmentos desta família.`}
+            color="#2bc196"
+          >
+            <CommonItemsTable
+              items={analysis.commonDocs}
+              kind="doc"
+              totalSegments={familyTemplates.length}
+            />
+          </Section>
 
-      {/* Seção 4 — Documentos condicionantes */}
-      <Section
-        icon={FileQuestion}
-        num="4"
-        title="Documentos Condicionantes por Segmento"
-        subtitle={`${analysis.conditionalDocs.length} documentos são solicitados apenas em alguns segmentos`}
-        color="#f59e0b"
-      >
-        <ConditionalDocsBySegment
-          bySegment={analysis.conditionalDocsBySegment}
-          allSegmentIds={analysis.segmentIds}
-          allSegmentLabels={analysis.segmentLabels}
-        />
-      </Section>
+          {/* ═══ 4. Documentos CONDICIONAIS — Matriz ═══ */}
+          <Section
+            icon={FileQuestion}
+            num="4"
+            title="Documentos Condicionais por Segmento"
+            subtitle={`${analysis.conditionalDocs.length} documentos são solicitados apenas em alguns segmentos.`}
+            color="#f59e0b"
+          >
+            <ConditionalMatrix
+              items={analysis.conditionalDocs}
+              segmentIds={analysis.segmentIds}
+              segmentLabels={analysis.segmentLabels}
+              kind="doc"
+            />
+            <ExclusiveItemsCard
+              items={analysis.conditionalDocs.filter(i => i.presentCount === 1)}
+              segmentLabels={analysis.segmentLabels}
+              kind="doc"
+            />
+          </Section>
+        </>
+      )}
     </div>
   );
 }
 
-/* ═══════════════════════════════════════════════
-   Análise — calcula o que é comum vs. condicionante
-   ═══════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════════
+   ANÁLISE — calcula o que é comum vs. condicional
+   ═══════════════════════════════════════════════════════════════════════ */
 function analyzeTemplates(templates, questionsByTemplate) {
   if (templates.length === 0) {
     return {
       stats: {},
       commonQuestions: [],
       conditionalQuestions: [],
-      conditionalQuestionsBySegment: {},
       commonDocs: [],
       conditionalDocs: [],
-      conditionalDocsBySegment: {},
       segmentIds: [],
       segmentLabels: {},
     };
@@ -158,14 +213,15 @@ function analyzeTemplates(templates, questionsByTemplate) {
   const segmentLabels = {};
   templates.forEach(t => {
     segmentLabels[t.id] = {
-      name: t.name || t.model || 'Sem nome',
+      short: SHORT_LABELS[t.model] || t.name || t.model || '—',
+      full: t.name || t.model || 'Sem nome',
       model: t.model,
       subCategory: t.subCategory,
+      merchantType: t.merchantType,
     };
   });
 
   // ── Perguntas ─────────────────────────────────────
-  // Mapa: chave normalizada → { text, templates: Set<templateId>, exampleQuestion }
   const questionsMap = new Map();
   templates.forEach(t => {
     const qs = questionsByTemplate[t.id] || [];
@@ -176,51 +232,53 @@ function analyzeTemplates(templates, questionsByTemplate) {
         questionsMap.set(key, {
           text: q.text,
           type: q.type,
-          isRequired: q.isRequired,
+          isRequired: !!q.isRequired,
+          options: Array.isArray(q.options) ? q.options : [],
+          riskWeight: q.riskWeight || 0,
+          helpText: q.helpText || '',
+          conditionalLogic: q.conditionalLogic || null,
           templatesPresent: new Set(),
-          examples: [],
         });
       }
       const entry = questionsMap.get(key);
       entry.templatesPresent.add(t.id);
-      entry.examples.push({ templateId: t.id, templateName: t.name, order: q.order, helpText: q.helpText });
+      // pega a mais "rica" (com mais opções / riskWeight)
+      if (!entry.options.length && Array.isArray(q.options)) entry.options = q.options;
+      if (!entry.riskWeight && q.riskWeight) entry.riskWeight = q.riskWeight;
+      if (!entry.helpText && q.helpText) entry.helpText = q.helpText;
     });
   });
 
   const commonQuestions = [];
   const conditionalQuestions = [];
-  const conditionalQuestionsBySegment = {};
-  segmentIds.forEach(id => { conditionalQuestionsBySegment[id] = []; });
 
   questionsMap.forEach((entry, key) => {
     const presentCount = entry.templatesPresent.size;
+    const base = {
+      key,
+      text: entry.text,
+      type: entry.type,
+      isRequired: entry.isRequired,
+      options: entry.options,
+      riskWeight: entry.riskWeight,
+      helpText: entry.helpText,
+      conditionalLogic: entry.conditionalLogic,
+    };
     if (presentCount === totalSegments) {
-      commonQuestions.push({
-        key,
-        text: entry.text,
-        type: entry.type,
-        isRequired: entry.isRequired,
-      });
+      commonQuestions.push(base);
     } else {
-      const item = {
-        key,
-        text: entry.text,
-        type: entry.type,
-        isRequired: entry.isRequired,
-        presentIn: Array.from(entry.templatesPresent),
+      conditionalQuestions.push({
+        ...base,
+        presentIn: new Set(entry.templatesPresent),
         presentCount,
-      };
-      conditionalQuestions.push(item);
-      // Indexar por cada segmento que tem essa pergunta
-      item.presentIn.forEach(tid => {
-        conditionalQuestionsBySegment[tid].push(item);
       });
     }
   });
 
-  // Ordenar perguntas
   commonQuestions.sort((a, b) => a.text.localeCompare(b.text, 'pt-BR'));
-  conditionalQuestions.sort((a, b) => b.presentCount - a.presentCount || a.text.localeCompare(b.text, 'pt-BR'));
+  conditionalQuestions.sort(
+    (a, b) => b.presentCount - a.presentCount || a.text.localeCompare(b.text, 'pt-BR')
+  );
 
   // ── Documentos ────────────────────────────────────
   const docsMap = new Map();
@@ -231,10 +289,10 @@ function analyzeTemplates(templates, questionsByTemplate) {
       if (!key) return;
       if (!docsMap.has(key)) {
         docsMap.set(key, {
-          label: d.label,
+          label: d.label || d.documentTypeId,
           documentTypeId: d.documentTypeId,
-          required: d.required,
-          conditionalLogic: d.conditionalLogic,
+          required: !!d.required,
+          conditionalLogic: d.conditionalLogic || null,
           templatesPresent: new Set(),
         });
       }
@@ -244,37 +302,31 @@ function analyzeTemplates(templates, questionsByTemplate) {
 
   const commonDocs = [];
   const conditionalDocs = [];
-  const conditionalDocsBySegment = {};
-  segmentIds.forEach(id => { conditionalDocsBySegment[id] = []; });
 
   docsMap.forEach((entry, key) => {
     const presentCount = entry.templatesPresent.size;
+    const base = {
+      key,
+      label: entry.label,
+      documentTypeId: entry.documentTypeId,
+      required: entry.required,
+      conditionalLogic: entry.conditionalLogic,
+    };
     if (presentCount === totalSegments) {
-      commonDocs.push({
-        key,
-        label: entry.label,
-        documentTypeId: entry.documentTypeId,
-        required: entry.required,
-      });
+      commonDocs.push(base);
     } else {
-      const item = {
-        key,
-        label: entry.label,
-        documentTypeId: entry.documentTypeId,
-        required: entry.required,
-        conditionalLogic: entry.conditionalLogic,
-        presentIn: Array.from(entry.templatesPresent),
+      conditionalDocs.push({
+        ...base,
+        presentIn: new Set(entry.templatesPresent),
         presentCount,
-      };
-      conditionalDocs.push(item);
-      item.presentIn.forEach(tid => {
-        conditionalDocsBySegment[tid].push(item);
       });
     }
   });
 
   commonDocs.sort((a, b) => a.label.localeCompare(b.label, 'pt-BR'));
-  conditionalDocs.sort((a, b) => b.presentCount - a.presentCount || a.label.localeCompare(b.label, 'pt-BR'));
+  conditionalDocs.sort(
+    (a, b) => b.presentCount - a.presentCount || a.label.localeCompare(b.label, 'pt-BR')
+  );
 
   const stats = {
     totalQuestions: questionsMap.size,
@@ -287,10 +339,8 @@ function analyzeTemplates(templates, questionsByTemplate) {
     stats,
     commonQuestions,
     conditionalQuestions,
-    conditionalQuestionsBySegment,
     commonDocs,
     conditionalDocs,
-    conditionalDocsBySegment,
     segmentIds,
     segmentLabels,
   };
@@ -300,60 +350,149 @@ function normalizeText(s) {
   if (!s) return '';
   return String(s)
     .toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // remove acentos
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .replace(/\s+/g, ' ')
     .trim();
 }
 
-/* ═══════════════════════════════════════════════
-   Header
-   ═══════════════════════════════════════════════ */
-function Header({ totalTemplates, stats }) {
+/* ═══════════════════════════════════════════════════════════════════════
+   HEADER — stats + filtro família + PDF
+   ═══════════════════════════════════════════════════════════════════════ */
+function Header({ family, setFamily, countsByFamily, activeTemplates, stats, onDownloadPdf }) {
   return (
-    <div className="bg-gradient-to-br from-[#002443] to-[#003366] rounded-2xl p-8 text-white">
-      <div className="flex items-center gap-3 mb-2">
-        <Layers className="w-6 h-6 text-[#5cf7cf]" />
-        <span className="text-xs font-bold uppercase tracking-wider text-[#5cf7cf]">
-          Modelo Dinâmico KYC/KYB
-        </span>
-      </div>
-      <h1 className="text-3xl font-bold mb-2">Perguntas e Documentos por Segmento</h1>
-      <p className="text-white/70 text-sm max-w-3xl">
-        Visão comparativa dos {totalTemplates} segmentos de compliance V4 ativos. Identifica quais
-        perguntas e documentos são exigidos universalmente vs. quais são condicionantes do segmento.
-      </p>
+    <div className="bg-gradient-to-br from-[#002443] via-[#003366] to-[#002443] rounded-2xl p-8 text-white relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-64 h-64 bg-[#2bc196]/10 rounded-full -mr-20 -mt-20 blur-3xl" />
+      <div className="relative">
+        <div className="flex items-start justify-between mb-4 flex-wrap gap-3">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="w-5 h-5 text-[#5cf7cf]" />
+              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5cf7cf]">
+                Modelo Dinâmico KYC/KYB — Visão Microscópica
+              </span>
+            </div>
+            <h1 className="text-3xl font-black tracking-tight">
+              Perguntas & Documentos <span className="text-[#5cf7cf]">por Segmento</span>
+            </h1>
+            <p className="text-white/70 text-sm mt-2 max-w-3xl leading-relaxed">
+              Cada template V4 de compliance compartilha uma <strong className="text-white">base comum</strong> de
+              perguntas e documentos, e adiciona <strong className="text-white">exigências específicas</strong> do
+              segmento. Esta visão separa os dois mundos com granularidade total.
+            </p>
+          </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
-        <StatBox label="Segmentos ativos" value={totalTemplates} />
-        <StatBox label="Perguntas únicas" value={stats.totalQuestions || 0} />
-        <StatBox label="Docs únicos" value={stats.totalDocs || 0} />
-        <StatBox label="% base comum" value={`${stats.commonQuestionsPct ?? 0}% / ${stats.commonDocsPct ?? 0}%`} />
+          <button
+            onClick={onDownloadPdf}
+            className="no-print inline-flex items-center gap-2 px-4 py-2 bg-[#2bc196] hover:bg-[#5cf7cf] text-[#002443] rounded-lg text-sm font-bold transition-colors shadow-lg"
+          >
+            <Download className="w-4 h-4" />
+            Baixar PDF
+          </button>
+        </div>
+
+        {/* Filtro família */}
+        <div className="no-print flex items-center gap-2 flex-wrap mb-5 mt-6">
+          <span className="text-[11px] uppercase tracking-wider text-white/50 font-bold mr-1">Família:</span>
+          <FamilyChip
+            active={family === 'CARTAO'}
+            onClick={() => setFamily('CARTAO')}
+            label="Cartão V4"
+            count={countsByFamily.CARTAO}
+          />
+          <FamilyChip
+            active={family === 'PIX'}
+            onClick={() => setFamily('PIX')}
+            label="PIX V4"
+            count={countsByFamily.PIX}
+          />
+          <div className="flex-1" />
+          <div className="flex items-center gap-1.5 text-[11px] text-white/40">
+            <HelpCircle className="w-3 h-3" />
+            PIX e Cartão comparados separadamente — exigências são muito diferentes.
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
+          <StatBox label="Segmentos ativos" value={activeTemplates.length} hint={activeTemplates.map(t => SHORT_LABELS[t.model] || t.name).join(' · ')} />
+          <StatBox label="Perguntas únicas" value={stats.totalQuestions || 0} />
+          <StatBox label="Documentos únicos" value={stats.totalDocs || 0} />
+          <StatBox label="% base comum" value={`${stats.commonQuestionsPct ?? 0}% Q · ${stats.commonDocsPct ?? 0}% D`} />
+        </div>
       </div>
     </div>
   );
 }
 
-function StatBox({ label, value }) {
+function FamilyChip({ active, onClick, label, count }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[12px] font-bold border transition-all ${
+        active
+          ? 'bg-[#2bc196] text-[#002443] border-[#2bc196] shadow'
+          : 'bg-white/5 text-white/70 border-white/10 hover:bg-white/10'
+      }`}
+    >
+      {label}
+      <span className={`px-1.5 py-0.5 rounded-full text-[10px] ${active ? 'bg-[#002443]/20 text-[#002443]' : 'bg-white/10 text-white/60'}`}>
+        {count}
+      </span>
+    </button>
+  );
+}
+
+function StatBox({ label, value, hint }) {
   return (
     <div className="bg-white/10 backdrop-blur rounded-xl p-3 border border-white/10">
       <p className="text-[10px] uppercase tracking-wider text-[#5cf7cf] font-bold mb-1">{label}</p>
-      <p className="text-xl font-bold">{value}</p>
+      <p className="text-xl font-black text-white">{value}</p>
+      {hint && <p className="text-[10px] text-white/40 mt-1 truncate" title={hint}>{hint}</p>}
     </div>
   );
 }
 
-/* ═══════════════════════════════════════════════
-   Section wrapper
-   ═══════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════════
+   LEGENDA dos segmentos ativos (uma vez no topo)
+   ═══════════════════════════════════════════════════════════════════════ */
+function Legend({ segmentLabels, segmentIds }) {
+  if (segmentIds.length === 0) return null;
+  return (
+    <div className="bg-white border border-[#e8e8e8] rounded-xl p-4">
+      <p className="text-[10px] uppercase tracking-wider text-[#1a1a1a]/50 font-bold mb-2.5">
+        Segmentos incluídos nesta análise
+      </p>
+      <div className="flex flex-wrap gap-1.5">
+        {segmentIds.map(id => {
+          const l = segmentLabels[id];
+          return (
+            <span
+              key={id}
+              className="inline-flex items-center gap-1.5 bg-[#f4f4f4] border border-[#e8e8e8] rounded-md px-2 py-1 text-[11px]"
+              title={`${l.full} · ${l.model}`}
+            >
+              <span className="font-bold text-[#002443]">{l.short}</span>
+              <span className="text-[9px] font-mono text-[#1a1a1a]/40">{l.merchantType || '—'}</span>
+            </span>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SECTION wrapper
+   ═══════════════════════════════════════════════════════════════════════ */
 function Section({ icon: Icon, num, title, subtitle, color, children }) {
   return (
-    <section>
-      <div className="flex items-start gap-4 mb-5">
+    <section className="space-y-4">
+      <div className="flex items-start gap-4">
         <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${color}15` }}>
           <Icon className="w-6 h-6" style={{ color }} />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
             <span className="text-xs font-bold px-2 py-0.5 rounded" style={{ backgroundColor: `${color}20`, color }}>
               {num}
             </span>
@@ -367,37 +506,73 @@ function Section({ icon: Icon, num, title, subtitle, color, children }) {
   );
 }
 
-/* ═══════════════════════════════════════════════
-   Tabelas — perguntas e docs comuns
-   ═══════════════════════════════════════════════ */
-function CommonQuestionsTable({ items }) {
+/* ═══════════════════════════════════════════════════════════════════════
+   TABELA de itens COMUNS (perguntas ou docs)
+   ═══════════════════════════════════════════════════════════════════════ */
+function CommonItemsTable({ items, kind, totalSegments }) {
   if (items.length === 0) {
-    return <EmptyBox message="Nenhuma pergunta é realmente comum a todos os segmentos." />;
+    return <EmptyBox message={`Nenhum ${kind === 'question' ? 'pergunta' : 'documento'} é 100% comum aos ${totalSegments} segmentos.`} />;
   }
+  const isQuestion = kind === 'question';
   return (
-    <div className="bg-white border border-[#e8e8e8] rounded-xl overflow-hidden">
+    <div className="bg-white border border-[#e8e8e8] rounded-xl overflow-hidden shadow-sm">
       <table className="w-full text-sm">
-        <thead className="bg-[#f9fafb] border-b border-[#e8e8e8]">
+        <thead className="bg-gradient-to-r from-[#f0fdf4] to-[#ecfdf5] border-b-2 border-[#2bc196]">
           <tr>
-            <th className="text-left px-4 py-3 text-xs font-bold text-[#002443] uppercase tracking-wider w-12">#</th>
-            <th className="text-left px-4 py-3 text-xs font-bold text-[#002443] uppercase tracking-wider">Pergunta</th>
-            <th className="text-left px-4 py-3 text-xs font-bold text-[#002443] uppercase tracking-wider w-32">Tipo</th>
-            <th className="text-left px-4 py-3 text-xs font-bold text-[#002443] uppercase tracking-wider w-28">Obrigatória</th>
+            <th className="text-left px-4 py-3 text-[10px] font-bold text-[#002443] uppercase tracking-wider w-10">#</th>
+            <th className="text-left px-4 py-3 text-[10px] font-bold text-[#002443] uppercase tracking-wider">
+              {isQuestion ? 'Pergunta' : 'Documento'}
+            </th>
+            {isQuestion && <th className="text-left px-4 py-3 text-[10px] font-bold text-[#002443] uppercase tracking-wider w-24">Tipo</th>}
+            {!isQuestion && <th className="text-left px-4 py-3 text-[10px] font-bold text-[#002443] uppercase tracking-wider w-56">documentTypeId</th>}
+            {isQuestion && <th className="text-left px-4 py-3 text-[10px] font-bold text-[#002443] uppercase tracking-wider w-24">Opções</th>}
+            {isQuestion && <th className="text-left px-4 py-3 text-[10px] font-bold text-[#002443] uppercase tracking-wider w-20">Peso</th>}
+            <th className="text-center px-4 py-3 text-[10px] font-bold text-[#002443] uppercase tracking-wider w-24">Obrigatório</th>
           </tr>
         </thead>
         <tbody>
-          {items.map((q, i) => (
-            <tr key={q.key} className="border-b border-[#f0f0f0] hover:bg-[#f9fafb]">
-              <td className="px-4 py-3 text-xs text-[#1a1a1a]/50">{i + 1}</td>
-              <td className="px-4 py-3 text-[#1a1a1a]">{q.text}</td>
-              <td className="px-4 py-3">
-                <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-[#002443]/5 text-[#002443]">{q.type || '—'}</span>
+          {items.map((it, i) => (
+            <tr key={it.key} className="border-b border-[#f0f0f0] hover:bg-[#fafdfb] align-top">
+              <td className="px-4 py-3 text-xs text-[#1a1a1a]/40">{i + 1}</td>
+              <td className="px-4 py-3 text-[#1a1a1a]">
+                <div className="font-medium">{it.text || it.label}</div>
+                {isQuestion && it.helpText && (
+                  <div className="text-[11px] text-[#1a1a1a]/50 mt-0.5">{it.helpText}</div>
+                )}
               </td>
-              <td className="px-4 py-3">
-                {q.isRequired ? (
-                  <span className="text-[11px] px-2 py-0.5 rounded bg-red-100 text-red-700 font-bold">SIM</span>
+              {isQuestion && (
+                <td className="px-4 py-3">
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#002443]/5 text-[#002443]">{it.type || '—'}</span>
+                </td>
+              )}
+              {!isQuestion && (
+                <td className="px-4 py-3">
+                  <span className="text-[10px] font-mono text-[#1a1a1a]/50">{it.documentTypeId || '—'}</span>
+                </td>
+              )}
+              {isQuestion && (
+                <td className="px-4 py-3">
+                  {it.options && it.options.length > 0 ? (
+                    <span className="text-[11px] text-[#1a1a1a]/70" title={it.options.join(' · ')}>{it.options.length}</span>
+                  ) : (
+                    <span className="text-[10px] text-[#1a1a1a]/30">—</span>
+                  )}
+                </td>
+              )}
+              {isQuestion && (
+                <td className="px-4 py-3">
+                  {it.riskWeight ? (
+                    <span className="text-[10px] font-bold text-[#f59e0b]">{it.riskWeight}</span>
+                  ) : (
+                    <span className="text-[10px] text-[#1a1a1a]/30">—</span>
+                  )}
+                </td>
+              )}
+              <td className="px-4 py-3 text-center">
+                {it.isRequired || it.required ? (
+                  <span className="text-[10px] px-2 py-0.5 rounded bg-red-100 text-red-700 font-bold">SIM</span>
                 ) : (
-                  <span className="text-[11px] px-2 py-0.5 rounded bg-gray-100 text-gray-600">Não</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded bg-gray-100 text-gray-600">Não</span>
                 )}
               </td>
             </tr>
@@ -408,217 +583,187 @@ function CommonQuestionsTable({ items }) {
   );
 }
 
-function CommonDocsTable({ items }) {
+/* ═══════════════════════════════════════════════════════════════════════
+   MATRIZ CONDICIONAL — linhas = item, colunas = segmentos, células = ✓/—
+   (o coração da "visão microscópica")
+   ═══════════════════════════════════════════════════════════════════════ */
+function ConditionalMatrix({ items, segmentIds, segmentLabels, kind }) {
+  const isQuestion = kind === 'question';
   if (items.length === 0) {
-    return <EmptyBox message="Nenhum documento é realmente comum a todos os segmentos." />;
+    return <EmptyBox message={`Não há ${isQuestion ? 'perguntas' : 'documentos'} condicionais nesta família.`} />;
   }
+
   return (
-    <div className="bg-white border border-[#e8e8e8] rounded-xl overflow-hidden">
-      <table className="w-full text-sm">
-        <thead className="bg-[#f9fafb] border-b border-[#e8e8e8]">
-          <tr>
-            <th className="text-left px-4 py-3 text-xs font-bold text-[#002443] uppercase tracking-wider w-12">#</th>
-            <th className="text-left px-4 py-3 text-xs font-bold text-[#002443] uppercase tracking-wider">Documento</th>
-            <th className="text-left px-4 py-3 text-xs font-bold text-[#002443] uppercase tracking-wider">documentTypeId</th>
-            <th className="text-left px-4 py-3 text-xs font-bold text-[#002443] uppercase tracking-wider w-28">Obrigatório</th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.map((d, i) => (
-            <tr key={d.key} className="border-b border-[#f0f0f0] hover:bg-[#f9fafb]">
-              <td className="px-4 py-3 text-xs text-[#1a1a1a]/50">{i + 1}</td>
-              <td className="px-4 py-3 text-[#1a1a1a]">{d.label}</td>
-              <td className="px-4 py-3">
-                <span className="text-[10px] font-mono text-[#1a1a1a]/50">{d.documentTypeId}</span>
-              </td>
-              <td className="px-4 py-3">
-                {d.required ? (
-                  <span className="text-[11px] px-2 py-0.5 rounded bg-red-100 text-red-700 font-bold">SIM</span>
-                ) : (
-                  <span className="text-[11px] px-2 py-0.5 rounded bg-gray-100 text-gray-600">Não</span>
-                )}
-              </td>
+    <div className="bg-white border border-[#e8e8e8] rounded-xl overflow-hidden shadow-sm">
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm border-collapse">
+          <thead className="bg-gradient-to-r from-[#fef3c7] to-[#fffbeb] border-b-2 border-[#f59e0b] sticky top-0">
+            <tr>
+              <th className="text-left px-3 py-3 text-[10px] font-bold text-[#002443] uppercase tracking-wider w-10 sticky left-0 bg-[#fef3c7] z-10">#</th>
+              <th className="text-left px-3 py-3 text-[10px] font-bold text-[#002443] uppercase tracking-wider sticky left-10 bg-[#fef3c7] z-10 min-w-[280px]">
+                {isQuestion ? 'Pergunta' : 'Documento'}
+              </th>
+              {isQuestion && (
+                <th className="text-left px-3 py-3 text-[10px] font-bold text-[#002443] uppercase tracking-wider w-24">Tipo</th>
+              )}
+              {segmentIds.map(id => {
+                const l = segmentLabels[id];
+                return (
+                  <th key={id} className="text-center px-2 py-3 text-[9px] font-bold text-[#002443] uppercase w-20" title={l.full}>
+                    <div className="whitespace-nowrap transform -rotate-0">{l.short}</div>
+                  </th>
+                );
+              })}
+              <th className="text-center px-3 py-3 text-[10px] font-bold text-[#002443] uppercase tracking-wider w-16">Total</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {items.map((it, i) => (
+              <tr key={it.key} className="border-b border-[#f0f0f0] hover:bg-[#fffcf5] align-top">
+                <td className="px-3 py-2.5 text-xs text-[#1a1a1a]/40 sticky left-0 bg-white">{i + 1}</td>
+                <td className="px-3 py-2.5 sticky left-10 bg-white">
+                  <div className="text-[#1a1a1a] font-medium">{it.text || it.label}</div>
+                  <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                    {!isQuestion && it.documentTypeId && (
+                      <span className="text-[9px] font-mono text-[#1a1a1a]/40">{it.documentTypeId}</span>
+                    )}
+                    {(it.isRequired || it.required) && (
+                      <span className="text-[9px] px-1 py-0 rounded bg-red-100 text-red-700 font-bold">OBR</span>
+                    )}
+                    {it.riskWeight > 0 && (
+                      <span className="text-[9px] px-1 py-0 rounded bg-amber-100 text-amber-700 font-bold" title="Peso de risco">
+                        P{it.riskWeight}
+                      </span>
+                    )}
+                    {it.conditionalLogic && (
+                      <span className="text-[9px] px-1 py-0 rounded bg-blue-100 text-blue-700 font-mono" title={`Aparece se ${it.conditionalLogic.dependsOn} ${it.conditionalLogic.operator} ${it.conditionalLogic.value}`}>
+                        cond.
+                      </span>
+                    )}
+                  </div>
+                </td>
+                {isQuestion && (
+                  <td className="px-3 py-2.5">
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#002443]/5 text-[#002443]">{it.type || '—'}</span>
+                  </td>
+                )}
+                {segmentIds.map(sid => {
+                  const present = it.presentIn.has(sid);
+                  return (
+                    <td key={sid} className="px-2 py-2.5 text-center">
+                      {present ? (
+                        <Check className="w-4 h-4 text-[#2bc196] mx-auto" strokeWidth={3} />
+                      ) : (
+                        <Minus className="w-3 h-3 text-[#1a1a1a]/15 mx-auto" />
+                      )}
+                    </td>
+                  );
+                })}
+                <td className="px-3 py-2.5 text-center">
+                  <span className="text-[11px] font-bold text-[#002443]">
+                    {it.presentCount}
+                    <span className="text-[#1a1a1a]/30">/{segmentIds.length}</span>
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
 
-/* ═══════════════════════════════════════════════
-   Condicionantes — expansível por segmento
-   ═══════════════════════════════════════════════ */
-function ConditionalQuestionsBySegment({ bySegment, allSegmentIds, allSegmentLabels }) {
-  const [expanded, setExpanded] = useState(() => new Set(allSegmentIds.slice(0, 1))); // primeiro aberto
+/* ═══════════════════════════════════════════════════════════════════════
+   EXCLUSIVOS — itens presentes em apenas 1 segmento (destaque)
+   ═══════════════════════════════════════════════════════════════════════ */
+function ExclusiveItemsCard({ items, segmentLabels, kind }) {
+  if (items.length === 0) return null;
+  const isQuestion = kind === 'question';
 
-  const toggle = (id) => {
-    const next = new Set(expanded);
-    if (next.has(id)) next.delete(id);
-    else next.add(id);
-    setExpanded(next);
-  };
-
-  const nonEmpty = allSegmentIds.filter(id => (bySegment[id] || []).length > 0);
-
-  if (nonEmpty.length === 0) {
-    return <EmptyBox message="Não há perguntas condicionantes — todos os segmentos têm as mesmas perguntas." />;
-  }
+  // Agrupa por segmento
+  const bySeg = {};
+  items.forEach(it => {
+    const sid = [...it.presentIn][0];
+    if (!bySeg[sid]) bySeg[sid] = [];
+    bySeg[sid].push(it);
+  });
 
   return (
-    <div className="space-y-3">
-      {nonEmpty.map(segId => {
-        const questions = bySegment[segId];
-        const label = allSegmentLabels[segId];
-        const isOpen = expanded.has(segId);
-        return (
-          <div key={segId} className="bg-white border border-[#e8e8e8] rounded-xl overflow-hidden">
-            <button
-              data-collapsible-toggle
-              onClick={() => toggle(segId)}
-              className="w-full flex items-center justify-between px-5 py-4 hover:bg-[#f9fafb] transition-colors"
-            >
-              <div className="flex items-center gap-3 text-left">
-                {isOpen ? <ChevronDown className="w-4 h-4 text-[#002443]" /> : <ChevronRight className="w-4 h-4 text-[#002443]" />}
-                <div>
-                  <p className="font-bold text-[#002443] text-sm">{label.name}</p>
-                  <p className="text-[11px] text-[#1a1a1a]/50 font-mono">{label.model} · {label.subCategory}</p>
-                </div>
-              </div>
-              <span className="text-xs font-bold px-3 py-1 rounded-full bg-amber-100 text-amber-700">
-                {questions.length} {questions.length === 1 ? 'pergunta' : 'perguntas'}
-              </span>
-            </button>
-            <div data-collapsible-body style={{ display: isOpen ? 'block' : 'none' }}>
-              <div className="border-t border-[#e8e8e8] bg-[#fafbfc]">
-                <table className="w-full text-sm">
-                  <thead className="bg-white border-b border-[#e8e8e8]">
-                    <tr>
-                      <th className="text-left px-4 py-2.5 text-[10px] font-bold text-[#002443] uppercase tracking-wider w-10">#</th>
-                      <th className="text-left px-4 py-2.5 text-[10px] font-bold text-[#002443] uppercase tracking-wider">Pergunta</th>
-                      <th className="text-left px-4 py-2.5 text-[10px] font-bold text-[#002443] uppercase tracking-wider w-28">Tipo</th>
-                      <th className="text-left px-4 py-2.5 text-[10px] font-bold text-[#002443] uppercase tracking-wider w-40">Compartilhado com</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {questions.map((q, i) => (
-                      <tr key={q.key} className="border-b border-[#f0f0f0] last:border-0">
-                        <td className="px-4 py-2.5 text-xs text-[#1a1a1a]/40">{i + 1}</td>
-                        <td className="px-4 py-2.5 text-[#1a1a1a]">{q.text}</td>
-                        <td className="px-4 py-2.5">
-                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#002443]/5 text-[#002443]">{q.type || '—'}</span>
-                        </td>
-                        <td className="px-4 py-2.5">
-                          <span className="text-[10px] text-[#1a1a1a]/60">
-                            {q.presentCount} de {allSegmentIds.length} segmentos
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+    <div className="mt-5 bg-gradient-to-br from-[#fef3c7]/30 to-white border-2 border-dashed border-[#f59e0b]/40 rounded-xl p-5">
+      <div className="flex items-center gap-2 mb-3">
+        <Target className="w-4 h-4 text-[#f59e0b]" />
+        <h3 className="text-sm font-bold text-[#002443]">
+          Exclusivos por segmento · {items.length} {isQuestion ? 'perguntas' : 'documentos'} únicos
+        </h3>
+      </div>
+      <p className="text-xs text-[#1a1a1a]/60 mb-4">
+        Itens que aparecem em apenas <strong>1 segmento</strong> — caracterizam a especificidade de cada modelo de negócio.
+      </p>
+      <div className="grid md:grid-cols-2 gap-3">
+        {Object.entries(bySeg).map(([sid, its]) => {
+          const label = segmentLabels[sid];
+          return (
+            <div key={sid} className="bg-white border border-[#f59e0b]/30 rounded-lg p-3">
+              <p className="text-[11px] font-bold text-[#002443] mb-2 flex items-center gap-2">
+                <span className="inline-block w-2 h-2 rounded-full bg-[#f59e0b]" />
+                {label?.full || sid}
+                <span className="text-[9px] font-mono text-[#1a1a1a]/40 font-normal">{label?.model}</span>
+              </p>
+              <ul className="space-y-1.5">
+                {its.map(it => (
+                  <li key={it.key} className="text-xs text-[#1a1a1a]/80 flex items-start gap-2">
+                    <span className="text-[#f59e0b] mt-0.5">•</span>
+                    <span>{it.text || it.label}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }
 
-function ConditionalDocsBySegment({ bySegment, allSegmentIds, allSegmentLabels }) {
-  const nonEmpty = (allSegmentIds || []).filter(id => (bySegment[id] || []).length > 0);
-  const [expanded, setExpanded] = useState(() => new Set(nonEmpty.slice(0, 1)));
-
-  const toggle = (id) => {
-    const next = new Set(expanded);
-    if (next.has(id)) next.delete(id);
-    else next.add(id);
-    setExpanded(next);
-  };
-
-  if (nonEmpty.length === 0) {
-    return <EmptyBox message="Não há documentos condicionantes — todos os segmentos têm os mesmos documentos." />;
-  }
-
-  return (
-    <div className="space-y-3">
-      {nonEmpty.map(segId => {
-        const docs = bySegment[segId];
-        const label = allSegmentLabels[segId] || { name: segId };
-        const isOpen = expanded.has(segId);
-        return (
-          <div key={segId} className="bg-white border border-[#e8e8e8] rounded-xl overflow-hidden">
-            <button
-              data-collapsible-toggle
-              onClick={() => toggle(segId)}
-              className="w-full flex items-center justify-between px-5 py-4 hover:bg-[#f9fafb] transition-colors"
-            >
-              <div className="flex items-center gap-3 text-left">
-                {isOpen ? <ChevronDown className="w-4 h-4 text-[#002443]" /> : <ChevronRight className="w-4 h-4 text-[#002443]" />}
-                <div>
-                  <p className="font-bold text-[#002443] text-sm">{label.name}</p>
-                  <p className="text-[11px] text-[#1a1a1a]/50 font-mono">{label.model} · {label.subCategory}</p>
-                </div>
-              </div>
-              <span className="text-xs font-bold px-3 py-1 rounded-full bg-amber-100 text-amber-700">
-                {docs.length} {docs.length === 1 ? 'documento' : 'documentos'}
-              </span>
-            </button>
-            <div data-collapsible-body style={{ display: isOpen ? 'block' : 'none' }}>
-              <div className="border-t border-[#e8e8e8] bg-[#fafbfc]">
-                <table className="w-full text-sm">
-                  <thead className="bg-white border-b border-[#e8e8e8]">
-                    <tr>
-                      <th className="text-left px-4 py-2.5 text-[10px] font-bold text-[#002443] uppercase tracking-wider w-10">#</th>
-                      <th className="text-left px-4 py-2.5 text-[10px] font-bold text-[#002443] uppercase tracking-wider">Documento</th>
-                      <th className="text-left px-4 py-2.5 text-[10px] font-bold text-[#002443] uppercase tracking-wider w-24">Obrigatório</th>
-                      <th className="text-left px-4 py-2.5 text-[10px] font-bold text-[#002443] uppercase tracking-wider">Lógica condicional</th>
-                      <th className="text-left px-4 py-2.5 text-[10px] font-bold text-[#002443] uppercase tracking-wider w-32">Outros segmentos</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {docs.map((d, i) => (
-                      <tr key={d.key} className="border-b border-[#f0f0f0] last:border-0">
-                        <td className="px-4 py-2.5 text-xs text-[#1a1a1a]/40">{i + 1}</td>
-                        <td className="px-4 py-2.5 text-[#1a1a1a]">{d.label}</td>
-                        <td className="px-4 py-2.5">
-                          {d.required
-                            ? <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-100 text-red-700 font-bold">SIM</span>
-                            : <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-100 text-gray-600">Não</span>}
-                        </td>
-                        <td className="px-4 py-2.5">
-                          {d.conditionalLogic
-                            ? <code className="text-[10px] text-[#1a1a1a]/70 bg-[#f0f0f0] px-1.5 py-0.5 rounded">
-                                {d.conditionalLogic.dependsOn} {d.conditionalLogic.operator} {String(d.conditionalLogic.value)}
-                              </code>
-                            : <span className="text-[10px] text-[#1a1a1a]/30">—</span>}
-                        </td>
-                        <td className="px-4 py-2.5">
-                          <span className="text-[10px] text-[#1a1a1a]/60">
-                            {d.presentCount - 1 > 0 ? `+${d.presentCount - 1} segmento(s)` : 'Exclusivo'}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-/* ═══════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════════════════
    Helpers visuais
-   ═══════════════════════════════════════════════ */
+   ═══════════════════════════════════════════════════════════════════════ */
 function EmptyBox({ message }) {
   return (
     <div className="bg-[#f9fafb] border border-dashed border-[#e8e8e8] rounded-xl p-8 text-center">
       <p className="text-sm text-[#1a1a1a]/50">{message}</p>
     </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   Print styles (PDF export)
+   ═══════════════════════════════════════════════════════════════════════ */
+function PrintStyles() {
+  return (
+    <style>{`
+      @media print {
+        *, *::before, *::after { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        body { margin: 0 !important; padding: 0 !important; background: white !important; }
+        body > * { visibility: hidden !important; }
+        body #doc-dinamico-kyc, body #doc-dinamico-kyc * { visibility: visible !important; }
+        #doc-dinamico-kyc {
+          position: absolute !important; left: 0 !important; top: 0 !important;
+          width: 100% !important; max-width: 100% !important;
+          padding: 12pt 16pt !important; margin: 0 !important;
+          font-size: 9pt !important;
+        }
+        #doc-dinamico-kyc .no-print { display: none !important; }
+        #doc-dinamico-kyc section { page-break-inside: auto !important; }
+        #doc-dinamico-kyc h1 { font-size: 16pt !important; }
+        #doc-dinamico-kyc h2 { font-size: 12pt !important; page-break-after: avoid !important; }
+        #doc-dinamico-kyc h3 { font-size: 10pt !important; page-break-after: avoid !important; }
+        #doc-dinamico-kyc table { page-break-inside: auto !important; font-size: 7.5pt !important; }
+        #doc-dinamico-kyc thead { display: table-header-group !important; }
+        #doc-dinamico-kyc tr { page-break-inside: avoid !important; }
+        #doc-dinamico-kyc td, #doc-dinamico-kyc th { padding: 3pt 5pt !important; }
+      }
+    `}</style>
   );
 }
