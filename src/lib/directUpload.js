@@ -1,25 +1,20 @@
 /**
- * BULLETPROOF DIRECT UPLOAD — uses base44.functions.invoke (native SDK public channel).
+ * SDK-FREE direct document upload.
  *
- * Strategy (chosen after validating all alternatives):
- *   1. Convert the File to base64 in the browser using FileReader (100% native, zero SDK).
- *   2. Send as JSON via base44.functions.invoke('publicDirectDocUpload', { fileBase64, ... }).
- *   3. The server decodes base64 → File → uses asServiceRole.integrations.Core.UploadPrivateFile.
+ * Uploads files by converting to base64 in the browser and POSTing as JSON
+ * to `/functions/publicDirectDocUpload`. Completely bypasses @base44/sdk
+ * to avoid its MessagePort/instanceof crash on public routes.
  *
- * Why this is 100% reliable on PUBLIC routes:
- *   - base44.functions.invoke works anonymously (requiresAuth:false in base44Client)
- *   - It does NOT touch SDK.integrations.Core.UploadPrivateFile on the client (the
- *     function that was causing the crashes with stale tokens)
- *   - JSON transport is stable; no multipart / CORS edge cases
- *   - Progress feedback is best-effort (FileReader progress + toast updates)
+ * Backend is idempotent (same case+docType+fileName+fileSize within 60s
+ * returns the existing record), so retries are SAFE — no duplicates.
  *
- * Size limit: Base44 function payload cap ~10MB, so we accept files up to ~7MB
- * (base64 adds ~33% overhead). For larger files, the caller should compress first.
+ * Size limit: Base44 function payload cap ~10MB, so we accept files up to
+ * ~7MB (base64 adds ~33% overhead). For larger files, callers must compress.
  */
 
-import { base44 } from '@/api/base44Client';
+import { callPublicFunctionWithRetry } from '@/lib/publicApi';
 
-const MAX_FILE_SIZE_MB = 7; // hard cap — base64 overhead pushes 7MB → ~9.3MB payload
+const MAX_FILE_SIZE_MB = 7;
 
 function readFileAsBase64(file, onProgress) {
   return new Promise((resolve, reject) => {
@@ -30,10 +25,7 @@ function readFileAsBase64(file, onProgress) {
         try { onProgress(pct); } catch (_) {}
       }
     };
-    reader.onload = () => {
-      // result is a data URL: "data:mime;base64,XXX" — keep as-is (server handles both forms)
-      resolve(reader.result);
-    };
+    reader.onload = () => resolve(reader.result);
     reader.onerror = () => reject(new Error('Falha ao ler o arquivo no navegador'));
     reader.onabort = () => reject(new Error('Leitura do arquivo cancelada'));
     reader.readAsDataURL(file);
@@ -70,7 +62,7 @@ export async function directUploadDocument({
   // ── Branch A: not-available justification ──
   if (notAvailable) {
     if (typeof onProgress === 'function') { try { onProgress(30); } catch (_) {} }
-    const res = await base44.functions.invoke('publicDirectDocUpload', {
+    const data = await callPublicFunctionWithRetry('publicDirectDocUpload', {
       caseId,
       documentTypeId,
       documentName: documentName || documentTypeId,
@@ -80,8 +72,7 @@ export async function directUploadDocument({
       uploadDate: new Date().toISOString(),
     });
     if (typeof onProgress === 'function') { try { onProgress(100); } catch (_) {} }
-    const data = res?.data || {};
-    if (!data.ok) throw new Error(data.error || 'Falha ao registrar justificativa');
+    if (!data?.ok) throw new Error(data?.error || 'Falha ao registrar justificativa');
     return data;
   }
 
@@ -101,7 +92,7 @@ export async function directUploadDocument({
   const fileBase64 = await readFileAsBase64(file, onProgress);
 
   // 50-95% = network send / server processing — we can't track it precisely,
-  // so we tick progress forward every 1.5s so the user sees activity.
+  // so we tick progress forward every 1.2s so the user sees activity.
   let tickStop = null;
   if (typeof onProgress === 'function') {
     let pct = 55;
@@ -113,12 +104,8 @@ export async function directUploadDocument({
     tickStop = () => clearInterval(interval);
   }
 
-  // RETRY STRATEGY: server-side uploads of large base64 payloads can take 15-25s,
-  // and the SDK/network layer sometimes aborts before the server finishes. Because
-  // the backend is now idempotent (same case+docType+fileName+fileSize within 60s
-  // returns the existing record), retrying on transient failures is SAFE — no dupes.
-  const invokeWithRetry = async () => {
-    const payload = {
+  try {
+    const data = await callPublicFunctionWithRetry('publicDirectDocUpload', {
       caseId,
       documentTypeId,
       documentName: documentName || documentTypeId,
@@ -128,30 +115,10 @@ export async function directUploadDocument({
       fileType: file.type || 'application/octet-stream',
       fileSize: file.size || 0,
       uploadDate: new Date().toISOString(),
-    };
-    let lastErr;
-    for (let attempt = 0; attempt < 3; attempt++) {
-      try {
-        const res = await base44.functions.invoke('publicDirectDocUpload', payload);
-        const data = res?.data || {};
-        if (!data.ok) throw new Error(data.error || 'Falha ao enviar arquivo');
-        return data;
-      } catch (err) {
-        lastErr = err;
-        const msg = String(err?.message || '').toLowerCase();
-        const isRetryable = msg.includes('network') || msg.includes('timeout') || msg.includes('aborted') || msg.includes('failed to fetch') || msg.includes('load failed');
-        if (!isRetryable || attempt === 2) throw err;
-        // backoff 1.5s, then 3s
-        await new Promise(r => setTimeout(r, 1500 * (attempt + 1)));
-      }
-    }
-    throw lastErr;
-  };
-
-  try {
-    const data = await invokeWithRetry();
+    });
     if (tickStop) tickStop();
     if (typeof onProgress === 'function') { try { onProgress(100); } catch (_) {} }
+    if (!data?.ok) throw new Error(data?.error || 'Falha ao enviar arquivo');
     return data;
   } catch (err) {
     if (tickStop) tickStop();
