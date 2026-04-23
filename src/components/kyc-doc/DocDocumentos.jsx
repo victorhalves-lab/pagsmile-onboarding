@@ -1,5 +1,6 @@
 import React from 'react';
 import { S, H1, H2, H3, P, Li, Bold, Table, InfoBox } from './DocHelpers';
+import DocDocumentosMudancasV4 from './DocDocumentosMudancasV4';
 
 export default function DocDocumentos({ templates }) {
   // Separate base docs from conditional docs
@@ -83,6 +84,8 @@ export default function DocDocumentos({ templates }) {
       <InfoBox title="Verificação Automática de Documentos (VerifAI)" color="purple">
         <p>Após o upload, cada documento pendente é automaticamente analisado pela IA da CAF (serviço VerifAI Docs) que verifica: autenticidade, legibilidade, conformidade com o tipo esperado, e sinais de adulteração digital. O resultado é registrado no <code>IntegrationLog</code> com status APPROVED ou PENDING_REVIEW.</p>
       </InfoBox>
+
+      <DocDocumentosMudancasV4 templates={templates} />
     </S>
   );
 }

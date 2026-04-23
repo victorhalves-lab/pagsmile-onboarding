@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronRight, FileText, HelpCircle, Tag, Users } from 'lucide-react';
+import { ChevronDown, ChevronRight, FileText, HelpCircle, Tag, Users, Zap } from 'lucide-react';
 import { QuestionTable } from '../DocHelpers';
 import TemplateDocumentsBlock from './TemplateDocumentsBlock';
+import TemplateOperationalBlock from './TemplateOperationalBlock';
 
 /* ──────────────────────────────────────────────────────────
    TemplateCard — expandable card for a single template
    Shows full metadata + all questions + all documents
    ────────────────────────────────────────────────────────── */
 export default function TemplateCard({ template, questions = [] }) {
-  const [expandedBlocks, setExpandedBlocks] = useState({ meta: true, questions: true, documents: true });
+  const [expandedBlocks, setExpandedBlocks] = useState({ operational: true, meta: true, questions: true, documents: true });
 
   const toggle = (key) => setExpandedBlocks(prev => ({ ...prev, [key]: !prev[key] }));
 
@@ -52,6 +53,16 @@ export default function TemplateCard({ template, questions = [] }) {
           <Metric label="Docs Cond." value={conditionalDocs.length} accent="purple" />
         </div>
       </div>
+
+      {/* Operational block — renderer, prefill source, BDC group, legal base */}
+      <Section
+        title="Contexto Operacional — Renderização, Pré-preenchimento, BDC e Base Legal"
+        icon={Zap}
+        expanded={expandedBlocks.operational}
+        onToggle={() => toggle('operational')}
+      >
+        <TemplateOperationalBlock template={template} />
+      </Section>
 
       {/* Metadata block */}
       <Section

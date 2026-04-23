@@ -1,126 +1,264 @@
 import React from 'react';
 import { S, H1, H2, H3, P, Li, Bold, Table, InfoBox } from './DocHelpers';
 
+/**
+ * Seção 18 — Doc Compliance Parceiros
+ * Documentação MICROSCÓPICA extraída do código fonte real em:
+ *   functions/exportPartnerComplianceDoc.js, functions/generateBankDataLink.js,
+ *   functions/publicBankDataRead.js, functions/publicBankDataSubmit.js,
+ *   pages/DocCompParceiros.jsx, pages/BankDataCollect.jsx,
+ *   components/doc-comp-parceiros/CaseRow.jsx
+ * Nenhuma linha aqui é especulação — se o código mudar, atualize aqui primeiro.
+ */
 export default function DocDocCompParceiros() {
   return (
     <S>
-      <H1>18. Doc Compliance Parceiros + Coleta Bancária + Export Pré-KYC</H1>
+      <H1>18. Doc Compliance Parceiros — Coleta Bancária + Export "Pré KYC Pagsmile"</H1>
 
-      <P>Esta seção documenta o módulo operacional de <strong>extração de dados KYC/KYB para parceiros bancários</strong> — a ponte final entre o dossiê interno de compliance (que é altamente detalhado e confidencial) e o formulário Pré-KYC Pagsmile exigido pelos nossos bancos parceiros (Celcoin, Dock, BS2, entre outros). Diferentemente do módulo "Parceiros de Compliance" (Seção 16), que serve para colaboração analítica externa, este módulo serve para <strong>produção de planilha padronizada Pré-KYC</strong> em formato XLSX.</P>
+      <P>Esta seção descreve o módulo administrativo que produz o artefato final do ciclo de onboarding: a planilha <Bold>Pré KYC Pagsmile</Bold>, enviada aos bancos parceiros (BaaS) para abertura da conta operacional do cliente. Cada campo citado, cada ordem de prioridade, cada validação e cada sanitização foi extraída diretamente do código fonte listado no cabeçalho deste arquivo.</P>
 
-      <InfoBox title="Problema que este módulo resolve">
-        <p>Bancos parceiros exigem uma planilha padronizada "Pré-KYC Pagsmile" com: dados cadastrais da empresa, endereço completo, contato, dados bancários (banco/agência/conta), volumetria, atividade, representante legal. Antes deste módulo: um operador manualmente copiava cada campo dos dossiês para uma planilha — processo lento, suscetível a erros e sem rastreabilidade. Agora: um clique gera a planilha com todos os sellers + subsellers hierarquizados, cada linha já validada contra múltiplas fontes.</p>
+      <InfoBox title="O problema que o módulo resolve">
+        <p>Antes: um operador abria cada dossiê no CRM, copiava 15 campos (razão social, CNPJ, endereço, dados bancários…) para uma planilha Excel manual, um cliente por linha. Processo lento, sujeito a erro de digitação e sem rastreabilidade. Agora: um clique na tela <code>/DocCompParceiros</code> gera o XLSX completo, com endereço enriquecido automaticamente via BigDataCorp quando os dados declarados estão incompletos, e com dados bancários coletados via link público enviado ao cliente.</p>
       </InfoBox>
 
-      <H2>18.1. Tela <code>/DocCompParceiros</code> — Arquitetura</H2>
-      <P>A tela é o centro de operação do módulo. Ela agrupa todos os casos aprovados (sellers + subsellers) em uma árvore hierárquica seller → subseller, permite filtros, seleção múltipla e dispara as duas ações principais: (a) gerar link de coleta bancária para clientes que ainda não informaram conta, (b) exportar a planilha Pré-KYC em XLSX.</P>
+      <H2>18.1. Tela <code>/DocCompParceiros</code> — Carga de Dados</H2>
 
-      <H3>18.1.1. Fontes de Dados Consultadas (Loading)</H3>
-      <Table headers={['Fonte', 'O que traz', 'Quando usa']} rows={[
-        ['OnboardingCase', 'Casos com status = Aprovado ou em subfaixa aprovável.', 'Base principal da lista.'],
-        ['Merchant', 'Nome, CNPJ/CPF, tipo (PF/PJ), parentMerchantId, onboardingStatus.', 'Hidrata cada caso com dados do cliente e identifica pares seller↔subseller.'],
-        ['BankDataCollection', 'Banco, agência, conta, dígitos, status (pendente/preenchido/expirado), token.', 'Identifica quais casos já têm conta bancária e quais precisam ser solicitados.'],
-        ['QuestionnaireResponse', 'Respostas do questionário (nome, endereço, telefone, volumetria, atividade).', 'Fallback quando Merchant/OnboardingCase não têm o dado.'],
-        ['Lead', 'Dados comerciais anteriores ao onboarding (e-mail, telefone, CNPJ, segmento).', 'Fallback final de contato.'],
+      <H3>18.1.1. Entidades consultadas no carregamento</H3>
+      <P>A função <code>load()</code> do componente executa, em sequência, as queries:</P>
+      <Table headers={['Ordem', 'Entidade', 'Consulta exata', 'Uso']} rows={[
+        ['1', <code key="1">OnboardingCase</code>, <code key="2">list('-updated_date', 1000)</code>, 'Até 1.000 casos mais recentes.'],
+        ['2', <code key="3">Merchant</code>, <span key="4"><code>get(merchantId)</code> paralelo</span>, 'Hidrata cada caso com razão social, CNPJ, tipo (PF/PJ), parentMerchantId.'],
+        ['3', <code key="5">Merchant (pais)</code>, <code key="6">get(parentMerchantId)</code>, 'Busca parents de subsellers cujo merchant pai não veio no passo 2.'],
+        ['4', <code key="7">BankDataCollection</code>, <code key="8">list('-created_date', 2000)</code>, 'Últimos 2.000 registros bancários. Indexados por onboardingCaseId (mais recente prevalece).'],
       ]} />
 
-      <H3>18.1.2. Resolução Determinística de CPF/CNPJ</H3>
-      <P>Um dos desafios deste módulo é que o <strong>mesmo cliente pode aparecer com CNPJs inconsistentes</strong> entre os 4 fontes acima (ex: questionário preenchido com CPF do sócio mas cadastro Merchant tem CNPJ da empresa). A função resolve o CPF/CNPJ correto aplicando, em ordem:</P>
-      <ol className="list-decimal ml-6 space-y-1.5 mb-4">
-        <Li><Bold>Merchant.cpfCnpj</Bold> — sempre prioritário; é o dado oficial do cadastro.</Li>
-        <Li><Bold>OnboardingCase.cpfCnpj</Bold> — se o merchant não trouxer, o caso pode ter gravado.</Li>
-        <Li><Bold>QuestionnaireResponse</Bold> com questionId de CNPJ ou CPF — varre respostas matchando keywords ("cnpj", "cpf", "documento").</Li>
-        <Li><Bold>Lead.cpfCnpj</Bold> — último fallback.</Li>
-        <Li><Bold>BDC Enrichment</Bold> — se nada encontrado, aciona <code>bdcEnrichCase</code> apenas para resolver o documento.</Li>
+      <H3>18.1.2. Resolução assíncrona de CPF/CNPJ (<code>resolveDocsForCases</code>)</H3>
+      <P>Um mesmo caso pode ter o documento em fontes diferentes — e nem todas concordam. O código executa em duas passadas:</P>
+      <P><Bold>Passada 1 — determinística e síncrona.</Bold> Para cada caso:</P>
+      <ol className="list-decimal ml-6 space-y-1 mb-3">
+        <Li>Classifica PJ se <code>Merchant.type === 'PJ'</code> OU <code>Merchant.cpfCnpj</code>/<code>OnboardingCase.cpfCnpj</code> tem 14 dígitos.</Li>
+        <Li>Se PJ: prioriza <code>Merchant.cpfCnpj</code> válido, cai para <code>OnboardingCase.cpfCnpj</code>.</Li>
+        <Li>Se PF: usa <code>onlyDigits(Merchant.cpfCnpj || OnboardingCase.cpfCnpj)</code>.</Li>
       </ol>
-      <P>A validação aplica expressão regular estrita: CNPJ deve ter exatamente 14 dígitos (<code>/^\d{`{14}`}$/</code>), CPF exatamente 11 (<code>/^\d{`{11}`}$/</code>) após remover máscara. Dígitos inválidos (como "00000000000000") são descartados.</P>
+      <P><Bold>Passada 2 — enriquecimento em chunks de 10, paralelo.</Bold> Só para casos PJ ainda sem CNPJ válido:</P>
+      <ol className="list-decimal ml-6 space-y-1 mb-3">
+        <Li>Busca <code>QuestionnaireResponse.filter({'{ onboardingCaseId }'})</code>. Varre cada resposta onde o texto da pergunta bate <code>/\bcnpj\b/</code> E <code>onlyDigits(valueText).length === 14</code> → adota.</Li>
+        <Li>Sem sucesso: <code>Lead.filter({'{ email: merchant.email }'})</code>. Primeiro Lead com <code>cpfCnpj</code> de 14 dígitos → adota.</Li>
+      </ol>
+      <P>A UI atualiza progressivamente via <code>setResolvedDocs</code> a cada chunk. Casos que permanecem sem CNPJ válido mostram badge vermelho <code>"CNPJ não encontrado"</code>.</P>
 
-      <H3>18.1.3. Hierarquia Seller → Subseller</H3>
-      <P>A tela agrupa automaticamente os casos em uma árvore de 2 níveis:</P>
-      <ul className="list-disc ml-6 space-y-1 mb-4">
-        <Li><Bold>Sellers (nível raiz):</Bold> casos onde <code>Merchant.parentMerchantId</code> é vazio E <code>OnboardingCase.isSubsellerCase</code> é false. Aparecem como linhas de cabeçalho expansíveis.</Li>
-        <Li><Bold>Subsellers (nível filho):</Bold> casos onde <code>Merchant.parentMerchantId</code> aponta para um seller. Ficam indentados sob o seller pai, fundo roxo suave para distinguir visualmente.</Li>
-        <Li><Bold>Sellers sem casos ativos mas com subsellers:</Bold> renderizam um placeholder agregador mostrando "X subsellers vinculados" mesmo sem caso próprio pendente — garante que nenhum subseller fique órfão.</Li>
+      <H3>18.1.3. Hierarquia Seller → Subseller (função <code>groups</code>)</H3>
+      <P>Agrupamento em memória com dois <code>Map</code>:</P>
+      <ul className="list-disc ml-6 space-y-1 mb-3">
+        <Li><code>sellerCaseByMerchantId</code>: um case por seller, prevalecendo o mais recente por <code>updated_date</code>.</Li>
+        <Li><code>subsellerCasesBySellerId</code>: cases com <code>merchant.isSubseller + parentMerchantId</code>, agrupados sob o parent.</Li>
       </ul>
-      <P>O filtro hierárquico <code>hierarchyFilter</code> permite: <em>"Sellers + Subsellers"</em> (padrão), <em>"Apenas Sellers"</em> ou <em>"Apenas Subsellers"</em>. Contadores no rodapé mostram totais filtrados.</P>
-
-      <H2>18.2. Link de Coleta Bancária — Fluxo End-to-End</H2>
-      <P>Quando o compliance aprova um cliente mas esse cliente ainda não informou os dados da conta bancária que receberá os recebíveis, o módulo gera um link público seguro para o cliente preencher.</P>
-
-      <H3>18.2.1. Geração do Link (Admin)</H3>
-      <P>Na tela <code>/DocCompParceiros</code> há um botão "Solicitar Dados Bancários" em cada linha (ou em massa via seleção múltipla). O admin clica → função backend <code>generateBankDataLink</code> é invocada e:</P>
-      <ol className="list-decimal ml-6 space-y-1 mb-4">
-        <Li>Valida autenticação admin.</Li>
-        <Li>Busca ou cria registro <code>BankDataCollection</code> para o caso.</Li>
-        <Li>Gera <code>token</code> cripto-seguro (256 bits).</Li>
-        <Li>Retorna URL: <code>{`{origin}/BankDataCollect?token=TOKEN`}</code>.</Li>
-        <Li>Modal exibe a URL copiável + botões WhatsApp/E-mail de envio direto.</Li>
-      </ol>
-      <P>Em massa: admin seleciona múltiplos casos e clica "Gerar Links em Lote" → função retorna lista de URLs com identificação de cada caso, pronta para distribuição.</P>
-
-      <H3>18.2.2. Preenchimento pelo Cliente — Página <code>/BankDataCollect</code></H3>
-      <P>Página pública que valida o token via função <code>publicBankDataRead</code>. Se token inválido/expirado/já preenchido: exibe mensagem apropriada. Se válido: mostra formulário pré-preenchido com nome e CNPJ do cliente (read-only) e campos editáveis:</P>
-      <Table headers={['Campo', 'Tipo', 'Validação']} rows={[
-        ['Banco', 'Autocomplete com lista oficial Febraban (380 bancos)', 'Obrigatório. Formato: código + nome.'],
-        ['Agência', 'Texto 4-5 dígitos', 'Obrigatório. Sem dígito verificador quando banco não exige.'],
-        ['Dígito da Agência', 'Texto 1 dígito', 'Opcional (bancos sem dígito).'],
-        ['Conta', 'Texto', 'Obrigatório. Deve ser conta PJ quando titular é PJ.'],
-        ['Dígito da Conta', 'Texto 1-2 dígitos', 'Obrigatório.'],
-      ]} />
-      <P>Ao submeter, função <code>publicBankDataSubmit</code>: (a) valida token novamente, (b) grava os campos, (c) marca <code>status = "preenchido"</code>, <code>filledAt = now</code>, (d) registra IP (<code>clientIp</code>) para auditoria, (e) retorna sucesso. Cliente vê tela de confirmação "Dados recebidos com segurança".</P>
-
-      <H2>18.3. Export XLSX — "Pré-KYC Pagsmile"</H2>
-      <P>É a ação final do fluxo. Admin seleciona um lote de casos (tipicamente todos os aprovados de uma semana, ou todos os subsellers de um marketplace) e clica <strong>"Exportar Pré-KYC"</strong>. Função <code>exportPartnerComplianceDoc</code> processa e retorna planilha XLSX.</P>
-
-      <H3>18.3.1. Processamento de Cada Caso</H3>
-      <P>Para cada caso selecionado, a função executa:</P>
-      <ol className="list-decimal ml-6 space-y-1.5 mb-4">
-        <Li><Bold>Resolução do CPF/CNPJ</Bold> pela cadeia de prioridades descrita na 18.1.2.</Li>
-        <Li><Bold>Enriquecimento BDC on-demand</Bold> quando faltam endereço/atividade/razão social: aciona <code>bdcEnrichCase</code> em modo "merge" (reutiliza datasets já consultados; só re-consulta o que está vazio). Economiza créditos BDC.</Li>
-        <Li><Bold>Parse semântico de respostas</Bold>: para cada resposta do questionário, identifica o campo pela keyword (ex: pergunta com "endereço" → mapeia para coluna "Logradouro"). Validação estrita: CNPJs não podem ser parseados como "número do logradouro".</Li>
-        <Li><Bold>Merge por prioridade</Bold> Merchant → Case → Response → Lead → BDC para cada campo da planilha.</Li>
-        <Li><Bold>Sanity checks</Bold>: campos obrigatórios vazios são destacados na planilha em vermelho; campos bancários ausentes listados em aba "Pendências".</Li>
-      </ol>
-
-      <H3>18.3.2. Colunas da Planilha Pré-KYC</H3>
-      <Table headers={['Aba', 'Colunas incluídas']} rows={[
-        ['Sellers', 'Tipo (PJ/PF), Razão Social, Nome Fantasia, CNPJ/CPF, Data de Abertura, Situação Cadastral, CNAE Principal, Capital Social, Endereço completo (CEP, logradouro, número, complemento, bairro, cidade, UF), E-mail, Telefone, Nome do Representante Legal, CPF Rep. Legal, Banco, Agência, Dígito Agência, Conta, Dígito Conta, TPV mensal declarado, Ticket médio, Segmento, Score V4, Subfaixa, Data Aprovação Pagsmile.'],
-        ['Subsellers', 'Mesmas colunas + coluna extra "Seller Principal (nome + CNPJ)" que identifica o parent.'],
-        ['Pendências', 'Lista de casos com dados incompletos (ex: "Sem conta bancária", "Endereço sem número", "CPF rep. legal ausente"). Permite ao admin retornar e completar.'],
-        ['Auditoria', 'Metadados da exportação: quem exportou, quando, quantos casos, qual versão do schema Pré-KYC. Usada em auditoria regulatória.'],
+      <Table headers={['Cenário', 'Condição', 'Renderização']} rows={[
+        ['Seller com subsellers', 'Merchant tem case + tem subsellers', 'Linha expansível (ChevronDown) + sub-linhas com indent.'],
+        ['Seller sem case mas com subs', 'parentMerchantId aparece mas pai não tem OnboardingCase no escopo', 'Placeholder "Seller sem caso visível" + contador de subsellers, sem checkbox.'],
+        ['Hierarchy filter', 'hierarchyFilter = sellers | subsellers | all', 'Remove grupos ou zera arrays conforme escolha.'],
       ]} />
 
-      <H3>18.3.3. Formato do Arquivo</H3>
-      <P>Gerado via biblioteca <code>xlsx</code> (SheetJS). Nome padrão: <code>pre-kyc-pagsmile_YYYY-MM-DD_HHMM.xlsx</code>. Headers em negrito, colunas com largura otimizada, formatação condicional (vermelho para vazio obrigatório, amarelo para fallback BDC, verde para dado declarado e confirmado).</P>
+      <H3>18.1.4. Filtros da interface</H3>
+      <Table headers={['Filtro', 'Valores', 'Efeito']} rows={[
+        ['Status (statusFilter)', 'auto | all | Aprovado | Manual | Recusado | Docs Solicitados | Em Processamento | Pendente', '"auto" (default) mostra Aprovado + Manual — os quais são auto-selecionados.'],
+        ['Hierarquia', 'all | sellers | subsellers', 'Filtra a árvore inteira ou esvazia seller/subseller conforme escolha.'],
+        ['Busca (search)', 'Texto livre', 'Match case-insensitive em CNPJ/CPF resolvido, companyName, fullName, email.'],
+      ]} />
 
-      <InfoBox title="Por que o formato é Excel (XLSX) e não CSV ou PDF?">
-        <p>Os bancos parceiros abrem o arquivo diretamente no Excel, filtram, validam em lote e importam para seus próprios sistemas via copy-paste ou VLOOKUP. CSV perde formatação e dígitos iniciais (contas começando em 0). PDF não permite extração automática. XLSX é o padrão de fato da indústria bancária brasileira para intercâmbio de dados KYC.</p>
+      <H2>18.2. Geração de Link — <code>generateBankDataLink</code> (admin-only)</H2>
+
+      <H3>18.2.1. Fluxo exato da função backend</H3>
+      <ol className="list-decimal ml-6 space-y-1 mb-3">
+        <Li><Bold>Auth:</Bold> <code>base44.auth.me()</code> + check <code>user.role === 'admin'</code>. Não-admin → 403.</Li>
+        <Li><Bold>Input:</Bold> <code>onboardingCaseId</code> (único) OU <code>onboardingCaseIds</code> (array bulk). Normalizado para array.</Li>
+        <Li><Bold>Idempotência por caso:</Bold> busca último <code>BankDataCollection</code> ordenado por <code>created_date</code>. Reutiliza se existir E <code>status !== 'expirado'</code>.</Li>
+        <Li><Bold>Token:</Bold> <code>crypto.getRandomValues(new Uint8Array(24))</code> → 48 chars hex (192 bits de entropia).</Li>
+        <Li><Bold>Persistência inicial:</Bold> cria <code>BankDataCollection</code> com <code>status: 'pendente'</code>, <code>linkSentAt: new Date().toISOString()</code>, <code>cpfCnpj</code> copiado do caso.</Li>
+        <Li><Bold>URL:</Bold> <code>{'${origin}/BankDataCollect?token=${record.token}'}</code> — <code>origin</code> lido de <code>req.headers.get('origin') || referer</code>, trailing slash removido.</Li>
+      </ol>
+
+      <InfoBox title="Entropia do token (192 bits)">
+        <p>24 bytes aleatórios via Web Crypto API, codificados em hex (48 chars). Espaço: 2^192 ≈ 6,3 × 10^57. Para comparação, UUID v4 tem 122 bits. A validação mínima no backend (<code>publicBankDataRead</code>/<code>publicBankDataSubmit</code>) exige <code>token.length &gt;= 20</code> — qualquer token mais curto é rejeitado com 400.</p>
       </InfoBox>
 
-      <H2>18.4. Diferença entre este módulo e o "Módulo de Parceiros de Compliance" (Seção 16)</H2>
-      <Table headers={['Característica', 'Seção 16 — Parceiros Compliance', 'Seção 18 — Doc Compliance Parceiros (este)']} rows={[
-        ['Propósito', 'Colaboração analítica — parceiro analisa dossiê e recomenda decisão.', 'Extração de dados — produz planilha padronizada Pré-KYC para bancos.'],
-        ['Entidades principais', 'CompliancePartner, CompliancePartnerUser, PartnerAssignment.', 'BankDataCollection + agregação OnboardingCase + Merchant.'],
-        ['Nível de visibilidade', 'Configurável (full / redacted / summary_only).', 'Fixo — apenas campos necessários para Pré-KYC (sem dossiê completo).'],
-        ['Quem vê os dados', 'Usuário do parceiro via login próprio em /ComplianceParceiro.', 'Equipe interna Pagsmile exporta e envia XLSX ao banco por canal próprio.'],
-        ['Tipo de saída', 'Recomendação clicável dentro do sistema (approve/reject/request_docs/escalate).', 'Arquivo XLSX baixado localmente.'],
-        ['Rastreamento', 'PartnerAssignmentActivity — cada visualização/recomendação logada.', 'Auditoria no export + logs de quem baixou e quando.'],
+      <H3>18.2.2. Retorno e comportamento frontend</H3>
+      <Table headers={['Campo retornado', 'Uso']} rows={[
+        ['caseId', 'Match com caso da lista.'],
+        ['token', '48 hex chars; usado por copyLink().'],
+        ['status', 'pendente | preenchido | expirado — estado do BankDataCollection.'],
+        ['url', `${'${origin}'}/BankDataCollect?token=XXX`],
+        ['banco, agencia, conta, filledAt', 'Reutilizados quando status=preenchido, para exibição.'],
+      ]} />
+      <P>No frontend: quando <code>caseIds.length === 1</code>, link vai para <code>navigator.clipboard.writeText</code> + toast "Link copiado!". Bulk: toast com a contagem — "Use Copiar em cada linha para enviar".</P>
+
+      <H2>18.3. Página Pública <code>/BankDataCollect</code></H2>
+
+      <H3>18.3.1. Fluxo de carregamento</H3>
+      <ol className="list-decimal ml-6 space-y-1 mb-3">
+        <Li>Lê <code>?token=</code> do <code>window.location.search</code>. Sem token: "Link inválido ou incompleto".</Li>
+        <Li>Invoca <code>callPublicFunction('publicBankDataRead', {'{ token }'})</code> — SDK-free, zero auth.</Li>
+        <Li>Backend valida <code>token.length &gt;= 20</code>, registro existe → retorna <code>status, cpfCnpj, companyName (Merchant.companyName || fullName), filled</code>.</Li>
+        <Li>Se <code>status === 'preenchido'</code>: form populado e tela de sucesso read-only.</Li>
+      </ol>
+
+      <H3>18.3.2. Campos do formulário</H3>
+      <Table headers={['Campo', 'Obrigatório', 'Limite (sanitize)', 'Placeholder']} rows={[
+        ['Banco', 'Sim', '80 chars', '"Ex: 237 - Bradesco, 341 - Itaú" (texto livre)'],
+        ['Agência', 'Sim', '10 chars', '—'],
+        ['Dígito Agência', 'Não', '2 chars', '—'],
+        ['Conta', 'Sim', '20 chars', '—'],
+        ['Dígito Conta', 'Não', '2 chars', '—'],
       ]} />
 
-      <H2>18.5. Entidades e Funções do Módulo</H2>
-      <Table headers={['Componente', 'Tipo', 'Papel']} rows={[
-        ['/DocCompParceiros', 'Página admin', 'Interface principal — lista hierárquica, filtros, seleção múltipla, ações bulk.'],
-        ['CaseRow', 'Componente', 'Renderiza cada linha (seller ou subseller) com badges de status, progresso e controles de link.'],
-        ['generateBankDataLink', 'Backend function', 'Gera token cripto-seguro e URL /BankDataCollect para o cliente.'],
-        ['publicBankDataRead', 'Backend function (pública)', 'Valida token e retorna dados do caso para preenchimento.'],
-        ['publicBankDataSubmit', 'Backend function (pública)', 'Grava dados bancários, marca como preenchido, registra IP.'],
-        ['BankDataCollection', 'Entidade', 'Armazena token + dados bancários + status de cada solicitação.'],
-        ['exportPartnerComplianceDoc', 'Backend function', 'Processa casos, resolve CPF/CNPJ, enriquece BDC, gera XLSX.'],
-        ['/BankDataCollect', 'Página pública', 'Formulário que o cliente preenche com os dados da conta.'],
+      <InfoBox title="O campo Banco é texto livre, não autocomplete Febraban">
+        <p>O código atual aceita banco como string livre até 80 chars. Não há lista Febraban integrada no frontend nem validação de código no backend. O placeholder sugere o formato <em>"237 - Bradesco"</em>, mas qualquer texto é aceito. Se operacionalmente for necessário código Febraban padronizado, é uma melhoria futura — não estado atual.</p>
+      </InfoBox>
+
+      <H3>18.3.3. <code>publicBankDataSubmit</code> — validações e persistência</H3>
+      <ol className="list-decimal ml-6 space-y-1 mb-3">
+        <Li><code>token.length &gt;= 20</code> → senão 400 <code>invalid_token</code>.</Li>
+        <Li>Busca <code>BankDataCollection.filter({'{ token }'})</code>. Sem registro → 404 <code>not_found</code>.</Li>
+        <Li>Se <code>status === 'expirado'</code> → 410 <code>expired</code>.</Li>
+        <Li>Sanitização: <code>v.trim().slice(0, max)</code> com limites 80/10/2/20/2.</Li>
+        <Li>Obrigatórios: <code>banco</code>, <code>agencia</code>, <code>conta</code>. Faltando → 400 <code>missing_required_fields</code>.</Li>
+        <Li>IP do cliente: <code>x-forwarded-for</code> → <code>x-real-ip</code> → string vazia, truncado a 60 chars.</Li>
+        <Li>Update com dados + <code>status: 'preenchido'</code> + <code>filledAt: now</code> + <code>clientIp</code>.</Li>
+      </ol>
+      <P>Retorno: <code>{'{ ok: true }'}</code>. UI mostra tela "Recebemos seus dados!" com recap read-only e disclaimer LGPD.</P>
+
+      <H2>18.4. Export "Pré KYC Pagsmile" — <code>exportPartnerComplianceDoc</code></H2>
+      <P>Invocada pelo botão "Exportar XLSX". Processa um caso por vez em loop serial. Para cada caso:</P>
+
+      <H3>18.4.1. Montagem da linha por caso</H3>
+      <ol className="list-decimal ml-6 space-y-1 mb-3">
+        <Li><code>OnboardingCase.get(caseId)</code>; se não existe, pula sem lançar.</Li>
+        <Li>Se tem <code>merchantId</code>, busca <code>Merchant.get</code>. Null-safe.</Li>
+        <Li><code>QuestionnaireResponse.filter({'{ onboardingCaseId }'})</code> → passa pelo <code>buildAnswerIndex</code>.</Li>
+        <Li>Classifica PJ/PF (critérios de 18.1.2).</Li>
+        <Li>Resolve doc via <code>resolveCnpj</code> (PJ) ou <code>onlyDigits</code> direto (PF).</Li>
+        <Li>Busca último <code>BankDataCollection</code> com <code>status: 'preenchido'</code>, ordenado por <code>-filledAt</code>, limite 1.</Li>
+        <Li>Monta linha via <code>pick(...vals)</code> — retorna primeiro valor não-vazio, descartando <code>—</code>, <code>-</code> e strings vazias.</Li>
+      </ol>
+
+      <H3>18.4.2. Parser das respostas (<code>buildAnswerIndex</code>) — regras anti-falso-positivo</H3>
+      <P>Cada pergunta é analisada por regex aplicada ao texto (lowercased). Valor extraído em ordem: <code>valueText</code> → <code>valueNumber</code> → <code>valueArray.join</code>:</P>
+      <Table headers={['Campo', 'Regex ACEITA', 'Regex REJEITA', 'Validação']} rows={[
+        ['cnpj', <code key="1">/\bcnpj\b/</code>, '—', 'onlyDigits(val).length === 14'],
+        ['razaoSocial', <code key="2">/raz[aã]o\s*social/</code>, '—', '—'],
+        ['nomeFantasia', <code key="3">/nome\s*fantasia/</code>, '—', '—'],
+        ['cep', <code key="4">/\bcep\b/</code>, '—', '—'],
+        ['rua', <code key="5">/(logradouro|^rua|endere[çc]o\s*.*rua|endere[çc]o\s*completo)/</code>, '—', '—'],
+        ['numero', <code key="6">/(n[úu]mero)/ + /(endere[çc]o|logradouro|casa|im[óo]vel|pr[ée]dio)/</code>, <code key="7">/(s[óo]cios?|funcion[áa]rios?|cnpj|cpf|transa|telefone|celular)/ RECUSA</code>, 'Precisa das positivas E ausência das negativas.'],
+        ['bairro', <code key="8">/bairro/</code>, '—', '—'],
+        ['cidade', <code key="9">/(cidade|munic[íi]pio)/</code>, '—', '—'],
+        ['estado', <code key="10">/\b(estado|uf)\b/</code>, '—', '—'],
       ]} />
 
-      <InfoBox title="Governança e Métricas de Qualidade">
-        <p>• <strong>Taxa de preenchimento do link bancário:</strong> meta ≥ 90% em até 48h da solicitação. • <strong>Casos com dados incompletos na exportação:</strong> meta &lt; 3% do total — valores maiores indicam falhas no enriquecimento BDC ou no parse de respostas. • <strong>Tempo entre aprovação Pagsmile e Pré-KYC entregue ao banco:</strong> meta &lt; 24h. Dashboards internos monitoram essas métricas semanalmente.</p>
+      <InfoBox title="Por que a regra do campo 'número' é tão defensiva">
+        <p>Sem os filtros negativos, perguntas como <em>"Quantos sócios?"</em>, <em>"Número de funcionários?"</em>, <em>"Número do seu CNPJ?"</em> ou <em>"Número de telefone"</em> seriam parseadas erroneamente como número do endereço, e acabariam na célula "Numero" da planilha. Os bancos parceiros receberiam um telefone no lugar do número da rua. Essa linha do parser é produto de bugs reais encontrados em versões anteriores e corrigidos cirurgicamente.</p>
+      </InfoBox>
+
+      <H3>18.4.3. Resolução de CNPJ (<code>resolveCnpj</code>)</H3>
+      <Table headers={['Prioridade', 'Fonte', 'Condição', 'source retornado']} rows={[
+        ['1', 'Merchant.cpfCnpj', 'isCnpj (14 dígitos)', 'merchant'],
+        ['2', 'OnboardingCase.cpfCnpj', 'isCnpj', 'case'],
+        ['3', 'Respostas do questionário', 'answers.cnpj válido (regex + 14 dig)', 'answers'],
+        ['4', 'Lead por email do merchant', 'Lead.cpfCnpj é CNPJ válido', 'lead_email'],
+        ['5', 'Lead pelo merchant.cpfCnpj', 'Lead.cpfCnpj é CNPJ válido', 'lead_cpf'],
+        ['6', 'Nenhuma das anteriores', '—', 'none (linha exportada sem CNPJ)'],
+      ]} />
+
+      <H3>18.4.4. Enriquecimento BDC on-demand</H3>
+      <P>Dispara somente quando as 3 condições batem: <Bold>(i)</Bold> caso é PJ, <Bold>(ii)</Bold> CNPJ válido resolvido, <Bold>(iii)</Bold> pelo menos um dos campos <code>Razão Social, Nome Fantasia, CEP, Rua, Cidade, Estado</code> está vazio.</P>
+      <Table headers={['Parâmetro', 'Valor']} rows={[
+        ['URL', 'https://plataforma.bigdatacorp.com.br/empresas'],
+        ['Headers', 'AccessToken + TokenId (secrets BDC_ACCESS_TOKEN, BDC_TOKEN_ID)'],
+        ['Datasets', <code key="ds">basic_data,addresses</code>],
+        ['Query', <code key="q">{`doc{CNPJ}`}</code>],
+      ]} />
+      <P>Endereço preferido: aquele com <code>Type</code> contendo "MATRIZ" ou "PRINCIPAL"; senão, <code>addresses[0]</code>. Campos BDC preenchem <strong>só slots vazios</strong> — jamais sobrescrevem dados declarados. Quando BDC é acionado, <code>source</code> vira <code>merchant+bdc</code> (visível no debug).</P>
+
+      <H3>18.4.5. Sanity checks pós-merge</H3>
+      <P>Três validações defensivas antes do XLSX:</P>
+      <ul className="list-disc ml-6 space-y-1 mb-3">
+        <Li>Se <code>row['CEP']</code> é CNPJ (14 dígitos) → zera.</Li>
+        <Li>Se <code>row['Numero']</code> é CNPJ → zera.</Li>
+        <Li>Se <code>row['Rua']</code> é CNPJ → zera.</Li>
+      </ul>
+      <P>Esses checks cobrem o último 1% de casos em que parser + BDC produziram contaminação cruzada de colunas. Preferem célula vazia a célula com dado claramente errado.</P>
+
+      <H3>18.4.6. Rastreamento de pendências bancárias</H3>
+      <P>Qualquer linha com <code>Banco</code>, <code>Agencia</code> ou <code>Conta</code> vazios é empurrada para <code>missingBankData[]</code> contendo <code>{'{ caseId, companyName, cpfCnpj }'}</code>. O frontend exibe no toast: <em>"N registros exportados. X sem dados bancários — gere links para eles."</em></P>
+
+      <H2>18.5. Formato da Planilha — aba única "Pré KYC"</H2>
+
+      <H3>18.5.1. Ordem exata das colunas (código fonte)</H3>
+      <Table headers={['#', 'Header', 'Origem — cadeia de fallback']} rows={[
+        ['1', 'CPF/ CNPJ', 'Documento resolvido (cadeia 18.4.3) ou CPF direto do Merchant.'],
+        ['2', 'Nome Fantasia', 'Merchant.companyName → answers.nomeFantasia → BDC.TradeName'],
+        ['3', 'Razão Social', 'Merchant.fullName → answers.razaoSocial → BDC.OfficialName'],
+        ['4', 'Agencia', 'BankDataCollection.agencia (só preenchido)'],
+        ['5', 'Digito', 'BankDataCollection.digitoAgencia'],
+        ['6', 'Conta', 'BankDataCollection.conta'],
+        ['7', 'Digito Conta', 'BankDataCollection.digitoConta'],
+        ['8', 'Banco', 'BankDataCollection.banco'],
+        ['9', 'Email', 'Merchant.email (sem fallback)'],
+        ['10', 'CEP', 'answers.cep → BDC (formatado 00000-000)'],
+        ['11', 'Cidade', 'answers.cidade → BDC.City'],
+        ['12', 'Rua', 'answers.rua → BDC.Street || AddressLine1'],
+        ['13', 'Numero', 'answers.numero → BDC.Number'],
+        ['14', 'Bairro', 'answers.bairro → BDC.Neighborhood'],
+        ['15', 'Estado', 'answers.estado → BDC.State'],
+      ]} />
+
+      <H3>18.5.2. Formato do arquivo</H3>
+      <Table headers={['Propriedade', 'Valor']} rows={[
+        ['Biblioteca', 'npm:xlsx@0.18.5 (SheetJS)'],
+        ['Sheet name', 'Pré KYC (única)'],
+        ['bookType', 'xlsx'],
+        ['Nome do arquivo', <code key="fn">PreKYC-Pagsmile-YYYY-MM-DD.xlsx</code>],
+        ['Encoding', 'ArrayBuffer → Uint8Array → base64 (fileBase64 na resposta)'],
+        ['Download frontend', 'atob → Blob → URL.createObjectURL → anchor.click → revokeObjectURL'],
+      ]} />
+
+      <InfoBox title="O que a planilha NÃO tem (e por quê)">
+        <p>• Nenhuma aba adicional (Pendências, Auditoria) — o código gera só a sheet "Pré KYC"; pendências vão no toast.<br/>• Sem formatação condicional — output XLSX "puro", sem cellStyles.<br/>• Sem coluna "Seller Principal" nas linhas de subseller — hierarquia é visual na tela, não no export.<br/>Se algum desses recursos for necessário, é evolução futura, não estado atual.</p>
+      </InfoBox>
+
+      <H2>18.6. Resposta da função — payload completo</H2>
+      <Table headers={['Campo', 'Tipo', 'Uso']} rows={[
+        ['fileBase64', 'string', 'Planilha binária encoded — decodificada no front para Blob.'],
+        ['fileName', 'string', 'Nome sugerido no download.'],
+        ['rowCount', 'number', 'Quantos casos viraram linha (pode ser < ids enviados se case.get() falhou).'],
+        ['missingBankData', 'array', 'Casos exportados sem banco/agencia/conta — para follow-up.'],
+        ['debug', 'array', 'Auditoria por caso: { caseId, finalDoc, docSource, isPJ }.'],
+      ]} />
+
+      <H2>18.7. Diferença entre este módulo e o Módulo de Parceiros de Compliance (Seção 16)</H2>
+      <Table headers={['Aspecto', 'Seção 16 — Parceiros Compliance', 'Seção 18 — este módulo']} rows={[
+        ['Propósito', 'Parceiro externo ANALISA o dossiê e recomenda decisão.', 'Equipe interna EXTRAI dados estruturados para enviar ao banco BaaS.'],
+        ['Entidades centrais', 'CompliancePartner, CompliancePartnerUser, PartnerAssignment.', 'BankDataCollection + leitura de OnboardingCase/Merchant/QuestionnaireResponse/Lead.'],
+        ['Quem acessa', 'Usuário do parceiro em /ComplianceParceiro, visibilidade configurável.', 'Admin Pagsmile em /DocCompParceiros — user.role === "admin".'],
+        ['Saída', 'Recomendação persistida em PartnerAssignment.recommendation.', 'Arquivo XLSX base64 baixado localmente; nada persistido além dos BankDataCollection criados.'],
+        ['BDC consumido', 'Indireto via dossiê (parceiro não dispara BDC).', 'Fire-on-demand — só PJ com CNPJ válido E campos faltando.'],
+        ['Rastreamento', 'PartnerAssignmentActivity registra cada ação.', 'Array debug por caso no response; sem log persistente da exportação.'],
+      ]} />
+
+      <H2>18.8. Artefatos do módulo</H2>
+      <Table headers={['Arquivo', 'Tipo', 'Responsabilidade']} rows={[
+        [<code key="a">pages/DocCompParceiros.jsx</code>, 'Página admin', 'Tabela hierárquica + filtros + seleção múltipla.'],
+        [<code key="b">components/doc-comp-parceiros/CaseRow.jsx</code>, 'Componente', 'Linha (seller/subseller/placeholder) com badges e ações.'],
+        [<code key="c">functions/generateBankDataLink.js</code>, 'Backend admin', 'Cria/reusa BankDataCollection, token 192-bit, retorna URLs.'],
+        [<code key="d">functions/publicBankDataRead.js</code>, 'Backend público', 'Valida token, retorna identificação mínima.'],
+        [<code key="e">functions/publicBankDataSubmit.js</code>, 'Backend público', 'Sanitiza, valida, persiste, captura IP.'],
+        [<code key="f">functions/exportPartnerComplianceDoc.js</code>, 'Backend admin', 'Loop de casos, resolução CNPJ, BDC, XLSX.'],
+        [<code key="g">pages/BankDataCollect.jsx</code>, 'Página pública', 'Form SDK-free via callPublicFunction.'],
+        [<code key="h">BankDataCollection (entity)</code>, 'Schema', 'onboardingCaseId, merchantId, cpfCnpj, token, status, linkSentAt, filledAt, banco, agencia, digitoAgencia, conta, digitoConta, clientIp.'],
+      ]} />
+
+      <InfoBox title="Ponto de atenção operacional">
+        <p>A função <code>generateBankDataLink</code> reusa o registro existente apenas se <code>status !== 'expirado'</code>. Não há rotina automatizada de expiração — um token permanece válido indefinidamente até que alguém marque manualmente como expirado. Se o requisito regulatório for "links expiram em N dias", precisa-se criar uma automação agendada que rode <code>BankDataCollection.update(..., {'{ status: "expirado" }'})</code> para registros com <code>linkSentAt &lt; now - N dias</code>. Hoje isso não existe.</p>
       </InfoBox>
     </S>
   );
