@@ -78,9 +78,12 @@ function useUrlParams() {
   return useMemo(() => {
     const p = new URLSearchParams(window.location.search);
     // Accept new params (case/token/mode) AND legacy ones (caseId/token/mode, ca_mode, docs_and_caf).
-    const caseId = p.get('case') || p.get('caseId');
-    const token = p.get('token');
-    let mode = p.get('mode') || p.get('ca_mode') || 'full';
+    // Sanitize: messaging apps (Slack/WhatsApp) sometimes append " Show less" / " Show more" to pasted URLs.
+    // Strip anything after a space/+/newline and trim.
+    const sanitize = (v) => (v || '').split(/[\s+]/)[0].trim();
+    const caseId = sanitize(p.get('case') || p.get('caseId'));
+    const token = sanitize(p.get('token'));
+    let mode = sanitize(p.get('mode') || p.get('ca_mode')) || 'full';
     if (mode === 'docs_and_caf') mode = 'docs_caf';
     return { caseId, token, mode };
   }, []);
