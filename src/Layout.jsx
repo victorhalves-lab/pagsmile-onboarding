@@ -3,6 +3,7 @@ import { useLocation, Link } from 'react-router-dom';
 import { createPageUrl } from './utils';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { isPublicPath } from '@/lib/publicRoutes';
 import { 
   LayoutDashboard, 
   FileCheck, 
@@ -48,6 +49,12 @@ export default function Layout({ children, currentPageName }) {
     try { return localStorage.getItem('sidebar_collapsed') === 'true'; } catch { return false; }
   });
 
+  // ⚡ SECURITY + STABILITY: on public routes we MUST NOT call base44.auth.me().
+  // The SDK crashes anonymous visitors with a MessagePort/instanceof TypeError when
+  // it tries to validate a missing token. Short-circuit before any auth call.
+  const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
+  const isPublicRoute = isPublicPath(pathname);
+
   const { data: authData } = useQuery({
     queryKey: ['user'],
     queryFn: async () => {
@@ -57,11 +64,12 @@ export default function Layout({ children, currentPageName }) {
       } catch (error) {
         return { user: null, isAuthenticated: false };
       }
-    }
+    },
+    enabled: !isPublicRoute, // never runs on public pages
   });
 
-  const user = authData?.user;
-  const isAuthenticated = authData?.isAuthenticated;
+  const user = isPublicRoute ? null : authData?.user;
+  const isAuthenticated = isPublicRoute ? false : !!authData?.isAuthenticated;
   const isAdmin = user?.role === 'admin';
 
   const publicPages = [
