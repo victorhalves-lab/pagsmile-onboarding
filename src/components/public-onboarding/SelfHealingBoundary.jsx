@@ -94,10 +94,15 @@ export default class SelfHealingBoundary extends React.Component {
     }
 
     // Key bump re-mounts the whole subtree, clearing any stale DOM references.
+    // NOTE: using a plain <div> wrapper (not React.Fragment) because Vite dev
+    // injects `data-source-location` props into elements — Fragment rejects
+    // any prop other than `key`/`children` and crashes with a cryptic
+    // "instanceof is not callable" TypeError that breaks the boundary itself.
+    // (Same fix was already applied in components/ErrorBoundary.jsx.)
     return (
-      <React.Fragment key={this.state.attemptKey}>
+      <div key={this.state.attemptKey} style={{ display: 'contents' }}>
         {this.props.children}
-      </React.Fragment>
+      </div>
     );
   }
 }

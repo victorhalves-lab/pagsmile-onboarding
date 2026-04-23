@@ -11,39 +11,6 @@
   </head>
   <body class="notranslate">
     <div id="root"></div>
-    <!--
-      Global SDK crash shield — MUST run before any other script.
-      The Base44 platform autoinjects its SDK bundle asynchronously, and when
-      an anonymous visitor opens a public page like /onboarding, the SDK's
-      background auth-validation crashes with:
-          TypeError: Right-hand side of 'instanceof' is not callable
-      …originating from a MessagePort handler inside the platform bundle.
-      The error is purely async (never in React render phase) and harmless,
-      but Chrome logs it and it's alarming to users. We swallow it silently.
-    -->
-    <script>
-      (function () {
-        var isSdkCrash = function (err) {
-          var msg = String((err && err.message) || err || '');
-          var stack = String((err && err.stack) || '');
-          if (msg.indexOf("Right-hand side of 'instanceof' is not callable") !== -1) return true;
-          if (/MessagePort/i.test(stack) && /instanceof/i.test(stack)) return true;
-          return false;
-        };
-        window.addEventListener('error', function (evt) {
-          if (isSdkCrash(evt && evt.error) || isSdkCrash(evt && evt.message)) {
-            evt.preventDefault();
-            if (evt.stopImmediatePropagation) evt.stopImmediatePropagation();
-            return false;
-          }
-        }, true);
-        window.addEventListener('unhandledrejection', function (evt) {
-          if (isSdkCrash(evt && evt.reason)) {
-            evt.preventDefault();
-          }
-        }, true);
-      })();
-    </script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
