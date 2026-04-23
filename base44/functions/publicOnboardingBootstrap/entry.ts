@@ -45,7 +45,8 @@ Deno.serve(async (req) => {
     const mode = MODE_ALIASES[rawMode] || rawMode;
 
     if (!caseId || !token) return Response.json({ ok: false, reason: 'missing_params' });
-    if (!SUPPORTED_MODES.has(mode)) return Response.json({ ok: false, reason: 'invalid_mode' });
+    // Unknown/legacy modes silently fall back to 'full' (safest — lets the user complete everything).
+    const effectiveMode = SUPPORTED_MODES.has(mode) ? mode : 'full';
 
     const base44 = await getClient(req);
 
@@ -76,7 +77,7 @@ Deno.serve(async (req) => {
     let session = null;
     try {
       const found = await base44.asServiceRole.entities.ComplianceSession.filter({
-        sessionToken: sessionKey(caseId, mode),
+        sessionToken: sessionKey(caseId, effectiveMode),
       });
       if (found.length > 0) {
         const s = found[0];
@@ -112,7 +113,7 @@ Deno.serve(async (req) => {
 
     return Response.json({
       ok: true,
-      mode,
+      mode: effectiveMode,
       case: {
         id: theCase.id,
         merchantId: theCase.merchantId,
