@@ -256,10 +256,14 @@ export default class ErrorBoundary extends React.Component {
     }
 
     // Key bump remounts the tree after a DOM transient, clearing stale refs.
+    // NOTE: using a plain <div> wrapper (not React.Fragment) because Vite dev
+    // injects `data-source-location` props into elements — Fragment rejects
+    // any prop other than `key`/`children` and crashes with a cryptic
+    // "instanceof is not callable" TypeError that breaks the boundary itself.
     return (
-      <React.Fragment key={this.state.healKey}>
+      <div key={this.state.healKey} style={{ display: 'contents' }}>
         {this.props.children}
-      </React.Fragment>
+      </div>
     );
   }
 }
