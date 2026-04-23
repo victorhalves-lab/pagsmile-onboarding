@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { callPublicFunction } from '@/lib/publicApi';
 import { Loader2, AlertTriangle } from 'lucide-react';
 
 /**
@@ -17,14 +17,18 @@ export default function PublicSlugRedirect({ type }) {
   const { data, isLoading } = useQuery({
     queryKey: ['publicSlugResolve', type, slug],
     queryFn: async () => {
-      const res = await base44.functions.invoke('publicReadContext', {
+      // SDK-free: this route is PUBLIC. Using base44.functions.invoke fails with 401
+      // because the SDK requires auth on a private app. callPublicFunction bypasses
+      // the SDK entirely and hits /functions/publicReadContext directly.
+      const res = await callPublicFunction('publicReadContext', {
         kind: 'resolve_public_slug',
         entityType: type,
         slug,
       });
-      return res.data || {};
+      return res || {};
     },
     enabled: !!slug && !!type,
+    retry: 2,
   });
 
   if (isLoading) {
