@@ -38,6 +38,7 @@ const getAppParamValue = (paramName, { defaultValue = undefined, removeFromUrl =
 // Duplicated here (instead of imported) because app-params runs BEFORE the SDK
 // is instantiated and we need zero-dependency early detection.
 const PUBLIC_PATH_MARKERS = [
+	'/onboarding',
 	'/compliancedoconly',
 	'/propostapublica',
 	'/propostapadraopublica',
