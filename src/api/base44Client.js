@@ -133,18 +133,29 @@ function createPublicMockClient() {
 // SECURITY MODEL:
 // - The app is "Public (No Login)" — anonymous users can open public pages
 //   (proposals, compliance, contracts, onboarding) without login.
-// - On PUBLIC routes: real SDK is NEVER instantiated — a mock is exported.
-//   This makes the SDK's User/me 401 + instanceof crash physically impossible.
-// - On ADMIN routes: real SDK with token is used; AuthenticatedApp in App.jsx
-//   enforces 3 layers of protection (auth.me, verifyUserAuth, admin JWT).
+// - Previously we returned a Proxy "mock" on public routes to block any
+//   SDK usage. That BROKE the public onboarding: the SDK registers global
+//   MessagePort listeners at module-import time that internally do
+//   `x instanceof ClientClass`. When we replaced the client with a Proxy,
+//   those listeners received messages referencing a class that didn't
+//   match anything, crashing with:
+//       TypeError: Right-hand side of 'instanceof' is not callable
+// - Fix: always instantiate the real SDK with `requiresAuth: false`, which
+//   is the same config that worked before we added the mock. Public pages
+//   still use lib/publicApi.js (raw fetch) for their backend calls — we
+//   simply don't *use* the SDK client on public routes, we just let it
+//   exist so its internal listeners are happy.
 // ═══════════════════════════════════════════════════════════════════════
-export const base44 = isPublic
-  ? createPublicMockClient()
-  : createClient({
-      appId,
-      token,
-      functionsVersion,
-      serverUrl: '',
-      requiresAuth: false,
-      appBaseUrl,
-    });
+export const base44 = createClient({
+  appId,
+  token,
+  functionsVersion,
+  serverUrl: '',
+  requiresAuth: false,
+  appBaseUrl,
+});
+
+// Keep the public-mock factory defined above in case we need it later, but
+// don't use it — it was the thing that broke the page.
+void createPublicMockClient;
+void isPublic;
