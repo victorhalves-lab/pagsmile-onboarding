@@ -15,40 +15,46 @@ export default class ErrorBoundary extends React.Component {
     this._recentTransients = [];
   }
 
-  static getDerivedStateFromError(error) {
-    // DOM-mutation errors caused by external extensions (Google Translate,
-    // Grammarly, LastPass, ad-blockers) that move/remove DOM nodes underneath
-    // React. These are NOT real crashes — the app state is intact.
-    //
-    // Strategy: trigger a silent remount (bumping `healKey`) instead of showing
-    // the scary "Limpar cache e recarregar" screen. The client keeps their
-    // upload progress and just sees a brief flicker.
+  static _isTransient(error) {
     const msg = String(error?.message || error || '');
     const name = String(error?.name || '');
+    const stack = String(error?.stack || '');
+
+    // 1. DOM-mutation errors caused by browser extensions (Google Translate,
+    //    Grammarly, LastPass, ad-blockers) that move/remove DOM nodes underneath
+    //    React. The app state is intact — just remount.
     const isDomTransient =
       (name === 'NotFoundError' && /insertBefore|removeChild|appendChild/i.test(msg)) ||
       /Failed to execute 'insertBefore'/i.test(msg) ||
       /Failed to execute 'removeChild'/i.test(msg) ||
       /Failed to execute 'appendChild'/i.test(msg) ||
       /The node .* is not a child of this node/i.test(msg);
-    if (isDomTransient) {
-      // Don't show fatal UI. Signal to componentDidCatch to schedule a remount.
+    if (isDomTransient) return true;
+
+    // 2. Base44 SDK's async "instanceof is not callable" — fires from a
+    //    MessagePort after a 401 on the User/me endpoint for anonymous users.
+    //    The page state is fine; only the SDK's background fetch failed.
+    //    Silent heal keeps public pages (onboarding, compliance) alive.
+    const isSdkInstanceofCrash =
+      msg.includes("Right-hand side of 'instanceof' is not callable") ||
+      (name === 'TypeError' && /instanceof/i.test(msg)) ||
+      (/MessagePort/i.test(stack) && /instanceof/i.test(stack));
+    if (isSdkInstanceofCrash) return true;
+
+    return false;
+  }
+
+  static getDerivedStateFromError(error) {
+    if (ErrorBoundary._isTransient(error)) {
       return { hasError: false, error, _transient: true };
     }
     return { hasError: true, error };
   }
 
   componentDidCatch(error, errorInfo) {
-    const msg = String(error?.message || error || '');
-    const name = String(error?.name || '');
-    const isDomTransient =
-      (name === 'NotFoundError' && /insertBefore|removeChild|appendChild/i.test(msg)) ||
-      /Failed to execute 'insertBefore'/i.test(msg) ||
-      /Failed to execute 'removeChild'/i.test(msg) ||
-      /Failed to execute 'appendChild'/i.test(msg) ||
-      /The node .* is not a child of this node/i.test(msg);
+    const isTransient = ErrorBoundary._isTransient(error);
 
-    if (isDomTransient) {
+    if (isTransient) {
       // Track rolling window. If we keep crashing with the same DOM error,
       // the extension is clearly still active — escalate to a friendly recovery
       // screen (ask user to open in anonymous mode / disable translator).
