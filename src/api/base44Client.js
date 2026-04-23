@@ -94,6 +94,12 @@ function createPublicMockClient() {
   // but actually CALLING them throws.
   const handler = {
     get(_t, prop) {
+      // Symbol lookups (Symbol.hasInstance, Symbol.toPrimitive, etc.) must
+      // return undefined so JS falls back to default behavior. Returning a
+      // proxy here would break `instanceof`, `String(x)`, etc.
+      if (typeof prop === 'symbol') return undefined;
+      // React/DevTools probe for these — return undefined to avoid recursion.
+      if (prop === 'then' || prop === '$$typeof' || prop === 'toJSON' || prop === 'nodeType' || prop === 'constructor') return undefined;
       if (prop === 'auth') {
         return {
           me: throwOnUse('auth.me'),
@@ -116,13 +122,26 @@ function createPublicMockClient() {
         };
       }
       if (prop === 'entities' || prop === 'asServiceRole' || prop === 'integrations' || prop === 'agents' || prop === 'users' || prop === 'connectors' || prop === 'appLogs') {
-        return new Proxy({}, handler);
+        // CRITICAL: proxy target MUST be a function, not {}.
+        // Otherwise `X instanceof <this>` throws
+        // "Right-hand side of 'instanceof' is not callable" — that's the
+        // root cause of the page crash on public routes.
+        return new Proxy(function () {}, handler);
       }
-      // Unknown prop — return another proxy that also blocks calls.
-      return new Proxy({}, handler);
+      // Unknown prop — return another function-target proxy that also blocks calls.
+      return new Proxy(function () {}, handler);
+    },
+    // Make the proxy pass `instanceof` checks (Symbol.hasInstance) silently
+    // instead of throwing. SDKs often do `obj instanceof SomeClass` during
+    // render; throwing here would crash React.
+    getPrototypeOf() {
+      return Object.prototype;
     },
     apply() {
       throw new Error('[base44] Blocked call on public route — use lib/publicApi.js.');
+    },
+    construct() {
+      throw new Error('[base44] Blocked `new` on public route — use lib/publicApi.js.');
     },
   };
 
