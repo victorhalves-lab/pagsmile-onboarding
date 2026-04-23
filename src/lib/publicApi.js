@@ -45,11 +45,30 @@ export async function callPublicFunction(functionName, payload = {}) {
   }
 
   // ⚡ Base44 gateway edge case: on anonymous requests it sometimes wraps the function
-  // response with a 401 "Authentication required" envelope even though the function
+  // response with a 401/403 "Authentication required" envelope even though the function
   // itself ran successfully and returned a valid body. If the body already looks like
-  // a valid function response ({ ok: true/false, ... }), trust the body over the status.
-  if (body && typeof body === 'object' && 'ok' in body) {
-    return body;
+  // a valid function response, trust the body over the HTTP status.
+  //
+  // A "valid function response" is any JSON body that is NOT purely an auth-error
+  // envelope. Auth-error envelopes from Base44 gateway have shape:
+  //   { message: "Authentication required...", detail: "You must be logged in..." }
+  //   { message: "This app is private...", extra_data: { reason: "auth_required" } }
+  //
+  // If the body has ANY domain field we recognize (ok, template, questions, link,
+  // introducer, proposal, contract, redirectTo, presentation, case, merchant, rates,
+  // proposalSubmitted, docUrl, fileUrl, ...), it's our function's real response.
+  if (body && typeof body === 'object') {
+    const knownFunctionKeys = [
+      'ok', 'template', 'questions', 'link', 'introducer', 'proposal',
+      'contract', 'redirectTo', 'presentation', 'case', 'merchant',
+      'rates', 'partnerId', 'docUrl', 'fileUrl', 'url', 'merchantId',
+      'onboardingCaseId', 'docLinkToken', 'success', 'data', 'bankData',
+      'token', 'status', 'reason',
+    ];
+    const hasFunctionData = knownFunctionKeys.some(k => k in body);
+    if (hasFunctionData) {
+      return body;
+    }
   }
 
   if (!res.ok) {
