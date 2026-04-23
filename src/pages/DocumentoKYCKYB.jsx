@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Loader2, BookOpen, FileStack } from 'lucide-react';
+import { Loader2, BookOpen, FileStack, Layers } from 'lucide-react';
 import DocCapa from '@/components/kyc-doc/DocCapa';
 import DocGlossario from '@/components/kyc-doc/DocGlossario';
 import DocVisaoGeral from '@/components/kyc-doc/DocVisaoGeral';
@@ -23,6 +23,7 @@ import DocParceirosCompliance from '@/components/kyc-doc/DocParceirosCompliance'
 import DocDocOnlyLink from '@/components/kyc-doc/DocDocOnlyLink';
 import DocDocCompParceiros from '@/components/kyc-doc/DocDocCompParceiros';
 import DocTemplatesMicroscopico from '@/components/kyc-doc/DocTemplatesMicroscopico';
+import DocModeloDinamicoKYC from '@/components/kyc-doc/DocModeloDinamicoKYC';
 
 const TOC = [
   { id: 's0', n: '0', label: 'Glossário — Termos Técnicos e Regulatórios' },
@@ -47,7 +48,7 @@ const TOC = [
 ];
 
 export default function DocumentoKYCKYB() {
-  const [activeTab, setActiveTab] = useState('manual'); // 'manual' | 'templates'
+  const [activeTab, setActiveTab] = useState('manual'); // 'manual' | 'templates' | 'dinamico'
 
   const { data: templates = [], isLoading: loadingTemplates } = useQuery({
     queryKey: ['kyc-doc-templates'],
@@ -101,6 +102,13 @@ export default function DocumentoKYCKYB() {
             label="Templates Microscópico"
             sublabel={`${templates.length} templates ativos`}
           />
+          <TabButton
+            active={activeTab === 'dinamico'}
+            onClick={() => setActiveTab('dinamico')}
+            icon={Layers}
+            label="Modelo Dinâmico KYC/KYB"
+            sublabel="Perguntas e docs por segmento"
+          />
         </div>
       </div>
 
@@ -110,6 +118,9 @@ export default function DocumentoKYCKYB() {
       )}
       {activeTab === 'templates' && (
         <DocTemplatesMicroscopico templates={templates} questionsByTemplate={questionsByTemplate} />
+      )}
+      {activeTab === 'dinamico' && (
+        <DocModeloDinamicoKYC templates={templates} questionsByTemplate={questionsByTemplate} />
       )}
     </div>
   );
