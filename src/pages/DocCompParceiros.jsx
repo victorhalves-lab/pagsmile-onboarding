@@ -20,10 +20,21 @@ import { Loader2, Download, Link as LinkIcon, Copy, FileSpreadsheet, RefreshCw, 
 const AUTO_STATUSES = ['Aprovado', 'Manual'];
 const OPTIONAL_STATUSES = ['Recusado', 'Docs Solicitados', 'Em Processamento', 'Pendente'];
 
+const onlyDigits = (s) => String(s || '').replace(/\D/g, '');
+const isCnpj = (s) => onlyDigits(s).length === 14;
+const isCpf = (s) => onlyDigits(s).length === 11;
+const formatDoc = (s) => {
+  const d = onlyDigits(s);
+  if (d.length === 14) return d.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+  if (d.length === 11) return d.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4');
+  return s || '—';
+};
+
 export default function DocCompParceiros() {
   const [loading, setLoading] = useState(true);
   const [cases, setCases] = useState([]);
   const [merchants, setMerchants] = useState({});
+  const [resolvedDocs, setResolvedDocs] = useState({}); // caseId -> { doc, isPJ }
   const [bankMap, setBankMap] = useState({}); // caseId -> BankDataCollection
   const [selected, setSelected] = useState(new Set());
   const [statusFilter, setStatusFilter] = useState('auto');
@@ -60,10 +71,74 @@ export default function DocCompParceiros() {
       // Auto-select Aprovado + Manual
       const auto = new Set((allCases || []).filter(c => AUTO_STATUSES.includes(c.status)).map(c => c.id));
       setSelected(auto);
+
+      // Resolve CNPJ correto por caso (para PJ): Merchant > Case > Respostas > Lead
+      resolveDocsForCases(allCases || [], merchantMap);
     } catch (e) {
       toast({ title: 'Erro ao carregar', description: e.message, variant: 'destructive' });
     } finally {
       setLoading(false);
+    }
+  }
+
+  // Resolves the correct doc (CNPJ for PJ, CPF for PF) for each case by
+  // checking Merchant -> Case -> QuestionnaireResponse -> Lead. Runs in background.
+  async function resolveDocsForCases(allCases, merchantMap) {
+    const resolved = {};
+
+    // First pass: what we already know from merchant/case
+    for (const c of allCases) {
+      const m = merchantMap[c.merchantId] || {};
+      const isPJ = m.type === 'PJ' || isCnpj(m.cpfCnpj) || isCnpj(c.cpfCnpj);
+
+      let doc = '';
+      if (isPJ) {
+        if (isCnpj(m.cpfCnpj)) doc = onlyDigits(m.cpfCnpj);
+        else if (isCnpj(c.cpfCnpj)) doc = onlyDigits(c.cpfCnpj);
+      } else {
+        doc = onlyDigits(m.cpfCnpj || c.cpfCnpj);
+      }
+      resolved[c.id] = { doc, isPJ };
+    }
+    setResolvedDocs({ ...resolved });
+
+    // Second pass: for PJ cases still missing a valid CNPJ, look up QuestionnaireResponse + Lead
+    const needsLookup = allCases.filter(c => {
+      const r = resolved[c.id];
+      return r?.isPJ && !isCnpj(r.doc);
+    });
+
+    // Parallel, capped to 10 at a time to avoid spamming the API
+    const CHUNK = 10;
+    for (let i = 0; i < needsLookup.length; i += CHUNK) {
+      const batch = needsLookup.slice(i, i + CHUNK);
+      await Promise.all(batch.map(async (c) => {
+        try {
+          // Look for a CNPJ in the questionnaire responses
+          const responses = await base44.entities.QuestionnaireResponse.filter({ onboardingCaseId: c.id });
+          for (const r of (responses || [])) {
+            const qt = String(r.questionText || '').toLowerCase();
+            const val = onlyDigits(r.valueText);
+            if (/\bcnpj\b/.test(qt) && val.length === 14) {
+              resolved[c.id] = { doc: val, isPJ: true };
+              return;
+            }
+          }
+          // Fallback: look up Lead by email
+          const m = merchantMap[c.merchantId] || {};
+          if (m.email) {
+            const leads = await base44.entities.Lead.filter({ email: m.email });
+            for (const l of (leads || [])) {
+              if (isCnpj(l.cpfCnpj)) {
+                resolved[c.id] = { doc: onlyDigits(l.cpfCnpj), isPJ: true };
+                return;
+              }
+            }
+          }
+        } catch { /* ignore */ }
+      }));
+      // Update progressively so the UI feels responsive
+      setResolvedDocs({ ...resolved });
     }
   }
 
@@ -77,8 +152,9 @@ export default function DocCompParceiros() {
       const q = search.trim().toLowerCase();
       list = list.filter(c => {
         const m = merchants[c.merchantId] || {};
+        const resolved = resolvedDocs[c.id]?.doc || '';
         return (
-          (c.cpfCnpj || '').toLowerCase().includes(q) ||
+          (resolved || c.cpfCnpj || '').toLowerCase().includes(q) ||
           (m.companyName || '').toLowerCase().includes(q) ||
           (m.fullName || '').toLowerCase().includes(q) ||
           (m.email || '').toLowerCase().includes(q)
@@ -86,7 +162,7 @@ export default function DocCompParceiros() {
       });
     }
     return list;
-  }, [cases, merchants, statusFilter, search]);
+  }, [cases, merchants, statusFilter, search, resolvedDocs]);
 
   const toggleOne = (id) => {
     const next = new Set(selected);
@@ -283,7 +359,24 @@ export default function DocCompParceiros() {
                       <div className="font-medium text-[#002443]">{m.companyName || m.fullName || '—'}</div>
                       {m.email && <div className="text-xs text-muted-foreground">{m.email}</div>}
                     </td>
-                    <td className="p-3 font-mono text-xs">{c.cpfCnpj || m.cpfCnpj || '—'}</td>
+                    <td className="p-3 font-mono text-xs">
+                      {(() => {
+                        const r = resolvedDocs[c.id];
+                        const isPJ = r?.isPJ ?? (m.type === 'PJ');
+                        const doc = r?.doc || c.cpfCnpj || m.cpfCnpj || '';
+                        const isValid = isPJ ? isCnpj(doc) : isCpf(doc);
+                        return (
+                          <div className="flex items-center gap-2">
+                            <span>{formatDoc(doc)}</span>
+                            {isPJ && !isValid && (
+                              <Badge className="bg-red-50 text-red-700 border-red-200 text-[10px]">CNPJ não encontrado</Badge>
+                            )}
+                            {isPJ && isValid && <Badge variant="outline" className="text-[10px]">CNPJ</Badge>}
+                            {!isPJ && isValid && <Badge variant="outline" className="text-[10px]">CPF</Badge>}
+                          </div>
+                        );
+                      })()}
+                    </td>
                     <td className="p-3">
                       <Badge variant="outline">{c.status}</Badge>
                     </td>
