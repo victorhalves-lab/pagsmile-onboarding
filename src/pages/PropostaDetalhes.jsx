@@ -192,6 +192,10 @@ export default function PropostaDetalhes() {
       } catch {}
     }
 
+    // FIX: nova versão recebe validade NOVA (+30 dias a partir de hoje), nunca
+    // herda a validade antiga — senão pode nascer já expirada.
+    const newValidUntil = moment().add(30, 'days').endOf('day').toISOString();
+
     const newProposta = {
       ...dataToCopy,
       leadId: resolvedLeadId,
@@ -201,6 +205,7 @@ export default function PropostaDetalhes() {
       previousVersionId: proposta.id,
       rootProposalId: rootId,
       isCurrentVersion: true,
+      validUntil: newValidUntil,
     };
 
     const created = await base44.entities.Proposal.create(newProposta);
