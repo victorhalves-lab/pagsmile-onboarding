@@ -16,6 +16,7 @@
 // Small caveat: because `import` statements must be static, we use a dynamic
 // `import()` that is awaited at the top of main.jsx BEFORE any React code runs.
 
+import { createClient } from '@base44/sdk';
 import { appParams } from '@/lib/app-params';
 import { isPublicPath } from '@/lib/publicRoutes';
 
@@ -102,48 +103,26 @@ function createMock() {
 // on non-onboarding routes get the real client synchronously.
 // ─────────────────────────────────────────────────────────────────────────
 
-let realClient = null;
+// SDK is imported statically — bundled by Vite, no runtime fetch, no chunk errors.
+// On onboarding public routes the SDK is still imported but all calls are routed
+// to the mock by the Proxy below, so no side-effectful SDK code runs for them.
+const realClient = isOnboardingPublicRoute ? null : createClient({
+  appId: appParams.appId,
+  token: appParams.token,
+  functionsVersion: appParams.functionsVersion,
+  serverUrl: '',
+  requiresAuth: false,
+  appBaseUrl: appParams.appBaseUrl,
+});
 
-export async function ensureSdkLoaded() {
-  if (isOnboardingPublicRoute) return; // NEVER load SDK here
-  if (realClient) return;
-  // Retry with backoff on transient chunk-fetch failures (Vite HMR cache, network
-  // blip, deploy in progress). If it still fails after 4 attempts, let the app
-  // render with the mock — better a broken-but-visible page than a blank screen.
-  let mod;
-  const delays = [400, 800, 1600]; // between 4 attempts
-  for (let i = 0; i < 4; i++) {
-    try {
-      mod = await import('@base44/sdk');
-      break;
-    } catch (err) {
-      console.warn(`[base44] SDK import failed (attempt ${i + 1}/4)`, err?.message);
-      if (i === 3) {
-        console.error('[base44] SDK import exhausted all retries — falling back to mock.');
-        return;
-      }
-      await new Promise(r => setTimeout(r, delays[i]));
-    }
-  }
-  realClient = mod.createClient({
-    appId: appParams.appId,
-    token: appParams.token,
-    functionsVersion: appParams.functionsVersion,
-    serverUrl: '',
-    requiresAuth: false,
-    appBaseUrl: appParams.appBaseUrl,
-  });
-}
+// Kept for backwards compatibility with main.jsx — now a no-op.
+export async function ensureSdkLoaded() {}
 
 const mockClient = createMock();
 
 export const base44 = new Proxy({}, {
   get(_t, prop) {
     if (isOnboardingPublicRoute) return mockClient[prop];
-    if (realClient) return realClient[prop];
-    // SDK not yet loaded — fall back to mock. In practice main.jsx awaits
-    // ensureSdkLoaded() before rendering, so this branch never fires at
-    // render time, only during cold module evaluation.
-    return mockClient[prop];
+    return realClient[prop];
   },
 });
