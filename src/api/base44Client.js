@@ -133,29 +133,36 @@ function createPublicMockClient() {
 // SECURITY MODEL:
 // - The app is "Public (No Login)" — anonymous users can open public pages
 //   (proposals, compliance, contracts, onboarding) without login.
-// - Previously we returned a Proxy "mock" on public routes to block any
-//   SDK usage. That BROKE the public onboarding: the SDK registers global
-//   MessagePort listeners at module-import time that internally do
-//   `x instanceof ClientClass`. When we replaced the client with a Proxy,
-//   those listeners received messages referencing a class that didn't
-//   match anything, crashing with:
+// - On ONBOARDING public routes (/onboarding, /PublicOnboarding,
+//   /ComplianceDocOnly), we return a mock client that NEVER instantiates
+//   the real SDK. These are the routes where the gateway returns 401 on
+//   the initial HTML, which in turn triggers the SDK's MessagePort
+//   listener to crash with:
 //       TypeError: Right-hand side of 'instanceof' is not callable
-// - Fix: always instantiate the real SDK with `requiresAuth: false`, which
-//   is the same config that worked before we added the mock. Public pages
-//   still use lib/publicApi.js (raw fetch) for their backend calls — we
-//   simply don't *use* the SDK client on public routes, we just let it
-//   exist so its internal listeners are happy.
+//   By never creating the real client on those routes, the listener is
+//   never registered, so the crash is physically impossible.
+// - On every OTHER route (including other public routes like proposals
+//   and contracts, and all admin routes), we instantiate the real SDK
+//   with `requiresAuth: false`. Those pages have been working correctly
+//   and we don't want to break them.
 // ═══════════════════════════════════════════════════════════════════════
-export const base44 = createClient({
-  appId,
-  token,
-  functionsVersion,
-  serverUrl: '',
-  requiresAuth: false,
-  appBaseUrl,
-});
+const ONBOARDING_PUBLIC_ROUTES_LOWER = new Set([
+  '/onboarding',
+  '/publiconboarding',
+  '/compliancedoconly',
+]);
+const isOnboardingPublicRoute = typeof window !== 'undefined'
+  && ONBOARDING_PUBLIC_ROUTES_LOWER.has(window.location.pathname.toLowerCase());
 
-// Keep the public-mock factory defined above in case we need it later, but
-// don't use it — it was the thing that broke the page.
-void createPublicMockClient;
+export const base44 = isOnboardingPublicRoute
+  ? createPublicMockClient()
+  : createClient({
+      appId,
+      token,
+      functionsVersion,
+      serverUrl: '',
+      requiresAuth: false,
+      appBaseUrl,
+    });
+
 void isPublic;
