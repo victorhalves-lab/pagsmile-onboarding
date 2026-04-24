@@ -28,13 +28,19 @@ const MODE_ALIASES = {
   caf: 'caf_only',
 };
 
-async function getClient(req) {
-  try {
-    return createClientFromRequest(req);
-  } catch (_) {
-    const { createClient } = await import('npm:@base44/sdk@0.8.25');
-    return createClient({ appId: Deno.env.get('BASE44_APP_ID'), requiresAuth: false });
-  }
+// PUBLIC endpoint — always use an anonymous client. We intentionally DO NOT
+// call createClientFromRequest(req) because:
+//   1. The request may carry an expired/invalid access_token in the URL (e.g.
+//      admin who generated the link, then the token in their browser expired
+//      and got copied into an anonymous tab).
+//   2. The SDK, when built from a request with a token, runs a background
+//      `users/me` validation that throws "Authentication required to view users"
+//      — even if we only use asServiceRole afterwards. That error bubbles up
+//      and the function returns 500 → the client enters a crash loop.
+// Using a pure anonymous client avoids both. asServiceRole works regardless.
+async function getClient() {
+  const { createClient } = await import('npm:@base44/sdk@0.8.25');
+  return createClient({ appId: Deno.env.get('BASE44_APP_ID'), requiresAuth: false });
 }
 
 function sessionKey(caseId, mode) {
@@ -53,7 +59,7 @@ Deno.serve(async (req) => {
     // Unknown/legacy modes silently fall back to 'full' (safest — lets the user complete everything).
     const effectiveMode = SUPPORTED_MODES.has(mode) ? mode : 'full';
 
-    const base44 = await getClient(req);
+    const base44 = await getClient();
 
     // 1) Load + validate case
     let cases = [];
