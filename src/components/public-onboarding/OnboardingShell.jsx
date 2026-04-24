@@ -36,6 +36,7 @@ class LocalErrorBoundary extends React.Component {
     super(props);
     this.state = { err: null, healKey: 0 };
     this._transientCount = 0;
+    this._lastTransientAt = 0;
   }
   static getDerivedStateFromError(err) {
     if (isTransientBoundaryError(err)) return {}; // let componentDidCatch decide
@@ -56,17 +57,28 @@ class LocalErrorBoundary extends React.Component {
       }).catch(() => {});
     } catch (_) {}
 
-    // Self-heal transient errors — bump key to remount. Only escalate to the
-    // crash screen after 3 repeats in a row, which means it's NOT transient.
+    // Self-heal transient errors. Only escalate after 3 crashes IN RAPID
+    // SUCCESSION (<2s apart) — not 3 cumulative crashes across the whole
+    // session. SDK's `instanceof` crashes can fire sporadically for an hour
+    // of valid usage and that's fine as long as a remount recovers each
+    // time. Previous version counted every crash forever → clients using
+    // the page for >5 min would see "Ops, algo não carregou" even though
+    // the page was actually healing correctly between crashes.
     if (isTransientBoundaryError(err)) {
+      const now = Date.now();
+      if (now - this._lastTransientAt > 2000) {
+        this._transientCount = 0;
+      }
+      this._lastTransientAt = now;
       this._transientCount += 1;
+
       if (this._transientCount < 3) {
         setTimeout(() => {
           this.setState(s => ({ healKey: s.healKey + 1 }));
         }, 50);
         return;
       }
-      // Repeated → not transient anymore, show fallback.
+      // 3 crashes within 2s → truly stuck, show fallback.
       this.setState({ err });
     }
   }

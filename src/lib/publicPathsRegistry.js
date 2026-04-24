@@ -6,6 +6,12 @@
 // ══════════════════════════════════════════════════════════════════
 
 export const PUBLIC_PATHS = new Set([
+  '/onboarding',
+  '/BankDataCollect',
+  // NOTA: embora listadas aqui, rotas públicas só funcionam se o app estiver
+  // configurado como "Public (No Login)" na plataforma Base44. Caso contrário,
+  // o gateway da plataforma redireciona qualquer request ao login ANTES de chegar
+  // neste código. Ver Settings → Visibility no dashboard.
   '/ComplianceDocOnly',
   '/PropostaPublica',
   '/PropostaPadraoPublica',
