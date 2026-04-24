@@ -107,7 +107,22 @@ let realClient = null;
 export async function ensureSdkLoaded() {
   if (isOnboardingPublicRoute) return; // NEVER load SDK here
   if (realClient) return;
-  const mod = await import('@base44/sdk');
+  // Retry once on transient chunk-fetch failures (Vite HMR cache, network blip,
+  // deploy in progress). If it still fails, let the app render with the mock —
+  // better a broken-but-visible page than a permanent blank screen.
+  let mod;
+  try {
+    mod = await import('@base44/sdk');
+  } catch (err) {
+    console.warn('[base44] SDK dynamic import failed, retrying once...', err?.message);
+    await new Promise(r => setTimeout(r, 500));
+    try {
+      mod = await import('@base44/sdk');
+    } catch (err2) {
+      console.error('[base44] SDK dynamic import failed twice — falling back to mock.', err2?.message);
+      return;
+    }
+  }
   realClient = mod.createClient({
     appId: appParams.appId,
     token: appParams.token,
