@@ -1,26 +1,20 @@
 import React, { useMemo } from 'react';
-import { FileQuestion, FileCheck2, Layers, Filter, Download, Sparkles, Target, Check, Minus } from 'lucide-react';
+import { FileQuestion, FileCheck2, Layers, Filter, Download, Sparkles } from 'lucide-react';
 
 /**
- * Sub-aba "Modelo Dinâmico KYC/KYB" — Visão microscópica.
+ * Sub-aba "Modelo Dinâmico KYC/KYB" — Visão por Segmento.
  *
- * Analisa EXATAMENTE os 9 questionários de Compliance V4:
- *   E-commerce, Gateway, Dropshipping, Educação, Merchant Link de Pagamento,
- *   MPE, SaaS, Marketplace, Plataformas Verticais.
+ * Analisa os 9 questionários de Compliance V4 e mostra:
+ *   SEÇÃO 1 — Perguntas COMUNS a todos os 9 segmentos (lista única, em ordem)
+ *   SEÇÃO 2 — Perguntas CONDICIONAIS agrupadas POR SEGMENTO (um bloco por segmento)
+ *   SEÇÃO 3 — Documentos COMUNS a todos os 9 segmentos
+ *   SEÇÃO 4 — Documentos CONDICIONAIS agrupados POR SEGMENTO
  *
- * 4 Seções:
- *   1. Perguntas COMUNS (em todos os 9)
- *   2. Perguntas CONDICIONAIS por segmento (matriz ✓/—)
- *   3. Documentos COMUNS (em todos os 9)
- *   4. Documentos CONDICIONAIS por segmento (matriz ✓/—)
- *
- * Props:
- *   templates: QuestionnaireTemplate[] (category=COMPLIANCE, isActive=true)
- *   questionsByTemplate: { [templateId]: Question[] }
+ * Dentro de cada bloco de segmento, perguntas/documentos aparecem na ordem exata
+ * como constam naquele questionário (campo `order` do próprio template).
  */
 
 // ─── Os 9 modelos V4 oficiais ──────────────────────────────────────────
-// Mapeia o `model` de cada template para um label curto legível.
 const V4_MODELS = {
   ComplianceEcommerceV4: 'E-commerce',
   ComplianceGatewayV4: 'Gateway',
@@ -36,16 +30,30 @@ const V4_MODELS = {
 
 const V4_MODEL_KEYS = new Set(Object.keys(V4_MODELS));
 
+// Ordem visual dos segmentos (maior risco/complexidade primeiro)
+const SEGMENT_ORDER = [
+  'ComplianceGatewayV4',
+  'ComplianceMarketplaceV4',
+  'CompliancePlataformaVerticalV4',
+  'ComplianceEcommerceV4',
+  'ComplianceDropshippingV4',
+  'ComplianceEducacaoV4',
+  'ComplianceMerchantLinkV4',
+  'ComplianceLinkPagamentoV4',
+  'ComplianceMPEV4',
+  'ComplianceSaaSV4',
+];
+
 export default function DocModeloDinamicoKYC({ templates = [], questionsByTemplate = {} }) {
-  // Trava: somente os 9 questionários V4 oficiais.
   const v4Templates = useMemo(() => {
-    return templates
-      .filter(t => t.category === 'COMPLIANCE' && t.isActive !== false && V4_MODEL_KEYS.has(t.model))
-      .sort((a, b) => {
-        const la = V4_MODELS[a.model] || a.name || '';
-        const lb = V4_MODELS[b.model] || b.name || '';
-        return la.localeCompare(lb, 'pt-BR');
-      });
+    const filtered = templates.filter(t =>
+      t.category === 'COMPLIANCE' && t.isActive !== false && V4_MODEL_KEYS.has(t.model)
+    );
+    return filtered.sort((a, b) => {
+      const ia = SEGMENT_ORDER.indexOf(a.model);
+      const ib = SEGMENT_ORDER.indexOf(b.model);
+      return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+    });
   }, [templates]);
 
   const analysis = useMemo(
@@ -62,7 +70,7 @@ export default function DocModeloDinamicoKYC({ templates = [], questionsByTempla
   };
 
   return (
-    <div id="doc-dinamico-kyc" className="max-w-[1400px] mx-auto px-6 py-8 space-y-10">
+    <div id="doc-dinamico-kyc" className="max-w-[1200px] mx-auto px-6 py-8 space-y-10">
       <PrintStyles />
 
       <Header
@@ -72,7 +80,7 @@ export default function DocModeloDinamicoKYC({ templates = [], questionsByTempla
       />
 
       {v4Templates.length === 0 ? (
-        <EmptyBox message="Nenhum dos 9 questionários Compliance V4 foi encontrado. Verifique se os templates oficiais estão ativos." />
+        <EmptyBox message="Nenhum dos 9 questionários Compliance V4 foi encontrado ativo." />
       ) : (
         <>
           <Legend segmentLabels={analysis.segmentLabels} segmentIds={analysis.segmentIds} />
@@ -82,28 +90,23 @@ export default function DocModeloDinamicoKYC({ templates = [], questionsByTempla
             icon={Layers}
             num="1"
             title="Perguntas Comuns a Todos os Segmentos"
-            subtitle={`${analysis.commonQuestions.length} perguntas aparecem nos ${v4Templates.length} questionários V4.`}
+            subtitle={`${analysis.commonQuestions.length} perguntas aparecem nos ${v4Templates.length} questionários V4, em ordem do questionário.`}
             color="#2bc196"
           >
-            <CommonItemsTable items={analysis.commonQuestions} kind="question" totalSegments={v4Templates.length} />
+            <CommonItemsList items={analysis.commonQuestions} kind="question" />
           </Section>
 
-          {/* 2. Perguntas CONDICIONAIS */}
+          {/* 2. Perguntas CONDICIONAIS por segmento */}
           <Section
             icon={Filter}
             num="2"
             title="Perguntas Condicionais por Segmento"
-            subtitle={`${analysis.conditionalQuestions.length} perguntas aparecem em alguns segmentos mas não em todos.`}
+            subtitle="Perguntas específicas de cada segmento — que não aparecem em todos os 9 questionários. Cada bloco abaixo é um segmento."
             color="#f59e0b"
           >
-            <ConditionalMatrix
-              items={analysis.conditionalQuestions}
+            <BySegmentBlocks
+              perSegment={analysis.conditionalQuestionsBySegment}
               segmentIds={analysis.segmentIds}
-              segmentLabels={analysis.segmentLabels}
-              kind="question"
-            />
-            <ExclusiveItemsCard
-              items={analysis.conditionalQuestions.filter(i => i.presentCount === 1)}
               segmentLabels={analysis.segmentLabels}
               kind="question"
             />
@@ -117,25 +120,20 @@ export default function DocModeloDinamicoKYC({ templates = [], questionsByTempla
             subtitle={`${analysis.commonDocs.length} documentos são solicitados em todos os ${v4Templates.length} questionários V4.`}
             color="#2bc196"
           >
-            <CommonItemsTable items={analysis.commonDocs} kind="doc" totalSegments={v4Templates.length} />
+            <CommonItemsList items={analysis.commonDocs} kind="doc" />
           </Section>
 
-          {/* 4. Documentos CONDICIONAIS */}
+          {/* 4. Documentos CONDICIONAIS por segmento */}
           <Section
             icon={FileQuestion}
             num="4"
             title="Documentos Condicionais por Segmento"
-            subtitle={`${analysis.conditionalDocs.length} documentos são exigidos apenas em alguns segmentos.`}
+            subtitle="Documentos específicos exigidos por cada segmento — não são comuns a todos."
             color="#f59e0b"
           >
-            <ConditionalMatrix
-              items={analysis.conditionalDocs}
+            <BySegmentBlocks
+              perSegment={analysis.conditionalDocsBySegment}
               segmentIds={analysis.segmentIds}
-              segmentLabels={analysis.segmentLabels}
-              kind="doc"
-            />
-            <ExclusiveItemsCard
-              items={analysis.conditionalDocs.filter(i => i.presentCount === 1)}
               segmentLabels={analysis.segmentLabels}
               kind="doc"
             />
@@ -147,14 +145,14 @@ export default function DocModeloDinamicoKYC({ templates = [], questionsByTempla
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   ANÁLISE — comuns vs. condicionais
+   ANÁLISE — comuns + condicionais agrupadas por segmento
    ═══════════════════════════════════════════════════════════════════════ */
 function analyzeTemplates(templates, questionsByTemplate) {
   if (templates.length === 0) {
     return {
       stats: {},
-      commonQuestions: [], conditionalQuestions: [],
-      commonDocs: [], conditionalDocs: [],
+      commonQuestions: [], commonDocs: [],
+      conditionalQuestionsBySegment: {}, conditionalDocsBySegment: {},
       segmentIds: [], segmentLabels: {},
     };
   }
@@ -170,102 +168,154 @@ function analyzeTemplates(templates, questionsByTemplate) {
     };
   });
 
-  // ── Perguntas ─────────────────────────────────────
-  // Guarda a ORDEM em que cada pergunta aparece em cada template (campo `order`).
-  // Para ordenação final: usa a MENOR ordem encontrada entre os templates em que a pergunta aparece
-  // — assim a lista reflete a sequência natural como o analista vê no questionário.
-  const questionsMap = new Map();
+  // ── Perguntas: descobrir quais são comuns (aparecem em TODOS os templates) ──
+  const qPresence = new Map(); // key → { text, type, ..., templatesPresent: Set, minOrder }
   templates.forEach(t => {
     const qs = questionsByTemplate[t.id] || [];
     qs.forEach(q => {
       const key = normalizeText(q.text);
       if (!key) return;
-      if (!questionsMap.has(key)) {
-        questionsMap.set(key, {
-          text: q.text,
-          type: q.type,
+      if (!qPresence.has(key)) {
+        qPresence.set(key, {
+          text: q.text, type: q.type,
           isRequired: !!q.isRequired,
           options: Array.isArray(q.options) ? q.options : [],
           riskWeight: q.riskWeight || 0,
           helpText: q.helpText || '',
-          conditionalLogic: q.conditionalLogic || null,
           templatesPresent: new Set(),
           minOrder: Number.isFinite(q.order) ? q.order : Infinity,
         });
       }
-      const entry = questionsMap.get(key);
-      entry.templatesPresent.add(t.id);
-      if (!entry.options.length && Array.isArray(q.options)) entry.options = q.options;
-      if (!entry.riskWeight && q.riskWeight) entry.riskWeight = q.riskWeight;
-      if (!entry.helpText && q.helpText) entry.helpText = q.helpText;
-      if (Number.isFinite(q.order) && q.order < entry.minOrder) entry.minOrder = q.order;
+      const e = qPresence.get(key);
+      e.templatesPresent.add(t.id);
+      if (!e.options.length && Array.isArray(q.options)) e.options = q.options;
+      if (!e.riskWeight && q.riskWeight) e.riskWeight = q.riskWeight;
+      if (!e.helpText && q.helpText) e.helpText = q.helpText;
+      if (Number.isFinite(q.order) && q.order < e.minOrder) e.minOrder = q.order;
     });
   });
 
-  const commonQuestions = [];
-  const conditionalQuestions = [];
-
-  questionsMap.forEach((entry, key) => {
-    const presentCount = entry.templatesPresent.size;
-    const base = {
-      key, text: entry.text, type: entry.type, isRequired: entry.isRequired,
-      options: entry.options, riskWeight: entry.riskWeight, helpText: entry.helpText,
-      conditionalLogic: entry.conditionalLogic,
-      minOrder: entry.minOrder,
-    };
-    if (presentCount === totalSegments) commonQuestions.push(base);
-    else conditionalQuestions.push({ ...base, presentIn: new Set(entry.templatesPresent), presentCount });
+  const commonKeysQ = new Set();
+  qPresence.forEach((e, key) => {
+    if (e.templatesPresent.size === totalSegments) commonKeysQ.add(key);
   });
 
-  // Ordem natural do questionário (campo `order`), com fallback alfabético.
-  const byOrder = (a, b) => (a.minOrder - b.minOrder) || a.text.localeCompare(b.text, 'pt-BR');
-  commonQuestions.sort(byOrder);
-  conditionalQuestions.sort(byOrder);
+  const commonQuestions = [...qPresence.entries()]
+    .filter(([k]) => commonKeysQ.has(k))
+    .map(([k, e]) => ({
+      key: k, text: e.text, type: e.type, isRequired: e.isRequired,
+      options: e.options, riskWeight: e.riskWeight, helpText: e.helpText,
+      minOrder: e.minOrder,
+    }))
+    .sort((a, b) => (a.minOrder - b.minOrder) || a.text.localeCompare(b.text, 'pt-BR'));
 
-  // ── Documentos ────────────────────────────────────
-  const docsMap = new Map();
+  // ── Perguntas condicionais agrupadas POR SEGMENTO ─────────────────────
+  // Para cada template, pegamos suas perguntas que NÃO estão no conjunto comum.
+  // Ordem preservada pelo `order` do próprio template.
+  const conditionalQuestionsBySegment = {};
+  templates.forEach(t => {
+    const qs = (questionsByTemplate[t.id] || [])
+      .slice()
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    const conds = [];
+    qs.forEach(q => {
+      const key = normalizeText(q.text);
+      if (!key || commonKeysQ.has(key)) return;
+      const presence = qPresence.get(key);
+      const sharedWith = presence
+        ? [...presence.templatesPresent].filter(id => id !== t.id)
+        : [];
+      conds.push({
+        key,
+        text: q.text, type: q.type, isRequired: !!q.isRequired,
+        options: Array.isArray(q.options) ? q.options : [],
+        riskWeight: q.riskWeight || 0,
+        helpText: q.helpText || '',
+        conditionalLogic: q.conditionalLogic || null,
+        order: q.order ?? 0,
+        sharedWith,
+        isExclusive: sharedWith.length === 0,
+      });
+    });
+    conditionalQuestionsBySegment[t.id] = conds;
+  });
+
+  // ── Documentos: mesma lógica ─────────────────────────────────────────
+  const dPresence = new Map();
   templates.forEach(t => {
     const docs = Array.isArray(t.requiredDocuments) ? t.requiredDocuments : [];
-    docs.forEach(d => {
+    docs.forEach((d, idx) => {
       const key = normalizeText(d.label || d.documentTypeId);
       if (!key) return;
-      if (!docsMap.has(key)) {
-        docsMap.set(key, {
+      if (!dPresence.has(key)) {
+        dPresence.set(key, {
           label: d.label || d.documentTypeId,
           documentTypeId: d.documentTypeId,
           required: !!d.required,
-          conditionalLogic: d.conditionalLogic || null,
+          description: d.description || '',
           templatesPresent: new Set(),
+          minOrder: idx,
         });
       }
-      docsMap.get(key).templatesPresent.add(t.id);
+      const e = dPresence.get(key);
+      e.templatesPresent.add(t.id);
+      if (!e.description && d.description) e.description = d.description;
+      if (idx < e.minOrder) e.minOrder = idx;
     });
   });
 
-  const commonDocs = [];
-  const conditionalDocs = [];
-
-  docsMap.forEach((entry, key) => {
-    const presentCount = entry.templatesPresent.size;
-    const base = {
-      key, label: entry.label, documentTypeId: entry.documentTypeId,
-      required: entry.required, conditionalLogic: entry.conditionalLogic,
-    };
-    if (presentCount === totalSegments) commonDocs.push(base);
-    else conditionalDocs.push({ ...base, presentIn: new Set(entry.templatesPresent), presentCount });
+  const commonKeysD = new Set();
+  dPresence.forEach((e, key) => {
+    if (e.templatesPresent.size === totalSegments) commonKeysD.add(key);
   });
 
-  commonDocs.sort((a, b) => a.label.localeCompare(b.label, 'pt-BR'));
-  conditionalDocs.sort((a, b) => b.presentCount - a.presentCount || a.label.localeCompare(b.label, 'pt-BR'));
+  const commonDocs = [...dPresence.entries()]
+    .filter(([k]) => commonKeysD.has(k))
+    .map(([k, e]) => ({
+      key: k, label: e.label, documentTypeId: e.documentTypeId,
+      required: e.required, description: e.description, minOrder: e.minOrder,
+    }))
+    .sort((a, b) => (a.minOrder - b.minOrder) || a.label.localeCompare(b.label, 'pt-BR'));
+
+  const conditionalDocsBySegment = {};
+  templates.forEach(t => {
+    const docs = Array.isArray(t.requiredDocuments) ? t.requiredDocuments : [];
+    const conds = [];
+    docs.forEach((d, idx) => {
+      const key = normalizeText(d.label || d.documentTypeId);
+      if (!key || commonKeysD.has(key)) return;
+      const presence = dPresence.get(key);
+      const sharedWith = presence
+        ? [...presence.templatesPresent].filter(id => id !== t.id)
+        : [];
+      conds.push({
+        key,
+        label: d.label || d.documentTypeId,
+        documentTypeId: d.documentTypeId,
+        required: !!d.required,
+        description: d.description || '',
+        conditionalLogic: d.conditionalLogic || null,
+        order: idx,
+        sharedWith,
+        isExclusive: sharedWith.length === 0,
+      });
+    });
+    conditionalDocsBySegment[t.id] = conds;
+  });
 
   const stats = {
-    totalQuestions: questionsMap.size,
-    totalDocs: docsMap.size,
-    commonQuestionsPct: questionsMap.size ? Math.round((commonQuestions.length / questionsMap.size) * 100) : 0,
-    commonDocsPct: docsMap.size ? Math.round((commonDocs.length / docsMap.size) * 100) : 0,
+    totalQuestions: qPresence.size,
+    totalDocs: dPresence.size,
+    commonQuestionsPct: qPresence.size ? Math.round((commonQuestions.length / qPresence.size) * 100) : 0,
+    commonDocsPct: dPresence.size ? Math.round((commonDocs.length / dPresence.size) * 100) : 0,
   };
 
-  return { stats, commonQuestions, conditionalQuestions, commonDocs, conditionalDocs, segmentIds, segmentLabels };
+  return {
+    stats,
+    commonQuestions, commonDocs,
+    conditionalQuestionsBySegment, conditionalDocsBySegment,
+    segmentIds, segmentLabels,
+  };
 }
 
 function normalizeText(s) {
@@ -288,16 +338,16 @@ function Header({ activeTemplates, stats, onDownloadPdf }) {
             <div className="flex items-center gap-2 mb-2">
               <Sparkles className="w-5 h-5 text-[#5cf7cf]" />
               <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#5cf7cf]">
-                Modelo Dinâmico KYC/KYB — Visão Microscópica
+                Modelo Dinâmico KYC/KYB — Visão por Segmento
               </span>
             </div>
             <h1 className="text-3xl font-black tracking-tight">
               Perguntas & Documentos <span className="text-[#5cf7cf]">por Segmento V4</span>
             </h1>
             <p className="text-white/70 text-sm mt-2 max-w-3xl leading-relaxed">
-              Análise comparativa dos <strong className="text-white">9 questionários oficiais V4</strong> de
-              compliance. Identifica o que é <strong className="text-white">comum a todos</strong> e o que é
-              <strong className="text-white"> específico</strong> de cada segmento.
+              Análise dos <strong className="text-white">9 questionários oficiais V4</strong>.
+              Primeiro o que é <strong className="text-white">comum a todos</strong>, depois as
+              <strong className="text-white"> perguntas e documentos específicos</strong> de cada segmento.
             </p>
           </div>
 
@@ -362,12 +412,12 @@ function Legend({ segmentLabels, segmentIds }) {
 /* ═══════════════════════════════════════════════════════════════════════
    SECTION wrapper
    ═══════════════════════════════════════════════════════════════════════ */
-function Section({ icon: Icon, num, title, subtitle, color, children }) {
+function Section({ icon: IconCmp, num, title, subtitle, color, children }) {
   return (
     <section className="space-y-4">
       <div className="flex items-start gap-4">
         <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${color}15` }}>
-          <Icon className="w-6 h-6" style={{ color }} />
+          <IconCmp className="w-6 h-6" style={{ color }} />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
@@ -385,11 +435,11 @@ function Section({ icon: Icon, num, title, subtitle, color, children }) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   TABELA de itens COMUNS
+   LISTA de itens COMUNS — tabela simples em ordem do questionário
    ═══════════════════════════════════════════════════════════════════════ */
-function CommonItemsTable({ items, kind, totalSegments }) {
+function CommonItemsList({ items, kind }) {
   if (items.length === 0) {
-    return <EmptyBox message={`Nenhum ${kind === 'question' ? 'pergunta' : 'documento'} é 100% comum aos ${totalSegments} segmentos V4.`} />;
+    return <EmptyBox message={`Nenhum ${kind === 'question' ? 'pergunta' : 'documento'} é 100% comum aos 9 segmentos V4.`} />;
   }
   const isQuestion = kind === 'question';
   return (
@@ -403,8 +453,6 @@ function CommonItemsTable({ items, kind, totalSegments }) {
             </th>
             {isQuestion && <th className="text-left px-4 py-3 text-[10px] font-bold text-[#002443] uppercase tracking-wider w-24">Tipo</th>}
             {!isQuestion && <th className="text-left px-4 py-3 text-[10px] font-bold text-[#002443] uppercase tracking-wider w-56">documentTypeId</th>}
-            {isQuestion && <th className="text-left px-4 py-3 text-[10px] font-bold text-[#002443] uppercase tracking-wider w-24">Opções</th>}
-            {isQuestion && <th className="text-left px-4 py-3 text-[10px] font-bold text-[#002443] uppercase tracking-wider w-20">Peso</th>}
             <th className="text-center px-4 py-3 text-[10px] font-bold text-[#002443] uppercase tracking-wider w-24">Obrigatório</th>
           </tr>
         </thead>
@@ -417,6 +465,14 @@ function CommonItemsTable({ items, kind, totalSegments }) {
                 {isQuestion && it.helpText && (
                   <div className="text-[11px] text-[#1a1a1a]/50 mt-0.5">{it.helpText}</div>
                 )}
+                {!isQuestion && it.description && (
+                  <div className="text-[11px] text-[#1a1a1a]/50 mt-0.5">{it.description}</div>
+                )}
+                {isQuestion && it.options?.length > 0 && (
+                  <div className="text-[10px] text-[#1a1a1a]/40 mt-1" title={it.options.join(' · ')}>
+                    {it.options.length} opções
+                  </div>
+                )}
               </td>
               {isQuestion && (
                 <td className="px-4 py-3">
@@ -426,24 +482,6 @@ function CommonItemsTable({ items, kind, totalSegments }) {
               {!isQuestion && (
                 <td className="px-4 py-3">
                   <span className="text-[10px] font-mono text-[#1a1a1a]/50">{it.documentTypeId || '—'}</span>
-                </td>
-              )}
-              {isQuestion && (
-                <td className="px-4 py-3">
-                  {it.options && it.options.length > 0 ? (
-                    <span className="text-[11px] text-[#1a1a1a]/70" title={it.options.join(' · ')}>{it.options.length}</span>
-                  ) : (
-                    <span className="text-[10px] text-[#1a1a1a]/30">—</span>
-                  )}
-                </td>
-              )}
-              {isQuestion && (
-                <td className="px-4 py-3">
-                  {it.riskWeight ? (
-                    <span className="text-[10px] font-bold text-[#f59e0b]">{it.riskWeight}</span>
-                  ) : (
-                    <span className="text-[10px] text-[#1a1a1a]/30">—</span>
-                  )}
                 </td>
               )}
               <td className="px-4 py-3 text-center">
@@ -462,142 +500,142 @@ function CommonItemsTable({ items, kind, totalSegments }) {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   MATRIZ CONDICIONAL — linhas = item, colunas = segmentos (✓/—)
+   BLOCOS por segmento — um card por segmento com seus itens condicionais
    ═══════════════════════════════════════════════════════════════════════ */
-function ConditionalMatrix({ items, segmentIds, segmentLabels, kind }) {
+function BySegmentBlocks({ perSegment, segmentIds, segmentLabels, kind }) {
   const isQuestion = kind === 'question';
-  if (items.length === 0) {
-    return <EmptyBox message={`Não há ${isQuestion ? 'perguntas' : 'documentos'} condicionais entre os 9 segmentos V4.`} />;
+
+  const blocks = segmentIds
+    .map(sid => ({
+      sid,
+      label: segmentLabels[sid],
+      items: perSegment[sid] || [],
+    }));
+
+  const hasAny = blocks.some(b => b.items.length > 0);
+  if (!hasAny) {
+    return <EmptyBox message={`Nenhum ${isQuestion ? 'pergunta' : 'documento'} condicional encontrado.`} />;
   }
 
   return (
-    <div className="bg-white border border-[#e8e8e8] rounded-xl overflow-hidden shadow-sm">
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm border-collapse">
-          <thead className="bg-gradient-to-r from-[#fef3c7] to-[#fffbeb] border-b-2 border-[#f59e0b] sticky top-0">
-            <tr>
-              <th className="text-left px-3 py-3 text-[10px] font-bold text-[#002443] uppercase tracking-wider w-10 sticky left-0 bg-[#fef3c7] z-10">#</th>
-              <th className="text-left px-3 py-3 text-[10px] font-bold text-[#002443] uppercase tracking-wider sticky left-10 bg-[#fef3c7] z-10 min-w-[280px]">
-                {isQuestion ? 'Pergunta' : 'Documento'}
-              </th>
-              {isQuestion && (
-                <th className="text-left px-3 py-3 text-[10px] font-bold text-[#002443] uppercase tracking-wider w-24">Tipo</th>
-              )}
-              {segmentIds.map(id => {
-                const l = segmentLabels[id];
-                return (
-                  <th key={id} className="text-center px-2 py-3 text-[9px] font-bold text-[#002443] uppercase w-24" title={l.full}>
-                    <div className="whitespace-nowrap">{l.short}</div>
-                  </th>
-                );
-              })}
-              <th className="text-center px-3 py-3 text-[10px] font-bold text-[#002443] uppercase tracking-wider w-16">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((it, i) => (
-              <tr key={it.key} className="border-b border-[#f0f0f0] hover:bg-[#fffcf5] align-top">
-                <td className="px-3 py-2.5 text-xs text-[#1a1a1a]/40 sticky left-0 bg-white">{i + 1}</td>
-                <td className="px-3 py-2.5 sticky left-10 bg-white">
-                  <div className="text-[#1a1a1a] font-medium">{it.text || it.label}</div>
-                  <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-                    {!isQuestion && it.documentTypeId && (
-                      <span className="text-[9px] font-mono text-[#1a1a1a]/40">{it.documentTypeId}</span>
-                    )}
-                    {(it.isRequired || it.required) && (
-                      <span className="text-[9px] px-1 py-0 rounded bg-red-100 text-red-700 font-bold">OBR</span>
-                    )}
-                    {it.riskWeight > 0 && (
-                      <span className="text-[9px] px-1 py-0 rounded bg-amber-100 text-amber-700 font-bold" title="Peso de risco">
-                        P{it.riskWeight}
-                      </span>
-                    )}
-                    {it.conditionalLogic && (
-                      <span className="text-[9px] px-1 py-0 rounded bg-blue-100 text-blue-700 font-mono" title={`Aparece se ${it.conditionalLogic.dependsOn} ${it.conditionalLogic.operator} ${it.conditionalLogic.value}`}>
-                        cond.
-                      </span>
-                    )}
-                  </div>
-                </td>
-                {isQuestion && (
-                  <td className="px-3 py-2.5">
-                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#002443]/5 text-[#002443]">{it.type || '—'}</span>
-                  </td>
-                )}
-                {segmentIds.map(sid => {
-                  const present = it.presentIn.has(sid);
-                  return (
-                    <td key={sid} className="px-2 py-2.5 text-center">
-                      {present ? (
-                        <Check className="w-4 h-4 text-[#2bc196] mx-auto" strokeWidth={3} />
-                      ) : (
-                        <Minus className="w-3 h-3 text-[#1a1a1a]/15 mx-auto" />
-                      )}
-                    </td>
-                  );
-                })}
-                <td className="px-3 py-2.5 text-center">
-                  <span className="text-[11px] font-bold text-[#002443]">
-                    {it.presentCount}
-                    <span className="text-[#1a1a1a]/30">/{segmentIds.length}</span>
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+    <div className="space-y-5">
+      {blocks.map((block, idx) => (
+        <SegmentBlock
+          key={block.sid}
+          index={idx + 1}
+          label={block.label}
+          items={block.items}
+          segmentLabels={segmentLabels}
+          kind={kind}
+        />
+      ))}
     </div>
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════════════
-   EXCLUSIVOS — itens presentes em apenas 1 segmento
-   ═══════════════════════════════════════════════════════════════════════ */
-function ExclusiveItemsCard({ items, segmentLabels, kind }) {
-  if (items.length === 0) return null;
+function SegmentBlock({ index, label, items, segmentLabels, kind }) {
   const isQuestion = kind === 'question';
 
-  const bySeg = {};
-  items.forEach(it => {
-    const sid = [...it.presentIn][0];
-    if (!bySeg[sid]) bySeg[sid] = [];
-    bySeg[sid].push(it);
-  });
-
   return (
-    <div className="mt-5 bg-gradient-to-br from-[#fef3c7]/30 to-white border-2 border-dashed border-[#f59e0b]/40 rounded-xl p-5">
-      <div className="flex items-center gap-2 mb-3">
-        <Target className="w-4 h-4 text-[#f59e0b]" />
-        <h3 className="text-sm font-bold text-[#002443]">
-          Exclusivos por segmento · {items.length} {isQuestion ? 'perguntas' : 'documentos'} únicos
-        </h3>
+    <div className="bg-white border-2 border-[#f59e0b]/30 rounded-xl overflow-hidden shadow-sm">
+      {/* Header do segmento */}
+      <div className="bg-gradient-to-r from-[#fef3c7] to-[#fffbeb] px-5 py-3.5 border-b-2 border-[#f59e0b]/40 flex items-center justify-between flex-wrap gap-2">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-[#f59e0b] text-white font-black text-sm flex items-center justify-center">
+            {index}
+          </div>
+          <div>
+            <h3 className="text-base font-bold text-[#002443]">{label?.short || '—'}</h3>
+            <p className="text-[10px] font-mono text-[#1a1a1a]/40">{label?.model}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] font-bold text-[#002443]/70">
+            {items.length} {isQuestion ? 'pergunta' : 'documento'}{items.length !== 1 ? 's' : ''} condicionai{items.length !== 1 ? 's' : 'l'}
+          </span>
+        </div>
       </div>
-      <p className="text-xs text-[#1a1a1a]/60 mb-4">
-        Itens que aparecem em apenas <strong>1 segmento</strong> — caracterizam a especificidade de cada modelo de negócio.
-      </p>
-      <div className="grid md:grid-cols-2 gap-3">
-        {Object.entries(bySeg).map(([sid, its]) => {
-          const label = segmentLabels[sid];
-          return (
-            <div key={sid} className="bg-white border border-[#f59e0b]/30 rounded-lg p-3">
-              <p className="text-[11px] font-bold text-[#002443] mb-2 flex items-center gap-2">
-                <span className="inline-block w-2 h-2 rounded-full bg-[#f59e0b]" />
-                {label?.short || sid}
-                <span className="text-[9px] font-mono text-[#1a1a1a]/40 font-normal">{label?.model}</span>
-              </p>
-              <ul className="space-y-1.5">
-                {its.map(it => (
-                  <li key={it.key} className="text-xs text-[#1a1a1a]/80 flex items-start gap-2">
-                    <span className="text-[#f59e0b] mt-0.5">•</span>
-                    <span>{it.text || it.label}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          );
-        })}
-      </div>
+
+      {/* Lista de itens */}
+      {items.length === 0 ? (
+        <div className="p-6 text-center">
+          <p className="text-sm text-[#1a1a1a]/50">
+            Este segmento não tem {isQuestion ? 'perguntas' : 'documentos'} condicionais — só usa os itens comuns.
+          </p>
+        </div>
+      ) : (
+        <ol className="divide-y divide-[#f0f0f0]">
+          {items.map((it, i) => (
+            <li key={it.key} className="px-5 py-3 hover:bg-[#fffcf5] transition-colors">
+              <div className="flex items-start gap-3">
+                <span className="text-[11px] font-mono text-[#1a1a1a]/30 mt-0.5 w-6 text-right flex-shrink-0">
+                  {i + 1}.
+                </span>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[#1a1a1a] font-medium">
+                    {it.text || it.label}
+                  </div>
+
+                  {/* Help text / descrição */}
+                  {isQuestion && it.helpText && (
+                    <div className="text-[11px] text-[#1a1a1a]/50 mt-1">{it.helpText}</div>
+                  )}
+                  {!isQuestion && it.description && (
+                    <div className="text-[11px] text-[#1a1a1a]/50 mt-1">{it.description}</div>
+                  )}
+
+                  {/* Tags: tipo, documentTypeId, obrigatório, peso, conditional, opções */}
+                  <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                    {isQuestion && it.type && (
+                      <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[#002443]/5 text-[#002443]">
+                        {it.type}
+                      </span>
+                    )}
+                    {!isQuestion && it.documentTypeId && (
+                      <span className="text-[9px] font-mono text-[#1a1a1a]/40">
+                        {it.documentTypeId}
+                      </span>
+                    )}
+                    {(it.isRequired || it.required) && (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-red-100 text-red-700 font-bold">OBR</span>
+                    )}
+                    {it.riskWeight > 0 && (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 font-bold">
+                        P{it.riskWeight}
+                      </span>
+                    )}
+                    {it.conditionalLogic && (
+                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 font-mono" title={`Aparece se ${it.conditionalLogic.dependsOn} ${it.conditionalLogic.operator} ${it.conditionalLogic.value}`}>
+                        condicional
+                      </span>
+                    )}
+                    {isQuestion && it.options?.length > 0 && (
+                      <span className="text-[9px] text-[#1a1a1a]/50" title={it.options.join(' · ')}>
+                        {it.options.length} opções
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Compartilhamento com outros segmentos */}
+                  {it.isExclusive ? (
+                    <div className="mt-1.5 inline-flex items-center gap-1.5 text-[10px] text-[#f59e0b] font-semibold">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#f59e0b]" />
+                      Exclusivo deste segmento
+                    </div>
+                  ) : (
+                    <div className="mt-1.5 text-[10px] text-[#1a1a1a]/50">
+                      <span className="text-[#1a1a1a]/40">Também em: </span>
+                      {it.sharedWith
+                        .map(sid => segmentLabels[sid]?.short || '—')
+                        .join(', ')}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </li>
+          ))}
+        </ol>
+      )}
     </div>
   );
 }
@@ -634,7 +672,7 @@ function PrintStyles() {
         #doc-dinamico-kyc h3 { font-size: 10pt !important; page-break-after: avoid !important; }
         #doc-dinamico-kyc table { page-break-inside: auto !important; font-size: 7.5pt !important; }
         #doc-dinamico-kyc thead { display: table-header-group !important; }
-        #doc-dinamico-kyc tr { page-break-inside: avoid !important; }
+        #doc-dinamico-kyc tr, #doc-dinamico-kyc li { page-break-inside: avoid !important; }
         #doc-dinamico-kyc td, #doc-dinamico-kyc th { padding: 3pt 5pt !important; }
       }
     `}</style>
