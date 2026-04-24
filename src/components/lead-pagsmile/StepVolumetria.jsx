@@ -28,28 +28,32 @@ export default function StepVolumetria({ form, updateField, errors }) {
       </div>
 
       {/* P15 — TPV Mensal */}
-      <div className="space-y-1">
+      <div className="space-y-1" data-field="tpvMensal">
         <label className="text-sm font-semibold text-[#002443]">TPV Mensal (R$) *</label>
         <CurrencyNumberInput value={form.tpvMensal} onChange={(v) => updateField('tpvMensal', v)} placeholder="150.000" hasError={errors?.tpvMensal} />
         <p className="text-[10px] text-[#002443]/40">Volume total de pagamentos processados por mês</p>
+        {errors?.tpvMensal && <p className="text-xs text-red-500">TPV Mensal deve ser maior que zero</p>}
       </div>
 
       {/* P15.1 — Faturamento Anual (NOVO v5.0) */}
-      <div className="space-y-2">
+      <div className="space-y-2" data-field="faturamentoAnual">
         <label className="text-sm font-semibold text-[#002443]">Faturamento Anual da Empresa *</label>
         <ButtonSelector options={FATURAMENTO_ANUAL_OPTIONS} value={form.faturamentoAnual} onChange={(v) => updateField('faturamentoAnual', v)} columns={3} />
+        {errors?.faturamentoAnual && <p className="text-xs text-red-500">Selecione o faturamento anual</p>}
       </div>
 
       {/* P15.2 — Número de Funcionários (NOVO v5.0) */}
-      <div className="space-y-2">
+      <div className="space-y-2" data-field="funcionarios">
         <label className="text-sm font-semibold text-[#002443]">Número de Funcionários *</label>
         <ButtonSelector options={FUNCIONARIOS_OPTIONS} value={form.funcionarios} onChange={(v) => updateField('funcionarios', v)} columns={6} />
+        {errors?.funcionarios && <p className="text-xs text-red-500">Selecione o número de funcionários</p>}
       </div>
 
       {/* P16 — Ticket Médio */}
-      <div className="space-y-1">
+      <div className="space-y-1" data-field="ticketMedio">
         <label className="text-sm font-semibold text-[#002443]">Ticket Médio (R$) *</label>
         <CurrencyNumberInput value={form.ticketMedio} onChange={(v) => updateField('ticketMedio', v)} placeholder="150" hasError={errors?.ticketMedio} />
+        {errors?.ticketMedio && <p className="text-xs text-red-500">Ticket Médio deve ser maior que zero</p>}
       </div>
 
       {/* P17 — Transações/Mês (AUTO) */}

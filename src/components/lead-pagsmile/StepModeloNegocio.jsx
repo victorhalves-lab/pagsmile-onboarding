@@ -27,22 +27,24 @@ export default function StepModeloNegocio({ form, updateField, errors }) {
       </div>
 
       {/* P10 — Modelo de Cobrança */}
-      <div className="space-y-2">
+      <div className="space-y-2" data-field="modeloCobranca">
         <label className="text-sm font-semibold text-[#002443]">Modelo de Cobrança *</label>
         <ButtonSelector options={MODELO_COBRANCA_OPTIONS} value={form.modeloCobranca} onChange={(v) => updateField('modeloCobranca', v)} columns={4} />
+        {errors?.modeloCobranca && <p className="text-xs text-red-500">Selecione o modelo de cobrança</p>}
       </div>
 
       {/* P11 — Descrição do negócio */}
-      <div className="space-y-1">
+      <div className="space-y-1" data-field="descricaoNegocio">
         <label className="text-sm font-semibold text-[#002443]">Breve descrição do negócio *</label>
         <Textarea
           value={form.descricaoNegocio || ''}
           onChange={(e) => updateField('descricaoNegocio', e.target.value.slice(0, 500))}
-          placeholder="Explique o que sua empresa faz em suas palavras (máx 500 caracteres)"
-          className="rounded-xl min-h-[80px]"
+          placeholder="Explique o que sua empresa faz em suas palavras (mín 10, máx 500 caracteres)"
+          className={`rounded-xl min-h-[80px] ${errors?.descricaoNegocio ? 'border-red-400' : ''}`}
           maxLength={500}
         />
         <p className="text-[10px] text-[#002443]/40 text-right">{(form.descricaoNegocio || '').length}/500</p>
+        {errors?.descricaoNegocio && <p className="text-xs text-red-500">Descreva seu negócio (mín. 10 caracteres)</p>}
       </div>
 
       {/* P12 — Qtd sub-sellers (condicional: intermediários) */}

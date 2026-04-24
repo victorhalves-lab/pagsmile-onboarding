@@ -4,7 +4,7 @@ import ButtonSelector from './ButtonSelector';
 import { URGENCIA_OPTIONS, CRESCIMENTO_OPTIONS, COMO_CONHECEU_OPTIONS } from './pagsmileQuestionnaireData';
 
 /** ETAPA 10 — Expectativas e Fechamento (P36-P39) */
-export default function StepFechamento({ form, updateField }) {
+export default function StepFechamento({ form, updateField, errors = {} }) {
   return (
     <div className="space-y-6">
       <div>
@@ -12,15 +12,17 @@ export default function StepFechamento({ form, updateField }) {
       </div>
 
       {/* P36 — Urgência */}
-      <div className="space-y-2">
+      <div className="space-y-2" data-field="urgencia">
         <label className="text-sm font-semibold text-[#002443]">Quando quer começar a operar? *</label>
         <ButtonSelector options={URGENCIA_OPTIONS} value={form.urgencia} onChange={(v) => updateField('urgencia', v)} columns={4} />
+        {errors?.urgencia && <p className="text-xs text-red-500">Informe quando quer começar</p>}
       </div>
 
       {/* P37 — Crescimento */}
-      <div className="space-y-2">
+      <div className="space-y-2" data-field="crescimento">
         <label className="text-sm font-semibold text-[#002443]">Expectativa de crescimento (12 meses) *</label>
         <ButtonSelector options={CRESCIMENTO_OPTIONS} value={form.crescimento} onChange={(v) => updateField('crescimento', v)} columns={4} />
+        {errors?.crescimento && <p className="text-xs text-red-500">Informe a expectativa de crescimento</p>}
       </div>
 
       {/* P38 — Como conheceu */}

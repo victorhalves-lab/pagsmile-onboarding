@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Loader2, Send, Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Loader2, Send, Check, ChevronLeft, ChevronRight, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 
 import StepSegmento from '@/components/lead-pagsmile/StepSegmento';
@@ -17,8 +17,14 @@ import StepTaxasAtuais from '@/components/lead-pagsmile/StepTaxasAtuais';
 import StepProcessadorAtual from '@/components/lead-pagsmile/StepProcessadorAtual';
 import StepComplianceRisco from '@/components/lead-pagsmile/StepComplianceRisco';
 import StepFechamento from '@/components/lead-pagsmile/StepFechamento';
+import ValidationSummary from '@/components/lead-pagsmile/ValidationSummary';
+import StepProgressIndicator from '@/components/lead-pagsmile/StepProgressIndicator';
+import DraftRecoveryBanner from '@/components/lead-pagsmile/DraftRecoveryBanner';
+import useLeadV5Autosave from '@/hooks/useLeadV5Autosave';
+
 import { calculateLeadScore, calculateSilentFlags, getScoreLabel, SEGMENTS } from '@/components/lead-pagsmile/pagsmileQuestionnaireData';
 import { calculateBDCEnrichedScore, getBDCScoreLabel } from '@/components/lead-scoring/bdcLeadScoring';
+import { validateStepV5, countStepFields } from '@/components/lead-pagsmile/leadV5Validators';
 
 const STEPS = [
   { id: 'segmento', label: 'Tipo de Negócio' },
@@ -33,6 +39,18 @@ const STEPS = [
   { id: 'compliance', label: 'Compliance' },
   { id: 'fechamento', label: 'Fechamento' },
 ];
+
+// Helper: strip internal keys (prefixed with "_") and heavy blobs from form before sending
+function sanitizeFormForSubmit(form) {
+  const clean = {};
+  for (const [k, v] of Object.entries(form)) {
+    // Keep _silentFlags, _declarativeScore, _bdcScore, _leadScore, _cnpjEnrichment (set explicitly below)
+    // but drop the raw _bdcQuickData blob (can be large, re-fetched server-side)
+    if (k === '_bdcQuickData') continue;
+    clean[k] = v;
+  }
+  return clean;
+}
 
 export default function QuestionarioLeadsPagsmile() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -51,113 +69,62 @@ export default function QuestionarioLeadsPagsmile() {
   const [step, setStep] = useState(0);
   const [form, setForm] = useState({});
   const [cnpjData, setCnpjData] = useState(null);
-  const [errors, setErrors] = useState({});
+  const [showValidation, setShowValidation] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [protocolo, setProtocolo] = useState('');
   const [bdcData, setBdcData] = useState(null);
 
-  const updateField = (field, value) => {
+  // ── Autosave + draft recovery ──
+  const { recoverable, clear: clearDraft, discardRecoverable } = useLeadV5Autosave({ form, step, linkCode });
+
+  const restoreDraft = useCallback(() => {
+    if (recoverable?.form) {
+      setForm(recoverable.form);
+      setStep(recoverable.step || 0);
+      discardRecoverable();
+      toast.success('Rascunho restaurado!');
+    }
+  }, [recoverable, discardRecoverable]);
+
+  const updateField = useCallback((field, value) => {
     setForm(prev => ({ ...prev, [field]: value }));
-    setErrors(prev => ({ ...prev, [field]: false }));
-  };
+  }, []);
 
-  // Validação por step
-  const validateStep = () => {
-    const errs = {};
-    const errorMessages = [];
-    if (step === 0 && !form.segmento) { toast.error('Selecione o tipo de negócio'); return false; }
-    if (step === 1) {
-      if (!form.cnpj || form.cnpj.replace(/\D/g, '').length < 14) { errs.cnpj = true; errorMessages.push('CNPJ válido é obrigatório'); }
-      if (!form.nomeFantasia) { errs.nomeFantasia = true; errorMessages.push('Nome Fantasia é obrigatório'); }
-    }
-    if (step === 2) {
-      if (!form._enderecoConfirmado) { toast.error('Confirme o endereço antes de prosseguir'); return false; }
-    }
-    if (step === 3) {
-      if (!form.email) { errs.email = true; errorMessages.push('E-mail é obrigatório'); }
-      if (!form.phone) { errs.phone = true; errorMessages.push('Telefone é obrigatório'); }
-      if (!form.contactName) { errs.contactName = true; errorMessages.push('Nome do contato é obrigatório'); }
-      if (!form.cargo && form.cargo !== '__other__') { errs.cargo = true; errorMessages.push('Cargo é obrigatório'); }
-    }
-    if (step === 4) {
-      if (!form.modeloCobranca) { errs.modeloCobranca = true; errorMessages.push('Modelo de cobrança é obrigatório'); }
-      if (!form.descricaoNegocio) { errs.descricaoNegocio = true; errorMessages.push('Descrição do negócio é obrigatória'); }
-    }
-    if (step === 5) {
-      if (!form.tpvMensal) { errs.tpvMensal = true; errorMessages.push('TPV Mensal é obrigatório'); }
-      if (!form.ticketMedio) { errs.ticketMedio = true; errorMessages.push('Ticket Médio é obrigatório'); }
-      if (!form.faturamentoAnual) { errs.faturamentoAnual = true; errorMessages.push('Faturamento anual é obrigatório'); }
-      if (!form.funcionarios) { errs.funcionarios = true; errorMessages.push('Número de funcionários é obrigatório'); }
-    }
-    if (step === 6) {
-      if (!form.jaProcessa) { errs.jaProcessa = true; errorMessages.push('Informe se já processa pagamentos'); }
-      if (form.jaProcessa) {
-        const distParc = form.distribuicaoParcelamento || {};
-        const totalParc = Object.values(distParc).reduce((s, v) => s + (v || 0), 0);
-        if (totalParc !== 100) { errs.distribuicaoParcelamento = true; errorMessages.push('Distribuição por parcelamento deve somar 100%'); }
-      }
-    }
-    if (step === 7 && form.jaProcessa === 'Sim, já processo') {
-      const dist = form.distribuicao || {};
-      const temPix = (dist.pix || 0) > 0;
-      const temBoleto = (dist.boleto || 0) > 0;
-      const temCartao = (dist.credito || 0) > 0 || (dist.debito || 0) > 0;
-      if (temCartao) {
-        if (!form.mdrAvista) { errs.mdrAvista = true; errorMessages.push('MDR Crédito à Vista é obrigatório'); }
-        if (!form.mdr2a6x) { errs.mdr2a6x = true; errorMessages.push('MDR Crédito 2-6x é obrigatório'); }
-        if (!form.mdr7a12x) { errs.mdr7a12x = true; errorMessages.push('MDR Crédito 7-12x é obrigatório'); }
-        if (!form.mdrDebito) { errs.mdrDebito = true; errorMessages.push('MDR Débito é obrigatório'); }
-      }
-      if (temPix && !form.taxaPix) { errs.taxaPix = true; errorMessages.push('Taxa PIX é obrigatória'); }
-      if (temBoleto && !form.taxaBoleto) { errs.taxaBoleto = true; errorMessages.push('Taxa Boleto é obrigatória'); }
-      if (!form.taxaAntecipacao) { errs.taxaAntecipacao = true; errorMessages.push('Taxa Antecipação é obrigatória'); }
-      if (!form.feeTransacao) { errs.feeTransacao = true; errorMessages.push('Fee por transação é obrigatório'); }
-      if (!form.custoAntifraude) { errs.custoAntifraude = true; errorMessages.push('Custo antifraude é obrigatório'); }
-      if (!form.taxa3ds) { errs.taxa3ds = true; errorMessages.push('Taxa 3DS é obrigatória'); }
-    }
-    if (step === 9) {
-      if (!form.encerrado) { errs.encerrado = true; errorMessages.push('Informe se já foi encerrado'); }
-      const jaProcessa9 = form.jaProcessa === 'Sim, já processo';
-      const dist9 = form.distribuicao || {};
-      const temCartao9 = (dist9.credito || 0) > 0;
-      const temPix9 = (dist9.pix || 0) > 0;
-      if (jaProcessa9 && temCartao9 && !form.chargeback) { errs.chargeback = true; errorMessages.push('Taxa de chargeback é obrigatória'); }
-      if (temPix9 && !form.medPix) { errs.medPix = true; errorMessages.push('Taxa de MED PIX é obrigatória'); }
-    }
-    if (step === 10) {
-      if (!form.urgencia) { errs.urgencia = true; errorMessages.push('Informe quando quer começar'); }
-      if (!form.crescimento) { errs.crescimento = true; errorMessages.push('Informe a expectativa de crescimento'); }
-    }
+  // ── Derived: live validation for current step ──
+  const validation = useMemo(() => validateStepV5(step, form), [step, form]);
+  const fieldCount = useMemo(() => countStepFields(step, form), [step, form]);
+  const errors = validation.errors;
 
-    if (Object.keys(errs).length > 0) {
-      setErrors(errs);
-      const currencyFields = ['tpvMensal', 'ticketMedio', 'mdrAvista', 'mdr2a6x', 'mdr7a12x', 'mdrDebito', 'taxaPix', 'taxaBoleto', 'taxaAntecipacao', 'feeTransacao', 'custoAntifraude', 'taxa3ds'];
-      const failedCurrencyFields = Object.keys(errs).filter(f => currencyFields.includes(f));
-      if (failedCurrencyFields.length > 0) {
-        base44.analytics.track({
-          eventName: 'currency_input_validation_error',
-          properties: {
-            form_type: 'lead_pagsmile_v5',
-            step: step,
-            step_label: STEPS[step]?.label || '',
-            failed_fields: failedCurrencyFields.join(','),
-            field_count: failedCurrencyFields.length,
-          }
-        });
+  // Reset validation banner when user moves to a different step
+  useEffect(() => { setShowValidation(false); }, [step]);
+
+  // ── Scroll helper: focus first error field ──
+  const scrollToFirstError = useCallback(() => {
+    const firstField = validation.raw[0]?.field;
+    if (!firstField) return;
+    // Wait a tick for the error summary to render
+    requestAnimationFrame(() => {
+      const el = document.querySelector(`[data-field="${firstField}"]`)
+        || document.querySelector(`[name="${firstField}"]`);
+      if (el && el.scrollIntoView) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
-      toast.error(errorMessages[0] || 'Preencha os campos obrigatórios');
-      return false;
-    }
-    return true;
-  };
+    });
+  }, [validation]);
 
   const nextStep = () => {
-    if (!validateStep()) return;
-    // Skip taxas/processador if not applicable
+    if (!validation.isValid) {
+      setShowValidation(true);
+      scrollToFirstError();
+      return;
+    }
+    setShowValidation(false);
     const jaProcessa = form.jaProcessa === 'Sim, já processo';
     let next = step + 1;
-    if (next === 7 && !jaProcessa) next = 9; // Skip taxas + processador
+    if (next === 7 && !jaProcessa) next = 9;
     if (next === 8 && !jaProcessa) next = 9;
     setStep(Math.min(next, STEPS.length - 1));
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -173,136 +140,138 @@ export default function QuestionarioLeadsPagsmile() {
   };
 
   const handleSubmit = async () => {
-    if (!validateStep()) return;
+    if (!validation.isValid) {
+      setShowValidation(true);
+      scrollToFirstError();
+      return;
+    }
+    if (submitting) return; // double-click guard
     setSubmitting(true);
 
     try {
-    const silentFlags = calculateSilentFlags(form, cnpjData);
-    const declarativeScore = calculateLeadScore(form, silentFlags);
+      const silentFlags = calculateSilentFlags(form, cnpjData);
+      const declarativeScore = calculateLeadScore(form, silentFlags);
 
-    // BDC enriched scoring
-    let bdcFullData = bdcData;
-    if (bdcData && form.cnpj) {
-      try {
-        const fullResp = await base44.functions.invoke('bdcEnrichLead', { cnpj: form.cnpj.replace(/\D/g, ''), level: 'full' });
-        if (fullResp.data?.success) bdcFullData = fullResp.data;
-      } catch (e) { console.warn('BDC full enrichment failed:', e.message); }
-    }
-    const bdcResult = calculateBDCEnrichedScore(declarativeScore, bdcFullData, form.tpvMensal, form.segmento);
-    const leadScore = bdcResult.finalScore;
-    const proto = `PSM-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 99999)).padStart(5, '0')}`;
+      // BDC full enrichment is done server-side in onLeadCreatedEnrich.
+      // We only use the quick data (already loaded at CNPJ input) for client-side score preview.
+      // This keeps the submit fast and resilient — NEVER block submission on BDC.
+      const bdcResult = calculateBDCEnrichedScore(declarativeScore, bdcData, form.tpvMensal, form.segmento);
+      const leadScore = bdcResult.finalScore;
+      const proto = `PSM-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 99999)).padStart(5, '0')}`;
 
-    const segmentLabel = SEGMENTS.find(s => s.id === form.segmento)?.label || form.segmento;
-    // Map V5 segments to businessSubCategory — use real segment ID for the 10 segments
-    const bizMap = {
-      gateway: 'gateway', marketplace: 'marketplace', plataforma_vertical: 'plataformas_verticais',
-      ecommerce: 'ecommerce', dropshipping: 'dropshipping', infoprodutos: 'infoprodutos',
-      saas: 'saas', educacao: 'educacao', link_pagamento: 'link_pagamento', mpe: 'mpe'
-    };
+      const segmentLabel = SEGMENTS.find(s => s.id === form.segmento)?.label || form.segmento;
+      const bizMap = {
+        gateway: 'gateway', marketplace: 'marketplace', plataforma_vertical: 'plataformas_verticais',
+        ecommerce: 'ecommerce', dropshipping: 'dropshipping', infoprodutos: 'infoprodutos',
+        saas: 'saas', educacao: 'educacao', link_pagamento: 'link_pagamento', mpe: 'mpe'
+      };
 
-    // Introducer resolution happens server-side in publicLeadSubmit
-    const hasIntroducer = !!onboardingLink?.introducerId;
-    const origemLead = hasIntroducer ? 'introducer' : 'questionario_completo';
+      const hasIntroducer = !!onboardingLink?.introducerId;
+      const origemLead = hasIntroducer ? 'introducer' : 'questionario_completo';
+      const cleanForm = sanitizeFormForSubmit(form);
 
-    const leadCommonData = {
-      email: form.email,
-      fullName: form.razaoSocial || form.nomeFantasia || form.contactName,
-      cpfCnpj: form.cnpj?.replace(/\D/g, ''),
-      phone: form.phone,
-      companyName: form.nomeFantasia || form.razaoSocial,
-      contactName: form.contactName,
-      contactRole: form.cargo === '__other__' ? form.cargoOutro : form.cargo,
-      website: form.presencaDigital,
-      status: 'questionario_preenchido',
-      businessSubCategory: bizMap[form.segmento] || 'MERCHAN',
-      tpvMensal: form.tpvMensal ? Number(form.tpvMensal) : undefined,
-      ticketMedio: form.ticketMedio ? Number(form.ticketMedio) : undefined,
-      transacoesMes: form.transacoesMes ? Number(form.transacoesMes) : undefined,
-      expectativaCrescimento: form.crescimento,
-      protocolo: proto,
-      origemLead,
-      onboardingLinkCode: linkCode || undefined,
-      leadQualifierScore: leadScore,
-      leadQualifierLevel: getScoreLabel(leadScore).label === 'Muito Quente' ? 'EXCELENTE' : getScoreLabel(leadScore).label === 'Quente' ? 'BOM' : getScoreLabel(leadScore).label === 'Morno' ? 'REGULAR' : 'FRACO',
-      lastInteractionDate: new Date().toISOString(),
-      bdcEnrichmentData: bdcFullData || bdcData || null,
-      bdcLeadScore: bdcResult.bdcScore,
-      bdcScoreLevel: getBDCScoreLabel(bdcResult.finalScore).label,
-      bdcFlags: bdcResult.activeFlags || [],
-      bdcCrossValidation: bdcResult.crossValidation || null,
-      bdcEnrichmentDate: bdcFullData ? new Date().toISOString() : undefined,
-      questionnaireData: {
-        origem: 'questionario_leads_pagsmile_v5',
-        versao: '5.0',
-        segmento: form.segmento,
-        segmentoLabel: segmentLabel,
-        ...form,
-        _silentFlags: silentFlags,
-        _declarativeScore: declarativeScore,
-        _bdcScore: bdcResult.bdcScore,
-        _leadScore: leadScore,
-        _cnpjEnrichment: cnpjData || null,
-        // NOTE: BDC enrichment is sent via the top-level bdcEnrichmentData field
-        // and persisted there by the backend. Do NOT duplicate inside questionnaireData —
-        // some CNPJs with many CGU records / passages push questionnaireData over the
-        // 200KB per-field limit and cause the submission to fail silently.
-      },
-      expectedRates: {
-        mdr1x: form.mdrAvista ? Number(form.mdrAvista) : undefined,
-        mdr2a6x: form.mdr2a6x ? Number(form.mdr2a6x) : undefined,
-        mdr7a12x: form.mdr7a12x ? Number(form.mdr7a12x) : undefined,
-        antecipacao: form.taxaAntecipacao ? Number(form.taxaAntecipacao) : undefined,
-        feeTransacao: form.feeTransacao ? Number(form.feeTransacao) : undefined,
-        antifraude: form.custoAntifraude ? Number(form.custoAntifraude) : undefined,
-        taxa3ds: form.taxa3ds ? Number(form.taxa3ds) : undefined,
-        pix: form.taxaPix ? { tipo: 'percentual', valor: Number(form.taxaPix) } : undefined,
-      },
-    };
+      // Map lead qualifier level from score directly (robust)
+      const scoreLabel = getScoreLabel(leadScore).label;
+      const qualifierLevel =
+        scoreLabel === 'Muito Quente' ? 'EXCELENTE' :
+        scoreLabel === 'Quente' ? 'BOM' :
+        scoreLabel === 'Morno' ? 'REGULAR' : 'FRACO';
 
-    const submitRes = await base44.functions.invoke('publicLeadSubmit', {
-      kind: hasIntroducer ? 'introducer_lead' : 'lead',
-      linkCode: linkCode || undefined,
-      leadPayload: leadCommonData,
-      introducerLeadPayload: hasIntroducer ? {
-        email: leadCommonData.email,
-        fullName: leadCommonData.fullName,
-        cpfCnpj: leadCommonData.cpfCnpj,
-        phone: leadCommonData.phone,
-        companyName: leadCommonData.companyName,
-        contactName: leadCommonData.contactName,
-        contactRole: leadCommonData.contactRole,
-        website: leadCommonData.website,
-        businessSubCategory: leadCommonData.businessSubCategory,
-        tpvMensal: leadCommonData.tpvMensal,
-        ticketMedio: leadCommonData.ticketMedio,
+      const leadCommonData = {
+        email: form.email,
+        fullName: form.razaoSocial || form.nomeFantasia || form.contactName,
+        cpfCnpj: form.cnpj?.replace(/\D/g, ''),
+        phone: form.phone,
+        companyName: form.nomeFantasia || form.razaoSocial,
+        contactName: form.contactName,
+        contactRole: form.cargo === '__other__' ? form.cargoOutro : form.cargo,
+        website: form.presencaDigital,
+        status: 'questionario_preenchido',
+        businessSubCategory: bizMap[form.segmento] || 'MERCHAN',
+        tpvMensal: form.tpvMensal ? Number(form.tpvMensal) : undefined,
+        ticketMedio: form.ticketMedio ? Number(form.ticketMedio) : undefined,
+        transacoesMes: form.transacoesMes ? Number(form.transacoesMes) : undefined,
+        expectativaCrescimento: form.crescimento,
         protocolo: proto,
-        onboardingLinkCode: linkCode || '',
-        questionnaireData: leadCommonData.questionnaireData,
+        origemLead,
+        onboardingLinkCode: linkCode || undefined,
         leadQualifierScore: leadScore,
-        leadQualifierLevel: leadCommonData.leadQualifierLevel,
-      } : undefined,
-    });
-    if (submitRes.data?.error) throw new Error(submitRes.data.error);
+        leadQualifierLevel: qualifierLevel,
+        lastInteractionDate: new Date().toISOString(),
+        bdcEnrichmentData: bdcData || null,
+        bdcLeadScore: bdcResult.bdcScore,
+        bdcScoreLevel: getBDCScoreLabel(bdcResult.finalScore).label,
+        bdcFlags: bdcResult.activeFlags || [],
+        bdcCrossValidation: bdcResult.crossValidation || null,
+        bdcEnrichmentDate: bdcData ? new Date().toISOString() : undefined,
+        questionnaireData: {
+          origem: 'questionario_leads_pagsmile_v5',
+          versao: '5.0',
+          segmento: form.segmento,
+          segmentoLabel: segmentLabel,
+          ...cleanForm,
+          _silentFlags: silentFlags,
+          _declarativeScore: declarativeScore,
+          _bdcScore: bdcResult.bdcScore,
+          _leadScore: leadScore,
+          _cnpjEnrichment: cnpjData || null,
+        },
+        expectedRates: {
+          mdr1x: form.mdrAvista ? Number(form.mdrAvista) : undefined,
+          mdr2a6x: form.mdr2a6x ? Number(form.mdr2a6x) : undefined,
+          mdr7a12x: form.mdr7a12x ? Number(form.mdr7a12x) : undefined,
+          antecipacao: form.taxaAntecipacao ? Number(form.taxaAntecipacao) : undefined,
+          feeTransacao: form.feeTransacao ? Number(form.feeTransacao) : undefined,
+          antifraude: form.custoAntifraude ? Number(form.custoAntifraude) : undefined,
+          taxa3ds: form.taxa3ds ? Number(form.taxa3ds) : undefined,
+          pix: form.taxaPix ? { tipo: 'percentual', valor: Number(form.taxaPix) } : undefined,
+        },
+      };
 
-    base44.analytics.track({
-      eventName: 'onboarding_form_submitted',
-      properties: {
-        form_type: 'lead_pagsmile_v5',
-        segment: form.segmento || '',
-        has_introducer: !!onboardingLink?.introducerId,
-        link_code: linkCode || '',
-        protocolo: proto,
-        lead_score: leadScore,
-      }
-    });
+      const submitRes = await base44.functions.invoke('publicLeadSubmit', {
+        kind: hasIntroducer ? 'introducer_lead' : 'lead',
+        linkCode: linkCode || undefined,
+        leadPayload: leadCommonData,
+        introducerLeadPayload: hasIntroducer ? {
+          email: leadCommonData.email,
+          fullName: leadCommonData.fullName,
+          cpfCnpj: leadCommonData.cpfCnpj,
+          phone: leadCommonData.phone,
+          companyName: leadCommonData.companyName,
+          contactName: leadCommonData.contactName,
+          contactRole: leadCommonData.contactRole,
+          website: leadCommonData.website,
+          businessSubCategory: leadCommonData.businessSubCategory,
+          tpvMensal: leadCommonData.tpvMensal,
+          ticketMedio: leadCommonData.ticketMedio,
+          protocolo: proto,
+          onboardingLinkCode: linkCode || '',
+          questionnaireData: leadCommonData.questionnaireData,
+          leadQualifierScore: leadScore,
+          leadQualifierLevel: leadCommonData.leadQualifierLevel,
+        } : undefined,
+      });
+      if (submitRes.data?.error) throw new Error(submitRes.data.error);
 
-    setProtocolo(proto);
-    setSubmitted(true);
+      base44.analytics.track({
+        eventName: 'onboarding_form_submitted',
+        properties: {
+          form_type: 'lead_pagsmile_v5',
+          segment: form.segmento || '',
+          has_introducer: !!onboardingLink?.introducerId,
+          link_code: linkCode || '',
+          protocolo: proto,
+          lead_score: leadScore,
+        }
+      });
+
+      clearDraft();
+      setProtocolo(proto);
+      setSubmitted(true);
     } catch (err) {
       const serverMessage = err?.response?.data?.error || err?.message || 'Erro desconhecido';
-      toast.error(`Erro ao enviar: ${serverMessage}. Se persistir, entre em contato.`);
+      toast.error(`Erro ao enviar: ${serverMessage}. Seu rascunho foi salvo, tente novamente.`);
       console.error('Submit error:', err);
-      // Log to backend for diagnosis — silent fire-and-forget
       try {
         base44.functions.invoke('logPublicClientError', {
           stage: 'questionario_leads_pagsmile_v5_submit',
@@ -345,6 +314,7 @@ export default function QuestionarioLeadsPagsmile() {
 
   const progress = ((step + 1) / STEPS.length) * 100;
   const isLastStep = step === STEPS.length - 1;
+  const nextDisabled = !validation.isValid;
 
   return (
     <div className="max-w-3xl mx-auto py-6 px-4">
@@ -357,16 +327,25 @@ export default function QuestionarioLeadsPagsmile() {
           style={{ filter: 'brightness(0) saturate(100%) invert(12%) sepia(36%) saturate(2476%) hue-rotate(183deg) brightness(91%) contrast(107%)' }}
         />
         <h1 className="text-2xl font-bold text-[#002443]">Questionário de Lead PagSmile</h1>
-        <p className="text-sm text-[#002443]/50 mt-1">{STEPS.length} etapas</p>
+        <p className="text-sm text-[#002443]/50 mt-1">{STEPS.length} etapas · progresso salvo automaticamente</p>
       </div>
+
+      {/* Draft recovery banner */}
+      {recoverable && !submitted && (
+        <DraftRecoveryBanner
+          savedAt={recoverable.savedAt}
+          onRestore={restoreDraft}
+          onDiscard={() => { clearDraft(); discardRecoverable(); }}
+        />
+      )}
 
       {/* Progress Bar */}
       <div className="mb-6">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-2 gap-3 flex-wrap">
           <span className="text-xs font-bold text-[#002443]/50">
             Etapa {step + 1} de {STEPS.length}: {STEPS[step].label}
           </span>
-          <span className="text-xs font-bold text-[#2bc196]">{Math.round(progress)}%</span>
+          <StepProgressIndicator total={fieldCount.total} filled={fieldCount.filled} />
         </div>
         <div className="w-full h-2 bg-[#002443]/5 rounded-full overflow-hidden">
           <div
@@ -375,6 +354,15 @@ export default function QuestionarioLeadsPagsmile() {
           />
         </div>
       </div>
+
+      {/* Validation Summary */}
+      {showValidation && (
+        <ValidationSummary
+          messages={validation.summary}
+          totalFields={fieldCount.total}
+          filledFields={fieldCount.filled}
+        />
+      )}
 
       {/* Step Content */}
       <Card className="rounded-2xl border border-[#002443]/5 shadow-sm mb-6">
@@ -385,16 +373,16 @@ export default function QuestionarioLeadsPagsmile() {
           {step === 3 && <StepContato form={form} updateField={updateField} errors={errors} />}
           {step === 4 && <StepModeloNegocio form={form} updateField={updateField} errors={errors} />}
           {step === 5 && <StepVolumetria form={form} updateField={updateField} errors={errors} />}
-          {step === 6 && <StepDistribuicao form={form} updateField={updateField} />}
+          {step === 6 && <StepDistribuicao form={form} updateField={updateField} errors={errors} />}
           {step === 7 && <StepTaxasAtuais form={form} updateField={updateField} errors={errors} />}
           {step === 8 && <StepProcessadorAtual form={form} updateField={updateField} />}
-          {step === 9 && <StepComplianceRisco form={form} updateField={updateField} />}
-          {step === 10 && <StepFechamento form={form} updateField={updateField} />}
+          {step === 9 && <StepComplianceRisco form={form} updateField={updateField} errors={errors} />}
+          {step === 10 && <StepFechamento form={form} updateField={updateField} errors={errors} />}
         </CardContent>
       </Card>
 
       {/* Navigation */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <Button
           variant="outline"
           onClick={prevStep}
@@ -407,21 +395,31 @@ export default function QuestionarioLeadsPagsmile() {
         {isLastStep ? (
           <Button
             onClick={handleSubmit}
-            disabled={submitting}
-            className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl gap-2 px-8"
+            disabled={submitting || nextDisabled}
+            className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl gap-2 px-8 disabled:opacity-50"
+            title={nextDisabled ? `Faltam ${validation.summary.length} campos obrigatórios` : ''}
           >
-            {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-            Enviar Questionário
+            {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : nextDisabled ? <Lock className="w-4 h-4" /> : <Send className="w-4 h-4" />}
+            {submitting ? 'Enviando...' : 'Enviar Questionário'}
           </Button>
         ) : (
           <Button
             onClick={nextStep}
-            className="bg-[#002443] hover:bg-[#002443]/90 text-white rounded-xl gap-2"
+            className="bg-[#002443] hover:bg-[#002443]/90 text-white rounded-xl gap-2 disabled:opacity-60"
+            title={nextDisabled ? `Faltam ${validation.summary.length} campos obrigatórios` : ''}
           >
+            {nextDisabled && <Lock className="w-3.5 h-3.5" />}
             Próximo <ChevronRight className="w-4 h-4" />
           </Button>
         )}
       </div>
+
+      {/* Bottom hint */}
+      {nextDisabled && showValidation && (
+        <p className="text-center text-[10px] text-[#002443]/40 mt-4">
+          💾 Seus dados estão sendo salvos automaticamente — você pode fechar e voltar depois
+        </p>
+      )}
     </div>
   );
 }
