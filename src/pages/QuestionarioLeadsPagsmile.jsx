@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { callPublicFunction } from '@/lib/publicApi';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Loader2, Send, Check, ChevronLeft, ChevronRight, Lock } from 'lucide-react';
@@ -60,8 +61,8 @@ export default function QuestionarioLeadsPagsmile() {
     queryKey: ['onboardingLink', linkCode],
     queryFn: async () => {
       if (!linkCode) return null;
-      const res = await base44.functions.invoke('publicReadContext', { kind: 'onboarding_link', uniqueCode: linkCode });
-      return res.data?.link || null;
+      const res = await callPublicFunction('publicReadContext', { kind: 'onboarding_link', uniqueCode: linkCode });
+      return res?.link || null;
     },
     enabled: !!linkCode
   });
@@ -228,7 +229,7 @@ export default function QuestionarioLeadsPagsmile() {
         },
       };
 
-      const submitRes = await base44.functions.invoke('publicLeadSubmit', {
+      const submitRes = await callPublicFunction('publicLeadSubmit', {
         kind: hasIntroducer ? 'introducer_lead' : 'lead',
         linkCode: linkCode || undefined,
         leadPayload: leadCommonData,
@@ -251,19 +252,22 @@ export default function QuestionarioLeadsPagsmile() {
           leadQualifierLevel: leadCommonData.leadQualifierLevel,
         } : undefined,
       });
-      if (submitRes.data?.error) throw new Error(submitRes.data.error);
+      if (submitRes?.error) throw new Error(submitRes.error);
 
-      base44.analytics.track({
-        eventName: 'onboarding_form_submitted',
-        properties: {
-          form_type: 'lead_pagsmile_v5',
-          segment: form.segmento || '',
-          has_introducer: !!onboardingLink?.introducerId,
-          link_code: linkCode || '',
-          protocolo: proto,
-          lead_score: leadScore,
-        }
-      });
+      // Analytics is non-critical — the SDK may block it on public routes.
+      try {
+        base44.analytics.track({
+          eventName: 'onboarding_form_submitted',
+          properties: {
+            form_type: 'lead_pagsmile_v5',
+            segment: form.segmento || '',
+            has_introducer: !!onboardingLink?.introducerId,
+            link_code: linkCode || '',
+            protocolo: proto,
+            lead_score: leadScore,
+          }
+        });
+      } catch (_) { /* ignore analytics failures on public routes */ }
 
       clearDraft();
       setProtocolo(proto);
@@ -273,7 +277,7 @@ export default function QuestionarioLeadsPagsmile() {
       toast.error(`Erro ao enviar: ${serverMessage}. Seu rascunho foi salvo, tente novamente.`);
       console.error('Submit error:', err);
       try {
-        base44.functions.invoke('logPublicClientError', {
+        await callPublicFunction('logPublicClientError', {
           stage: 'questionario_leads_pagsmile_v5_submit',
           errorMessage: String(serverMessage).slice(0, 1500),
           componentStack: String(err?.stack || '').slice(0, 4000),
