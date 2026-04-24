@@ -15,6 +15,7 @@ import PropostaRevisaoHeader from '@/components/proposals/PropostaRevisaoHeader'
 import PropostaRevisaoResumo from '@/components/proposals/PropostaRevisaoResumo';
 import PropostaRevisaoLink from '@/components/proposals/PropostaRevisaoLink';
 import RentabilidadeDrawer from '@/components/proposals/RentabilidadeDrawer';
+import ExtendValidityModal from '@/components/proposals/ExtendValidityModal';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 import { generatePublicSlug } from '@/lib/publicSlug';
 
@@ -38,6 +39,61 @@ export default function PropostaDetalhes() {
   const queryClient = useQueryClient();
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
   const [showRentabilidade, setShowRentabilidade] = useState(false);
+  const [showExtendModal, setShowExtendModal] = useState(false);
+  const [isExtendingValidity, setIsExtendingValidity] = useState(false);
+
+  const handleExtendValidity = async (newValidUntilIso) => {
+    if (!proposta || !newValidUntilIso) return;
+    setIsExtendingValidity(true);
+    const now = new Date().toISOString();
+    const wasExpired = proposta.status === 'expirada';
+
+    // Se a proposta estava expirada, reabre para 'enviada' — assim o cliente
+    // pode aceitar normalmente e o pipeline comercial reflete a reativação.
+    const update = { validUntil: newValidUntilIso };
+    if (wasExpired) update.status = 'enviada';
+
+    try {
+      await base44.entities.Proposal.update(proposta.id, update);
+
+      let changedBy = 'admin';
+      try { const u = await base44.auth.me(); changedBy = u?.email || 'admin'; } catch {}
+
+      await base44.entities.AuditLog.create({
+        entityName: 'Proposal', entityId: proposta.id, actionType: 'UPDATE',
+        actionDescription: `Validade da proposta ${proposta.codigo} estendida para ${moment(newValidUntilIso).format('DD/MM/YYYY')} por ${changedBy}${wasExpired ? ' (reativada de expirada)' : ''}`,
+        changedBy, changeDate: now,
+        details: {
+          validadeAnterior: proposta.validUntil || null,
+          validadeNova: newValidUntilIso,
+          statusAnterior: proposta.status,
+          statusNovo: update.status || proposta.status,
+          reativada: wasExpired,
+        },
+      });
+
+      if (proposta.leadId) {
+        try {
+          await base44.entities.LeadActivity.create({
+            leadId: proposta.leadId,
+            activityType: 'nota_adicionada',
+            description: `Validade da proposta ${proposta.codigo} estendida até ${moment(newValidUntilIso).format('DD/MM/YYYY')}${wasExpired ? ' (proposta reativada)' : ''}`,
+            performedBy: changedBy,
+            activityDate: now,
+          });
+        } catch {}
+      }
+
+      queryClient.invalidateQueries({ queryKey: ['proposta-detalhes', proposalId] });
+      queryClient.invalidateQueries({ queryKey: ['propostas'] });
+      toast.success(wasExpired ? 'Proposta reativada e validade estendida!' : 'Validade atualizada com sucesso!');
+      setShowExtendModal(false);
+    } catch (e) {
+      toast.error('Falha ao estender validade: ' + (e?.message || 'erro desconhecido'));
+    } finally {
+      setIsExtendingValidity(false);
+    }
+  };
 
   const handleMarkAsAccepted = async () => {
     if (!proposta) return;
@@ -224,6 +280,8 @@ export default function PropostaDetalhes() {
         }
         onMarkAsAccepted={handleMarkAsAccepted}
         isUpdatingStatus={isUpdatingStatus}
+        onExtendValidity={() => setShowExtendModal(true)}
+        isExtendingValidity={isExtendingValidity}
       />
 
       {/* Botão Rentabilidade */}
@@ -298,6 +356,15 @@ export default function PropostaDetalhes() {
         open={showRentabilidade}
         onClose={() => setShowRentabilidade(false)}
         proposal={proposta}
+      />
+
+      {/* Modal para estender validade */}
+      <ExtendValidityModal
+        open={showExtendModal}
+        onClose={() => setShowExtendModal(false)}
+        proposta={proposta}
+        onConfirm={handleExtendValidity}
+        isPending={isExtendingValidity}
       />
     </div>
   );

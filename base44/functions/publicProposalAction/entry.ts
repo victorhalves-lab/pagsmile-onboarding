@@ -130,21 +130,24 @@ Deno.serve(async (req) => {
         if (['recusada', 'cancelada'].includes(proposta.status)) {
           return Response.json({ error: `Proposta já está ${proposta.status} e não pode ser aceita.` }, { status: 409 });
         }
-        // GRACE PERIOD: se a proposta expirou há menos de 7 dias, ainda aceita.
-        // Isso protege o cliente que recebeu o link sexta e clicou segunda, ou
-        // que enfrentou rede ruim e só conseguiu aceitar horas depois.
-        if (proposta.status === 'expirada') {
-          const expiredAt = proposta.validUntil ? new Date(proposta.validUntil).getTime() : null;
-          const daysSinceExpiry = expiredAt ? (Date.now() - expiredAt) / (1000 * 60 * 60 * 24) : 999;
-          if (daysSinceExpiry > 7) {
-            return Response.json({ error: 'Proposta expirada há mais de 7 dias. Entre em contato com seu consultor.' }, { status: 409 });
-          }
-          // dentro do grace period: aceita normalmente
-        }
+        // POLÍTICA: Propostas expiradas ainda podem ser aceitas pelo cliente.
+        // Cenário real (Garena / ALLPES / etc): o cliente recebe o link, trava
+        // na decisão interna, e volta semanas depois querendo aceitar. Bloquear
+        // o aceite obriga o comercial a criar manualmente nova versão e reenviar
+        // tudo — atrito desnecessário. A validade serve apenas como referência
+        // comercial, não como trava absoluta.
+        //
+        // O aceite registra o timestamp real do aceite (acceptedDate = now), então
+        // o histórico sempre mostra que foi aceito FORA do prazo original — útil
+        // para auditoria e para o comercial revalidar condições comerciais se for
+        // o caso. Se o comercial precisar impedir o aceite, basta cancelar a
+        // proposta (status 'cancelada'), que é terminal.
         proposalUpdates = { status: 'aceita', acceptedDate: now };
         leadStatus = 'proposta_aceita';
         activityType = 'proposta_aceita';
-        activityDescription = `${actLabel} ${proposta.codigo || ''} aceita pelo cliente`;
+        activityDescription = proposta.status === 'expirada'
+          ? `${actLabel} ${proposta.codigo || ''} aceita pelo cliente APÓS expirada (validade: ${proposta.validUntil ? new Date(proposta.validUntil).toLocaleDateString('pt-BR') : 'n/d'})`
+          : `${actLabel} ${proposta.codigo || ''} aceita pelo cliente`;
         break;
 
       case 'reject': {

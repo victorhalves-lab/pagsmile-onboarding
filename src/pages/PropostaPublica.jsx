@@ -253,17 +253,25 @@ export default function PropostaPublica() {
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4" ref={propostaContentRef}>
-      {/* Expired Banner */}
-      {isExpired && (
-        <div className="rounded-2xl p-6 mb-6 text-center bg-amber-50 border border-amber-200">
-          <div className="flex items-center justify-center gap-3 mb-2">
-            <Clock className="w-8 h-8 text-amber-500" />
-            <h2 className="text-xl font-bold text-amber-800">{t('pp.expired_title')}</h2>
+      {/* Expired Banner — aviso amigável, mas cliente AINDA pode aceitar.
+          O aceite fora do prazo é registrado no histórico (veja publicProposalAction). */}
+      {isExpired && !isAlreadyResponded && (
+        <div className="rounded-2xl p-5 mb-6 bg-amber-50 border border-amber-200">
+          <div className="flex items-start gap-3">
+            <Clock className="w-6 h-6 text-amber-500 shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <h2 className="text-base font-bold text-amber-900 mb-1">
+                Prazo de validade original vencido
+              </h2>
+              <p className="text-sm text-amber-800/90 leading-relaxed">
+                Esta proposta tinha validade até {moment(proposta.validUntil).format('DD/MM/YYYY')},
+                mas você ainda pode aceitá-la normalmente. As condições comerciais permanecem as mesmas.
+              </p>
+              <p className="text-xs text-amber-700 mt-2">
+                Se tiver qualquer dúvida antes de aceitar, fale com seu consultor.
+              </p>
+            </div>
           </div>
-          <p className="text-sm text-amber-600">
-            {t('pp.expired_desc', { date: moment(proposta.validUntil).format('DD/MM/YYYY') })}
-          </p>
-          <p className="text-xs text-amber-500 mt-2">{t('pp.expired_contact')}</p>
         </div>
       )}
 
@@ -539,7 +547,7 @@ export default function PropostaPublica() {
         <InternationalPaymentsBanner />
       </div>
 
-      {['enviada', 'visualizada'].includes(proposta.status) && !isAlreadyResponded && (
+      {['enviada', 'visualizada', 'expirada'].includes(proposta.status) && !isAlreadyResponded && (
         <div className="h-28" />
       )}
 
@@ -555,8 +563,8 @@ export default function PropostaPublica() {
         <p>&copy; {new Date().getFullYear()} Pagsmile. Proposta {proposta.codigo}</p>
       </div>
 
-      {/* Barra de ação: inclui propostas expiradas em grace period (até 7 dias) — servidor valida */}
-      {['enviada', 'visualizada'].includes(proposta.status) && !isAlreadyResponded && (
+      {/* Barra de ação: inclui propostas expiradas — cliente sempre pode aceitar (servidor valida). */}
+      {['enviada', 'visualizada', 'expirada'].includes(proposta.status) && !isAlreadyResponded && (
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-[0_-4px_20px_rgba(0,36,67,0.1)]">
           <div className="max-w-4xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4">
             <Button

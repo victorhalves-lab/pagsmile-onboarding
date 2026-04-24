@@ -1,12 +1,14 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Pencil, Calendar, Send, CheckCircle, XCircle, Clock, GitBranch } from 'lucide-react';
+import { ArrowLeft, Pencil, Calendar, Send, CheckCircle, XCircle, Clock, GitBranch, CalendarPlus } from 'lucide-react';
 import moment from 'moment';
 
-export default function PropostaRevisaoHeader({ proposta, statusConfig, onBack, onEdit, onMarkAsAccepted, isUpdatingStatus }) {
+export default function PropostaRevisaoHeader({ proposta, statusConfig, onBack, onEdit, onMarkAsAccepted, isUpdatingStatus, onExtendValidity, isExtendingValidity }) {
   const isRascunho = proposta.status === 'rascunho';
   const canEdit = ['rascunho', 'enviada', 'visualizada'].includes(proposta.status);
+  // Estender validade faz sentido enquanto a proposta pode receber resposta do cliente.
+  const canExtend = ['enviada', 'visualizada', 'expirada'].includes(proposta.status);
 
   return (
     <div className="bg-gradient-to-r from-[#002443] to-[#36706c] rounded-2xl p-6 shadow-lg">
@@ -26,7 +28,18 @@ export default function PropostaRevisaoHeader({ proposta, statusConfig, onBack, 
             {proposta.clienteNome || 'Sem cliente'} — Revisão interna
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap justify-end">
+          {canExtend && onExtendValidity && (
+            <Button
+              onClick={onExtendValidity}
+              disabled={isExtendingValidity}
+              className="bg-amber-500 hover:bg-amber-600 text-white gap-2 rounded-xl"
+              title="Adiciona 30 dias à validade e reativa a proposta se estiver expirada"
+            >
+              <CalendarPlus className="w-4 h-4" />
+              {isExtendingValidity ? 'Estendendo...' : 'Estender validade'}
+            </Button>
+          )}
           {['enviada', 'visualizada'].includes(proposta.status) && onMarkAsAccepted && (
             <Button onClick={onMarkAsAccepted} disabled={isUpdatingStatus} className="bg-green-500 hover:bg-green-600 text-white gap-2 rounded-xl">
               <CheckCircle className="w-4 h-4" />
