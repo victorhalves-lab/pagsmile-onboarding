@@ -64,28 +64,58 @@ export function useOnboarding({ caseId, token, mode }) {
   }, [caseId, token, mode]);
 
   // ── Debounced autosave ──
-  // CRITICAL: sanitize documentsData before stringifying — strip out any non-
-  // serializable/huge fields (e.g. File objects) that previously froze the
-  // main thread during JSON.stringify in the autosave payload.
+  // CRITICAL: Do NOT put `documentsData`/`formData` in the deps array.
+  // The bootstrap hydrates state from the server, which would immediately
+  // re-trigger the save effect, creating a feedback loop that serializes
+  // the entire documents map every 1.5s — that's what was freezing the tab
+  // 2-10s after load ("Página sem resposta"). Instead, we read the latest
+  // state from refs and only schedule saves when the user ACTUALLY mutates
+  // state (via a dedicated bump counter).
+  const formDataRef = useRef(formData);
+  const documentsDataRef = useRef(documentsData);
+  formDataRef.current = formData;
+  documentsDataRef.current = documentsData;
+
+  const [saveBump, setSaveBump] = useState(0);
+  const hydratedRef = useRef(false);
+
+  // Wrap setters so we only bump `saveBump` when the state actually changed.
+  // `setDocuments(prev => prev)` (used by BulletproofDocumentUploader when
+  // localStorage has stale data and server state wins) must NOT trigger a save.
+  const setFormDataWithSave = useCallback((updater) => {
+    setFormData(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      if (next !== prev && hydratedRef.current) setSaveBump(n => n + 1);
+      return next;
+    });
+  }, []);
+  const setDocumentsDataWithSave = useCallback((updater) => {
+    setDocumentsData(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      if (next !== prev && hydratedRef.current) setSaveBump(n => n + 1);
+      return next;
+    });
+  }, []);
+
+  useEffect(() => {
+    if (status === 'ready') hydratedRef.current = true;
+  }, [status]);
+
   useEffect(() => {
     if (status !== 'ready') return;
+    if (saveBump === 0) return; // no real user change yet — don't save
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
+      const currentDocs = documentsDataRef.current || {};
       const safeDocs = {};
-      for (const [k, v] of Object.entries(documentsData || {})) {
+      for (const [k, v] of Object.entries(currentDocs)) {
         if (!v || typeof v !== 'object') continue;
         safeDocs[k] = {
-          url: v.url,
-          uri: v.uri,
-          isPrivate: v.isPrivate,
-          name: v.name,
-          size: v.size,
-          type: v.type,
-          uploadedAt: v.uploadedAt,
-          documentUploadId: v.documentUploadId,
+          url: v.url, uri: v.uri, isPrivate: v.isPrivate,
+          name: v.name, size: v.size, type: v.type,
+          uploadedAt: v.uploadedAt, documentUploadId: v.documentUploadId,
           persisted: v.persisted,
-          notAvailable: v.notAvailable,
-          notAvailableReason: v.notAvailableReason,
+          notAvailable: v.notAvailable, notAvailableReason: v.notAvailableReason,
           files: Array.isArray(v.files) ? v.files.map(f => ({
             url: f.url, uri: f.uri, isPrivate: f.isPrivate,
             name: f.name, size: f.size, type: f.type,
@@ -96,12 +126,12 @@ export function useOnboarding({ caseId, token, mode }) {
       }
       callPublicFunction('publicOnboardingSave', {
         caseId, token, mode,
-        formData,
+        formData: formDataRef.current,
         documentsData: safeDocs,
       }).catch(() => {});
     }, 1500);
     return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
-  }, [formData, documentsData, status, caseId, token, mode]);
+  }, [saveBump, status, caseId, token, mode]);
 
   // ── Finalize ──
   const finalize = useCallback(async () => {
@@ -119,8 +149,8 @@ export function useOnboarding({ caseId, token, mode }) {
   return {
     status, errorReason,
     data,
-    formData, setFormData,
-    documentsData, setDocumentsData,
+    formData, setFormData: setFormDataWithSave,
+    documentsData, setDocumentsData: setDocumentsDataWithSave,
     finalize,
   };
 }
