@@ -92,18 +92,25 @@ export default function BulletproofDocumentUploader({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storageKey]);
 
+  // Debounced localStorage write — previously ran synchronously on every `documents`
+  // mutation, which stacks up and blocks the main thread after 6-8 uploads
+  // (JSON.stringify of the whole documents map on every keystroke in any sibling field).
+  const saveTimerRef = React.useRef(null);
   useEffect(() => {
-    if (storageKey && documents && Object.keys(documents).length > 0) {
+    if (!storageKey || !documents || Object.keys(documents).length === 0) return;
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => {
       try {
         localStorage.setItem(storageKey, JSON.stringify(documents));
       } catch (e) {
         console.warn('[BulletproofUploader] localStorage.setItem failed:', e?.message);
       }
-    }
+    }, 400);
+    return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };
   }, [documents, storageKey]);
 
   // ── Upload handler: processes each file independently; one failure never aborts others ──
-  const handleUpload = async (docId, filesList) => {
+  const handleUpload = React.useCallback(async (docId, filesList) => {
     const fileArray = Array.isArray(filesList) ? filesList : [filesList];
     if (fileArray.length === 0) return;
     if (!caseId) {
@@ -219,17 +226,17 @@ export default function BulletproofDocumentUploader({
     }
 
     setUploadingDoc(null);
-  };
+  }, [caseId, docLinkToken, allDocs, setDocuments]);
 
-  const handleRemoveAll = (docId) => {
+  const handleRemoveAll = React.useCallback((docId) => {
     setDocuments(prev => {
       const newDocs = { ...prev };
       delete newDocs[docId];
       return newDocs;
     });
-  };
+  }, [setDocuments]);
 
-  const handleRemoveSingle = (docId, fileIndex) => {
+  const handleRemoveSingle = React.useCallback((docId, fileIndex) => {
     setDocuments(prev => {
       const entry = prev[docId];
       if (!entry) return prev;
@@ -255,11 +262,11 @@ export default function BulletproofDocumentUploader({
         },
       };
     });
-  };
+  }, [setDocuments]);
 
-  const handleOpenNotAvailable = (doc) => setNotAvailableModal({ open: true, doc });
+  const handleOpenNotAvailable = React.useCallback((doc) => setNotAvailableModal({ open: true, doc }), []);
 
-  const handleConfirmNotAvailable = async (reason) => {
+  const handleConfirmNotAvailable = React.useCallback(async (reason) => {
     const doc = notAvailableModal.doc;
     if (!doc) return;
     const docId = doc._docKey || doc.documentTypeId || doc.id;
@@ -298,7 +305,7 @@ export default function BulletproofDocumentUploader({
     } finally {
       setUploadingDoc(null);
     }
-  };
+  }, [notAvailableModal.doc, caseId, docLinkToken, setDocuments]);
 
   const mandatoryDocs = requiredDocs.filter(d => d.required);
   const optionalDocs = requiredDocs.filter(d => !d.required);

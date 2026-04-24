@@ -55,7 +55,7 @@ function fileIcon(name = '') {
   return <File className="w-4 h-4 text-slate-400" />;
 }
 
-export default function DocumentCard({ doc, uploadedFile, onUpload, onRemoveAll, onRemoveSingle, onMarkNotAvailable, isUploading }) {
+function DocumentCard({ doc, uploadedFile, onUpload, onRemoveAll, onRemoveSingle, onMarkNotAvailable, isUploading }) {
   const inputRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const docKey = doc._docKey || doc.documentTypeId || doc.id;
@@ -287,3 +287,17 @@ export default function DocumentCard({ doc, uploadedFile, onUpload, onRemoveAll,
     </div>
   );
 }
+
+// Memoize — prevents all 12 cards from re-rendering when any single one changes,
+// which is the main reason the documents page becomes sluggish after 6-8 uploads.
+export default React.memo(DocumentCard, (prev, next) => {
+  return (
+    prev.doc === next.doc &&
+    prev.uploadedFile === next.uploadedFile &&
+    prev.isUploading === next.isUploading &&
+    prev.onUpload === next.onUpload &&
+    prev.onRemoveAll === next.onRemoveAll &&
+    prev.onRemoveSingle === next.onRemoveSingle &&
+    prev.onMarkNotAvailable === next.onMarkNotAvailable
+  );
+});
