@@ -132,19 +132,6 @@ export async function directUploadDocument({
     payload.fileBase64 = null;
     if (tickStop) tickStop();
     if (typeof onProgress === 'function') { try { onProgress(100); } catch (_) {} }
-    // Gateway envelope case: function likely succeeded server-side (upload duration
-    // outran gateway's auth-validation timeout), but we can't read documentUploadId.
-    // Treat as success — the backend is idempotent. Client shows success; next
-    // resume/bootstrap call will pick up the DocumentUpload row and merge state.
-    if (data?._gatewayEnvelope) {
-      return {
-        ok: true,
-        documentUploadId: null,
-        fileUri: null,
-        fileUrl: null,
-        _gatewayEnvelope: true,
-      };
-    }
     if (!data?.ok) throw new Error(data?.error || 'Falha ao enviar arquivo');
     return data;
   } catch (err) {

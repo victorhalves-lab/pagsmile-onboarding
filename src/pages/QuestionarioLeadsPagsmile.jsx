@@ -252,14 +252,7 @@ export default function QuestionarioLeadsPagsmile() {
           leadQualifierLevel: leadCommonData.leadQualifierLevel,
         } : undefined,
       });
-      // Gateway envelope: function likely ran server-side; lead was created.
-      // Show success and clear draft (anti-fantasma on server will accept the next retry
-      // as a duplicate if somehow the lead wasn't created).
-      if (submitRes?._gatewayEnvelope) {
-        console.log('[Submit] Gateway wrap detected — treating as success');
-      } else if (submitRes?.error) {
-        throw new Error(submitRes.error);
-      }
+      if (submitRes?.error) throw new Error(submitRes.error);
 
       // Analytics is non-critical — the SDK may block it on public routes.
       try {
