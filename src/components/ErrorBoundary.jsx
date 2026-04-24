@@ -55,25 +55,17 @@ export default class ErrorBoundary extends React.Component {
     const isTransient = ErrorBoundary._isTransient(error);
 
     if (isTransient) {
-      // Track rolling window. If we keep crashing with the same DOM error,
-      // the extension is clearly still active — escalate to a friendly recovery
-      // screen (ask user to open in anonymous mode / disable translator).
-      const now = Date.now();
-      this._recentTransients = this._recentTransients.filter(t => now - t < 10000);
-      this._recentTransients.push(now);
-
-      if (this._recentTransients.length >= 4) {
-        // 4 transients in 10s = extension is actively fighting us. Show recovery.
-        console.warn('[ErrorBoundary] Repeated DOM transients — escalating to recovery UI');
-        this.setState({ hasError: true, error });
-        return;
-      }
-
-      // Silent self-heal: schedule a remount so stale DOM references clear.
-      console.warn('[ErrorBoundary] DOM transient — auto-healing (attempt', this._recentTransients.length, ')');
-      setTimeout(() => {
-        this.setState(s => ({ healKey: s.healKey + 1, _transient: false }));
-      }, 50);
+      // Transient errors (SDK MessagePort `instanceof`, extension DOM mutations)
+      // fire from background async listeners and do NOT break the rendered tree.
+      // The SDK's `instanceof` error in particular can fire dozens of times
+      // during a session while the page is perfectly functional — counting it
+      // as "crashes" and escalating to the recovery UI was misleading clients
+      // with a scary error screen on top of a working page.
+      //
+      // We now fully ignore transient errors at the global boundary: no state
+      // change, no remount. React keeps the last committed tree visible and
+      // the user never sees the "Algo deu errado" screen for benign events.
+      console.warn('[ErrorBoundary] Transient error — ignored:', String(error?.message || error).slice(0, 120));
       return;
     }
 
