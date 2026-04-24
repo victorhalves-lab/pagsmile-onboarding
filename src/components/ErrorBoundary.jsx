@@ -57,15 +57,9 @@ export default class ErrorBoundary extends React.Component {
     if (isTransient) {
       // Transient errors (SDK MessagePort `instanceof`, extension DOM mutations)
       // fire from background async listeners and do NOT break the rendered tree.
-      // The SDK's `instanceof` error in particular can fire dozens of times
-      // during a session while the page is perfectly functional — counting it
-      // as "crashes" and escalating to the recovery UI was misleading clients
-      // with a scary error screen on top of a working page.
-      //
-      // We now fully ignore transient errors at the global boundary: no state
-      // change, no remount. React keeps the last committed tree visible and
-      // the user never sees the "Algo deu errado" screen for benign events.
-      console.warn('[ErrorBoundary] Transient error — ignored:', String(error?.message || error).slice(0, 120));
+      // IGNORED silently — do NOT log to server (the SDK fires this dozens of
+      // times per session and was hitting the logPublicClientError rate limit,
+      // blocking the main thread and freezing the page).
       return;
     }
 

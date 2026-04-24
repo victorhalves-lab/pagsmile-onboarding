@@ -35,7 +35,19 @@ export default class SelfHealingBoundary extends React.Component {
     const msg = String(err?.message || err || '');
     const stack = String(err?.stack || info?.componentStack || '');
 
-    // Log once (fire-and-forget, never throws).
+    // ── KNOWN BENIGN ERROR: SDK's MessagePort `instanceof` crash ──
+    // Check FIRST, before any logging — the SDK fires this dozens of times
+    // per session and was saturating logPublicClientError rate limit,
+    // blocking the main thread and freezing the page.
+    const isBenignSdkInstanceofErrorEarly =
+      msg.includes("Right-hand side of 'instanceof' is not callable") ||
+      /is not a function.*evaluating.*instanceof/i.test(msg) ||
+      (/MessagePort/i.test(stack) && /instanceof/i.test(stack));
+    if (isBenignSdkInstanceofErrorEarly) {
+      return;
+    }
+
+    // Log real errors only (fire-and-forget, never throws).
     try {
       fetch('/functions/logPublicClientError', {
         method: 'POST',
@@ -51,7 +63,7 @@ export default class SelfHealingBoundary extends React.Component {
       }).catch(() => {});
     } catch (_) {}
 
-    // ── KNOWN BENIGN ERROR: SDK's MessagePort `instanceof` crash ──
+    // ── Benign error check kept for safety (already returned above) ──
     // This error fires from a background async listener (MessagePort.k) and
     // does NOT break rendering — the page actually works fine. Previous
     // behavior counted it as a real crash and after 3 occurrences forced

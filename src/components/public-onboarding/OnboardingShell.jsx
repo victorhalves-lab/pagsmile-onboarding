@@ -43,6 +43,15 @@ class LocalErrorBoundary extends React.Component {
     return { err };
   }
   componentDidCatch(err, info) {
+    // Transient errors (SDK MessagePort `instanceof`, extension DOM mutations)
+    // are silently ignored AND NOT LOGGED — the SDK fires them dozens of times
+    // per session and was saturating the logPublicClientError rate limit,
+    // blocking the main thread and freezing the page.
+    if (isTransientBoundaryError(err)) {
+      return;
+    }
+
+    // Log REAL render errors (not transient noise) for diagnosis.
     try {
       fetch('/functions/logPublicClientError', {
         method: 'POST',
@@ -57,14 +66,6 @@ class LocalErrorBoundary extends React.Component {
       }).catch(() => {});
     } catch (_) {}
 
-    // Transient errors (SDK MessagePort `instanceof`, extension DOM mutations)
-    // are now FULLY IGNORED. They come from background async listeners and do
-    // not break the rendered tree. Counting them and showing "Ops" was the
-    // cause of the page erroring out even though it had rendered correctly.
-    if (isTransientBoundaryError(err)) {
-      return;
-    }
-    // Only real render errors escalate to the fallback UI.
     this.setState({ err });
   }
   render() {
