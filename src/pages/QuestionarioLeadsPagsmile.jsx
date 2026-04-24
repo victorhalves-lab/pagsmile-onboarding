@@ -242,7 +242,10 @@ export default function QuestionarioLeadsPagsmile() {
         _bdcScore: bdcResult.bdcScore,
         _leadScore: leadScore,
         _cnpjEnrichment: cnpjData || null,
-        _bdcEnrichment: bdcFullData || bdcData || null,
+        // NOTE: BDC enrichment is sent via the top-level bdcEnrichmentData field
+        // and persisted there by the backend. Do NOT duplicate inside questionnaireData —
+        // some CNPJs with many CGU records / passages push questionnaireData over the
+        // 200KB per-field limit and cause the submission to fail silently.
       },
       expectedRates: {
         mdr1x: form.mdrAvista ? Number(form.mdrAvista) : undefined,
@@ -296,8 +299,25 @@ export default function QuestionarioLeadsPagsmile() {
     setProtocolo(proto);
     setSubmitted(true);
     } catch (err) {
-      toast.error('Erro ao enviar questionário. Tente novamente.');
+      const serverMessage = err?.response?.data?.error || err?.message || 'Erro desconhecido';
+      toast.error(`Erro ao enviar: ${serverMessage}. Se persistir, entre em contato.`);
       console.error('Submit error:', err);
+      // Log to backend for diagnosis — silent fire-and-forget
+      try {
+        base44.functions.invoke('logPublicClientError', {
+          stage: 'questionario_leads_pagsmile_v5_submit',
+          errorMessage: String(serverMessage).slice(0, 1500),
+          componentStack: String(err?.stack || '').slice(0, 4000),
+          userAgent: navigator.userAgent,
+          url: window.location.href,
+          extra: {
+            segmento: form.segmento,
+            cnpj: form.cnpj,
+            hasIntroducer: !!onboardingLink?.introducerId,
+            linkCode: linkCode || '',
+          },
+        });
+      } catch (_) {}
     } finally {
       setSubmitting(false);
     }

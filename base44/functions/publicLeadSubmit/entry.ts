@@ -29,6 +29,11 @@ const CLIENT_ALLOWED_LEAD_FIELDS = [
   'protocolo', 'origemLead',
   'questionnaireData', 'expectedRates',
   'lastInteractionDate',
+  // BDC enrichment (calculated client-side from bdcEnrichLead response)
+  'bdcEnrichmentData', 'bdcLeadScore', 'bdcScoreLevel',
+  'bdcFlags', 'bdcCrossValidation', 'bdcEnrichmentDate',
+  // Lead qualifier (calculated client-side from questionnaire answers)
+  'leadQualifierScore', 'leadQualifierLevel',
 ];
 
 // SECURITY: IntroducerLead allowlist — client CANNOT set leadId, introducerId,
