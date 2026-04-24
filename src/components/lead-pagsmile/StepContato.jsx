@@ -3,10 +3,12 @@ import { Input } from '@/components/ui/input';
 import EmailInput from '../leads/EmailInput';
 import PhoneInput from '../leads/PhoneInput';
 import ButtonSelector from './ButtonSelector';
+import BdcAutofillBadge from './BdcAutofillBadge';
 import { CARGO_OPTIONS } from './pagsmileQuestionnaireData';
 
 /** ETAPA 3 — Contato (P6-P9) */
 export default function StepContato({ form, updateField, errors }) {
+  const autofilled = form._bdcAutofilled || {};
   return (
     <div className="space-y-5">
       <div>
@@ -23,6 +25,7 @@ export default function StepContato({ form, updateField, errors }) {
           onSiteSuggestion={(site) => { if (!form.presencaDigital) updateField('presencaDigital', site); }}
           hasError={errors?.email}
         />
+        <BdcAutofillBadge show={autofilled.email && !!form.email} />
         {errors?.email && <p className="text-xs text-red-500">E-mail inválido</p>}
       </div>
 
@@ -34,6 +37,7 @@ export default function StepContato({ form, updateField, errors }) {
           onChange={(v) => updateField('phone', v)}
           hasError={errors?.phone}
         />
+        <BdcAutofillBadge show={autofilled.phone && !!form.phone} />
         {errors?.phone && <p className="text-xs text-red-500">Telefone inválido (DDD + número, ex: 11 99999-9999)</p>}
       </div>
 

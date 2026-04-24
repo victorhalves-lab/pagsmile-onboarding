@@ -4,6 +4,7 @@ import { Loader2, CheckCircle, AlertTriangle, Shield, Building2 } from 'lucide-r
 import { Badge } from '@/components/ui/badge';
 import useBdcCnpjEnrichment from '@/hooks/useBdcCnpjEnrichment';
 import SiteValidationBadge from '../leads/SiteValidationBadge';
+import { applyBdcAutofill } from './bdcAutofillMapper';
 
 const formatCnpj = (val) => {
   const d = val.replace(/\D/g, '').slice(0, 14);
@@ -44,6 +45,12 @@ export default function StepDadosEmpresa({ form, updateField, cnpjData, setCnpjD
           updateField('enderecoMunicipio', bdc.endereco.municipio || '');
           updateField('enderecoUf', bdc.endereco.uf || '');
           updateField('_enderecoConfirmado', true);
+        }
+        // Auto-fill contato (email/phone) + volumetria (faturamento/funcionários) + plataforma
+        // via mapper central. Só preenche campos que estão vazios — nunca sobrescreve o cliente.
+        const autofilled = applyBdcAutofill(bdc, form, updateField);
+        if (Object.keys(autofilled).length > 0) {
+          updateField('_bdcAutofilled', { ...(form._bdcAutofilled || {}), ...autofilled });
         }
       } else {
         // Fallback to Brasil API
