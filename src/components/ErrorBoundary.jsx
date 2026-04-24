@@ -11,8 +11,9 @@ import React from 'react';
 export default class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false, error: null, healKey: 0, _transient: false };
+    this.state = { hasError: false, error: null, healKey: 0 };
     this._recentTransients = [];
+    this._loopGuardUntil = 0;
   }
 
   static _isTransient(error) {
@@ -45,25 +46,39 @@ export default class ErrorBoundary extends React.Component {
   }
 
   static getDerivedStateFromError(error) {
-    if (ErrorBoundary._isTransient(error)) {
-      return { hasError: false, error, _transient: true };
-    }
+    // CRITICAL: Always mark `hasError: true` synchronously here. React calls
+    // this BEFORE the next render, so returning `{ hasError: false }` for
+    // "transients" causes React to immediately re-render the same broken
+    // children, which throws again → infinite loop (see `inpage.js` freeze bug).
+    // Transient recovery is now handled by `componentDidCatch` bumping healKey.
     return { hasError: true, error };
   }
 
   componentDidCatch(error, errorInfo) {
     const isTransient = ErrorBoundary._isTransient(error);
+    const now = Date.now();
 
-    if (isTransient) {
-      // Transient errors (SDK MessagePort `instanceof`, extension DOM mutations)
-      // fire from background async listeners and do NOT break the rendered tree.
-      // IGNORED silently — do NOT log to server (the SDK fires this dozens of
-      // times per session and was hitting the logPublicClientError rate limit,
-      // blocking the main thread and freezing the page).
+    // Hard loop guard: if we catch >5 errors in <500ms, stop trying to recover
+    // and show the fallback. Prevents browser freeze from fetch spam.
+    this._recentTransients = this._recentTransients.filter(t => now - t < 500);
+    this._recentTransients.push(now);
+    const isLooping = this._recentTransients.length > 5 || now < this._loopGuardUntil;
+
+    if (isTransient && !isLooping) {
+      // Transient: silently remount subtree via healKey bump. Do NOT log
+      // (SDK fires this dozens of times; logging saturates rate limit).
+      // Keep hasError=false so the fallback doesn't flash.
+      this._loopGuardUntil = now + 100; // debounce back-to-back remounts
+      this.setState(s => ({ hasError: false, error: null, healKey: s.healKey + 1 }));
       return;
     }
 
-    // Log to console for debugging.
+    if (isTransient && isLooping) {
+      // Transient but looping — give up healing, show fallback.
+      return;
+    }
+
+    // Log real errors to console for debugging.
     console.error('[ErrorBoundary] Caught error:', error);
     console.error('[ErrorBoundary] Stack:', errorInfo?.componentStack);
 

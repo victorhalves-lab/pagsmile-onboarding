@@ -26,28 +26,45 @@ export default class SelfHealingBoundary extends React.Component {
   }
 
   static getDerivedStateFromError() {
-    // We don't freeze the UI here — componentDidCatch decides whether to remount
-    // or escalate to fatal.
-    return {};
+    // Mark fatal synchronously. If the error turns out to be benign/transient,
+    // componentDidCatch will clear the flag and bump attemptKey to remount.
+    // NEVER return `{}` here: that lets React re-render the broken children
+    // immediately, which re-throws → infinite loop freezing the browser.
+    return { fatal: true };
   }
 
   componentDidCatch(err, info) {
     const msg = String(err?.message || err || '');
     const stack = String(err?.stack || info?.componentStack || '');
+    const now = Date.now();
 
     // ── KNOWN BENIGN ERROR: SDK's MessagePort `instanceof` crash ──
-    // Check FIRST, before any logging — the SDK fires this dozens of times
-    // per session and was saturating logPublicClientError rate limit,
-    // blocking the main thread and freezing the page.
-    const isBenignSdkInstanceofErrorEarly =
+    // Fires from a background async listener and doesn't break rendering.
+    // We recover silently by remounting — but NEVER log and NEVER loop.
+    const isBenignSdkInstanceofError =
       msg.includes("Right-hand side of 'instanceof' is not callable") ||
       /is not a function.*evaluating.*instanceof/i.test(msg) ||
       (/MessagePort/i.test(stack) && /instanceof/i.test(stack));
-    if (isBenignSdkInstanceofErrorEarly) {
+
+    // Hard loop guard: if we've caught >3 errors in <500ms, stop trying to heal
+    // and leave fatal=true (show recovery screen). Prevents browser freeze.
+    this._recentErrors = this._recentErrors.filter(t => now - t < 500);
+    this._recentErrors.push(now);
+    const isLooping = this._recentErrors.length > 3;
+
+    if (isBenignSdkInstanceofError && !isLooping) {
+      // Silent heal — clear fatal flag and bump key to remount children.
+      this.setState(s => ({ fatal: false, attemptKey: s.attemptKey + 1 }));
       return;
     }
 
-    // Log real errors only (fire-and-forget, never throws).
+    if (isLooping) {
+      // Too many errors too fast — stop everything, show recovery UI.
+      // Do NOT log (would spam the rate limit and freeze the page).
+      return;
+    }
+
+    // Real, non-benign error — log once for observability, then show fallback.
     try {
       fetch('/functions/logPublicClientError', {
         method: 'POST',
@@ -63,44 +80,9 @@ export default class SelfHealingBoundary extends React.Component {
       }).catch(() => {});
     } catch (_) {}
 
-    // ── Benign error check kept for safety (already returned above) ──
-    // This error fires from a background async listener (MessagePort.k) and
-    // does NOT break rendering — the page actually works fine. Previous
-    // behavior counted it as a real crash and after 3 occurrences forced
-    // the "Ops, algo não carregou" screen even though the UI was fine.
-    //
-    // We now fully ignore it here: no remount, no counter bump. The
-    // ErrorBoundary contract allows returning without setState — React
-    // keeps the last committed tree visible.
-    const isBenignSdkInstanceofError =
-      msg.includes("Right-hand side of 'instanceof' is not callable") ||
-      /is not a function.*evaluating.*instanceof/i.test(msg) ||
-      (/MessagePort/i.test(stack) && /instanceof/i.test(stack));
-    if (isBenignSdkInstanceofError) {
-      return;
-    }
-
-    // Track repeat errors in a rolling 2s window.
-    // CRITICAL FIX (2026-04-24): the previous "3 errors in 10s → fatal" window
-    // was too permissive. A tight render loop can fire 50+ errors in <1s,
-    // during which each componentDidCatch schedules a setTimeout remount
-    // AND a fetch to logPublicClientError. The browser tab froze because
-    // the fetch backlog + render loop saturated the main thread. We now
-    // escalate to fatal on the SECOND error within 2s — fast enough to stop
-    // the freeze, lenient enough to still auto-heal truly transient issues.
-    const now = Date.now();
-    this._recentErrors = this._recentErrors.filter(t => now - t < 2000);
-    this._recentErrors.push(now);
-
-    if (this._recentErrors.length >= 2) {
-      // Second crash inside 2s → definitely not transient. Stop the loop now.
-      this.setState({ fatal: true });
-      return;
-    }
-
-    // First error only: give the subtree one chance to recover by remounting.
+    // One-shot recovery attempt: if it was truly a one-off, bump key and hope.
     setTimeout(() => {
-      this.setState(s => ({ attemptKey: s.attemptKey + 1 }));
+      this.setState(s => ({ fatal: false, attemptKey: s.attemptKey + 1 }));
     }, 50);
   }
 
