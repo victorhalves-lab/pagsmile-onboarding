@@ -80,20 +80,25 @@ export default class SelfHealingBoundary extends React.Component {
       return;
     }
 
-    // Track repeat errors in a rolling 10s window.
+    // Track repeat errors in a rolling 2s window.
+    // CRITICAL FIX (2026-04-24): the previous "3 errors in 10s → fatal" window
+    // was too permissive. A tight render loop can fire 50+ errors in <1s,
+    // during which each componentDidCatch schedules a setTimeout remount
+    // AND a fetch to logPublicClientError. The browser tab froze because
+    // the fetch backlog + render loop saturated the main thread. We now
+    // escalate to fatal on the SECOND error within 2s — fast enough to stop
+    // the freeze, lenient enough to still auto-heal truly transient issues.
     const now = Date.now();
-    this._recentErrors = this._recentErrors.filter(t => now - t < 10000);
+    this._recentErrors = this._recentErrors.filter(t => now - t < 2000);
     this._recentErrors.push(now);
 
-    if (this._recentErrors.length >= 3) {
-      // Too many crashes → give up silently and show recovery UI.
+    if (this._recentErrors.length >= 2) {
+      // Second crash inside 2s → definitely not transient. Stop the loop now.
       this.setState({ fatal: true });
       return;
     }
 
-    // Auto-heal: bump key to force full remount of children on next tick.
-    // React requires a state change to re-render; we schedule it async to let
-    // the current render phase unwind cleanly.
+    // First error only: give the subtree one chance to recover by remounting.
     setTimeout(() => {
       this.setState(s => ({ attemptKey: s.attemptKey + 1 }));
     }, 50);

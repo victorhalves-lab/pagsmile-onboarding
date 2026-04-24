@@ -16,7 +16,15 @@
 // Small caveat: because `import` statements must be static, we use a dynamic
 // `import()` that is awaited at the top of main.jsx BEFORE any React code runs.
 
-import { createClient } from '@base44/sdk';
+// CRITICAL: `@base44/sdk` is imported DYNAMICALLY (not statically) so that
+// public onboarding routes NEVER even download the SDK bundle. A static
+// import here forces Vite to evaluate the SDK's module-level code on EVERY
+// page load (including /PublicOnboarding), and that side-effect code
+// minifies in production to a call like `vw(...)` where `vw` may be
+// tree-shaken to `undefined`, producing:
+//     TypeError: vw is not a function
+// which crashes the page before React can render. Dynamic import defers
+// SDK loading to authenticated routes only.
 import { appParams } from '@/lib/app-params';
 import { isPublicPath } from '@/lib/publicRoutes';
 
@@ -103,40 +111,61 @@ function createMock() {
 // on non-onboarding routes get the real client synchronously.
 // ─────────────────────────────────────────────────────────────────────────
 
-// SDK client is instantiated LAZILY inside a getter with try/catch.
-// If createClient() ever throws (bad token, SDK internal error, etc.), we
-// fall back to the mock instead of killing the entire module — which would
-// cascade and crash App.jsx and every page that imports `base44`.
+// SDK client is instantiated LAZILY and asynchronously.
+//  • On onboarding public routes → always mock (SDK never downloaded).
+//  • On other routes → kick off a dynamic import on module load, cache the
+//    client promise. Consumers hit the mock until the SDK finishes loading,
+//    then transparently switch to the real client.
+// If the dynamic import or createClient() ever throws, we permanently fall
+// back to the mock — never crash the module and take the whole app down.
 const mockClient = createMock();
 let realClient = null;
-let realClientTried = false;
+let sdkLoadPromise = null;
 
-function getRealClient() {
-  if (isOnboardingPublicRoute) return mockClient;
-  if (realClient) return realClient;
-  if (realClientTried) return mockClient;
-  realClientTried = true;
-  try {
-    realClient = createClient({
-      appId: appParams.appId,
-      token: appParams.token,
-      functionsVersion: appParams.functionsVersion,
-      serverUrl: '',
-      requiresAuth: false,
-      appBaseUrl: appParams.appBaseUrl,
-    });
-    return realClient;
-  } catch (err) {
-    console.error('[base44] createClient failed — falling back to mock:', err);
-    return mockClient;
+function loadSdk() {
+  if (sdkLoadPromise) return sdkLoadPromise;
+  if (isOnboardingPublicRoute) {
+    sdkLoadPromise = Promise.resolve(null);
+    return sdkLoadPromise;
   }
+  sdkLoadPromise = import('@base44/sdk')
+    .then((mod) => {
+      try {
+        realClient = mod.createClient({
+          appId: appParams.appId,
+          token: appParams.token,
+          functionsVersion: appParams.functionsVersion,
+          serverUrl: '',
+          requiresAuth: false,
+          appBaseUrl: appParams.appBaseUrl,
+        });
+        return realClient;
+      } catch (err) {
+        console.error('[base44] createClient failed — using mock:', err);
+        return null;
+      }
+    })
+    .catch((err) => {
+      console.error('[base44] SDK dynamic import failed — using mock:', err);
+      return null;
+    });
+  return sdkLoadPromise;
 }
 
-// Kept for backwards compatibility — now a no-op.
-export async function ensureSdkLoaded() {}
+// Start loading immediately on non-onboarding routes so the client is ready
+// by the time the app renders authenticated pages.
+if (!isOnboardingPublicRoute) loadSdk();
+
+// ensureSdkLoaded() — await this in main.jsx if you need the SDK synchronously
+// before the first render on authenticated routes. Safe to call anywhere;
+// resolves to either the real client or null (caller falls back to mock).
+export async function ensureSdkLoaded() {
+  await loadSdk();
+}
 
 export const base44 = new Proxy({}, {
   get(_t, prop) {
-    return getRealClient()[prop];
+    const client = realClient || mockClient;
+    return client[prop];
   },
 });
