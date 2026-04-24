@@ -1,8 +1,13 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { appParams } from '@/lib/app-params';
-import { createAxiosClient } from '@base44/sdk/dist/utils/axios-client';
 import { isPublicPath } from '@/lib/publicRoutes';
+
+// createAxiosClient is imported DYNAMICALLY inside checkAppState() to avoid
+// the @base44/sdk chunk being evaluated on public pages. A static import here
+// would force the SDK bundle (index-CwCfScd1.js) to run top-level code on
+// every page load including /PublicOnboarding, causing:
+//   TypeError: i4 is not a function   ← minified SDK initialisation crash
 
 const AuthContext = createContext();
 
@@ -41,6 +46,7 @@ export const AuthProvider = ({ children }) => {
 
       // First, check app public settings (with token if available)
       // This will tell us if auth is required, user not registered, etc.
+      const { createAxiosClient } = await import('@base44/sdk/dist/utils/axios-client');
       const appClient = createAxiosClient({
         baseURL: `/api/apps/public`,
         headers: {
