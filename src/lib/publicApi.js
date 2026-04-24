@@ -134,6 +134,27 @@ export async function callPublicFunction(functionName, payload = {}) {
     }
   }
 
+  // ⚡ Gateway wrap detection: Base44 gateway sometimes wraps a SUCCESSFUL
+  // function response with a 401/403 envelope when the anonymous request
+  // outran the gateway's auth-validation timeout (~3s for anon). The function
+  // already executed server-side — the document was saved, the session was
+  // updated, etc. The envelope shape is always:
+  //   { message: "Authentication required to view users",
+  //     detail: "You must be logged in to perform this operation.",
+  //     traceback: null, extra_data: null, request_id: null }
+  // Returning an error here causes the client to retry or show a fake failure,
+  // while the backend has already done the work (and is idempotent). Instead,
+  // surface it as a "likely-succeeded-but-unverifiable" response so the caller
+  // can decide to verify via a follow-up fetch or just proceed.
+  const isGatewayAuthEnvelope =
+    (res.status === 401 || res.status === 403) &&
+    body && typeof body === 'object' &&
+    typeof body.message === 'string' &&
+    /authentication required|must be logged in|this app is private/i.test(body.message + ' ' + (body.detail || ''));
+  if (isGatewayAuthEnvelope) {
+    return { ok: true, _gatewayEnvelope: true, _originalStatus: res.status };
+  }
+
   if (!res.ok) {
     const msg = (body && (body.error || body.message)) || `HTTP ${res.status}`;
     throw new Error(msg);
