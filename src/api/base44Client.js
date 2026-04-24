@@ -103,26 +103,40 @@ function createMock() {
 // on non-onboarding routes get the real client synchronously.
 // ─────────────────────────────────────────────────────────────────────────
 
-// SDK is imported statically — bundled by Vite, no runtime fetch, no chunk errors.
-// On onboarding public routes the SDK is still imported but all calls are routed
-// to the mock by the Proxy below, so no side-effectful SDK code runs for them.
-const realClient = isOnboardingPublicRoute ? null : createClient({
-  appId: appParams.appId,
-  token: appParams.token,
-  functionsVersion: appParams.functionsVersion,
-  serverUrl: '',
-  requiresAuth: false,
-  appBaseUrl: appParams.appBaseUrl,
-});
-
-// Kept for backwards compatibility with main.jsx — now a no-op.
-export async function ensureSdkLoaded() {}
-
+// SDK client is instantiated LAZILY inside a getter with try/catch.
+// If createClient() ever throws (bad token, SDK internal error, etc.), we
+// fall back to the mock instead of killing the entire module — which would
+// cascade and crash App.jsx and every page that imports `base44`.
 const mockClient = createMock();
+let realClient = null;
+let realClientTried = false;
+
+function getRealClient() {
+  if (isOnboardingPublicRoute) return mockClient;
+  if (realClient) return realClient;
+  if (realClientTried) return mockClient;
+  realClientTried = true;
+  try {
+    realClient = createClient({
+      appId: appParams.appId,
+      token: appParams.token,
+      functionsVersion: appParams.functionsVersion,
+      serverUrl: '',
+      requiresAuth: false,
+      appBaseUrl: appParams.appBaseUrl,
+    });
+    return realClient;
+  } catch (err) {
+    console.error('[base44] createClient failed — falling back to mock:', err);
+    return mockClient;
+  }
+}
+
+// Kept for backwards compatibility — now a no-op.
+export async function ensureSdkLoaded() {}
 
 export const base44 = new Proxy({}, {
   get(_t, prop) {
-    if (isOnboardingPublicRoute) return mockClient[prop];
-    return realClient[prop];
+    return getRealClient()[prop];
   },
 });

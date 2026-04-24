@@ -410,15 +410,19 @@ const AuthenticatedApp = () => {
   );
 };
 
+// --- Suspense fallback for lazy-loaded pages ---
+const PageSuspenseFallback = () => (
+  <div className="fixed inset-0 flex items-center justify-center">
+    <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
+  </div>
+);
+
 // --- Main router: checks if current path is public or requires auth ---
 const AppRoutes = () => {
   const location = useLocation();
 
-  if (isPublicPath(location.pathname)) {
-    return <PublicRoutes />;
-  }
-
-  return <AuthenticatedApp />;
+  const tree = isPublicPath(location.pathname) ? <PublicRoutes /> : <AuthenticatedApp />;
+  return <React.Suspense fallback={<PageSuspenseFallback />}>{tree}</React.Suspense>;
 };
 
 function App() {

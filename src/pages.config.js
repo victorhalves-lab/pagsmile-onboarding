@@ -1,136 +1,67 @@
 /**
  * pages.config.js - Page routing configuration
- * 
- * This file is AUTO-GENERATED. Do not add imports or modify PAGES manually.
- * Pages are auto-registered when you create files in the ./pages/ folder.
- * 
- * THE ONLY EDITABLE VALUE: mainPage
- * This controls which page is the landing page (shown when users visit the app).
- * 
- * Example file structure:
- * 
- *   import HomePage from './pages/HomePage';
- *   import Dashboard from './pages/Dashboard';
- *   import Settings from './pages/Settings';
- *   
- *   export const PAGES = {
- *       "HomePage": HomePage,
- *       "Dashboard": Dashboard,
- *       "Settings": Settings,
- *   }
- *   
- *   export const pagesConfig = {
- *       mainPage: "HomePage",
- *       Pages: PAGES,
- *   };
- * 
- * Example with Layout (wraps all pages):
  *
- *   import Home from './pages/Home';
- *   import Settings from './pages/Settings';
- *   import __Layout from './Layout.jsx';
- *
- *   export const PAGES = {
- *       "Home": Home,
- *       "Settings": Settings,
- *   }
- *
- *   export const pagesConfig = {
- *       mainPage: "Home",
- *       Pages: PAGES,
- *       Layout: __Layout,
- *   };
- *
- * To change the main page from HomePage to Dashboard, use find_replace:
- *   Old: mainPage: "HomePage",
- *   New: mainPage: "Dashboard",
- *
- * The mainPage value must match a key in the PAGES object exactly.
+ * Pages are lazy-loaded via React.lazy so a single broken page doesn't
+ * crash the entire app. If one page fails to load, only that route shows
+ * an error — every other page keeps working.
  */
-import AdminDashboard from './pages/AdminDashboard';
-import AnaliseDeCasos from './pages/AnaliseDeCasos';
-import Auditoria from './pages/Auditoria';
-import ComplianceDinamico from './pages/ComplianceDinamico';
-import Configuracoes from './pages/Configuracoes';
-import ContratoPublico from './pages/ContratoPublico';
-import CriarContrato from './pages/CriarContrato';
-import CriarProposta from './pages/CriarProposta';
-import DocumentUploadFull from './pages/DocumentUploadFull';
-import DocumentUploadPix from './pages/DocumentUploadPix';
-import EditorContrato from './pages/EditorContrato';
-import EditorQuestionario from './pages/EditorQuestionario';
-import GerarLinkOnboarding from './pages/GerarLinkOnboarding';
-import GestaoContratos from './pages/GestaoContratos';
-import GestaoDocumentos from './pages/GestaoDocumentos';
-import GestaoPropostas from './pages/GestaoPropostas';
-import GestaoRevalidacao from './pages/GestaoRevalidacao';
-import HelenaIA from './pages/HelenaIA';
-import Home from './pages/Home';
-import HowItWorks from './pages/HowItWorks';
-import IntegracoesExternas from './pages/IntegracoesExternas';
-import LeadDetails from './pages/LeadDetails';
-import LeadManagement from './pages/LeadManagement';
-import LeadQuestionnaire from './pages/LeadQuestionnaire';
-import LeadSuccess from './pages/LeadSuccess';
-import LinksCompliance from './pages/LinksCompliance';
-import LinksQuestionariosLeads from './pages/LinksQuestionariosLeads';
-
-import MessageTemplates from './pages/MessageTemplates';
-import OnboardingCompletion from './pages/OnboardingCompletion';
-import PipelineComercial from './pages/PipelineComercial';
-import PublicOnboarding from './pages/PublicOnboarding';
-import PreviewContrato from './pages/PreviewContrato';
-import PropostaDetalhes from './pages/PropostaDetalhes';
-import PropostaPublica from './pages/PropostaPublica';
-import QuestionarioSimplificadoPublico from './pages/QuestionarioSimplificadoPublico';
-import QuestionariosLeads from './pages/QuestionariosLeads';
-import QuestionariosRecebidos from './pages/QuestionariosRecebidos';
-import RegrasDeCompliance from './pages/RegrasDeCompliance';
-import TemplatesQuestionarios from './pages/TemplatesQuestionarios';
+import React from 'react';
 import __Layout from './Layout.jsx';
 
+const lazyPage = (loader) => React.lazy(() =>
+  loader().catch((err) => {
+    console.error('[pages.config] Failed to load page:', err);
+    return {
+      default: () => React.createElement(
+        'div',
+        { style: { padding: '32px', fontFamily: 'Plus Jakarta Sans, system-ui, sans-serif' } },
+        React.createElement('h1', { style: { color: '#002443', fontSize: '18px', marginBottom: '8px' } }, 'Erro ao carregar esta página'),
+        React.createElement('p', { style: { color: '#002443', opacity: 0.7, fontSize: '14px' } }, String(err?.message || err))
+      ),
+    };
+  })
+);
 
 export const PAGES = {
-    "AdminDashboard": AdminDashboard,
-    "AnaliseDeCasos": AnaliseDeCasos,
-    "Auditoria": Auditoria,
-    "ComplianceDinamico": ComplianceDinamico,
-    "Configuracoes": Configuracoes,
-    "ContratoPublico": ContratoPublico,
-    "CriarContrato": CriarContrato,
-    "CriarProposta": CriarProposta,
-    "DocumentUploadFull": DocumentUploadFull,
-    "DocumentUploadPix": DocumentUploadPix,
-    "EditorContrato": EditorContrato,
-    "EditorQuestionario": EditorQuestionario,
-    "GerarLinkOnboarding": GerarLinkOnboarding,
-    "GestaoContratos": GestaoContratos,
-    "GestaoDocumentos": GestaoDocumentos,
-    "GestaoPropostas": GestaoPropostas,
-    "GestaoRevalidacao": GestaoRevalidacao,
-    "HelenaIA": HelenaIA,
-    "Home": Home,
-    "HowItWorks": HowItWorks,
-    "IntegracoesExternas": IntegracoesExternas,
-    "LeadDetails": LeadDetails,
-    "LeadManagement": LeadManagement,
-    "LeadQuestionnaire": LeadQuestionnaire,
-    "LeadSuccess": LeadSuccess,
-    "LinksCompliance": LinksCompliance,
-    "LinksQuestionariosLeads": LinksQuestionariosLeads,
-
-    "MessageTemplates": MessageTemplates,
-    "OnboardingCompletion": OnboardingCompletion,
-    "PipelineComercial": PipelineComercial,
-    "PublicOnboarding": PublicOnboarding,
-    "PreviewContrato": PreviewContrato,
-    "PropostaDetalhes": PropostaDetalhes,
-    "PropostaPublica": PropostaPublica,
-    "QuestionarioSimplificadoPublico": QuestionarioSimplificadoPublico,
-    "QuestionariosLeads": QuestionariosLeads,
-    "QuestionariosRecebidos": QuestionariosRecebidos,
-    "RegrasDeCompliance": RegrasDeCompliance,
-    "TemplatesQuestionarios": TemplatesQuestionarios,
+    "AdminDashboard": lazyPage(() => import('./pages/AdminDashboard')),
+    "AnaliseDeCasos": lazyPage(() => import('./pages/AnaliseDeCasos')),
+    "Auditoria": lazyPage(() => import('./pages/Auditoria')),
+    "ComplianceDinamico": lazyPage(() => import('./pages/ComplianceDinamico')),
+    "Configuracoes": lazyPage(() => import('./pages/Configuracoes')),
+    "ContratoPublico": lazyPage(() => import('./pages/ContratoPublico')),
+    "CriarContrato": lazyPage(() => import('./pages/CriarContrato')),
+    "CriarProposta": lazyPage(() => import('./pages/CriarProposta')),
+    "DocumentUploadFull": lazyPage(() => import('./pages/DocumentUploadFull')),
+    "DocumentUploadPix": lazyPage(() => import('./pages/DocumentUploadPix')),
+    "EditorContrato": lazyPage(() => import('./pages/EditorContrato')),
+    "EditorQuestionario": lazyPage(() => import('./pages/EditorQuestionario')),
+    "GerarLinkOnboarding": lazyPage(() => import('./pages/GerarLinkOnboarding')),
+    "GestaoContratos": lazyPage(() => import('./pages/GestaoContratos')),
+    "GestaoDocumentos": lazyPage(() => import('./pages/GestaoDocumentos')),
+    "GestaoPropostas": lazyPage(() => import('./pages/GestaoPropostas')),
+    "GestaoRevalidacao": lazyPage(() => import('./pages/GestaoRevalidacao')),
+    "HelenaIA": lazyPage(() => import('./pages/HelenaIA')),
+    "Home": lazyPage(() => import('./pages/Home')),
+    "HowItWorks": lazyPage(() => import('./pages/HowItWorks')),
+    "IntegracoesExternas": lazyPage(() => import('./pages/IntegracoesExternas')),
+    "LeadDetails": lazyPage(() => import('./pages/LeadDetails')),
+    "LeadManagement": lazyPage(() => import('./pages/LeadManagement')),
+    "LeadQuestionnaire": lazyPage(() => import('./pages/LeadQuestionnaire')),
+    "LeadSuccess": lazyPage(() => import('./pages/LeadSuccess')),
+    "LinksCompliance": lazyPage(() => import('./pages/LinksCompliance')),
+    "LinksQuestionariosLeads": lazyPage(() => import('./pages/LinksQuestionariosLeads')),
+    "MessageTemplates": lazyPage(() => import('./pages/MessageTemplates')),
+    "OnboardingCompletion": lazyPage(() => import('./pages/OnboardingCompletion')),
+    "PipelineComercial": lazyPage(() => import('./pages/PipelineComercial')),
+    "PublicOnboarding": lazyPage(() => import('./pages/PublicOnboarding')),
+    "PreviewContrato": lazyPage(() => import('./pages/PreviewContrato')),
+    "PropostaDetalhes": lazyPage(() => import('./pages/PropostaDetalhes')),
+    "PropostaPublica": lazyPage(() => import('./pages/PropostaPublica')),
+    "QuestionarioSimplificadoPublico": lazyPage(() => import('./pages/QuestionarioSimplificadoPublico')),
+    "QuestionariosLeads": lazyPage(() => import('./pages/QuestionariosLeads')),
+    "QuestionariosRecebidos": lazyPage(() => import('./pages/QuestionariosRecebidos')),
+    "RegrasDeCompliance": lazyPage(() => import('./pages/RegrasDeCompliance')),
+    "TemplatesQuestionarios": lazyPage(() => import('./pages/TemplatesQuestionarios')),
 }
 
 export const pagesConfig = {
