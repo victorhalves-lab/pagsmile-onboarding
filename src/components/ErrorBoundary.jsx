@@ -58,6 +58,15 @@ export default class ErrorBoundary extends React.Component {
     const isTransient = ErrorBoundary._isTransient(error);
     const now = Date.now();
 
+    // ── DEBUG LOG ── Shows exactly which error hit this boundary and how often.
+    this._totalErrors = (this._totalErrors || 0) + 1;
+    console.warn(
+      `[ErrorBoundary/global] error #${this._totalErrors}`,
+      { name: error?.name, message: String(error?.message || error).slice(0, 200), isTransient },
+      'componentStack head:',
+      String(errorInfo?.componentStack || '').split('\n').slice(0, 6).join('\n')
+    );
+
     // Hard loop guard: if we catch >5 errors in <500ms, stop trying to recover
     // and show the fallback. Prevents browser freeze from fetch spam.
     this._recentTransients = this._recentTransients.filter(t => now - t < 500);

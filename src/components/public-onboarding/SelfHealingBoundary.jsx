@@ -38,6 +38,15 @@ export default class SelfHealingBoundary extends React.Component {
     const stack = String(err?.stack || info?.componentStack || '');
     const now = Date.now();
 
+    // ── DEBUG LOG ── Shows exactly which error hit this boundary and how often.
+    this._totalErrors = (this._totalErrors || 0) + 1;
+    console.warn(
+      `[SelfHealingBoundary] error #${this._totalErrors}`,
+      { name: err?.name, message: msg.slice(0, 200) },
+      'componentStack head:',
+      String(info?.componentStack || '').split('\n').slice(0, 6).join('\n')
+    );
+
     // ── KNOWN BENIGN ERROR: SDK's MessagePort `instanceof` crash ──
     // Fires from a background async listener and doesn't break rendering.
     // We recover silently by remounting — but NEVER log and NEVER loop.

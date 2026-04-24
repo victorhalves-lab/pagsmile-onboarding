@@ -35,19 +35,51 @@ class LocalErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
     this.state = { err: null, healKey: 0 };
-    this._transientCount = 0;
-    this._lastTransientAt = 0;
+    this._errorsInWindow = [];
+    this._totalErrors = 0;
+    this._firstErrorAt = 0;
   }
   static getDerivedStateFromError(err) {
-    if (isTransientBoundaryError(err)) return {}; // let componentDidCatch decide
+    // CRITICAL: Always return `err` synchronously. Returning `{}` for
+    // "transients" causes React to immediately re-render the same broken
+    // children, which throws again → infinite loop freezing the browser.
+    // componentDidCatch is the place to decide whether to heal or give up.
     return { err };
   }
   componentDidCatch(err, info) {
-    // Transient errors (SDK MessagePort `instanceof`, extension DOM mutations)
-    // are silently ignored AND NOT LOGGED — the SDK fires them dozens of times
-    // per session and was saturating the logPublicClientError rate limit,
-    // blocking the main thread and freezing the page.
-    if (isTransientBoundaryError(err)) {
+    const now = Date.now();
+    this._totalErrors += 1;
+    if (this._totalErrors === 1) this._firstErrorAt = now;
+
+    // ── DEBUG LOG (visible in DevTools console) ──
+    // This tells us WHICH error is firing, from WHERE, and HOW MANY TIMES.
+    // If the console shows hundreds of these in seconds → real render loop.
+    console.warn(
+      `[LocalErrorBoundary] error #${this._totalErrors}`,
+      { name: err?.name, message: String(err?.message || err).slice(0, 200) },
+      'componentStack head:',
+      String(info?.componentStack || '').split('\n').slice(0, 6).join('\n')
+    );
+
+    const transient = isTransientBoundaryError(err);
+
+    // Hard loop guard: >5 errors in <500ms → stop healing, show fallback.
+    // Prevents browser freeze from render loop + fetch spam.
+    this._errorsInWindow = this._errorsInWindow.filter(t => now - t < 500);
+    this._errorsInWindow.push(now);
+    const isLooping = this._errorsInWindow.length > 5;
+
+    if (transient && !isLooping) {
+      // Silently heal by bumping healKey (full remount of subtree).
+      this.setState(s => ({ err: null, healKey: s.healKey + 1 }));
+      return;
+    }
+
+    if (isLooping) {
+      console.error(
+        `[LocalErrorBoundary] LOOP DETECTED — ${this._errorsInWindow.length} errors in <500ms. Showing fallback.`
+      );
+      // Keep err state so fallback renders — no setState needed.
       return;
     }
 
@@ -65,8 +97,6 @@ class LocalErrorBoundary extends React.Component {
         }),
       }).catch(() => {});
     } catch (_) {}
-
-    this.setState({ err });
   }
   render() {
     if (this.state.err) {
