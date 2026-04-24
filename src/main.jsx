@@ -10,14 +10,20 @@ import { ensureSdkLoaded } from '@/api/base44Client'
 //    SDK imports out of the chunk loaded on onboarding public routes.
 // 3. Render.
 // ─────────────────────────────────────────────────────────────────────────
-async function importWithRetry(loader, label) {
-  try {
-    return await loader();
-  } catch (err) {
-    console.warn(`[boot] ${label} failed, retrying once...`, err?.message);
-    await new Promise(r => setTimeout(r, 600));
-    return await loader();
+async function importWithRetry(loader, label, maxAttempts = 4) {
+  let lastErr;
+  for (let i = 0; i < maxAttempts; i++) {
+    try {
+      return await loader();
+    } catch (err) {
+      lastErr = err;
+      console.warn(`[boot] ${label} failed (attempt ${i + 1}/${maxAttempts})`, err?.message);
+      if (i < maxAttempts - 1) {
+        await new Promise(r => setTimeout(r, 500 * Math.pow(2, i))); // 500, 1000, 2000ms
+      }
+    }
   }
+  throw lastErr;
 }
 
 function renderFatalError(err) {
