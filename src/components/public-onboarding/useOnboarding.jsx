@@ -64,14 +64,40 @@ export function useOnboarding({ caseId, token, mode }) {
   }, [caseId, token, mode]);
 
   // ── Debounced autosave ──
+  // CRITICAL: sanitize documentsData before stringifying — strip out any non-
+  // serializable/huge fields (e.g. File objects) that previously froze the
+  // main thread during JSON.stringify in the autosave payload.
   useEffect(() => {
     if (status !== 'ready') return;
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
+      const safeDocs = {};
+      for (const [k, v] of Object.entries(documentsData || {})) {
+        if (!v || typeof v !== 'object') continue;
+        safeDocs[k] = {
+          url: v.url,
+          uri: v.uri,
+          isPrivate: v.isPrivate,
+          name: v.name,
+          size: v.size,
+          type: v.type,
+          uploadedAt: v.uploadedAt,
+          documentUploadId: v.documentUploadId,
+          persisted: v.persisted,
+          notAvailable: v.notAvailable,
+          notAvailableReason: v.notAvailableReason,
+          files: Array.isArray(v.files) ? v.files.map(f => ({
+            url: f.url, uri: f.uri, isPrivate: f.isPrivate,
+            name: f.name, size: f.size, type: f.type,
+            uploadedAt: f.uploadedAt, documentUploadId: f.documentUploadId,
+            persisted: f.persisted,
+          })) : undefined,
+        };
+      }
       callPublicFunction('publicOnboardingSave', {
         caseId, token, mode,
         formData,
-        documentsData,
+        documentsData: safeDocs,
       }).catch(() => {});
     }, 1500);
     return () => { if (saveTimerRef.current) clearTimeout(saveTimerRef.current); };

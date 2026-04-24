@@ -138,6 +138,10 @@ export default function BulletproofDocumentUploader({
         });
         if (!result?.ok) throw new Error(result?.error || 'resposta inválida do servidor');
 
+        // IMPORTANT: do NOT keep the raw File object in state.
+        // It gets serialized to localStorage and sent in the autosave payload,
+        // which freezes the main thread ("Página sem resposta") after a few
+        // uploads because JSON.stringify on large File references is O(n) huge.
         uploadedFiles.push({
           url: result.fileUri,
           uri: result.fileUri,
@@ -148,7 +152,6 @@ export default function BulletproofDocumentUploader({
           uploadedAt: new Date().toISOString(),
           documentUploadId: result.documentUploadId,
           persisted: true,
-          _localFile: original,
         });
       } catch (err) {
         console.error('[BulletproofUploader] upload failed for', original?.name, err);
