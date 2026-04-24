@@ -39,6 +39,7 @@ const getAppParamValue = (paramName, { defaultValue = undefined, removeFromUrl =
 // is instantiated and we need zero-dependency early detection.
 const PUBLIC_PATH_MARKERS = [
 	'/onboarding',
+	'/publiconboarding',
 	'/compliancedoconly',
 	'/propostapublica',
 	'/propostapadraopublica',

@@ -4,6 +4,7 @@
 
 export const PUBLIC_PATHS = new Set([
   '/onboarding',
+  '/PublicOnboarding',
   '/ComplianceDocOnly',
   '/PropostaPublica',
   '/PropostaPadraoPublica',

@@ -19,7 +19,10 @@ export default function ComplianceDocOnlyRedirect() {
     if (caseId) qs.set('case', caseId);
     if (token) qs.set('token', token);
     qs.set('mode', mode);
-    window.location.replace(`/onboarding?${qs.toString()}`);
+    // Use /PublicOnboarding (registered in pages.config.js) so the Base44 gateway
+    // recognizes it as a public page. /onboarding is NOT in pages.config.js and
+    // the gateway returns 401 for unknown paths on public apps.
+    window.location.replace(`/PublicOnboarding?${qs.toString()}`);
   }, []);
   return (
     <div className="min-h-screen flex items-center justify-center">

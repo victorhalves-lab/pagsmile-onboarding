@@ -92,8 +92,10 @@ Deno.serve(async (req) => {
 
     // Build URL. baseUrl is the app's origin (passed from frontend for environment-awareness).
     const origin = (baseUrl || '').replace(/\/+$/, '') || 'https://app.base44.com';
-    // V2 URL — unified /onboarding route. Legacy /ComplianceDocOnly still redirects here.
-    const url = `${origin}/onboarding?case=${encodeURIComponent(caseId)}&token=${encodeURIComponent(docLinkToken)}&mode=docs_only`;
+    // V2 URL — unified /PublicOnboarding route. MUST match a key in pages.config.js
+    // so the Base44 platform gateway recognizes it as a public page (otherwise
+    // the gateway returns 401 on the HTML itself before our code even runs).
+    const url = `${origin}/PublicOnboarding?case=${encodeURIComponent(caseId)}&token=${encodeURIComponent(docLinkToken)}&mode=docs_only`;
 
     return Response.json({
       success: true,

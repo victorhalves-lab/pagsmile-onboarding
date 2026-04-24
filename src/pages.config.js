@@ -78,6 +78,7 @@ import LinksQuestionariosLeads from './pages/LinksQuestionariosLeads';
 import MessageTemplates from './pages/MessageTemplates';
 import OnboardingCompletion from './pages/OnboardingCompletion';
 import PipelineComercial from './pages/PipelineComercial';
+import PublicOnboarding from './pages/PublicOnboarding';
 import PreviewContrato from './pages/PreviewContrato';
 import PropostaDetalhes from './pages/PropostaDetalhes';
 import PropostaPublica from './pages/PropostaPublica';
@@ -121,6 +122,7 @@ export const PAGES = {
     "MessageTemplates": MessageTemplates,
     "OnboardingCompletion": OnboardingCompletion,
     "PipelineComercial": PipelineComercial,
+    "PublicOnboarding": PublicOnboarding,
     "PreviewContrato": PreviewContrato,
     "PropostaDetalhes": PropostaDetalhes,
     "PropostaPublica": PropostaPublica,

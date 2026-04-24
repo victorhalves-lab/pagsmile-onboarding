@@ -136,7 +136,12 @@ const PublicRoutes = () => (
     <Route path="/SubsellerQuestionnaire" element={<LayoutWrapper currentPageName="SubsellerQuestionnaire"><SubsellerQuestionnaire /></LayoutWrapper>} />
     <Route path="/SubsellerDocUpload" element={<LayoutWrapper currentPageName="SubsellerDocUpload"><SubsellerDocUpload /></LayoutWrapper>} />
     <Route path="/ComplianceDocOnly" element={<ComplianceDocOnlyRedirect />} />
+    {/* Both /onboarding (legacy) and /PublicOnboarding (new — matches pages.config.js) render the same page.
+        /PublicOnboarding is the canonical URL because it matches a page key in pages.config.js, which is what
+        the Base44 platform gateway uses to decide which paths are public. /onboarding stays as a fallback
+        for any links already sent to clients. */}
     <Route path="/onboarding" element={<PublicOnboarding />} />
+    <Route path="/PublicOnboarding" element={<PublicOnboarding />} />
 
     {/* Questionário Simplificado */}
     {Pages['QuestionarioSimplificadoPublico'] && <Route path="/QuestionarioSimplificadoPublico" element={<LayoutWrapper currentPageName="QuestionarioSimplificadoPublico"><Pages.QuestionarioSimplificadoPublico /></LayoutWrapper>} />}
