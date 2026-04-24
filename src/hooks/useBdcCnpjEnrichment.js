@@ -1,5 +1,8 @@
 import { useState, useCallback } from 'react';
-import { base44 } from '@/api/base44Client';
+// SDK-FREE — this hook is used on PUBLIC routes (lead questionnaires) where the
+// Base44 SDK blocks `functions.invoke`. callPublicFunction hits the function
+// endpoint directly via fetch and works identically on authenticated routes too.
+import { callPublicFunction } from '@/lib/publicApi';
 
 /**
  * Hook for BDC CNPJ enrichment on lead forms.
@@ -18,15 +21,14 @@ export default function useBdcCnpjEnrichment() {
     setError(null);
 
     try {
-      const response = await base44.functions.invoke('bdcEnrichLead', { cnpj: digits, level });
-      const data = response.data;
+      const data = await callPublicFunction('bdcEnrichLead', { cnpj: digits, level });
 
-      if (data.success) {
+      if (data?.success) {
         setBdcData(data);
         setIsLoading(false);
         return data;
       } else {
-        setError(data.error || 'Erro no enriquecimento BDC');
+        setError(data?.error || 'Erro no enriquecimento BDC');
         setIsLoading(false);
         return null;
       }
