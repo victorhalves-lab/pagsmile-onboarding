@@ -28,8 +28,13 @@ const MODE_ALIASES = {
   caf: 'caf_only',
 };
 
-function getClient(req) {
-  return createClientFromRequest(req);
+async function getClient(req) {
+  try {
+    return createClientFromRequest(req);
+  } catch (_) {
+    const { createClient } = await import('npm:@base44/sdk@0.8.25');
+    return createClient({ appId: Deno.env.get('BASE44_APP_ID'), requiresAuth: false });
+  }
 }
 
 function sessionKey(caseId, mode) {

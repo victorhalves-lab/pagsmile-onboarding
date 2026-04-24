@@ -33,7 +33,13 @@ Deno.serve(async (req) => {
       return Response.json({ ok: false, error: 'stage and errorMessage required' }, { status: 400 });
     }
 
-    const base44 = createClientFromRequest(req);
+    let base44;
+    try {
+      base44 = createClientFromRequest(req);
+    } catch (_) {
+      const { createClient } = await import('npm:@base44/sdk@0.8.25');
+      base44 = createClient({ appId: Deno.env.get('BASE44_APP_ID'), requiresAuth: false });
+    }
 
     await base44.asServiceRole.entities.IntegrationLog.create({
       onboarding_case_id: caseId || null,
