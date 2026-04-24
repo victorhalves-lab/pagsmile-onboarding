@@ -39,16 +39,17 @@ import { compressImageIfNeeded } from '@/lib/imageCompression';
  * parent page's final submit step should SKIP re-posting via publicComplianceDocUpload.
  * Use the `persisted: true` flag to detect already-saved entries.
  */
-export default function BulletproofDocumentUploader({
-  template,
-  documents,
-  setDocuments,
-  storageKey,
-  caseId,
-  docLinkToken,
-  onAllRequiredUploaded,
-  formData,
-}) {
+export default function BulletproofDocumentUploader(props = {}) {
+  const {
+    template,
+    documents = {},
+    setDocuments = () => {},
+    storageKey,
+    caseId,
+    docLinkToken,
+    onAllRequiredUploaded,
+    formData = {},
+  } = props || {};
   const [uploadingDoc, setUploadingDoc] = useState(null);
   const [notAvailableModal, setNotAvailableModal] = useState({ open: false, doc: null });
 
