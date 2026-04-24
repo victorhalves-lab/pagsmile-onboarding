@@ -38,9 +38,16 @@ const MODE_ALIASES = {
 //      — even if we only use asServiceRole afterwards. That error bubbles up
 //      and the function returns 500 → the client enters a crash loop.
 // Using a pure anonymous client avoids both. asServiceRole works regardless.
-async function getClient() {
-  const { createClient } = await import('npm:@base44/sdk@0.8.25');
-  return createClient({ appId: Deno.env.get('BASE44_APP_ID'), requiresAuth: false });
+// PUBLIC endpoint. The SDK's createClient({requiresAuth:false}) still triggers
+// a users/me validation (401) when the request carries headers/cookies hinting
+// at auth. Instead, strip all auth-ish headers from the request and use
+// createClientFromRequest — this gives us a clean anonymous client that CAN
+// still access asServiceRole for DB operations.
+async function getClient(req) {
+  const cleanHeaders = new Headers(req.headers);
+  ['authorization', 'Authorization', 'cookie', 'Cookie', 'x-base44-token', 'X-Base44-Token'].forEach(h => cleanHeaders.delete(h));
+  const cleanReq = new Request(req.url, { method: req.method, headers: cleanHeaders });
+  return createClientFromRequest(cleanReq);
 }
 
 function sessionKey(caseId, mode) {
@@ -59,7 +66,7 @@ Deno.serve(async (req) => {
     // Unknown/legacy modes silently fall back to 'full' (safest — lets the user complete everything).
     const effectiveMode = SUPPORTED_MODES.has(mode) ? mode : 'full';
 
-    const base44 = await getClient();
+    const base44 = await getClient(req);
 
     // 1) Load + validate case
     let cases = [];
