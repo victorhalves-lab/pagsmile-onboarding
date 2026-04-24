@@ -22,10 +22,24 @@ export default function FileThumbnail({ name, type, localFile, size = 'sm' }) {
   const isDoc = ['DOC', 'DOCX'].includes(ext);
 
   useEffect(() => {
-    if (isImage && localFile instanceof File) {
+    // Guard against environments where window.File is undefined (some browser
+    // extensions / privacy modes wipe it), which would make `x instanceof File`
+    // throw "Right-hand side of 'instanceof' is not callable" and crash the
+    // whole onboarding page. Use duck-typing instead.
+    if (!isImage || !localFile) return;
+    const isFileLike =
+      typeof localFile === 'object' &&
+      typeof localFile.size === 'number' &&
+      typeof localFile.name === 'string' &&
+      typeof URL !== 'undefined' &&
+      typeof URL.createObjectURL === 'function';
+    if (!isFileLike) return;
+    try {
       const url = URL.createObjectURL(localFile);
       setBlobUrl(url);
-      return () => URL.revokeObjectURL(url);
+      return () => { try { URL.revokeObjectURL(url); } catch {} };
+    } catch {
+      // ignore — fallback icon will render
     }
   }, [localFile, isImage]);
 
