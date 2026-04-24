@@ -33,6 +33,7 @@ export default class SelfHealingBoundary extends React.Component {
 
   componentDidCatch(err, info) {
     const msg = String(err?.message || err || '');
+    const stack = String(err?.stack || info?.componentStack || '');
 
     // Log once (fire-and-forget, never throws).
     try {
@@ -49,6 +50,23 @@ export default class SelfHealingBoundary extends React.Component {
         }),
       }).catch(() => {});
     } catch (_) {}
+
+    // ── KNOWN BENIGN ERROR: SDK's MessagePort `instanceof` crash ──
+    // This error fires from a background async listener (MessagePort.k) and
+    // does NOT break rendering — the page actually works fine. Previous
+    // behavior counted it as a real crash and after 3 occurrences forced
+    // the "Ops, algo não carregou" screen even though the UI was fine.
+    //
+    // We now fully ignore it here: no remount, no counter bump. The
+    // ErrorBoundary contract allows returning without setState — React
+    // keeps the last committed tree visible.
+    const isBenignSdkInstanceofError =
+      msg.includes("Right-hand side of 'instanceof' is not callable") ||
+      /is not a function.*evaluating.*instanceof/i.test(msg) ||
+      (/MessagePort/i.test(stack) && /instanceof/i.test(stack));
+    if (isBenignSdkInstanceofError) {
+      return;
+    }
 
     // Track repeat errors in a rolling 10s window.
     const now = Date.now();

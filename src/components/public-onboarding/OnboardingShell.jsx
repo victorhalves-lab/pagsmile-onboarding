@@ -57,30 +57,15 @@ class LocalErrorBoundary extends React.Component {
       }).catch(() => {});
     } catch (_) {}
 
-    // Self-heal transient errors. Only escalate after 3 crashes IN RAPID
-    // SUCCESSION (<2s apart) — not 3 cumulative crashes across the whole
-    // session. SDK's `instanceof` crashes can fire sporadically for an hour
-    // of valid usage and that's fine as long as a remount recovers each
-    // time. Previous version counted every crash forever → clients using
-    // the page for >5 min would see "Ops, algo não carregou" even though
-    // the page was actually healing correctly between crashes.
+    // Transient errors (SDK MessagePort `instanceof`, extension DOM mutations)
+    // are now FULLY IGNORED. They come from background async listeners and do
+    // not break the rendered tree. Counting them and showing "Ops" was the
+    // cause of the page erroring out even though it had rendered correctly.
     if (isTransientBoundaryError(err)) {
-      const now = Date.now();
-      if (now - this._lastTransientAt > 2000) {
-        this._transientCount = 0;
-      }
-      this._lastTransientAt = now;
-      this._transientCount += 1;
-
-      if (this._transientCount < 3) {
-        setTimeout(() => {
-          this.setState(s => ({ healKey: s.healKey + 1 }));
-        }, 50);
-        return;
-      }
-      // 3 crashes within 2s → truly stuck, show fallback.
-      this.setState({ err });
+      return;
     }
+    // Only real render errors escalate to the fallback UI.
+    this.setState({ err });
   }
   render() {
     if (this.state.err) {
