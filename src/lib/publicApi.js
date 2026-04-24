@@ -57,12 +57,19 @@ function buildCandidateUrls(functionName) {
 async function fetchFunction(functionName, payload) {
   const urls = buildCandidateUrls(functionName);
   let lastError = null;
+  // CRITICAL: Stringify ONCE outside the loop. Previously we called
+  // JSON.stringify on every URL attempt (up to 3x), which for upload payloads
+  // (base64 strings ~2MB per file) would block the main thread for 200-500ms
+  // EACH — stacking with retry amplification to ~9 blocking calls per upload.
+  // That is why the onboarding page froze ("Página sem resposta") after 6-8
+  // files. Now the browser stringifies the payload a single time per call.
+  const bodyString = JSON.stringify(payload || {});
   for (const url of urls) {
     try {
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload || {}),
+        body: bodyString,
         credentials: 'omit',
       });
       // Server replied with HTML (wrong endpoint) → skip to next candidate.

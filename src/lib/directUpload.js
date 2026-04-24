@@ -12,7 +12,7 @@
  * ~7MB (base64 adds ~33% overhead). For larger files, callers must compress.
  */
 
-import { callPublicFunctionWithRetry } from '@/lib/publicApi';
+import { callPublicFunction } from '@/lib/publicApi';
 
 const MAX_FILE_SIZE_MB = 7;
 
@@ -62,7 +62,7 @@ export async function directUploadDocument({
   // ── Branch A: not-available justification ──
   if (notAvailable) {
     if (typeof onProgress === 'function') { try { onProgress(30); } catch (_) {} }
-    const data = await callPublicFunctionWithRetry('publicDirectDocUpload', {
+    const data = await callPublicFunction('publicDirectDocUpload', {
       caseId,
       documentTypeId,
       documentName: documentName || documentTypeId,
@@ -89,7 +89,7 @@ export async function directUploadDocument({
     );
   }
 
-  const fileBase64 = await readFileAsBase64(file, onProgress);
+  let fileBase64 = await readFileAsBase64(file, onProgress);
 
   // 50-95% = network send / server processing — we can't track it precisely,
   // so we tick progress forward every 1.2s so the user sees activity.
@@ -105,7 +105,11 @@ export async function directUploadDocument({
   }
 
   try {
-    const data = await callPublicFunctionWithRetry('publicDirectDocUpload', {
+    // Build payload locally so we can NULL OUT fileBase64 immediately after
+    // send, freeing ~2MB of string memory. Without this, multiple uploads
+    // stack base64 strings in the JS heap, which combined with repeated
+    // JSON.stringify calls freezes Chrome after ~6-8 files.
+    const payload = {
       caseId,
       documentTypeId,
       documentName: documentName || documentTypeId,
@@ -115,12 +119,23 @@ export async function directUploadDocument({
       fileType: file.type || 'application/octet-stream',
       fileSize: file.size || 0,
       uploadDate: new Date().toISOString(),
-    });
+    };
+    // CRITICAL: use callPublicFunction (no retry) instead of ...WithRetry.
+    // Retrying a 2MB base64 payload runs JSON.stringify up to 9x on the main
+    // thread for a single upload — that is what was blocking the UI thread
+    // and triggering "Página sem resposta". If the upload legitimately fails,
+    // the user can click retry manually; the backend is idempotent.
+    const data = await callPublicFunction('publicDirectDocUpload', payload);
+    // Free the huge base64 strings immediately (both our local copy and the
+    // payload reference) so GC can reclaim them before the next upload.
+    fileBase64 = null;
+    payload.fileBase64 = null;
     if (tickStop) tickStop();
     if (typeof onProgress === 'function') { try { onProgress(100); } catch (_) {} }
     if (!data?.ok) throw new Error(data?.error || 'Falha ao enviar arquivo');
     return data;
   } catch (err) {
+    fileBase64 = null;
     if (tickStop) tickStop();
     throw err;
   }
