@@ -1,12 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import CurrencyNumberInput from './CurrencyNumberInput';
 import ButtonSelector from './ButtonSelector';
-import BdcAutofillBadge from './BdcAutofillBadge';
 import { FATURAMENTO_ANUAL_OPTIONS, FUNCIONARIOS_OPTIONS } from './pagsmileQuestionnaireData';
 
 /** ETAPA 5 — Volumetria e Faturamento (P15-P17 + P15.1, P15.2) */
 export default function StepVolumetria({ form, updateField, errors }) {
-  const autofilled = form._bdcAutofilled || {};
   // P17 — Auto-calc transações (use ref to avoid infinite loop)
   const prevTpv = useRef(form.tpvMensal);
   const prevTicket = useRef(form.ticketMedio);
@@ -41,7 +39,6 @@ export default function StepVolumetria({ form, updateField, errors }) {
       <div className="space-y-2" data-field="faturamentoAnual">
         <label className="text-sm font-semibold text-[#002443]">Faturamento Anual da Empresa *</label>
         <ButtonSelector options={FATURAMENTO_ANUAL_OPTIONS} value={form.faturamentoAnual} onChange={(v) => updateField('faturamentoAnual', v)} columns={3} />
-        <BdcAutofillBadge show={autofilled.faturamentoAnual && !!form.faturamentoAnual} />
         {errors?.faturamentoAnual && <p className="text-xs text-red-500">Selecione o faturamento anual</p>}
       </div>
 
@@ -49,7 +46,6 @@ export default function StepVolumetria({ form, updateField, errors }) {
       <div className="space-y-2" data-field="funcionarios">
         <label className="text-sm font-semibold text-[#002443]">Número de Funcionários *</label>
         <ButtonSelector options={FUNCIONARIOS_OPTIONS} value={form.funcionarios} onChange={(v) => updateField('funcionarios', v)} columns={6} />
-        <BdcAutofillBadge show={autofilled.funcionarios && !!form.funcionarios} />
         {errors?.funcionarios && <p className="text-xs text-red-500">Selecione o número de funcionários</p>}
       </div>
 

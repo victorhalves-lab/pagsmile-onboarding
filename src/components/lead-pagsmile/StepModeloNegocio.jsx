@@ -1,7 +1,6 @@
 import React from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import ButtonSelector from './ButtonSelector';
-import BdcAutofillBadge from './BdcAutofillBadge';
 import {
   MODELO_COBRANCA_OPTIONS, SUB_SELLERS_OPTIONS, PLATAFORMA_OPTIONS,
   ANTIFRAUDE_OPTIONS, ANTIFRAUDE_SEGMENTS, LICENCA_BCB_OPTIONS, SPLIT_PAGAMENTO_OPTIONS,
@@ -15,7 +14,6 @@ import {
 
 /** ETAPA 4 — Modelo de Negócio (P10-P14) + Condicionais (P12G-P12V) */
 export default function StepModeloNegocio({ form, updateField, errors }) {
-  const autofilled = form._bdcAutofilled || {};
   const seg = form.segmento;
   const isIntermediario = ['gateway', 'marketplace', 'plataforma_vertical'].includes(seg);
   const showPlataforma = ['ecommerce', 'dropshipping', 'plataforma_vertical', 'infoprodutos'].includes(seg);
@@ -64,7 +62,6 @@ export default function StepModeloNegocio({ form, updateField, errors }) {
             {seg === 'infoprodutos' ? 'Plataforma de infoprodutos' : seg === 'plataforma_vertical' ? 'Plataforma / PDV' : 'Plataforma e-commerce'}
           </label>
           <ButtonSelector options={plataformaOpts} value={form.plataforma} onChange={(v) => updateField('plataforma', v)} />
-          <BdcAutofillBadge show={autofilled.plataforma && !!form.plataforma} label="Detectado via BDC (tecnologia do site) — confirme ou altere" />
         </div>
       )}
 
