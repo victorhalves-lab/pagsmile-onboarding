@@ -53,6 +53,10 @@ export default function BulletproofDocumentUploader(props = {}) {
   const [uploadingDoc, setUploadingDoc] = useState(null);
   const [notAvailableModal, setNotAvailableModal] = useState({ open: false, doc: null });
 
+  // Validate template/caseId BEFORE anything else — if invalid, don't even try to render docs.
+  const isTemplateValid = !!(template && typeof template === 'object' && Array.isArray(template.requiredDocuments));
+  const isCaseValid = !!caseId;
+
   // CRITICAL: memoize doc lists so each DocumentCard receives a STABLE `doc` prop
   // reference across renders. Without this, `allDocs.map` on every render creates
   // fresh objects, defeating React.memo on DocumentCard — so every keystroke /
@@ -341,6 +345,19 @@ export default function BulletproofDocumentUploader(props = {}) {
     return e?.notAvailable === true;
   }).length;
   const progress = totalRequired === 0 ? 100 : Math.round((mandatorySatisfied / totalRequired) * 100);
+
+  // Guard: template missing or malformed — show a clear message instead of trying to render.
+  if (!isTemplateValid || !isCaseValid) {
+    return (
+      <div className="text-center py-8 text-slate-500">
+        <AlertCircle className="w-12 h-12 mx-auto text-amber-400 mb-3" />
+        <p className="font-medium text-[#002443]">Aguardando configuração do caso…</p>
+        <p className="text-xs mt-2 text-slate-400">
+          Se esta mensagem persistir, recarregue a página ou solicite um novo link ao seu consultor.
+        </p>
+      </div>
+    );
+  }
 
   if (requiredDocs.length === 0) {
     return (

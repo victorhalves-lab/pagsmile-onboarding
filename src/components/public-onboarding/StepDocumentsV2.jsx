@@ -13,6 +13,9 @@ export default function StepDocumentsV2({
   caseId, docLinkToken,
   onBack, onNext, canGoBack, isSubmitting,
 }) {
+  // Guard: template must be loaded and valid before rendering the uploader.
+  const templateReady = !!(template && typeof template === 'object' && Array.isArray(template.requiredDocuments));
+
   const handleNext = () => {
     const required = (template?.requiredDocuments || []).map((d, i) => ({
       ...d, _docKey: d.documentTypeId || d.id || `doc_${i}_${(d.label || '').replace(/\s+/g, '_').toLowerCase().slice(0, 30)}`,
@@ -35,16 +38,23 @@ export default function StepDocumentsV2({
 
   return (
     <div>
-      <BulletproofDocumentUploader
-        template={template}
-        documents={documents}
-        setDocuments={setDocuments}
-        storageKey={`onboarding_v2_docs_${caseId}`}
-        caseId={caseId}
-        docLinkToken={docLinkToken}
-        onAllRequiredUploaded={() => {}}
-        formData={{}}
-      />
+      {templateReady && caseId ? (
+        <BulletproofDocumentUploader
+          template={template}
+          documents={documents || {}}
+          setDocuments={setDocuments}
+          storageKey={`onboarding_v2_docs_${caseId}`}
+          caseId={caseId}
+          docLinkToken={docLinkToken}
+          onAllRequiredUploaded={() => {}}
+          formData={{}}
+        />
+      ) : (
+        <div className="text-center py-12 text-slate-500">
+          <Loader2 className="w-8 h-8 mx-auto text-slate-300 animate-spin mb-3" />
+          <p className="text-sm">Carregando documentos solicitados…</p>
+        </div>
+      )}
 
       <div className="flex justify-between items-center mt-8 pt-5 border-t border-slate-100">
         <Button
