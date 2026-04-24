@@ -1,68 +1,19 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
-
 /**
- * PUBLIC endpoint — logs client-side errors from anonymous public pages.
- * Creates an IntegrationLog record so we can diagnose issues without asking the client
- * to send us their browser console.
+ * PUBLIC endpoint — NO-OP safety valve.
  *
- * Called from the frontend whenever an upload / save / critical action fails.
+ * This function used to create IntegrationLog records for client-side errors
+ * on public pages. However, the Base44 SDK fires dozens of benign `instanceof`
+ * errors per session from background listeners, which saturated this endpoint,
+ * triggered the rate-limiter (429), and (via the retry logic in the client)
+ * blocked the main thread and froze the page.
  *
- * Required: { stage, errorMessage }
- * Optional: { caseId, merchantId, linkCode, fileName, fileSize, fileType, userAgent, extra }
+ * The client-side boundaries now filter those transient errors before calling
+ * this endpoint. But browsers may still be running an older cached bundle that
+ * calls it aggressively, so this function returns 200 immediately — no logging,
+ * no rate-limit, no CPU. Fire-and-forget callers receive a clean success.
+ *
+ * Real client errors can be re-enabled here once all cached bundles are flushed.
  */
-Deno.serve(async (req) => {
-  try {
-    if (req.method !== 'POST') {
-      return Response.json({ ok: false, error: 'Method not allowed' }, { status: 405 });
-    }
-    const body = await req.json().catch(() => ({}));
-    const {
-      stage,
-      errorMessage,
-      caseId,
-      merchantId,
-      linkCode,
-      fileName,
-      fileSize,
-      fileType,
-      userAgent,
-      extra,
-    } = body;
-
-    if (!stage || !errorMessage) {
-      return Response.json({ ok: false, error: 'stage and errorMessage required' }, { status: 400 });
-    }
-
-    let base44;
-    try {
-      base44 = createClientFromRequest(req);
-    } catch (_) {
-      const { createClient } = await import('npm:@base44/sdk@0.8.25');
-      base44 = createClient({ appId: Deno.env.get('BASE44_APP_ID'), requiresAuth: false });
-    }
-
-    await base44.asServiceRole.entities.IntegrationLog.create({
-      onboarding_case_id: caseId || null,
-      merchant_id: merchantId || null,
-      provider: 'BigDataCorp', // reusing enum — not a real provider, but required
-      service_type: 'caf_webhook_received', // reusing enum
-      status: 'failed',
-      error_message: `[${stage}] ${errorMessage}`.slice(0, 500),
-      request_payload: {
-        stage,
-        linkCode: linkCode || null,
-        fileName: fileName || null,
-        fileSize: typeof fileSize === 'number' ? fileSize : null,
-        fileType: fileType || null,
-        userAgent: (userAgent || '').slice(0, 300),
-        extra: extra || null,
-        loggedAt: new Date().toISOString(),
-      },
-    });
-
-    return Response.json({ ok: true });
-  } catch (error) {
-    console.error('[logPublicClientError] ERROR:', error?.message);
-    return Response.json({ ok: false, error: error.message }, { status: 500 });
-  }
+Deno.serve(async (_req) => {
+  return Response.json({ ok: true });
 });
