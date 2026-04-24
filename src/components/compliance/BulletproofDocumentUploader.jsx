@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Progress } from '@/components/ui/progress';
 import {
   FileUp, AlertCircle, Shield, Lock, File, HelpCircle, MessageSquareWarning
@@ -52,12 +52,18 @@ export default function BulletproofDocumentUploader({
   const [uploadingDoc, setUploadingDoc] = useState(null);
   const [notAvailableModal, setNotAvailableModal] = useState({ open: false, doc: null });
 
-  const allDocs = (template?.requiredDocuments || []).map((doc, index) => ({
-    ...doc,
-    _docKey: doc.documentTypeId || doc.id || `doc_${index}_${(doc.label || '').replace(/\s+/g, '_').toLowerCase().slice(0, 30)}`,
-  }));
+  // CRITICAL: memoize doc lists so each DocumentCard receives a STABLE `doc` prop
+  // reference across renders. Without this, `allDocs.map` on every render creates
+  // fresh objects, defeating React.memo on DocumentCard — so every keystroke /
+  // upload re-renders all 12 cards. That is what made the page "pesada e trava".
+  const allDocs = useMemo(() => (
+    (template?.requiredDocuments || []).map((doc, index) => ({
+      ...doc,
+      _docKey: doc.documentTypeId || doc.id || `doc_${index}_${(doc.label || '').replace(/\s+/g, '_').toLowerCase().slice(0, 30)}`,
+    }))
+  ), [template]);
 
-  const requiredDocs = allDocs.filter(doc => {
+  const requiredDocs = useMemo(() => allDocs.filter(doc => {
     if (!doc.conditionalLogic) return true;
     const { dependsOn, value, operator } = doc.conditionalLogic;
     if (!dependsOn || !formData) return true;
@@ -65,7 +71,7 @@ export default function BulletproofDocumentUploader({
     if (operator === 'equals') return fieldValue === value;
     if (operator === 'contains') return String(fieldValue || '').includes(value);
     return true;
-  });
+  }), [allDocs, formData]);
 
   // ── Load from localStorage ONCE on mount only ──
   // CRITICAL BUG FIX (2026-04-22): This useEffect used to depend on [storageKey, setDocuments].
@@ -307,8 +313,8 @@ export default function BulletproofDocumentUploader({
     }
   }, [notAvailableModal.doc, caseId, docLinkToken, setDocuments]);
 
-  const mandatoryDocs = requiredDocs.filter(d => d.required);
-  const optionalDocs = requiredDocs.filter(d => !d.required);
+  const mandatoryDocs = useMemo(() => requiredDocs.filter(d => d.required), [requiredDocs]);
+  const optionalDocs = useMemo(() => requiredDocs.filter(d => !d.required), [requiredDocs]);
 
   const isDocSatisfied = (d) => {
     const entry = documents[d._docKey || d.documentTypeId || d.id];
