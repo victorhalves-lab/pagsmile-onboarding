@@ -171,6 +171,9 @@ function analyzeTemplates(templates, questionsByTemplate) {
   });
 
   // ── Perguntas ─────────────────────────────────────
+  // Guarda a ORDEM em que cada pergunta aparece em cada template (campo `order`).
+  // Para ordenação final: usa a MENOR ordem encontrada entre os templates em que a pergunta aparece
+  // — assim a lista reflete a sequência natural como o analista vê no questionário.
   const questionsMap = new Map();
   templates.forEach(t => {
     const qs = questionsByTemplate[t.id] || [];
@@ -187,6 +190,7 @@ function analyzeTemplates(templates, questionsByTemplate) {
           helpText: q.helpText || '',
           conditionalLogic: q.conditionalLogic || null,
           templatesPresent: new Set(),
+          minOrder: Number.isFinite(q.order) ? q.order : Infinity,
         });
       }
       const entry = questionsMap.get(key);
@@ -194,6 +198,7 @@ function analyzeTemplates(templates, questionsByTemplate) {
       if (!entry.options.length && Array.isArray(q.options)) entry.options = q.options;
       if (!entry.riskWeight && q.riskWeight) entry.riskWeight = q.riskWeight;
       if (!entry.helpText && q.helpText) entry.helpText = q.helpText;
+      if (Number.isFinite(q.order) && q.order < entry.minOrder) entry.minOrder = q.order;
     });
   });
 
@@ -206,13 +211,16 @@ function analyzeTemplates(templates, questionsByTemplate) {
       key, text: entry.text, type: entry.type, isRequired: entry.isRequired,
       options: entry.options, riskWeight: entry.riskWeight, helpText: entry.helpText,
       conditionalLogic: entry.conditionalLogic,
+      minOrder: entry.minOrder,
     };
     if (presentCount === totalSegments) commonQuestions.push(base);
     else conditionalQuestions.push({ ...base, presentIn: new Set(entry.templatesPresent), presentCount });
   });
 
-  commonQuestions.sort((a, b) => a.text.localeCompare(b.text, 'pt-BR'));
-  conditionalQuestions.sort((a, b) => b.presentCount - a.presentCount || a.text.localeCompare(b.text, 'pt-BR'));
+  // Ordem natural do questionário (campo `order`), com fallback alfabético.
+  const byOrder = (a, b) => (a.minOrder - b.minOrder) || a.text.localeCompare(b.text, 'pt-BR');
+  commonQuestions.sort(byOrder);
+  conditionalQuestions.sort(byOrder);
 
   // ── Documentos ────────────────────────────────────
   const docsMap = new Map();
