@@ -77,7 +77,13 @@ export async function directUploadDocument({
   }
 
   // ── Branch B: real file ──
-  if (!(file instanceof File) && !(file instanceof Blob)) {
+  // Guard `instanceof` against undefined globals (e.g. SSR/Node contexts where
+  // File/Blob may not exist) — same pattern as the SDK crash we mitigate elsewhere.
+  const FileCtor = typeof File !== 'undefined' ? File : null;
+  const BlobCtor = typeof Blob !== 'undefined' ? Blob : null;
+  const isFile = FileCtor && file instanceof FileCtor;
+  const isBlob = BlobCtor && file instanceof BlobCtor;
+  if (!isFile && !isBlob) {
     throw new Error('Arquivo inválido');
   }
 
