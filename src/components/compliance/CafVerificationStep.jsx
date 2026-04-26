@@ -425,6 +425,15 @@ export default function CafVerificationStep({
           imageBase64 = await blobToBase64(result.image.blob);
         }
 
+        // FIX 1: Reject capture if blob conversion produced no data — do not advance silently
+        if (!imageBase64) {
+          console.error('[CAF] Blob was null — rejecting capture');
+          try { await dd.close(); await dd.dispose(); } catch {}
+          setError('Não foi possível capturar a imagem do documento (frente). Tente novamente.');
+          setPhase('error');
+          return;
+        }
+
         // PERSIST (awaited) — send blob + all metadata
         const persistResult = await persistCafResult({
           onboardingCaseId: onboardingCaseId || '',
@@ -516,6 +525,15 @@ export default function CafVerificationStep({
           imageBase64 = await blobToBase64(result.image.blob);
         }
 
+        // FIX 1: Reject capture if blob conversion produced no data — do not advance silently
+        if (!imageBase64) {
+          console.error('[CAF] Blob was null — rejecting capture');
+          try { await dd.close(); await dd.dispose(); } catch {}
+          setError('Não foi possível capturar a imagem do documento (verso). Tente novamente.');
+          setPhase('error');
+          return;
+        }
+
         // PERSIST (awaited)
         const persistResult = await persistCafResult({
           onboardingCaseId: onboardingCaseId || '',
@@ -603,6 +621,18 @@ export default function CafVerificationStep({
 
         console.log('[CAF] Liveness completed, JWT received (type:', typeof jwtResult, ', length:', jwtResult?.length, ')');
         setLivenessResult(jwtResult);
+
+        // FIX 2: Validate JWT structure (3 dot-separated segments) before persisting
+        const isValidJwt = typeof jwtResult === 'string'
+          && jwtResult.length > 0
+          && jwtResult.split('.').length === 3;
+        if (!isValidJwt) {
+          console.error('[CAF] Invalid JWT from liveness run');
+          try { window['CafFaceLiveness']?.dispose(); } catch {}
+          setError('A prova de vida não retornou uma resposta válida. Tente novamente.');
+          setPhase('error');
+          return;
+        }
 
         // PERSIST (awaited) — send the FULL JWT string to backend for decoding + validation
         const persistResult = await persistCafResult({

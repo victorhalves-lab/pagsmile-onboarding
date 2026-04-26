@@ -155,8 +155,26 @@ Deno.serve(async (req) => {
 
     // ── For DocumentDetector: use the values passed directly ──
     if (module === 'document_front' || module === 'document_back') {
+      // FIX 3: Reject document captures with no image data — do not log or persist
+      const hasImageBase64 = imageBase64 && typeof imageBase64 === 'string' && imageBase64.length > 0;
+      const hasImageUrl = imageUrl && typeof imageUrl === 'string' && imageUrl.length > 0;
+      if (!hasImageBase64 && !hasImageUrl) {
+        console.warn('[CAF] cafVerifyResult: rejecting', module, '— no image data received');
+        return Response.json({ success: false, error: 'No image data received — capture rejected' }, { status: 422 });
+      }
       isApproved = isCaptureValid !== false; // default true unless explicitly false
       cafDecision = isApproved ? 'APPROVED' : 'REPROVED';
+    }
+
+    // FIX 3 (extended): Reject liveness with empty or malformed JWT — do not log or persist
+    if (module === 'liveness') {
+      const isValidJwt = typeof signedResponse === 'string'
+        && signedResponse.length > 0
+        && signedResponse.split('.').length === 3;
+      if (!isValidJwt) {
+        console.warn('[CAF] cafVerifyResult: rejecting liveness — invalid or empty JWT');
+        return Response.json({ success: false, error: 'Invalid or empty liveness response — capture rejected' }, { status: 422 });
+      }
     }
 
     // ── Upload image to our permanent storage ──
