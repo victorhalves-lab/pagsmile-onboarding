@@ -98,63 +98,121 @@ export default function DocCompParceiros() {
     }
   }
 
-  // Resolves the correct doc (CNPJ for PJ, CPF for PF) for each case by
-  // checking Merchant -> Case -> QuestionnaireResponse -> Lead. Runs in background.
+  // Resolves the correct doc (CNPJ for PJ, CPF for PF) for each case using
+  // MICROSCOPIC search across: Merchant -> Case -> Parent Merchant ->
+  // QuestionnaireResponse (explicit + free-text scan) -> Lead (cpfCnpj +
+  // bdcEnrichmentData + questionnaireData). Runs progressively in the background.
   async function resolveDocsForCases(allCases, merchantMap) {
     const resolved = {};
 
-    // First pass: what we already know from merchant/case
+    // First pass: what we already know from merchant/case/parent
     for (const c of allCases) {
       const m = merchantMap[c.merchantId] || {};
-      const isPJ = m.type === 'PJ' || isCnpj(m.cpfCnpj) || isCnpj(c.cpfCnpj);
+      const parent = m.parentMerchantId ? merchantMap[m.parentMerchantId] : null;
+      const isPJ = m.type === 'PJ' || isCnpj(m.cpfCnpj) || isCnpj(c.cpfCnpj) || isCnpj(parent?.cpfCnpj);
 
       let doc = '';
       if (isPJ) {
         if (isCnpj(m.cpfCnpj)) doc = onlyDigits(m.cpfCnpj);
         else if (isCnpj(c.cpfCnpj)) doc = onlyDigits(c.cpfCnpj);
+        else if (isCnpj(parent?.cpfCnpj)) doc = onlyDigits(parent.cpfCnpj);
       } else {
-        doc = onlyDigits(m.cpfCnpj || c.cpfCnpj);
+        // PF
+        if (isCpf(m.cpfCnpj)) doc = onlyDigits(m.cpfCnpj);
+        else if (isCpf(c.cpfCnpj)) doc = onlyDigits(c.cpfCnpj);
       }
       resolved[c.id] = { doc, isPJ };
     }
     setResolvedDocs({ ...resolved });
 
-    // Second pass: for PJ cases still missing a valid CNPJ, look up QuestionnaireResponse + Lead
+    // Second pass: deep search for cases still missing a valid doc
     const needsLookup = allCases.filter(c => {
       const r = resolved[c.id];
-      return r?.isPJ && !isCnpj(r.doc);
+      if (!r) return true;
+      if (r.isPJ) return !isCnpj(r.doc);
+      return !isCpf(r.doc);
     });
 
-    // Parallel, capped to 10 at a time to avoid spamming the API
-    const CHUNK = 10;
+    const findDocInResponses = (responses, wantCnpj) => {
+      for (const r of (responses || [])) {
+        const qt = String(r.questionText || '').toLowerCase();
+        const raw = String(r.valueText ?? (Array.isArray(r.valueArray) ? r.valueArray.join(' ') : '') ?? '');
+        const valDigits = onlyDigits(raw);
+        // Pergunta explícita
+        if (wantCnpj && /\bcnpj\b/.test(qt) && valDigits.length === 14) return valDigits;
+        if (!wantCnpj && /\bcpf\b/.test(qt) && valDigits.length === 11) return valDigits;
+        // Padrão dentro do texto livre
+        if (wantCnpj) {
+          const fmt = raw.match(/(\d{2}[.\s]?\d{3}[.\s]?\d{3}[/\s]?\d{4}[-\s]?\d{2})/);
+          if (fmt && onlyDigits(fmt[0]).length === 14) return onlyDigits(fmt[0]);
+          const seq = raw.match(/\b\d{14}\b/);
+          if (seq) return seq[0];
+        } else {
+          const fmt = raw.match(/(\d{3}[.\s]?\d{3}[.\s]?\d{3}[-\s]?\d{2})/);
+          if (fmt && onlyDigits(fmt[0]).length === 11) return onlyDigits(fmt[0]);
+          const seq = raw.match(/\b\d{11}\b/);
+          if (seq) return seq[0];
+        }
+      }
+      return '';
+    };
+
+    const findDocInLeadJson = (lead, wantCnpj) => {
+      const blob = JSON.stringify(lead?.bdcEnrichmentData || {}) + JSON.stringify(lead?.questionnaireData || {});
+      const len = wantCnpj ? 14 : 11;
+      const re = new RegExp(`\\b\\d{${len}}\\b`);
+      const m = blob.match(re);
+      return m ? m[0] : '';
+    };
+
+    const CHUNK = 8;
     for (let i = 0; i < needsLookup.length; i += CHUNK) {
       const batch = needsLookup.slice(i, i + CHUNK);
       await Promise.all(batch.map(async (c) => {
         try {
-          // Look for a CNPJ in the questionnaire responses
+          const r = resolved[c.id] || { isPJ: true, doc: '' };
+          const wantCnpj = !!r.isPJ;
+
+          // 1) Respostas
           const responses = await base44.entities.QuestionnaireResponse.filter({ onboardingCaseId: c.id });
-          for (const r of (responses || [])) {
-            const qt = String(r.questionText || '').toLowerCase();
-            const val = onlyDigits(r.valueText);
-            if (/\bcnpj\b/.test(qt) && val.length === 14) {
-              resolved[c.id] = { doc: val, isPJ: true };
+          const fromResponses = findDocInResponses(responses, wantCnpj);
+          if (fromResponses) {
+            resolved[c.id] = { doc: fromResponses, isPJ: wantCnpj };
+            return;
+          }
+
+          // 2) Leads (por email, cpfCnpj, ou onboardingCaseId)
+          const m = merchantMap[c.merchantId] || {};
+          const leadCandidates = [];
+          if (m.email) {
+            const byEmail = await base44.entities.Lead.filter({ email: m.email }).catch(() => []);
+            leadCandidates.push(...(byEmail || []));
+          }
+          if (m.cpfCnpj) {
+            const byDoc = await base44.entities.Lead.filter({ cpfCnpj: m.cpfCnpj }).catch(() => []);
+            leadCandidates.push(...(byDoc || []));
+          }
+          const byCase = await base44.entities.Lead.filter({ onboardingCaseId: c.id }).catch(() => []);
+          leadCandidates.push(...(byCase || []));
+
+          for (const l of leadCandidates) {
+            if (wantCnpj && isCnpj(l?.cpfCnpj)) {
+              resolved[c.id] = { doc: onlyDigits(l.cpfCnpj), isPJ: true };
               return;
             }
-          }
-          // Fallback: look up Lead by email
-          const m = merchantMap[c.merchantId] || {};
-          if (m.email) {
-            const leads = await base44.entities.Lead.filter({ email: m.email });
-            for (const l of (leads || [])) {
-              if (isCnpj(l.cpfCnpj)) {
-                resolved[c.id] = { doc: onlyDigits(l.cpfCnpj), isPJ: true };
-                return;
-              }
+            if (!wantCnpj && isCpf(l?.cpfCnpj)) {
+              resolved[c.id] = { doc: onlyDigits(l.cpfCnpj), isPJ: false };
+              return;
+            }
+            const fromLeadJson = findDocInLeadJson(l, wantCnpj);
+            if (fromLeadJson && ((wantCnpj && fromLeadJson.length === 14) || (!wantCnpj && fromLeadJson.length === 11))) {
+              resolved[c.id] = { doc: fromLeadJson, isPJ: wantCnpj };
+              return;
             }
           }
         } catch { /* ignore */ }
       }));
-      // Update progressively so the UI feels responsive
+      // Progressive update
       setResolvedDocs({ ...resolved });
     }
   }

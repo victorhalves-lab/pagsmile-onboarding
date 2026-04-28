@@ -82,19 +82,9 @@ async function bdcQueryByCnpj(cnpj) {
 }
 
 /**
- * Monta um mapa determinístico a partir das respostas do questionário, usando
- * matching baseado em palavras-chave SEM falsos positivos:
- *  - "cnpj" só casa CNPJ, nunca "endereço/rua/número"
- *  - "cep" precisa ser exato ou com valor de 8 dígitos
- *  - "número" só casa se a pergunta tiver "número" + ("endereço" OU "casa" OU "logradouro"),
- *     NÃO casa com "número de sócios", "número de CNPJ", etc.
+ * Itera todas as respostas e expõe (questionText, valueText, valueRaw) já normalizados.
  */
-function buildAnswerIndex(responses) {
-  const index = {
-    cnpj: '', razaoSocial: '', nomeFantasia: '',
-    cep: '', rua: '', numero: '', bairro: '', cidade: '', estado: '',
-  };
-
+function* iterAnswers(responses) {
   for (const r of (responses || [])) {
     const q = String(r.questionText || '').toLowerCase();
     const val = String(
@@ -103,9 +93,62 @@ function buildAnswerIndex(responses) {
       (Array.isArray(r.valueArray) ? r.valueArray.join(', ') : '') ??
       ''
     ).trim();
+    if (!q && !val) continue;
+    yield { q, val };
+  }
+}
+
+/**
+ * Procura QUALQUER valor de 14 dígitos válido como CNPJ em todas as respostas,
+ * mesmo que a pergunta não mencione "cnpj" explicitamente. Útil para campos
+ * genéricos tipo "documento da empresa", "ID fiscal", "razão social e CNPJ", etc.
+ */
+function findCnpjAnywhere(responses) {
+  for (const { val } of iterAnswers(responses)) {
+    // Tenta valor inteiro primeiro
+    if (isCnpj(val)) return onlyDigits(val);
+    // Procura padrão de CNPJ no meio do texto (ex: "...CNPJ 12.345.678/0001-99...")
+    const matches = String(val).match(/(\d{2}[.\s]?\d{3}[.\s]?\d{3}[/\s]?\d{4}[-\s]?\d{2})/g) || [];
+    for (const m of matches) {
+      if (isCnpj(m)) return onlyDigits(m);
+    }
+    // Procura sequência de 14 dígitos consecutivos
+    const seq = String(val).match(/\b\d{14}\b/);
+    if (seq) return seq[0];
+  }
+  return '';
+}
+
+/** Idem para CPF (11 dígitos). */
+function findCpfAnywhere(responses) {
+  for (const { val } of iterAnswers(responses)) {
+    if (isCpf(val)) return onlyDigits(val);
+    const matches = String(val).match(/(\d{3}[.\s]?\d{3}[.\s]?\d{3}[-\s]?\d{2})/g) || [];
+    for (const m of matches) {
+      const d = onlyDigits(m);
+      if (d.length === 11) return d;
+    }
+    const seq = String(val).match(/\b\d{11}\b/);
+    if (seq) return seq[0];
+  }
+  return '';
+}
+
+/**
+ * Monta um mapa determinístico a partir das respostas do questionário, usando
+ * matching baseado em palavras-chave SEM falsos positivos.
+ */
+function buildAnswerIndex(responses) {
+  const index = {
+    cnpj: '', razaoSocial: '', nomeFantasia: '',
+    cep: '', rua: '', numero: '', bairro: '', cidade: '', estado: '',
+    banco: '', agencia: '', digitoAgencia: '', conta: '', digitoConta: '',
+  };
+
+  for (const { q, val } of iterAnswers(responses)) {
     if (!q || !val) continue;
 
-    // CNPJ — só se a pergunta fala explicitamente em CNPJ e o valor parece CNPJ
+    // CNPJ — pergunta explícita
     if (!index.cnpj && /\bcnpj\b/.test(q) && isCnpj(val)) {
       index.cnpj = onlyDigits(val);
     }
@@ -125,81 +168,145 @@ function buildAnswerIndex(responses) {
       index.cep = val;
     }
 
-    // Rua / Logradouro — só aceita se a pergunta é claramente sobre endereço textual
+    // Rua / Logradouro
     if (!index.rua && /(logradouro|^rua|endere[çc]o\s*.*rua|endere[çc]o\s*completo)/.test(q)) {
       index.rua = val;
     }
 
-    // Número — MUITO restrito: precisa casar "número" + contexto de endereço
+    // Número — restrito a contexto de endereço
     if (!index.numero &&
         /(n[úu]mero)/.test(q) &&
         /(endere[çc]o|logradouro|casa|im[óo]vel|pr[ée]dio)/.test(q) &&
-        // Exclui "número de sócios", "número de funcionários", "número de CNPJ", etc.
         !/(s[óo]cios?|funcion[áa]rios?|cnpj|cpf|transa|telefone|celular)/.test(q)) {
       index.numero = val;
     }
 
-    // Bairro
-    if (!index.bairro && /bairro/.test(q)) {
-      index.bairro = val;
-    }
+    if (!index.bairro && /bairro/.test(q)) index.bairro = val;
+    if (!index.cidade && /(cidade|munic[íi]pio)/.test(q)) index.cidade = val;
+    if (!index.estado && /\b(estado|uf)\b/.test(q)) index.estado = val;
 
-    // Cidade / Município
-    if (!index.cidade && /(cidade|munic[íi]pio)/.test(q)) {
-      index.cidade = val;
-    }
-
-    // Estado / UF
-    if (!index.estado && /\b(estado|uf)\b/.test(q)) {
-      index.estado = val;
-    }
+    // ── Dados bancários nas respostas ──
+    if (!index.banco && /\bbanco\b/.test(q) && !/banc[áa]rio/.test(q)) index.banco = val;
+    if (!index.agencia && /ag[êe]ncia/.test(q) && !/d[íi]gito/.test(q)) index.agencia = val;
+    if (!index.digitoAgencia && /d[íi]gito.*ag[êe]ncia/.test(q)) index.digitoAgencia = val;
+    if (!index.conta && /\bconta\b/.test(q) && !/d[íi]gito/.test(q) && !/tipo/.test(q)) index.conta = val;
+    if (!index.digitoConta && /d[íi]gito.*conta/.test(q)) index.digitoConta = val;
   }
 
   return index;
 }
 
 /**
- * Resolve o CNPJ correto do caso, olhando várias fontes na ordem correta.
- * Retorna { cnpj: '14digits or empty', source: 'merchant|lead|answers|none' }
+ * BUSCA MICROSCÓPICA do CNPJ em TODAS as fontes possíveis.
+ * Retorna { cnpj: '14digits or empty', source: '...' }
  */
 async function resolveCnpj(base44, caseRecord, merchant, responses) {
-  // 1) Merchant — só se for CNPJ válido
+  // 1) Merchant
   if (isCnpj(merchant?.cpfCnpj)) {
     return { cnpj: onlyDigits(merchant.cpfCnpj), source: 'merchant' };
   }
 
-  // 2) OnboardingCase.cpfCnpj (às vezes diferente do merchant)
+  // 2) OnboardingCase
   if (isCnpj(caseRecord?.cpfCnpj)) {
     return { cnpj: onlyDigits(caseRecord.cpfCnpj), source: 'case' };
   }
 
-  // 3) Respostas
+  // 3) Respostas — pergunta explícita
   const answers = buildAnswerIndex(responses);
   if (isCnpj(answers.cnpj)) {
-    return { cnpj: answers.cnpj, source: 'answers' };
+    return { cnpj: answers.cnpj, source: 'answers_explicit' };
   }
 
-  // 4) Lead vinculado ao merchant (por email OU por cpfCnpj do merchant se for CPF)
+  // 4) Respostas — busca microscópica em qualquer texto
+  const cnpjAnywhere = findCnpjAnywhere(responses);
+  if (isCnpj(cnpjAnywhere)) {
+    return { cnpj: cnpjAnywhere, source: 'answers_anywhere' };
+  }
+
+  // 5) Lead vinculado por email/cpfCnpj
   try {
+    const candidateLeads = [];
     if (merchant?.email) {
-      const leads = await base44.asServiceRole.entities.Lead.filter({ email: merchant.email });
-      for (const l of (leads || [])) {
-        if (isCnpj(l?.cpfCnpj)) {
-          return { cnpj: onlyDigits(l.cpfCnpj), source: 'lead_email' };
-        }
-      }
+      const byEmail = await base44.asServiceRole.entities.Lead.filter({ email: merchant.email }).catch(() => []);
+      candidateLeads.push(...(byEmail || []));
     }
     if (merchant?.cpfCnpj) {
-      const leads = await base44.asServiceRole.entities.Lead.filter({ cpfCnpj: merchant.cpfCnpj });
-      for (const l of (leads || [])) {
-        if (isCnpj(l?.cpfCnpj)) {
-          return { cnpj: onlyDigits(l.cpfCnpj), source: 'lead_cpf' };
-        }
+      const byDoc = await base44.asServiceRole.entities.Lead.filter({ cpfCnpj: merchant.cpfCnpj }).catch(() => []);
+      candidateLeads.push(...(byDoc || []));
+    }
+    if (caseRecord?.id) {
+      const byCase = await base44.asServiceRole.entities.Lead.filter({ onboardingCaseId: caseRecord.id }).catch(() => []);
+      candidateLeads.push(...(byCase || []));
+    }
+
+    for (const l of candidateLeads) {
+      if (isCnpj(l?.cpfCnpj)) {
+        return { cnpj: onlyDigits(l.cpfCnpj), source: 'lead' };
+      }
+      // Lead pode ter CNPJ dentro de bdcEnrichmentData ou questionnaireData
+      const bdcData = l?.bdcEnrichmentData || {};
+      const flatBdc = JSON.stringify(bdcData);
+      const bdcMatch = flatBdc.match(/\b\d{14}\b/);
+      if (bdcMatch && isCnpj(bdcMatch[0])) {
+        return { cnpj: bdcMatch[0], source: 'lead_bdc' };
+      }
+      const qData = l?.questionnaireData || {};
+      const flatQ = JSON.stringify(qData);
+      const qMatch = flatQ.match(/\b\d{14}\b/);
+      if (qMatch && isCnpj(qMatch[0])) {
+        return { cnpj: qMatch[0], source: 'lead_questionnaire_data' };
+      }
+    }
+  } catch (_) { /* ignore */ }
+
+  // 6) ExternalValidationResult — BDC pode ter retornado dados com CNPJ
+  try {
+    const validations = await base44.asServiceRole.entities.ExternalValidationResult
+      .filter({ onboardingCaseId: caseRecord?.id })
+      .catch(() => []);
+    for (const v of (validations || [])) {
+      const flat = JSON.stringify(v?.resultData || {});
+      const match = flat.match(/\b\d{14}\b/);
+      if (match && isCnpj(match[0])) {
+        return { cnpj: match[0], source: 'external_validation' };
+      }
+    }
+  } catch (_) { /* ignore */ }
+
+  // 7) Parent merchant (caso seja subseller, herda CNPJ do seller-pai)
+  try {
+    if (merchant?.parentMerchantId) {
+      const parent = await base44.asServiceRole.entities.Merchant.get(merchant.parentMerchantId).catch(() => null);
+      if (isCnpj(parent?.cpfCnpj)) {
+        return { cnpj: onlyDigits(parent.cpfCnpj), source: 'parent_merchant' };
       }
     }
   } catch (_) { /* ignore */ }
 
   return { cnpj: '', source: 'none' };
+}
+
+/** BUSCA MICROSCÓPICA do CPF em todas as fontes (para PF). */
+async function resolveCpf(base44, caseRecord, merchant, responses) {
+  if (isCpf(merchant?.cpfCnpj)) {
+    return { cpf: onlyDigits(merchant.cpfCnpj), source: 'merchant' };
+  }
+  if (isCpf(caseRecord?.cpfCnpj)) {
+    return { cpf: onlyDigits(caseRecord.cpfCnpj), source: 'case' };
+  }
+  const cpfFromAnswers = findCpfAnywhere(responses);
+  if (isCpf(cpfFromAnswers)) {
+    return { cpf: cpfFromAnswers, source: 'answers' };
+  }
+  try {
+    if (merchant?.email) {
+      const leads = await base44.asServiceRole.entities.Lead.filter({ email: merchant.email }).catch(() => []);
+      for (const l of (leads || [])) {
+        if (isCpf(l?.cpfCnpj)) return { cpf: onlyDigits(l.cpfCnpj), source: 'lead' };
+      }
+    }
+  } catch (_) { /* ignore */ }
+  return { cpf: '', source: 'none' };
 }
 
 Deno.serve(async (req) => {
@@ -244,27 +351,28 @@ Deno.serve(async (req) => {
         finalDoc = r.cnpj;
         docSource = r.source;
       } else {
-        // PF — usa CPF do merchant
-        finalDoc = onlyDigits(merchant?.cpfCnpj || caseRecord?.cpfCnpj);
-        docSource = 'merchant_pf';
+        // PF — busca microscópica de CPF
+        const r = await resolveCpf(base44, caseRecord, merchant, responses);
+        finalDoc = r.cpf;
+        docSource = `pf_${r.source}`;
       }
 
-      // ── Dados bancários ──
+      // ── Dados bancários: BankDataCollection > respostas do questionário ──
       const bankRecords = await base44.asServiceRole.entities.BankDataCollection
         .filter({ onboardingCaseId: caseId, status: 'preenchido' }, '-filledAt', 1)
         .catch(() => []);
       const bank = bankRecords?.[0] || null;
 
-      // ── Monta linha com dados locais primeiro ──
+      // ── Monta linha — banco prioriza BankDataCollection, cai pra respostas ──
       let row = {
         'CPF/ CNPJ': finalDoc,
         'Nome Fantasia': pick(merchant?.companyName, answers.nomeFantasia),
         'Razão Social': pick(merchant?.fullName, answers.razaoSocial),
-        'Agencia': pick(bank?.agencia),
-        'Digito': pick(bank?.digitoAgencia),
-        'Conta': pick(bank?.conta),
-        'Digito Conta': pick(bank?.digitoConta),
-        'Banco': pick(bank?.banco),
+        'Agencia': pick(bank?.agencia, answers.agencia),
+        'Digito': pick(bank?.digitoAgencia, answers.digitoAgencia),
+        'Conta': pick(bank?.conta, answers.conta),
+        'Digito Conta': pick(bank?.digitoConta, answers.digitoConta),
+        'Banco': pick(bank?.banco, answers.banco),
         'Email': pick(merchant?.email),
         'CEP': pick(answers.cep),
         'Cidade': pick(answers.cidade),
