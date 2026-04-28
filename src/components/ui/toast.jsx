@@ -37,11 +37,34 @@ const toastVariants = cva(
   }
 );
 
-const Toast = React.forwardRef(({ className, variant, ...props }, ref) => {
+const Toast = React.forwardRef(({ className, variant, open = true, onOpenChange, duration = 5000, ...props }, ref) => {
+  const [isOpen, setIsOpen] = React.useState(open);
+
+  React.useEffect(() => { setIsOpen(open); }, [open]);
+
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const t = setTimeout(() => {
+      setIsOpen(false);
+      onOpenChange?.(false);
+    }, duration);
+    return () => clearTimeout(t);
+  }, [isOpen, duration, onOpenChange]);
+
+  if (!isOpen) return null;
+
   return (
     <div
       ref={ref}
+      data-state={isOpen ? "open" : "closed"}
       className={cn(toastVariants({ variant }), className)}
+      onClick={(e) => {
+        // close when clicking the X button
+        if (e.target.closest('[toast-close=""]')) {
+          setIsOpen(false);
+          onOpenChange?.(false);
+        }
+      }}
       {...props}
     />
   );
@@ -64,7 +87,7 @@ const ToastClose = React.forwardRef(({ className, ...props }, ref) => (
   <button
     ref={ref}
     className={cn(
-      "absolute right-2 top-2 rounded-md p-1 text-[#002443]/50 opacity-0 transition-opacity hover:text-[#002443] focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100 group-[.destructive]:text-white/70 group-[.destructive]:hover:text-white group-[.destructive]:focus:ring-red-400",
+      "absolute right-2 top-2 rounded-md p-1 text-[#002443]/50 opacity-100 transition-opacity hover:text-[#002443] hover:bg-slate-100 focus:opacity-100 focus:outline-none focus:ring-2 group-[.destructive]:text-white/70 group-[.destructive]:hover:text-white group-[.destructive]:hover:bg-red-600 group-[.destructive]:focus:ring-red-400 cursor-pointer",
       className
     )}
     toast-close=""
