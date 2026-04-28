@@ -71,6 +71,7 @@ import ComplianceParceiroDetalhe from './pages/ComplianceParceiroDetalhe';
 import AdminGestaoParceiros from './pages/AdminGestaoParceiros';
 import DocCompParceiros from './pages/DocCompParceiros';
 import BankDataCollect from './pages/BankDataCollect';
+import Governanca from './pages/Governanca';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -405,6 +406,7 @@ const AuthenticatedApp = () => {
       <Route path="/ComplianceParceiroDetalhe" element={<LayoutWrapper currentPageName="ComplianceParceiroDetalhe"><ComplianceParceiroDetalhe /></LayoutWrapper>} />
       <Route path="/AdminGestaoParceiros" element={<LayoutWrapper currentPageName="AdminGestaoParceiros"><AdminGestaoParceiros /></LayoutWrapper>} />
       <Route path="/DocCompParceiros" element={<LayoutWrapper currentPageName="DocCompParceiros"><DocCompParceiros /></LayoutWrapper>} />
+      <Route path="/Governanca" element={<LayoutWrapper currentPageName="Governanca"><Governanca /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

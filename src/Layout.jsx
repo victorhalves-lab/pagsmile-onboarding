@@ -180,6 +180,7 @@ export default function Layout({ children, currentPageName }) {
       label: t('menu.administration'),
       icon: Settings,
       items: [
+        { label: 'Governança', path: 'Governanca', icon: Shield, adminOnly: true, highlight: true },
         { label: 'Perfis de Acesso', path: 'GestaoPerfis', icon: Shield, adminOnly: true },
         { label: 'Usuários & Perfis', path: 'GestaoUsuarios', icon: Users, adminOnly: true },
         { label: 'Parceiros de Compliance', path: 'AdminGestaoParceiros', icon: Handshake, adminOnly: true },
