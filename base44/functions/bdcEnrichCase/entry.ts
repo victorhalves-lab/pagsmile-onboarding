@@ -336,10 +336,12 @@ function analyzeIdentity(result) {
   if (tradeName) items.push({ label: 'Nome fantasia', value: String(tradeName), risk: 'INFO', points: 0 });
   const founded = safeGet(bd, 'FoundedDate') || safeGet(bd, 'Age.FoundedDate');
   if (founded) {
-    const years = (Date.now() - new Date(founded).getTime()) / (365.25 * 24 * 3600 * 1000);
+    const ageMs = Date.now() - new Date(founded).getTime();
+    const months = ageMs / (30.44 * 24 * 3600 * 1000);
+    const years = ageMs / (365.25 * 24 * 3600 * 1000);
     const y = Math.floor(years);
-    if (y < 1) { score += 25; items.push({ label: 'Idade da empresa', value: `< 1 ano`, risk: 'ALTO', points: 25 }); }
-    else if (y < 2) { score += 15; items.push({ label: 'Idade da empresa', value: `${y} ano(s)`, risk: 'MEDIO', points: 15 }); }
+    if (months <= 1) { score += 25; items.push({ label: 'Idade da empresa', value: `≤ 1 mês`, risk: 'ALTO', points: 25 }); }
+    else if (y < 2) { score += 5; items.push({ label: 'Idade da empresa', value: y < 1 ? `< 1 ano` : `${y} ano(s)`, risk: 'BAIXO', points: 5 }); }
     else if (y < 5) { score += 5; items.push({ label: 'Idade da empresa', value: `${y} anos`, risk: 'BAIXO', points: 5 }); }
     else { items.push({ label: 'Idade da empresa', value: `${y} anos`, risk: 'OK', points: 0 }); }
   }
