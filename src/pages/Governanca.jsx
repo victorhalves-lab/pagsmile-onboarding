@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Shield, FileCheck, KeyRound, BookOpen } from 'lucide-react';
+import { Shield, FileCheck, KeyRound, BookOpen, GitCommit } from 'lucide-react';
 import GovernanceKPIs from '@/components/governance/GovernanceKPIs';
 import AuditLogTable from '@/components/governance/AuditLogTable';
 import AccessAuditTable from '@/components/governance/AccessAuditTable';
 import SecurityAuditTable from '@/components/governance/SecurityAuditTable';
 import GovernanceFramework from '@/components/governance/GovernanceFramework';
+import ChangelogTimeline from '@/components/governance/ChangelogTimeline';
 
 export default function Governanca() {
   const [loading, setLoading] = useState(true);
@@ -15,26 +16,27 @@ export default function Governanca() {
   const [twoFactor, setTwoFactor] = useState([]);
   const [loginAttempts, setLoginAttempts] = useState([]);
   const [users, setUsers] = useState([]);
+  const [changelog, setChangelog] = useState([]);
+
+  const loadAll = async () => {
+    const [logs, access, tf, logins, allUsers, changes] = await Promise.all([
+      base44.entities.AuditLog.list('-changeDate', 500).catch(() => []),
+      base44.entities.AccessAudit.list('-created_date', 300).catch(() => []),
+      base44.entities.TwoFactorAudit.list('-created_date', 200).catch(() => []),
+      base44.entities.AdminLoginAttempt.list('-created_date', 200).catch(() => []),
+      base44.entities.User.list().catch(() => []),
+      base44.entities.CodeChangelog.list('-implementedAt', 500).catch(() => []),
+    ]);
+    setAuditLogs(logs);
+    setAccessAudits(access);
+    setTwoFactor(tf);
+    setLoginAttempts(logins);
+    setUsers(allUsers);
+    setChangelog(changes);
+  };
 
   useEffect(() => {
-    (async () => {
-      try {
-        const [logs, access, tf, logins, allUsers] = await Promise.all([
-          base44.entities.AuditLog.list('-changeDate', 500).catch(() => []),
-          base44.entities.AccessAudit.list('-created_date', 300).catch(() => []),
-          base44.entities.TwoFactorAudit.list('-created_date', 200).catch(() => []),
-          base44.entities.AdminLoginAttempt.list('-created_date', 200).catch(() => []),
-          base44.entities.User.list().catch(() => []),
-        ]);
-        setAuditLogs(logs);
-        setAccessAudits(access);
-        setTwoFactor(tf);
-        setLoginAttempts(logins);
-        setUsers(allUsers);
-      } finally {
-        setLoading(false);
-      }
-    })();
+    loadAll().finally(() => setLoading(false));
   }, []);
 
   const stats = useMemo(() => {
@@ -74,13 +76,15 @@ export default function Governanca() {
 
       <GovernanceKPIs stats={stats} />
 
-      <Tabs defaultValue="audit">
+      <Tabs defaultValue="changelog">
         <TabsList>
+          <TabsTrigger value="changelog"><GitCommit className="w-4 h-4 mr-2" /> Changelog</TabsTrigger>
           <TabsTrigger value="audit"><FileCheck className="w-4 h-4 mr-2" /> Audit Log</TabsTrigger>
           <TabsTrigger value="access"><Shield className="w-4 h-4 mr-2" /> Acessos</TabsTrigger>
           <TabsTrigger value="security"><KeyRound className="w-4 h-4 mr-2" /> Segurança / 2FA</TabsTrigger>
           <TabsTrigger value="framework"><BookOpen className="w-4 h-4 mr-2" /> Framework</TabsTrigger>
         </TabsList>
+        <TabsContent value="changelog" className="mt-4"><ChangelogTimeline entries={changelog} onRefresh={loadAll} /></TabsContent>
         <TabsContent value="audit" className="mt-4"><AuditLogTable logs={auditLogs} /></TabsContent>
         <TabsContent value="access" className="mt-4"><AccessAuditTable items={accessAudits} /></TabsContent>
         <TabsContent value="security" className="mt-4"><SecurityAuditTable twoFactor={twoFactor} loginAttempts={loginAttempts} /></TabsContent>

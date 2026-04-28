@@ -1,0 +1,158 @@
+{
+  "name": "CodeChangelog",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "T\u00edtulo curto e claro da mudan\u00e7a"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "FEATURE",
+        "BUGFIX",
+        "REFACTOR",
+        "SECURITY",
+        "COMPLIANCE",
+        "INTEGRATION",
+        "UI_UX",
+        "PERFORMANCE",
+        "GOVERNANCE",
+        "DATA_MODEL",
+        "INFRA"
+      ],
+      "description": "Categoria da mudan\u00e7a"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+      ],
+      "default": "MEDIUM",
+      "description": "Impacto da mudan\u00e7a no sistema"
+    },
+    "userRequest": {
+      "type": "string",
+      "description": "O pedido original do usu\u00e1rio (verbatim)"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Resumo executivo do que foi implementado (1-2 par\u00e1grafos)"
+    },
+    "technicalDetails": {
+      "type": "string",
+      "description": "Explica\u00e7\u00e3o t\u00e9cnica profunda: arquitetura, decis\u00f5es, l\u00f3gica, fluxo. Markdown permitido."
+    },
+    "businessImpact": {
+      "type": "string",
+      "description": "Impacto de neg\u00f3cio, por que importa, qual problema resolve"
+    },
+    "filesChanged": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "created",
+              "modified",
+              "deleted"
+            ]
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Lista de arquivos afetados"
+    },
+    "entitiesAffected": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Entidades de banco afetadas"
+    },
+    "functionsAffected": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Backend functions afetadas"
+    },
+    "pagesAffected": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "P\u00e1ginas afetadas"
+    },
+    "breakingChanges": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se a mudan\u00e7a quebra compatibilidade"
+    },
+    "rollbackInstructions": {
+      "type": "string",
+      "description": "Como reverter caso necess\u00e1rio"
+    },
+    "testingNotes": {
+      "type": "string",
+      "description": "Como testar/validar a mudan\u00e7a"
+    },
+    "implementedBy": {
+      "type": "string",
+      "description": "Email de quem solicitou via chat"
+    },
+    "implementedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp da implementa\u00e7\u00e3o"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags livres para busca (ex: bdc, caf, scoring, sentinel)"
+    },
+    "relatedChangelogId": {
+      "type": "string",
+      "description": "ID de changelog relacionado (continua\u00e7\u00e3o/corre\u00e7\u00e3o)"
+    }
+  },
+  "required": [
+    "title",
+    "category",
+    "summary"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
