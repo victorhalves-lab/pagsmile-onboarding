@@ -225,6 +225,15 @@ function analyzeBlocks(result, responses) {
     blocks.push({ code: 'B01', label: 'CNPJ Inativo', severity: 'BLOQUEIO', detail: `Situação cadastral BDC: "${status}". Empresa não pode exercer atividades econômicas. Circular BCB 3.978/2020 Art. 2º.`, score: 850 });
   }
 
+  // B10: CNPJ com idade ≤ 1 mês — recusa automática
+  const founded = safeGet(bd, 'FoundedDate') || safeGet(bd, 'Age.FoundedDate');
+  if (founded) {
+    const months = (Date.now() - new Date(founded).getTime()) / (30.44 * 24 * 3600 * 1000);
+    if (months <= 1) {
+      blocks.push({ code: 'B10', label: 'CNPJ recém-aberto (≤ 1 mês)', severity: 'BLOQUEIO', detail: `Empresa fundada há ${months.toFixed(1)} mês(es). CNPJs com menos de 1 mês de existência são recusados automaticamente por insuficiência de histórico operacional.`, score: 850 });
+    }
+  }
+
   const kyc = result?.Kyc || result?.kyc;
   if (kyc) {
     const kycItems = flattenBDCArray(kyc);
