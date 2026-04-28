@@ -1,5 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
-import * as XLSX from 'npm:xlsx@0.18.5';
+import XLSX from 'npm:xlsx-js-style@1.2.0';
 
 /**
  * Admin-only: gera XLSX no formato "Pré KYC Pagsmile" com dados de todos os casos selecionados.
@@ -421,13 +421,139 @@ Deno.serve(async (req) => {
       debug.push({ caseId, finalDoc, docSource, isPJ });
     }
 
-    // ── Gera XLSX ──
+    // ══════════════════════════════════════════════════════════════════
+    // GERA XLSX COM FORMATAÇÃO EXECUTIVA — IDENTIDADE VISUAL PAGSMILE
+    // Azul #002443 (header) · Verde #2bc196 (destaques) · Zebra striping
+    // ══════════════════════════════════════════════════════════════════
     const headers = ['CPF/ CNPJ', 'Nome Fantasia', 'Razão Social', 'Agencia', 'Digito', 'Conta', 'Digito Conta', 'Banco', 'Email', 'CEP', 'Cidade', 'Rua', 'Numero', 'Bairro', 'Estado'];
-    const ws = XLSX.utils.json_to_sheet(rows, { header: headers });
+
+    const PAGSMILE_BLUE = '002443';
+    const PAGSMILE_GREEN = '2BC196';
+    const ROW_ALT = 'F4F8FB';
+    const ROW_WHITE = 'FFFFFF';
+    const MISSING_BG = 'FFE9E9';      // vermelho claro p/ bancário faltando
+    const HIGHLIGHT_BG = 'E8FAF3';    // verde claro p/ identificadores-chave
+    const BORDER_COLOR = 'D5DDE5';
+
+    const thinBorder = {
+      top:    { style: 'thin', color: { rgb: BORDER_COLOR } },
+      bottom: { style: 'thin', color: { rgb: BORDER_COLOR } },
+      left:   { style: 'thin', color: { rgb: BORDER_COLOR } },
+      right:  { style: 'thin', color: { rgb: BORDER_COLOR } },
+    };
+
+    // Larguras coerentes com o conteúdo de cada coluna
+    const colWidths = {
+      'CPF/ CNPJ':     22,
+      'Nome Fantasia': 32,
+      'Razão Social':  38,
+      'Agencia':       10,
+      'Digito':         8,
+      'Conta':         14,
+      'Digito Conta':  12,
+      'Banco':         28,
+      'Email':         32,
+      'CEP':           12,
+      'Cidade':        22,
+      'Rua':           36,
+      'Numero':        10,
+      'Bairro':        22,
+      'Estado':         8,
+    };
+    const bankCols = new Set(['Agencia', 'Digito', 'Conta', 'Digito Conta', 'Banco']);
+    const keyCols = new Set(['CPF/ CNPJ', 'Razão Social', 'Nome Fantasia']);
+
+    // ── 1. Cria worksheet base com title row + header + data ──
+    const titleText = `Pré KYC Pagsmile — ${rows.length} registro${rows.length === 1 ? '' : 's'} · ${new Date().toLocaleDateString('pt-BR')}`;
+    const aoa = [
+      [titleText, ...Array(headers.length - 1).fill('')],   // linha 1: título
+      headers,                                                // linha 2: cabeçalho
+      ...rows.map(r => headers.map(h => r[h] || '')),         // linhas 3+: dados
+    ];
+    const ws = XLSX.utils.aoa_to_sheet(aoa);
+
+    // ── 2. Merge do título (toda primeira linha) ──
+    ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: headers.length - 1 } }];
+
+    // ── 3. Larguras de coluna ──
+    ws['!cols'] = headers.map(h => ({ wch: colWidths[h] || 16 }));
+
+    // ── 4. Alturas de linha (título + header maiores) ──
+    ws['!rows'] = [
+      { hpt: 32 }, // título
+      { hpt: 26 }, // cabeçalho
+      ...rows.map(() => ({ hpt: 20 })),
+    ];
+
+    // ── 5. Aplica estilos célula-a-célula ──
+    const range = XLSX.utils.decode_range(ws['!ref']);
+    for (let R = range.s.r; R <= range.e.r; R++) {
+      for (let C = range.s.c; C <= range.e.c; C++) {
+        const cellAddr = XLSX.utils.encode_cell({ r: R, c: C });
+        if (!ws[cellAddr]) ws[cellAddr] = { t: 's', v: '' };
+
+        const headerName = headers[C];
+        let style = {
+          border: thinBorder,
+          alignment: { vertical: 'center', horizontal: 'left', wrapText: false },
+          font: { name: 'Calibri', sz: 11, color: { rgb: PAGSMILE_BLUE } },
+        };
+
+        if (R === 0) {
+          // Título: barra azul Pagsmile com texto verde
+          style = {
+            font: { name: 'Calibri', sz: 16, bold: true, color: { rgb: PAGSMILE_GREEN } },
+            fill: { fgColor: { rgb: PAGSMILE_BLUE } },
+            alignment: { vertical: 'center', horizontal: 'left', indent: 1 },
+            border: thinBorder,
+          };
+        } else if (R === 1) {
+          // Cabeçalho: fundo azul Pagsmile, texto branco em maiúsculas
+          style = {
+            font: { name: 'Calibri', sz: 11, bold: true, color: { rgb: 'FFFFFF' } },
+            fill: { fgColor: { rgb: PAGSMILE_BLUE } },
+            alignment: { vertical: 'center', horizontal: 'center', wrapText: true },
+            border: thinBorder,
+          };
+        } else {
+          // Linhas de dados: zebra striping
+          const isAlt = (R % 2) === 0;
+          const bg = isAlt ? ROW_ALT : ROW_WHITE;
+          const cellValue = String(ws[cellAddr].v || '').trim();
+
+          // Bancário vazio — destacar em vermelho claro
+          if (bankCols.has(headerName) && !cellValue) {
+            style.fill = { fgColor: { rgb: MISSING_BG } };
+          }
+          // Colunas-chave (CNPJ, Razão Social, Nome Fantasia) — destaque verde claro
+          else if (keyCols.has(headerName) && cellValue) {
+            style.fill = { fgColor: { rgb: HIGHLIGHT_BG } };
+            style.font = { ...style.font, bold: headerName === 'CPF/ CNPJ' };
+          } else {
+            style.fill = { fgColor: { rgb: bg } };
+          }
+
+          // Centralizar campos numéricos curtos
+          if (['CPF/ CNPJ', 'Agencia', 'Digito', 'Conta', 'Digito Conta', 'CEP', 'Numero', 'Estado'].includes(headerName)) {
+            style.alignment.horizontal = 'center';
+          }
+        }
+
+        ws[cellAddr].s = style;
+      }
+    }
+
+    // ── 6. Freeze panes — congela título + cabeçalho ──
+    ws['!freeze'] = { xSplit: 0, ySplit: 2 };
+    ws['!views'] = [{ state: 'frozen', xSplit: 0, ySplit: 2, topLeftCell: 'A3' }];
+
+    // ── 7. Auto filter no cabeçalho ──
+    ws['!autofilter'] = { ref: XLSX.utils.encode_range({ s: { r: 1, c: 0 }, e: { r: range.e.r, c: range.e.c } }) };
+
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Pré KYC');
 
-    const buffer = XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
+    const buffer = XLSX.write(wb, { type: 'array', bookType: 'xlsx', cellStyles: true });
     const bytes = new Uint8Array(buffer);
     let binary = '';
     for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
