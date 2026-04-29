@@ -4,9 +4,11 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Plus, GitCommit, AlertTriangle, Sparkles, Bug, Wrench, Shield, Zap, Palette, Rocket, FileText, Database, Server } from 'lucide-react';
+import { Search, Plus, GitCommit, AlertTriangle, Sparkles, Bug, Wrench, Shield, Zap, Palette, Rocket, FileText, Database, Server, History, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { base44 } from '@/api/base44Client';
+import { toast } from 'sonner';
 import ChangelogDetailModal from './ChangelogDetailModal';
 import ChangelogFormModal from './ChangelogFormModal';
 
@@ -37,6 +39,22 @@ export default function ChangelogTimeline({ entries, onRefresh }) {
   const [severityFilter, setSeverityFilter] = useState('all');
   const [selected, setSelected] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [reconstructing, setReconstructing] = useState(false);
+
+  const handleReconstruct = async () => {
+    if (!confirm('Reconstruir histórico retroativo?\n\nIsso vai usar IA para gerar entradas de changelog para ~21 épicos da plataforma desde o início (Jun/2025 → hoje), com base nas entidades, páginas e functions existentes.\n\nAs entradas serão marcadas com [reconstruído] para diferenciar de mudanças futuras reais. Operação idempotente (pode rodar mais de uma vez).')) return;
+    setReconstructing(true);
+    try {
+      const res = await base44.functions.invoke('seedHistoricalChangelog', { force: false });
+      const d = res.data || {};
+      toast.success(`Reconstruído: ${d.created} novos · ${d.skipped} já existiam · ${d.errors} erros`);
+      onRefresh();
+    } catch (e) {
+      toast.error('Erro ao reconstruir histórico: ' + e.message);
+    } finally {
+      setReconstructing(false);
+    }
+  };
 
   const filtered = useMemo(() => {
     return entries.filter(e => {
@@ -88,6 +106,10 @@ export default function ChangelogTimeline({ entries, onRefresh }) {
           </Select>
           <Button onClick={() => setShowForm(true)} className="bg-[#2bc196] hover:bg-[#2bc196]/90">
             <Plus className="w-4 h-4 mr-1" /> Registrar Mudança
+          </Button>
+          <Button onClick={handleReconstruct} disabled={reconstructing} variant="outline" title="Reconstrói retroativamente o histórico de implementações usando IA + estrutura do código">
+            {reconstructing ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <History className="w-4 h-4 mr-1" />}
+            Reconstruir Histórico
           </Button>
         </div>
       </Card>
