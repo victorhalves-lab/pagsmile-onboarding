@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Loader2, BookOpen, FileStack, Layers } from 'lucide-react';
+import { Loader2, BookOpen, FileStack, Layers, ShieldCheck, Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import DocCapa from '@/components/kyc-doc/DocCapa';
 import DocGlossario from '@/components/kyc-doc/DocGlossario';
 import DocVisaoGeral from '@/components/kyc-doc/DocVisaoGeral';
@@ -24,6 +25,7 @@ import DocDocOnlyLink from '@/components/kyc-doc/DocDocOnlyLink';
 import DocDocCompParceiros from '@/components/kyc-doc/DocDocCompParceiros';
 import DocTemplatesMicroscopico from '@/components/kyc-doc/DocTemplatesMicroscopico';
 import DocModeloDinamicoKYC from '@/components/kyc-doc/DocModeloDinamicoKYC';
+import RiskScoringDocTab from '@/components/kyc-doc/risk-scoring/RiskScoringDocTab';
 
 const TOC = [
   { id: 's0', n: '0', label: 'Glossário — Termos Técnicos e Regulatórios' },
@@ -99,7 +101,7 @@ export default function DocumentoKYCKYB() {
             active={activeTab === 'templates'}
             onClick={() => setActiveTab('templates')}
             icon={FileStack}
-            label="Templates Microscópico"
+            label="Templates"
             sublabel={`${templates.length} templates ativos`}
           />
           <TabButton
@@ -109,6 +111,13 @@ export default function DocumentoKYCKYB() {
             label="Modelo Dinâmico KYC/KYB"
             sublabel="Perguntas e docs por segmento"
           />
+          <TabButton
+            active={activeTab === 'risk'}
+            onClick={() => setActiveTab('risk')}
+            icon={ShieldCheck}
+            label="Risk Scoring"
+            sublabel="Sellers & Subsellers — para Bandeiras"
+          />
         </div>
       </div>
 
@@ -117,11 +126,57 @@ export default function DocumentoKYCKYB() {
         <ManualContent templates={templates} questionsByTemplate={questionsByTemplate} />
       )}
       {activeTab === 'templates' && (
-        <DocTemplatesMicroscopico templates={templates} questionsByTemplate={questionsByTemplate} />
+        <TemplatesContent templates={templates} questionsByTemplate={questionsByTemplate} />
       )}
       {activeTab === 'dinamico' && (
         <DocModeloDinamicoKYC templates={templates} questionsByTemplate={questionsByTemplate} />
       )}
+      {activeTab === 'risk' && (
+        <RiskScoringDocTab />
+      )}
+    </div>
+  );
+}
+
+/* ────────────────────────────────────────
+   Templates content with print-ready download button
+   ──────────────────────────────────────── */
+function TemplatesContent({ templates, questionsByTemplate }) {
+  return (
+    <div id="kyc-templates-print">
+      <style>{`
+        @media print {
+          @page { size: A4; margin: 12mm 10mm; }
+          *, *::before, *::after { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+          body { margin: 0 !important; background: white !important; }
+          body > *:not(:has(#kyc-templates-print)) { display: none !important; }
+          .no-print { display: none !important; }
+          #kyc-templates-print { padding: 0 !important; max-width: 100% !important; }
+          #kyc-templates-print .max-w-\\[1200px\\] { max-width: 100% !important; padding: 0 !important; }
+          #kyc-templates-print h1 { font-size: 16pt !important; }
+          #kyc-templates-print h2 { font-size: 11pt !important; page-break-after: avoid; }
+          #kyc-templates-print h3 { font-size: 10pt !important; page-break-after: avoid; }
+          #kyc-templates-print h4 { font-size: 9pt !important; }
+          #kyc-templates-print p, #kyc-templates-print li, #kyc-templates-print td, #kyc-templates-print th { font-size: 8pt !important; line-height: 1.35 !important; }
+          #kyc-templates-print table { font-size: 7pt !important; page-break-inside: auto; }
+          #kyc-templates-print thead { display: table-header-group; }
+          #kyc-templates-print tr { page-break-inside: avoid; }
+          #kyc-templates-print .print-avoid-break { page-break-inside: avoid; }
+          #kyc-templates-print [class*="rounded"] { border-radius: 2pt !important; }
+        }
+      `}</style>
+
+      <div className="no-print sticky top-[68px] z-[5] bg-white border-b border-[#e8e8e8] max-w-[1200px] mx-auto px-6 py-3 flex items-center justify-between">
+        <div>
+          <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-[#2bc196]">Documento Técnico</p>
+          <p className="text-sm font-bold text-[#002443]">Templates de Compliance — Visão Completa</p>
+        </div>
+        <Button onClick={() => window.print()} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white">
+          <Download className="w-4 h-4 mr-1.5" /> Baixar PDF
+        </Button>
+      </div>
+
+      <DocTemplatesMicroscopico templates={templates} questionsByTemplate={questionsByTemplate} />
     </div>
   );
 }
