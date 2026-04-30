@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Copy, ExternalLink, Link as LinkIcon, Plus, Check, Zap, Loader2, ArrowRight, UserPlus, Crown } from 'lucide-react';
+import { Copy, ExternalLink, Link as LinkIcon, Plus, Check, Zap, Loader2, ArrowRight, UserPlus, Crown, ClipboardList } from 'lucide-react';
 import { toast } from 'sonner';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -22,6 +22,7 @@ export default function LinksQuestionariosLeads() {
   const genericLinks = {
     LEAD_PAGSMILE: `${window.location.origin}/QuestionarioLeadsPagsmile`,
     LEAD_PIX_V4: `${window.location.origin}/LeadPixV4`,
+    QUESTIONARIO_SIMPLIFICADO: `${window.location.origin}/QuestionarioSimplificadoPublico`,
   };
 
   const handleCopy = async (text, id) => {
@@ -172,6 +173,48 @@ export default function LinksQuestionariosLeads() {
           </CardFooter>
         </Card>
       </div>
+
+      {/* Card Questionário Simplificado (Reuniões com Cliente) */}
+      <Card className="rounded-2xl border border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow overflow-hidden ring-2 ring-amber-400/30 lg:col-span-2">
+        <div className="h-2 bg-gradient-to-r from-amber-400 via-orange-400 to-[#2bc196]" />
+        <CardHeader className="pt-5">
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 shadow-md">
+                <ClipboardList className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <CardTitle className="text-base font-bold text-[#002443]">Questionário Simplificado</CardTitle>
+                  <Badge className="bg-amber-500 text-white border-0 text-[10px]">REUNIÕES</Badge>
+                  <Badge className="bg-[#002443]/5 text-[#002443] border-0 text-[10px]">CURTO</Badge>
+                </div>
+                <CardDescription className="text-[#282828]/50 text-xs mt-0.5">
+                  Versão enxuta para enviar durante ou após reuniões com clientes. Captura essencial: contato, modelo de negócio e volumetria. Respostas aparecem em <strong>Questionários Recebidos</strong>.
+                </CardDescription>
+              </div>
+            </div>
+            <Button variant="outline" size="sm" onClick={() => window.open(genericLinks.QUESTIONARIO_SIMPLIFICADO, '_blank')} className="border-[#002443]/10 text-[#002443] hover:bg-[#002443]/5 rounded-lg">
+              <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
+              {t('lql.view')}
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40">{t('lql.default_link')}</Label>
+            <div className="flex gap-2">
+              <Input readOnly value={genericLinks.QUESTIONARIO_SIMPLIFICADO} className="font-mono text-xs bg-[#f4f4f4] border-[#002443]/5 rounded-lg" />
+              <Button
+                onClick={() => handleCopy(genericLinks.QUESTIONARIO_SIMPLIFICADO, 'questionario-simplificado')}
+                className={`rounded-lg ${copied === 'questionario-simplificado' ? 'bg-[#2bc196]' : 'bg-[#002443] hover:bg-[#002443]/90'}`}
+              >
+                {copied === 'questionario-simplificado' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Card Gerar Link por Introducer */}
       <Card className="rounded-2xl border border-[#002443]/5 shadow-sm hover:shadow-md transition-shadow overflow-hidden lg:col-span-2">
