@@ -24,6 +24,7 @@ import {
 import { toast } from 'sonner';
 import moment from 'moment';
 import LeadQuickActions from '../components/leads/LeadQuickActions';
+import LeadAssignmentCard from '../components/leads/LeadAssignmentCard';
 import LeadProposals from '../components/leads/LeadProposals';
 import LeadSLAIndicator from '../components/leads/LeadSLAIndicator';
 import LeadQualifierPanel from '../components/leads/LeadQualifierPanel';
@@ -205,6 +206,9 @@ export default function LeadDetails() {
 
       {/* Quick Actions Bar */}
       <LeadQuickActions lead={lead} />
+
+      {/* Atribuições — Introducer + Comercial Responsável */}
+      <LeadAssignmentCard lead={lead} />
 
       <Tabs defaultValue="overview">
         <TabsList>
