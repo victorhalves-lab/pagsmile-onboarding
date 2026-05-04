@@ -8,6 +8,7 @@ import { Loader2, Send, Check, ChevronLeft, ChevronRight, Lock } from 'lucide-re
 import { toast } from 'sonner';
 
 import StepSegmento from '@/components/lead-pagsmile/StepSegmento';
+import StepMixOperacao from '@/components/lead-pagsmile/StepMixOperacao';
 import StepDadosEmpresa from '@/components/lead-pagsmile/StepDadosEmpresa';
 import StepEndereco from '@/components/lead-pagsmile/StepEndereco';
 import StepContato from '@/components/lead-pagsmile/StepContato';
@@ -29,6 +30,7 @@ import { validateStepV5, countStepFields } from '@/components/lead-pagsmile/lead
 
 const STEPS = [
   { id: 'segmento', label: 'Tipo de Negócio' },
+  { id: 'mix', label: 'Composição da Operação' },
   { id: 'empresa', label: 'Dados da Empresa' },
   { id: 'endereco', label: 'Endereço' },
   { id: 'contato', label: 'Contato' },
@@ -125,8 +127,9 @@ export default function QuestionarioLeadsPagsmile() {
     setShowValidation(false);
     const jaProcessa = form.jaProcessa === 'Sim, já processo';
     let next = step + 1;
-    if (next === 7 && !jaProcessa) next = 9;
-    if (next === 8 && !jaProcessa) next = 9;
+    // Skip "Taxas Atuais" (8) and "Processador" (9) when client is not yet processing
+    if (next === 8 && !jaProcessa) next = 10;
+    if (next === 9 && !jaProcessa) next = 10;
     setStep(Math.min(next, STEPS.length - 1));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -134,8 +137,8 @@ export default function QuestionarioLeadsPagsmile() {
   const prevStep = () => {
     const jaProcessa = form.jaProcessa === 'Sim, já processo';
     let prev = step - 1;
-    if (prev === 8 && !jaProcessa) prev = 6;
-    if (prev === 7 && !jaProcessa) prev = 6;
+    if (prev === 9 && !jaProcessa) prev = 7;
+    if (prev === 8 && !jaProcessa) prev = 7;
     setStep(Math.max(prev, 0));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -372,16 +375,17 @@ export default function QuestionarioLeadsPagsmile() {
       <Card className="rounded-2xl border border-[#002443]/5 shadow-sm mb-6">
         <CardContent className="p-6 sm:p-8">
           {step === 0 && <StepSegmento form={form} updateField={updateField} cnpjData={cnpjData} />}
-          {step === 1 && <StepDadosEmpresa form={form} updateField={updateField} cnpjData={cnpjData} setCnpjData={setCnpjData} errors={errors} setBdcData={(d) => { setBdcData(d); updateField('_bdcQuickData', d); }} />}
-          {step === 2 && <StepEndereco form={form} updateField={updateField} cnpjData={cnpjData} />}
-          {step === 3 && <StepContato form={form} updateField={updateField} errors={errors} />}
-          {step === 4 && <StepModeloNegocio form={form} updateField={updateField} errors={errors} />}
-          {step === 5 && <StepVolumetria form={form} updateField={updateField} errors={errors} />}
-          {step === 6 && <StepDistribuicao form={form} updateField={updateField} errors={errors} />}
-          {step === 7 && <StepTaxasAtuais form={form} updateField={updateField} errors={errors} />}
-          {step === 8 && <StepProcessadorAtual form={form} updateField={updateField} />}
-          {step === 9 && <StepComplianceRisco form={form} updateField={updateField} errors={errors} />}
-          {step === 10 && <StepFechamento form={form} updateField={updateField} errors={errors} />}
+          {step === 1 && <StepMixOperacao form={form} updateField={updateField} />}
+          {step === 2 && <StepDadosEmpresa form={form} updateField={updateField} cnpjData={cnpjData} setCnpjData={setCnpjData} errors={errors} setBdcData={(d) => { setBdcData(d); updateField('_bdcQuickData', d); }} />}
+          {step === 3 && <StepEndereco form={form} updateField={updateField} cnpjData={cnpjData} />}
+          {step === 4 && <StepContato form={form} updateField={updateField} errors={errors} />}
+          {step === 5 && <StepModeloNegocio form={form} updateField={updateField} errors={errors} />}
+          {step === 6 && <StepVolumetria form={form} updateField={updateField} errors={errors} />}
+          {step === 7 && <StepDistribuicao form={form} updateField={updateField} errors={errors} />}
+          {step === 8 && <StepTaxasAtuais form={form} updateField={updateField} errors={errors} />}
+          {step === 9 && <StepProcessadorAtual form={form} updateField={updateField} />}
+          {step === 10 && <StepComplianceRisco form={form} updateField={updateField} errors={errors} />}
+          {step === 11 && <StepFechamento form={form} updateField={updateField} errors={errors} />}
         </CardContent>
       </Card>
 

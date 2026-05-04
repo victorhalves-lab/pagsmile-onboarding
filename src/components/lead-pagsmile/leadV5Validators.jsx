@@ -104,6 +104,7 @@ const FIELD_LABELS = {
   feeTransacao: 'Fee por transação',
   custoAntifraude: 'Custo antifraude',
   taxa3ds: 'Taxa 3DS',
+  mixOperacao: 'Composição da operação',
   encerrado: 'Já foi encerrado',
   chargeback: 'Taxa de chargeback',
   medPix: 'Taxa de MED PIX',
@@ -121,7 +122,7 @@ function sumValues(obj) {
   return Object.values(obj).reduce((s, v) => s + (Number(v) || 0), 0);
 }
 
-// ── Validator por etapa (0..10) ──
+// ── Validator por etapa (0..11) ──
 export function validateStepV5(step, form) {
   const out = [];
 
@@ -130,6 +131,36 @@ export function validateStepV5(step, form) {
   }
 
   if (step === 1) {
+    // Composição da Operação — total deve somar 100% (estimado)
+    const mix = form.mixOperacao || {};
+    const fixedTotal =
+      (Number(mix.ecommerce) || 0) +
+      (Number(mix.dropshipping) || 0) +
+      (Number(mix.infoproduto) || 0) +
+      (Number(mix.saas) || 0) +
+      (Number(mix.educacao) || 0);
+    const outros = Array.isArray(mix.outros) ? mix.outros : [];
+    const outrosTotal = outros.reduce((s, o) => s + (Number(o?.percentual) || 0), 0);
+    const total = fixedTotal + outrosTotal;
+
+    if (total !== 100) {
+      out.push(err('mixOperacao', `Composição da operação deve somar 100% (atual: ${total}%)`));
+    }
+    // Cada "Outros" precisa ter nome (mín 2 chars) e percentual > 0
+    for (let i = 0; i < outros.length; i++) {
+      const o = outros[i] || {};
+      const nome = String(o.nome || '').trim();
+      const pct = Number(o.percentual) || 0;
+      if (!nome || nome.length < 2) {
+        out.push(err('mixOperacao', `Categoria "Outros" #${i + 1}: informe o nome`));
+      }
+      if (pct <= 0) {
+        out.push(err('mixOperacao', `Categoria "Outros" #${i + 1}: percentual deve ser maior que zero`));
+      }
+    }
+  }
+
+  if (step === 2) {
     if (!isValidCnpj(form.cnpj)) {
       out.push(err('cnpj', 'CNPJ inválido — confira os dígitos'));
     }
@@ -144,13 +175,13 @@ export function validateStepV5(step, form) {
     }
   }
 
-  if (step === 2) {
+  if (step === 3) {
     if (!form._enderecoConfirmado) {
       out.push(err('_enderecoConfirmado', 'Confirme o endereço antes de prosseguir'));
     }
   }
 
-  if (step === 3) {
+  if (step === 4) {
     if (!isValidEmail(form.email)) {
       out.push(err('email', 'E-mail inválido'));
     }
@@ -167,7 +198,7 @@ export function validateStepV5(step, form) {
     }
   }
 
-  if (step === 4) {
+  if (step === 5) {
     if (!form.modeloCobranca) out.push(err('modeloCobranca'));
     if (!form.descricaoNegocio || form.descricaoNegocio.trim().length < 10) {
       out.push(err('descricaoNegocio', 'Descreva seu negócio (mín. 10 caracteres)'));
@@ -184,7 +215,7 @@ export function validateStepV5(step, form) {
     }
   }
 
-  if (step === 5) {
+  if (step === 6) {
     const tpv = parseFloat(form.tpvMensal) || 0;
     const ticket = parseFloat(form.ticketMedio) || 0;
     if (tpv <= 0) out.push(err('tpvMensal', 'TPV Mensal deve ser maior que zero'));
@@ -193,7 +224,7 @@ export function validateStepV5(step, form) {
     if (!form.funcionarios) out.push(err('funcionarios'));
   }
 
-  if (step === 6) {
+  if (step === 7) {
     if (!form.jaProcessa) {
       out.push(err('jaProcessa', 'Informe se já processa pagamentos'));
     } else if (form.jaProcessa === 'Sim, já processo') {
@@ -213,7 +244,7 @@ export function validateStepV5(step, form) {
     }
   }
 
-  if (step === 7 && form.jaProcessa === 'Sim, já processo') {
+  if (step === 8 && form.jaProcessa === 'Sim, já processo') {
     const dist = form.distribuicao || {};
     const temPix = (dist.pix || 0) > 0;
     const temBoleto = (dist.boleto || 0) > 0;
@@ -232,7 +263,7 @@ export function validateStepV5(step, form) {
     if (!form.taxa3ds) out.push(err('taxa3ds'));
   }
 
-  if (step === 9) {
+  if (step === 10) {
     if (!form.encerrado) out.push(err('encerrado'));
     const jaProcessa = form.jaProcessa === 'Sim, já processo';
     const dist = jaProcessa ? (form.distribuicao || {}) : (form.distribuicaoDesejada || {});
@@ -242,7 +273,7 @@ export function validateStepV5(step, form) {
     if (temPix && !form.medPix) out.push(err('medPix'));
   }
 
-  if (step === 10) {
+  if (step === 11) {
     if (!form.urgencia) out.push(err('urgencia'));
     if (!form.crescimento) out.push(err('crescimento'));
   }
