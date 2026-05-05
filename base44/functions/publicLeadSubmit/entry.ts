@@ -128,6 +128,16 @@ Deno.serve(async (req) => {
       }, { status: 400 });
     }
 
+    // ── BLOQUEIO TPV MÍNIMO: TPV mensal precisa ser >= R$ 50.000.
+    // Garantia server-side caso o frontend seja burlado.
+    const tpvNum = Number(leadPayload.tpvMensal) || 0;
+    if (tpvNum > 0 && tpvNum < 50000) {
+      return Response.json({
+        error: 'TPV mensal abaixo do mínimo aceito (R$ 50.000). Confira se digitou o valor em reais.',
+        code: 'TPV_BELOW_MINIMUM'
+      }, { status: 400 });
+    }
+
     // SECURITY: apply allowlist — only trusted client fields pass through.
     // Sensitive fields (scoring, attribution, IA reports) are derived server-side.
     const safeLeadPayload = sanitizeLeadPayload(leadPayload);
