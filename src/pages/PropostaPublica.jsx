@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   CheckCircle2, XCircle, MessageSquare, Clock, Info,
-  CreditCard, Loader2, AlertTriangle, Shield, Smartphone
+  CreditCard, Loader2, AlertTriangle, Shield, Smartphone, Globe, Settings
 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
@@ -19,6 +19,10 @@ import TaxasPorBandeiraPublic from '@/components/proposals/TaxasPorBandeiraPubli
 import TaxasMaquininhaPublic from '@/components/proposals/TaxasMaquininhaPublic';
 import AluguelEquipamentosPublic from '@/components/proposals/AluguelEquipamentosPublic';
 import ParcelasTableDetalhada from '@/components/proposals/ParcelasTableDetalhada';
+import SectionHeader from '@/components/proposals/public/SectionHeader';
+import CustosOnlinePublic from '@/components/proposals/public/CustosOnlinePublic';
+import PixBoletoPublic from '@/components/proposals/public/PixBoletoPublic';
+import CondicoesGeraisPublic from '@/components/proposals/public/CondicoesGeraisPublic';
 import ExportButtons from '@/components/proposals/ExportButtons';
 import AceiteModal from '@/components/proposals/AceiteModal';
 import ContrapropostaModal from '@/components/proposals/ContrapropostaModal';
@@ -383,171 +387,60 @@ export default function PropostaPublica() {
         </Card>
       </div>
 
-      {/* TPV Mínimo Garantido */}
-      {rates.minimoGarantido && (parseFloat(rates.minimoGarantido.mes1) > 0 || parseFloat(rates.minimoGarantido.mes2) > 0 || parseFloat(rates.minimoGarantido.mes3) > 0) && (
-        <Card className="mb-6 bg-slate-50 border-slate-200">
-          <CardContent className="py-4">
-            <div className="flex items-center gap-2 mb-1">
-              <CreditCard className="w-5 h-5 text-[#002443]/60" />
-              <h2 className="font-bold text-base text-[#002443]">{t('pp.min_tpv')}</h2>
-            </div>
-            <p className="text-[11px] text-[#002443]/40 mb-4 ml-7">Volume mínimo mensal em cartão de crédito/débito</p>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-white p-3 rounded-lg border border-slate-200 text-center">
-                <p className="text-xs text-[#002443]/50 uppercase font-semibold mb-1">{t('pp.month1')}</p>
-                <p className="font-bold text-[#002443]">
-                  R$ {(parseFloat(rates.minimoGarantido.mes1) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2})}
-                </p>
-              </div>
-              <div className="bg-white p-3 rounded-lg border border-slate-200 text-center">
-                <p className="text-xs text-[#002443]/50 uppercase font-semibold mb-1">{t('pp.month2')}</p>
-                <p className="font-bold text-[#002443]">
-                  R$ {(parseFloat(rates.minimoGarantido.mes2) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2})}
-                </p>
-              </div>
-              <div className="bg-white p-3 rounded-lg border border-[#2bc196]/40 text-center shadow-sm relative overflow-hidden">
-                <div className="absolute inset-0 bg-[#2bc196]/5 pointer-events-none" />
-                <p className="text-xs text-[#2bc196] uppercase font-semibold mb-1">{t('pp.month3_plus')}</p>
-                <p className="font-bold text-[#2bc196]">
-                  R$ {(parseFloat(rates.minimoGarantido.mes3) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2})}
-                </p>
-              </div>
-            </div>
-            <p className="text-xs text-[#002443]/50 mt-3 text-center">
-              {t('pp.min_tpv_note')}
-            </p>
-            <div className="mt-3 bg-[#2bc196]/5 border border-[#2bc196]/20 rounded-xl px-4 py-3">
-              <p className="text-xs text-[#002443]/70 text-center leading-relaxed">
-                {t('pp.min_tpv_pix_incentive')}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      {/* ═════════════════════════════════════════════════════════════
+           ZONA 1 — PAGAMENTOS ONLINE (E-commerce)
+           Taxas + parcelas + custos por transação que SÓ incidem online.
+           ═════════════════════════════════════════════════════════════ */}
+      <SectionHeader
+        icon={Globe}
+        title="Pagamentos Online"
+        subtitle="Taxas e custos aplicados em vendas processadas pelo checkout, link de pagamento ou e-commerce."
+        variant="online"
+      />
 
-      {/* Taxas por Bandeira — ONLINE / E-COMMERCE */}
-      <Card className="mb-6">
+      {/* Taxas por Bandeira — Crédito Online */}
+      <Card className="mb-4">
         <CardContent className="py-4">
-          <h2 className="font-bold text-base text-[#002443] mb-1 flex items-center gap-2">
-            <CreditCard className="w-5 h-5 text-[#2bc196]" />
+          <h3 className="font-bold text-sm text-[#002443] mb-3 uppercase tracking-wide flex items-center gap-2">
+            <CreditCard className="w-4 h-4 text-[#2bc196]" />
             {t('pp.credit_card_rates')}
-            {rates.usaMaquininha && (
-              <span className="ml-2 text-[10px] font-semibold uppercase tracking-wide text-[#002443]/40">Online / E-commerce</span>
-            )}
-          </h2>
+          </h3>
           <TaxasPorBandeiraPublic taxas={rates} hideRange13a21={proposta.hideRange13a21 || false} />
         </CardContent>
       </Card>
 
-      {/* Taxas MAQUININHA — só se proposta tiver processamento presencial */}
-      {rates.usaMaquininha && rates.maquininha && (
-        <Card className="mb-6 border-[#2bc196]/30 bg-[#2bc196]/[0.02]">
-          <CardContent className="py-4">
-            <h2 className="font-bold text-base text-[#002443] mb-1 flex items-center gap-2">
-              <Smartphone className="w-5 h-5 text-[#2bc196]" />
-              Taxas Maquininha
-              <span className="ml-2 text-[10px] font-semibold uppercase tracking-wide text-[#002443]/40">Presencial / POS</span>
-            </h2>
-            <p className="text-[11px] text-[#002443]/40 mb-4">Taxas aplicadas em transações presenciais com maquininha (POS)</p>
-            <TaxasMaquininhaPublic maquininha={rates.maquininha} />
-            <AluguelEquipamentosPublic alugueis={rates.maquininha?.alugueis} />
-          </CardContent>
-        </Card>
-      )}
+      {/* Tabela de Parcelas Detalhada */}
+      <Card className="mb-4">
+        <CardContent className="py-4">
+          <h3 className="font-bold text-sm text-[#002443] mb-3 uppercase tracking-wide">
+            {t('pp.installment_table')}
+          </h3>
+          <ParcelasTableDetalhada taxas={rates} taxaRAV={taxaRAV} prazo={prazo} showSimulator={!proposta.hideCalculationColumns} taxaFinalOverrides={proposta.taxaFinalOverrides || {}} hideCalculationColumns={proposta.hideCalculationColumns || false} hideRange13a21={proposta.hideRange13a21 || false} />
+        </CardContent>
+      </Card>
 
-      {/* Outros Métodos */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-        <Card>
-          <CardContent className="py-4 text-center flex flex-col justify-center h-full">
-            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">PIX</p>
-            <p className="text-lg font-bold text-[#2bc196]">
-              {rates.pix?.tipo === 'fixo'
-                ? `R$ ${(parseFloat(rates.pix?.valor) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
-                : `${(parseFloat(rates.pix?.valor) || 0).toFixed(2).replace('.', ',')}%`}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="py-4 text-center flex flex-col justify-center h-full">
-            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">BOLETO</p>
-            <p className="text-lg font-bold text-[#002443]">
-              R$ {(parseFloat(rates.boleto) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="py-4 text-center flex flex-col justify-center h-full">
-            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">{t('pp.transaction_fee')}</p>
-            <p className="text-lg font-bold text-[#002443]">
-              R$ {(parseFloat(rates.feeTransacao) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="py-4 text-center flex flex-col justify-center h-full">
-            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">ANTIFRAUDE</p>
-            <p className="text-lg font-bold text-[#002443]">
-              R$ {(parseFloat(rates.antifraude) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="py-4 text-center flex flex-col justify-center h-full">
-            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">3DS</p>
-            <p className="text-lg font-bold text-[#002443]">
-              R$ {(parseFloat(rates.taxa3ds) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="py-4 text-center flex flex-col justify-center h-full">
-            <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">{t('pp.pre_chargeback')}</p>
-            <p className="text-lg font-bold text-[#002443]">
-              R$ {(parseFloat(rates.alertaPreChargeback) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-            </p>
-          </CardContent>
-        </Card>
-        {(parseFloat(rates.setup) || 0) > 0 && (
-          <Card>
-            <CardContent className="py-4 text-center flex flex-col justify-center h-full">
-              <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">SETUP</p>
-              <p className="text-lg font-bold text-[#002443]">
-                R$ {(parseFloat(rates.setup) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-              </p>
-            </CardContent>
-          </Card>
-        )}
-        {(parseFloat(rates.forex) || 0) > 0 && (
-          <Card className="border-amber-200 bg-amber-50/50">
-            <CardContent className="py-4 text-center flex flex-col justify-center h-full">
-              <p className="text-xs text-[#002443]/50 mb-1 uppercase font-semibold">{t('pp.forex_rate')}</p>
-              <p className="text-lg font-bold text-amber-600">
-                {(parseFloat(rates.forex) || 0).toFixed(2).replace('.', ',')}%
-              </p>
-            </CardContent>
-          </Card>
-        )}
-      </div>
+      {/* Custos adicionais por transação online */}
+      <CustosOnlinePublic rates={rates} />
 
-      {/* Prazo + Antecipação + Volume */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+      {/* Prazo + Antecipação + Volume (vinculados a online) */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
         <Card>
           <CardContent className="py-5 text-center">
             <p className="text-xs text-[#002443]/50 mb-2 uppercase font-semibold tracking-wide">{t('pp.receiving_term')}</p>
-            <p className="text-xl font-bold text-[#002443]">{prazo}</p>
+            <p className="text-xl font-bold text-[#002443] font-mono">{prazo}</p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="py-5 text-center">
             <p className="text-xs text-[#002443]/50 mb-2 uppercase font-semibold tracking-wide">{t('pp.anticipation_rate')}</p>
-            <p className="text-xl font-bold text-amber-600">{taxaRAV}% a.m.</p>
-            <p className="text-[10px] text-amber-600/80 mt-2">* Sujeito à aprovação de Compliance</p>
+            <p className="text-xl font-bold text-[#36706c] font-mono">{taxaRAV}% a.m.</p>
+            <p className="text-[10px] text-[#002443]/50 mt-2">* Sujeito à aprovação de Compliance</p>
           </CardContent>
         </Card>
         <Card className="border-[#2bc196]/30 bg-[#2bc196]/5">
           <CardContent className="py-5 text-center">
             <p className="text-xs text-[#002443]/50 mb-2 uppercase font-semibold tracking-wide">Volume Antecipado</p>
-            <p className="text-xl font-bold text-[#2bc196]">
+            <p className="text-xl font-bold text-[#2bc196] font-mono">
               {parseFloat(rates.percentualAntecipacao) > 0 ? `${parseFloat(rates.percentualAntecipacao)}%` : '—'}
             </p>
             <p className="text-[10px] text-[#002443]/40 mt-2">do TPV processado</p>
@@ -555,25 +448,51 @@ export default function PropostaPublica() {
         </Card>
       </div>
 
-      {/* Disclaimer: 100% antecipação está sujeita à análise de Compliance */}
       {parseFloat(rates.percentualAntecipacao) >= 100 && (
-        <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 flex items-start gap-3">
-          <Info className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
-          <p className="text-xs text-amber-800 leading-relaxed">
+        <div className="mb-8 rounded-xl border border-[#2bc196]/30 bg-[#2bc196]/5 px-4 py-3 flex items-start gap-3">
+          <Info className="w-4 h-4 text-[#36706c] mt-0.5 flex-shrink-0" />
+          <p className="text-xs text-[#002443]/80 leading-relaxed">
             <span className="font-semibold">Importante:</span> caso existam subcontas/subsellers, a antecipação de 100% do TPV dependerá do resultado da análise de Compliance de cada subconta/subseller.
           </p>
         </div>
       )}
 
-      {/* Tabela de Parcelas */}
-      <Card className="mb-8">
-        <CardContent className="py-4">
-          <h2 className="font-bold text-base text-[#002443] mb-4">
-            {t('pp.installment_table')}
-          </h2>
-          <ParcelasTableDetalhada taxas={rates} taxaRAV={taxaRAV} prazo={prazo} showSimulator={!proposta.hideCalculationColumns} taxaFinalOverrides={proposta.taxaFinalOverrides || {}} hideCalculationColumns={proposta.hideCalculationColumns || false} hideRange13a21={proposta.hideRange13a21 || false} />
-        </CardContent>
-      </Card>
+      {/* ═════════════════════════════════════════════════════════════
+           ZONA 2 — PAGAMENTOS PRESENCIAIS (Maquininha / POS)
+           Só renderiza se a proposta tiver maquininha ativada.
+           NÃO incidem fee transação, antifraude, 3DS ou pré-chargeback.
+           ═════════════════════════════════════════════════════════════ */}
+      {rates.usaMaquininha && rates.maquininha && (
+        <>
+          <SectionHeader
+            icon={Smartphone}
+            title="Pagamentos Presenciais (Maquininha)"
+            subtitle="Taxas aplicadas em transações presenciais com POS. Sem fee por transação, antifraude, 3DS ou alerta pré-chargeback — esses custos só incidem em vendas online."
+            variant="presencial"
+          />
+          <Card className="mb-4">
+            <CardContent className="py-4">
+              <h3 className="font-bold text-sm text-[#002443] mb-3 uppercase tracking-wide">Taxas por Bandeira (POS)</h3>
+              <TaxasMaquininhaPublic maquininha={rates.maquininha} />
+              <AluguelEquipamentosPublic alugueis={rates.maquininha?.alugueis} />
+            </CardContent>
+          </Card>
+        </>
+      )}
+
+      {/* ═════════════════════════════════════════════════════════════
+           ZONA 3 — OUTROS SERVIÇOS E CONDIÇÕES
+           PIX, Boleto e condições comerciais gerais.
+           ═════════════════════════════════════════════════════════════ */}
+      <SectionHeader
+        icon={Settings}
+        title="Outros Serviços e Condições"
+        subtitle="PIX, Boleto e condições comerciais gerais aplicáveis ao contrato."
+        variant="outros"
+      />
+
+      <PixBoletoPublic rates={rates} />
+      <CondicoesGeraisPublic rates={rates} />
 
       <div className="mb-8">
         <InternationalPaymentsBanner />

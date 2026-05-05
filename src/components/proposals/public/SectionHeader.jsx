@@ -1,0 +1,58 @@
+import React from 'react';
+
+/**
+ * Header de zona da proposta pública (paleta Pagsmile oficial).
+ *
+ * variant:
+ *  - 'online'     → fundo gradiente azul→verde escuro Pagsmile (autoridade, canal principal)
+ *  - 'presencial' → fundo verde Pagsmile principal (tátil, físico)
+ *  - 'outros'     → fundo cinza Pagsmile com borda verde (neutro, condições gerais)
+ *
+ * Uso: bloco visual que separa as 3 zonas da proposta pública.
+ */
+export default function SectionHeader({ icon: Icon, title, subtitle, variant = 'online' }) {
+  const variants = {
+    online: {
+      wrapper: 'bg-gradient-to-r from-[#002443] to-[#36706c]',
+      iconBox: 'bg-[#5cf7cf]/20',
+      iconColor: 'text-[#5cf7cf]',
+      titleColor: 'text-white',
+      subtitleColor: 'text-white/70',
+    },
+    presencial: {
+      wrapper: 'bg-[#2bc196]',
+      iconBox: 'bg-white/25',
+      iconColor: 'text-white',
+      titleColor: 'text-white',
+      subtitleColor: 'text-white/85',
+    },
+    outros: {
+      wrapper: 'bg-[#f4f4f4] border border-[#2bc196]/20',
+      iconBox: 'bg-[#2bc196]/15',
+      iconColor: 'text-[#36706c]',
+      titleColor: 'text-[#002443]',
+      subtitleColor: 'text-[#002443]/70',
+    },
+  };
+  const v = variants[variant] || variants.online;
+
+  return (
+    <div className={`rounded-2xl p-5 md:p-6 mb-4 flex items-start gap-4 shadow-sm ${v.wrapper}`}>
+      {Icon && (
+        <div className={`w-11 h-11 rounded-xl flex-shrink-0 flex items-center justify-center ${v.iconBox}`}>
+          <Icon className={`w-5 h-5 ${v.iconColor}`} />
+        </div>
+      )}
+      <div className="flex-1 min-w-0">
+        <h2 className={`text-lg md:text-xl font-bold ${v.titleColor} leading-tight`}>
+          {title}
+        </h2>
+        {subtitle && (
+          <p className={`text-xs md:text-sm mt-1 leading-relaxed ${v.subtitleColor}`}>
+            {subtitle}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}

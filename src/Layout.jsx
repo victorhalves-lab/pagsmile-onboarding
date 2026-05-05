@@ -221,11 +221,13 @@ export default function Layout({ children, currentPageName }) {
     return (
       <div className="min-h-screen font-sans antialiased bg-[#f4f4f4]">
         <style>{`
-          @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
           :root {
             --pagsmile-green: #2bc196; --pagsmile-green-light: #5cf7cf;
             --pagsmile-blue: #002443; --pagsmile-blue-light: #003366;
-            --pagsmile-gray: #f4f4f4; --font-sans: 'Plus Jakarta Sans', sans-serif;
+            --pagsmile-green-dark: #36706c;
+            --pagsmile-gray: #f4f4f4; --pagsmile-text: #282828;
+            --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
             --foreground: #002443; --primary: #2bc196; --primary-foreground: #ffffff;
             --secondary: #002443; --secondary-foreground: #ffffff;
             --muted: #f4f4f4; --muted-foreground: #002443;
@@ -405,11 +407,13 @@ export default function Layout({ children, currentPageName }) {
     <TooltipProvider>
       <div className="min-h-screen bg-[#f4f4f4] flex font-sans">
         <style>{`
-          @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
           :root {
             --pagsmile-green: #2bc196; --pagsmile-green-light: #5cf7cf;
             --pagsmile-blue: #002443; --pagsmile-blue-light: #003366;
-            --pagsmile-gray: #f4f4f4; --font-sans: 'Plus Jakarta Sans', sans-serif;
+            --pagsmile-green-dark: #36706c;
+            --pagsmile-gray: #f4f4f4; --pagsmile-text: #282828;
+            --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+            --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
           }
           body { font-family: var(--font-sans); color: var(--pagsmile-blue); }
         `}</style>
