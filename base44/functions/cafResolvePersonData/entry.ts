@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
+import { createClientFromRequest, createClient } from 'npm:@base44/sdk@0.8.25';
 
 /**
  * cafResolvePersonData — Resolve CPF + Nome do representante legal em cascata, 
@@ -24,7 +24,19 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 Deno.serve(async (req) => {
   try {
-    const base44 = createClientFromRequest(req);
+    // ── PUBLIC ENDPOINT ──
+    // Same fix as cafLogSdkError: createClientFromRequest crashes 401 for anonymous
+    // public-onboarding visitors. We only use asServiceRole + docLinkToken auth, so
+    // fallback to anonymous client when there is no bearer token.
+    let base44;
+    try {
+      base44 = createClientFromRequest(req);
+    } catch {
+      base44 = createClient({
+        appId: Deno.env.get('BASE44_APP_ID'),
+        requiresAuth: false,
+      });
+    }
     const body = await req.json();
     const { onboardingCaseId, docLinkToken } = body;
 

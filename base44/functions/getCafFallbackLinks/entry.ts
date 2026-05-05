@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
+import { createClientFromRequest, createClient } from 'npm:@base44/sdk@0.8.25';
 
 /**
  * getCafFallbackLinks — Retorna os links CAF cadastro.io por modelo de compliance.
@@ -27,7 +27,18 @@ const DEFAULT_LINKS = {
 
 Deno.serve(async (req) => {
   try {
-    const base44 = createClientFromRequest(req);
+    // ── PUBLIC ENDPOINT ──
+    // Anonymous public-onboarding clients call this; createClientFromRequest 401's
+    // without a bearer token. Fallback to anonymous client (we only read configs).
+    let base44;
+    try {
+      base44 = createClientFromRequest(req);
+    } catch {
+      base44 = createClient({
+        appId: Deno.env.get('BASE44_APP_ID'),
+        requiresAuth: false,
+      });
+    }
 
     // Busca overrides em ComplianceConfig
     const configs = await base44.asServiceRole.entities.ComplianceConfig.filter({

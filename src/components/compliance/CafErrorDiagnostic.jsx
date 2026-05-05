@@ -322,10 +322,13 @@ export default function CafErrorDiagnostic({
           </Button>
         )}
 
-        {/* Fallback CAF onboarding oficial (cadastro.io) — aparece na 2ª falha técnica.
+        {/* Fallback CAF onboarding oficial (cadastro.io) — aparece JÁ NA 1ª falha.
+             Decisão tomada após análise do caso Prime Cash (5/Mai/2026): cliente fez
+             5 tentativas sem nunca ver este link porque attemptCount é resetado a cada
+             sessão. A regra `>= 2` escondia a única alternativa que destrava o cliente.
              Vínculo ao cliente via externalId = onboardingCaseId (query param).
              ⚠️ Aviso destacado: compliance só é aprovado após conclusão completa. */}
-        {cafFallbackUrl && attemptCount >= 2 && (
+        {cafFallbackUrl && (
           <div className="rounded-xl border-2 border-[#002443] bg-gradient-to-br from-[#002443]/5 to-[#2bc196]/5 p-4 space-y-3">
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-[#002443] flex items-center justify-center">

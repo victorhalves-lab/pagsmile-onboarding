@@ -183,7 +183,20 @@ export default function CafVerificationStep({
   const [docResults, setDocResults] = useState({ front: null, back: null });
   const [livenessResult, setLivenessResult] = useState(null);
   const [savedResults, setSavedResults] = useState({ front: false, back: false, liveness: false });
-  const [retryCount, setRetryCount] = useState(0);
+  // Persist retryCount cross-session per onboardingCaseId.
+  // Without this, a client who reloads the page or reopens the link starts back at 0
+  // and the error UI behaves as if it's the first attempt — masking the real cumulative
+  // failure count from our diagnostics and (previously) hiding the CAF fallback link.
+  const retryCountStorageKey = onboardingCaseId ? `caf_retry_count_${onboardingCaseId}` : null;
+  const [retryCount, setRetryCount] = useState(() => {
+    if (!retryCountStorageKey || typeof localStorage === 'undefined') return 0;
+    const saved = parseInt(localStorage.getItem(retryCountStorageKey) || '0', 10);
+    return Number.isFinite(saved) ? saved : 0;
+  });
+  useEffect(() => {
+    if (!retryCountStorageKey || typeof localStorage === 'undefined') return;
+    try { localStorage.setItem(retryCountStorageKey, String(retryCount)); } catch {}
+  }, [retryCount, retryCountStorageKey]);
   const [livenessAttempts, setLivenessAttempts] = useState(0);
   const [showDifficultyModal, setShowDifficultyModal] = useState(false);
   const [manualFallback, setManualFallback] = useState(false);

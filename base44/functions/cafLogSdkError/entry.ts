@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
+import { createClientFromRequest, createClient } from 'npm:@base44/sdk@0.8.25';
 
 /**
  * cafLogSdkError — Registra TODO erro do SDK CAF (frontend) no IntegrationLog.
@@ -22,7 +22,21 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 Deno.serve(async (req) => {
   try {
-    const base44 = createClientFromRequest(req);
+    // ── PUBLIC ENDPOINT ──
+    // The onboarding flow runs unauthenticated. createClientFromRequest crashes with 401
+    // for anonymous users (it tries to fetch /users/me to validate the bearer token,
+    // which doesn't exist). We only need asServiceRole here, so use createClient
+    // with requiresAuth:false and fall back to createClientFromRequest only if it
+    // succeeds (so authenticated admin testing still works).
+    let base44;
+    try {
+      base44 = createClientFromRequest(req);
+    } catch {
+      base44 = createClient({
+        appId: Deno.env.get('BASE44_APP_ID'),
+        requiresAuth: false,
+      });
+    }
     const body = await req.json();
     const { 
       onboardingCaseId, 
