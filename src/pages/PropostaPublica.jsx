@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   CheckCircle2, XCircle, MessageSquare, Clock, Info,
-  CreditCard, Loader2, AlertTriangle, Shield, Smartphone, Globe, Settings, Calculator
+  CreditCard, Loader2, AlertTriangle, Shield, Smartphone, Globe, Settings, Store
 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
@@ -465,7 +465,7 @@ export default function PropostaPublica() {
       {rates.usaMaquininha && rates.maquininha && (
         <>
           <SectionHeader
-            icon={Calculator}
+            icon={Store}
             title="Pagamentos Presenciais (Maquininha)"
             subtitle="Taxas aplicadas em transações presenciais com POS. Sem fee por transação, antifraude, 3DS ou alerta pré-chargeback — esses custos só incidem em vendas online."
             variant="presencial"
