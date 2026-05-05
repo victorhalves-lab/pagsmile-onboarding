@@ -61,7 +61,14 @@ export default function CriarProposta() {
     // Maquininha (POS presencial) só existe se "Processamento com maquininha" estiver ativo.
     // Tem taxas próprias, distintas das taxas online: crédito (1x, 2-6x, 7-12x) + débito por bandeira.
     usaMaquininha: false,
-    maquininha: { credito: {}, debito: {} },
+    maquininha: {
+      credito: {},
+      debito: {},
+      alugueis: {
+        posComum: { valor: '', isencaoAtiva: false, faturamentoMinimoIsencao: '' },
+        smartPos: { valor: '' },
+      },
+    },
   });
 
   const usePriscila = urlParams.get('usePriscila') === '1';
@@ -98,7 +105,19 @@ export default function CriarProposta() {
       forex: r.forex ?? '',
       minimoGarantido: typeof r.minimoGarantido === 'object' ? r.minimoGarantido : { mes1: r.minimoGarantido ?? '', mes2: r.minimoGarantido ?? '', mes3: r.minimoGarantido ?? '' },
       usaMaquininha: hasMaquininha,
-      maquininha: hasMaquininha ? { credito: r.maquininha.credito || {}, debito: r.maquininha.debito || {} } : { credito: {}, debito: {} },
+      maquininha: hasMaquininha
+        ? {
+            credito: r.maquininha.credito || {},
+            debito: r.maquininha.debito || {},
+            alugueis: {
+              posComum: r.maquininha.alugueis?.posComum || { valor: '', isencaoAtiva: false, faturamentoMinimoIsencao: '' },
+              smartPos: r.maquininha.alugueis?.smartPos || { valor: '' },
+            },
+          }
+        : {
+            credito: {}, debito: {},
+            alugueis: { posComum: { valor: '', isencaoAtiva: false, faturamentoMinimoIsencao: '' }, smartPos: { valor: '' } },
+          },
     });
     toast.success(t('criar_prop.rates_copied'));
   };
@@ -176,7 +195,19 @@ export default function CriarProposta() {
         taxa3ds: r.taxa3ds || '', setup: r.setup || '', forex: r.forex || '',
         minimoGarantido: typeof r.minimoGarantido === 'object' ? r.minimoGarantido : { mes1: r.minimoGarantido || '', mes2: r.minimoGarantido || '', mes3: r.minimoGarantido || '' },
         usaMaquininha: hasMaquininha,
-        maquininha: hasMaquininha ? { credito: r.maquininha.credito || {}, debito: r.maquininha.debito || {} } : { credito: {}, debito: {} },
+        maquininha: hasMaquininha
+          ? {
+              credito: r.maquininha.credito || {},
+              debito: r.maquininha.debito || {},
+              alugueis: {
+                posComum: r.maquininha.alugueis?.posComum || { valor: '', isencaoAtiva: false, faturamentoMinimoIsencao: '' },
+                smartPos: r.maquininha.alugueis?.smartPos || { valor: '' },
+              },
+            }
+          : {
+              credito: {}, debito: {},
+              alugueis: { posComum: { valor: '', isencaoAtiva: false, faturamentoMinimoIsencao: '' }, smartPos: { valor: '' } },
+            },
       });
       if (existingProposal.chosenPartnerId) {
         setSelectedPartnerId(existingProposal.chosenPartnerId);
@@ -261,7 +292,19 @@ export default function CriarProposta() {
         };
         mqDebito[b] = parseTaxa(rates.maquininha?.debito?.[b]);
       });
-      maquininhaPayload = { credito: mqCredito, debito: mqDebito };
+      // Aluguel de equipamentos (POS Comum + Smart POS)
+      const al = rates.maquininha?.alugueis || {};
+      const alugueisPayload = {
+        posComum: {
+          valor: parseTaxa(al.posComum?.valor),
+          isencaoAtiva: !!al.posComum?.isencaoAtiva,
+          faturamentoMinimoIsencao: al.posComum?.isencaoAtiva ? parseTaxa(al.posComum?.faturamentoMinimoIsencao) : 0,
+        },
+        smartPos: {
+          valor: parseTaxa(al.smartPos?.valor),
+        },
+      };
+      maquininhaPayload = { credito: mqCredito, debito: mqDebito, alugueis: alugueisPayload };
     }
     let criadoPor = 'sistema';
     let criadoPorNome = 'sistema';

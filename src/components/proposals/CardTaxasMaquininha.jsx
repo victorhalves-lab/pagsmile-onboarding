@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Smartphone, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import TaxaInput from './TaxaInput';
+import AluguelEquipamentosBlock from './AluguelEquipamentosBlock';
 
 const BANDEIRAS = [
   { id: 'mastercard', label: 'Master', color: '#EB001B', secondColor: '#F79E1B' },
@@ -164,6 +165,13 @@ export default function CardTaxasMaquininha({
               </div>
             </div>
           </div>
+
+          {/* Aluguel de Equipamentos */}
+          <AluguelEquipamentosBlock
+            alugueis={maquininha?.alugueis || {}}
+            onUpdateAlugueis={(newAlugueis) => onUpdateMaquininha({ ...maquininha, alugueis: newAlugueis })}
+            readOnly={readOnly}
+          />
 
           {/* Actions */}
           {!readOnly && (

@@ -17,6 +17,7 @@ import moment from 'moment';
 import { formatCNPJ } from '@/components/proposals/CnpjInput';
 import TaxasPorBandeiraPublic from '@/components/proposals/TaxasPorBandeiraPublic';
 import TaxasMaquininhaPublic from '@/components/proposals/TaxasMaquininhaPublic';
+import AluguelEquipamentosPublic from '@/components/proposals/AluguelEquipamentosPublic';
 import ParcelasTableDetalhada from '@/components/proposals/ParcelasTableDetalhada';
 import ExportButtons from '@/components/proposals/ExportButtons';
 import AceiteModal from '@/components/proposals/AceiteModal';
@@ -449,6 +450,7 @@ export default function PropostaPublica() {
             </h2>
             <p className="text-[11px] text-[#002443]/40 mb-4">Taxas aplicadas em transações presenciais com maquininha (POS)</p>
             <TaxasMaquininhaPublic maquininha={rates.maquininha} />
+            <AluguelEquipamentosPublic alugueis={rates.maquininha?.alugueis} />
           </CardContent>
         </Card>
       )}
