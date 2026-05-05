@@ -209,6 +209,12 @@ export default function CafVerificationStep({
   const didCaptureAnythingRef = useRef(false);
   const abandonLoggedRef = useRef(false);
 
+  // 🛡️ Throttle: evita que cliques rápidos em "Iniciar/Tentar" disparem N chamadas a cafGenerateToken
+  // Sem isso, um usuário em loop de erro pode gerar 100+ session-tokens (visto em 2026-05-05 com 465 attempts).
+  // Mínimo 4s entre chamadas — invisível para usuário humano normal, bloqueia loops automáticos.
+  const lastStartAtRef = useRef(0);
+  const MIN_START_INTERVAL_MS = 4000;
+
   const docLinkToken = (typeof localStorage !== 'undefined' && localStorage.getItem('created_doc_link_token')) || undefined;
 
   // Carrega overrides de links do admin (se houver)
@@ -287,6 +293,14 @@ export default function CafVerificationStep({
   //  2) Se backend achou CPF confiável, passa pro cafGenerateToken que tenta criar person real
   //  3) Token volta com tokenType='session' (canUseFaceAuth=true) OU 'fallback' (face auth OFF)
   const startVerification = useCallback(async () => {
+    // 🛡️ Throttle anti-flood: bloqueia cliques rápidos consecutivos
+    const sinceLast = Date.now() - lastStartAtRef.current;
+    if (sinceLast < MIN_START_INTERVAL_MS) {
+      console.warn(`[CAF] startVerification throttled (sinceLast=${sinceLast}ms < ${MIN_START_INTERVAL_MS}ms)`);
+      return;
+    }
+    lastStartAtRef.current = Date.now();
+
     setLoading(true);
     setError(null);
     setErrorName(null);
@@ -712,10 +726,17 @@ export default function CafVerificationStep({
 
   // ── Smart retry: skip already-completed steps ──
   const handleRetry = () => {
+    // 🛡️ Throttle anti-flood: bloqueia cliques rápidos consecutivos em "Tentar novamente"
+    const sinceLast = Date.now() - lastStartAtRef.current;
+    if (sinceLast < MIN_START_INTERVAL_MS) {
+      console.warn(`[CAF] handleRetry throttled (sinceLast=${sinceLast}ms < ${MIN_START_INTERVAL_MS}ms)`);
+      return;
+    }
+
     setError(null);
     setRetryCount(prev => prev + 1);
 
-    // If docs already saved, skip directly to liveness prep
+    // If docs already saved, skip directly to liveness prep (NO new token request needed)
     if (savedResults.front && savedResults.back && sdkToken) {
       setPhase('liveness_prep');
       return;
