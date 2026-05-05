@@ -218,7 +218,11 @@ export function validateStepV5(step, form) {
   if (step === 6) {
     const tpv = parseFloat(form.tpvMensal) || 0;
     const ticket = parseFloat(form.ticketMedio) || 0;
-    if (tpv <= 0) out.push(err('tpvMensal', 'TPV Mensal deve ser maior que zero'));
+    if (tpv <= 0) {
+      out.push(err('tpvMensal', 'TPV Mensal deve ser maior que zero'));
+    } else if (tpv < 50000) {
+      out.push(err('tpvMensal', 'Só aceitamos TPV mensal acima de R$ 50.000 — confira se digitou o valor em reais'));
+    }
     if (ticket <= 0) out.push(err('ticketMedio', 'Ticket Médio deve ser maior que zero'));
     if (!form.faturamentoAnual) out.push(err('faturamentoAnual'));
     if (!form.funcionarios) out.push(err('funcionarios'));

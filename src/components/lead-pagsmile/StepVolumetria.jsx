@@ -28,12 +28,31 @@ export default function StepVolumetria({ form, updateField, errors }) {
       </div>
 
       {/* P15 — TPV Mensal */}
-      <div className="space-y-1" data-field="tpvMensal">
-        <label className="text-sm font-semibold text-[#002443]">TPV Mensal (R$) *</label>
-        <CurrencyNumberInput value={form.tpvMensal} onChange={(v) => updateField('tpvMensal', v)} placeholder="150.000" hasError={errors?.tpvMensal} />
-        <p className="text-[10px] text-[#002443]/40">Volume total de pagamentos processados por mês</p>
-        {errors?.tpvMensal && <p className="text-xs text-red-500">TPV Mensal deve ser maior que zero</p>}
-      </div>
+      {(() => {
+        const tpvNum = parseFloat(form.tpvMensal) || 0;
+        const tooLow = tpvNum > 0 && tpvNum < 50000;
+        return (
+          <div className="space-y-1" data-field="tpvMensal">
+            <label className="text-sm font-semibold text-[#002443]">TPV Mensal (R$) *</label>
+            <CurrencyNumberInput
+              value={form.tpvMensal}
+              onChange={(v) => updateField('tpvMensal', v)}
+              placeholder="150.000"
+              hasError={errors?.tpvMensal || tooLow}
+            />
+            <div className="rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 text-[11px] text-amber-900 leading-relaxed">
+              ⚠️ <strong>Atenção:</strong> informe o valor em <strong>reais</strong> (ex: <strong>R$ 150.000</strong>, não <strong>150</strong>). Aceitamos apenas TPV mensal a partir de <strong>R$ 50.000</strong>.
+            </div>
+            <p className="text-[10px] text-[#002443]/40">Volume total de pagamentos processados por mês</p>
+            {tooLow && (
+              <p className="text-xs text-red-500 font-medium">
+                Só aceitamos TPV mensal acima de R$ 50.000. Confira se digitou o valor completo (em reais).
+              </p>
+            )}
+            {errors?.tpvMensal && !tooLow && <p className="text-xs text-red-500">TPV Mensal deve ser maior que zero</p>}
+          </div>
+        );
+      })()}
 
       {/* P15.1 — Faturamento Anual (NOVO v5.0) */}
       <div className="space-y-2" data-field="faturamentoAnual">
