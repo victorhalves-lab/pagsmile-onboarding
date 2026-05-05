@@ -11,6 +11,7 @@ import moment from 'moment';
 import TaxasPorBandeiraPublic from '@/components/proposals/TaxasPorBandeiraPublic';
 import ParcelasTableDetalhada from '@/components/proposals/ParcelasTableDetalhada';
 import ExportButtons from '@/components/proposals/ExportButtons';
+import DownloadPdfButton from '@/components/proposals/DownloadPdfButton';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 import SEGMENT_TO_COMPLIANCE from '@/components/fechamento/segmentComplianceMap';
 import InternationalPaymentsBanner from '@/components/landing/InternationalPaymentsBanner';
@@ -99,7 +100,16 @@ export default function PropostaPadraoPublica() {
           <h1 className="text-2xl font-bold text-[#002443]">{t('spp.commercial_proposal')}</h1>
           <p className="text-[#002443]/60 text-sm">{t('spp.online_rates')} — {proposta.segment}</p>
         </div>
-        <ExportButtons contentRef={propostaContentRef} />
+        <div className="flex items-center gap-2">
+          <DownloadPdfButton
+            type="standard_proposal"
+            token={proposta.tokenPublico}
+            slug={proposta.publicSlug}
+            codigo={proposta.codigo}
+            publicMode
+          />
+          <ExportButtons contentRef={propostaContentRef} />
+        </div>
       </div>
 
       {/* Dados da Empresa */}

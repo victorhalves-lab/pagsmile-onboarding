@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import moment from 'moment';
 import PropostaRevisaoResumo from '@/components/proposals/PropostaRevisaoResumo';
 import RentabilidadeDrawer from '@/components/proposals/RentabilidadeDrawer';
+import DownloadPdfButton from '@/components/proposals/DownloadPdfButton';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 const STATUS_CONFIG = {
@@ -149,8 +150,13 @@ export default function PropostaPadraoDetalhes() {
         </div>
       ) : null}
 
-      {/* Botão Rentabilidade */}
-      <div className="flex justify-end">
+      {/* Botão Rentabilidade + Download PDF */}
+      <div className="flex justify-end gap-2">
+        <DownloadPdfButton
+          type="standard_proposal"
+          proposalId={proposta.id}
+          codigo={proposta.codigo}
+        />
         <Button onClick={() => setShowRentabilidade(true)} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white gap-2 rounded-xl shadow-md">
           <DollarSign className="w-4 h-4" /> {t('pd.simulate_profitability')}
         </Button>

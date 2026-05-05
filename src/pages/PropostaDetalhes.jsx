@@ -16,6 +16,7 @@ import PropostaRevisaoResumo from '@/components/proposals/PropostaRevisaoResumo'
 import PropostaRevisaoLink from '@/components/proposals/PropostaRevisaoLink';
 import RentabilidadeDrawer from '@/components/proposals/RentabilidadeDrawer';
 import ExtendValidityModal from '@/components/proposals/ExtendValidityModal';
+import DownloadPdfButton from '@/components/proposals/DownloadPdfButton';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 import { generatePublicSlug } from '@/lib/publicSlug';
 
@@ -289,8 +290,13 @@ export default function PropostaDetalhes() {
         isExtendingValidity={isExtendingValidity}
       />
 
-      {/* Botão Rentabilidade */}
-      <div className="flex justify-end">
+      {/* Botão Rentabilidade + Download PDF */}
+      <div className="flex justify-end gap-2">
+        <DownloadPdfButton
+          type="proposal"
+          proposalId={proposta.id}
+          codigo={proposta.codigo}
+        />
         <Button onClick={() => setShowRentabilidade(true)} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white gap-2 rounded-xl shadow-md">
           <DollarSign className="w-4 h-4" /> {t('pd.simulate_profitability')}
         </Button>

@@ -22,6 +22,7 @@ import { canonicalizeSlugUrl } from '@/lib/publicSlug';
 import { usePublicProposalQuery } from '@/hooks/usePublicProposalQuery';
 import PublicProposalErrorState from '@/components/proposals/PublicProposalErrorState';
 import { enqueueAccept, startAcceptWorker } from '@/lib/acceptQueue';
+import DownloadPdfButton from '@/components/proposals/DownloadPdfButton';
 
 export default function PropostaPixPublica() {
   const { t } = useTranslation();
@@ -189,6 +190,16 @@ export default function PropostaPixPublica() {
           )}
         </div>
       )}
+
+      <div className="flex justify-end mb-3">
+        <DownloadPdfButton
+          type="pix_proposal"
+          token={proposta.tokenPublico}
+          slug={proposta.publicSlug}
+          codigo={proposta.codigo}
+          publicMode
+        />
+      </div>
 
       <div className="relative overflow-hidden bg-[#002443] rounded-3xl p-8 md:p-12 mb-8 text-center shadow-xl">
         <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#2bc196 1px, transparent 1px)', backgroundSize: '24px 24px' }} />

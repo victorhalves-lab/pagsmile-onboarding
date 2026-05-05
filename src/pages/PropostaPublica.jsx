@@ -24,6 +24,7 @@ import CustosOnlinePublic from '@/components/proposals/public/CustosOnlinePublic
 import PixBoletoPublic from '@/components/proposals/public/PixBoletoPublic';
 import CondicoesGeraisPublic from '@/components/proposals/public/CondicoesGeraisPublic';
 import ExportButtons from '@/components/proposals/ExportButtons';
+import DownloadPdfButton from '@/components/proposals/DownloadPdfButton';
 import AceiteModal from '@/components/proposals/AceiteModal';
 import ContrapropostaModal from '@/components/proposals/ContrapropostaModal';
 import RecusaModal from '@/components/proposals/RecusaModal';
@@ -346,7 +347,16 @@ export default function PropostaPublica() {
           <h1 className="text-2xl font-bold text-[#002443]">{t('pp.commercial_proposal')}</h1>
           <p className="text-[#002443]/60 text-sm">{t('pp.online_payment_rates')}</p>
         </div>
-        <ExportButtons contentRef={propostaContentRef} />
+        <div className="flex items-center gap-2">
+          <DownloadPdfButton
+            type="proposal"
+            token={proposta.tokenPublico}
+            slug={proposta.publicSlug}
+            codigo={proposta.codigo}
+            publicMode
+          />
+          <ExportButtons contentRef={propostaContentRef} />
+        </div>
       </div>
 
       {/* Detalhes do Cliente e Proposta */}

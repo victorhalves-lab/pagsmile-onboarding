@@ -12,6 +12,7 @@ import {
 import { toast } from 'sonner';
 import moment from 'moment';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
+import DownloadPdfButton from '@/components/proposals/DownloadPdfButton';
 
 const STATUS_CONFIG = {
   rascunho: { label: 'Rascunho', color: 'bg-slate-100 text-slate-700' },
@@ -228,6 +229,15 @@ export default function PropostaPixDetalhes() {
           </a>
         </div>
       )}
+
+      {/* Download PDF */}
+      <div className="flex justify-end">
+        <DownloadPdfButton
+          type="pix_proposal"
+          proposalId={proposta.id}
+          codigo={proposta.codigo}
+        />
+      </div>
 
       {/* Resumo */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
