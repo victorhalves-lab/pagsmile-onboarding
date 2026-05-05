@@ -12,6 +12,7 @@ import PartnerSelector from '@/components/proposals/PartnerSelector';
 import CardTaxasCartao from '@/components/proposals/CardTaxasCartao';
 import CardAntecipacao from '@/components/proposals/CardAntecipacao';
 import CardOutrasTaxas from '@/components/proposals/CardOutrasTaxas';
+import CardDebitoMaquininha from '@/components/proposals/CardDebitoMaquininha';
 import ProfitabilityPanel from '@/components/proposals/ProfitabilityPanel';
 import PropostaPreview from '@/components/proposals/PropostaPreview';
 import CopyRatesModal from '@/components/proposals/CopyRatesModal';
@@ -57,6 +58,10 @@ export default function CriarProposta() {
     pix: { tipo: 'percentual', valor: '' },
     boleto: '', feeTransacao: '', antifraude: '', alertaPreChargeback: '', taxa3ds: '', setup: '', forex: '',
     minimoGarantido: { mes1: '', mes2: '', mes3: '' },
+    // Débito só existe se "Processamento com maquininha" estiver ativo.
+    // Por padrão DESLIGADO — não inventa débito automaticamente.
+    usaMaquininha: false,
+    debito: {},
   });
 
   const usePriscila = urlParams.get('usePriscila') === '1';
@@ -77,6 +82,8 @@ export default function CriarProposta() {
       percentualAntecipacao: r.percentualAntecipacao ?? prev.percentualAntecipacao,
       taxaAntecipacao: r.rav?.taxa ?? prev.taxaAntecipacao,
     }));
+    // Débito só vem copiado se a proposta de origem tinha maquininha explicitamente ativa.
+    const hasDebito = r.usaMaquininha === true && r.debito && Object.keys(r.debito).length > 0;
     setRates({
       cartao: r.cartao || {},
       pix: r.pix || { tipo: 'percentual', valor: '' },
@@ -88,6 +95,8 @@ export default function CriarProposta() {
       setup: r.setup ?? '',
       forex: r.forex ?? '',
       minimoGarantido: typeof r.minimoGarantido === 'object' ? r.minimoGarantido : { mes1: r.minimoGarantido ?? '', mes2: r.minimoGarantido ?? '', mes3: r.minimoGarantido ?? '' },
+      usaMaquininha: hasDebito,
+      debito: hasDebito ? r.debito : {},
     });
     toast.success(t('criar_prop.rates_copied'));
   };
@@ -153,12 +162,17 @@ export default function CriarProposta() {
         hideRange13a21: existingProposal.hideRange13a21 || false,
       });
       const r = existingProposal.rates || {};
+      // Débito só é considerado se a proposta tiver "usaMaquininha=true" gravado (novo formato).
+      // Propostas antigas tinham débito calculado automaticamente (60% da à vista) — agora ignoramos.
+      const hasDebito = r.usaMaquininha === true && r.debito && Object.keys(r.debito).length > 0;
       setRates({
         cartao: r.cartao || {}, pix: r.pix || { tipo: 'percentual', valor: '' },
         boleto: r.boleto || '', feeTransacao: r.feeTransacao || '',
         antifraude: r.antifraude || '', alertaPreChargeback: r.alertaPreChargeback || '',
         taxa3ds: r.taxa3ds || '', setup: r.setup || '', forex: r.forex || '',
         minimoGarantido: typeof r.minimoGarantido === 'object' ? r.minimoGarantido : { mes1: r.minimoGarantido || '', mes2: r.minimoGarantido || '', mes3: r.minimoGarantido || '' },
+        usaMaquininha: hasDebito,
+        debito: hasDebito ? r.debito : {},
       });
       if (existingProposal.chosenPartnerId) {
         setSelectedPartnerId(existingProposal.chosenPartnerId);
@@ -220,14 +234,22 @@ export default function CriarProposta() {
     const taxasRaw = rates.cartao || {};
     // Converter TODAS as taxas de cartão de string para number
     const cartaoNumerico = {};
-    const credito_1x = {}, credito_2_6x = {}, credito_7_12x = {}, credito_13_21x = {}, debito = {};
+    const credito_1x = {}, credito_2_6x = {}, credito_7_12x = {}, credito_13_21x = {};
     ['visa', 'mastercard', 'elo', 'amex', 'outras'].forEach(b => {
       const d = taxasRaw[b] || {};
       const av = parseTaxa(d.avista), p26 = parseTaxa(d.de2a6x), p712 = parseTaxa(d.de7a12x), p1321 = parseTaxa(d.de13a21x);
       cartaoNumerico[b] = { avista: av, de2a6x: p26, de7a12x: p712, de13a21x: p1321 };
       credito_1x[b] = av; credito_2_6x[b] = p26; credito_7_12x[b] = p712; credito_13_21x[b] = p1321;
-      debito[b] = Math.round(av * 0.6 * 100) / 100;
     });
+    // Débito só é gravado se "Processamento com maquininha" estiver ativo.
+    // Caso contrário, NÃO inventamos débito (era 60% da à vista — bug antigo).
+    const usaMaquininha = !!rates.usaMaquininha;
+    const debito = {};
+    if (usaMaquininha) {
+      ['visa', 'mastercard', 'elo', 'amex', 'outras'].forEach(b => {
+        debito[b] = parseTaxa(rates.debito?.[b]);
+      });
+    }
     let criadoPor = 'sistema';
     let criadoPorNome = 'sistema';
     let criadoPorId = '';
@@ -244,7 +266,10 @@ export default function CriarProposta() {
       clienteNome: form.clienteNome, clienteCnpj: form.clienteCnpj.replace(/\D/g, ''),
       clienteContato: form.clienteContato, clienteMcc: form.clienteMcc,
       rates: {
-        cartao: cartaoNumerico, credito_1x, credito_2_6x, credito_7_12x, credito_13_21x, debito,
+        cartao: cartaoNumerico, credito_1x, credito_2_6x, credito_7_12x, credito_13_21x,
+        // Débito só vai junto se houve processamento com maquininha
+        usaMaquininha,
+        ...(usaMaquininha ? { debito } : {}),
         pix: { tipo: rates.pix?.tipo || 'percentual', valor: parseTaxa(rates.pix?.valor) },
         boleto: parseTaxa(rates.boleto), antifraude: parseTaxa(rates.antifraude),
         feeTransacao: parseTaxa(rates.feeTransacao), alertaPreChargeback: parseTaxa(rates.alertaPreChargeback),
@@ -344,6 +369,12 @@ export default function CriarProposta() {
             hideCalculationColumns={form.hideCalculationColumns || false}
             onToggleHideColumns={(v) => updateForm('hideCalculationColumns', v)}
             defaultPrazo={form.prazoRecebimento || 'D+1'}
+          />
+          <CardDebitoMaquininha
+            enabled={!!rates.usaMaquininha}
+            onToggleEnabled={(v) => setRates(prev => ({ ...prev, usaMaquininha: v, debito: v ? (prev.debito || {}) : {} }))}
+            debito={rates.debito || {}}
+            onUpdateDebito={(newDebito) => setRates(prev => ({ ...prev, debito: newDebito }))}
           />
           <CardOutrasTaxas rates={rates} onUpdateRates={updateRates} partner={selectedPartner} />
         </div>
