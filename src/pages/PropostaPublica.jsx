@@ -21,6 +21,7 @@ import ExportButtons from '@/components/proposals/ExportButtons';
 import AceiteModal from '@/components/proposals/AceiteModal';
 import ContrapropostaModal from '@/components/proposals/ContrapropostaModal';
 import RecusaModal from '@/components/proposals/RecusaModal';
+import ProximoPassoComplianceModal from '@/components/proposals/ProximoPassoComplianceModal';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 import InternationalPaymentsBanner from '@/components/landing/InternationalPaymentsBanner';
 import { resolveComplianceModel } from '@/components/compliance/segmentToComplianceV4Map';
@@ -40,6 +41,10 @@ export default function PropostaPublica() {
   const [showAceiteModal, setShowAceiteModal] = useState(false);
   const [showContrapropostaModal, setShowContrapropostaModal] = useState(false);
   const [showRecusaModal, setShowRecusaModal] = useState(false);
+  // Após aceitar, mostra modal de "próximo passo" com link de compliance.
+  // O cliente precisa decidir ativamente quando ir (em vez de redirect automático).
+  const [showProximoPassoModal, setShowProximoPassoModal] = useState(false);
+  const [complianceUrlAfterAccept, setComplianceUrlAfterAccept] = useState(null);
 
   // ROBUSTO: hook com 5 tentativas, fallback por slug, e distinção clara entre
   // "erro de rede" e "não encontrada". Resolve o bug onde clientes viam
@@ -150,7 +155,13 @@ export default function PropostaPublica() {
     onSuccess: (complianceUrl) => {
       toast.success(t('pp.proposal_accepted_success'));
       setShowAceiteModal(false);
-      if (complianceUrl) window.location.href = complianceUrl;
+      // Em vez de redirecionar IMEDIATAMENTE, mostra modal de próximo passo
+      // para que o cliente entenda claramente o que precisa fazer agora
+      // (ou guarde o link para executar mais tarde).
+      if (complianceUrl) {
+        setComplianceUrlAfterAccept(complianceUrl);
+        setShowProximoPassoModal(true);
+      }
     },
     onError: (err) => {
       toast.error(err?.message || 'Erro ao registrar o aceite. Tente novamente.');
@@ -616,6 +627,19 @@ export default function PropostaPublica() {
         onClose={() => setShowRecusaModal(false)}
         onSubmit={(data) => recusarMutation.mutate(data)}
         isPending={recusarMutation.isPending}
+      />
+      <ProximoPassoComplianceModal
+        open={showProximoPassoModal}
+        complianceUrl={complianceUrlAfterAccept || ''}
+        onGoNow={() => {
+          if (complianceUrlAfterAccept) window.location.href = complianceUrlAfterAccept;
+        }}
+        onClose={() => {
+          setShowProximoPassoModal(false);
+          // Recarrega para refletir o novo status "aceita" da proposta —
+          // o banner verde "Proposta aceita" + botão "Iniciar Compliance" aparecem.
+          queryClient.invalidateQueries({ queryKey: ['public_proposal', 'proposal'] });
+        }}
       />
     </div>
   );
