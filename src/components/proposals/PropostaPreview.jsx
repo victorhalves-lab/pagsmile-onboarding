@@ -44,6 +44,11 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
   }
   const visibleRows = hideRange13a21 ? rows.filter(r => r.parcela <= 12) : rows;
 
+  // Maquininha (presencial) — só renderiza se ativa
+  const usaMaquininha = !!rates.usaMaquininha;
+  const mqCredito = rates.maquininha?.credito?.[selectedBrand] || {};
+  const mqDebito = rates.maquininha?.debito?.[selectedBrand];
+
   return (
     <div>
       {/* Title */}
@@ -81,6 +86,28 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
           </div>
         ))}
       </div>
+
+      {/* Maquininha (presencial) — só se ativa */}
+      {usaMaquininha && (
+        <div className="rounded-xl bg-[#2bc196]/[0.04] border border-[#2bc196]/10 overflow-hidden mb-4">
+          <div className="px-2 py-1.5 bg-[#2bc196]/[0.06] flex items-center justify-between">
+            <span className="text-[9px] text-[#2bc196] font-bold uppercase tracking-widest">📱 Maquininha (Presencial)</span>
+            <span className="text-[8px] text-white/40 font-mono">{selectedBrand.toUpperCase()}</span>
+          </div>
+          <div className="grid grid-cols-4 text-[8px] text-white font-bold uppercase tracking-wider py-1.5 px-2 bg-white/[0.02]">
+            <div className="text-center">1x</div>
+            <div className="text-center">2-6x</div>
+            <div className="text-center">7-12x</div>
+            <div className="text-center">Débito</div>
+          </div>
+          <div className="grid grid-cols-4 items-center px-2 py-1.5 border-t border-white/[0.03]">
+            <div className="text-[11px] text-center font-bold text-[#2bc196]">{fmtPct(mqCredito.avista)}</div>
+            <div className="text-[11px] text-center font-bold text-[#2bc196]">{fmtPct(mqCredito.de2a6x)}</div>
+            <div className="text-[11px] text-center font-bold text-[#2bc196]">{fmtPct(mqCredito.de7a12x)}</div>
+            <div className="text-[11px] text-center font-bold text-[#2bc196]">{fmtPct(mqDebito)}</div>
+          </div>
+        </div>
+      )}
 
       {/* Footer Stats */}
       <div className="space-y-2">

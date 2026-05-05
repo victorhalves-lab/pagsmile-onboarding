@@ -10,12 +10,13 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   CheckCircle2, XCircle, MessageSquare, Clock, Info,
-  CreditCard, Loader2, AlertTriangle, Shield
+  CreditCard, Loader2, AlertTriangle, Shield, Smartphone
 } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
 import { formatCNPJ } from '@/components/proposals/CnpjInput';
 import TaxasPorBandeiraPublic from '@/components/proposals/TaxasPorBandeiraPublic';
+import TaxasMaquininhaPublic from '@/components/proposals/TaxasMaquininhaPublic';
 import ParcelasTableDetalhada from '@/components/proposals/ParcelasTableDetalhada';
 import ExportButtons from '@/components/proposals/ExportButtons';
 import AceiteModal from '@/components/proposals/AceiteModal';
@@ -423,16 +424,34 @@ export default function PropostaPublica() {
         </Card>
       )}
 
-      {/* Taxas por Bandeira */}
+      {/* Taxas por Bandeira — ONLINE / E-COMMERCE */}
       <Card className="mb-6">
         <CardContent className="py-4">
-          <h2 className="font-bold text-base text-[#002443] mb-4 flex items-center gap-2">
+          <h2 className="font-bold text-base text-[#002443] mb-1 flex items-center gap-2">
             <CreditCard className="w-5 h-5 text-[#2bc196]" />
             {t('pp.credit_card_rates')}
+            {rates.usaMaquininha && (
+              <span className="ml-2 text-[10px] font-semibold uppercase tracking-wide text-[#002443]/40">Online / E-commerce</span>
+            )}
           </h2>
           <TaxasPorBandeiraPublic taxas={rates} hideRange13a21={proposta.hideRange13a21 || false} />
         </CardContent>
       </Card>
+
+      {/* Taxas MAQUININHA — só se proposta tiver processamento presencial */}
+      {rates.usaMaquininha && rates.maquininha && (
+        <Card className="mb-6 border-[#2bc196]/30 bg-[#2bc196]/[0.02]">
+          <CardContent className="py-4">
+            <h2 className="font-bold text-base text-[#002443] mb-1 flex items-center gap-2">
+              <Smartphone className="w-5 h-5 text-[#2bc196]" />
+              Taxas Maquininha
+              <span className="ml-2 text-[10px] font-semibold uppercase tracking-wide text-[#002443]/40">Presencial / POS</span>
+            </h2>
+            <p className="text-[11px] text-[#002443]/40 mb-4">Taxas aplicadas em transações presenciais com maquininha (POS)</p>
+            <TaxasMaquininhaPublic maquininha={rates.maquininha} />
+          </CardContent>
+        </Card>
+      )}
 
       {/* Outros Métodos */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
