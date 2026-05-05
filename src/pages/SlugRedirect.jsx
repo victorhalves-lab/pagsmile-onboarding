@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { callPublicFunction } from '@/lib/publicApi';
 import { Loader2, AlertTriangle } from 'lucide-react';
 
 export default function SlugRedirect() {
@@ -10,12 +10,14 @@ export default function SlugRedirect() {
   const { data: link, isLoading, isError } = useQuery({
     queryKey: ['slugRedirect', slug],
     queryFn: async () => {
-      const res = await base44.functions.invoke('publicReadContext', {
+      // SDK-free: rota pública. base44.functions.invoke falha com 401 em apps privadas.
+      const res = await callPublicFunction('publicReadContext', {
         kind: 'onboarding_link_by_slug', slug,
       });
-      return res.data?.link || null;
+      return res?.link || null;
     },
     enabled: !!slug,
+    retry: 2,
   });
 
   if (isLoading) {

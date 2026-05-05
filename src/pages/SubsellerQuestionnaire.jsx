@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { callPublicFunction } from '@/lib/publicApi';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import DynamicQuestionnaire from '../components/compliance/DynamicQuestionnaire';
 import MerchantTypeSelector from '../components/subseller/MerchantTypeSelector';
@@ -16,10 +17,12 @@ export default function SubsellerQuestionnaire() {
     queryKey: ['subsellerLink', linkCode],
     queryFn: async () => {
       if (!linkCode) return null;
-      const res = await base44.functions.invoke('publicReadContext', { kind: 'onboarding_link', uniqueCode: linkCode });
-      return res.data?.link || null;
+      // SDK-free: rota pública. base44.functions.invoke falha com 401 em apps privadas.
+      const res = await callPublicFunction('publicReadContext', { kind: 'onboarding_link', uniqueCode: linkCode });
+      return res?.link || null;
     },
-    enabled: !!linkCode
+    enabled: !!linkCode,
+    retry: 2,
   });
 
   useEffect(() => {
