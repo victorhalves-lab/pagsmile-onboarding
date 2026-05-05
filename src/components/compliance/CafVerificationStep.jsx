@@ -577,10 +577,19 @@ export default function CafVerificationStep({
   useEffect(() => {
     if (phase !== 'liveness' || !sdkToken) return;
     let cancelled = false;
-    setLivenessAttempts(prev => prev + 1);
 
     const runLiveness = async () => {
       try {
+        // ── Cleanup defensivo: garante DOM e SDK limpos antes do init ──
+        // Sem isso, re-entradas na fase 'liveness' empilham botões "Iniciar Verificação Facial"
+        // dentro do mesmo container (cada init() faz append, não replace).
+        try { window['CafFaceLiveness']?.dispose(); } catch {}
+        const container = document.getElementById('caf-fl-container');
+        if (container) container.innerHTML = '';
+
+        // Conta tentativa apenas uma vez por execução real (não dispara re-render do efeito)
+        setLivenessAttempts(prev => prev + 1);
+
         const CafFaceLivenessSdk = window['CafFaceLiveness'];
         if (!CafFaceLivenessSdk) throw new Error('FaceLiveness SDK não disponível');
 
@@ -670,7 +679,9 @@ export default function CafVerificationStep({
     };
     runLiveness();
     return () => { cancelled = true; };
-  }, [phase, sdkToken, personId, onboardingCaseId, canUseFaceAuth, tokenType, savedResults, logSdkError, livenessAttempts]);
+    // Dependências enxutas: NÃO incluir `livenessAttempts` (atualizado dentro do efeito)
+    // nem `savedResults` (muda durante o fluxo) — ambos causariam re-init em loop.
+  }, [phase, sdkToken, personId, onboardingCaseId, logSdkError]);
 
   // ── When all done, notify parent ──
   useEffect(() => {
