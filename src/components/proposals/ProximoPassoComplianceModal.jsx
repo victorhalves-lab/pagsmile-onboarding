@@ -72,22 +72,22 @@ export default function ProximoPassoComplianceModal({ open, complianceUrl, onGoN
             {/* Ações */}
             <div className="flex flex-col sm:flex-row gap-2">
               <Button
-                onClick={onGoNow}
-                className="flex-1 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white h-11 rounded-xl font-bold"
-              >
-                <Shield className="w-4 h-4 mr-2" />
-                Iniciar agora
-              </Button>
-              <Button
                 onClick={handleCopy}
                 variant="outline"
                 className="flex-1 border-[#002443]/20 text-[#002443] hover:bg-[#002443]/5 h-11 rounded-xl font-semibold"
               >
                 {copied ? (
-                  <><Check className="w-4 h-4 mr-2 text-[#2bc196]" /> Copiado!</>
+                  <><Check className="w-4 h-4 mr-2 text-[#2bc196]" /> Link copiado!</>
                 ) : (
-                  <><Copy className="w-4 h-4 mr-2" /> Copiar link</>
+                  <><Copy className="w-4 h-4 mr-2" /> Copiar link para fazer depois</>
                 )}
+              </Button>
+              <Button
+                onClick={onGoNow}
+                className="flex-1 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white h-11 rounded-xl font-bold"
+              >
+                Continuar
+                <Shield className="w-4 h-4 ml-2" />
               </Button>
             </div>
           </div>
@@ -96,18 +96,10 @@ export default function ProximoPassoComplianceModal({ open, complianceUrl, onGoN
           <div className="flex items-start gap-2.5 text-xs text-[#002443]/65 bg-amber-50/60 border border-amber-200/60 rounded-lg p-3">
             <Clock className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
             <p className="leading-relaxed">
-              Se preferir executar mais tarde, <strong>copie o link acima</strong> e
-              guarde-o. Você pode acessá-lo a qualquer momento para retomar o processo.
+              <strong>Copie o link</strong> para retomar o Compliance mais tarde, ou
+              clique em <strong>Continuar</strong> para iniciar agora.
             </p>
           </div>
-
-          {/* Fechar */}
-          <button
-            onClick={onClose}
-            className="w-full text-center text-sm text-[#002443]/50 hover:text-[#002443] underline-offset-4 hover:underline transition-colors"
-          >
-            Fechar (executarei mais tarde)
-          </button>
         </div>
       </DialogContent>
     </Dialog>
