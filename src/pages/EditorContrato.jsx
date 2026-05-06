@@ -19,6 +19,7 @@ import PrecosForm from '@/components/contrato/PrecosForm';
 import SLAsForm from '@/components/contrato/SLAsForm';
 import AssinaturaForm from '@/components/contrato/AssinaturaForm';
 import ConteudoContrato from '@/components/contrato/ConteudoContrato';
+import DownloadContractPdfButton from '@/components/contrato/DownloadContractPdfButton';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function EditorContrato() {
@@ -138,6 +139,12 @@ export default function EditorContrato() {
             {hasChanges && (
               <Badge className="bg-amber-100 text-amber-700">{t('ec.unsaved')}</Badge>
             )}
+            <DownloadContractPdfButton
+              contract={formData}
+              variant="outline"
+              label="Baixar PDF"
+              className="rounded-xl border-[#002443]/10 text-sm"
+            />
             <Button variant="outline" onClick={() => saveMutation.mutate(formData)} disabled={saveMutation.isPending} className="rounded-xl border-[#002443]/10 text-sm">
               {saveMutation.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
               {t('ec.save')}

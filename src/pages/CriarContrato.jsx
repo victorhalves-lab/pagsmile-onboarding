@@ -13,6 +13,7 @@ import PrecosForm from '@/components/contrato/PrecosForm';
 import SLAsForm from '@/components/contrato/SLAsForm';
 import AssinaturaForm from '@/components/contrato/AssinaturaForm';
 import ConteudoContrato from '@/components/contrato/ConteudoContrato';
+import DownloadContractPdfButton from '@/components/contrato/DownloadContractPdfButton';
 
 const TABS = [
   { id: 'cliente', label: 'Cliente', icon: Users },
@@ -108,6 +109,12 @@ export default function CriarContrato() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <DownloadContractPdfButton
+              contract={formData}
+              variant="outline"
+              label="Baixar PDF"
+              className="rounded-xl border-[#002443]/10 text-sm"
+            />
             <Button variant="outline" onClick={handleSalvarRascunho} disabled={saving} className="rounded-xl border-[#002443]/10 text-sm">
               {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />} Rascunho
             </Button>
