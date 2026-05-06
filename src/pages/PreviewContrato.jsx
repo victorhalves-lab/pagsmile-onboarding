@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from 'sonner';
 import ConteudoContrato from '@/components/contrato/ConteudoContrato';
+import DownloadContractDocxButton from '@/components/contrato/DownloadContractDocxButton';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function PreviewContrato() {
@@ -138,6 +139,7 @@ export default function PreviewContrato() {
             {generating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />}
             {t('pc.download_pdf')}
           </Button>
+          <DownloadContractDocxButton contract={contract} variant="outline" label="Baixar Word" />
           <Button variant="outline" onClick={copyPublicLink}>
             <Copy className="w-4 h-4 mr-2" /> {t('pc.copy_link')}
           </Button>

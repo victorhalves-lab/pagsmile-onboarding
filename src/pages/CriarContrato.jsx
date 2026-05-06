@@ -14,6 +14,7 @@ import SLAsForm from '@/components/contrato/SLAsForm';
 import AssinaturaForm from '@/components/contrato/AssinaturaForm';
 import ConteudoContrato from '@/components/contrato/ConteudoContrato';
 import DownloadContractPdfButton from '@/components/contrato/DownloadContractPdfButton';
+import DownloadContractDocxButton from '@/components/contrato/DownloadContractDocxButton';
 
 const TABS = [
   { id: 'cliente', label: 'Cliente', icon: Users },
@@ -113,6 +114,12 @@ export default function CriarContrato() {
               contract={formData}
               variant="outline"
               label="Baixar PDF"
+              className="rounded-xl border-[#002443]/10 text-sm"
+            />
+            <DownloadContractDocxButton
+              contract={formData}
+              variant="outline"
+              label="Baixar Word"
               className="rounded-xl border-[#002443]/10 text-sm"
             />
             <Button variant="outline" onClick={handleSalvarRascunho} disabled={saving} className="rounded-xl border-[#002443]/10 text-sm">

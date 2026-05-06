@@ -20,6 +20,7 @@ import SLAsForm from '@/components/contrato/SLAsForm';
 import AssinaturaForm from '@/components/contrato/AssinaturaForm';
 import ConteudoContrato from '@/components/contrato/ConteudoContrato';
 import DownloadContractPdfButton from '@/components/contrato/DownloadContractPdfButton';
+import DownloadContractDocxButton from '@/components/contrato/DownloadContractDocxButton';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function EditorContrato() {
@@ -143,6 +144,12 @@ export default function EditorContrato() {
               contract={formData}
               variant="outline"
               label="Baixar PDF"
+              className="rounded-xl border-[#002443]/10 text-sm"
+            />
+            <DownloadContractDocxButton
+              contract={formData}
+              variant="outline"
+              label="Baixar Word"
               className="rounded-xl border-[#002443]/10 text-sm"
             />
             <Button variant="outline" onClick={() => saveMutation.mutate(formData)} disabled={saveMutation.isPending} className="rounded-xl border-[#002443]/10 text-sm">
