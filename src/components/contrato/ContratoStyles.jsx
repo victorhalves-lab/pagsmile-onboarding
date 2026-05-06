@@ -36,7 +36,7 @@ export const Check = ({ checked }) => checked ? '☑' : '☐';
 export const SectionHeading = ({ children, level = 1 }) => {
   if (level === 1) {
     return (
-      <div style={{ borderTop: '3px solid #2bc196', paddingTop: '24px', marginTop: '40px', marginBottom: '16px' }}>
+      <div data-pdf-block="section-heading" style={{ borderTop: '3px solid #2bc196', paddingTop: '24px', marginTop: '40px', marginBottom: '16px' }}>
         <h2 style={{ 
           color: '#002443', fontSize: '13px', fontWeight: 700, textTransform: 'uppercase', 
           letterSpacing: '1.5px', textAlign: 'center', margin: 0,
@@ -45,7 +45,7 @@ export const SectionHeading = ({ children, level = 1 }) => {
     );
   }
   return (
-    <h3 style={{ 
+    <h3 data-pdf-block="section-heading" style={{ 
       color: '#2bc196', fontSize: '11px', fontWeight: 700, marginBottom: '8px', marginTop: '20px',
       paddingBottom: '4px', borderBottom: '1px solid rgba(43,193,150,0.2)',
     }}>{children}</h3>
@@ -53,26 +53,26 @@ export const SectionHeading = ({ children, level = 1 }) => {
 };
 
 export const ClauseTitle = ({ children }) => (
-  <h3 style={{
+  <h3 data-pdf-block="clause-title" style={{
     color: '#002443', fontSize: '11px', fontWeight: 700, marginTop: '28px', marginBottom: '12px',
     paddingBottom: '6px', borderBottom: '2px solid rgba(43,193,150,0.2)', textTransform: 'uppercase', letterSpacing: '0.5px',
   }}>{children}</h3>
 );
 
 export const SubClauseTitle = ({ children }) => (
-  <h4 style={{
+  <h4 data-pdf-block="subclause-title" style={{
     color: '#2bc196', fontSize: '11px', fontWeight: 700, marginTop: '20px', marginBottom: '8px',
   }}>{children}</h4>
 );
 
 export const P = ({ children, style = {} }) => (
-  <p style={{ 
+  <p data-pdf-block="paragraph" style={{ 
     marginBottom: '10px', textAlign: 'justify', lineHeight: 1.75, color: '#002443', fontSize: '10.5px', ...style,
   }}>{children}</p>
 );
 
 export const BrandTable = ({ headers, rows, compact = false }) => (
-  <table style={{ 
+  <table data-pdf-block="table" style={{ 
     width: '100%', borderCollapse: 'collapse', marginBottom: '20px', fontSize: compact ? '9.5px' : '10.5px',
     border: '1px solid rgba(0,36,67,0.12)', borderRadius: '8px', overflow: 'hidden',
   }}>
@@ -104,7 +104,7 @@ export const BrandTable = ({ headers, rows, compact = false }) => (
 );
 
 export const KVTable = ({ items }) => (
-  <table style={{ 
+  <table data-pdf-block="table" style={{ 
     width: '100%', borderCollapse: 'collapse', marginBottom: '20px', fontSize: '10.5px',
     border: '1px solid rgba(0,36,67,0.12)', borderRadius: '8px', overflow: 'hidden',
   }}>

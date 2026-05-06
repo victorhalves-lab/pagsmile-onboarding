@@ -18,7 +18,7 @@ export default function ConteudoContrato({ contract }) {
       backgroundColor: '#ffffff',
     }}>
       {/* ===== HEADER ===== */}
-      <div style={{ 
+      <div data-pdf-block="header" style={{ 
         background: 'linear-gradient(135deg, #002443 0%, #003366 50%, #36706c 100%)',
         borderRadius: '16px', padding: '40px 32px', marginBottom: '32px',
         textAlign: 'center', position: 'relative', overflow: 'hidden',
@@ -98,7 +98,7 @@ export default function ConteudoContrato({ contract }) {
       )}
 
       {/* ===== ASSINATURAS ===== */}
-      <div style={{ borderTop: '3px solid #2bc196', paddingTop: '32px', marginTop: '48px' }}>
+      <div data-pdf-block="signatures" style={{ borderTop: '3px solid #2bc196', paddingTop: '32px', marginTop: '48px' }}>
         <SectionHeading>ASSINATURAS</SectionHeading>
         <P>E, por estarem assim justas e contratadas, as PARTES assinam o presente Contrato Master em 2 (duas) vias de igual teor e forma, na presença das testemunhas abaixo identificadas, para que produza todos os seus efeitos jurídicos e legais.</P>
         <p style={{ textAlign: 'center', marginBottom: '32px', fontSize: '11px', color: '#002443' }}>
