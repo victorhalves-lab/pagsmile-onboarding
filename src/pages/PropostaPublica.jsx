@@ -469,10 +469,26 @@ export default function PropostaPublica() {
 
       {/* ═════════════════════════════════════════════════════════════
            ZONA 2 — PAGAMENTOS PRESENCIAIS (Maquininha / POS)
-           Só renderiza se a proposta tiver maquininha ativada.
+           Renderiza se a flag usaMaquininha estiver ativa OU se houver
+           qualquer taxa de POS preenchida (compatibilidade com propostas
+           antigas que foram salvas sem a flag explícita).
            NÃO incidem fee transação, antifraude, 3DS ou pré-chargeback.
            ═════════════════════════════════════════════════════════════ */}
-      {rates.usaMaquininha && rates.maquininha && (
+      {(() => {
+        const maq = rates.maquininha;
+        if (!maq) return false;
+        if (rates.usaMaquininha) return true;
+        // Detecta se há ao menos uma taxa de crédito ou débito preenchida (>0)
+        const hasNum = (v) => {
+          const n = typeof v === 'string' ? parseFloat(v) : v;
+          return typeof n === 'number' && !isNaN(n) && n > 0;
+        };
+        const cred = maq.credito || {};
+        const deb = maq.debito || {};
+        const credFilled = Object.values(cred).some(b => b && (hasNum(b.avista) || hasNum(b.de2a6x) || hasNum(b.de7a12x)));
+        const debFilled = Object.values(deb).some(v => hasNum(v));
+        return credFilled || debFilled;
+      })() && (
         <>
           <SectionHeader
             icon={Store}
