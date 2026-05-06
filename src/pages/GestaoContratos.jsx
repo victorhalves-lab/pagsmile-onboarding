@@ -14,6 +14,28 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
+import DownloadContractPdfButton from '@/components/contrato/DownloadContractPdfButton';
+import DownloadContractDocxButton from '@/components/contrato/DownloadContractDocxButton';
+
+// Contrato base (template em branco) — usado para baixar o modelo sem dados preenchidos
+const BLANK_CONTRACT_TEMPLATE = {
+  codigo: 'CONTRATO-BASE-MODELO',
+  clientName: '',
+  clientDocument: '',
+  clientAddress: '',
+  clientCity: '',
+  clientState: '',
+  clientZipCode: '',
+  clientEmail: '',
+  clientPhone: '',
+  clientRepresentativeName: '',
+  clientRepresentativeRole: '',
+  clientRepresentativeCPF: '',
+  modules: {},
+  rates: { cartao: {}, debito: {}, pix: {}, rav: {} },
+  contractDate: '',
+  contractDurationMonths: 24,
+};
 
 export default function GestaoContratos() {
   const { t } = useTranslation();
@@ -61,6 +83,35 @@ export default function GestaoContratos() {
           <p className="text-sm text-[#002443]/60 mt-1">{t('gc.subtitle')}</p>
         </div>
       </div>
+
+      {/* Contrato Base / Modelo em Branco */}
+      <Card className="bg-gradient-to-r from-[#002443] to-[#003366] border-0 text-white">
+        <CardContent className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-[#2bc196]/20 flex items-center justify-center shrink-0">
+              <FileText className="w-6 h-6 text-[#5cf7cf]" />
+            </div>
+            <div>
+              <h3 className="font-bold text-white text-base">Contrato Base (Modelo em Branco)</h3>
+              <p className="text-xs text-white/70 mt-0.5">Baixe o contrato master sem dados preenchidos para revisão jurídica ou envio prévio.</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <DownloadContractPdfButton
+              contract={BLANK_CONTRACT_TEMPLATE}
+              variant="outline"
+              label="Baixar PDF"
+              className="rounded-xl bg-white/10 border-white/20 text-white hover:bg-white/20 hover:text-white text-sm"
+            />
+            <DownloadContractDocxButton
+              contract={BLANK_CONTRACT_TEMPLATE}
+              variant="outline"
+              label="Baixar Word"
+              className="rounded-xl bg-white/10 border-white/20 text-white hover:bg-white/20 hover:text-white text-sm"
+            />
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
