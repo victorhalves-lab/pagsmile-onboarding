@@ -30,11 +30,11 @@ import { validateStepV5, countStepFields } from '@/components/lead-pagsmile/lead
 
 const STEPS = [
   { id: 'segmento', label: 'Tipo de Negócio' },
-  { id: 'mix', label: 'Composição da Operação' },
   { id: 'empresa', label: 'Dados da Empresa' },
   { id: 'endereco', label: 'Endereço' },
   { id: 'contato', label: 'Contato' },
   { id: 'modelo', label: 'Modelo de Negócio' },
+  { id: 'mix', label: 'Composição da Operação' },
   { id: 'volumetria', label: 'Volumetria' },
   { id: 'distribuicao', label: 'Distribuição' },
   { id: 'taxas', label: 'Taxas Atuais' },
@@ -375,11 +375,11 @@ export default function QuestionarioLeadsPagsmile() {
       <Card className="rounded-2xl border border-[#002443]/5 shadow-sm mb-6">
         <CardContent className="p-6 sm:p-8">
           {step === 0 && <StepSegmento form={form} updateField={updateField} cnpjData={cnpjData} />}
-          {step === 1 && <StepMixOperacao form={form} updateField={updateField} />}
-          {step === 2 && <StepDadosEmpresa form={form} updateField={updateField} cnpjData={cnpjData} setCnpjData={setCnpjData} errors={errors} setBdcData={(d) => { setBdcData(d); updateField('_bdcQuickData', d); }} />}
-          {step === 3 && <StepEndereco form={form} updateField={updateField} cnpjData={cnpjData} />}
-          {step === 4 && <StepContato form={form} updateField={updateField} errors={errors} />}
-          {step === 5 && <StepModeloNegocio form={form} updateField={updateField} errors={errors} />}
+          {step === 1 && <StepDadosEmpresa form={form} updateField={updateField} cnpjData={cnpjData} setCnpjData={setCnpjData} errors={errors} setBdcData={(d) => { setBdcData(d); updateField('_bdcQuickData', d); }} />}
+          {step === 2 && <StepEndereco form={form} updateField={updateField} cnpjData={cnpjData} />}
+          {step === 3 && <StepContato form={form} updateField={updateField} errors={errors} />}
+          {step === 4 && <StepModeloNegocio form={form} updateField={updateField} errors={errors} />}
+          {step === 5 && <StepMixOperacao form={form} updateField={updateField} />}
           {step === 6 && <StepVolumetria form={form} updateField={updateField} errors={errors} />}
           {step === 7 && <StepDistribuicao form={form} updateField={updateField} errors={errors} />}
           {step === 8 && <StepTaxasAtuais form={form} updateField={updateField} errors={errors} />}

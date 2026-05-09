@@ -131,6 +131,61 @@ export function validateStepV5(step, form) {
   }
 
   if (step === 1) {
+    if (!isValidCnpj(form.cnpj)) {
+      out.push(err('cnpj', 'CNPJ inválido — confira os dígitos'));
+    }
+    if (!form.razaoSocial || String(form.razaoSocial).trim().length < 2) {
+      out.push(err('razaoSocial', 'Razão Social é obrigatória'));
+    }
+    if (!form.nomeFantasia || String(form.nomeFantasia).trim().length < 2) {
+      out.push(err('nomeFantasia', 'Nome Fantasia é obrigatório'));
+    }
+    if (!form.presencaDigital || String(form.presencaDigital).trim().length < 2) {
+      out.push(err('presencaDigital', 'Informe site, @rede social ou "Não possuo"'));
+    }
+  }
+
+  if (step === 2) {
+    if (!form._enderecoConfirmado) {
+      out.push(err('_enderecoConfirmado', 'Confirme o endereço antes de prosseguir'));
+    }
+  }
+
+  if (step === 3) {
+    if (!isValidEmail(form.email)) {
+      out.push(err('email', 'E-mail inválido'));
+    }
+    if (!isValidBrPhone(form.phone)) {
+      out.push(err('phone', 'Telefone inválido (DDD + número)'));
+    }
+    if (!form.contactName || String(form.contactName).trim().length < 2) {
+      out.push(err('contactName', 'Nome do contato é obrigatório'));
+    }
+    if (!form.cargo) {
+      out.push(err('cargo', 'Cargo é obrigatório'));
+    } else if (form.cargo === '__other__' && (!form.cargoOutro || form.cargoOutro.trim().length < 2)) {
+      out.push(err('cargoOutro', 'Descreva o cargo'));
+    }
+  }
+
+  if (step === 4) {
+    if (!form.modeloCobranca) out.push(err('modeloCobranca'));
+    if (!form.descricaoNegocio || form.descricaoNegocio.trim().length < 10) {
+      out.push(err('descricaoNegocio', 'Descreva seu negócio (mín. 10 caracteres)'));
+    }
+    if (ANTIFRAUDE_SEGMENTS.includes(form.segmento) && !form.antifraude) {
+      out.push(err('antifraude'));
+    }
+    // Campos condicionais por segmento
+    const required = SEGMENT_REQUIRED_FIELDS[form.segmento] || [];
+    for (const f of required) {
+      const val = form[f];
+      const isEmpty = Array.isArray(val) ? val.length === 0 : !val;
+      if (isEmpty) out.push(err(f));
+    }
+  }
+
+  if (step === 5) {
     // Composição da Operação — total deve somar 100% (estimado)
     const mix = form.mixOperacao || {};
     const fixedTotal =
@@ -157,61 +212,6 @@ export function validateStepV5(step, form) {
       if (pct <= 0) {
         out.push(err('mixOperacao', `Categoria "Outros" #${i + 1}: percentual deve ser maior que zero`));
       }
-    }
-  }
-
-  if (step === 2) {
-    if (!isValidCnpj(form.cnpj)) {
-      out.push(err('cnpj', 'CNPJ inválido — confira os dígitos'));
-    }
-    if (!form.razaoSocial || String(form.razaoSocial).trim().length < 2) {
-      out.push(err('razaoSocial', 'Razão Social é obrigatória'));
-    }
-    if (!form.nomeFantasia || String(form.nomeFantasia).trim().length < 2) {
-      out.push(err('nomeFantasia', 'Nome Fantasia é obrigatório'));
-    }
-    if (!form.presencaDigital || String(form.presencaDigital).trim().length < 2) {
-      out.push(err('presencaDigital', 'Informe site, @rede social ou "Não possuo"'));
-    }
-  }
-
-  if (step === 3) {
-    if (!form._enderecoConfirmado) {
-      out.push(err('_enderecoConfirmado', 'Confirme o endereço antes de prosseguir'));
-    }
-  }
-
-  if (step === 4) {
-    if (!isValidEmail(form.email)) {
-      out.push(err('email', 'E-mail inválido'));
-    }
-    if (!isValidBrPhone(form.phone)) {
-      out.push(err('phone', 'Telefone inválido (DDD + número)'));
-    }
-    if (!form.contactName || String(form.contactName).trim().length < 2) {
-      out.push(err('contactName', 'Nome do contato é obrigatório'));
-    }
-    if (!form.cargo) {
-      out.push(err('cargo', 'Cargo é obrigatório'));
-    } else if (form.cargo === '__other__' && (!form.cargoOutro || form.cargoOutro.trim().length < 2)) {
-      out.push(err('cargoOutro', 'Descreva o cargo'));
-    }
-  }
-
-  if (step === 5) {
-    if (!form.modeloCobranca) out.push(err('modeloCobranca'));
-    if (!form.descricaoNegocio || form.descricaoNegocio.trim().length < 10) {
-      out.push(err('descricaoNegocio', 'Descreva seu negócio (mín. 10 caracteres)'));
-    }
-    if (ANTIFRAUDE_SEGMENTS.includes(form.segmento) && !form.antifraude) {
-      out.push(err('antifraude'));
-    }
-    // Campos condicionais por segmento
-    const required = SEGMENT_REQUIRED_FIELDS[form.segmento] || [];
-    for (const f of required) {
-      const val = form[f];
-      const isEmpty = Array.isArray(val) ? val.length === 0 : !val;
-      if (isEmpty) out.push(err(f));
     }
   }
 
