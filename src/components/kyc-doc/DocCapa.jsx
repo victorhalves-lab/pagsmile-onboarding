@@ -22,9 +22,12 @@ export default function DocCapa() {
       <p className="text-sm text-[#1a1a1a]/70 leading-relaxed max-w-2xl mb-6">
         Descrição <strong className="text-[#1a1a1a]">microscópica e exaustiva</strong> de cada etapa, 
         cada pergunta, cada dataset, cada variável, cada threshold, cada fallback e cada decisão 
-        do processo de onboarding KYC/KYB da PagSmile — cobrindo Cartão (11 segmentos V4), 
-        PIX (Merchants, Intermediários e API Enterprise), Subsellers (PJ e PF) e a 
-        extração de Pré-KYC para parceiros bancários. 19 seções técnicas, incluindo glossário.
+        do processo de onboarding KYC/KYB da PagSmile — cobrindo: <strong>funis de captação</strong>{' '}
+        (Lead Pagsmile V5 com 12 etapas, Lead PIX V4 com 7 etapas, Fechamento Landing acoplado a 
+        proposta padrão), <strong>Compliance V4</strong> em Cartão (11 segmentos), PIX (Merchants, 
+        Intermediários e API Enterprise) e Subsellers (PJ e PF), pipeline automatizado, scoring V4 
+        determinístico, SENTINEL relator, e extração de Pré-KYC para parceiros bancários. 
+        20 seções técnicas, incluindo glossário e funis de captação.
       </p>
 
       <div className="w-16 h-[2px] bg-[#2bc196] mb-4" />

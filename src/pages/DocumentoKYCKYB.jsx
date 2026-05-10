@@ -25,6 +25,7 @@ import DocDocOnlyLink from '@/components/kyc-doc/DocDocOnlyLink';
 import DocDocCompParceiros from '@/components/kyc-doc/DocDocCompParceiros';
 import DocTemplatesMicroscopico from '@/components/kyc-doc/DocTemplatesMicroscopico';
 import DocModeloDinamicoKYC from '@/components/kyc-doc/DocModeloDinamicoKYC';
+import DocFunisCaptacao from '@/components/kyc-doc/DocFunisCaptacao';
 import RiskScoringDocTab from '@/components/kyc-doc/risk-scoring/RiskScoringDocTab';
 
 const TOC = [
@@ -47,6 +48,7 @@ const TOC = [
   { id: 's16', n: '16', label: 'Módulo de Parceiros de Compliance — Colaboração Externa' },
   { id: 's17', n: '17', label: 'Link de Documentos Exclusivos — Fluxo Acelerado' },
   { id: 's18', n: '18', label: 'Doc Compliance Parceiros + Coleta Bancária + Export Pré-KYC' },
+  { id: 's19', n: '19', label: 'Funis de Captação de Leads — Lead V5, PIX V4 e Fechamento (Pré-KYC)' },
 ];
 
 export default function DocumentoKYCKYB() {
@@ -95,7 +97,7 @@ export default function DocumentoKYCKYB() {
             onClick={() => setActiveTab('manual')}
             icon={BookOpen}
             label="Manual de Processos"
-            sublabel="19 seções completas"
+            sublabel="20 seções completas"
           />
           <TabButton
             active={activeTab === 'templates'}
@@ -282,6 +284,7 @@ function ManualContent({ templates, questionsByTemplate }) {
         <div id="s16" className="doc-break"><DocParceirosCompliance /></div>
         <div id="s17" className="doc-break"><DocDocOnlyLink /></div>
         <div id="s18" className="doc-break"><DocDocCompParceiros /></div>
+        <div id="s19" className="doc-break"><DocFunisCaptacao /></div>
       </div>
 
       {/* ═══ FOOTER ═══ */}

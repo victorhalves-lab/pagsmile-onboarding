@@ -54,6 +54,15 @@ export default function DocGlossario() {
         ['Escalação Questionável', 'Caso em Revisão Manual com subfaixa 1A-3B — possível escalação desnecessária. Listado em /EscalationsReview.'],
         ['Pré-preenchimento (autocomplete)', 'Respostas herdadas de Lead v5 / Lead PIX v4 ao abrir /ComplianceDinamico — reduz fricção e garante consistência.'],
         ['Template Model', 'String identificadora (ex: ComplianceEcommerceV4). Mapeada em complianceModelRegistry.js para storageKey, documentUploadPage, flowType, badgeLabel.'],
+        ['Lead Pagsmile V5', 'Funil público de captação (cartão) com 12 etapas: Tipo de Negócio → Dados da Empresa → Endereço → Contato → Modelo de Negócio → Composição da Operação → Volumetria → Distribuição → Taxas Atuais → Processador → Compliance → Fechamento. Hospedado em /QuestionarioLeadsPagsmile.'],
+        ['Lead PIX V4', 'Funil público de captação (PIX) com 7 etapas: Tipo PIX → Dados da Empresa → Modelo de Negócio → Volume PIX → Situação Atual → Serviços Complementares → Contato. Hospedado em /LeadPixV4.'],
+        ['Fechamento Landing', 'Funil público acoplado a propostas padrão (URL /pp/:slug). 3 blocos consolidados (Empresa + Volumetria + Modelo) — gera Lead + Proposal + OnboardingCase rascunho de uma vez.'],
+        ['mixOperacao', 'Composição percentual do que o cliente vende: { ecommerce, dropshipping, infoproduto, saas, educacao, outros: [{nome, percentual}] }. Soma OBRIGATORIAMENTE 100%. Renderizado pelo MixOperacaoSlider na Etapa 6 (não 2 — reorganizado em 2026) do Lead V5.'],
+        ['Distribuição', 'Composição percentual dos meios de pagamento usados: { credito, debito, pix, boleto } (se já processa) ou distribuicaoDesejada (se está começando). Etapa 8 do Lead V5. Soma 100% obrigatoriamente.'],
+        ['Distribuicao Parcelamento', 'Composição percentual das parcelas do crédito: { avista, de2a6x, de7a12x, de13a21x }. Soma 100%. Coletada na Etapa 8 quando jaProcessa="Sim, já processo".'],
+        ['Lead Qualifier', 'Score 0-100 calculado client-side no submit do Lead V5/PIX V4 + ajustes BDC server-side. Mapeado para leadQualifierLevel ∈ {EXCELENTE, BOM, REGULAR, FRACO, INSUFICIENTE, PENDENTE}. Persistido em Lead.leadQualifierScore e Lead.leadQualifierLevel.'],
+        ['BDC Lead Score', 'Variante do score qualificador que aplica ajustes a partir do bdcEnrichmentData (Shell Company, atividade, idade da empresa, RAIS). Persistido em Lead.bdcLeadScore. Calculado por calculateBDCEnrichedScore.'],
+        ['Flags Silenciosas', '16 booleanos calculados pelo calculateSilentFlags ao submeter Lead V5: PERSONAL_EMAIL, NO_WEBSITE, NO_ANTIFRAUDE, HIGH_CHARGEBACK, HIGH_MED_PIX, TERMINATED_BEFORE, TPV_EXCEEDS_REVENUE, NEW_MERCHANT, CNPJ_SITUACAO_IRREGULAR, EMPRESA_NOVA, SETOR_REGULADO, CNAE_MISMATCH, VOLUME_INCOMPATIVEL, JUST_QUOTING, LOW_TICKET, HIGH_REFUND_POLICY. Não bloqueiam submit — alimentam ranking comercial.'],
       ]} />
 
       <H2>0.3. Bloqueios V4 — B01 a B10</H2>
