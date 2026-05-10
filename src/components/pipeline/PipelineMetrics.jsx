@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Users, DollarSign, CheckCircle, XCircle, BarChart3, TrendingUp, Clock, Target, Wallet, ArrowUpRight } from 'lucide-react';
 import moment from 'moment';
+import { FALLBACK_MDR_RATE } from '@/lib/businessConstants';
 
 const formatMoeda = (val) => {
   if (!val) return 'R$ 0';
@@ -78,12 +79,12 @@ export default function PipelineMetrics({ leads, proposals = [], dealClosedIds =
         const revFees = txPerMonth * feePerTx;
         receitaFechadaReal += revMdr + revPix + revFees;
       } else {
-        receitaFechadaReal += (l.tpvMensal || 0) * 0.025;
+        receitaFechadaReal += (l.tpvMensal || 0) * FALLBACK_MDR_RATE;
       }
     });
 
     // Estimated revenue from pipeline
-    const receitaPipelineEstimada = tpvPipeline * 0.025;
+    const receitaPipelineEstimada = tpvPipeline * FALLBACK_MDR_RATE;
 
     // Ticket médio dos fechados
     const ticketMedioFechado = closedCount > 0 ? tpvFechado / closedCount : 0;

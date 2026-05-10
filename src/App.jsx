@@ -12,67 +12,87 @@ import { PermissionsProvider } from '@/lib/PermissionsProvider';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import { base44 } from '@/api/base44Client';
-import GestaoIntroducers from './pages/GestaoIntroducers';
-import IntroducerDashboard from './pages/IntroducerDashboard';
-import QuestionarioReuniao from './pages/QuestionarioReuniao';
-import ProcessMeetingNotes from './pages/ProcessMeetingNotes';
-import ComplianceResume from './pages/ComplianceResume';
+// ── Eager imports: components that MUST be available immediately on every render ──
+// (auth screens, error states, redirect helpers — small components, no async load benefit)
 import LegacyComplianceRedirect from './pages/LegacyComplianceRedirect';
-import QuestionarioReuniaoPix from './pages/QuestionarioReuniaoPix';
-import SubsellerQuestionnaire from './pages/SubsellerQuestionnaire';
-import GerenciarSubsellerLinks from './pages/GerenciarSubsellerLinks';
-import ConfiguracaoParceiros from './pages/ConfiguracaoParceiros';
-import IntroducerLandingPage from './pages/IntroducerLandingPage';
-import GestaoPropostasPadrao from './pages/GestaoPropostasPadrao';
-import CriarPropostaPadrao from './pages/CriarPropostaPadrao';
-import PropostaPadraoDetalhes from './pages/PropostaPadraoDetalhes';
-import PropostaPadraoPublica from './pages/PropostaPadraoPublica';
-import GestaoPropostasPix from './pages/GestaoPropostasPix';
-import CriarPropostaPix from './pages/CriarPropostaPix';
-import PropostaPixDetalhes from './pages/PropostaPixDetalhes';
-import PropostaPixPublica from './pages/PropostaPixPublica';
-import GestaoLandingPages from './pages/GestaoLandingPages';
-import DadosInsights from './pages/DadosInsights';
-import RiskScoringV4 from './pages/RiskScoringV4';
-import RiskScoringSubcontas from './pages/RiskScoringSubcontas';
-import QuestionarioLeadsPagsmile from './pages/QuestionarioLeadsPagsmile';
-import LeadPixV4 from './pages/LeadPixV4';
-import FechamentoLandingPage from './pages/FechamentoLandingPage';
-import DashboardComercial from './pages/DashboardComercial';
-import DashboardCEO from './pages/DashboardCEO';
-import ProcessosModelo from './pages/ProcessosModelo';
-import GerarKickOff from './pages/GerarKickOff';
-import KickOffPublico from './pages/KickOffPublico';
+import ComplianceDocOnlyRedirect from './pages/ComplianceDocOnlyRedirect';
+import PublicSlugRedirect from './pages/PublicSlugRedirect';
 import SlugRedirect from './pages/SlugRedirect';
 import AccessDenied from './components/AccessDenied';
 import AdminLoginScreen from './components/admin/AdminLoginScreen';
 import TwoFactorEnrollScreen from './components/admin/TwoFactorEnrollScreen';
 import TwoFactorLoginScreen from './components/admin/TwoFactorLoginScreen';
-import GerenciarTaxasPadrao from './pages/GerenciarTaxasPadrao';
-import SubsellerDocUpload from './pages/SubsellerDocUpload';
-import Cadastro from './pages/Cadastro';
-import CadastroDetalhe from './pages/CadastroDetalhe';
-import ComplianceDocOnly from './pages/ComplianceDocOnly';
-import ComplianceDocOnlyRedirect from './pages/ComplianceDocOnlyRedirect';
-import PublicOnboarding from './pages/PublicOnboarding';
-import BDCHealthDashboard from './pages/BDCHealthDashboard';
-import AnaliseCompleta from './pages/AnaliseCompleta';
-import BulkReprocess from './pages/BulkReprocess';
-import DocumentoKYCKYB from './pages/DocumentoKYCKYB';
-import EscalationsReview from './pages/EscalationsReview';
-import PublicSlugRedirect from './pages/PublicSlugRedirect';
-import GestaoPerfis from './pages/GestaoPerfis';
-import EditorPerfil from './pages/EditorPerfil';
-import GestaoUsuarios from './pages/GestaoUsuarios';
-import AuditoriaAcessos from './pages/AuditoriaAcessos';
-import CafTestLab from './pages/CafTestLab';
-import ComplianceParceiro from './pages/ComplianceParceiro';
-import ComplianceParceiroDetalhe from './pages/ComplianceParceiroDetalhe';
-import AdminGestaoParceiros from './pages/AdminGestaoParceiros';
-import DocCompParceiros from './pages/DocCompParceiros';
-import BankDataCollect from './pages/BankDataCollect';
-import Governanca from './pages/Governanca';
-import DocumentacaoMaster from './pages/DocumentacaoMaster';
+
+// ── Lazy imports: heavy pages loaded only when their route is visited ──
+// Each page becomes its own bundle chunk → smaller initial download.
+// React.Suspense boundary in <AppRoutes> shows the spinner while loading.
+const lazyPage = (loader) => React.lazy(() =>
+  loader().catch((err) => {
+    console.error('[App.jsx] Failed to load page:', err);
+    return {
+      default: () => React.createElement(
+        'div',
+        { style: { padding: '32px', fontFamily: 'Inter, system-ui, sans-serif' } },
+        React.createElement('h1', { style: { color: '#002443', fontSize: '18px', marginBottom: '8px' } }, 'Erro ao carregar esta página'),
+        React.createElement('p', { style: { color: '#002443', opacity: 0.7, fontSize: '14px' } }, String(err?.message || err))
+      ),
+    };
+  })
+);
+
+const GestaoIntroducers = lazyPage(() => import('./pages/GestaoIntroducers'));
+const IntroducerDashboard = lazyPage(() => import('./pages/IntroducerDashboard'));
+const QuestionarioReuniao = lazyPage(() => import('./pages/QuestionarioReuniao'));
+const ProcessMeetingNotes = lazyPage(() => import('./pages/ProcessMeetingNotes'));
+const ComplianceResume = lazyPage(() => import('./pages/ComplianceResume'));
+const QuestionarioReuniaoPix = lazyPage(() => import('./pages/QuestionarioReuniaoPix'));
+const SubsellerQuestionnaire = lazyPage(() => import('./pages/SubsellerQuestionnaire'));
+const GerenciarSubsellerLinks = lazyPage(() => import('./pages/GerenciarSubsellerLinks'));
+const ConfiguracaoParceiros = lazyPage(() => import('./pages/ConfiguracaoParceiros'));
+const IntroducerLandingPage = lazyPage(() => import('./pages/IntroducerLandingPage'));
+const GestaoPropostasPadrao = lazyPage(() => import('./pages/GestaoPropostasPadrao'));
+const CriarPropostaPadrao = lazyPage(() => import('./pages/CriarPropostaPadrao'));
+const PropostaPadraoDetalhes = lazyPage(() => import('./pages/PropostaPadraoDetalhes'));
+const PropostaPadraoPublica = lazyPage(() => import('./pages/PropostaPadraoPublica'));
+const GestaoPropostasPix = lazyPage(() => import('./pages/GestaoPropostasPix'));
+const CriarPropostaPix = lazyPage(() => import('./pages/CriarPropostaPix'));
+const PropostaPixDetalhes = lazyPage(() => import('./pages/PropostaPixDetalhes'));
+const PropostaPixPublica = lazyPage(() => import('./pages/PropostaPixPublica'));
+const GestaoLandingPages = lazyPage(() => import('./pages/GestaoLandingPages'));
+const DadosInsights = lazyPage(() => import('./pages/DadosInsights'));
+const RiskScoringV4 = lazyPage(() => import('./pages/RiskScoringV4'));
+const RiskScoringSubcontas = lazyPage(() => import('./pages/RiskScoringSubcontas'));
+const QuestionarioLeadsPagsmile = lazyPage(() => import('./pages/QuestionarioLeadsPagsmile'));
+const LeadPixV4 = lazyPage(() => import('./pages/LeadPixV4'));
+const FechamentoLandingPage = lazyPage(() => import('./pages/FechamentoLandingPage'));
+const DashboardComercial = lazyPage(() => import('./pages/DashboardComercial'));
+const DashboardCEO = lazyPage(() => import('./pages/DashboardCEO'));
+const ProcessosModelo = lazyPage(() => import('./pages/ProcessosModelo'));
+const GerarKickOff = lazyPage(() => import('./pages/GerarKickOff'));
+const KickOffPublico = lazyPage(() => import('./pages/KickOffPublico'));
+const GerenciarTaxasPadrao = lazyPage(() => import('./pages/GerenciarTaxasPadrao'));
+const SubsellerDocUpload = lazyPage(() => import('./pages/SubsellerDocUpload'));
+const Cadastro = lazyPage(() => import('./pages/Cadastro'));
+const CadastroDetalhe = lazyPage(() => import('./pages/CadastroDetalhe'));
+const ComplianceDocOnly = lazyPage(() => import('./pages/ComplianceDocOnly'));
+const PublicOnboarding = lazyPage(() => import('./pages/PublicOnboarding'));
+const BDCHealthDashboard = lazyPage(() => import('./pages/BDCHealthDashboard'));
+const AnaliseCompleta = lazyPage(() => import('./pages/AnaliseCompleta'));
+const BulkReprocess = lazyPage(() => import('./pages/BulkReprocess'));
+const DocumentoKYCKYB = lazyPage(() => import('./pages/DocumentoKYCKYB'));
+const EscalationsReview = lazyPage(() => import('./pages/EscalationsReview'));
+const GestaoPerfis = lazyPage(() => import('./pages/GestaoPerfis'));
+const EditorPerfil = lazyPage(() => import('./pages/EditorPerfil'));
+const GestaoUsuarios = lazyPage(() => import('./pages/GestaoUsuarios'));
+const AuditoriaAcessos = lazyPage(() => import('./pages/AuditoriaAcessos'));
+const CafTestLab = lazyPage(() => import('./pages/CafTestLab'));
+const ComplianceParceiro = lazyPage(() => import('./pages/ComplianceParceiro'));
+const ComplianceParceiroDetalhe = lazyPage(() => import('./pages/ComplianceParceiroDetalhe'));
+const AdminGestaoParceiros = lazyPage(() => import('./pages/AdminGestaoParceiros'));
+const DocCompParceiros = lazyPage(() => import('./pages/DocCompParceiros'));
+const BankDataCollect = lazyPage(() => import('./pages/BankDataCollect'));
+const Governanca = lazyPage(() => import('./pages/Governanca'));
+const DocumentacaoMaster = lazyPage(() => import('./pages/DocumentacaoMaster'));
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];

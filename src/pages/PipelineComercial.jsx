@@ -22,6 +22,7 @@ import PipelineMetrics from '../components/pipeline/PipelineMetrics';
 import PipelineAgingAlerts from '../components/pipeline/PipelineAgingAlerts';
 import PipelineConversionChart from '../components/pipeline/PipelineConversionChart';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
+import { FALLBACK_MDR_RATE } from '@/lib/businessConstants';
 
 const formatMoeda = (val) => {
   if (!val) return 'R$ 0';
@@ -498,7 +499,7 @@ export default function PipelineComercial() {
           {columns.map(col => {
             const colTPVMensal = col.leads.reduce((s, l) => s + (l.tpvMensal || 0), 0);
             const colTPVAnual = colTPVMensal * 12;
-            const colReceitaMensal = colTPVMensal * 0.025;
+            const colReceitaMensal = colTPVMensal * FALLBACK_MDR_RATE;
             const colReceitaAnual = colReceitaMensal * 12;
             return (
               <div key={col.id} className="flex-shrink-0 w-[260px]">

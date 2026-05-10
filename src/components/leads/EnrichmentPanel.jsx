@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { base44 } from '@/api/base44Client';
@@ -64,6 +65,7 @@ function DataRow({ label, value, valueClass }) {
 
 export default function EnrichmentPanel({ lead }) {
   const [loading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
   const enrichment = lead?.questionnaireData?._enrichment;
   const cnpjEnrichment = lead?.questionnaireData?._cnpjEnrichment;
 
@@ -78,8 +80,9 @@ export default function EnrichmentPanel({ lead }) {
         site: lead.website,
         qsa: cnpjEnrichment?.qsa || []
       });
-      window.location.reload();
-    } catch {
+      // Invalidate any cached lead/leads queries instead of full page reload
+      queryClient.invalidateQueries();
+    } finally {
       setLoading(false);
     }
   };
