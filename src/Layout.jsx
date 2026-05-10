@@ -528,6 +528,15 @@ export default function Layout({ children, currentPageName }) {
                 />
               </div>
 
+              {/* Documentação Master */}
+              <div className="mt-1">
+                <NavItem 
+                  item={{ label: 'Documentação Master', path: 'DocumentacaoMaster', icon: FileText, highlight: true }} 
+                  isActive={currentPageName === 'DocumentacaoMaster'}
+                  isCollapsed={collapsed}
+                />
+              </div>
+
             </nav>
 
             {/* Collapse Toggle */}
@@ -698,6 +707,16 @@ export default function Layout({ children, currentPageName }) {
                   <NavItem 
                     item={{ label: t('menu.how_it_works'), path: 'HowItWorks', icon: BookOpen }} 
                     isActive={currentPageName === 'HowItWorks'}
+                    onClick={() => setMobileMenuOpen(false)}
+                    isCollapsed={false}
+                  />
+                </div>
+
+                {/* Documentação Master mobile */}
+                <div className="mt-1">
+                  <NavItem 
+                    item={{ label: 'Documentação Master', path: 'DocumentacaoMaster', icon: FileText, highlight: true }} 
+                    isActive={currentPageName === 'DocumentacaoMaster'}
                     onClick={() => setMobileMenuOpen(false)}
                     isCollapsed={false}
                   />

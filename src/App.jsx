@@ -72,6 +72,7 @@ import AdminGestaoParceiros from './pages/AdminGestaoParceiros';
 import DocCompParceiros from './pages/DocCompParceiros';
 import BankDataCollect from './pages/BankDataCollect';
 import Governanca from './pages/Governanca';
+import DocumentacaoMaster from './pages/DocumentacaoMaster';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -407,6 +408,7 @@ const AuthenticatedApp = () => {
       <Route path="/AdminGestaoParceiros" element={<LayoutWrapper currentPageName="AdminGestaoParceiros"><AdminGestaoParceiros /></LayoutWrapper>} />
       <Route path="/DocCompParceiros" element={<LayoutWrapper currentPageName="DocCompParceiros"><DocCompParceiros /></LayoutWrapper>} />
       <Route path="/Governanca" element={<LayoutWrapper currentPageName="Governanca"><Governanca /></LayoutWrapper>} />
+      <Route path="/DocumentacaoMaster" element={<LayoutWrapper currentPageName="DocumentacaoMaster"><DocumentacaoMaster /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
