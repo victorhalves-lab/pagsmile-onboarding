@@ -153,12 +153,26 @@ export default function DashboardComercial() {
     ).length;
 
     // ── Funnel data ──
+    // Regra v2026-05-10: cliente NÃO assina contrato → proposta aceita = NEGÓCIO FECHADO.
+    // Conta a partir da realidade (Proposal/OnboardingCase), não só do Lead.status,
+    // porque Lead.status pode ficar dessincronizado quando proposta é aceita sem update.
+    const acceptedLeadIds = new Set();
+    allProposals.forEach(p => {
+      if (p.status === 'aceita' && p.leadId) acceptedLeadIds.add(p.leadId);
+    });
+    const sentLeadIds = new Set();
+    allProposals.forEach(p => {
+      if (['enviada', 'visualizada', 'contraproposta', 'expirada'].includes(p.status) && p.leadId) sentLeadIds.add(p.leadId);
+    });
+    const fechadosCount = acceptedLeadIds.size + leads.filter(l => l.status === 'proposta_aceita' && !acceptedLeadIds.has(l.id)).length;
+    const propostaEnviadaCount = sentLeadIds.size + leads.filter(l => l.status === 'proposta_enviada' && !sentLeadIds.has(l.id)).length;
+
     const funnelData = [
       { name: 'Questionário', value: leads.filter(l => l.status === 'questionario_preenchido').length },
       { name: 'Analisado IA', value: leads.filter(l => l.status === 'analisado_priscila').length },
       { name: 'Em Contato', value: leads.filter(l => l.status === 'em_contato_comercial').length },
-      { name: 'Proposta Enviada', value: leads.filter(l => l.status === 'proposta_enviada').length },
-      { name: 'Proposta Aceita', value: leads.filter(l => l.status === 'proposta_aceita').length },
+      { name: 'Proposta Enviada', value: propostaEnviadaCount },
+      { name: 'Negócio Fechado', value: fechadosCount },
       { name: 'KYC', value: leads.filter(l => ['kyc_iniciado', 'kyc_aprovado', 'kyc_revisao_manual'].includes(l.status)).length },
       { name: 'Ativado', value: leads.filter(l => l.status === 'ativado').length },
     ];

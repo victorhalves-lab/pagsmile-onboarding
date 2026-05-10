@@ -10,7 +10,7 @@ const formatMoeda = (val) => {
   return `R$ ${val.toLocaleString('pt-BR')}`;
 };
 
-export default function PipelineMetrics({ leads, contracts = [], proposals = [], dealClosedIds = new Set() }) {
+export default function PipelineMetrics({ leads, proposals = [], dealClosedIds = new Set() }) {
   const metrics = useMemo(() => {
     const total = leads.length;
     const byStatus = {};
@@ -109,7 +109,7 @@ export default function PipelineMetrics({ leads, contracts = [], proposals = [],
       ticketMedioFechado, avgCycleDays, emNegociacao,
       activeCount: activeLeads.length,
     };
-  }, [leads, contracts, proposals, dealClosedIds]);
+  }, [leads, proposals, dealClosedIds]);
 
   const kpis = [
     { label: 'Leads no Funil', value: metrics.total, sub: `${metrics.activeCount} ativos`, icon: Users, iconColor: 'text-blue-500', valueColor: 'text-[var(--pagsmile-blue)]' },

@@ -35,13 +35,15 @@ export default function PipelineComercial() {
   const [search, setSearch] = useState('');
   const [period, setPeriod] = useState('all');
 
+  // Pipeline simplificado: cliente NÃO assina contrato — proposta aceita = NEGÓCIO FECHADO.
+  // Propostas expiradas (sem aceite) voltam para "Proposta Enviada" para reenvio.
   const COLUNAS = [
     { id: 'leads_completo', name: t('pipeline_page.col_leads_complete'), color: '#6B7280', statuses: ['questionario_preenchido', 'analisado_priscila'], questionnaireType: 'FULL' },
     { id: 'em_contato_simplificado', name: t('pipeline_page.col_in_contact'), color: '#F59E0B', statuses: ['em_contato_comercial'], questionnaireType: 'ANY' },
-    { id: 'proposta_enviada', name: t('pipeline_page.col_proposal_sent'), color: '#3B82F6', statuses: ['proposta_enviada'] },
-    { id: 'proposta_aceita', name: t('pipeline_page.col_proposal_accepted'), color: '#8B5CF6', statuses: ['proposta_aceita'] },
+    { id: 'proposta_enviada', name: t('pipeline_page.col_proposal_sent'), color: '#3B82F6', statuses: ['proposta_enviada'], specialRule: 'PROPOSAL_OPEN' },
+    { id: 'negocio_fechado', name: 'Negócio Fechado (Proposta Aceita)', color: '#8B5CF6', statuses: ['proposta_aceita'], specialRule: 'DEAL_CLOSED' },
     { id: 'compliance_kyc', name: t('pipeline_page.col_compliance'), color: '#10B981', statuses: ['kyc_iniciado', 'kyc_aprovado', 'kyc_revisao_manual'] },
-    { id: 'negocio_fechado', name: t('pipeline_page.col_deal_closed') || 'Negócio Fechado', color: '#047857', statuses: ['ativado'], specialRule: 'DEAL_CLOSED' },
+    { id: 'ativado', name: 'Ativado (Operando)', color: '#047857', statuses: ['ativado'] },
     { id: 'perdido', name: t('pipeline_page.col_lost'), color: '#EF4444', statuses: ['perdido', 'proposta_recusada'] },
   ];
 
@@ -357,10 +359,7 @@ export default function PipelineComercial() {
     });
   }, [filteredLeads, leadContractMap, leadProposalMap]);
 
-  // Set of lead IDs that have contracts (ANY status including pre_generated)
-  const leadsWithContract = useMemo(() => new Set(Object.keys(leadContractMap)), [leadContractMap]);
-
-  // Set of lead IDs that have accepted proposals (any version)
+  // Set of lead IDs that have accepted proposals (any version) — fonte de verdade para "fechado"
   const leadsWithAcceptedProposal = useMemo(() => {
     const set = new Set();
     proposals.forEach(p => {
@@ -369,29 +368,47 @@ export default function PipelineComercial() {
     return set;
   }, [proposals]);
 
-  // "Negócio Fechado" = lead com CONTRATO (qualquer status)
-  //                    OU proposta aceita OU status ativado/proposta_aceita
+  // Set of lead IDs that have an OPEN proposal (enviada/visualizada/contraproposta/expirada)
+  // Expiradas voltam para "Proposta Enviada" para reenvio (não vão para Perdido).
+  const leadsWithOpenProposal = useMemo(() => {
+    const OPEN_STATUSES = new Set(['enviada', 'visualizada', 'contraproposta', 'expirada']);
+    const set = new Set();
+    proposals.forEach(p => {
+      if (p.leadId && OPEN_STATUSES.has(p.status)) set.add(p.leadId);
+    });
+    return set;
+  }, [proposals]);
+
+  // "Negócio Fechado" = proposta aceita (cliente NÃO assina contrato — regra v2026-05-10).
+  // Inclui: lead.status='proposta_aceita' OU qualquer proposta do lead com status='aceita'.
+  // Não considera mais contratos (cliente não assina mais).
   const dealClosedIds = useMemo(() => {
     const set = new Set();
     enrichedLeads.forEach(l => {
-      if (l.status === 'ativado') { set.add(l.id); return; }
-      if (leadsWithContract.has(l.id) || l._contract) { set.add(l.id); return; }
+      if (l.status === 'proposta_aceita') { set.add(l.id); return; }
       if (leadsWithAcceptedProposal.has(l.id)) { set.add(l.id); return; }
       if (l._proposal?.status === 'aceita') { set.add(l.id); return; }
-      if (l.status === 'proposta_aceita') { set.add(l.id); return; }
     });
     return set;
-  }, [enrichedLeads, leadsWithContract, leadsWithAcceptedProposal]);
+  }, [enrichedLeads, leadsWithAcceptedProposal]);
 
   // Group leads by column
   const columns = useMemo(() => {
     return COLUNAS.map(col => ({
       ...col,
       leads: enrichedLeads.filter(l => {
-        // "Negócio Fechado": has contract, accepted proposal, or ativado
+        // "Negócio Fechado": proposta aceita (sem contrato — cliente não assina mais)
         if (col.specialRule === 'DEAL_CLOSED') return dealClosedIds.has(l.id);
-        // All other columns: skip leads already in closed column
+        // Skip leads already in closed column from any other column
         if (dealClosedIds.has(l.id)) return false;
+        // "Proposta Enviada" inclui qualquer lead com proposta aberta (enviada/visualizada/contraproposta/expirada)
+        // mesmo que o Lead.status ainda esteja em 'em_contato_comercial' por falta de sync.
+        if (col.specialRule === 'PROPOSAL_OPEN') {
+          if (col.statuses.includes(l.status)) return true;
+          if (leadsWithOpenProposal.has(l.id)) return true;
+          if (l._proposal && ['enviada', 'visualizada', 'contraproposta', 'expirada'].includes(l._proposal.status)) return true;
+          return false;
+        }
         if (!col.statuses.includes(l.status)) return false;
         if (col.questionnaireType === 'FULL') {
           const lt = l.onboardingLinkCode ? linkTypeMap[l.onboardingLinkCode] : 'LEAD_QUESTIONNAIRE';
@@ -400,7 +417,7 @@ export default function PipelineComercial() {
         return true;
       })
     }));
-  }, [enrichedLeads, linkTypeMap, dealClosedIds]);
+  }, [enrichedLeads, linkTypeMap, dealClosedIds, leadsWithOpenProposal]);
 
   const onDragEnd = (result) => {
     if (!result.destination) return;
@@ -456,7 +473,7 @@ export default function PipelineComercial() {
       </div>
 
       {/* Metrics */}
-      <PipelineMetrics leads={filteredLeads} contracts={contracts} proposals={proposals} dealClosedIds={dealClosedIds} />
+      <PipelineMetrics leads={filteredLeads} proposals={proposals} dealClosedIds={dealClosedIds} />
 
       {/* Conversion chart + Aging alerts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

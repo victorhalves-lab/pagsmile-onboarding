@@ -83,15 +83,16 @@ export default function LeadKanbanCard({ lead, onAction, contract, proposal }) {
 
       <div className="flex items-center gap-1.5 flex-wrap">
         {proposal && (
-          <Badge className="text-[9px] px-1.5 py-0 bg-blue-50 text-blue-700 border-blue-200 gap-0.5">
+          <Badge className={`text-[9px] px-1.5 py-0 gap-0.5 ${
+            proposal.status === 'aceita' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+            proposal.status === 'expirada' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+            'bg-blue-50 text-blue-700 border-blue-200'
+          }`}>
             <Send className="w-2.5 h-2.5" />
-            {proposal.status === 'aceita' ? t('kanban.prop_accepted') : proposal.status === 'enviada' || proposal.status === 'visualizada' ? t('kanban.prop_sent') : proposal.codigo?.slice(-5) || t('kanban.proposal')}
-          </Badge>
-        )}
-        {contract && (
-          <Badge className="text-[9px] px-1.5 py-0 bg-emerald-50 text-emerald-700 border-emerald-200 gap-0.5">
-            <FileCheck2 className="w-2.5 h-2.5" />
-            {t('kanban.contract')}
+            {proposal.status === 'aceita' ? t('kanban.prop_accepted') :
+             proposal.status === 'expirada' ? 'Expirada' :
+             ['enviada', 'visualizada', 'contraproposta'].includes(proposal.status) ? t('kanban.prop_sent') :
+             proposal.codigo?.slice(-5) || t('kanban.proposal')}
           </Badge>
         )}
       </div>
