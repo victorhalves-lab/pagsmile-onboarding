@@ -33,6 +33,10 @@ import PagsmileLeadV5Section from '../components/howitworks/PagsmileLeadV5Sectio
 import ComplianceV4Section from '../components/howitworks/ComplianceV4Section';
 import LeadPixV4Section from '../components/howitworks/LeadPixV4Section';
 import RiskScoringV4Section from '../components/howitworks/RiskScoringV4Section';
+import GovernancaSection from '../components/howitworks/GovernancaSection';
+import ParceirosComplianceSection from '../components/howitworks/ParceirosComplianceSection';
+import EscalacoesDocOnlySection from '../components/howitworks/EscalacoesDocOnlySection';
+import EntidadesAtualizadasSection from '../components/howitworks/EntidadesAtualizadasSection';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function HowItWorks() {
@@ -59,18 +63,20 @@ export default function HowItWorks() {
           </div>
         )}
         <div className="flex flex-wrap gap-2 mt-4">
-          <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0">20 Seções</Badge>
-          <Badge className="bg-blue-50 text-blue-700 border-0">55+ Páginas</Badge>
-          <Badge className="bg-purple-50 text-purple-700 border-0">27+ Entidades</Badge>
+          <Badge className="bg-[#2bc196]/10 text-[#2bc196] border-0">24 Seções</Badge>
+          <Badge className="bg-blue-50 text-blue-700 border-0">60+ Páginas</Badge>
+          <Badge className="bg-purple-50 text-purple-700 border-0">50+ Entidades</Badge>
           <Badge className="bg-orange-50 text-orange-700 border-0">10 Fluxogramas Microscópicos</Badge>
           <Badge className="bg-pink-50 text-pink-700 border-0">7 Jornadas End-to-End</Badge>
-          <Badge className="bg-red-50 text-red-700 border-0">3 IAs (SENTINEL, PRISCILA, Lead Qualifier) + Motor v4</Badge>
+          <Badge className="bg-red-50 text-red-700 border-0">Data-First v7: V4 + CAF decidem · SENTINEL relator</Badge>
           <Badge className="bg-cyan-50 text-cyan-700 border-0">21 Abas de Analytics</Badge>
-          <Badge className="bg-amber-50 text-amber-700 border-0">6 Templates Lead + 10 Templates Compliance v4 + 2 Subseller (PF/PJ)</Badge>
-          <Badge className="bg-emerald-50 text-emerald-700 border-0">35+ Backend Functions</Badge>
+          <Badge className="bg-amber-50 text-amber-700 border-0">11 V4 Cartão + 2 PIX + 2 Subseller (PF/PJ)</Badge>
+          <Badge className="bg-emerald-50 text-emerald-700 border-0">175+ Backend Functions</Badge>
           <Badge className="bg-violet-50 text-violet-700 border-0">3 Tipos de Proposta + Versionamento</Badge>
-          <Badge className="bg-rose-50 text-rose-700 border-0">13 Segmentos + 27 Flags Silenciosas</Badge>
-          <Badge className="bg-slate-100 text-slate-700 border-0">Risk Scoring v4: 60 Variáveis + 8 Subfaixas + 10 Bloqueios</Badge>
+          <Badge className="bg-rose-50 text-rose-700 border-0">15 Segmentos · 16 Flags Lead V5 · 11 Flags PIX V4</Badge>
+          <Badge className="bg-slate-100 text-slate-700 border-0">Risk Scoring v4: 13 Dimensões · 8 Subfaixas · 10 Bloqueios</Badge>
+          <Badge className="bg-indigo-50 text-indigo-700 border-0">2FA TOTP+PIN · 5 Perfis · Auditoria 5 anos</Badge>
+          <Badge className="bg-teal-50 text-teal-700 border-0">Parceiros Externos · Pré-KYC · Doc-Only Link</Badge>
         </div>
       </div>
 
@@ -491,13 +497,41 @@ export default function HowItWorks() {
         <PersonasDetailedSection />
       </Section>
 
+      {/* ═══════════════════════════════════════════════════════ */}
+      {/* 16. GOVERNANÇA DE ACESSO — PERFIS + 2FA + AUDITORIA */}
+      {/* ═══════════════════════════════════════════════════════ */}
+      <Section id="governanca" title="16. Governança de Acesso — Perfis Granulares + 2FA + Auditoria 5 Anos" icon={Lock} badge="3 Camadas de Proteção" expandedSections={expandedSections} toggleSection={toggleSection}>
+        <GovernancaSection />
+      </Section>
+
+      {/* ═══════════════════════════════════════════════════════ */}
+      {/* 17. PARCEIROS DE COMPLIANCE + PRÉ-KYC */}
+      {/* ═══════════════════════════════════════════════════════ */}
+      <Section id="parceiros-compliance" title="17. Parceiros Externos de Compliance + Doc Pré-KYC para Bancos BaaS" icon={Handshake} badge="2 Módulos Distintos" expandedSections={expandedSections} toggleSection={toggleSection}>
+        <ParceirosComplianceSection />
+      </Section>
+
+      {/* ═══════════════════════════════════════════════════════ */}
+      {/* 18. ESCALAÇÕES + DOC-ONLY + BULK REPROCESS */}
+      {/* ═══════════════════════════════════════════════════════ */}
+      <Section id="ops-compliance" title="18. Operação Compliance — Escalações Questionáveis + Doc-Only Link + Bulk Reprocess" icon={AlertCircle} badge="Governança Operacional" expandedSections={expandedSections} toggleSection={toggleSection}>
+        <EscalacoesDocOnlySection />
+      </Section>
+
+      {/* ═══════════════════════════════════════════════════════ */}
+      {/* 19. MODELO DE DADOS ATUALIZADO (50+ ENTIDADES) */}
+      {/* ═══════════════════════════════════════════════════════ */}
+      <Section id="entidades-v9" title="19. Modelo de Dados Atualizado v9.0 — 50+ Entidades por Domínio" icon={Database} badge="50+ Entidades · 11 Domínios" expandedSections={expandedSections} toggleSection={toggleSection}>
+        <EntidadesAtualizadasSection />
+      </Section>
+
       {/* Footer */}
       <div className="mt-8 p-6 bg-gradient-to-r from-[#002443] to-[#003366] rounded-2xl text-center">
         <p className="text-sm text-white/70">
-          Documentação Completa e Microscópica — Pagsmile v8.0 • {new Date().toLocaleDateString()}
+          Documentação Completa e Microscópica — Pagsmile v9.0 (Data-First v7) • {new Date().toLocaleDateString()}
         </p>
         <p className="text-xs text-white/40 mt-1">
-          20 Seções • 55+ Páginas • 27+ Entidades • 10 Fluxogramas • 7 Jornadas E2E • 3 IAs + Motor v4 • 21 Abas Analytics • 6 Templates Lead (incl. Pagsmile v5 + PIX v4) • 10 Templates Compliance v4 + 2 Subseller (PF/PJ) + 3 Legados • 35+ Backend Functions • 27 Flags Silenciosas (16 Lead + 11 PIX) • Risk Scoring v4: 60 Variáveis + 8 Subfaixas + 10 Bloqueios • Subseller PF: Upload direto sem CAF
+          24 Seções • 60+ Páginas • 50+ Entidades em 11 Domínios • 10 Fluxogramas • 7 Jornadas E2E • Data-First v7 (V4+CAF decidem, SENTINEL relator) • 21 Abas Analytics • 6 Funis de Lead (Pagsmile v5 + PIX v4 + Fechamento + Reunião + Robô IA + Simplificado) • 11 Templates Compliance v4 Cartão + 2 PIX + 2 Subseller (PF/PJ) + Legados • 175+ Backend Functions • 16 Flags Lead V5 + 11 Flags PIX V4 • Risk Scoring v4: 13 Dimensões com Pesos % + 8 Subfaixas + 10 Bloqueios + Veto Biométrico CAF + Safety Net • 5 Perfis AccessProfile + 2FA TOTP+PIN + AccessAudit/TwoFactorAudit/AdminLoginAttempt (5 anos retenção) • Parceiros Externos de Compliance (3 níveis visibilidade) + Doc Pré-KYC para BaaS + Doc-Only Link + Bulk Reprocess + Escalações Questionáveis
         </p>
       </div>
     </div>
