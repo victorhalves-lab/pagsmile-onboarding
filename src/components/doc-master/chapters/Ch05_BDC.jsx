@@ -30,13 +30,13 @@ export default function Ch05_BDC() {
     "BasicData": { ... },
     "Kyc": { ... }
   }]
-}`}
-        errors={[
-          { code: '500/502/503/504', reason: 'Transient', when: 'BDC instável — retry com backoff jittered' },
-          { code: '429', reason: 'Rate limit', when: 'Throttling — retry com backoff' },
-          { code: '408', reason: 'Timeout', when: 'Lento — retry' },
-          { code: '400/401/403', reason: 'Non-retryable', when: 'Erro permanente — para imediatamente' },
-        ]}
+}
+
+// Erros HTTP tratados:
+// 500/502/503/504 — Transient (BDC instável) → retry com backoff jittered
+// 429              — Rate limit (throttling) → retry com backoff
+// 408              — Timeout (BDC lento) → retry
+// 400/401/403      — Non-retryable (erro permanente) → para imediatamente`}
         source="bdcEnrichCase.js linhas 112-191 (callBdcBatch)"
       />
 
