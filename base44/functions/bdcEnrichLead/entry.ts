@@ -233,6 +233,22 @@ Deno.serve(async (req) => {
     const result = bdcData.Result?.[0] || {}; 
     const bd = extractBasicData(result);
 
+    // Detecta payload vazio (token expirado, sem dados, erro silencioso da BDC)
+    // BDC responde 200 mesmo quando o login está expirado → status com Code -101.
+    const statusErrors = [];
+    if (bdcData.Status && typeof bdcData.Status === 'object') {
+      for (const [ds, statuses] of Object.entries(bdcData.Status)) {
+        if (Array.isArray(statuses)) {
+          for (const s of statuses) {
+            if (s.Code !== 0 && s.Code != null) statusErrors.push({ ds, code: s.Code, msg: s.Message });
+          }
+        }
+      }
+    }
+    if (statusErrors.length > 0) {
+      console.warn(`BDC empty/error response for ${cleanCnpj}:`, JSON.stringify(statusErrors));
+    }
+
     // Build standardized response
     const response = {
       success: true,

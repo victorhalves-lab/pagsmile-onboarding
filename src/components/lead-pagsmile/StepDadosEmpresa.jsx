@@ -25,7 +25,10 @@ export default function StepDadosEmpresa({ form, updateField, cnpjData, setCnpjD
     const digits = formatted.replace(/\D/g, '');
     if (digits.length === 14) {
       const bdc = await enrichCnpj(digits, 'quick');
-      if (bdc) {
+      // Considera o BDC "útil" apenas se trouxer razão social OU nome fantasia.
+      // Resposta vazia (token expirado, dataset sem dados) → cai para BrasilAPI.
+      const bdcUtil = !!(bdc?.autoFill?.razaoSocial || bdc?.autoFill?.nomeFantasia);
+      if (bdcUtil) {
         const legacy = toLegacyCnpjData(bdc);
         if (legacy) {
           setCnpjData(legacy);
@@ -52,7 +55,7 @@ export default function StepDadosEmpresa({ form, updateField, cnpjData, setCnpjD
           updateField('_bdcAutofilled', { ...(form._bdcAutofilled || {}), ...autofilled });
         }
       } else {
-        // Fallback to Brasil API
+        // Fallback to Brasil API (também ativado quando BDC retorna vazio/expirado)
         try {
           const resp = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${digits}`, { signal: AbortSignal.timeout(5000) });
           if (resp.ok) {
@@ -69,18 +72,26 @@ export default function StepDadosEmpresa({ form, updateField, cnpjData, setCnpjD
                 municipio: data.municipio, uf: data.uf,
               } : null,
             };
-            setCnpjData(legacy);
-            if (legacy.razao_social) updateField('razaoSocial', legacy.razao_social);
-            if (legacy.nome_fantasia) updateField('nomeFantasia', legacy.nome_fantasia);
+            if (legacy.razao_social || legacy.nome_fantasia) {
+              setCnpjData(legacy);
+              if (legacy.razao_social) updateField('razaoSocial', legacy.razao_social);
+              if (legacy.nome_fantasia) updateField('nomeFantasia', legacy.nome_fantasia);
+              // Auto-fill address from BrasilAPI as well
+              if (legacy.endereco) {
+                updateField('enderecoCep', legacy.endereco.cep || '');
+                updateField('enderecoLogradouro', legacy.endereco.logradouro || '');
+                updateField('enderecoNumero', legacy.endereco.numero || '');
+                updateField('enderecoComplemento', legacy.endereco.complemento || '');
+                updateField('enderecoBairro', legacy.endereco.bairro || '');
+                updateField('enderecoMunicipio', legacy.endereco.municipio || '');
+                updateField('enderecoUf', legacy.endereco.uf || '');
+              }
+            }
           }
-        } catch { /* silent */ }
+        } catch { /* silent — cliente preenche manualmente */ }
       }
     }
   };
-
-  // Razão Social só fica readonly se o autocomplete realmente preencheu o campo.
-  // Se a fonte retornou parcial (sem razao_social), o cliente edita manualmente.
-  const razaoSocialAutoPreenchida = !!cnpjData && !!form.razaoSocial;
 
   return (
     <div className="space-y-5">
@@ -105,15 +116,14 @@ export default function StepDadosEmpresa({ form, updateField, cnpjData, setCnpjD
         {errors?.cnpj && <p className="text-xs text-red-500">CNPJ inválido — confira os dígitos</p>}
       </div>
 
-      {/* Razão Social */}
+      {/* Razão Social — sempre editável pelo cliente, mesmo após enriquecimento */}
       <div className="space-y-1" data-field="razaoSocial">
         <label className="text-sm font-semibold text-[#002443]">Razão Social *</label>
         <Input
           value={form.razaoSocial || ''}
-          onChange={(e) => !razaoSocialAutoPreenchida && updateField('razaoSocial', e.target.value)}
-          readOnly={razaoSocialAutoPreenchida}
+          onChange={(e) => updateField('razaoSocial', e.target.value)}
           placeholder="Razão Social"
-          className={`h-12 rounded-xl ${razaoSocialAutoPreenchida ? 'bg-[#f4f4f4] font-medium' : ''} ${errors?.razaoSocial ? 'border-red-400' : ''}`}
+          className={`h-12 rounded-xl ${errors?.razaoSocial ? 'border-red-400' : ''}`}
         />
         {errors?.razaoSocial && <p className="text-xs text-red-500">Razão Social é obrigatória</p>}
       </div>
