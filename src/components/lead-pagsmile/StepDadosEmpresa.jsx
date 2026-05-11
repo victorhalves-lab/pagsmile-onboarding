@@ -1,7 +1,6 @@
 import React from 'react';
 import { Input } from '@/components/ui/input';
-import { Loader2, CheckCircle, AlertTriangle, Shield, Building2 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Loader2, CheckCircle } from 'lucide-react';
 import useBdcCnpjEnrichment from '@/hooks/useBdcCnpjEnrichment';
 import SiteValidationBadge from '../leads/SiteValidationBadge';
 import { applyBdcAutofill } from './bdcAutofillMapper';
@@ -17,7 +16,7 @@ const formatCnpj = (val) => {
 
 /** ETAPA 2 — Dados da Empresa com BDC Enrichment */
 export default function StepDadosEmpresa({ form, updateField, cnpjData, setCnpjData, errors, setBdcData }) {
-  const { isLoading, error, enrichCnpj, toLegacyCnpjData } = useBdcCnpjEnrichment();
+  const { isLoading, enrichCnpj, toLegacyCnpjData } = useBdcCnpjEnrichment();
 
   const handleCnpjChange = async (e) => {
     const formatted = formatCnpj(e.target.value);
@@ -79,13 +78,14 @@ export default function StepDadosEmpresa({ form, updateField, cnpjData, setCnpjD
     }
   };
 
-  const ai = form._bdcQuickData?.activityIndicators;
+  // Razão Social só fica readonly se o autocomplete realmente preencheu o campo.
+  // Se a fonte retornou parcial (sem razao_social), o cliente edita manualmente.
+  const razaoSocialAutoPreenchida = !!cnpjData && !!form.razaoSocial;
 
   return (
     <div className="space-y-5">
       <div>
         <h2 className="text-lg font-bold text-[#002443]">Dados da Empresa</h2>
-        <p className="text-xs text-[#002443]/50 mt-1">Autocomplete via Big Data Corp + fallback Brasil API</p>
       </div>
 
       {/* CNPJ */}
@@ -103,32 +103,19 @@ export default function StepDadosEmpresa({ form, updateField, cnpjData, setCnpjD
           {cnpjData && !isLoading && <CheckCircle className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-500" />}
         </div>
         {errors?.cnpj && <p className="text-xs text-red-500">CNPJ inválido — confira os dígitos</p>}
-        {error && <p className="text-xs text-amber-600 flex items-center gap-1"><AlertTriangle className="w-3 h-3" />{error}</p>}
       </div>
-
-      {/* BDC Activity Banner */}
-      {ai && (
-        <div className="p-3 rounded-xl bg-[#002443]/5 border border-[#002443]/10 flex items-center gap-3 flex-wrap">
-          <Shield className="w-4 h-4 text-[#002443]/40 shrink-0" />
-          <span className="text-[10px] font-bold text-[#002443]/50 uppercase">BDC Verified</span>
-          {ai.activityLevel != null && (
-            <Badge variant="outline" className={`text-[10px] ${ai.activityLevel >= 0.3 ? 'border-emerald-300 text-emerald-700' : 'border-red-300 text-red-700'}`}>
-              Atividade: {(ai.activityLevel * 100).toFixed(0)}%
-            </Badge>
-          )}
-          {ai.employeesRange && <Badge variant="outline" className="text-[10px]"><Building2 className="w-3 h-3 mr-1" />{ai.employeesRange}</Badge>}
-          {ai.shellCompanyLikelihood != null && ai.shellCompanyLikelihood > 0.3 && (
-            <Badge className="text-[10px] bg-red-100 text-red-700">⚠ Shell: {(ai.shellCompanyLikelihood * 100).toFixed(0)}%</Badge>
-          )}
-        </div>
-      )}
 
       {/* Razão Social */}
       <div className="space-y-1" data-field="razaoSocial">
         <label className="text-sm font-semibold text-[#002443]">Razão Social *</label>
-        <Input value={form.razaoSocial || ''} onChange={(e) => !cnpjData && updateField('razaoSocial', e.target.value)} readOnly={!!cnpjData} placeholder={cnpjData ? 'Preenchido automaticamente' : 'Razão Social'} className={`h-12 rounded-xl ${cnpjData ? 'bg-[#f4f4f4] font-medium' : ''} ${errors?.razaoSocial ? 'border-red-400' : ''}`} />
-        {cnpjData && <p className="text-[10px] text-[#2bc196]">✓ Preenchido via BDC</p>}
-        {errors?.razaoSocial && !cnpjData && <p className="text-xs text-red-500">Razão Social é obrigatória</p>}
+        <Input
+          value={form.razaoSocial || ''}
+          onChange={(e) => !razaoSocialAutoPreenchida && updateField('razaoSocial', e.target.value)}
+          readOnly={razaoSocialAutoPreenchida}
+          placeholder="Razão Social"
+          className={`h-12 rounded-xl ${razaoSocialAutoPreenchida ? 'bg-[#f4f4f4] font-medium' : ''} ${errors?.razaoSocial ? 'border-red-400' : ''}`}
+        />
+        {errors?.razaoSocial && <p className="text-xs text-red-500">Razão Social é obrigatória</p>}
       </div>
 
       {/* Nome Fantasia */}
