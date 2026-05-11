@@ -489,7 +489,35 @@ Deno.serve(async (req) => {
         }
       }
 
-      if (subfaixa && v4Score != null) {
+      // ═══ DOC GATE (2026-05-11) ═══
+      // REGRA DE OURO: Nenhum caso pode ser marcado como "Aprovado" sem que a Etapa 2
+      // (upload de documentos KYC/KYB + CAF) tenha sido concluída.
+      // Se o template exige documentos obrigatórios e docCompleted=false, mantemos
+      // o caso em "Em Processamento" — o V4 score continua sendo calculado, o SENTINEL
+      // continua gerando relatório, mas o status FINAL aguarda a Etapa 2.
+      // Quando o cliente sobe os docs, publicOnboardingFinalize re-dispara este pipeline
+      // e o Step 4 então aplica a decisão final corretamente.
+      let templateRequiresDocs = false;
+      try {
+        const [tpl] = await base44.asServiceRole.entities.QuestionnaireTemplate.filter({ id: freshCase.questionnaireTemplateId });
+        const reqDocs = Array.isArray(tpl?.requiredDocuments) ? tpl.requiredDocuments : [];
+        templateRequiresDocs = reqDocs.some(d => d?.required === true);
+      } catch (_) { /* non-blocking — if we can't read template, fall through */ }
+      const docGateBlocking = templateRequiresDocs && !freshCase.docCompleted;
+
+      if (subfaixa && v4Score != null && docGateBlocking) {
+        console.log(`[AutoEnrich] Step 4: 🚧 DOC GATE — case ${caseId} has subfaixa=${subfaixa} score=${v4Score} BUT docCompleted=false. Holding status="Em Processamento" until docs+CAF are completed.`);
+        await base44.asServiceRole.entities.OnboardingCase.update(caseId, {
+          status: 'Em Processamento',
+          validationsCompleted: true, // V4/SENTINEL did run; only docs are missing
+          escalationSource: 'NONE',
+          escalationReason: 'Aguardando Etapa 2 (upload de documentos KYC/KYB + verificação CAF). Score V4 calculado mas decisão final retida até completar a etapa 2.',
+        });
+        // Notify Slack about the gate hold (best-effort) and return early — skip Step 5 default flow
+        finalDecision = 'Aguardando Documentos';
+        finalStatus = 'Em Processamento';
+        autoDecisionApplied = false;
+      } else if (subfaixa && v4Score != null) {
         // ═══ MAPS BY SUBFAIXA ═══
         const rollingReserveMap = { '1A': 0, '1B': 0, '2A': 5, '2B': 10, '3A': 15, '3B': 20, '4': 20, '5': 20 };
         const monitoringMap = {
