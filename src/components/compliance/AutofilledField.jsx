@@ -6,13 +6,15 @@ import { CheckCircle, Lock } from 'lucide-react';
 
 /**
  * Campo preenchido automaticamente via API com indicador visual.
- * Pode ser editável (🟢 AUTO) ou somente leitura (🟣 NOVO+AUTO / display-only).
+ * REGRA DE NEGÓCIO: campos enriquecidos/autocomplete SEMPRE são editáveis pelo cliente.
+ * A prop `readOnly` foi mantida para compatibilidade mas é ignorada — todo campo
+ * de autocomplete em questionários/leads deve permitir edição mesmo após enriquecimento.
  */
 export default function AutofilledField({
   label,
   value,
   isRequired = false,
-  readOnly = false,
+  readOnly: _readOnly = false, // eslint-disable-line no-unused-vars
   onChange,
   questionId,
   helpText,
@@ -35,23 +37,14 @@ export default function AutofilledField({
             {source}
           </Badge>
         )}
-        {readOnly && hasValue && (
-          <Badge variant="outline" className="text-[10px] gap-1 text-[#002443]/50 border-[#002443]/20">
-            <Lock className="w-3 h-3" />
-            Não editável
-          </Badge>
-        )}
       </div>
       {helpText && (
         <p className="text-xs text-[#002443]/60">{helpText}</p>
       )}
       <Input
         value={displayValue}
-        onChange={readOnly ? undefined : (e) => onChange?.(questionId, e.target.value)}
-        readOnly={readOnly}
-        className={`h-11 rounded-xl ${
-          hasValue ? 'border-emerald-200 bg-emerald-50/30' : ''
-        } ${readOnly ? 'cursor-not-allowed bg-slate-50' : ''}`}
+        onChange={(e) => onChange?.(questionId, e.target.value)}
+        className={`h-11 rounded-xl ${hasValue ? 'border-emerald-200 bg-emerald-50/30' : ''}`}
       />
     </div>
   );

@@ -118,17 +118,15 @@ export default function StepDadosEmpresa({ form, updateField, cnpjData, setCnpjD
         </div>
       )}
 
-      {/* Razão Social */}
+      {/* Razão Social — sempre editável, mesmo após enriquecimento */}
       <div className="space-y-1">
         <Label className="text-sm font-semibold">Razão Social *</Label>
         <Input
           value={form.razaoSocial || ''}
-          onChange={(e) => !cnpjData && updateField('razaoSocial', e.target.value)}
-          readOnly={!!cnpjData}
-          placeholder={cnpjData ? 'Preenchido automaticamente' : 'Razão Social da empresa'}
-          className={`h-12 rounded-xl ${cnpjData ? 'bg-[#f4f4f4] font-medium' : ''}`}
+          onChange={(e) => updateField('razaoSocial', e.target.value)}
+          placeholder="Razão Social da empresa"
+          className="h-12 rounded-xl"
         />
-        {cnpjData && <p className="text-[10px] text-[#2bc196]">✓ Preenchido via BDC</p>}
       </div>
 
       {/* Nome Fantasia */}
