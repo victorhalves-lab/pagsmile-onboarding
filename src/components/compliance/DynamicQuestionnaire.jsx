@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import StepNavigation from './StepNavigation';
 import DynamicQuestionRenderer from './DynamicQuestionRenderer';
+import QuestionnaireToDocsBridge from './QuestionnaireToDocsBridge';
 import { useOnboardingAnalytics } from '../analytics/useOnboardingAnalytics';
 import { useLeadPrefill } from './useLeadPrefill';
 import { useComplianceSession } from '../../hooks/useComplianceSession';
@@ -206,6 +207,9 @@ export default function DynamicQuestionnaire({
   const [showCafRedirect, setShowCafRedirect] = useState(false);
   const [isCompletingCaf, setIsCompletingCaf] = useState(false);
   const [resolvedCafRedirectUrl, setResolvedCafRedirectUrl] = useState(null);
+  // Bridge entre questionário e upload de documentos (Opção B — salvar e continuar depois)
+  const [showDocsBridge, setShowDocsBridge] = useState(false);
+  const [bridgeNavParams, setBridgeNavParams] = useState('');
 
   const linkCode = localStorage.getItem('onboarding_link_code');
 
@@ -737,8 +741,18 @@ export default function DynamicQuestionnaire({
       const existingCaseId = localStorage.getItem('created_onboarding_case_id');
       if (existingCaseId) params.set('caseId', existingCaseId);
       const qs = params.toString();
-      navigate(`/${documentUploadPage}${qs ? `?${qs}` : ''}`);
+      // Em vez de navegar direto (o que deixava o cliente confuso e gerava casos sem docs),
+      // mostramos a tela-ponte explicando que falta a Etapa 2 — com opção de continuar
+      // agora ou receber link por email para retomar depois (Opção B).
+      setBridgeNavParams(qs);
+      setShowDocsBridge(true);
+      window.scrollTo(0, 0);
     }
+  };
+
+  const handleBridgeContinue = () => {
+    setShowDocsBridge(false);
+    navigate(`/${documentUploadPage}${bridgeNavParams ? `?${bridgeNavParams}` : ''}`);
   };
 
   // Helper: create Merchant + OnboardingCase from compliance data so it appears in "Recebidos"
@@ -926,6 +940,19 @@ export default function DynamicQuestionnaire({
         redirectUrl={activeCafUrl}
         onConfirmCompletion={handleCafCompletion}
         isCompleting={isCompletingCaf}
+      />
+    );
+  }
+
+  // Bridge: questionário → upload de documentos (Opção B — explica, oferece "continuar depois")
+  if (showDocsBridge) {
+    return (
+      <QuestionnaireToDocsBridge
+        onContinueNow={handleBridgeContinue}
+        resumeUrl={getResumeUrl()}
+        clientEmail={clientInfo.email}
+        clientName={clientInfo.name}
+        branding={branding}
       />
     );
   }
