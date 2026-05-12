@@ -324,6 +324,52 @@ Deno.serve(async (req) => {
               representanteNome = firstSocio.nome; repNamePriority = 5;
             }
             console.log(`[AutoEnrich] Post-BDC Representante: CPF=${representanteCpf ? representanteCpf.substring(0, 3) + '***' + representanteCpf.substring(8) : 'EMPTY'} (P${repCpfPriority}), Name=${representanteNome || 'EMPTY'} (P${repNamePriority})`);
+
+            // ═══ POST-BDC: Enrich contacts (phones/emails) for each sócio via individual BDC query ═══
+            // Roda em paralelo para até 5 sócios — falhas individuais não bloqueiam o pipeline.
+            // Resultados são persistidos em onboardingCase.representativesContacts para uso pelo
+            // time comercial / análise manual.
+            try {
+              const sociosToEnrich = bdcSocios.slice(0, 5);
+              const contactsResults = await Promise.allSettled(
+                sociosToEnrich.map(s =>
+                  base44.asServiceRole.functions.invoke('bdcQueryPerson', {
+                    cpf: s.cpf,
+                    datasets: 'basic_data,phones_extended,emails_extended',
+                  }).then(res => ({ socio: s, data: res?.data }))
+                )
+              );
+              const representativesContacts = [];
+              for (const r of contactsResults) {
+                if (r.status !== 'fulfilled' || !r.value?.data?.success) continue;
+                const { socio, data } = r.value;
+                const result = data?.result || {};
+                // Extract phones/emails (paths variam entre datasets BDC — defensivo)
+                const phonesRaw = result?.PhonesExtended?.Phones || result?.phones_extended?.Phones || [];
+                const emailsRaw = result?.EmailsExtended?.Emails || result?.emails_extended?.Emails || [];
+                const phones = (Array.isArray(phonesRaw) ? phonesRaw : [])
+                  .map(p => p?.Number || p?.PhoneNumber || p?.phone || '')
+                  .filter(Boolean).slice(0, 5);
+                const emails = (Array.isArray(emailsRaw) ? emailsRaw : [])
+                  .map(e => e?.EmailAddress || e?.Email || e?.email || '')
+                  .filter(Boolean).slice(0, 5);
+                if (phones.length > 0 || emails.length > 0) {
+                  representativesContacts.push({
+                    cpf: socio.cpf,
+                    nome: socio.nome,
+                    phones,
+                    emails,
+                    queriedAt: new Date().toISOString(),
+                  });
+                }
+              }
+              if (representativesContacts.length > 0) {
+                await base44.asServiceRole.entities.OnboardingCase.update(caseId, { representativesContacts });
+                console.log(`[AutoEnrich] Enriched contacts for ${representativesContacts.length} sócios via BDC`);
+              }
+            } catch (contactsErr) {
+              console.warn(`[AutoEnrich] BDC sócio contacts enrichment failed (non-blocking): ${contactsErr.message}`);
+            }
           } else {
             console.log(`[AutoEnrich] BDC QSA: No PF sócios found in Relationships/OwnersKyc`);
           }
@@ -505,13 +551,24 @@ Deno.serve(async (req) => {
       } catch (_) { /* non-blocking — if we can't read template, fall through */ }
       const docGateBlocking = templateRequiresDocs && !freshCase.docCompleted;
 
-      if (subfaixa && v4Score != null && docGateBlocking) {
-        console.log(`[AutoEnrich] Step 4: 🚧 DOC GATE — case ${caseId} has subfaixa=${subfaixa} score=${v4Score} BUT docCompleted=false. Holding status="Em Processamento" until docs+CAF are completed.`);
+      // Gate adicional: CAFs de representantes ADICIONAIS precisam estar todos concluídos.
+      // Só ativa quando o caso declarou representantes extras (additionalRepresentatives).
+      const additionalReps = Array.isArray(freshCase.additionalRepresentatives) ? freshCase.additionalRepresentatives : [];
+      const cafLinks = Array.isArray(freshCase.cafLinksPorRepresentante) ? freshCase.cafLinksPorRepresentante : [];
+      const repsCafIncomplete = additionalReps.length > 0
+        && (cafLinks.length < additionalReps.length || cafLinks.some(l => l.status !== 'completed'));
+      const multiCafGateBlocking = additionalReps.length > 0 && repsCafIncomplete;
+
+      if (subfaixa && v4Score != null && (docGateBlocking || multiCafGateBlocking)) {
+        const reason = docGateBlocking
+          ? 'Aguardando Etapa 2 (upload de documentos KYC/KYB + verificação CAF). Score V4 calculado mas decisão final retida até completar a etapa 2.'
+          : `Aguardando verificação CAF dos ${additionalReps.length} representantes legais adicionais (${cafLinks.filter(l => l.status === 'completed').length}/${additionalReps.length} concluídos).`;
+        console.log(`[AutoEnrich] Step 4: 🚧 GATE — case ${caseId} subfaixa=${subfaixa} score=${v4Score} held (docGate=${docGateBlocking}, multiCafGate=${multiCafGateBlocking})`);
         await base44.asServiceRole.entities.OnboardingCase.update(caseId, {
           status: 'Em Processamento',
-          validationsCompleted: true, // V4/SENTINEL did run; only docs are missing
+          validationsCompleted: true,
           escalationSource: 'NONE',
-          escalationReason: 'Aguardando Etapa 2 (upload de documentos KYC/KYB + verificação CAF). Score V4 calculado mas decisão final retida até completar a etapa 2.',
+          escalationReason: reason,
         });
         // Notify Slack about the gate hold (best-effort) and return early — skip Step 5 default flow
         finalDecision = 'Aguardando Documentos';

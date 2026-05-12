@@ -540,6 +540,21 @@ export default function DynamicDocumentUploadPage({
         </div>
       </div>
 
+      {/* Banner informativo: documentos dos demais representantes e sócios */}
+      {currentStep === 'docs_upload' && (
+        <div className="mb-6 p-4 rounded-xl bg-blue-50 border border-blue-200 flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+          <div className="text-sm text-blue-900 leading-relaxed">
+            <p className="font-semibold mb-1">Importante — documentos de todos os representantes e sócios</p>
+            <p className="text-blue-800/90">
+              Inclua nos documentos abaixo as informações de <strong>todos os representantes legais e sócios da empresa</strong>,
+              quando houver. Cada representante legal adicional também precisa concluir a verificação biométrica (CAF) —
+              o link individual de cada um pode ser gerado na etapa anterior do questionário.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Step 1: Upload de Documentos — ALWAYS uses BULLETPROOF uploader.
           If the OnboardingCase doesn't exist yet, we lazy-create it here via
           publicComplianceSubmit BEFORE rendering the uploader. This eliminates

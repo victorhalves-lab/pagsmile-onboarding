@@ -213,6 +213,107 @@
         "NONE"
       ],
       "description": "Origem t\u00e9cnica da escala\u00e7\u00e3o."
+    },
+    "additionalRepresentatives": {
+      "type": "array",
+      "description": "Lista de representantes legais ADICIONAIS al\u00e9m do principal. Capturado quando o cliente confirma ter mais de um representante. Cada item: { nome, cpf, email, phone, cargo }.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string"
+          },
+          "cpf": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "cargo": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "cafLinksPorRepresentante": {
+      "type": "array",
+      "description": "Links CAF gerados para cada representante adicional. Status individual de conclus\u00e3o da verifica\u00e7\u00e3o biom\u00e9trica.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "cpf": {
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "cargo": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "completed",
+              "failed"
+            ]
+          },
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "completedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "representativesContacts": {
+      "type": "array",
+      "description": "Contatos (telefone/email) dos representantes legais verificados via BigDataCorp (busca individual por CPF). N\u00e3o \u00e9 fornecido pelo cliente \u2014 vem do enriquecimento BDC.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "cpf": {
+            "type": "string"
+          },
+          "nome": {
+            "type": "string"
+          },
+          "phones": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "emails": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "queriedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
     }
   },
   "required": [

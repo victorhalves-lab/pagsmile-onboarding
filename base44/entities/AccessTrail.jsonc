@@ -1,0 +1,109 @@
+{
+  "name": "AccessTrail",
+  "type": "object",
+  "description": "Registro de IP, geolocaliza\u00e7\u00e3o e contexto de acesso em todas as a\u00e7\u00f5es p\u00fablicas (submiss\u00f5es de compliance, uploads, aceites/recusas de proposta, CAF).",
+  "properties": {
+    "eventType": {
+      "type": "string",
+      "enum": [
+        "compliance_submit",
+        "compliance_case_update",
+        "document_upload",
+        "caf_verify",
+        "proposal_action",
+        "questionnaire_save"
+      ],
+      "description": "Tipo do evento que gerou esse trail"
+    },
+    "onboardingCaseId": {
+      "type": "string",
+      "description": "Caso de onboarding associado (quando aplic\u00e1vel)"
+    },
+    "merchantId": {
+      "type": "string",
+      "description": "Merchant associado (quando aplic\u00e1vel)"
+    },
+    "leadId": {
+      "type": "string",
+      "description": "Lead associado (quando aplic\u00e1vel)"
+    },
+    "proposalId": {
+      "type": "string",
+      "description": "Proposta associada (quando aplic\u00e1vel)"
+    },
+    "action": {
+      "type": "string",
+      "description": "A\u00e7\u00e3o espec\u00edfica (ex: 'accept', 'reject', 'upload', 'liveness')"
+    },
+    "ip": {
+      "type": "string",
+      "description": "IP do cliente (do header x-forwarded-for/cf-connecting-ip)"
+    },
+    "ipHash": {
+      "type": "string",
+      "description": "SHA-256 do IP (privacidade/LGPD \u2014 exibido em vez do IP bruto)"
+    },
+    "country": {
+      "type": "string",
+      "description": "Pa\u00eds aproximado (de cf-ipcountry quando dispon\u00edvel)"
+    },
+    "region": {
+      "type": "string",
+      "description": "Regi\u00e3o/estado quando dispon\u00edvel"
+    },
+    "city": {
+      "type": "string",
+      "description": "Cidade aproximada"
+    },
+    "timezone": {
+      "type": "string",
+      "description": "Timezone reportada pelo cliente (Intl)"
+    },
+    "userAgent": {
+      "type": "string",
+      "description": "User-Agent do navegador"
+    },
+    "referer": {
+      "type": "string",
+      "description": "Referer header (p\u00e1gina de origem)"
+    },
+    "linkCode": {
+      "type": "string",
+      "description": "C\u00f3digo do link p\u00fablico usado (quando aplic\u00e1vel)"
+    },
+    "docLinkToken": {
+      "type": "string",
+      "description": "Token usado na requisi\u00e7\u00e3o (apenas primeiros 6 chars para auditoria \u2014 n\u00e3o \u00e9 o token completo)"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Metadata adicional do evento (ex: m\u00f3dulo CAF, decis\u00e3o, valores, etc)"
+    },
+    "serverTimestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp servidor (autoritativo, n\u00e3o confia em rel\u00f3gio cliente)"
+    }
+  },
+  "required": [
+    "eventType"
+  ],
+  "rls": {
+    "create": true,
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

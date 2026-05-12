@@ -819,14 +819,27 @@ export default function DynamicQuestionnaire({
     // Build responses array for backend
     // Note: Redact any accidental file/URL values from questionnaire responses — uploads
     // are separately handled via DocumentUpload entity.
+    // Also: extract REPRESENTATIVES_LIST answers into a structured payload field.
     const responsesToCreate = [];
+    let additionalRepresentatives = [];
     questions.forEach(q => {
       const val = finalFormData[q.id];
       if (val === undefined || val === null || String(q.id).startsWith('__')) return;
+      // Detect REPRESENTATIVES_LIST and split into the structured field (don't persist as response)
+      const textLower = (q.text || '').toLowerCase();
+      const isRepsList = q.type === 'REPRESENTATIVES_LIST'
+        || (textLower.includes('representante legal') && (textLower.includes('mais de um') || textLower.includes('múltiplos') || textLower.includes('outros')));
+      if (isRepsList && val && typeof val === 'object' && Array.isArray(val.list)) {
+        if (val.hasMultiple === true && val.list.length > 0) {
+          additionalRepresentatives = val.list.filter(r => r?.nome || r?.cpf);
+        }
+        return;
+      }
       const resp = { questionId: q.id, questionText: q.text, questionType: q.type };
       if (typeof val === 'boolean') resp.valueBoolean = val;
       else if (typeof val === 'number') resp.valueNumber = val;
       else if (Array.isArray(val)) resp.valueArray = val;
+      else if (typeof val === 'object') resp.valueText = JSON.stringify(val);
       else resp.valueText = String(val);
       responsesToCreate.push(resp);
     });
@@ -852,6 +865,7 @@ export default function DynamicQuestionnaire({
         priority: 'medium',
       },
       responses: responsesToCreate,
+      additionalRepresentatives,
     });
 
     if (res?.error || !res?.ok) {
@@ -1094,6 +1108,13 @@ export default function DynamicQuestionnaire({
             hideAlerts={true}
             isPublicView={isPublicView}
             hasBranding={hasBranding}
+            bdcSocios={Array.isArray(cnpjAutocompleteData?.qsa) ? cnpjAutocompleteData.qsa.map(s => ({
+              nome: s.nome_socio || s.nome || '',
+              cpf: (s.cnpj_cpf_do_socio || s.cpf || '').replace(/\D/g, ''),
+              cargo: s.qualificacao_socio || s.cargo || '',
+            })).filter(s => s.nome) : []}
+            caseId={typeof window !== 'undefined' ? localStorage.getItem('created_onboarding_case_id') : null}
+            docLinkToken={typeof window !== 'undefined' ? localStorage.getItem('created_doc_link_token') : null}
           />
 
           {/* Botões de Ação */}

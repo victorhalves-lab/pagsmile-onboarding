@@ -31,7 +31,7 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json().catch(() => ({}));
-    const { templateId, merchantData = {}, onboardingCaseData = {}, responses = [], linkCode, leadId } = body;
+    const { templateId, merchantData = {}, onboardingCaseData = {}, responses = [], linkCode, leadId, additionalRepresentatives = [] } = body;
 
     if (!templateId) {
       return Response.json({ error: 'templateId required' }, { status: 400 });
@@ -173,7 +173,45 @@ Deno.serve(async (req) => {
     };
     if (parentMerchantId) casePayload.parentMerchantId = parentMerchantId;
 
+    // Persist additionalRepresentatives (opt-in — só quando o cliente preencheu a lista)
+    if (Array.isArray(additionalRepresentatives) && additionalRepresentatives.length > 0) {
+      casePayload.additionalRepresentatives = additionalRepresentatives
+        .filter(r => r && (r.nome || r.cpf))
+        .slice(0, 10) // hard cap defensivo
+        .map(r => ({
+          nome: String(r.nome || '').trim().slice(0, 200),
+          cpf: String(r.cpf || '').replace(/\D/g, '').slice(0, 11),
+          email: String(r.email || '').trim().slice(0, 200),
+          phone: String(r.phone || '').trim().slice(0, 30),
+          cargo: String(r.cargo || '').trim().slice(0, 100),
+        }));
+    }
+
     const onboardingCase = await base44.asServiceRole.entities.OnboardingCase.create(casePayload);
+
+    // Audit trail: capture client context (IP, geo, UA) for this submission — non-blocking
+    try {
+      const headers = req.headers;
+      const ip = headers.get('cf-connecting-ip') || (headers.get('x-forwarded-for') || '').split(',')[0].trim() || headers.get('x-real-ip') || null;
+      base44.asServiceRole.entities.AccessTrail.create({
+        eventType: 'compliance_submit',
+        onboardingCaseId: onboardingCase.id,
+        merchantId: merchant.id,
+        leadId: leadId || undefined,
+        action: 'create_case',
+        ip,
+        country: headers.get('cf-ipcountry') || null,
+        region: headers.get('cf-region') || null,
+        city: headers.get('cf-ipcity') || null,
+        timezone: headers.get('cf-timezone') || null,
+        userAgent: (headers.get('user-agent') || '').slice(0, 500),
+        referer: (headers.get('referer') || '').slice(0, 500),
+        linkCode: linkCode || null,
+        docLinkToken: docLinkToken.slice(0, 6),
+        metadata: { templateId, responsesCount: responses.length, hasAdditionalReps: (additionalRepresentatives || []).length > 0 },
+        serverTimestamp: new Date().toISOString(),
+      }).catch(() => {});
+    } catch (_) { /* silent */ }
 
     // Create QuestionnaireResponses (bulk)
     if (Array.isArray(responses) && responses.length > 0) {

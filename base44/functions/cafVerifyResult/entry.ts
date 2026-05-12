@@ -480,6 +480,26 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Audit trail — non-blocking
+    try {
+      const headers = req.headers;
+      const ip = headers.get('cf-connecting-ip') || (headers.get('x-forwarded-for') || '').split(',')[0].trim() || headers.get('x-real-ip') || null;
+      base44.asServiceRole.entities.AccessTrail.create({
+        eventType: 'caf_verify',
+        onboardingCaseId,
+        action: module,
+        ip,
+        country: headers.get('cf-ipcountry') || null,
+        region: headers.get('cf-region') || null,
+        city: headers.get('cf-ipcity') || null,
+        userAgent: (headers.get('user-agent') || '').slice(0, 500),
+        referer: (headers.get('referer') || '').slice(0, 500),
+        docLinkToken: (docLinkToken || '').slice(0, 6),
+        metadata: { module, cafDecision, isAlive, isMatch, similarity, sessionId },
+        serverTimestamp: new Date().toISOString(),
+      }).catch(() => {});
+    } catch (_) { /* silent */ }
+
     return Response.json({
       success: true,
       approved: isApproved,

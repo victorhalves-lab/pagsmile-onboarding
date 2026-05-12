@@ -15,17 +15,35 @@ import PhoneValidationField from './PhoneValidationField';
 import Top5CnpjField from './Top5CnpjField';
 import CpfValidationField from './CpfValidationField';
 import ComplianceFieldAlerts from './ComplianceFieldAlerts';
+import RepresentativesList from './RepresentativesList';
 import SiteValidationBadge from '../leads/SiteValidationBadge';
 import CurrencyInput from '../leads/CurrencyInput';
 
 // Componente que renderiza UMA pergunta com base no tipo
-function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpjAutocomplete, onCepData, fieldAlerts, hideAlerts, isPublicView, hasBranding }) {
+function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpjAutocomplete, onCepData, fieldAlerts, hideAlerts, isPublicView, hasBranding, bdcSocios, caseId, docLinkToken }) {
   const { type, text, options = [], placeholder, helpText, isRequired } = question;
   const textLower = (text || '').toLowerCase();
 
   const handleChange = (newValue) => {
     onChange(question.id, newValue);
   };
+
+  // Detectar tipo especial REPRESENTATIVES_LIST
+  // — type literal "REPRESENTATIVES_LIST" OU pergunta cujo texto pede "mais de um representante legal"
+  const isRepresentativesList = type === 'REPRESENTATIVES_LIST'
+    || (textLower.includes('representante legal') && (textLower.includes('mais de um') || textLower.includes('múltiplos') || textLower.includes('outros')));
+  if (isRepresentativesList) {
+    return (
+      <RepresentativesList
+        value={value}
+        onChange={handleChange}
+        bdcSocios={bdcSocios || []}
+        caseId={caseId}
+        docLinkToken={docLinkToken}
+        hasBranding={hasBranding}
+      />
+    );
+  }
 
   // Detectar se é campo CNPJ gatilho
   const isCnpjTrigger = type === 'CPF_CNPJ' && textLower === 'cnpj';
@@ -381,7 +399,7 @@ function QuestionField({ question, value, onChange, cnpjAutocompleteData, onCnpj
 }
 
 // Componente que renderiza UMA pergunta completa com label
-function QuestionItem({ question, value, onChange, prefillSource, cnpjAutocompleteData, onCnpjAutocomplete, onCepData, fieldAlerts, hideAlerts, isPublicView, hasBranding }) {
+function QuestionItem({ question, value, onChange, prefillSource, cnpjAutocompleteData, onCnpjAutocomplete, onCepData, fieldAlerts, hideAlerts, isPublicView, hasBranding, bdcSocios, caseId, docLinkToken }) {
   const textLower = (question.text || '').toLowerCase();
   const isCnpjTrigger = question.type === 'CPF_CNPJ' && textLower === 'cnpj';
   const isAutoSource = cnpjAutocompleteData && value && (
@@ -444,6 +462,9 @@ function QuestionItem({ question, value, onChange, prefillSource, cnpjAutocomple
         hideAlerts={hideAlerts}
         isPublicView={isPublicView}
         hasBranding={hasBranding}
+        bdcSocios={bdcSocios}
+        caseId={caseId}
+        docLinkToken={docLinkToken}
       />
     </div>
   );
@@ -504,7 +525,10 @@ export default function DynamicQuestionRenderer({
   complianceAlerts = {},
   hideAlerts = false,
   isPublicView = false,
-  hasBranding = false
+  hasBranding = false,
+  bdcSocios = [],
+  caseId = null,
+  docLinkToken = null,
 }) {
   // Se currentStep for definido, filtramos as perguntas para aquele step
   const displayQuestions = currentStep !== undefined
@@ -555,6 +579,9 @@ export default function DynamicQuestionRenderer({
               hideAlerts={hideAlerts}
               isPublicView={isPublicView}
               hasBranding={hasBranding}
+              bdcSocios={bdcSocios}
+              caseId={caseId}
+              docLinkToken={docLinkToken}
             />
             {idx < visibleQuestions.length - 1 && (
               <div className="mt-6 border-b border-slate-100" />

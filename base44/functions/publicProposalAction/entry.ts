@@ -218,6 +218,26 @@ Deno.serve(async (req) => {
       } catch (_) { /* non-blocking */ }
     }
 
+    // Audit trail — non-blocking
+    try {
+      const headers = req.headers;
+      const ip = headers.get('cf-connecting-ip') || (headers.get('x-forwarded-for') || '').split(',')[0].trim() || headers.get('x-real-ip') || null;
+      base44.asServiceRole.entities.AccessTrail.create({
+        eventType: 'proposal_action',
+        proposalId: proposta.id,
+        leadId: effectiveLeadId || undefined,
+        action,
+        ip,
+        country: headers.get('cf-ipcountry') || null,
+        region: headers.get('cf-region') || null,
+        city: headers.get('cf-ipcity') || null,
+        userAgent: (headers.get('user-agent') || '').slice(0, 500),
+        referer: (headers.get('referer') || '').slice(0, 500),
+        metadata: { type, status: proposalUpdates.status, codigo: proposta.codigo, rejectedReason: proposalUpdates.rejectedReason },
+        serverTimestamp: new Date().toISOString(),
+      }).catch(() => {});
+    } catch (_) { /* silent */ }
+
     // 6. Return the updated proposal (so frontend can use its fields, e.g. leadId for compliance redirect)
     const updated = await base44.asServiceRole.entities[entityName].filter({ id: proposta.id });
     return Response.json({ ok: true, proposta: updated[0] || proposta });
