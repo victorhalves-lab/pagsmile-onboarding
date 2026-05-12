@@ -23,6 +23,7 @@ import PipelineAgingAlerts from '../components/pipeline/PipelineAgingAlerts';
 import PipelineConversionChart from '../components/pipeline/PipelineConversionChart';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 import { FALLBACK_MDR_RATE } from '@/lib/businessConstants';
+import { buildCommercialDataset } from '@/lib/commercialMetrics';
 
 const formatMoeda = (val) => {
   if (!val) return 'R$ 0';
@@ -61,6 +62,16 @@ export default function PipelineComercial() {
   const { data: proposals = [] } = useQuery({
     queryKey: ['pipeline-proposals'],
     queryFn: () => base44.entities.Proposal.list('-created_date', 500)
+  });
+
+  const { data: pixProposals = [] } = useQuery({
+    queryKey: ['pipeline-pix-proposals'],
+    queryFn: () => base44.entities.PixProposal.list('-created_date', 500)
+  });
+
+  const { data: standardProposals = [] } = useQuery({
+    queryKey: ['pipeline-std-proposals'],
+    queryFn: () => base44.entities.StandardProposal.list('-created_date', 500)
   });
 
   const { data: onboardingLinks = [] } = useQuery({
@@ -360,38 +371,26 @@ export default function PipelineComercial() {
     });
   }, [filteredLeads, leadContractMap, leadProposalMap]);
 
-  // Set of lead IDs that have accepted proposals (any version) — fonte de verdade para "fechado"
-  const leadsWithAcceptedProposal = useMemo(() => {
-    const set = new Set();
-    proposals.forEach(p => {
-      if (p.leadId && p.status === 'aceita') set.add(p.leadId);
-    });
-    return set;
-  }, [proposals]);
+  // ── Fonte Única da Verdade (FUV) — gaps de proposta/StandardProposal já tratados ──
+  // IMPORTANTE: usamos `leads` (não enrichedLeads) para consistência com os outros dashboards.
+  // Virtual leads ficam DE FORA da FUV propositalmente — eles são uma visão exclusiva do Kanban.
+  const fuv = useMemo(() => buildCommercialDataset({
+    leads, proposals, pixProposals, standardProposals,
+    introducers: [], onboardingLinks,
+  }), [leads, proposals, pixProposals, standardProposals, onboardingLinks]);
 
-  // Set of lead IDs that have an OPEN proposal (enviada/visualizada/contraproposta/expirada)
-  // Expiradas voltam para "Proposta Enviada" para reenvio (não vão para Perdido).
   const leadsWithOpenProposal = useMemo(() => {
     const OPEN_STATUSES = new Set(['enviada', 'visualizada', 'contraproposta', 'expirada']);
     const set = new Set();
-    proposals.forEach(p => {
+    [...proposals, ...pixProposals].forEach(p => {
       if (p.leadId && OPEN_STATUSES.has(p.status)) set.add(p.leadId);
     });
     return set;
-  }, [proposals]);
+  }, [proposals, pixProposals]);
 
-  // "Negócio Fechado" = proposta aceita (cliente NÃO assina contrato — regra v2026-05-10).
-  // Inclui: lead.status='proposta_aceita' OU qualquer proposta do lead com status='aceita'.
-  // Não considera mais contratos (cliente não assina mais).
-  const dealClosedIds = useMemo(() => {
-    const set = new Set();
-    enrichedLeads.forEach(l => {
-      if (l.status === 'proposta_aceita') { set.add(l.id); return; }
-      if (leadsWithAcceptedProposal.has(l.id)) { set.add(l.id); return; }
-      if (l._proposal?.status === 'aceita') { set.add(l.id); return; }
-    });
-    return set;
-  }, [enrichedLeads, leadsWithAcceptedProposal]);
+  // "Negócio Fechado" = FUV.dealClosedLeadIds (cobre Proposal aceita, PixProposal aceita,
+  // StandardProposal via questionnaireData.taxasAceitas, e Lead.status na família accepted).
+  const dealClosedIds = fuv.dealClosedLeadIds;
 
   // Group leads by column
   const columns = useMemo(() => {
@@ -474,7 +473,7 @@ export default function PipelineComercial() {
       </div>
 
       {/* Metrics */}
-      <PipelineMetrics leads={filteredLeads} proposals={proposals} dealClosedIds={dealClosedIds} />
+      <PipelineMetrics leads={filteredLeads} proposals={[...proposals, ...pixProposals]} dealClosedIds={dealClosedIds} />
 
       {/* Conversion chart + Aging alerts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
