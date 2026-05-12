@@ -14,6 +14,7 @@ import CEOContractsOverview from '@/components/ceo-dashboard/CEOContractsOvervie
 import CEOComplianceOverview from '@/components/ceo-dashboard/CEOComplianceOverview';
 import CEOTrendChart from '@/components/ceo-dashboard/CEOTrendChart';
 import TeamProductivityPanel from '@/components/ceo-dashboard/TeamProductivityPanel';
+import CommercialConsistencyAudit from '@/components/ceo-dashboard/CommercialConsistencyAudit';
 
 export default function DashboardCEO() {
   const { data: leads = [], refetch: r1 } = useQuery({
@@ -131,6 +132,9 @@ export default function DashboardCEO() {
         <CEOContractsOverview contracts={contracts} />
         <CEOComplianceOverview cases={cases} />
       </div>
+
+      {/* Auditoria de Consistência Comercial */}
+      <CommercialConsistencyAudit audit={dataset.audit} />
     </div>
   );
 }
