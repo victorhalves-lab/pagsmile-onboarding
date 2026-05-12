@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Loader2, AlertTriangle } from 'lucide-react';
 // SDK-FREE: public route — callPublicFunction hits /functions/* directly via fetch.
 import { callPublicFunction } from '@/lib/publicApi';
 import { toast } from 'sonner';
 import BulletproofDocumentUploader from './BulletproofDocumentUploader';
+import { expandPerRepresentativeDocs, getRepresentativesFromStorage } from '@/lib/expandPerRepresentativeDocs';
 
 /**
  * Wrapper around BulletproofDocumentUploader that ensures the OnboardingCase
@@ -152,13 +153,29 @@ export default function BulletproofUploaderWithLazyCase({
     );
   }
 
+  // Expand per-representative documents (identity, address proof, selfie)
+  // into N copies — one per representative. Must be called BEFORE any early return
+  // to comply with React's rules of hooks.
+  const expandedTemplate = useMemo(() => {
+    if (!template || !Array.isArray(template.requiredDocuments)) return template;
+    try {
+      const reps = getRepresentativesFromStorage(formDataStorageKey, questions);
+      const expanded = expandPerRepresentativeDocs(template.requiredDocuments, reps);
+      if (expanded === template.requiredDocuments) return template;
+      return { ...template, requiredDocuments: expanded };
+    } catch (e) {
+      console.warn('[BulletproofUploaderWithLazyCase] expand per-rep failed:', e?.message);
+      return template;
+    }
+  }, [template, formDataStorageKey, questions]);
+
   if (!caseId) return null;
 
   const formDataParsed = JSON.parse(localStorage.getItem(formDataStorageKey) || '{}');
 
   return (
     <BulletproofDocumentUploader
-      template={template}
+      template={expandedTemplate}
       documents={documents}
       setDocuments={setDocuments}
       storageKey={documentsStorageKey}
