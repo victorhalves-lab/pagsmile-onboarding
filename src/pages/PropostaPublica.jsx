@@ -23,6 +23,7 @@ import SectionHeader from '@/components/proposals/public/SectionHeader';
 import CustosOnlinePublic from '@/components/proposals/public/CustosOnlinePublic';
 import PixBoletoPublic from '@/components/proposals/public/PixBoletoPublic';
 import CondicoesGeraisPublic from '@/components/proposals/public/CondicoesGeraisPublic';
+import ReservaFinanceiraPublic from '@/components/proposals/public/ReservaFinanceiraPublic';
 import ExportButtons from '@/components/proposals/ExportButtons';
 import DownloadPdfButton from '@/components/proposals/DownloadPdfButton';
 import AceiteModal from '@/components/proposals/AceiteModal';
@@ -518,6 +519,7 @@ export default function PropostaPublica() {
       />
 
       <PixBoletoPublic rates={rates} />
+      <ReservaFinanceiraPublic rates={rates} />
       <CondicoesGeraisPublic rates={rates} />
 
       <div className="mb-8">

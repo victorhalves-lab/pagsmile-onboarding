@@ -18,6 +18,8 @@ import PropostaPreview from '@/components/proposals/PropostaPreview';
 import CopyRatesModal from '@/components/proposals/CopyRatesModal';
 import SegmentRatesLoader from '@/components/proposals/SegmentRatesLoader';
 import FinalRateOverridesEditor from '@/components/proposals/FinalRateOverridesEditor';
+import CardReservaFinanceira from '@/components/proposals/CardReservaFinanceira';
+import { getReservaWithDefaults } from '@/lib/reservaFinanceiraDefaults';
 
 const parseTaxa = (val) => {
   if (!val && val !== 0) return 0;
@@ -333,6 +335,8 @@ export default function CriarProposta() {
         minimoGarantido: { mes1: parseTaxa(rates.minimoGarantido?.mes1), mes2: parseTaxa(rates.minimoGarantido?.mes2), mes3: parseTaxa(rates.minimoGarantido?.mes3) },
         rav: { taxa: parseTaxa(form.taxaAntecipacao), prazo: form.prazoRecebimento },
         percentualAntecipacao: parseTaxa(form.percentualAntecipacao),
+        // Reserva financeira (rolling reserve) — snap garante percentuais válidos + prazos fixos
+        reservaFinanceira: getReservaWithDefaults(rates),
       },
       taxaFinalOverrides: form.taxaFinalOverrides || {},
       hideCalculationColumns: form.hideCalculationColumns || false,
@@ -437,6 +441,7 @@ export default function CriarProposta() {
             onUpdateMaquininha={(newMaq) => setRates(prev => ({ ...prev, maquininha: newMaq }))}
           />
           <CardOutrasTaxas rates={rates} onUpdateRates={updateRates} partner={selectedPartner} />
+          <CardReservaFinanceira rates={rates} onUpdateRates={updateRates} />
         </div>
 
         {/* Right Column - Preview + Profitability */}
