@@ -212,25 +212,34 @@ function mergeBdcResults(batchResults) {
 }
 
 // ══════════════════════════════════════════════════════════════════
-// BLOCK ANALYSIS — B01 through B09
+// BLOCK ANALYSIS — B01 through B12 + ManualReviewFlags
+// Returns { blocks, manualReviewFlags }
 // ══════════════════════════════════════════════════════════════════
 function analyzeBlocks(result, responses) {
   const blocks = [];
+  const manualReviewFlags = [];
   const bd = extractBasicData(result);
 
+  // ── REGRA 1: Status na Receita Federal deve ser ATIVA — caso contrário, REPROVAR.
+  // Antes aceitávamos qualquer string contendo "ATIV" ou "REGULAR" (frouxo).
+  // Régua nova: estritamente "ATIVA" passa; "SUSPENSA"/"INAPTA"/"BAIXADA"/"NULA" → bloqueio.
   const status = safeGet(bd, 'TaxIdStatus') || safeGet(bd, 'TaxIdStatusDescription') || '';
   const statusUp = String(status).toUpperCase().trim();
-  const cnpjIsActive = !status || statusUp.includes('ATIV') || statusUp.includes('REGULAR');
+  const cnpjIsActive = !status || statusUp === 'ATIVA' || statusUp.startsWith('ATIV');
   if (status && !cnpjIsActive) {
-    blocks.push({ code: 'B01', label: 'CNPJ Inativo', severity: 'BLOQUEIO', detail: `Situação cadastral BDC: "${status}". Empresa não pode exercer atividades econômicas. Circular BCB 3.978/2020 Art. 2º.`, score: 850 });
+    blocks.push({ code: 'B01', label: 'CNPJ não-ATIVO na Receita Federal', severity: 'BLOQUEIO', detail: `Situação cadastral Receita Federal: "${status}" (esperado: ATIVA). Empresa não pode exercer atividades econômicas. Circular BCB 3.978/2020 Art. 2º.`, score: 850 });
   }
 
-  // B10: CNPJ com idade ≤ 1 mês — recusa automática
+  // ── REGRA 3: Idade da empresa
+  //   A) < 6 meses → REVISÃO MANUAL
+  //   B) 6 meses a 2 anos → risco médio (sem bloqueio, sem manual — apenas variável)
+  //   C) ≥ 2 anos → OK
+  // Nota: a regra B10 (≤ 1 mês = bloqueio) foi SUBSTITUÍDA pela régua nova; ≤ 6m agora é manual.
   const founded = safeGet(bd, 'FoundedDate') || safeGet(bd, 'Age.FoundedDate');
   if (founded) {
     const months = (Date.now() - new Date(founded).getTime()) / (30.44 * 24 * 3600 * 1000);
-    if (months <= 1) {
-      blocks.push({ code: 'B10', label: 'CNPJ recém-aberto (≤ 1 mês)', severity: 'BLOQUEIO', detail: `Empresa fundada há ${months.toFixed(1)} mês(es). CNPJs com menos de 1 mês de existência são recusados automaticamente por insuficiência de histórico operacional.`, score: 850 });
+    if (months < 6) {
+      manualReviewFlags.push({ code: 'M01', label: 'Empresa com menos de 6 meses', detail: `Empresa fundada há ${months.toFixed(1)} mês(es) — abaixo do mínimo de 6 meses. Encaminhar para análise manual.` });
     }
   }
 
@@ -328,7 +337,56 @@ function analyzeBlocks(result, responses) {
     }
   }
 
-  return blocks;
+  // ── REGRA 2: CPF de sócios/administradores na Receita Federal ≠ REGULAR → REPROVAR.
+  // Verifica o TaxIdStatus de cada sócio retornado em OwnersKyc/owners_kyc (cada item
+  // representa um sócio, o KYC inclui dados pessoais incluindo a situação do CPF).
+  const ownersKycForCpf = result?.OwnersKyc || result?.owners_kyc;
+  if (ownersKycForCpf) {
+    const items = flattenBDCArray(ownersKycForCpf);
+    const irregularOwners = [];
+    for (const item of items) {
+      const ownerStatus = item?.TaxIdStatus || item?.CpfStatus || item?.PersonStatus || '';
+      const ownerStatusUp = String(ownerStatus).toUpperCase().trim();
+      // Só sinaliza se BDC retornou um status explícito e não-REGULAR
+      if (ownerStatus && ownerStatusUp !== 'REGULAR' && !ownerStatusUp.includes('REGULAR')) {
+        irregularOwners.push(`${item?.Name || item?.RelatedPersonName || 'sócio'} (${ownerStatus})`);
+      }
+    }
+    if (irregularOwners.length > 0) {
+      blocks.push({
+        code: 'B11', label: 'CPF de sócio(s) irregular na Receita Federal', severity: 'BLOQUEIO',
+        detail: `CPF não-REGULAR identificado em: ${irregularOwners.join('; ')}. Sócios com CPF irregular impedem prosseguir.`,
+        score: 850,
+      });
+    }
+  }
+
+  // ── REGRA 4: Endereço da empresa na Receita Federal ≠ endereço declarado → REVISÃO MANUAL.
+  // Compara o CEP da Receita (BasicData.Address.ZipCode) com o CEP declarado nas respostas.
+  // Comparação por CEP é mais confiável que por logradouro (evita falsos positivos por abreviação).
+  try {
+    const rfAddressObj = safeGet(bd, 'Address') || safeGet(bd, 'address') || {};
+    const rfZip = String(rfAddressObj?.ZipCode || rfAddressObj?.zipCode || rfAddressObj?.CEP || '').replace(/\D/g, '');
+    if (rfZip && Array.isArray(responses)) {
+      // Procura nas respostas do questionário um campo de CEP
+      let declaredZip = '';
+      for (const r of responses) {
+        const qt = String(r?.questionText || '').toLowerCase();
+        if (qt.includes('cep') || qt.includes('código postal') || qt.includes('codigo postal')) {
+          const v = String(r?.valueText || '').replace(/\D/g, '');
+          if (v.length === 8) { declaredZip = v; break; }
+        }
+      }
+      if (declaredZip && declaredZip !== rfZip) {
+        manualReviewFlags.push({
+          code: 'M02', label: 'Endereço Receita Federal divergente do declarado',
+          detail: `CEP Receita Federal: ${rfZip}; CEP declarado no onboarding: ${declaredZip}. Encaminhar para análise manual para validação de endereço.`,
+        });
+      }
+    }
+  } catch (_) { /* não-bloqueante */ }
+
+  return { blocks, manualReviewFlags };
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -349,9 +407,13 @@ function analyzeIdentity(result) {
     const months = ageMs / (30.44 * 24 * 3600 * 1000);
     const years = ageMs / (365.25 * 24 * 3600 * 1000);
     const y = Math.floor(years);
-    if (months <= 1) { score += 25; items.push({ label: 'Idade da empresa', value: `≤ 1 mês`, risk: 'ALTO', points: 25 }); }
-    else if (y < 2) { score += 5; items.push({ label: 'Idade da empresa', value: y < 1 ? `< 1 ano` : `${y} ano(s)`, risk: 'BAIXO', points: 5 }); }
-    else if (y < 5) { score += 5; items.push({ label: 'Idade da empresa', value: `${y} anos`, risk: 'BAIXO', points: 5 }); }
+    // Régua nova:
+    //   < 6 meses        → ALTO (vai pra manual via manualReviewFlags em analyzeBlocks)
+    //   6 meses - 2 anos → MÉDIO (risco médio, 15 pts)
+    //   ≥ 2 anos         → OK
+    if (months < 6) { score += 25; items.push({ label: 'Idade da empresa', value: `< 6 meses (${months.toFixed(1)}m)`, risk: 'ALTO', points: 25 }); }
+    else if (years < 2) { score += 15; items.push({ label: 'Idade da empresa', value: `${months.toFixed(0)} meses (entre 6m e 2 anos)`, risk: 'MEDIO', points: 15 }); }
+    else if (y < 5) { items.push({ label: 'Idade da empresa', value: `${y} anos`, risk: 'OK', points: 0 }); }
     else { items.push({ label: 'Idade da empresa', value: `${y} anos`, risk: 'OK', points: 0 }); }
   }
   const statusVal = safeGet(bd, 'TaxIdStatus') || safeGet(bd, 'TaxIdStatusDescription') || '';
@@ -1083,7 +1145,7 @@ Deno.serve(async (req) => {
         },
       };
     } else {
-      const blocks = analyzeBlocks(result, responses);
+      const { blocks, manualReviewFlags } = analyzeBlocks(result, responses);
       const identity = analyzeIdentity(result);
       const owners = analyzeOwners(result);
       const digital = analyzeDigital(result);
@@ -1111,7 +1173,7 @@ Deno.serve(async (req) => {
       analysis = {
         type: 'PJ', document: cleanDoc, templateModel, datasetGroup: groupKey,
         datasetsQueried: Object.values(batchDefs).flatMap(b => b.datasets).length,
-        elapsedMs: totalElapsed, blocks, hasBlock, batchStatuses,
+        elapsedMs: totalElapsed, blocks, hasBlock, manualReviewFlags, batchStatuses,
         sections: { identity, owners, digital, compliance, reputation, financial, evolution, esg: esgData, contacts, employeesKyc, sectorial, assets, creditRisk },
         scoring: {
           baseScore, variablesScore: Math.round(weightedTotal * 0.6), enrichmentScore: Math.round(weightedTotal * 0.4),
@@ -1130,6 +1192,7 @@ Deno.serve(async (req) => {
       try {
         const existing = await base44.asServiceRole.entities.ComplianceScore.filter({ onboarding_case_id: onboardingCaseId });
         const v4RedFlags = analysis.blocks.map(b => `V4: ${b.code}_${b.label}`);
+        const v4ManualFlags = (analysis.manualReviewFlags || []).map(f => `MANUAL: ${f.code}_${f.label}`);
         const scoreData = {
           onboarding_case_id: onboardingCaseId, framework_version: 'v4.0',
           segmento: templateModel || 'unknown',
@@ -1139,16 +1202,22 @@ Deno.serve(async (req) => {
           score_final: analysis.scoring.finalScore,
           subfaixa: analysis.scoring.subfaixa, subfaixa_nome: analysis.scoring.subfaixaNome,
           bloqueios_ativos: analysis.blocks.map(b => `${b.code}_${b.label}`),
-          variaveis_aplicadas: analysis.sections, red_flags: v4RedFlags,
+          variaveis_aplicadas: analysis.sections, red_flags: [...v4RedFlags, ...v4ManualFlags],
           fase_2_completa: true, data_analise_fase_2: new Date().toISOString(),
         };
         if (existing.length > 0) await base44.asServiceRole.entities.ComplianceScore.update(existing[0].id, scoreData);
         else await base44.asServiceRole.entities.ComplianceScore.create(scoreData);
 
+        // ── Compute existing redFlags + add MANUAL: flags (regra 3-A < 6m, regra 4 endereço)
+        const [existingCaseForFlags] = await base44.asServiceRole.entities.OnboardingCase.filter({ id: onboardingCaseId });
+        const previousFlags = (existingCaseForFlags?.redFlags || []).filter(f => !String(f).startsWith('MANUAL:'));
+        const newRedFlags = [...previousFlags, ...v4ManualFlags];
+
         await base44.asServiceRole.entities.OnboardingCase.update(onboardingCaseId, {
           bigDataCorpCompleted: true, riskScoreV4: analysis.scoring.finalScore,
           subfaixa: analysis.scoring.subfaixa, subfaixaNome: analysis.scoring.subfaixaNome,
           bloqueiosAtivos: analysis.blocks.map(b => `${b.code}_${b.label}`),
+          redFlags: newRedFlags,
         });
 
       } catch (e) { console.warn('Error saving results:', e.message); }

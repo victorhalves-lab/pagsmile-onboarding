@@ -666,6 +666,13 @@ Deno.serve(async (req) => {
         let escalationReason = null;
         let escalationSource = 'NONE';
 
+        // ── RÉGUA DE RISK SCORING (2026-05-12): MANUAL: flags em redFlags ──
+        // Quando V4 escreve MANUAL:* (empresa <6m, endereço Receita ≠ declarado, etc.),
+        // forçamos Revisão Manual SE a decisão V4 atual for "Aprovado". Não rebaixa
+        // "Recusado" nem mexe em subfaixa 4 que já é manual.
+        const manualFlags = (freshCase.redFlags || []).filter(f => String(f).startsWith('MANUAL:'));
+        const hasManualFlags = manualFlags.length > 0;
+
         if (cafFraudDetected && finalDecision !== 'Recusado') {
           escalationReason = `${uniqueConfirmedServices.size} sinal(is) CAF confirmado(s) em ${[...uniqueConfirmedServices].join(', ')} — limite para subfaixa ${subfaixa} é ${requiredSignals}. Detalhes: ${confirmedFrauds.map(f => f.reason).join('; ')}`;
           escalationSource = 'CAF_FRAUD';
@@ -673,6 +680,13 @@ Deno.serve(async (req) => {
           finalStatus = 'Manual';
           autoDecisionApplied = false;
           console.log(`[AutoEnrich] Step 4: CAF FRAUD CONFIRMED (${uniqueConfirmedServices.size}/${requiredSignals} signals) — overriding to Revisão Manual`);
+        } else if (hasManualFlags && finalStatus === 'Aprovado') {
+          escalationReason = `Régua de Risk Scoring exige revisão manual: ${manualFlags.join('; ')}`;
+          escalationSource = 'V4_BLOCK';
+          finalDecision = 'Revisão Manual';
+          finalStatus = 'Manual';
+          autoDecisionApplied = false;
+          console.log(`[AutoEnrich] Step 4: MANUAL FLAGS PRESENT — overriding to Revisão Manual: ${manualFlags.join('; ')}`);
         } else if (recaptureRecommended) {
           // Low-quality CAF but not enough confirmed frauds — request recapture instead of escalating
           escalationReason = `Qualidade CAF insuficiente: ${qualityIssues.map(q => q.reason).join('; ')}. Recaptura solicitada antes de escalar.`;

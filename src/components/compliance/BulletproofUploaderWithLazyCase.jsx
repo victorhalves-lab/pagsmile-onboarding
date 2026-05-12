@@ -42,6 +42,22 @@ export default function BulletproofUploaderWithLazyCase({
   const [error, setError] = useState(null);
   const creatingRef = useRef(false); // prevent double-create on React StrictMode
 
+  // Expand per-representative documents (identity, address proof, selfie)
+  // into N copies — one per representative. Declared HERE (before any early return)
+  // to comply with React's rules of hooks.
+  const expandedTemplate = useMemo(() => {
+    if (!template || !Array.isArray(template.requiredDocuments)) return template;
+    try {
+      const reps = getRepresentativesFromStorage(formDataStorageKey, questions);
+      const expanded = expandPerRepresentativeDocs(template.requiredDocuments, reps);
+      if (expanded === template.requiredDocuments) return template;
+      return { ...template, requiredDocuments: expanded };
+    } catch (e) {
+      console.warn('[BulletproofUploaderWithLazyCase] expand per-rep failed:', e?.message);
+      return template;
+    }
+  }, [template, formDataStorageKey, questions]);
+
   useEffect(() => {
     // Already have both — nothing to do
     if (caseId && docToken) return;
@@ -152,22 +168,6 @@ export default function BulletproofUploaderWithLazyCase({
       </div>
     );
   }
-
-  // Expand per-representative documents (identity, address proof, selfie)
-  // into N copies — one per representative. Must be called BEFORE any early return
-  // to comply with React's rules of hooks.
-  const expandedTemplate = useMemo(() => {
-    if (!template || !Array.isArray(template.requiredDocuments)) return template;
-    try {
-      const reps = getRepresentativesFromStorage(formDataStorageKey, questions);
-      const expanded = expandPerRepresentativeDocs(template.requiredDocuments, reps);
-      if (expanded === template.requiredDocuments) return template;
-      return { ...template, requiredDocuments: expanded };
-    } catch (e) {
-      console.warn('[BulletproofUploaderWithLazyCase] expand per-rep failed:', e?.message);
-      return template;
-    }
-  }, [template, formDataStorageKey, questions]);
 
   if (!caseId) return null;
 
