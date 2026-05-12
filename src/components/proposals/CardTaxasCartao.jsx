@@ -13,7 +13,6 @@ const BANDEIRAS = [
   { id: 'visa', label: 'Visa', color: '#1A1F71', secondColor: '#F7B600' },
   { id: 'elo', label: 'Elo', color: '#00A4E0', secondColor: '#FFCB05' },
   { id: 'amex', label: 'Amex', color: '#006FCF', secondColor: '#006FCF' },
-  { id: 'outras', label: 'Outras', color: '#6B7280', secondColor: '#6B7280' },
 ];
 
 const FAIXAS_SPEC = [
