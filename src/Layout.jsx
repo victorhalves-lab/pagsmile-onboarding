@@ -129,6 +129,7 @@ export default function Layout({ children, currentPageName }) {
       icon: Shield,
       items: [
         { label: t('menu.dashboard'), path: 'AdminDashboard', icon: LayoutDashboard },
+        { label: 'Análise Manual', path: 'AnaliseManual', icon: AlertTriangle, highlight: true },
         { label: t('menu.compliance_links'), path: 'LinksCompliance', icon: LinkIcon },
         { label: t('menu.received_questionnaires'), path: 'QuestionariosRecebidos', icon: FileCheck },
         { label: t('menu.case_analysis'), path: 'AnaliseDeCasos', icon: ClipboardList, hidden: true },

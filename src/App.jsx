@@ -81,6 +81,7 @@ const AnaliseCompleta = lazyPage(() => import('./pages/AnaliseCompleta'));
 const BulkReprocess = lazyPage(() => import('./pages/BulkReprocess'));
 const DocumentoKYCKYB = lazyPage(() => import('./pages/DocumentoKYCKYB'));
 const EscalationsReview = lazyPage(() => import('./pages/EscalationsReview'));
+const AnaliseManual = lazyPage(() => import('./pages/AnaliseManual'));
 const GestaoPerfis = lazyPage(() => import('./pages/GestaoPerfis'));
 const EditorPerfil = lazyPage(() => import('./pages/EditorPerfil'));
 const GestaoUsuarios = lazyPage(() => import('./pages/GestaoUsuarios'));
@@ -418,6 +419,7 @@ const AuthenticatedApp = () => {
       <Route path="/BulkReprocess" element={<LayoutWrapper currentPageName="BulkReprocess"><BulkReprocess /></LayoutWrapper>} />
       <Route path="/DocumentoKYCKYB" element={<DocumentoKYCKYB />} />
       <Route path="/EscalationsReview" element={<LayoutWrapper currentPageName="EscalationsReview"><EscalationsReview /></LayoutWrapper>} />
+      <Route path="/AnaliseManual" element={<LayoutWrapper currentPageName="AnaliseManual"><AnaliseManual /></LayoutWrapper>} />
       <Route path="/GestaoPerfis" element={<LayoutWrapper currentPageName="GestaoPerfis"><GestaoPerfis /></LayoutWrapper>} />
       <Route path="/EditorPerfil" element={<LayoutWrapper currentPageName="EditorPerfil"><EditorPerfil /></LayoutWrapper>} />
       <Route path="/GestaoUsuarios" element={<LayoutWrapper currentPageName="GestaoUsuarios"><GestaoUsuarios /></LayoutWrapper>} />
