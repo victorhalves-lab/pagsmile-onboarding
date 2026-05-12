@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { FileText, Loader2, Eye, Archive, Lock } from 'lucide-react';
+import { FileText, Loader2, Eye, Archive, Lock, ClipboardList } from 'lucide-react';
 import { toast } from 'sonner';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { base44 } from '@/api/base44Client';
 import CafDocsSection from './CafDocsSection';
+import RequestPendencyModal from './RequestPendencyModal';
 
 // Resolve a readable URL: for private docs, request a short-lived signed URL from backend.
 async function resolveDocUrl(doc) {
@@ -24,9 +25,14 @@ async function resolveDocUrl(doc) {
   return doc.fileUrl || null;
 }
 
-export default function CaseDocumentsTab({ documents, caseId, merchantName, integrationLogs = [] }) {
+export default function CaseDocumentsTab({ documents, caseId, merchantName, integrationLogs = [], onboardingCase, merchant, onRefetch }) {
   const [isDownloadingZip, setIsDownloadingZip] = useState(false);
   const [downloadProgress, setDownloadProgress] = useState('');
+  const [pendencyModalOpen, setPendencyModalOpen] = useState(false);
+
+  // Gate: só permite solicitar pendências em casos manuais ou já com pendência ativa
+  const canRequestPendency = onboardingCase &&
+    ['Manual', 'Docs Solicitados'].includes(onboardingCase.status);
 
   const handleDownloadAllDocuments = async () => {
     const docsWithUrl = documents.filter(d => d.fileUrl);
@@ -85,14 +91,26 @@ export default function CaseDocumentsTab({ documents, caseId, merchantName, inte
       <CafDocsSection documents={documents} integrationLogs={integrationLogs} />
 
       <div className="bg-white rounded-xl border border-slate-200 p-6">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-2">
         <h3 className="text-lg font-bold text-[var(--pagsmile-blue)]">Documentos Enviados pelo Cliente</h3>
-        {documents.length > 0 && (
-          <Button variant="outline" size="sm" onClick={handleDownloadAllDocuments} disabled={isDownloadingZip}>
-            {isDownloadingZip ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Archive className="w-4 h-4 mr-2" />}
-            {isDownloadingZip ? `Baixando ${downloadProgress}` : 'Baixar Todos (ZIP)'}
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          {canRequestPendency && (
+            <Button
+              size="sm"
+              onClick={() => setPendencyModalOpen(true)}
+              className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green-dark)] text-white gap-1.5"
+            >
+              <ClipboardList className="w-4 h-4" />
+              Solicitar Pendências
+            </Button>
+          )}
+          {documents.length > 0 && (
+            <Button variant="outline" size="sm" onClick={handleDownloadAllDocuments} disabled={isDownloadingZip}>
+              {isDownloadingZip ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Archive className="w-4 h-4 mr-2" />}
+              {isDownloadingZip ? `Baixando ${downloadProgress}` : 'Baixar Todos (ZIP)'}
+            </Button>
+          )}
+        </div>
       </div>
       {documents.length === 0 ? (
         <div className="text-center py-12">
@@ -151,6 +169,16 @@ export default function CaseDocumentsTab({ documents, caseId, merchantName, inte
         </div>
       )}
       </div>
+
+      {canRequestPendency && (
+        <RequestPendencyModal
+          open={pendencyModalOpen}
+          onClose={() => setPendencyModalOpen(false)}
+          onboardingCase={onboardingCase}
+          merchant={merchant}
+          onSuccess={() => onRefetch?.()}
+        />
+      )}
     </div>
   );
 }

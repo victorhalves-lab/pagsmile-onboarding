@@ -204,14 +204,30 @@ export default function AnaliseDeCasos() {
           </div>
           {merchant?.type === 'PF' && documents.length > 0 && (
             <div className="mt-4">
-              <CaseDocumentsTab documents={documents} caseId={caseId} merchantName={merchant?.fullName} integrationLogs={integrationLogs} />
+              <CaseDocumentsTab
+                documents={documents}
+                caseId={caseId}
+                merchantName={merchant?.fullName}
+                integrationLogs={integrationLogs}
+                onboardingCase={onboardingCase}
+                merchant={merchant}
+                onRefetch={refetchCase}
+              />
             </div>
           )}
         </TabsContent>
 
         <TabsContent value="documents" className="space-y-4">
           <CaseDocumentJustifications caseId={caseId} />
-          <CaseDocumentsTab documents={documents} caseId={caseId} merchantName={merchant?.fullName} integrationLogs={integrationLogs} />
+          <CaseDocumentsTab
+            documents={documents}
+            caseId={caseId}
+            merchantName={merchant?.fullName}
+            integrationLogs={integrationLogs}
+            onboardingCase={onboardingCase}
+            merchant={merchant}
+            onRefetch={refetchCase}
+          />
         </TabsContent>
 
         <TabsContent value="validations">

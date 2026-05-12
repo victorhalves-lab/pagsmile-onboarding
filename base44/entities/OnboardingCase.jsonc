@@ -34,7 +34,7 @@
     },
     "riskScoreV4": {
       "type": "number",
-      "description": "Score de risco Framework v4 (0-1000, onde 0=melhor)"
+      "description": "Score de risco Framework v4 (0-1000)"
     },
     "subfaixa": {
       "type": "string",
@@ -47,17 +47,14 @@
         "3B",
         "4",
         "5"
-      ],
-      "description": "Subfaixa de decis\u00e3o v4"
+      ]
     },
     "subfaixaNome": {
-      "type": "string",
-      "description": "Nome da subfaixa (VERDE EXPRESS, AZUL, AMARELO, etc)"
+      "type": "string"
     },
     "rollingReservePercent": {
       "type": "number",
-      "default": 0,
-      "description": "Rolling Reserve aplicado (%)"
+      "default": 0
     },
     "monitoramentoNivel": {
       "type": "string",
@@ -68,22 +65,19 @@
         "INTENSO",
         "INTENSO_PLUS",
         "MAXIMO"
-      ],
-      "description": "N\u00edvel de monitoramento v4"
+      ]
     },
     "condicoesAutomaticas": {
       "type": "array",
       "items": {
         "type": "string"
-      },
-      "description": "Condi\u00e7\u00f5es autom\u00e1ticas aplicadas pelo framework v4"
+      }
     },
     "bloqueiosAtivos": {
       "type": "array",
       "items": {
         "type": "string"
-      },
-      "description": "Bloqueios B01-B10 ativos"
+      }
     },
     "iaDecision": {
       "type": "string",
@@ -91,12 +85,10 @@
         "Aprovado",
         "Manual",
         "Recusado"
-      ],
-      "description": "Decis\u00e3o sugerida pela IA"
+      ]
     },
     "iaExplanation": {
-      "type": "string",
-      "description": "Explica\u00e7\u00e3o detalhada da IA"
+      "type": "string"
     },
     "manualReviewerId": {
       "type": "string"
@@ -135,12 +127,10 @@
       "type": "string"
     },
     "commercialAgentId": {
-      "type": "string",
-      "description": "ID do vendedor/agente comercial que originou este caso"
+      "type": "string"
     },
     "commercialAgentName": {
-      "type": "string",
-      "description": "Nome do vendedor/agente comercial que originou este caso"
+      "type": "string"
     },
     "priority": {
       "type": "string",
@@ -176,31 +166,25 @@
       "default": false
     },
     "docLinkToken": {
-      "type": "string",
-      "description": "Token de seguran\u00e7a para link p\u00fablico de upload de documentos + CAF"
+      "type": "string"
     },
     "cafRecaptureRequested": {
       "type": "boolean",
-      "default": false,
-      "description": "Indica se uma nova captura CAF (selfie/documento) foi solicitada ao cliente devido a baixa qualidade da primeira tentativa."
+      "default": false
     },
     "cafRecaptureReason": {
-      "type": "string",
-      "description": "Motivo leg\u00edvel da solicita\u00e7\u00e3o de recaptura (ex: 'liveness com score 58 \u2014 selfie pouco n\u00edtida')."
+      "type": "string"
     },
     "cafRecaptureRequestedAt": {
       "type": "string",
-      "format": "date-time",
-      "description": "Data da solicita\u00e7\u00e3o de recaptura."
+      "format": "date-time"
     },
     "cafRecaptureAttempts": {
       "type": "number",
-      "default": 0,
-      "description": "N\u00famero de tentativas de recaptura j\u00e1 realizadas."
+      "default": 0
     },
     "escalationReason": {
-      "type": "string",
-      "description": "Motivo t\u00e9cnico da escala\u00e7\u00e3o para Revis\u00e3o Manual (ex: 'CAF liveness REPROVED score 58; recapture falhou')."
+      "type": "string"
     },
     "escalationSource": {
       "type": "string",
@@ -211,12 +195,10 @@
         "CAF_QUALITY",
         "SAFETY_NET",
         "NONE"
-      ],
-      "description": "Origem t\u00e9cnica da escala\u00e7\u00e3o."
+      ]
     },
     "additionalRepresentatives": {
       "type": "array",
-      "description": "Lista de representantes legais ADICIONAIS al\u00e9m do principal. Capturado quando o cliente confirma ter mais de um representante. Cada item: { nome, cpf, email, phone, cargo }.",
       "items": {
         "type": "object",
         "properties": {
@@ -240,7 +222,6 @@
     },
     "cafLinksPorRepresentante": {
       "type": "array",
-      "description": "Links CAF gerados para cada representante adicional. Status individual de conclus\u00e3o da verifica\u00e7\u00e3o biom\u00e9trica.",
       "items": {
         "type": "object",
         "properties": {
@@ -286,7 +267,6 @@
     },
     "representativesContacts": {
       "type": "array",
-      "description": "Contatos (telefone/email) dos representantes legais verificados via BigDataCorp (busca individual por CPF). N\u00e3o \u00e9 fornecido pelo cliente \u2014 vem do enriquecimento BDC.",
       "items": {
         "type": "object",
         "properties": {
@@ -314,6 +294,15 @@
           }
         }
       }
+    },
+    "reanalysisRound": {
+      "type": "number",
+      "default": 0,
+      "description": "Quantas vezes o caso voltou para rean\u00e1lise ap\u00f3s o cliente preencher pend\u00eancias solicitadas"
+    },
+    "currentPendencyRequestId": {
+      "type": "string",
+      "description": "ID da PendencyRequest atualmente aberta (status='Docs Solicitados'). Vazio quando n\u00e3o h\u00e1 pend\u00eancias em curso."
     }
   },
   "required": [
