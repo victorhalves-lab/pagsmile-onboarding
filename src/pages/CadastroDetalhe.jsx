@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Building2, User, Mail, Phone, MapPin, Globe, Calendar, Shield, FileText, Users, FileCheck, Stamp, BarChart3, History, Database, Microscope, Handshake } from 'lucide-react';
+import { ArrowLeft, Building2, User, Mail, Phone, MapPin, Globe, Calendar, Shield, FileText, Users, FileCheck, Stamp, BarChart3, History, Database, Microscope, Handshake, Briefcase, Brain, ClipboardList, UserCheck, ShieldCheck } from 'lucide-react';
 import CasePartnerAssignments from '@/components/partners-compliance/CasePartnerAssignments';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -11,13 +11,23 @@ import { Skeleton } from '@/components/ui/skeleton';
 import CadastroOverviewTab from '@/components/cadastro/CadastroOverviewTab';
 import CadastroDadosTab from '@/components/cadastro/CadastroDadosTab';
 import CadastroDocumentosTab from '@/components/cadastro/CadastroDocumentosTab';
-import CadastroPropostaTab from '@/components/cadastro/CadastroPropostaTab';
+import CadastroDocumentJustificationsBlock from '@/components/cadastro/CadastroDocumentJustificationsBlock';
+import CadastroAllProposalsTab from '@/components/cadastro/CadastroAllProposalsTab';
 import CadastroComplianceTab from '@/components/cadastro/CadastroComplianceTab';
 import CadastroSubsellersTab from '@/components/cadastro/CadastroSubsellersTab';
 import CadastroContratoTab from '@/components/cadastro/CadastroContratoTab';
 import CadastroHistoricoTab from '@/components/cadastro/CadastroHistoricoTab';
 import CadastroEnrichmentTab from '@/components/cadastro/CadastroEnrichmentTab';
 import CadastroRegulatoryPanel from '@/components/cadastro/CadastroRegulatoryPanel';
+import CadastroComercialTab from '@/components/cadastro/CadastroComercialTab';
+import CadastroLeadIATab from '@/components/cadastro/CadastroLeadIATab';
+import CadastroPendenciasTab from '@/components/cadastro/CadastroPendenciasTab';
+import CadastroRepresentantesTab from '@/components/cadastro/CadastroRepresentantesTab';
+import CadastroAuditoriaTab from '@/components/cadastro/CadastroAuditoriaTab';
+import CadastroBankDataBlock from '@/components/cadastro/CadastroBankDataBlock';
+import CadastroSessionDraftsBlock from '@/components/cadastro/CadastroSessionDraftsBlock';
+import CadastroRevalidationBlock from '@/components/cadastro/CadastroRevalidationBlock';
+import CadastroPartnerActivityBlock from '@/components/cadastro/CadastroPartnerActivityBlock';
 import EnterpriseExecutiveSummary from '@/components/cadastro/EnterpriseExecutiveSummary';
 import DownloadDossieButton from '@/components/cadastro/DownloadDossieButton';
 import { segmentLabel } from '@/lib/segmentLabels';
@@ -285,6 +295,17 @@ export default function CadastroDetalhe() {
     );
   }
 
+  // Helper inline component to fetch PartnerAssignments and render activities below the list
+  function PartnerActivitiesForCase({ onboardingCaseId }) {
+    const { data: assigns = [] } = useQuery({
+      queryKey: ['cadastro-partner-assignments', onboardingCaseId],
+      queryFn: () => base44.entities.PartnerAssignment.filter({ onboardingCaseId }),
+      enabled: !!onboardingCaseId,
+    });
+    if (!assigns.length) return null;
+    return <CadastroPartnerActivityBlock assignments={assigns} />;
+  }
+
   const sc = STATUS_CONFIG[merchant.onboardingStatus] || STATUS_CONFIG['Pendente'];
   const backLink = merchant.isSubseller && merchant.parentMerchantId
     ? `/CadastroDetalhe?id=${merchant.parentMerchantId}`
@@ -357,13 +378,18 @@ export default function CadastroDetalhe() {
         <TabsList className="bg-white border border-[var(--pagsmile-blue)]/8 p-1 rounded-xl flex-wrap h-auto">
           <TabsTrigger value="overview" className="text-xs gap-1"><BarChart3 className="w-3 h-3" />Visão Geral</TabsTrigger>
           <TabsTrigger value="dados" className="text-xs gap-1"><FileText className="w-3 h-3" />Dados Cadastrais</TabsTrigger>
+          <TabsTrigger value="comercial" className="text-xs gap-1"><Briefcase className="w-3 h-3" />Comercial</TabsTrigger>
+          <TabsTrigger value="lead-ia" className="text-xs gap-1"><Brain className="w-3 h-3" />Lead & IA</TabsTrigger>
           <TabsTrigger value="documentos" className="text-xs gap-1"><FileCheck className="w-3 h-3" />Documentos</TabsTrigger>
+          <TabsTrigger value="pendencias" className="text-xs gap-1"><ClipboardList className="w-3 h-3" />Pendências</TabsTrigger>
+          <TabsTrigger value="representantes" className="text-xs gap-1"><UserCheck className="w-3 h-3" />Representantes</TabsTrigger>
           <TabsTrigger value="proposta" className="text-xs gap-1"><FileText className="w-3 h-3" />Propostas{allProposals.length > 0 ? ` (${allProposals.length})` : ''}</TabsTrigger>
           <TabsTrigger value="contrato" className="text-xs gap-1"><Stamp className="w-3 h-3" />Contratos{allContracts.length > 0 ? ` (${allContracts.length})` : ''}</TabsTrigger>
           <TabsTrigger value="compliance" className="text-xs gap-1"><Shield className="w-3 h-3" />Compliance</TabsTrigger>
           <TabsTrigger value="regulatory" className="text-xs gap-1"><Shield className="w-3 h-3" />Regulatório</TabsTrigger>
           <TabsTrigger value="enrichment" className="text-xs gap-1"><Database className="w-3 h-3" />BDC / CAF{(validations.length + integrationLogs.length) > 0 ? ` (${validations.length + integrationLogs.length})` : ''}</TabsTrigger>
           <TabsTrigger value="historico" className="text-xs gap-1"><History className="w-3 h-3" />Histórico{auditLogs.length > 0 ? ` (${auditLogs.length})` : ''}</TabsTrigger>
+          <TabsTrigger value="auditoria" className="text-xs gap-1"><ShieldCheck className="w-3 h-3" />Auditoria LGPD</TabsTrigger>
           <TabsTrigger value="parceiros" className="text-xs gap-1"><Handshake className="w-3 h-3" />Parceiros</TabsTrigger>
           {!merchant.isSubseller && (
             <TabsTrigger value="subsellers" className="text-xs gap-1"><Users className="w-3 h-3" />Subsellers ({subsellers.length})</TabsTrigger>
@@ -374,19 +400,41 @@ export default function CadastroDetalhe() {
           <CadastroOverviewTab merchant={merchant} latestCase={latestCase} lead={lead} latestProposal={latestProposal} latestContract={latestContract} latestScore={latestScore} documents={documents} subsellers={subsellers} allProposals={allProposals} allContracts={allContracts} allLeads={allLeads} allCases={cases} />
         </TabsContent>
         <TabsContent value="dados">
-          <CadastroDadosTab merchant={merchant} lead={lead} responses={responses} latestCase={latestCase} onMerchantUpdated={handleMerchantUpdated} />
+          <div className="space-y-4">
+            <CadastroDadosTab merchant={merchant} lead={lead} responses={responses} latestCase={latestCase} onMerchantUpdated={handleMerchantUpdated} />
+            <CadastroBankDataBlock allCaseIds={allCaseIds} merchantId={merchantId} />
+          </div>
+        </TabsContent>
+        <TabsContent value="comercial">
+          <CadastroComercialTab lead={lead} allLeads={allLeads} />
+        </TabsContent>
+        <TabsContent value="lead-ia">
+          <CadastroLeadIATab lead={lead} latestCase={latestCase} />
         </TabsContent>
         <TabsContent value="documentos">
-          <CadastroDocumentosTab documents={documents} latestCase={latestCase} merchantEmail={merchant?.email} />
+          <div className="space-y-4">
+            <CadastroDocumentJustificationsBlock documents={documents} />
+            <CadastroDocumentosTab documents={documents} latestCase={latestCase} merchantEmail={merchant?.email} />
+          </div>
+        </TabsContent>
+        <TabsContent value="pendencias">
+          <CadastroPendenciasTab allCaseIds={allCaseIds} />
+        </TabsContent>
+        <TabsContent value="representantes">
+          <CadastroRepresentantesTab latestCase={latestCase} />
         </TabsContent>
         <TabsContent value="proposta">
-          <CadastroPropostaTab proposals={allProposals} lead={lead} />
+          <CadastroAllProposalsTab proposals={allProposals} lead={lead} allLeads={allLeads} merchant={merchant} />
         </TabsContent>
         <TabsContent value="contrato">
           <CadastroContratoTab contracts={allContracts} />
         </TabsContent>
         <TabsContent value="compliance">
-          <CadastroComplianceTab score={latestScore} latestCase={latestCase} allScores={scores} allCases={cases} allCaseIds={allCaseIds} integrationLogs={integrationLogs} validations={validations} />
+          <div className="space-y-4">
+            <CadastroComplianceTab score={latestScore} latestCase={latestCase} allScores={scores} allCases={cases} allCaseIds={allCaseIds} integrationLogs={integrationLogs} validations={validations} />
+            <CadastroRevalidationBlock merchantId={merchantId} />
+            <CadastroSessionDraftsBlock merchantEmail={merchant?.email} />
+          </div>
         </TabsContent>
         <TabsContent value="regulatory">
           <CadastroRegulatoryPanel merchant={merchant} latestCase={latestCase} validations={validations} integrationLogs={integrationLogs} score={latestScore} />
@@ -406,9 +454,19 @@ export default function CadastroDetalhe() {
         <TabsContent value="historico">
           <CadastroHistoricoTab auditLogs={auditLogs} />
         </TabsContent>
+        <TabsContent value="auditoria">
+          <CadastroAuditoriaTab
+            merchantId={merchantId}
+            allCaseIds={allCaseIds}
+            allProposalIds={allProposals.map(p => p.id)}
+          />
+        </TabsContent>
         <TabsContent value="parceiros">
           {latestCase?.id ? (
-            <CasePartnerAssignments onboardingCaseId={latestCase.id} />
+            <>
+              <CasePartnerAssignments onboardingCaseId={latestCase.id} />
+              <PartnerActivitiesForCase onboardingCaseId={latestCase.id} />
+            </>
           ) : (
             <div className="bg-white rounded-xl p-8 text-center text-sm text-slate-500">
               Este merchant ainda não possui um caso de onboarding para ser atribuído a parceiros.
