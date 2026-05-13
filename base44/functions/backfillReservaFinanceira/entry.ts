@@ -86,11 +86,25 @@ function buildNormalized(existing) {
   return null; // sem mudanças necessárias
 }
 
-async function processEntity(base44, entityName, dryRun) {
+async function processEntity(base44, entityName, dryRun, applySegmentDefaults = false) {
   const all = await base44.asServiceRole.entities[entityName].list('-created_date', 5000);
 
   const todo = [];
   for (const p of all) {
+    // Modo applySegmentDefaults: para StandardProposal, FORÇA a reserva conforme o segmento.
+    // Sobrescreve percentuais mesmo se já existir — útil quando muda a regra de negócio.
+    if (applySegmentDefaults && entityName === 'StandardProposal') {
+      const segReserva = reservaForSegment(p.businessSubCategory || p.segment);
+      if (segReserva) {
+        const current = p.rates?.reservaFinanceira;
+        const needsUpdate = !current
+          || current.pix?.percentual !== segReserva.pix.percentual
+          || current.cartao?.percentual !== segReserva.cartao.percentual
+          || current.disclaimer !== OFFICIAL_DISCLAIMER;
+        if (needsUpdate) todo.push({ p, diff: { reserva: segReserva, reason: 'segment_default' } });
+        continue;
+      }
+    }
     const diff = buildNormalized(p.rates?.reservaFinanceira);
     if (diff) todo.push({ p, diff });
   }
@@ -129,10 +143,13 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => ({}));
     const dryRun = body.dryRun === true;
+    // applySegmentDefaults: aplica percentuais POR SEGMENTO nas StandardProposals
+    // (modelos padrão). Útil para forçar a regra v2026-05-13 nos templates existentes.
+    const applySegmentDefaults = body.applySegmentDefaults === true;
 
     const results = [];
     for (const entityName of ['Proposal', 'PixProposal', 'StandardProposal']) {
-      results.push(await processEntity(base44, entityName, dryRun));
+      results.push(await processEntity(base44, entityName, dryRun, applySegmentDefaults));
     }
 
     const totals = results.reduce((acc, r) => ({
