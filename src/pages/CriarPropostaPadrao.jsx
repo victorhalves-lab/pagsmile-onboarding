@@ -14,7 +14,9 @@ import CardTaxasCartao from '@/components/proposals/CardTaxasCartao';
 import CardAntecipacao from '@/components/proposals/CardAntecipacao';
 import CardOutrasTaxas from '@/components/proposals/CardOutrasTaxas';
 import PropostaPreview from '@/components/proposals/PropostaPreview';
+import CardReservaFinanceira from '@/components/proposals/CardReservaFinanceira';
 import { DEFAULT_SEGMENT_RATES } from '@/lib/rateCalculator';
+import { getReservaForSegment, getReservaWithDefaults } from '@/lib/reservaFinanceiraDefaults';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 const SEGMENTS = ['Educação', 'Infoprodutos', 'E-commerce', 'SaaS', 'Gateway', 'Marketplace', 'Dropshipping', 'MPE', 'Plataformas Verticais', 'Link de Pagamento'];
@@ -59,6 +61,7 @@ export default function CriarPropostaPadrao() {
     pix: { tipo: 'percentual', valor: '' },
     boleto: '', feeTransacao: '', antifraude: '', alertaPreChargeback: '', taxa3ds: '', setup: '',
     minimoGarantido: { mes1: '', mes2: '', mes3: '' },
+    reservaFinanceira: getReservaForSegment(''),
   });
 
   const { data: existingProposal } = useQuery({
@@ -101,6 +104,9 @@ export default function CriarPropostaPadrao() {
         antifraude: r.antifraude || '', alertaPreChargeback: r.alertaPreChargeback || '',
         taxa3ds: r.taxa3ds || '', setup: r.setup || '',
         minimoGarantido: typeof r.minimoGarantido === 'object' ? r.minimoGarantido : { mes1: '', mes2: '', mes3: '' },
+        reservaFinanceira: r.reservaFinanceira
+          ? getReservaWithDefaults(r)
+          : getReservaForSegment(existingProposal.segment || ''),
       });
       if (existingProposal.chosenPartnerId) setSelectedPartnerId(existingProposal.chosenPartnerId);
     }
@@ -134,6 +140,8 @@ export default function CriarPropostaPadrao() {
           taxa3ds: segDefault.taxa3ds,
           setup: 5000,
           minimoGarantido: { mes1: '', mes2: '', mes3: '' },
+          // Reserva Financeira por segmento (regra v2026-05-13)
+          reservaFinanceira: getReservaForSegment(value),
         });
 
         setForm(prev => ({
@@ -194,6 +202,7 @@ export default function CriarPropostaPadrao() {
         minimoGarantido: { mes1: parseTaxa(rates.minimoGarantido?.mes1), mes2: parseTaxa(rates.minimoGarantido?.mes2), mes3: parseTaxa(rates.minimoGarantido?.mes3) },
         rav: { taxa: parseTaxa(form.taxaAntecipacao), prazo: form.prazoRecebimento },
         percentualAntecipacao: parseTaxa(form.percentualAntecipacao),
+        reservaFinanceira: getReservaWithDefaults(rates),
       },
       validUntil: form.dataValidade.toISOString(),
       tokenPublico: existingProposal?.tokenPublico || gerarToken(),
@@ -343,6 +352,7 @@ export default function CriarPropostaPadrao() {
 
           <CardTaxasCartao rates={rates} onUpdateRates={updateRates} selectedBrand={selectedBrand} setSelectedBrand={setSelectedBrand} partner={selectedPartner} clientMcc="" />
           <CardAntecipacao form={form} onUpdate={updateForm} />
+          <CardReservaFinanceira rates={rates} onUpdateRates={updateRates} />
           <CardOutrasTaxas rates={rates} onUpdateRates={updateRates} partner={selectedPartner} />
 
           {/* Parceiro - apenas para simulação de rentabilidade */}

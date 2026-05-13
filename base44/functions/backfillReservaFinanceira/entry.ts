@@ -24,6 +24,36 @@ const DEFAULT_RESERVA = {
   disclaimer: OFFICIAL_DISCLAIMER,
 };
 
+// Defaults por segmento (regra de negócio v2026-05-13).
+// Aceita tanto a chave técnica (businessSubCategory) quanto o label visual (segment).
+const SEGMENT_DEFAULTS = {
+  gateway:               { cartao: 20, pix: 5 },
+  dropshipping:          { cartao: 20, pix: 5 },
+  infoprodutos:          { cartao: 15, pix: 3 },
+  marketplace:           { cartao: 10, pix: 2 },
+  ecommerce:             { cartao: 10, pix: 1 },
+  educacao:              { cartao: 5,  pix: 1 },
+  saas:                  { cartao: 5,  pix: 1 },
+  mpe:                   { cartao: 5,  pix: 1 },
+  plataformas_verticais: { cartao: 5,  pix: 1 },
+  link_pagamento:        { cartao: 5,  pix: 1 },
+};
+
+function reservaForSegment(seg) {
+  if (!seg) return null;
+  const key = String(seg).toLowerCase()
+    .replace(/[-\s]/g, '_')
+    .replace(/ç/g, 'c').replace(/ã/g, 'a').replace(/á/g, 'a').replace(/é/g, 'e').replace(/í/g, 'i').replace(/ó/g, 'o').replace(/ú/g, 'u')
+    .replace(/^e_commerce$/, 'ecommerce');
+  const cfg = SEGMENT_DEFAULTS[key];
+  if (!cfg) return null;
+  return {
+    pix: { percentual: cfg.pix, diasRetencao: 90, ativa: true },
+    cartao: { percentual: cfg.cartao, diasRetencao: 180, ativa: true },
+    disclaimer: OFFICIAL_DISCLAIMER,
+  };
+}
+
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 /** Decide se a proposta precisa de update (novo ou disclaimer/prazo divergente). */

@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { LayoutGrid, Check, Info, Loader2 } from 'lucide-react';
 import { DEFAULT_SEGMENT_RATES } from '@/lib/rateCalculator';
+import { getReservaForSegment } from '@/lib/reservaFinanceiraDefaults';
 import { toast } from 'sonner';
 
 const SEGMENTS = [
@@ -51,6 +52,10 @@ export default function SegmentRatesLoader({ onApply }) {
       taxa3ds: segDefault.taxa3ds,
       setup: 5000,
       minimoGarantido: { mes1: '', mes2: '', mes3: '' },
+      // Reserva Financeira default do segmento (regra v2026-05-13):
+      // Gateway/Dropshipping = 20%/5%, Infoprodutos = 15%/3%, Marketplace = 10%/2%,
+      // E-commerce = 10%/1%, demais = 5%/1%.
+      reservaFinanceira: getReservaForSegment(segment),
     };
 
     const formUpdates = {

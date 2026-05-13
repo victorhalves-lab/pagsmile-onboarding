@@ -18,6 +18,8 @@ import PropostaPreview from '@/components/proposals/PropostaPreview';
 import CopyRatesModal from '@/components/proposals/CopyRatesModal';
 import SegmentRatesLoader from '@/components/proposals/SegmentRatesLoader';
 import FinalRateOverridesEditor from '@/components/proposals/FinalRateOverridesEditor';
+import CardReservaFinanceira from '@/components/proposals/CardReservaFinanceira';
+import { getReservaForSegment, getReservaWithDefaults } from '@/lib/reservaFinanceiraDefaults';
 
 const parseTaxa = (val) => {
   if (!val && val !== 0) return 0;
@@ -58,6 +60,10 @@ export default function CriarProposta() {
     pix: { tipo: 'percentual', valor: '' },
     boleto: '', feeTransacao: '', antifraude: '', alertaPreChargeback: '', taxa3ds: '', setup: '', forex: '',
     minimoGarantido: { mes1: '', mes2: '', mes3: '' },
+    // Reserva Financeira (Rolling Reserve) — default = sem segmento ainda (5%/1%).
+    // Será sobrescrita quando o lead vier com businessSubCategory, ou quando o
+    // vendedor selecionar um segmento no SegmentRatesLoader.
+    reservaFinanceira: getReservaForSegment(null),
     // Maquininha (POS presencial) só existe se "Processamento com maquininha" estiver ativo.
     // Tem taxas próprias, distintas das taxas online: crédito (1x, 2-6x, 7-12x) + débito por bandeira.
     usaMaquininha: false,
@@ -104,6 +110,11 @@ export default function CriarProposta() {
       setup: r.setup ?? '',
       forex: r.forex ?? '',
       minimoGarantido: typeof r.minimoGarantido === 'object' ? r.minimoGarantido : { mes1: r.minimoGarantido ?? '', mes2: r.minimoGarantido ?? '', mes3: r.minimoGarantido ?? '' },
+      // Reserva Financeira — copia da proposta de origem (preserva escolha do vendedor).
+      // Se origem não tinha → usa default do segmento; se nem segmento → fallback (5%/1%).
+      reservaFinanceira: r.reservaFinanceira
+        ? getReservaWithDefaults(r)
+        : getReservaForSegment(sourceProposal.businessSubCategory),
       usaMaquininha: hasMaquininha,
       maquininha: hasMaquininha
         ? {
@@ -194,6 +205,10 @@ export default function CriarProposta() {
         antifraude: r.antifraude || '', alertaPreChargeback: r.alertaPreChargeback || '',
         taxa3ds: r.taxa3ds || '', setup: r.setup || '', forex: r.forex || '',
         minimoGarantido: typeof r.minimoGarantido === 'object' ? r.minimoGarantido : { mes1: r.minimoGarantido || '', mes2: r.minimoGarantido || '', mes3: r.minimoGarantido || '' },
+        // Reserva Financeira — usa a gravada na proposta ou cai no default do segmento.
+        reservaFinanceira: r.reservaFinanceira
+          ? getReservaWithDefaults(r)
+          : getReservaForSegment(existingProposal.businessSubCategory),
         usaMaquininha: hasMaquininha,
         maquininha: hasMaquininha
           ? {
@@ -224,6 +239,12 @@ export default function CriarProposta() {
         businessSubCategory: lead.businessSubCategory || prev.businessSubCategory,
       }));
 
+      // Aplica reserva financeira default do segmento do lead (regra v2026-05-13).
+      // Vendedor pode editar depois, mas o ponto de partida vem do segmento.
+      if (lead.businessSubCategory) {
+        setRates(prev => ({ ...prev, reservaFinanceira: getReservaForSegment(lead.businessSubCategory) }));
+      }
+
       // Auto-preencher com taxas da PRISCILA se usePriscila=1
       if (usePriscila && lead.priscilaAnalysisReport?.taxasSugeridas) {
         const tx = lead.priscilaAnalysisReport.taxasSugeridas;
@@ -245,7 +266,15 @@ export default function CriarProposta() {
     }
   }, [lead, editId, usePriscila]);
 
-  const updateForm = (field, value) => { setForm(prev => ({ ...prev, [field]: value })); setErrors(prev => ({ ...prev, [field]: undefined })); };
+  const updateForm = (field, value) => {
+    setForm(prev => ({ ...prev, [field]: value }));
+    setErrors(prev => ({ ...prev, [field]: undefined }));
+    // Quando o vendedor troca o segmento manualmente, atualiza a reserva financeira
+    // para o default do novo segmento — desde que ele ainda não tenha customizado.
+    if (field === 'businessSubCategory' && value) {
+      setRates(prev => ({ ...prev, reservaFinanceira: getReservaForSegment(value) }));
+    }
+  };
   const updateRates = (newRates) => setRates(newRates);
 
   const validate = () => {
@@ -333,6 +362,9 @@ export default function CriarProposta() {
         minimoGarantido: { mes1: parseTaxa(rates.minimoGarantido?.mes1), mes2: parseTaxa(rates.minimoGarantido?.mes2), mes3: parseTaxa(rates.minimoGarantido?.mes3) },
         rav: { taxa: parseTaxa(form.taxaAntecipacao), prazo: form.prazoRecebimento },
         percentualAntecipacao: parseTaxa(form.percentualAntecipacao),
+        // Reserva Financeira (Rolling Reserve) — sempre persistida com prazos fixos
+        // (PIX 90d / Cartão 180d) e disclaimer oficial garantidos pelo helper.
+        reservaFinanceira: getReservaWithDefaults({ reservaFinanceira: rates.reservaFinanceira }),
       },
       taxaFinalOverrides: form.taxaFinalOverrides || {},
       hideCalculationColumns: form.hideCalculationColumns || false,
@@ -419,6 +451,7 @@ export default function CriarProposta() {
           />
           <CardTaxasCartao rates={rates} onUpdateRates={updateRates} selectedBrand={selectedBrand} setSelectedBrand={setSelectedBrand} partner={selectedPartner} clientMcc={form.clienteMcc} hideRange13a21={form.hideRange13a21 || false} onToggleHideRange13a21={(v) => updateForm('hideRange13a21', v)} />
           <CardAntecipacao form={form} onUpdate={updateForm} />
+          <CardReservaFinanceira rates={rates} onUpdateRates={updateRates} />
           <FinalRateOverridesEditor
             overrides={form.taxaFinalOverrides || {}}
             onChange={(v) => updateForm('taxaFinalOverrides', v)}
