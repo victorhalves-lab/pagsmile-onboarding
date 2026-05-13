@@ -4,7 +4,8 @@ import { Loader2, Sparkles, RefreshCw, Brain, TrendingUp, AlertTriangle, Lightbu
 import { base44 } from '@/api/base44Client';
 import ReactMarkdown from 'react-markdown';
 
-export default function InsightsAISection({ leads, proposals, cases, complianceScores, merchants }) {
+export default function InsightsAISection({ leads, proposals, pixProposals = [], partners = [], cases, complianceScores, merchants }) {
+  const allProposals = [...proposals, ...pixProposals];
   const [insights, setInsights] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -17,7 +18,10 @@ export default function InsightsAISection({ leads, proposals, cases, complianceS
     const riskCounts = {};
     leads.forEach(l => { riskCounts[l.priscilaRiskLevel || 'N/A'] = (riskCounts[l.priscilaRiskLevel || 'N/A'] || 0) + 1; });
     const proposalStatus = {};
-    proposals.forEach(p => { proposalStatus[p.status || 'N/A'] = (proposalStatus[p.status || 'N/A'] || 0) + 1; });
+    allProposals.forEach(p => { proposalStatus[p.status || 'N/A'] = (proposalStatus[p.status || 'N/A'] || 0) + 1; });
+    const partnerUsage = {};
+    allProposals.forEach(p => { if (p.chosenPartnerName) partnerUsage[p.chosenPartnerName] = (partnerUsage[p.chosenPartnerName] || 0) + 1; });
+    const topPartners = Object.entries(partnerUsage).sort((a, b) => b[1] - a[1]).slice(0, 5);
     const compStatus = {};
     cases.forEach(c => { compStatus[c.status || 'N/A'] = (compStatus[c.status || 'N/A'] || 0) + 1; });
     const tpvValues = leads.filter(l => l.tpvMensal).map(l => l.tpvMensal);
@@ -38,7 +42,7 @@ export default function InsightsAISection({ leads, proposals, cases, complianceS
 
     const summary = `DADOS CONSOLIDADOS:
 LEADS (${leads.length}): Status: ${JSON.stringify(statusCounts)} | Tipo: ${JSON.stringify(bizCounts)} | Risco: ${JSON.stringify(riskCounts)} | TPV total: R$${tpvTotal.toLocaleString('pt-BR')} | TPV mediano: R$${tpvMedian.toLocaleString('pt-BR')} | Ticket mediano: R$${ticketMedian.toLocaleString('pt-BR')} | Introducers: ${topIntros.map(([n, c]) => `${n}:${c}`).join(', ') || 'nenhum'}
-PROPOSTAS (${proposals.length}): ${JSON.stringify(proposalStatus)}
+PROPOSTAS (${allProposals.length} - inclui ${pixProposals.length} PIX): ${JSON.stringify(proposalStatus)} | Top Parceiros: ${topPartners.map(([n, c]) => `${n}:${c}`).join(', ') || '-'} | Total Parceiros cadastrados: ${partners.length}
 COMPLIANCE (${cases.length}): ${JSON.stringify(compStatus)} | SENTINEL: ${JSON.stringify(sentinelRecs)} | Flags: ${topFlags.map(([f, c]) => `"${f}":${c}x`).join(', ') || '-'}
 MERCHANTS (${merchants.length}): Aprovados:${merchantApproved} Recusados:${merchantRejected}`;
 
@@ -70,7 +74,7 @@ MERCHANTS (${merchants.length}): Aprovados:${merchantApproved} Recusados:${merch
             </div>
             <h3 className="text-xl font-extrabold text-[#002443] mb-2">Insights Gerados por IA</h3>
             <p className="text-sm text-[#002443]/40 mb-8 max-w-lg mx-auto leading-relaxed">
-              Análise inteligente de <span className="font-bold text-[#002443]/60">{leads.length} leads</span>, <span className="font-bold text-[#002443]/60">{proposals.length} propostas</span> e <span className="font-bold text-[#002443]/60">{cases.length} casos</span> para extrair tendências, riscos e oportunidades estratégicas.
+              Análise inteligente de <span className="font-bold text-[#002443]/60">{leads.length} leads</span>, <span className="font-bold text-[#002443]/60">{allProposals.length} propostas</span> e <span className="font-bold text-[#002443]/60">{cases.length} casos</span> para extrair tendências, riscos e oportunidades estratégicas.
             </p>
             <Button onClick={generateInsights} size="lg" className="gap-2.5 px-8 rounded-xl shadow-lg shadow-[#2bc196]/25 hover:shadow-xl hover:shadow-[#2bc196]/30 transition-all">
               <Sparkles className="w-5 h-5" />

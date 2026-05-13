@@ -109,7 +109,7 @@ export default function DadosInsights() {
   });
   const { data: partners = [], isLoading: loadingPartners } = useQuery({
     queryKey: ['insights-partners'],
-    queryFn: () => base44.entities.Partner.list('-created_date', 50),
+    queryFn: () => base44.entities.Partner.list('-created_date', 500),
   });
   const { data: pixProposals = [], isLoading: loadingPix } = useQuery({
     queryKey: ['insights-pix-proposals'],
@@ -118,6 +118,10 @@ export default function DadosInsights() {
   const { data: complianceSessions = [], isLoading: loadingSessions } = useQuery({
     queryKey: ['insights-compliance-sessions'],
     queryFn: () => base44.entities.ComplianceSession.list('-created_date', 500),
+  });
+  const { data: questionnaireTemplates = [] } = useQuery({
+    queryKey: ['insights-questionnaire-templates'],
+    queryFn: () => base44.entities.QuestionnaireTemplate.list('-created_date', 200),
   });
 
   const isLoading = loadingLeads || loadingProposals || loadingCases || loadingScores || loadingMerchants || loadingDocs || loadingResponses || loadingPartners || loadingPix || loadingSessions;
@@ -234,7 +238,7 @@ export default function DadosInsights() {
 
       {/* ═══ TAB CONTENT ═══ */}
       <div className="min-h-[400px]">
-        {activeTab === 'ai-insights' && <InsightsAISection leads={leads} proposals={proposals} cases={cases} complianceScores={complianceScores} merchants={merchants} />}
+        {activeTab === 'ai-insights' && <InsightsAISection leads={leads} proposals={proposals} pixProposals={pixProposals} partners={partners} cases={cases} complianceScores={complianceScores} merchants={merchants} />}
         {activeTab === 'market-intel' && <InsightsMarketIntelSection leads={leads} />}
         {activeTab === 'tpv' && <InsightsTPVSection leads={leads} />}
         {activeTab === 'benchmark' && <InsightsBenchmarkSection leads={leads} proposals={proposals} />}
@@ -250,7 +254,7 @@ export default function DadosInsights() {
         {activeTab === 'introducers' && <InsightsIntroducerSection leads={leads} proposals={proposals} />}
         {activeTab === 'risk-ops' && <InsightsRiskOperationalSection leads={leads} />}
         {activeTab === 'compliance' && <InsightsComplianceSection cases={cases} complianceScores={complianceScores} merchants={merchants} documents={documents} questionnaireResponses={questionnaireResponses} />}
-        {activeTab === 'compliance-journey' && <InsightsComplianceJourneySection sessions={complianceSessions} />}
+        {activeTab === 'compliance-journey' && <InsightsComplianceJourneySection sessions={complianceSessions} templates={questionnaireTemplates} />}
         {activeTab === 'risk-scoring-v4' && <InsightsRiskScoringV4Section complianceScores={complianceScores} cases={cases} />}
         {activeTab === 'data-health' && <InsightsDataHealthSection leads={leads} />}
         {activeTab === 'partners' && <InsightsPartnerSection partners={partners} proposals={proposals} pixProposals={pixProposals} leads={leads} />}

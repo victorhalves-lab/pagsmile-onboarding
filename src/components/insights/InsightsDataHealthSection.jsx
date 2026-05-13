@@ -16,7 +16,7 @@ export default function InsightsDataHealthSection({ leads }) {
   const fields = [
     { key: 'tpvMensal', label: 'TPV Mensal', check: l => l.tpvMensal > 0 },
     { key: 'ticketMedio', label: 'Ticket Médio', check: l => l.ticketMedio > 0 },
-    { key: 'mcc', label: 'MCC', check: l => !!l.mcc },
+    { key: 'mcc', label: 'MCC', check: l => !!(l.mcc || l.questionnaireData?.mcc || l.bdcEnrichmentData?.mcc?.code) },
     { key: 'cpfCnpj', label: 'CNPJ/CPF', check: l => !!l.cpfCnpj },
     { key: 'email', label: 'E-mail', check: l => !!l.email },
     { key: 'phone', label: 'Telefone', check: l => !!l.phone },

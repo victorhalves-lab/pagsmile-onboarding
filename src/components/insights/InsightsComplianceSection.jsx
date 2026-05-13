@@ -81,6 +81,12 @@ function OverviewTab({ cases, complianceScores }) {
 function SentinelTab({ complianceScores }) {
   if (!complianceScores.length) return <Card className="p-8 text-center"><p className="text-sm text-[#002443]/50">Nenhum score SENTINEL disponível.</p></Card>;
 
+  // V4 = fonte de verdade atual (score_final 0-849, 3 camadas).
+  // Legado SQ/SVE/SGC são preservados, mas só aparecem se realmente houver dados.
+  const sfStats = calcStats(complianceScores.map(s => s.score_final));
+  const c1Stats = calcStats(complianceScores.map(s => s.score_base_segmento));
+  const c2Stats = calcStats(complianceScores.map(s => s.score_variaveis));
+  const c3Stats = calcStats(complianceScores.map(s => s.score_enriquecimento));
   const sqStats = calcStats(complianceScores.map(s => s.score_questionario));
   const sveStats = calcStats(complianceScores.map(s => s.score_validacao_externa));
   const sgcStats = calcStats(complianceScores.map(s => s.score_geral_composto));
@@ -88,10 +94,22 @@ function SentinelTab({ complianceScores }) {
   const confidenceStats = calcStats(complianceScores.map(s => s.nivel_confianca_ia));
   const findingsStats = calcStats(complianceScores.map(s => s.total_findings));
 
+  // Recomendação: usa recomendacao_final, com fallback p/ subfaixa
+  const SUBFAIXA_TO_DECISION = {
+    '1A': 'Aprovado', '1B': 'Aprovado',
+    '2A': 'Aprovado', '2B': 'Aprovado',
+    '3A': 'Aprovado com Condições', '3B': 'Aprovado com Condições',
+    '4': 'Revisão Manual', '5': 'Recusado',
+  };
   const recMap = {};
-  complianceScores.forEach(s => { recMap[s.recomendacao_final || 'N/A'] = (recMap[s.recomendacao_final || 'N/A'] || 0) + 1; });
-  const classMap = {};
-  complianceScores.forEach(s => { classMap[s.classificacao_geral || 'N/A'] = (classMap[s.classificacao_geral || 'N/A'] || 0) + 1; });
+  complianceScores.forEach(s => {
+    const r = s.recomendacao_final || SUBFAIXA_TO_DECISION[s.subfaixa] || 'Pendente';
+    recMap[r] = (recMap[r] || 0) + 1;
+  });
+
+  // Subfaixa distribution (V4)
+  const subfaixaMap = {};
+  complianceScores.forEach(s => { if (s.subfaixa) subfaixaMap[s.subfaixa] = (subfaixaMap[s.subfaixa] || 0) + 1; });
 
   const sevTotals = {};
   complianceScores.forEach(s => { Object.entries(s.findings_por_severidade || {}).forEach(([k, v]) => { sevTotals[k] = (sevTotals[k] || 0) + v; }); });
@@ -104,18 +122,22 @@ function SentinelTab({ complianceScores }) {
     <div className="space-y-5 mt-4">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <StatCard label="Análises" value={complianceScores.length} subtitle={`F1: ${f1} | F2: ${f2} | F3: ${f3}`} icon={Shield} />
-        <StatCard label="SGC Mediano" value={formatNumber(sgcStats.median)} subtitle={`Min: ${formatNumber(sgcStats.min)} / Max: ${formatNumber(sgcStats.max)}`} icon={Shield} />
+        <StatCard label="Score Final Med. (V4)" value={formatNumber(sfStats.median)} subtitle={`Min: ${formatNumber(sfStats.min)} / Max: ${formatNumber(sfStats.max)} / 849`} icon={Shield} />
         <StatCard label="Confiança IA" value={`${confidenceStats.median}%`} icon={CheckCircle2} />
         <StatCard label="Findings Média" value={formatNumber(findingsStats.avg)} subtitle={`Max: ${formatNumber(findingsStats.max)}`} icon={AlertTriangle} />
       </div>
 
       <MinMaxMedianTable
-        title="Scores SENTINEL — Mín / Mediana / Média / Máx"
+        title="Scores SENTINEL — V4 + Legado (apenas com dados)"
         rows={[
-          { label: 'Score Questionário (0-1000)', stats: sqStats },
-          { label: 'Score Validação Externa (0-1000)', stats: sveStats },
-          { label: 'Score Geral Composto (0-1000)', stats: sgcStats },
-          { label: 'Bônus Consistência (0-1000)', stats: bonusStats },
+          { label: 'Score Final V4 (0-849)', stats: sfStats },
+          { label: 'C1 - Base Segmento', stats: c1Stats },
+          { label: 'C2 - Variáveis', stats: c2Stats },
+          { label: 'C3 - Enriquecimento', stats: c3Stats },
+          { label: 'Score Questionário [LEGADO]', stats: sqStats },
+          { label: 'Score Validação Externa [LEGADO]', stats: sveStats },
+          { label: 'Score Geral Composto [LEGADO]', stats: sgcStats },
+          { label: 'Bônus Consistência [LEGADO]', stats: bonusStats },
           { label: 'Confiança IA (0-100)', stats: confidenceStats },
           { label: 'Total Findings', stats: findingsStats },
         ].filter(r => r.stats.count > 0)}
@@ -123,9 +145,11 @@ function SentinelTab({ complianceScores }) {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <DonutChart title="Recomendação" data={Object.entries(recMap).map(([n, v]) => ({ name: n, value: v }))} colorMap={{ Aprovado: '#2bc196', 'Aprovado com Condições': '#36706c', 'Revisão Manual': '#f59e0b', Recusado: '#ef4444' }} />
-        <DonutChart title="Classificação" data={Object.entries(classMap).map(([n, v]) => ({ name: n, value: v }))} colorMap={{ BAIXO: '#2bc196', MÉDIO: '#f59e0b', ALTO: '#ef4444', CRÍTICO: '#7c2d12', Bloqueante: '#000' }} />
-        {Object.keys(sevTotals).length > 0 && <DonutChart title="Findings por Severidade" data={Object.entries(sevTotals).map(([n, v]) => ({ name: n, value: v }))} colorMap={{ CRITICAL: '#ef4444', HIGH: '#f59e0b', MEDIUM: '#94a3b8', LOW: '#2bc196' }} />}
+        <DonutChart title="Recomendação (V4 + Sentinel)" data={Object.entries(recMap).map(([n, v]) => ({ name: n, value: v }))} colorMap={{ Aprovado: '#2bc196', 'Aprovado com Condições': '#36706c', 'Revisão Manual': '#f59e0b', Recusado: '#ef4444', Pendente: '#94a3b8' }} />
+        {Object.keys(subfaixaMap).length > 0 && (
+          <DonutChart title="Subfaixa V4" data={Object.entries(subfaixaMap).sort(([a],[b]) => a.localeCompare(b)).map(([n, v]) => ({ name: n, value: v }))} colorMap={{ '1A': '#22c55e', '1B': '#4ade80', '2A': '#3b82f6', '2B': '#60a5fa', '3A': '#eab308', '3B': '#facc15', '4': '#f97316', '5': '#ef4444' }} />
+        )}
+        {Object.keys(sevTotals).length > 0 && <DonutChart title="Findings por Severidade" data={Object.entries(sevTotals).map(([n, v]) => ({ name: n, value: v }))} colorMap={{ critico: '#ef4444', alto: '#f59e0b', medio: '#94a3b8', baixo: '#2bc196', info: '#64748b' }} />}
       </div>
     </div>
   );
@@ -230,8 +254,12 @@ function DocumentsTab({ documents }) {
 
   const statusMap = {};
   documents.forEach(d => { statusMap[d.validationStatus || 'N/A'] = (statusMap[d.validationStatus || 'N/A'] || 0) + 1; });
+  // Usa documentTypeId (ID estável) para agrupar; cai em documentName só se faltar typeId
   const typeMap = {};
-  documents.forEach(d => { typeMap[d.documentName || 'N/A'] = (typeMap[d.documentName || 'N/A'] || 0) + 1; });
+  documents.forEach(d => {
+    const key = d.documentTypeId || d.documentName || 'N/A';
+    typeMap[key] = (typeMap[key] || 0) + 1;
+  });
   const formatMap = {};
   documents.forEach(d => { formatMap[d.fileType || 'N/A'] = (formatMap[d.fileType || 'N/A'] || 0) + 1; });
   const sizeStats = calcStats(documents.map(d => d.fileSize));

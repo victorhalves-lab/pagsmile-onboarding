@@ -24,11 +24,12 @@ export default function InsightsIntroducerSection({ leads, proposals }) {
     }
   });
 
-  // Proposals per introducer
+  // Proposals per introducer — usa Map p/ evitar O(n²)
+  const leadById = new Map(leads.map(l => [l.id, l]));
   const proposalsByIntroducer = {};
   proposals.forEach(p => {
     if (p.status !== 'aceita') return;
-    const lead = leads.find(l => l.id === p.leadId);
+    const lead = leadById.get(p.leadId);
     if (lead?.introducerName) {
       proposalsByIntroducer[lead.introducerName] = (proposalsByIntroducer[lead.introducerName] || 0) + 1;
     }

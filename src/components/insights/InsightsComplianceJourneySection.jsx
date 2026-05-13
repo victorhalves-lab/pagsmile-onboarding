@@ -30,7 +30,18 @@ const MODEL_LABELS = {
   ecommerce: 'E-commerce v1',
 };
 
-export default function InsightsComplianceJourneySection({ sessions }) {
+export default function InsightsComplianceJourneySection({ sessions, templates = [] }) {
+  // Mapa templateId → model (resolve casos em que sessions não trazem templateModel direto)
+  const templateModelById = {};
+  templates.forEach(t => { if (t.id) templateModelById[t.id] = t.model || t.name; });
+
+  const resolveModel = (s) =>
+    s.templateModel ||
+    s.formData?.__model ||
+    templateModelById[s.questionnaireTemplateId] ||
+    s.questionnaireTemplateId ||
+    'N/A';
+
   if (!sessions || sessions.length === 0) {
     return (
       <div className="rounded-3xl bg-white border border-slate-100 p-12 text-center mt-2">
@@ -59,7 +70,8 @@ export default function InsightsComplianceJourneySection({ sessions }) {
   // Model distribution
   const modelMap = {};
   sessions.forEach(s => {
-    const label = MODEL_LABELS[s.templateModel] || s.templateModel || 'N/A';
+    const raw = resolveModel(s);
+    const label = MODEL_LABELS[raw] || raw;
     modelMap[label] = (modelMap[label] || 0) + 1;
   });
   const modelData = Object.entries(modelMap).sort((a, b) => b[1] - a[1]).map(([name, value]) => ({ name, value }));
@@ -67,7 +79,8 @@ export default function InsightsComplianceJourneySection({ sessions }) {
   // Completion rate by model
   const completionByModel = {};
   sessions.forEach(s => {
-    const label = MODEL_LABELS[s.templateModel] || s.templateModel || 'N/A';
+    const raw = resolveModel(s);
+    const label = MODEL_LABELS[raw] || raw;
     if (!completionByModel[label]) completionByModel[label] = { total: 0, completed: 0 };
     completionByModel[label].total++;
     if (s.status === 'completed' || s.currentPhase === 'completed') {

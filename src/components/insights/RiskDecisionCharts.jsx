@@ -12,10 +12,17 @@ const DECISION_COLORS = {
 
 export default function RiskDecisionCharts({ scores }) {
   const data = useMemo(() => {
-    // Decision pie
+    // Decision pie — usa recomendacao_final, com fallback p/ subfaixa (V4 puro)
+    const SUBFAIXA_TO_DECISION = {
+      '1A': 'Aprovado', '1B': 'Aprovado',
+      '2A': 'Aprovado', '2B': 'Aprovado',
+      '3A': 'Aprovado com Condições', '3B': 'Aprovado com Condições',
+      '4': 'Revisão Manual',
+      '5': 'Recusado',
+    };
     const decDist = {};
     scores.forEach(s => {
-      const d = s.recomendacao_final || 'Pendente';
+      const d = s.recomendacao_final || SUBFAIXA_TO_DECISION[s.subfaixa] || 'Pendente';
       decDist[d] = (decDist[d] || 0) + 1;
     });
     const decisionData = Object.entries(decDist).map(([name, value]) => ({
@@ -47,8 +54,11 @@ export default function RiskDecisionCharts({ scores }) {
     });
     const rrData = Object.entries(rrDist).sort(([a], [b]) => parseInt(a) - parseInt(b)).map(([name, value]) => ({ name, value }));
 
-    // Approval rate
-    const approved = scores.filter(s => s.recomendacao_final === 'Aprovado' || s.recomendacao_final === 'Aprovado com Condições').length;
+    // Approval rate — considera recomendacao_final OU subfaixa 1A-3B
+    const approved = scores.filter(s => {
+      const dec = s.recomendacao_final || SUBFAIXA_TO_DECISION[s.subfaixa];
+      return dec === 'Aprovado' || dec === 'Aprovado com Condições';
+    }).length;
     const approvalRate = scores.length > 0 ? ((approved / scores.length) * 100).toFixed(1) : 0;
 
     // Auto vs Manual

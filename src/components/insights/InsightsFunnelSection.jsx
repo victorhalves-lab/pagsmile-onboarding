@@ -47,9 +47,19 @@ export default function InsightsFunnelSection({ leads, proposals, cases }) {
   const avgAcceptDays = acceptTimes.length > 0 ? (acceptTimes.reduce((s, v) => s + v, 0) / acceptTimes.length).toFixed(1) : '-';
 
   // Lead source distribution
+  const ORIGEM_LABELS = {
+    questionario_leads_pagsmile_v5: 'Lead V5 (Pagsmile)',
+    lead_pix_v4: 'PIX V4',
+    landing_page: 'Landing Page',
+    introducer_landing: 'Landing Introducer',
+    standard_proposal: 'Proposta Padrão',
+    fechamento_landing: 'Fechamento LP',
+    questionario_simplificado: 'Quest. Simplificado',
+  };
   const sourceMap = {};
   leads.forEach(l => {
-    const src = l.origemLead || l.introducerName || 'Orgânico';
+    const raw = l.origemLead || l.questionnaireData?.origem || (l.introducerName ? `Introducer: ${l.introducerName}` : 'Orgânico');
+    const src = ORIGEM_LABELS[raw] || raw;
     sourceMap[src] = (sourceMap[src] || 0) + 1;
   });
   const sourceData = Object.entries(sourceMap)

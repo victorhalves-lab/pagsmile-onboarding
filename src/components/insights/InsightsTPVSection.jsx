@@ -15,13 +15,27 @@ export default function InsightsTPVSection({ leads }) {
 
   const bySegment = {};
   leads.forEach(l => {
-    const seg = l.businessSubCategory || 'N/A';
+    // Normaliza UPPERCASE legado e lowercase moderno na mesma chave
+    const seg = (l.businessSubCategory || 'N/A').toString().toLowerCase();
     if (!bySegment[seg]) bySegment[seg] = { tpvs: [], tickets: [], txs: [] };
     if (l.tpvMensal) bySegment[seg].tpvs.push(l.tpvMensal);
     if (l.ticketMedio) bySegment[seg].tickets.push(l.ticketMedio);
     if (l.transacoesMes) bySegment[seg].txs.push(l.transacoesMes);
   });
-  const segLabel = (s) => s === 'MERCHAN' ? 'Merchant' : s === 'GATEWAY' ? 'Gateway' : s === 'MARKETPLACE' ? 'Marketplace' : s;
+  const segLabel = (s) => {
+    const k = s.toLowerCase();
+    if (k === 'merchan' || k === 'mpe') return 'Merchant/MPE';
+    if (k === 'gateway') return 'Gateway';
+    if (k === 'marketplace') return 'Marketplace';
+    if (k === 'ecommerce') return 'E-commerce';
+    if (k === 'saas') return 'SaaS';
+    if (k === 'infoprodutos') return 'Infoprodutos';
+    if (k === 'educacao') return 'Educação';
+    if (k === 'dropshipping') return 'Dropshipping';
+    if (k === 'plataformas_verticais') return 'Plat. Verticais';
+    if (k === 'link_pagamento') return 'Link Pagamento';
+    return s;
+  };
   const segmentBarData = Object.entries(bySegment).map(([seg, d]) => ({
     name: segLabel(seg),
     'TPV Médio': Math.round(calcStats(d.tpvs).avg),

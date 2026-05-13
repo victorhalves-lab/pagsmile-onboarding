@@ -34,10 +34,11 @@ export default function InsightsCommercialPerfSection({ leads, proposals, pixPro
   }).filter(t => t >= 0 && t < 365);
   const tempoStats = calcStats(temposAceite);
 
-  // Tempo: lead criado → proposta enviada
+  // Tempo: lead criado → proposta enviada (Map p/ evitar O(n²))
+  const leadById = new Map(leads.map(l => [l.id, l]));
   const tempoLeadToProp = [];
   current.filter(p => p.sentDate).forEach(p => {
-    const lead = leads.find(l => l.id === p.leadId);
+    const lead = leadById.get(p.leadId);
     if (!lead?.created_date) return;
     const leadDate = new Date(lead.created_date);
     const sentDate = new Date(p.sentDate);
