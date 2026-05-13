@@ -1,5 +1,5 @@
 import React from 'react';
-import { base44 } from '@/api/base44Client';
+import { callPublicFunction } from '@/lib/publicApi';
 import { useQuery } from '@tanstack/react-query';
 import { Loader2, Printer, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,8 +12,8 @@ export default function KickOffPublico() {
   const { data: presentation, isLoading, error } = useQuery({
     queryKey: ['kickoff-public', token],
     queryFn: async () => {
-      const res = await base44.functions.invoke('publicReadContext', { kind: 'kickoff_public', token });
-      return res.data?.presentation || null;
+      const res = await callPublicFunction('publicReadContext', { kind: 'kickoff_public', token });
+      return res?.presentation || null;
     },
     enabled: !!token,
   });
