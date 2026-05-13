@@ -12,31 +12,39 @@ const TT = { borderRadius: 12, border: 'none', boxShadow: '0 8px 30px rgba(0,0,0
 
 export default function InsightsBenchmarkSection({ leads, proposals }) {
   // 1. Taxas atuais dos clientes (do questionnaireData)
+  // Match exato em chaves conhecidas de MDR — evita capturar taxa3ds, taxaForex, taxaSetup, taxasMaquininha, etc.
+  const MDR_AVISTA_KEYS = new Set(['mdravista', 'mdr1x', 'mdr_avista', 'mdr_1x', 'taxaavista', 'taxa_avista', 'taxaatual_avista', 'taxaatualavista']);
+  const MDR_2A6_KEYS = new Set(['mdr2a6x', 'mdr_2a6x', 'mdrparcelado2a6', 'mdr2a6', 'taxa2a6x', 'taxa_2a6x', 'taxaatual_2a6x']);
+  const MDR_7A12_KEYS = new Set(['mdr7a12x', 'mdr_7a12x', 'mdrparcelado7a12', 'mdr7a12', 'taxa7a12x', 'taxa_7a12x', 'taxaatual_7a12x']);
+  const PROCESSOR_KEYS = new Set(['processador', 'processadoratual', 'adquirente', 'subadquirente', 'japrocessacom', 'processadoresatuais']);
+
   const currentRates = { avista: [], de2a6x: [], de7a12x: [] };
   const processorMap = {};
-  
+
+  const pushRate = (bucket, raw) => {
+    const num = parseFloat(raw);
+    if (isNaN(num) || num <= 0 || num > 50) return;
+    bucket.push(num);
+  };
+
   leads.forEach(l => {
     const qd = l.questionnaireData || {};
-    // Taxas atuais (procurar por padrão de campos de MDR)
     Object.entries(qd).forEach(([key, val]) => {
-      if (typeof val !== 'number' && typeof val !== 'string') return;
-      const num = parseFloat(val);
-      if (isNaN(num) || num <= 0 || num > 50) return;
-      const k = key.toLowerCase();
-      if (k.includes('mdr') || k.includes('taxa')) {
-        if (k.includes('vista') || k.includes('1x') || k.includes('avista')) currentRates.avista.push(num);
-        else if (k.includes('2') && k.includes('6')) currentRates.de2a6x.push(num);
-        else if (k.includes('7') && k.includes('12')) currentRates.de7a12x.push(num);
+      const k = key.toLowerCase().replace(/[\s-]/g, '');
+      if (MDR_AVISTA_KEYS.has(k)) pushRate(currentRates.avista, val);
+      else if (MDR_2A6_KEYS.has(k)) pushRate(currentRates.de2a6x, val);
+      else if (MDR_7A12_KEYS.has(k)) pushRate(currentRates.de7a12x, val);
+      else if (PROCESSOR_KEYS.has(k) && typeof val === 'string' && val.trim()) {
+        processorMap[val.trim()] = (processorMap[val.trim()] || 0) + 1;
       }
     });
-    // Processador atual
-    Object.entries(qd).forEach(([key, val]) => {
-      if (typeof val !== 'string') return;
-      const k = key.toLowerCase();
-      if (k.includes('processador') || k.includes('adquirente') || k.includes('subadquirente')) {
-        processorMap[val] = (processorMap[val] || 0) + 1;
-      }
-    });
+    // Estrutura aninhada comum: questionnaireData.taxasAtuais
+    const ta = qd.taxasAtuais || qd.taxas_atuais;
+    if (ta && typeof ta === 'object') {
+      pushRate(currentRates.avista, ta.avista ?? ta.mdr1x);
+      pushRate(currentRates.de2a6x, ta.de2a6x ?? ta.mdr2a6x);
+      pushRate(currentRates.de7a12x, ta.de7a12x ?? ta.mdr7a12x);
+    }
   });
 
   // Taxas esperadas dos leads (campo expectedRates)

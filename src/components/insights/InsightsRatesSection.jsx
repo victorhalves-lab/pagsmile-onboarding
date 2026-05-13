@@ -14,6 +14,19 @@ export default function InsightsRatesSection({ leads }) {
   const allMdr1x = [], allMdr2a6 = [], allMdr7a12 = [], allAntecipacao = [];
   const allFee = [], allAntifraude = [], allTaxa3ds = [], allPixValues = [];
 
+  const pushNum = (bucket, raw) => {
+    const n = parseFloat(raw);
+    if (!isNaN(n) && n > 0 && n < 100) bucket.push(n);
+  };
+  // Parser de PIX: aceita "0,3-0,5%" → 0.4, "0.5%" → 0.5
+  const parsePixRange = (raw) => {
+    if (typeof raw !== 'string') return parseFloat(raw);
+    const clean = raw.replace(/%/g, '').replace(/,/g, '.').trim();
+    const parts = clean.split('-').map(p => parseFloat(p.trim())).filter(n => !isNaN(n));
+    if (parts.length === 2) return (parts[0] + parts[1]) / 2;
+    return parts[0];
+  };
+
   leads.forEach(l => {
     const r = l.expectedRates;
     if (r) {
@@ -26,13 +39,21 @@ export default function InsightsRatesSection({ leads }) {
       if (r.taxa3ds) allTaxa3ds.push(r.taxa3ds);
       if (r.pix?.valor) allPixValues.push(r.pix.valor);
     }
-    // Also try to get from questionnaireData raw fields
+    // Fallback: questionnaireData (lead V5, lead PIX V4) — usado quando expectedRates é null
     const qd = l.questionnaireData;
     if (qd) {
-      // Look for rate-like fields in questionnaire data (common IDs for rates)
-      Object.values(qd).forEach(v => {
-        // skip non-numeric 
-      });
+      const ta = qd.taxasAtuais || qd.taxas_atuais || {};
+      pushNum(allMdr1x, ta.avista ?? ta.mdr1x);
+      pushNum(allMdr2a6, ta.de2a6x ?? ta.mdr2a6x);
+      pushNum(allMdr7a12, ta.de7a12x ?? ta.mdr7a12x);
+      pushNum(allAntecipacao, ta.antecipacao);
+      pushNum(allFee, ta.feeTransacao);
+      pushNum(allAntifraude, ta.antifraude);
+      // PIX vem como faixa em string: "0,3-0,5%"
+      if (qd.medPix) {
+        const pixVal = parsePixRange(qd.medPix);
+        if (!isNaN(pixVal) && pixVal > 0) allPixValues.push(pixVal);
+      }
     }
   });
 

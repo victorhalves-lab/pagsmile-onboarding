@@ -146,9 +146,12 @@ export default function DadosInsights() {
     );
   }
 
+  // Dedup: conta apenas a versão atual de cada proposta (evita inflar quando há v1, v2, v3 da mesma proposta)
+  const currentProposalsCount = proposals.filter(p => p.isCurrentVersion === true).length;
+  const currentPixProposalsCount = pixProposals.filter(p => p.isCurrentVersion === true).length;
   const counters = [
     { label: t('di.leads'), value: leads.length, color: '#2bc196' },
-    { label: t('di.proposals'), value: proposals.length + pixProposals.length, color: '#5cf7cf' },
+    { label: t('di.proposals'), value: currentProposalsCount + currentPixProposalsCount, color: '#5cf7cf' },
     { label: t('di.compliance'), value: cases.length, color: '#36706c' },
     { label: t('di.merchants'), value: merchants.length, color: '#94a3b8' },
     { label: t('di.partners'), value: partners.length, color: '#f59e0b' },
@@ -245,7 +248,7 @@ export default function DadosInsights() {
         {activeTab === 'mix' && <InsightsMixSection leads={leads} />}
         {activeTab === 'expected-rates' && <InsightsRatesSection leads={leads} />}
         {activeTab === 'proposal-rates' && <InsightsProposalRatesSection proposals={proposals} />}
-        {activeTab === 'profitability' && <InsightsProfitabilitySection proposals={proposals} partners={partners} pixProposals={pixProposals} />}
+        {activeTab === 'profitability' && <InsightsProfitabilitySection proposals={proposals} partners={partners} pixProposals={pixProposals} leads={leads} />}
         {activeTab === 'commercial' && <InsightsCommercialPerfSection leads={leads} proposals={proposals} pixProposals={pixProposals} />}
         {activeTab === 'funnel' && <InsightsFunnelSection leads={leads} proposals={proposals} cases={cases} />}
         {activeTab === 'profiles' && <InsightsLeadProfileSection leads={leads} />}

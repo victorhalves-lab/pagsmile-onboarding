@@ -5,30 +5,49 @@ import MinMaxMedianTable from './MinMaxMedianTable';
 import HorizontalBarList from './HorizontalBarList';
 import { calcStats, formatCurrency, formatPercent } from './insightsUtils';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
-import { Wallet, TrendingUp, DollarSign, Percent } from 'lucide-react';
+import { Wallet, TrendingUp, DollarSign, Percent, Info } from 'lucide-react';
+import { computeProposalProfitability } from './profitabilityCalculator';
 
 const TT = { borderRadius: 12, border: 'none', boxShadow: '0 8px 30px rgba(0,0,0,0.08)', padding: '8px 14px', fontSize: 12 };
 
-export default function InsightsProfitabilitySection({ proposals, partners, pixProposals }) {
+export default function InsightsProfitabilitySection({ proposals, partners, pixProposals, leads = [] }) {
   const allProposals = [...proposals, ...pixProposals];
-  const current = allProposals.filter(p => p.isCurrentVersion !== false);
+  const current = allProposals.filter(p => p.isCurrentVersion === true);
+
+  // Maps p/ lookup O(1)
+  const leadById = new Map(leads.map(l => [l.id, l]));
+  const partnerByName = new Map((partners || []).map(p => [p.name, p]));
+  const partnerById = new Map((partners || []).map(p => [p.id, p]));
 
   const revenues = [], costs = [], margins = [];
   const marginPcts = [];
   const byPartner = {};
+  let persistedCount = 0;
+  let computedCount = 0;
 
   current.forEach(p => {
-    if (p.estimatedRevenue > 0) revenues.push(p.estimatedRevenue);
-    if (p.estimatedCost > 0) costs.push(p.estimatedCost);
-    if (p.estimatedMargin !== undefined && p.estimatedMargin !== null) margins.push(p.estimatedMargin);
-    const pd = p.profitabilityDetails || {};
-    if (pd.margemPercentual > 0) marginPcts.push(pd.margemPercentual);
+    const lead = leadById.get(p.leadId);
+    const partner = partnerByName.get(p.chosenPartnerName) || partnerById.get(p.chosenPartnerId);
+    const result = computeProposalProfitability(p, lead, partner);
+    if (!result) return;
+
+    if (result.source === 'persisted') persistedCount++;
+    else computedCount++;
+
+    revenues.push(result.revenue);
+    costs.push(result.cost);
+    margins.push(result.margin);
+    if (result.marginPct > 0) marginPcts.push(result.marginPct);
+
+    // Persiste no objeto para uso downstream (pipeline/risk revenue)
+    p.__computedRevenue = result.revenue;
+    p.__computedMargin = result.margin;
 
     const pName = p.chosenPartnerName || 'N/A';
     if (!byPartner[pName]) byPartner[pName] = { revenue: 0, cost: 0, margin: 0, count: 0 };
-    byPartner[pName].revenue += (p.estimatedRevenue || 0);
-    byPartner[pName].cost += (p.estimatedCost || 0);
-    byPartner[pName].margin += (p.estimatedMargin || 0);
+    byPartner[pName].revenue += result.revenue;
+    byPartner[pName].cost += result.cost;
+    byPartner[pName].margin += result.margin;
     byPartner[pName].count++;
   });
 
@@ -37,10 +56,11 @@ export default function InsightsProfitabilitySection({ proposals, partners, pixP
   const marginStats = calcStats(margins);
   const marginPctStats = calcStats(marginPcts);
 
-  // Pipeline revenue
+  // Pipeline revenue — usa __computedRevenue (preferido) ou fallback p/ persistido
   const openStatuses = ['enviada', 'visualizada', 'contraproposta'];
-  const pipelineRevenue = current.filter(p => openStatuses.includes(p.status)).reduce((s, p) => s + (p.estimatedRevenue || 0), 0);
-  const acceptedRevenue = current.filter(p => p.status === 'aceita').reduce((s, p) => s + (p.estimatedRevenue || 0), 0);
+  const revOf = (p) => p.__computedRevenue ?? p.estimatedRevenue ?? 0;
+  const pipelineRevenue = current.filter(p => openStatuses.includes(p.status)).reduce((s, p) => s + revOf(p), 0);
+  const acceptedRevenue = current.filter(p => p.status === 'aceita').reduce((s, p) => s + revOf(p), 0);
 
   // Revenue at risk (near expiry)
   const now = new Date();
@@ -49,7 +69,7 @@ export default function InsightsProfitabilitySection({ proposals, partners, pixP
     const expiry = new Date(p.validUntil);
     const daysLeft = (expiry - now) / (1000 * 60 * 60 * 24);
     return daysLeft >= 0 && daysLeft <= 7;
-  }).reduce((s, p) => s + (p.estimatedRevenue || 0), 0);
+  }).reduce((s, p) => s + revOf(p), 0);
 
   const partnerBarData = Object.entries(byPartner)
     .filter(([_, d]) => d.count > 0 && d.revenue > 0)
@@ -75,6 +95,14 @@ export default function InsightsProfitabilitySection({ proposals, partners, pixP
 
   return (
     <div className="space-y-6 mt-2">
+      <div className="flex items-start gap-2 px-4 py-3 bg-blue-50/50 border border-blue-100 rounded-xl">
+        <Info className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+        <div className="text-[11px] text-blue-900/80 leading-relaxed">
+          <strong>Cálculo dinâmico:</strong> {computedCount} propostas calculadas on-the-fly (TPV × taxas × distribuição declarada),
+          {' '}{persistedCount} usando valores persistidos. Estimativas assumem distribuição padrão quando o lead não declarou.
+        </div>
+      </div>
+
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <StatCard label="Receita Pipeline" value={formatCurrency(pipelineRevenue)} subtitle="Propostas em aberto" icon={DollarSign} />
         <StatCard label="Receita Realizada" value={formatCurrency(acceptedRevenue)} subtitle="Propostas aceitas" icon={TrendingUp} accentColor="#2bc196" />
