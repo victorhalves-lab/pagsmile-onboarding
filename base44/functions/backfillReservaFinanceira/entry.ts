@@ -41,11 +41,14 @@ const SEGMENT_DEFAULTS = {
 
 function reservaForSegment(seg) {
   if (!seg) return null;
-  const key = String(seg).toLowerCase()
+  let key = String(seg).toLowerCase()
     .replace(/[-\s]/g, '_')
     .replace(/ç/g, 'c').replace(/ã/g, 'a').replace(/á/g, 'a').replace(/é/g, 'e').replace(/í/g, 'i').replace(/ó/g, 'o').replace(/ú/g, 'u')
     .replace(/^e_commerce$/, 'ecommerce');
-  const cfg = SEGMENT_DEFAULTS[key];
+  // Aliases legados (valores antigos do enum do Lead em UPPERCASE).
+  if (key === 'merchan') key = 'gateway';   // categoria histórica → trata como Gateway
+  if (key === 'general') key = null;        // sem mapeamento → fallback
+  const cfg = key ? SEGMENT_DEFAULTS[key] : null;
   if (!cfg) return null;
   return {
     pix: { percentual: cfg.pix, diasRetencao: 90, ativa: true },
@@ -86,24 +89,54 @@ function buildNormalized(existing) {
   return null; // sem mudanças necessárias
 }
 
+// Cache para evitar refetch do mesmo Lead várias vezes.
+async function resolveSegmentForProposal(base44, p, leadCache) {
+  // 1) direto da proposta
+  if (p.businessSubCategory) return p.businessSubCategory;
+  // 2) via Lead vinculado (caso de PixProposal e algumas Proposals antigas)
+  if (p.leadId) {
+    if (leadCache.has(p.leadId)) return leadCache.get(p.leadId);
+    try {
+      const lead = await base44.asServiceRole.entities.Lead.get(p.leadId);
+      const seg = lead?.businessSubCategory || null;
+      leadCache.set(p.leadId, seg);
+      return seg;
+    } catch {
+      leadCache.set(p.leadId, null);
+      return null;
+    }
+  }
+  return null;
+}
+
 async function processEntity(base44, entityName, dryRun, applySegmentDefaults = false) {
   const all = await base44.asServiceRole.entities[entityName].list('-created_date', 5000);
 
   const todo = [];
+  const unresolved = []; // propostas sem segmento detectável (fallback)
+  const leadCache = new Map();
+
   for (const p of all) {
-    // Modo applySegmentDefaults: para StandardProposal, FORÇA a reserva conforme o segmento.
-    // Sobrescreve percentuais mesmo se já existir — útil quando muda a regra de negócio.
-    if (applySegmentDefaults && entityName === 'StandardProposal') {
-      const segReserva = reservaForSegment(p.businessSubCategory || p.segment);
+    // Modo applySegmentDefaults: FORÇA reserva conforme segmento (regra v2026-05-13).
+    // Aplica a Proposal, PixProposal e StandardProposal.
+    if (applySegmentDefaults) {
+      const seg = (entityName === 'StandardProposal')
+        ? (p.businessSubCategory || p.segment)
+        : await resolveSegmentForProposal(base44, p, leadCache);
+      const segReserva = reservaForSegment(seg);
       if (segReserva) {
         const current = p.rates?.reservaFinanceira;
         const needsUpdate = !current
           || current.pix?.percentual !== segReserva.pix.percentual
           || current.cartao?.percentual !== segReserva.cartao.percentual
+          || current.pix?.diasRetencao !== 90
+          || current.cartao?.diasRetencao !== 180
           || current.disclaimer !== OFFICIAL_DISCLAIMER;
-        if (needsUpdate) todo.push({ p, diff: { reserva: segReserva, reason: 'segment_default' } });
+        if (needsUpdate) todo.push({ p, diff: { reserva: segReserva, reason: 'segment_default', segment: seg } });
         continue;
       }
+      // Sem segmento: cai no comportamento padrão (DEFAULT_RESERVA 20%/1%).
+      unresolved.push(p.id);
     }
     const diff = buildNormalized(p.rates?.reservaFinanceira);
     if (diff) todo.push({ p, diff });
@@ -114,7 +147,20 @@ async function processEntity(base44, entityName, dryRun, applySegmentDefaults = 
       acc[diff.reason] = (acc[diff.reason] || 0) + 1;
       return acc;
     }, {});
-    return { entityName, total: all.length, needsBackfill: todo.length, byReason, updated: 0, errors: 0 };
+    const bySegment = todo.reduce((acc, { diff }) => {
+      if (diff.segment) acc[diff.segment] = (acc[diff.segment] || 0) + 1;
+      return acc;
+    }, {});
+    return {
+      entityName,
+      total: all.length,
+      needsBackfill: todo.length,
+      byReason,
+      bySegment,
+      unresolvedCount: unresolved.length,
+      updated: 0,
+      errors: 0,
+    };
   }
 
   let updated = 0, errors = 0;
