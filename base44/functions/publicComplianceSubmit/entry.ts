@@ -103,25 +103,49 @@ Deno.serve(async (req) => {
     }
     if (parentMerchantId) merchantPayload.parentMerchantId = parentMerchantId;
 
-    // FIX (2026-04-21): Dedup backend — evita criação de Merchants duplicados quando
-    // cliente dá duplo-submit, tem problema de rede, ou abre múltiplas abas.
-    // Reusa Merchant existente se o mesmo CNPJ/CPF foi submetido nos últimos 10min
-    // com o mesmo email (ou com leadId igual). Caso contrário, cria novo.
+    // FIX (2026-05-13): CNPJ/CPF agora é CHAVE PRIMÁRIA. Não importa quando foi
+    // submetido — se já existe Merchant com mesmo documento, REUSA sempre.
+    // Isso evita duplicatas como o caso FERRAMAC (2 registros do mesmo CNPJ em
+    // dias diferentes) e KINGPAY (2 registros com 12 dias de intervalo).
+    //
+    // Regra:
+    //  1. Procura Merchant com mesmo CNPJ/CPF (limpo, só dígitos).
+    //  2. Se existe → reusa, atualiza dados em branco (email/telefone) com
+    //     informações mais recentes se vieram preenchidas.
+    //  3. Se já tem case para esse template → retorna o case existente.
+    //  4. Se não existe → cria novo Merchant.
     let merchant = null;
     const cleanCpfCnpj = (merchantPayload.cpfCnpj || '').replace(/\D/g, '');
     if (cleanCpfCnpj.length >= 11) {
       try {
-        const recentSameDoc = await base44.asServiceRole.entities.Merchant.filter({ cpfCnpj: cleanCpfCnpj });
-        const tenMinAgo = Date.now() - 10 * 60 * 1000;
-        const existing = recentSameDoc.find(m => {
-          const isRecent = new Date(m.created_date).getTime() > tenMinAgo;
-          const sameEmail = m.email && merchantPayload.email &&
-            m.email.toLowerCase() === merchantPayload.email.toLowerCase();
-          return isRecent && (sameEmail || m.email === 'nao-informado@placeholder.com');
+        const sameDocMerchants = await base44.asServiceRole.entities.Merchant.filter({ cpfCnpj: cleanCpfCnpj });
+        // Filtra subsellers: subsellers podem ter CNPJ de outro registro principal.
+        // Para dedup de SELLER, ignora subsellers; para SUBSELLER, considera apenas subsellers do mesmo parent.
+        const candidates = sameDocMerchants.filter(m => {
+          if (isSubsellerLink) {
+            return m.isSubseller && m.parentMerchantId === parentMerchantId;
+          }
+          return !m.isSubseller;
         });
+        // Pega o mais antigo (canônico) — preserva histórico.
+        const existing = candidates.sort((a, b) =>
+          new Date(a.created_date).getTime() - new Date(b.created_date).getTime()
+        )[0];
+
         if (existing) {
-          // Check if the existing merchant already has a case for this template —
-          // if yes, return it instead of creating duplicate.
+          // Atualiza dados em branco do Merchant canônico com dados novos.
+          const patch = {};
+          if (!existing.email && merchantPayload.email && merchantPayload.email !== 'nao-informado@placeholder.com') {
+            patch.email = merchantPayload.email;
+          }
+          if (!existing.phone && merchantPayload.phone) patch.phone = merchantPayload.phone;
+          if (!existing.companyName && merchantPayload.companyName) patch.companyName = merchantPayload.companyName;
+          if (!existing.fullName && merchantPayload.fullName) patch.fullName = merchantPayload.fullName;
+          if (Object.keys(patch).length > 0) {
+            try { await base44.asServiceRole.entities.Merchant.update(existing.id, patch); } catch (_) {}
+          }
+
+          // Já tem case para esse template? Retorna o existente.
           const existingCases = await base44.asServiceRole.entities.OnboardingCase.filter({
             merchantId: existing.id, questionnaireTemplateId: templateId,
           });
@@ -135,7 +159,7 @@ Deno.serve(async (req) => {
               deduped: true,
             });
           }
-          merchant = existing; // reuse merchant, but create new case below
+          merchant = existing; // reusa merchant, cria case novo abaixo
         }
       } catch (dedupErr) { console.warn('[publicComplianceSubmit] Dedup check failed:', dedupErr.message); }
     }

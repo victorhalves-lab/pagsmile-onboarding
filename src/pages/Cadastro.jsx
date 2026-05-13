@@ -1,70 +1,72 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Link } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Search, Building2, User, ChevronRight, Filter, Users, Shield, FileCheck, AlertTriangle, Download, BarChart3, List } from 'lucide-react';
+import { Search, Building2, Users, Shield, AlertTriangle, Download, BarChart3, List, GitMerge } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import CadastroDashboard from '@/components/cadastro/CadastroDashboard';
 import ExportReportModal from '@/components/cadastro/ExportReportModal';
+import CadastroRichRow from '@/components/cadastro/CadastroRichRow';
+import MergeDuplicatesModal from '@/components/cadastro/MergeDuplicatesModal';
 
-const STATUS_CONFIG = {
-  'Pendente': { color: 'bg-gray-100 text-gray-700', label: 'Pendente' },
-  'Em Análise': { color: 'bg-blue-100 text-blue-700', label: 'Em Análise' },
-  'Aprovado': { color: 'bg-green-100 text-green-700', label: 'Aprovado' },
-  'Manual': { color: 'bg-amber-100 text-amber-700', label: 'Revisão Manual' },
-  'Recusado': { color: 'bg-red-100 text-red-700', label: 'Recusado' },
+const ORIGIN_LABELS = {
+  'questionario_leads_pagsmile_v5': 'Questionário V5',
+  'landing_page': 'Landing Page',
+  'proposta_padrao': 'Proposta Padrão',
+  'introducer': 'Introducer',
 };
-
-function formatDoc(doc) {
-  if (!doc) return '—';
-  if (doc.length === 14) return doc.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
-  if (doc.length === 11) return doc.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4');
-  return doc;
-}
 
 export default function Cadastro() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
+  const [duplicateOnly, setDuplicateOnly] = useState(false);
   const [viewMode, setViewMode] = useState('list');
   const [exportOpen, setExportOpen] = useState(false);
+  const [mergeOpen, setMergeOpen] = useState(false);
 
-  const { data: merchants = [], isLoading: loadingMerchants } = useQuery({
+  const { data: merchants = [], isLoading: loadingMerchants, refetch: refetchMerchants } = useQuery({
     queryKey: ['cadastro-merchants'],
-    queryFn: () => base44.entities.Merchant.list('-created_date', 200),
+    queryFn: () => base44.entities.Merchant.list('-created_date', 500),
   });
 
   const { data: cases = [] } = useQuery({
     queryKey: ['cadastro-cases'],
-    queryFn: () => base44.entities.OnboardingCase.list('-created_date', 500),
+    queryFn: () => base44.entities.OnboardingCase.list('-created_date', 1000),
   });
 
   const { data: leads = [] } = useQuery({
     queryKey: ['cadastro-leads'],
-    queryFn: () => base44.entities.Lead.list('-created_date', 500),
+    queryFn: () => base44.entities.Lead.list('-created_date', 1000),
   });
 
-  // Separate sellers and subsellers
+  const { data: proposals = [] } = useQuery({
+    queryKey: ['cadastro-proposals'],
+    queryFn: () => base44.entities.Proposal.filter({ isCurrentVersion: true }, '-created_date', 1000),
+  });
+
+  const { data: contracts = [] } = useQuery({
+    queryKey: ['cadastro-contracts'],
+    queryFn: () => base44.entities.Contract.list('-created_date', 1000),
+  });
+
+  // Separa sellers e subsellers
   const sellers = useMemo(() => merchants.filter(m => !m.isSubseller), [merchants]);
   const subsellers = useMemo(() => merchants.filter(m => m.isSubseller), [merchants]);
 
-  // Count subsellers per seller
+  // Conta subsellers por seller
   const subsellerCountMap = useMemo(() => {
     const map = {};
     subsellers.forEach(s => {
-      if (s.parentMerchantId) {
-        map[s.parentMerchantId] = (map[s.parentMerchantId] || 0) + 1;
-      }
+      if (s.parentMerchantId) map[s.parentMerchantId] = (map[s.parentMerchantId] || 0) + 1;
     });
     return map;
   }, [subsellers]);
 
-  // Map merchant to its latest case
+  // Mapeia merchant → último case
   const caseMap = useMemo(() => {
     const map = {};
     cases.forEach(c => {
@@ -75,7 +77,7 @@ export default function Cadastro() {
     return map;
   }, [cases]);
 
-  // Map merchant to lead (via case -> merchantId matching lead's onboardingCaseId or cpfCnpj)
+  // Mapeia merchant → lead (via case ou via CNPJ)
   const leadMap = useMemo(() => {
     const map = {};
     leads.forEach(l => {
@@ -85,26 +87,79 @@ export default function Cadastro() {
       }
       if (l.cpfCnpj) {
         const m = merchants.find(m => m.cpfCnpj === l.cpfCnpj);
-        if (m) map[m.id] = l;
+        if (m && !map[m.id]) map[m.id] = l;
       }
     });
     return map;
   }, [leads, cases, merchants]);
 
-  // Filter sellers
+  // Mapeia merchant → proposta atual (via lead)
+  const proposalMap = useMemo(() => {
+    const map = {};
+    sellers.forEach(m => {
+      const lead = leadMap[m.id];
+      if (!lead) return;
+      const p = proposals.find(p => p.leadId === lead.id);
+      if (p) map[m.id] = p;
+    });
+    return map;
+  }, [sellers, leadMap, proposals]);
+
+  // Mapeia merchant → contrato (via CNPJ ou merchantId)
+  const contractMap = useMemo(() => {
+    const map = {};
+    contracts.forEach(c => {
+      const targetMerchant = sellers.find(m =>
+        m.id === c.merchantId || m.cpfCnpj === c.clientCnpj
+      );
+      if (targetMerchant && !map[targetMerchant.id]) map[targetMerchant.id] = c;
+    });
+    return map;
+  }, [sellers, contracts]);
+
+  // Detecta duplicatas por CNPJ
+  const duplicateCountMap = useMemo(() => {
+    const counts = {};
+    sellers.forEach(m => {
+      const doc = String(m.cpfCnpj || '').replace(/\D/g, '');
+      if (doc.length >= 11) counts[doc] = (counts[doc] || 0) + 1;
+    });
+    const map = {};
+    sellers.forEach(m => {
+      const doc = String(m.cpfCnpj || '').replace(/\D/g, '');
+      map[m.id] = counts[doc] || 1;
+    });
+    return map;
+  }, [sellers]);
+
+  const totalDuplicates = useMemo(() => {
+    const seen = new Set();
+    let count = 0;
+    sellers.forEach(m => {
+      const doc = String(m.cpfCnpj || '').replace(/\D/g, '');
+      if (doc.length >= 11 && duplicateCountMap[m.id] > 1 && !seen.has(doc)) {
+        seen.add(doc);
+        count += duplicateCountMap[m.id] - 1;
+      }
+    });
+    return count;
+  }, [sellers, duplicateCountMap]);
+
+  // Filtros
   const filtered = useMemo(() => {
     return sellers.filter(m => {
       const q = search.toLowerCase();
-      const matchSearch = !q || 
+      const matchSearch = !q ||
         (m.fullName || '').toLowerCase().includes(q) ||
         (m.companyName || '').toLowerCase().includes(q) ||
         (m.cpfCnpj || '').includes(q) ||
         (m.email || '').toLowerCase().includes(q);
       const matchStatus = statusFilter === 'all' || m.onboardingStatus === statusFilter;
       const matchType = typeFilter === 'all' || m.type === typeFilter;
-      return matchSearch && matchStatus && matchType;
+      const matchDup = !duplicateOnly || duplicateCountMap[m.id] > 1;
+      return matchSearch && matchStatus && matchType && matchDup;
     });
-  }, [sellers, search, statusFilter, typeFilter]);
+  }, [sellers, search, statusFilter, typeFilter, duplicateOnly, duplicateCountMap]);
 
   if (loadingMerchants) {
     return (
@@ -123,10 +178,37 @@ export default function Cadastro() {
           <h1 className="text-2xl font-bold text-[var(--pagsmile-blue)]">Cadastro de Clientes</h1>
           <p className="text-sm text-[var(--pagsmile-blue)]/60 mt-1">Visão unificada de todos os sellers e subsellers</p>
         </div>
-        <Button onClick={() => setExportOpen(true)} variant="outline" className="gap-2 border-[var(--pagsmile-green)]/30 text-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/5 self-start">
-          <Download className="w-4 h-4" /> Exportar CSV
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          {totalDuplicates > 0 && (
+            <Button
+              onClick={() => setMergeOpen(true)}
+              variant="outline"
+              className="gap-2 border-red-300 text-red-600 hover:bg-red-50"
+            >
+              <GitMerge className="w-4 h-4" />
+              Mesclar Duplicatas ({totalDuplicates})
+            </Button>
+          )}
+          <Button onClick={() => setExportOpen(true)} variant="outline" className="gap-2 border-[var(--pagsmile-green)]/30 text-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/5">
+            <Download className="w-4 h-4" /> Exportar CSV
+          </Button>
+        </div>
       </div>
+
+      {/* Alerta de duplicatas no topo */}
+      {totalDuplicates > 0 && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+          <div className="flex-1">
+            <p className="font-semibold text-red-900 text-sm">
+              {totalDuplicates} cadastro{totalDuplicates > 1 ? 's' : ''} duplicado{totalDuplicates > 1 ? 's' : ''} detectado{totalDuplicates > 1 ? 's' : ''}
+            </p>
+            <p className="text-xs text-red-700/80 mt-0.5">
+              Clientes com o mesmo CNPJ aparecem mais de uma vez na base. Use "Mesclar Duplicatas" para consolidar.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* View Tabs */}
       <Tabs value={viewMode} onValueChange={setViewMode}>
@@ -140,112 +222,94 @@ export default function Cadastro() {
         </TabsContent>
 
         <TabsContent value="list">
-
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard icon={Building2} label="Sellers" value={sellers.length} color="text-blue-600" bg="bg-blue-50" />
-        <StatCard icon={Users} label="Subsellers" value={subsellers.length} color="text-purple-600" bg="bg-purple-50" />
-        <StatCard icon={Shield} label="Aprovados" value={sellers.filter(s => s.onboardingStatus === 'Aprovado').length} color="text-green-600" bg="bg-green-50" />
-        <StatCard icon={AlertTriangle} label="Pendentes" value={sellers.filter(s => ['Pendente', 'Em Análise', 'Manual'].includes(s.onboardingStatus)).length} color="text-amber-600" bg="bg-amber-50" />
-      </div>
-
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/40" />
-          <Input
-            placeholder="Buscar por nome, CNPJ, e-mail..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-full sm:w-44">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos os status</SelectItem>
-            <SelectItem value="Aprovado">Aprovado</SelectItem>
-            <SelectItem value="Manual">Revisão Manual</SelectItem>
-            <SelectItem value="Pendente">Pendente</SelectItem>
-            <SelectItem value="Em Análise">Em Análise</SelectItem>
-            <SelectItem value="Recusado">Recusado</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="w-full sm:w-36">
-            <SelectValue placeholder="Tipo" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">PF e PJ</SelectItem>
-            <SelectItem value="PJ">PJ</SelectItem>
-            <SelectItem value="PF">PF</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* List */}
-      <div className="space-y-2">
-        {filtered.length === 0 && (
-          <div className="text-center py-16 text-[var(--pagsmile-blue)]/50">
-            <Building2 className="w-12 h-12 mx-auto mb-3 opacity-30" />
-            <p>Nenhum seller encontrado</p>
+          {/* Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+            <StatCard icon={Building2} label="Sellers" value={sellers.length} color="text-blue-600" bg="bg-blue-50" />
+            <StatCard icon={Users} label="Subsellers" value={subsellers.length} color="text-purple-600" bg="bg-purple-50" />
+            <StatCard icon={Shield} label="Aprovados" value={sellers.filter(s => s.onboardingStatus === 'Aprovado').length} color="text-green-600" bg="bg-green-50" />
+            <StatCard icon={AlertTriangle} label="Pendentes" value={sellers.filter(s => ['Pendente', 'Em Análise', 'Manual'].includes(s.onboardingStatus)).length} color="text-amber-600" bg="bg-amber-50" />
           </div>
-        )}
-        {filtered.map(m => {
-          const sc = STATUS_CONFIG[m.onboardingStatus] || STATUS_CONFIG['Pendente'];
-          const subCount = subsellerCountMap[m.id] || 0;
-          const oCase = caseMap[m.id];
-          const lead = leadMap[m.id];
-          return (
-            <Link
-              key={m.id}
-              to={`/CadastroDetalhe?id=${m.id}`}
-              className="flex items-center gap-4 p-4 bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 hover:border-[var(--pagsmile-green)]/40 hover:shadow-md transition-all group"
+
+          {/* Filtros */}
+          <div className="flex flex-col sm:flex-row gap-3 mt-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--pagsmile-blue)]/40" />
+              <Input
+                placeholder="Buscar por nome, CNPJ, e-mail..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-full sm:w-44">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os status</SelectItem>
+                <SelectItem value="Aprovado">Aprovado</SelectItem>
+                <SelectItem value="Manual">Revisão Manual</SelectItem>
+                <SelectItem value="Pendente">Pendente</SelectItem>
+                <SelectItem value="Em Análise">Em Análise</SelectItem>
+                <SelectItem value="Recusado">Recusado</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={typeFilter} onValueChange={setTypeFilter}>
+              <SelectTrigger className="w-full sm:w-36">
+                <SelectValue placeholder="Tipo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">PF e PJ</SelectItem>
+                <SelectItem value="PJ">PJ</SelectItem>
+                <SelectItem value="PF">PF</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button
+              variant={duplicateOnly ? 'default' : 'outline'}
+              onClick={() => setDuplicateOnly(!duplicateOnly)}
+              className={duplicateOnly ? 'bg-red-600 hover:bg-red-700 text-white' : 'border-red-200 text-red-600 hover:bg-red-50'}
             >
-              <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${m.type === 'PJ' ? 'bg-blue-50' : 'bg-purple-50'}`}>
-                {m.type === 'PJ' ? <Building2 className="w-5 h-5 text-blue-600" /> : <User className="w-5 h-5 text-purple-600" />}
+              <AlertTriangle className="w-4 h-4 mr-1.5" />
+              Só duplicados
+            </Button>
+          </div>
+
+          {/* Lista enriquecida */}
+          <div className="space-y-2 mt-4">
+            {filtered.length === 0 && (
+              <div className="text-center py-16 text-[var(--pagsmile-blue)]/50">
+                <Building2 className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                <p>Nenhum seller encontrado</p>
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="font-semibold text-sm text-[var(--pagsmile-blue)] truncate">
-                    {m.companyName || m.fullName}
-                  </span>
-                  <Badge variant="outline" className="text-[10px] shrink-0">{m.type}</Badge>
-                </div>
-                <div className="flex items-center gap-3 text-xs text-[var(--pagsmile-blue)]/50 mt-0.5">
-                  <span>{formatDoc(m.cpfCnpj)}</span>
-                  {m.email && <span className="hidden sm:inline">• {m.email}</span>}
-                </div>
-              </div>
-              <div className="flex items-center gap-3 shrink-0">
-                {subCount > 0 && (
-                  <div className="flex items-center gap-1 text-xs text-purple-600 bg-purple-50 px-2 py-1 rounded-full">
-                    <Users className="w-3 h-3" />
-                    <span>{subCount}</span>
-                  </div>
-                )}
-                {oCase?.riskScore != null && (
-                  <div className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                    oCase.riskScore <= 40 ? 'bg-green-50 text-green-700' :
-                    oCase.riskScore <= 70 ? 'bg-amber-50 text-amber-700' :
-                    'bg-red-50 text-red-700'
-                  }`}>
-                    Score {oCase.riskScore}
-                  </div>
-                )}
-                <Badge className={`${sc.color} text-[10px]`}>{sc.label}</Badge>
-                <ChevronRight className="w-4 h-4 text-[var(--pagsmile-blue)]/20 group-hover:text-[var(--pagsmile-green)] transition-colors" />
-              </div>
-            </Link>
-          );
-        })}
-      </div>
+            )}
+            {filtered.map(m => {
+              const lead = leadMap[m.id];
+              const origemRaw = lead?.origemLead || lead?.questionnaireData?.origem;
+              const originLabel = origemRaw ? (ORIGIN_LABELS[origemRaw] || origemRaw) : null;
+              return (
+                <CadastroRichRow
+                  key={m.id}
+                  merchant={m}
+                  oCase={caseMap[m.id]}
+                  lead={lead}
+                  proposal={proposalMap[m.id]}
+                  contract={contractMap[m.id]}
+                  subsellerCount={subsellerCountMap[m.id] || 0}
+                  duplicateCount={duplicateCountMap[m.id] || 1}
+                  originLabel={originLabel}
+                />
+              );
+            })}
+          </div>
         </TabsContent>
       </Tabs>
 
       <ExportReportModal open={exportOpen} onOpenChange={setExportOpen} />
+      <MergeDuplicatesModal
+        open={mergeOpen}
+        onOpenChange={setMergeOpen}
+        onMerged={() => refetchMerchants()}
+      />
     </div>
   );
 }
