@@ -12,7 +12,8 @@ const PAGSMILE_BLUE = '#002443';
 
 export default function GenerateLinkModal({ merchant, onGenerate, onClose, isPending }) {
   const [mode, setMode] = useState(null); // null = choosing, 'pagsmile' | 'custom'
-  const [brandName, setBrandName] = useState('');
+  // Pré-preenche com o nome do cliente (seller) — usuário pode editar se quiser.
+  const [brandName, setBrandName] = useState(merchant?.fullName || merchant?.companyName || '');
   const [brandLogoUrl, setBrandLogoUrl] = useState('');
   const [brandPrimaryColor, setBrandPrimaryColor] = useState(PAGSMILE_GREEN);
   const [brandSecondaryColor, setBrandSecondaryColor] = useState(PAGSMILE_BLUE);
