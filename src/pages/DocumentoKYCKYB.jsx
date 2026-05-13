@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Loader2, BookOpen, FileStack, Layers, ShieldCheck, Download } from 'lucide-react';
+import { Loader2, BookOpen, FileStack, Layers, ShieldCheck, Download, Microscope } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import DocCapa from '@/components/kyc-doc/DocCapa';
 import DocGlossario from '@/components/kyc-doc/DocGlossario';
@@ -27,6 +27,7 @@ import DocTemplatesMicroscopico from '@/components/kyc-doc/DocTemplatesMicroscop
 import DocModeloDinamicoKYC from '@/components/kyc-doc/DocModeloDinamicoKYC';
 import DocFunisCaptacao from '@/components/kyc-doc/DocFunisCaptacao';
 import RiskScoringDocTab from '@/components/kyc-doc/risk-scoring/RiskScoringDocTab';
+import DocBdcCafMicroscopico from '@/components/kyc-doc/DocBdcCafMicroscopico';
 
 const TOC = [
   { id: 's0', n: '0', label: 'Glossário — Termos Técnicos e Regulatórios' },
@@ -120,6 +121,13 @@ export default function DocumentoKYCKYB() {
             label="Risk Scoring"
             sublabel="Sellers & Subsellers — para Bandeiras"
           />
+          <TabButton
+            active={activeTab === 'bdccaf'}
+            onClick={() => setActiveTab('bdccaf')}
+            icon={Microscope}
+            label="BDC + CAF Microscópico"
+            sublabel="Datasets, serviços e custos"
+          />
         </div>
       </div>
 
@@ -135,6 +143,9 @@ export default function DocumentoKYCKYB() {
       )}
       {activeTab === 'risk' && (
         <RiskScoringDocTab />
+      )}
+      {activeTab === 'bdccaf' && (
+        <DocBdcCafMicroscopico />
       )}
     </div>
   );
