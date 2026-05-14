@@ -37,7 +37,20 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Method not allowed' }, { status: 405 });
     }
 
-    const base44 = createClientFromRequest(req);
+    // Tolerante a visitantes anônimos: createClientFromRequest pode lançar 401 quando
+    // o navegador envia token expirado/inválido (ex: usuário sem login no Base44).
+    // Como só usamos asServiceRole aqui, não precisamos do user context.
+    let base44;
+    try {
+      base44 = createClientFromRequest(req);
+    } catch (_) {
+      const { createClient } = await import('npm:@base44/sdk@0.8.25');
+      base44 = createClient({
+        appId: Deno.env.get('BASE44_APP_ID'),
+        requiresAuth: false,
+      });
+    }
+
     const body = await req.json();
     const data = sanitize(body);
 
