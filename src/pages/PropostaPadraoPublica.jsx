@@ -15,6 +15,7 @@ import DownloadPdfButton from '@/components/proposals/DownloadPdfButton';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 import SEGMENT_TO_COMPLIANCE from '@/components/fechamento/segmentComplianceMap';
 import InternationalPaymentsBanner from '@/components/landing/InternationalPaymentsBanner';
+import ReservaFinanceiraPublic from '@/components/proposals/ReservaFinanceiraPublic';
 import { canonicalizeSlugUrl } from '@/lib/publicSlug';
 import { usePublicProposalQuery } from '@/hooks/usePublicProposalQuery';
 import PublicProposalErrorState from '@/components/proposals/PublicProposalErrorState';
@@ -261,6 +262,9 @@ export default function PropostaPadraoPublica() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Reserva Financeira (Rolling Reserve) */}
+      <ReservaFinanceiraPublic rates={rates} segmentName={proposta.segment} />
 
       {/* Setup Fee — Destaque */}
       <div className="mb-6 relative overflow-hidden bg-[#002443] rounded-2xl p-6 text-center shadow-lg">

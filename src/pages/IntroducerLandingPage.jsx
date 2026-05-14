@@ -10,6 +10,7 @@ import LandingHeader from '@/components/landing/LandingHeader';
 import PagsmileHeader from '@/components/landing/PagsmileHeader';
 import ComplianceDisclaimer from '@/components/landing/ComplianceDisclaimer';
 import SegmentRatesTable from '@/components/landing/SegmentRatesTable';
+import ReservaFinanceiraPublic from '@/components/proposals/ReservaFinanceiraPublic';
 import SegmentSelector from '@/components/landing/SegmentSelector';
 import RateCalculator from '@/components/landing/RateCalculator';
 import InternationalPaymentsBanner from '@/components/landing/InternationalPaymentsBanner';
@@ -178,6 +179,10 @@ export default function IntroducerLandingPage() {
                 transition={{ duration: 0.3 }}
               >
                 <SegmentRatesTable segmentRates={activeRates} segmentName={activeSegment} />
+
+                <div className="mt-6">
+                  <ReservaFinanceiraPublic segmentName={activeSegment} />
+                </div>
 
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
