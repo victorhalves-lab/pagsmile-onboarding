@@ -25,15 +25,10 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => ({}));
     const { kind } = body;
-    // SEMPRE usar cliente anônimo + service role aqui — esta function é 100% pública
-    // e qualquer tentativa de validar token do cliente pode lançar 401 (mesmo dentro
-    // de try/catch, em chamadas internas do SDK), quebrando a landing page para
-    // visitantes que nunca logaram. asServiceRole não depende do user context.
-    const { createClient } = await import('npm:@base44/sdk@0.8.25');
-    const base44 = createClient({
-      appId: Deno.env.get('BASE44_APP_ID'),
-      requiresAuth: false,
-    });
+    // createClientFromRequest aceita requests sem token (anônimos). asServiceRole
+    // funciona independentemente de auth do usuário. Não trocar para createClient
+    // sem credentials — isso silenciosamente retorna [] em vez de dados reais.
+    const base44 = createClientFromRequest(req);
 
     // ── Introducer by slug (for IntroducerLandingPage) ──
     if (kind === 'introducer_by_slug') {
