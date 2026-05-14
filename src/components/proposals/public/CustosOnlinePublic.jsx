@@ -13,7 +13,7 @@ const fmtPct = (v) => `${(parseFloat(v) || 0).toFixed(2).replace('.', ',')}%`;
 export default function CustosOnlinePublic({ rates }) {
   const items = [
     { key: 'feeTransacao', label: 'Fee por Transação', value: fmtBRL(rates.feeTransacao), icon: Zap },
-    { key: 'antifraude', label: 'Antifraude', value: fmtPct(rates.antifraude), icon: ShieldCheck },
+    { key: 'antifraude', label: 'Antifraude', value: fmtBRL(rates.antifraude), icon: ShieldCheck },
     { key: 'taxa3ds', label: '3DS', value: fmtBRL(rates.taxa3ds), icon: Lock },
     { key: 'alertaPreChargeback', label: 'Alerta Pré-Chargeback', value: fmtBRL(rates.alertaPreChargeback), icon: AlertCircle },
   ];
