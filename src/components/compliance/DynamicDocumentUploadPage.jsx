@@ -180,10 +180,10 @@ export default function DynamicDocumentUploadPage({
   const loadingTemplate = loadingBundle;
   const loadingQuestions = loadingBundle;
 
-  // Called when user finishes doc uploads and clicks "Próximo" → go to CAF step
-  // CRITICAL: a doc is satisfied if has files OR has not-available justification.
-  // Plus safety net: if template has docs but client didn't act on any, block.
-  const handleProceedToCaf = () => {
+  // Validation result — exposed so mobile UI can show PERSISTENT feedback below the button
+  // (toast.error desaparece rápido demais no mobile, especialmente quando o botão fica
+  // sobre a barra de URL do Safari/Chrome iOS).
+  const docsValidation = React.useMemo(() => {
     const allTemplateDocs = (template?.requiredDocuments || []).map((doc, index) => ({
       ...doc,
       _docKey: doc.documentTypeId || doc.id || `doc_${index}_${(doc.label || '').replace(/\s+/g, '_').toLowerCase().slice(0, 30)}`
@@ -195,35 +195,82 @@ export default function DynamicDocumentUploadPage({
       return hasFiles || (e.notAvailable && e.notAvailableReason);
     };
     const mandatoryDocs = allTemplateDocs.filter(d => d.required);
-    const missingDocs = mandatoryDocs.filter(d => !isSatisfied(d));
-    if (missingDocs.length > 0) {
-      toast.error(`Envie todos os documentos obrigatórios. Faltam ${missingDocs.length}: ${missingDocs.map(d => d.label || d.name).join(', ')}`);
-      return;
-    }
-    // Safety net: template has docs configured, but nothing was acted on → block.
-    if (allTemplateDocs.length > 0 && Object.keys(documents).length === 0) {
-      toast.error(
-        `Este fluxo exige o envio de ${allTemplateDocs.length} documento(s). ` +
-        `Anexe cada documento solicitado ou clique em "Não tenho este documento" para justificar a indisponibilidade.`,
-        { duration: 8000 }
-      );
-      return;
-    }
-    // Extra safety: if NONE of the docs in the template are marked required: true,
-    // we still require that the client acted on at least 80% of them (uploaded or justified).
-    // Prevents bypassing when the template admin forgot to mark required: true.
-    if (mandatoryDocs.length === 0 && allTemplateDocs.length >= 3) {
+    const missingMandatory = mandatoryDocs.filter(d => !isSatisfied(d));
+
+    let canProceed = true;
+    let reason = '';
+    let missingList = [];
+
+    if (missingMandatory.length > 0) {
+      canProceed = false;
+      reason = `Faltam ${missingMandatory.length} documento(s) obrigatório(s)`;
+      missingList = missingMandatory.map(d => d.label || d.name);
+    } else if (allTemplateDocs.length > 0 && Object.keys(documents).length === 0) {
+      canProceed = false;
+      reason = `Este fluxo exige o envio de ${allTemplateDocs.length} documento(s)`;
+      missingList = allTemplateDocs.map(d => d.label || d.name);
+    } else if (mandatoryDocs.length === 0 && allTemplateDocs.length >= 3) {
       const acted = allTemplateDocs.filter(isSatisfied).length;
       const minRequired = Math.ceil(allTemplateDocs.length * 0.8);
       if (acted < minRequired) {
-        toast.error(
-          `Envie ou justifique pelo menos ${minRequired} dos ${allTemplateDocs.length} documentos listados. ` +
-          `Você ainda tem ${allTemplateDocs.length - acted} documento(s) sem ação.`,
-          { duration: 8000 }
-        );
-        return;
+        canProceed = false;
+        reason = `Envie ou justifique pelo menos ${minRequired} dos ${allTemplateDocs.length} documentos`;
+        missingList = allTemplateDocs.filter(d => !isSatisfied(d)).map(d => d.label || d.name);
       }
     }
+    return { canProceed, reason, missingList, totalDocs: allTemplateDocs.length };
+  }, [template, documents]);
+
+  // Called when user finishes doc uploads and clicks "Próximo" → go to CAF step
+  // FIX 2026-05-14 (caso Millions mobile): toast.error desaparece muito rápido no celular
+  // — o botão estava colado na barra do navegador. Agora:
+  //   • Toda tentativa de avanço é LOGADA no backend (logPublicClientError) com motivo
+  //   • Validação também é exposta visualmente em banner persistente abaixo do botão
+  //   • Toast continua como reforço, mas dura mais (10s)
+  const handleProceedToCaf = () => {
+    // Diagnostic logging — even on success — para conseguirmos investigar futuros casos
+    const logAttempt = (outcome, reason = '') => {
+      try {
+        callPublicFunction('logPublicClientError', {
+          context: 'DynamicDocumentUploadPage:handleProceedToCaf',
+          message: `outcome=${outcome}${reason ? ` reason=${reason}` : ''}`,
+          metadata: {
+            flowType,
+            templateModel,
+            templateId: template?.id || null,
+            caseId: localStorage.getItem('created_onboarding_case_id') || null,
+            docsCount: Object.keys(documents).length,
+            totalDocs: docsValidation.totalDocs,
+            outcome,
+            reason,
+            userAgent: navigator.userAgent,
+            screenWidth: window.innerWidth,
+          },
+        }).catch(() => {});
+      } catch {}
+    };
+
+    if (!docsValidation.canProceed) {
+      logAttempt('blocked', docsValidation.reason);
+      toast.error(
+        `${docsValidation.reason}. ${docsValidation.missingList.length > 0 ? `Faltando: ${docsValidation.missingList.slice(0, 3).join(', ')}${docsValidation.missingList.length > 3 ? '...' : ''}` : ''}`,
+        { duration: 10000 }
+      );
+      return;
+    }
+
+    // Safety: confirma que o case foi criado antes de avançar para CAF
+    const caseId = localStorage.getItem('created_onboarding_case_id');
+    if (!skipCaf && !caseId) {
+      logAttempt('blocked', 'case_id_missing');
+      toast.error(
+        'Estamos finalizando a preparação do seu envio. Aguarde 5 segundos e clique novamente.',
+        { duration: 10000 }
+      );
+      return;
+    }
+
+    logAttempt('advanced');
     // Save docs progress immediately on transition
     saveProgressNow({ currentPhase: 'caf', documentsData: documents });
     if (!skipCaf) {
@@ -613,39 +660,70 @@ export default function DynamicDocumentUploadPage({
 
       {/* Botões de Ação */}
       {currentStep === 'docs_upload' && (
-        <div className="flex justify-between items-center mt-8 pt-6 border-t border-slate-200">
-          <Button
-            variant="ghost"
-            onClick={() => navigate(`/${questionnairePageName}`)}
-            className="text-slate-500 hover:text-[var(--pagsmile-blue)]"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Voltar ao Questionário
-          </Button>
+        <>
+          {/* Persistent validation banner — só aparece quando há pendência.
+              Crítico no mobile: o toast some rápido e o botão fica colado
+              na barra do navegador, então o cliente precisa ver O QUE FALTA
+              de forma permanente acima do botão. */}
+          {!docsValidation.canProceed && Object.keys(documents).length > 0 && (
+            <div className="mt-6 p-4 rounded-xl bg-amber-50 border border-amber-200">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div className="text-sm">
+                  <p className="font-semibold text-amber-900 mb-1">{docsValidation.reason}</p>
+                  {docsValidation.missingList.length > 0 && (
+                    <ul className="text-xs text-amber-800 list-disc list-inside space-y-0.5">
+                      {docsValidation.missingList.slice(0, 5).map((label, i) => (
+                        <li key={i}>{label}</li>
+                      ))}
+                      {docsValidation.missingList.length > 5 && (
+                        <li className="italic">+ {docsValidation.missingList.length - 5} outro(s)</li>
+                      )}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
-          <Button
-            onClick={handleProceedToCaf}
-            disabled={isSubmitting}
-            className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white px-8 h-12 rounded-xl shadow-lg shadow-green-500/20 disabled:opacity-50"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Enviando...
-              </>
-            ) : skipCaf ? (
-              <>
-                Concluir Submissão
-                <CheckCircle2 className="w-4 h-4 ml-2" />
-              </>
-            ) : (
-              <>
-                Próximo: Verificação de Identidade
-                <ScanFace className="w-4 h-4 ml-2" />
-              </>
-            )}
-          </Button>
-        </div>
+          <div className="flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-3 mt-8 pt-6 border-t border-slate-200 pb-[env(safe-area-inset-bottom)]">
+            <Button
+              variant="ghost"
+              onClick={() => navigate(`/${questionnairePageName}`)}
+              className="text-slate-500 hover:text-[var(--pagsmile-blue)] w-full sm:w-auto"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Voltar ao Questionário
+            </Button>
+
+            <Button
+              onClick={handleProceedToCaf}
+              disabled={isSubmitting}
+              className="bg-[var(--pagsmile-green)] hover:bg-[var(--pagsmile-green)]/90 text-white px-8 h-12 rounded-xl shadow-lg shadow-green-500/20 disabled:opacity-50 w-full sm:w-auto"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Enviando...
+                </>
+              ) : skipCaf ? (
+                <>
+                  Concluir Submissão
+                  <CheckCircle2 className="w-4 h-4 ml-2" />
+                </>
+              ) : (
+                <>
+                  Próximo: Verificação de Identidade
+                  <ScanFace className="w-4 h-4 ml-2" />
+                </>
+              )}
+            </Button>
+          </div>
+
+          {/* Mobile safe area: garante 24px extras embaixo no celular para que o
+              botão NUNCA fique colado na barra do browser (causa #4 do diagnóstico). */}
+          <div className="h-6 sm:h-0" />
+        </>
       )}
 
       {currentStep === 'caf_verification' && (
