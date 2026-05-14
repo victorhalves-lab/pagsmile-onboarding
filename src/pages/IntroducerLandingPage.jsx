@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
+import { callPublicFunction } from '@/lib/publicApi';
 import { motion } from 'framer-motion';
 import { Loader2, ArrowRight, Rocket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -34,8 +34,8 @@ function getDeviceType() {
 }
 
 function fireAnalytics(eventType, ctx, extra = {}) {
-  // Analytics routed through backend function (asServiceRole) — RLS is admin-only.
-  base44.functions.invoke('trackLandingPageEvent', {
+  // SDK-free: público sem auth. RLS no backend é admin-only, mas a function usa asServiceRole.
+  callPublicFunction('trackLandingPageEvent', {
     introducerId: ctx.introducerId,
     referralCode: ctx.referralCode,
     slug: ctx.slug,
@@ -58,10 +58,10 @@ export default function IntroducerLandingPage() {
   const { data: introducer, isLoading } = useQuery({
     queryKey: ['introducerLP', uniqueLandingPageSlug],
     queryFn: async () => {
-      const res = await base44.functions.invoke('publicReadContext', {
+      const body = await callPublicFunction('publicReadContext', {
         kind: 'introducer_by_slug', slug: uniqueLandingPageSlug,
       });
-      return res.data?.introducer || null;
+      return body?.introducer || null;
     },
     enabled: !!uniqueLandingPageSlug,
   });
