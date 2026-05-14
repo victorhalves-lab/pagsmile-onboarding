@@ -23,6 +23,7 @@ import SectionHeader from '@/components/proposals/public/SectionHeader';
 import CustosOnlinePublic from '@/components/proposals/public/CustosOnlinePublic';
 import PixBoletoPublic from '@/components/proposals/public/PixBoletoPublic';
 import CondicoesGeraisPublic from '@/components/proposals/public/CondicoesGeraisPublic';
+import ReservaFinanceiraPublic from '@/components/proposals/ReservaFinanceiraPublic';
 import ExportButtons from '@/components/proposals/ExportButtons';
 import DownloadPdfButton from '@/components/proposals/DownloadPdfButton';
 import AceiteModal from '@/components/proposals/AceiteModal';
@@ -518,6 +519,12 @@ export default function PropostaPublica() {
       />
 
       <PixBoletoPublic rates={rates} />
+
+      {/* Reserva Financeira (Rolling Reserve) — usa rates.reservaFinanceira gravado,
+          ou cai no default por segmento (businessSubCategory). Fonte única:
+          lib/reservaFinanceiraDefaults.js — mesma usada em CriarPropostaPadrao. */}
+      <ReservaFinanceiraPublic rates={rates} segmentName={proposta.businessSubCategory} />
+
       <CondicoesGeraisPublic rates={rates} />
 
       <div className="mb-8">

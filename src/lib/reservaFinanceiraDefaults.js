@@ -26,7 +26,7 @@ export const DEFAULT_RESERVA = {
 };
 
 /**
- * Defaults POR SEGMENTO (regra de negócio v2026-05-13).
+ * Defaults POR SEGMENTO (regra de negócio v2026-05-14).
  *
  * Aplicado automaticamente:
  *   • Em propostas PADRÃO (StandardProposal) no segmento correspondente.
@@ -36,7 +36,7 @@ export const DEFAULT_RESERVA = {
  * Tabela:
  *   Gateway        → 20% cartão / 5% pix
  *   Dropshipping   → 20% cartão / 5% pix
- *   Infoprodutos   → 15% cartão / 3% pix
+ *   Infoprodutos   → 18% cartão / 4% pix
  *   Marketplace    → 10% cartão / 2% pix
  *   E-commerce     → 10% cartão / 1% pix
  *   Outros         → 5%  cartão / 1% pix  (educacao, saas, mpe, plataformas_verticais, link_pagamento)
@@ -44,7 +44,7 @@ export const DEFAULT_RESERVA = {
 export const RESERVA_BY_SEGMENT = {
   gateway:              { cartao: 20, pix: 5 },
   dropshipping:         { cartao: 20, pix: 5 },
-  infoprodutos:         { cartao: 15, pix: 3 },
+  infoprodutos:         { cartao: 18, pix: 4 },
   marketplace:          { cartao: 10, pix: 2 },
   ecommerce:            { cartao: 10, pix: 1 },
   educacao:             { cartao: 5,  pix: 1 },
