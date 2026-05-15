@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
+// SDK-FREE: ComplianceResume is a PUBLIC page (anonymous clients arriving from
+// e-mail / QR code). The @base44/sdk fails with 401 on private apps when there's
+// no auth session. callPublicFunction hits /functions/* directly via fetch.
+import { callPublicFunction } from '@/lib/publicApi';
 import { RefreshCw, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -42,21 +45,21 @@ export default function ComplianceResume() {
       }
 
       try {
-        const response = await base44.functions.invoke('loadComplianceProgress', { sessionToken: token });
+        const response = await callPublicFunction('loadComplianceProgress', { sessionToken: token });
 
-        if (!response.data?.found) {
+        if (!response?.found) {
           setError('Sessão não encontrada ou expirada.');
           setLoading(false);
           return;
         }
 
-        if (response.data.session.status === 'completed') {
+        if (response.session?.status === 'completed') {
           setError('Este questionário já foi concluído.');
           setLoading(false);
           return;
         }
 
-        const sess = response.data.session;
+        const sess = response.session;
         setSession(sess);
 
         // Restore session token to localStorage

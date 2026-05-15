@@ -19,7 +19,14 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 const ALLOWED_HOSTS = [
   'pagsmile-onboarding.base44.app',
   'app.base44.com',
+  'preview--pagsmile-onboarding.base44.app',
 ];
+
+// Also accept any *.base44.app preview subdomain dynamically (for staging/builder previews)
+function isAllowedBase44Host(hostname) {
+  if (ALLOWED_HOSTS.includes(hostname)) return true;
+  return hostname.endsWith('.base44.app') || hostname.endsWith('.base44.com');
+}
 
 function isValidEmail(email) {
   return typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -29,7 +36,7 @@ function isSafeResumeUrl(url) {
   try {
     const u = new URL(url);
     if (u.protocol !== 'https:') return false;
-    return ALLOWED_HOSTS.includes(u.hostname);
+    return isAllowedBase44Host(u.hostname);
   } catch {
     return false;
   }

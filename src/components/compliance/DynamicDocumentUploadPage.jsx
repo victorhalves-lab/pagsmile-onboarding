@@ -16,6 +16,7 @@ import CafVerificationStep from './CafVerificationStep';
 import { useComplianceSession } from '../../hooks/useComplianceSession';
 import AutoSaveIndicator from './AutoSaveIndicator';
 import PhaseProgressBar from './PhaseProgressBar';
+import ContinueOnMobileButton from './ContinueOnMobileButton';
 
 export default function DynamicDocumentUploadPage({
   templateId,
@@ -578,12 +579,31 @@ export default function DynamicDocumentUploadPage({
             {badgeLabel || template.name}
           </div>
         </div>
-        <div className="flex justify-center mt-3">
+        <div className="flex flex-wrap justify-center items-center gap-3 mt-3">
           <AutoSaveIndicator
             saving={false}
             lastSaved={sessionLoaded}
             resumeUrl={getResumeUrl()}
           />
+          {/* Continue on another device — QR code + email (cross-device handoff).
+              Especially valuable on desktop where the CAF step needs a phone camera. */}
+          {currentStep === 'docs_upload' && (
+            <ContinueOnMobileButton
+              resumeUrl={getResumeUrl()}
+              prefilledEmail={(() => {
+                try {
+                  const fd = JSON.parse(localStorage.getItem(formDataStorageKey) || '{}');
+                  for (const q of (questions || [])) {
+                    const t = (q.text || '').toLowerCase();
+                    if ((t.includes('email') || t.includes('e-mail')) && fd[q.id]) {
+                      return String(fd[q.id]);
+                    }
+                  }
+                } catch {}
+                return '';
+              })()}
+            />
+          )}
         </div>
       </div>
 
