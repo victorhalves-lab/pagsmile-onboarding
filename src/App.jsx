@@ -94,6 +94,7 @@ const DocCompParceiros = lazyPage(() => import('./pages/DocCompParceiros'));
 const BankDataCollect = lazyPage(() => import('./pages/BankDataCollect'));
 const Governanca = lazyPage(() => import('./pages/Governanca'));
 const DocumentacaoMaster = lazyPage(() => import('./pages/DocumentacaoMaster'));
+const BdcLookup = lazyPage(() => import('./pages/BdcLookup'));
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -431,6 +432,7 @@ const AuthenticatedApp = () => {
       <Route path="/DocCompParceiros" element={<LayoutWrapper currentPageName="DocCompParceiros"><DocCompParceiros /></LayoutWrapper>} />
       <Route path="/Governanca" element={<LayoutWrapper currentPageName="Governanca"><Governanca /></LayoutWrapper>} />
       <Route path="/DocumentacaoMaster" element={<LayoutWrapper currentPageName="DocumentacaoMaster"><DocumentacaoMaster /></LayoutWrapper>} />
+      <Route path="/BdcLookup" element={<LayoutWrapper currentPageName="BdcLookup"><BdcLookup /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
