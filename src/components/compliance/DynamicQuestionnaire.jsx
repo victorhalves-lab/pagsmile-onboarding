@@ -23,7 +23,9 @@ import { useLeadPrefill } from './useLeadPrefill';
 import { useComplianceSession } from '../../hooks/useComplianceSession';
 import useComplianceFlags from '../../hooks/useComplianceFlags';
 import AutoSaveIndicator from './AutoSaveIndicator';
+import BlockedSubmitDialog from './BlockedSubmitDialog';
 import { toast } from 'sonner';
+import { logSubsellerError } from '@/lib/subsellerErrorLogger';
 import {
   trackOnboardingStepCompleted,
   trackOnboardingDropoff,
@@ -210,6 +212,15 @@ export default function DynamicQuestionnaire({
   // Bridge entre questionário e upload de documentos (Opção B — salvar e continuar depois)
   const [showDocsBridge, setShowDocsBridge] = useState(false);
   const [bridgeNavParams, setBridgeNavParams] = useState('');
+
+  // Modal persistente de bloqueio — substitui os toast.error que sumiam rápido demais
+  // (campos obrigatórios faltando, CNPJ inativo, etc) e deixavam o cliente trancado
+  // sem entender o motivo (caso real Pedro Sperandio / Millions).
+  const [blockDialog, setBlockDialog] = useState({
+    open: false,
+    reason: '',
+    missingList: [],
+  });
 
   const linkCode = localStorage.getItem('onboarding_link_code');
 
@@ -581,7 +592,16 @@ export default function DynamicQuestionnaire({
     if (currentStep < steps.length) {
       // Verificar se CNPJ inativo bloqueia o avanço
       if (isCnpjBlocked()) {
-        toast.error('O CNPJ informado não está com situação ATIVA na Receita Federal. Apenas empresas ativas podem prosseguir.');
+        logSubsellerError({
+          stage: 'questionnaire_blocked_cnpj_inactive',
+          message: 'CNPJ não está ATIVO na Receita Federal',
+          context: { flowType, templateModel, step: currentStep, situacao: cnpjAutocompleteData?.descricao_situacao_cadastral },
+        });
+        setBlockDialog({
+          open: true,
+          reason: 'O CNPJ informado não está com situação ATIVA na Receita Federal. Apenas empresas ativas podem prosseguir.',
+          missingList: [`Situação atual: ${cnpjAutocompleteData?.descricao_situacao_cadastral || 'Não identificada'}`],
+        });
         return;
       }
       const missing = validateCurrentStep();
@@ -591,8 +611,22 @@ export default function DynamicQuestionnaire({
           stepTitle: currentStepData?.title, flowType, templateModel,
           missingFieldsCount: missing.length,
         });
-        // Analytics SDK removido (já rastreado via trackOnboardingValidationFailed).
-        toast.error(`Preencha todos os campos obrigatórios (${missing.length} campo${missing.length > 1 ? 's' : ''} pendente${missing.length > 1 ? 's' : ''}).`);
+        logSubsellerError({
+          stage: 'questionnaire_validation_failed',
+          message: `${missing.length} campo(s) obrigatório(s) não preenchido(s)`,
+          context: {
+            flowType,
+            templateModel,
+            step: currentStep,
+            stepTitle: currentStepData?.title,
+            missingFields: missing.map(q => q.text || q.id).slice(0, 10),
+          },
+        });
+        setBlockDialog({
+          open: true,
+          reason: `Para avançar para a próxima etapa, preencha os ${missing.length} campo${missing.length > 1 ? 's' : ''} obrigatório${missing.length > 1 ? 's' : ''} abaixo:`,
+          missingList: missing.map(q => q.text || q.id),
+        });
         return;
       }
       const timeOnStep = Math.round((Date.now() - stepStartTimeRef.current) / 1000);
@@ -626,7 +660,16 @@ export default function DynamicQuestionnaire({
   const handleSubmit = () => {
     // Verificar bloqueio CNPJ inativo antes de submeter
     if (isCnpjBlocked()) {
-      toast.error('O CNPJ informado não está com situação ATIVA na Receita Federal. Apenas empresas ativas podem prosseguir.');
+      logSubsellerError({
+        stage: 'questionnaire_submit_blocked_cnpj_inactive',
+        message: 'CNPJ não está ATIVO na Receita Federal (etapa final)',
+        context: { flowType, templateModel, situacao: cnpjAutocompleteData?.descricao_situacao_cadastral },
+      });
+      setBlockDialog({
+        open: true,
+        reason: 'O CNPJ informado não está com situação ATIVA na Receita Federal. Apenas empresas ativas podem prosseguir.',
+        missingList: [`Situação atual: ${cnpjAutocompleteData?.descricao_situacao_cadastral || 'Não identificada'}`],
+      });
       return;
     }
     const missing = validateCurrentStep();
@@ -636,8 +679,22 @@ export default function DynamicQuestionnaire({
         stepTitle: currentStepData?.title, flowType, templateModel,
         missingFieldsCount: missing.length,
       });
-      // Analytics SDK removido (já rastreado via trackOnboardingValidationFailed).
-      toast.error(`Preencha todos os campos obrigatórios (${missing.length} campo${missing.length > 1 ? 's' : ''} pendente${missing.length > 1 ? 's' : ''}).`);
+      logSubsellerError({
+        stage: 'questionnaire_submit_validation_failed',
+        message: `${missing.length} campo(s) obrigatório(s) não preenchido(s) na última etapa`,
+        context: {
+          flowType,
+          templateModel,
+          step: currentStep,
+          stepTitle: currentStepData?.title,
+          missingFields: missing.map(q => q.text || q.id).slice(0, 10),
+        },
+      });
+      setBlockDialog({
+        open: true,
+        reason: `Para enviar, preencha os ${missing.length} campo${missing.length > 1 ? 's' : ''} obrigatório${missing.length > 1 ? 's' : ''} abaixo:`,
+        missingList: missing.map(q => q.text || q.id),
+      });
       return;
     }
     // Track final step + full completion
@@ -870,6 +927,19 @@ export default function DynamicQuestionnaire({
 
     if (res?.error || !res?.ok) {
       merchantCreatedRef.current = false;
+      logSubsellerError({
+        stage: 'create_merchant_and_case_failed',
+        message: res?.error || 'publicComplianceSubmit retornou sem ok',
+        context: {
+          flowType,
+          templateModel,
+          templateId: template?.id,
+          merchantType,
+          hasCnpj: !!cnpj,
+          hasEmail: !!email,
+          isSubsellerLink,
+        },
+      });
       return null;
     }
 
@@ -1160,6 +1230,15 @@ export default function DynamicQuestionnaire({
           </p>
         )}
       </div>
+
+      {/* Modal persistente: substitui toast.error de validação que sumia em 4s */}
+      <BlockedSubmitDialog
+        open={blockDialog.open}
+        variant="missing_docs"
+        missingList={blockDialog.missingList}
+        reason={blockDialog.reason}
+        onClose={() => setBlockDialog({ open: false, reason: '', missingList: [] })}
+      />
     </div>
   );
 }

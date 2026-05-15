@@ -8,6 +8,7 @@ import DocumentNotAvailableModal from './DocumentNotAvailableModal';
 import DocumentCard from './DocumentCard';
 import { directUploadDocument } from '@/lib/directUpload';
 import { compressImageIfNeeded } from '@/lib/imageCompression';
+import { logSubsellerError } from '@/lib/subsellerErrorLogger';
 
 /**
  * BULLETPROOF Multi-file document uploader.
@@ -125,7 +126,16 @@ export default function BulletproofDocumentUploader(props = {}) {
     const fileArray = Array.isArray(filesList) ? filesList : [filesList];
     if (fileArray.length === 0) return;
     if (!caseId) {
-      toast.error('Caso não identificado. Recarregue a página e tente novamente.');
+      logSubsellerError({
+        stage: 'upload_no_case_id',
+        message: 'Tentativa de upload sem caseId disponível',
+        context: { documentTypeId: docId, fileCount: fileArray.length },
+      });
+      toast.error(
+        'Seu cadastro ainda não foi preparado para receber documentos. ' +
+        'Recarregue a página e tente novamente — seus dados estão salvos.',
+        { duration: 10000 }
+      );
       return;
     }
 
@@ -173,28 +183,24 @@ export default function BulletproofDocumentUploader(props = {}) {
         });
       } catch (err) {
         console.error('[BulletproofUploader] upload failed for', original?.name, err);
+        const errMsg = err?.message || 'falha desconhecida';
         failedFiles.push({
           name: original?.name || 'arquivo',
-          error: err?.message || 'falha desconhecida',
+          error: errMsg,
         });
-        // Report failure server-side (fire-and-forget) so we can diagnose without
-        // asking the client for a screenshot. Uses raw fetch — no SDK dependency.
-        try {
-          fetch('/functions/logPublicClientError', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              stage: 'bulletproof_upload_failed',
-              errorMessage: String(err?.message || err || 'unknown'),
-              caseId,
-              fileName: original?.name || null,
-              fileSize: typeof original?.size === 'number' ? original.size : null,
-              fileType: original?.type || null,
-              userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
-              extra: { documentTypeId: docId, documentName, url: window.location.href },
-            }),
-          }).catch(() => {});
-        } catch {}
+        // Logger centralizado — substitui o fetch manual que estava duplicado
+        logSubsellerError({
+          stage: 'upload_file_failed',
+          message: errMsg,
+          context: {
+            documentTypeId: docId,
+            documentName,
+            fileName: original?.name || null,
+            fileSize: typeof original?.size === 'number' ? original.size : null,
+            fileType: original?.type || null,
+            caseId,
+          },
+        });
       }
     }
 
@@ -228,11 +234,21 @@ export default function BulletproofDocumentUploader(props = {}) {
     if (failedFiles.length > 0) {
       const names = failedFiles.map(f => f.name).join(', ');
       const firstError = failedFiles[0].error;
+      // Mensagem específica baseada no tipo de erro detectado
+      let friendlyHint = 'Tente novamente. Se persistir, use outro navegador ou verifique sua conexão.';
+      const lowerErr = firstError.toLowerCase();
+      if (lowerErr.includes('muito grande') || lowerErr.includes('too large')) {
+        friendlyHint = 'O arquivo está acima do limite de 7MB. Comprima a imagem ou divida o PDF antes de enviar.';
+      } else if (lowerErr.includes('network') || lowerErr.includes('failed to fetch') || lowerErr.includes('timeout')) {
+        friendlyHint = 'Falha de conexão. Verifique sua internet (Wi-Fi/4G) e tente novamente.';
+      } else if (lowerErr.includes('tipo') || lowerErr.includes('invalid file')) {
+        friendlyHint = 'Tipo de arquivo não aceito. Envie apenas PDF, JPG ou PNG.';
+      }
       toast.error(
-        `Falha ao enviar ${failedFiles.length} arquivo(s): ${names}. ` +
-        `Motivo: ${firstError}. ` +
-        `Tente novamente. Se persistir, use outro navegador ou verifique sua conexão.`,
-        { duration: 12000 }
+        `❌ Falha no envio de ${failedFiles.length} arquivo(s): ${names}.\n\n` +
+        `Motivo: ${firstError}\n\n` +
+        `${friendlyHint}`,
+        { duration: 15000 }
       );
     }
 
@@ -312,7 +328,16 @@ export default function BulletproofDocumentUploader(props = {}) {
       }));
       toast.success('Justificativa registrada. Nossa equipe irá analisar.');
     } catch (err) {
-      toast.error('Falha ao registrar justificativa: ' + (err?.message || 'erro desconhecido'), { duration: 10000 });
+      const errMsg = err?.message || 'erro desconhecido';
+      logSubsellerError({
+        stage: 'not_available_register_failed',
+        message: errMsg,
+        context: { documentTypeId: docId, documentName, caseId, reasonLength: (reason || '').length },
+      });
+      toast.error(
+        `Não conseguimos registrar sua justificativa.\n\nMotivo: ${errMsg}\n\nTente de novo em alguns segundos. Se persistir, recarregue a página.`,
+        { duration: 12000 }
+      );
     } finally {
       setUploadingDoc(null);
     }

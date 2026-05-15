@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Loader2, AlertTriangle } from 'lucide-react';
+import { Loader2, AlertTriangle, RefreshCw } from 'lucide-react';
 // SDK-FREE: public route — callPublicFunction hits /functions/* directly via fetch.
 import { callPublicFunction } from '@/lib/publicApi';
 import { toast } from 'sonner';
 import BulletproofDocumentUploader from './BulletproofDocumentUploader';
 import { expandPerRepresentativeDocs, getRepresentativesFromStorage } from '@/lib/expandPerRepresentativeDocs';
+import { logSubsellerError } from '@/lib/subsellerErrorLogger';
 
 /**
  * Wrapper around BulletproofDocumentUploader that ensures the OnboardingCase
@@ -162,8 +163,23 @@ export default function BulletproofUploaderWithLazyCase({
         setDocToken(newToken);
       } catch (e) {
         console.error('[BulletproofUploaderWithLazyCase] lazy-create failed:', e);
-        setError(e?.message || 'Falha ao preparar o envio dos documentos');
-        toast.error('Falha ao preparar o envio dos documentos: ' + (e?.message || 'erro desconhecido'), { duration: 10000 });
+        const errMsg = e?.message || 'Falha ao preparar o envio dos documentos';
+        setError(errMsg);
+        logSubsellerError({
+          stage: 'lazy_case_create_failed',
+          message: errMsg,
+          context: {
+            flowType,
+            templateModel,
+            templateId: template?.id,
+            hasFormData: !!localStorage.getItem(formDataStorageKey),
+            linkCode: localStorage.getItem('onboarding_link_code'),
+          },
+        });
+        toast.error(
+          'Não conseguimos preparar o envio dos documentos. ' + errMsg + '. Você pode tentar novamente abaixo.',
+          { duration: 12000 }
+        );
       } finally {
         setIsCreating(false);
         creatingRef.current = false;
@@ -182,16 +198,48 @@ export default function BulletproofUploaderWithLazyCase({
 
   if (error && !caseId) {
     return (
-      <div className="text-center py-12">
-        <AlertTriangle className="w-12 h-12 mx-auto text-amber-500 mb-4" />
-        <h2 className="text-lg font-bold text-[#002443] mb-2">Não foi possível preparar o envio</h2>
-        <p className="text-sm text-[#002443]/70 max-w-md mx-auto mb-4">{error}</p>
-        <button
-          onClick={() => window.location.reload()}
-          className="text-sm text-[var(--pagsmile-green)] underline"
-        >
-          Recarregar a página
-        </button>
+      <div className="max-w-md mx-auto py-12 px-4">
+        <div className="bg-white rounded-2xl border border-amber-200 shadow-sm p-6 text-center">
+          <div className="inline-flex p-3 rounded-full bg-amber-100 mb-4">
+            <AlertTriangle className="w-8 h-8 text-amber-600" />
+          </div>
+          <h2 className="text-lg font-bold text-[#002443] mb-2">
+            Não foi possível preparar o envio
+          </h2>
+          <p className="text-sm text-[#002443]/70 mb-4">
+            {error}
+          </p>
+          <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 mb-4 text-left">
+            <p className="text-xs text-blue-900 leading-relaxed">
+              <strong>O que aconteceu:</strong> houve um erro ao registrar seu cadastro
+              no nosso sistema antes de aceitar os documentos. Seus dados do questionário
+              continuam salvos — basta tentar de novo.
+            </p>
+          </div>
+          <div className="flex flex-col gap-2">
+            <button
+              onClick={() => {
+                setError(null);
+                creatingRef.current = false;
+                // re-dispara o effect de lazy-create
+                setCaseId(localStorage.getItem('created_onboarding_case_id'));
+              }}
+              className="w-full bg-[#2bc196] hover:bg-[#2bc196]/90 text-white rounded-xl py-2.5 text-sm font-semibold flex items-center justify-center gap-2"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Tentar novamente
+            </button>
+            <button
+              onClick={() => window.location.reload()}
+              className="w-full text-xs text-[#002443]/60 hover:text-[#002443] underline"
+            >
+              Recarregar a página
+            </button>
+          </div>
+          <p className="text-[10px] text-[#002443]/40 mt-4">
+            Se o problema persistir, entre em contato com nosso suporte.
+          </p>
+        </div>
       </div>
     );
   }

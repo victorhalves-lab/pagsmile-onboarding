@@ -18,6 +18,7 @@ import AutoSaveIndicator from './AutoSaveIndicator';
 import PhaseProgressBar from './PhaseProgressBar';
 import ContinueOnMobileButton from './ContinueOnMobileButton';
 import BlockedSubmitDialog from './BlockedSubmitDialog';
+import { logSubsellerError } from '@/lib/subsellerErrorLogger';
 
 export default function DynamicDocumentUploadPage({
   templateId,
@@ -257,24 +258,18 @@ export default function DynamicDocumentUploadPage({
   //   • Auto-recovery: chama findCaseFromUploads com os documentUploadIds do state
   const handleProceedToCaf = async () => {
     const logAttempt = (outcome, reason = '') => {
-      try {
-        callPublicFunction('logPublicClientError', {
-          context: 'DynamicDocumentUploadPage:handleProceedToCaf',
-          message: `outcome=${outcome}${reason ? ` reason=${reason}` : ''}`,
-          metadata: {
-            flowType,
-            templateModel,
-            templateId: template?.id || null,
-            caseId: liveCaseInfo.caseId || localStorage.getItem('created_onboarding_case_id') || null,
-            docsCount: Object.keys(documents).length,
-            allRequiredUploaded,
-            outcome,
-            reason,
-            userAgent: navigator.userAgent,
-            screenWidth: window.innerWidth,
-          },
-        }).catch(() => {});
-      } catch {}
+      logSubsellerError({
+        stage: `proceed_to_caf_${outcome}`,
+        message: reason || outcome,
+        context: {
+          flowType,
+          templateModel,
+          templateId: template?.id || null,
+          caseId: liveCaseInfo.caseId || localStorage.getItem('created_onboarding_case_id') || null,
+          docsCount: Object.keys(documents).length,
+          allRequiredUploaded,
+        },
+      });
     };
 
     // ── GATE 1: Filho (BulletproofDocumentUploader) é fonte de verdade ──
