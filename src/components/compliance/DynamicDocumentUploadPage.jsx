@@ -780,6 +780,49 @@ export default function DynamicDocumentUploadPage({
         </div>
       )}
 
+      {/* Banner de representantes confirmados — permite editar a lista sem voltar
+          ao questionário inteiro. Aparece SÓ quando o cliente já passou pela
+          ConfirmRepresentativesStep (representativesConfirmed=true) E há mais de 1 ativo. */}
+      {currentStep === 'docs_upload' && representativesConfirmed && (() => {
+        const activeReps = detectedRepresentatives.filter(r => r.status !== 'inactive');
+        if (activeReps.length <= 1) return null;
+        const nomes = activeReps.map(r => r.nome?.split(' ')[0] || 'sem nome').filter(Boolean);
+        const inactiveCount = detectedRepresentatives.length - activeReps.length;
+        return (
+          <div className="mb-6 p-4 rounded-xl bg-emerald-50 border border-emerald-200">
+            <div className="flex items-start gap-3 flex-wrap sm:flex-nowrap">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+              <div className="text-sm text-emerald-900 leading-relaxed flex-1 min-w-0">
+                <p className="font-semibold mb-1">
+                  Pedindo documentos de {activeReps.length} representante{activeReps.length !== 1 ? 's' : ''}
+                </p>
+                <p className="text-emerald-800/90 break-words">
+                  {nomes.join(', ')}
+                  {inactiveCount > 0 && (
+                    <span className="text-emerald-700/70"> · {inactiveCount} dispensado{inactiveCount !== 1 ? 's' : ''}</span>
+                  )}
+                </p>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  // Limpa confirmação → volta a renderizar ConfirmRepresentativesStep
+                  // sem perder os documentos já enviados (ficam em `documents` state).
+                  try {
+                    localStorage.removeItem(`${formDataStorageKey}__representatives_confirmed`);
+                  } catch {}
+                  setRepresentativesConfirmed(false);
+                }}
+                className="border-emerald-300 text-emerald-700 hover:bg-emerald-100 h-9 text-xs whitespace-nowrap"
+              >
+                Editar lista
+              </Button>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Step 1: Upload de Documentos — ALWAYS uses BULLETPROOF uploader.
           If the OnboardingCase doesn't exist yet, we lazy-create it here via
           publicComplianceSubmit BEFORE rendering the uploader. This eliminates
