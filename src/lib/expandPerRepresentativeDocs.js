@@ -69,7 +69,12 @@ function matchPattern(label) {
 
 export function expandPerRepresentativeDocs(requiredDocuments, representatives) {
   if (!Array.isArray(requiredDocuments)) return requiredDocuments || [];
-  const reps = Array.isArray(representatives) ? representatives.filter(r => r && (r.nome || r.cpf)) : [];
+  // Filtra: precisa ter dados E não estar marcado como inativo pelo cliente.
+  // O status 'inactive' vem da tela ConfirmRepresentativesStep, onde o cliente
+  // declara que aquela pessoa não é mais sócia/administradora ativa.
+  const reps = Array.isArray(representatives)
+    ? representatives.filter(r => r && (r.nome || r.cpf) && r.status !== 'inactive')
+    : [];
 
   // No reps configured → no expansion, leave template as-is
   if (reps.length === 0) return requiredDocuments;
@@ -138,6 +143,18 @@ export function getRepresentativesFromStorage(formDataKey, questions) {
   let formData = {};
   try { formData = JSON.parse(localStorage.getItem(formDataKey) || '{}'); } catch { formData = {}; }
 
+  // 0. Se já existe uma confirmação do cliente (tela ConfirmRepresentativesStep),
+  // use ela diretamente — é a fonte de verdade após o cliente confirmar quem é ativo.
+  try {
+    const confirmedRaw = localStorage.getItem(`${formDataKey}__representatives_confirmed`);
+    if (confirmedRaw) {
+      const confirmed = JSON.parse(confirmedRaw);
+      if (Array.isArray(confirmed) && confirmed.length > 0) {
+        return confirmed;
+      }
+    }
+  } catch {}
+
   // 1. Find REPRESENTATIVES_LIST answer
   let additional = [];
   for (const q of (questions || [])) {
@@ -146,7 +163,11 @@ export function getRepresentativesFromStorage(formDataKey, questions) {
     const isRepsList = q.type === 'REPRESENTATIVES_LIST'
       || (textLower.includes('representante legal') && (textLower.includes('mais de um') || textLower.includes('outros')));
     if (isRepsList && val && typeof val === 'object' && Array.isArray(val.list) && val.hasMultiple) {
-      additional = val.list.filter(r => r?.nome || r?.cpf);
+      additional = val.list.filter(r => r?.nome || r?.cpf).map(r => ({
+        ...r,
+        source: r.source || (r._autoFilled ? 'bdc_qsa' : 'declared'),
+        status: r.status || 'active',
+      }));
       break;
     }
   }
@@ -164,7 +185,15 @@ export function getRepresentativesFromStorage(formDataKey, questions) {
   };
   const principalName = findVal(['nome do representante', 'responsavel legal', 'representante legal', 'socio administrador', 'nome completo']);
   const principalCpf = findVal(['cpf do representante', 'cpf do responsavel', 'cpf']);
-  const principal = (principalName || principalCpf) ? [{ nome: principalName, cpf: principalCpf }] : [];
+  const principal = (principalName || principalCpf)
+    ? [{ nome: principalName, cpf: principalCpf, source: 'principal_declared', status: 'active' }]
+    : [];
 
-  return [...principal, ...additional];
+  // Deduplica por CPF — se o principal também aparece na lista do BDC, mantém só o principal.
+  const principalCpfDigits = (principalCpf || '').replace(/\D/g, '');
+  const dedupedAdditional = principalCpfDigits
+    ? additional.filter(r => (r.cpf || '').replace(/\D/g, '') !== principalCpfDigits)
+    : additional;
+
+  return [...principal, ...dedupedAdditional];
 }

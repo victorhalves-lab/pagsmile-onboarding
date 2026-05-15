@@ -153,11 +153,14 @@ function DocumentCard({ doc, uploadedFile, onUpload, onRemoveAll, onRemoveSingle
     >
       {/* Badge de representante — aparece apenas para docs expandidos por sócio.
           Garante que o cliente diferencie visualmente "RG do Sócio 1" vs "RG do Sócio 2"
-          mesmo antes de ler o título completo. */}
+          mesmo antes de ler o título completo.
+          
+          Mobile-safe: nome longo é truncado dentro do badge mantendo o "Sócio N"
+          sempre visível — assim mesmo em iPhone SE o cliente distingue os cards. */}
       {doc._representativeName && (
-        <div className="mb-2">
+        <div className="mb-2 flex items-center gap-1.5 flex-wrap">
           <span
-            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide ${
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide max-w-full ${
               doc._representativeIndex === 0
                 ? 'bg-blue-100 text-blue-800 border border-blue-200'
                 : doc._representativeIndex === 1
@@ -167,7 +170,10 @@ function DocumentCard({ doc, uploadedFile, onUpload, onRemoveAll, onRemoveSingle
                 : 'bg-amber-100 text-amber-800 border border-amber-200'
             }`}
           >
-            👤 Sócio {(doc._representativeIndex ?? 0) + 1} — {doc._representativeName}
+            <span className="flex-shrink-0">👤 Sócio {(doc._representativeIndex ?? 0) + 1}</span>
+            <span className="truncate max-w-[180px] sm:max-w-[280px]">
+              — {doc._representativeName}
+            </span>
           </span>
         </div>
       )}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 // SDK-FREE: page is PUBLIC (anonymous clients uploading docs + CAF liveness).
@@ -18,7 +18,9 @@ import AutoSaveIndicator from './AutoSaveIndicator';
 import PhaseProgressBar from './PhaseProgressBar';
 import ContinueOnMobileButton from './ContinueOnMobileButton';
 import BlockedSubmitDialog from './BlockedSubmitDialog';
+import ConfirmRepresentativesStep from './ConfirmRepresentativesStep';
 import { logSubsellerError } from '@/lib/subsellerErrorLogger';
+import { getRepresentativesFromStorage } from '@/lib/expandPerRepresentativeDocs';
 
 export default function DynamicDocumentUploadPage({
   templateId,
@@ -38,8 +40,10 @@ export default function DynamicDocumentUploadPage({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [allRequiredUploaded, setAllRequiredUploaded] = useState(false);
   // CAF verification is ALWAYS required (unless explicitly skipped)
-  // Phase: 'docs_upload' = uploading docs, 'caf_verification' = running CAF SDK, 'done' = all complete
+  // Phase: 'confirm_reps' = confirma representantes (se houver),
+  //        'docs_upload' = uploading docs, 'caf_verification' = running CAF SDK, 'done' = all complete
   const [currentStep, setCurrentStep] = useState('docs_upload');
+  const [representativesConfirmed, setRepresentativesConfirmed] = useState(false);
   const [cafResult, setCafResult] = useState(null);
   const cafResultRef = React.useRef(null);
 
@@ -85,6 +89,33 @@ export default function DynamicDocumentUploadPage({
       });
     }
   }, [sessionLoaded, savedDocumentsData]);
+
+  // Verifica se já existe confirmação prévia de representantes (cliente voltou ao fluxo)
+  useEffect(() => {
+    try {
+      const confirmedRaw = localStorage.getItem(`${formDataStorageKey}__representatives_confirmed`);
+      if (confirmedRaw) {
+        const list = JSON.parse(confirmedRaw);
+        if (Array.isArray(list) && list.length > 0) {
+          setRepresentativesConfirmed(true);
+        }
+      }
+    } catch {}
+  }, [formDataStorageKey]);
+
+  // Detecta representantes que precisam ser confirmados antes do upload.
+  // Só ativa quando há MAIS DE UM representante (caso de duplicação/QSA grande).
+  // Para PFs ou PJs com um único sócio, pula direto para o upload — sem fricção extra.
+  const detectedRepresentatives = useMemo(() => {
+    if (!questions || questions.length === 0) return [];
+    try {
+      return getRepresentativesFromStorage(formDataStorageKey, questions);
+    } catch {
+      return [];
+    }
+  }, [formDataStorageKey, questions]);
+
+  const needsRepConfirmation = detectedRepresentatives.length > 1 && !representativesConfirmed;
 
   // Auto-save documents to server when they change
   useEffect(() => {
@@ -607,6 +638,36 @@ export default function DynamicDocumentUploadPage({
         <AlertTriangle className="w-12 h-12 mx-auto text-amber-500 mb-4" />
         <h2 className="text-xl font-bold text-[#002443] mb-2">Template não encontrado</h2>
         <p className="text-[#002443]/70">Não foi possível carregar os documentos necessários.</p>
+      </div>
+    );
+  }
+
+  // Tela intermediária: confirmação de representantes (antes do upload).
+  // Aparece quando há >1 representante detectado e o cliente ainda não confirmou
+  // a lista nesta sessão. Evita a confusão de chegar na tela de upload com 3 RGs
+  // sem entender por quê.
+  if (needsRepConfirmation && currentStep === 'docs_upload') {
+    return (
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-6">
+          <PhaseProgressBar
+            current="documents"
+            showCaf={!skipCaf}
+          />
+        </div>
+        <ConfirmRepresentativesStep
+          representatives={detectedRepresentatives}
+          onBack={() => navigate(`/${questionnairePageName}`)}
+          onConfirm={(confirmedList) => {
+            try {
+              localStorage.setItem(
+                `${formDataStorageKey}__representatives_confirmed`,
+                JSON.stringify(confirmedList)
+              );
+            } catch {}
+            setRepresentativesConfirmed(true);
+          }}
+        />
       </div>
     );
   }

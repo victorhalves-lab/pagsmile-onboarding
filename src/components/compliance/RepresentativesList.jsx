@@ -26,16 +26,49 @@ export default function RepresentativesList({ value, onChange, bdcSocios = [], c
 
   const state = value || { hasMultiple: null, list: [] };
 
-  // Auto-popular com BDC quando user diz "Sim" pela primeira vez e BDC tem dados
+  // Auto-popular com BDC quando user diz "Sim" pela primeira vez e BDC tem dados.
+  //
+  // ── LIMPEZA DO BDC (3 filtros) ──
+  // O retorno bruto do BigDataCorp/QSA inclui ex-sócios, procuradores e cargos
+  // que não são representantes legais. Sem filtrar, o cliente recebia sugestões
+  // de pessoas que não são mais sócias e cards inúteis na tela de upload.
+  //
+  // Filtros aplicados:
+  //   1. status ATIVO — descarta sócios marcados como inativos no QSA.
+  //   2. cargo válido — só "Sócio*", "Administrador*", "Titular*", "Diretor*".
+  //      Procuradores e cargos administrativos não-societários ficam de fora.
+  //   3. limite de 3 sugestões — CNPJs grandes não viram tela com 8 cards de RG.
   useEffect(() => {
     if (state.hasMultiple === true && state.list.length === 0 && bdcSocios.length > 1) {
-      const seeded = bdcSocios.slice(1, 6).map(s => ({
+      const VALID_CARGO_REGEX = /(s[óo]cio|administrador|titular|diretor|presidente)/i;
+      const INVALID_STATUS_VALUES = ['inativo', 'desligado', 'baixado', 'ex-s[óo]cio', 'retirado'];
+
+      const isCargoValid = (cargo) => {
+        if (!cargo) return true; // sem cargo → assume válido (BDC nem sempre devolve)
+        const c = String(cargo).toLowerCase();
+        // Rejeita procurador explicitamente (não é representante legal societário)
+        if (c.includes('procurador') && !c.includes('s[óo]cio')) return false;
+        return VALID_CARGO_REGEX.test(cargo);
+      };
+
+      const isStatusActive = (socio) => {
+        const status = (socio.status || socio.situacao || socio.participation_status || '').toLowerCase();
+        if (!status) return true; // sem status → assume ativo (default seguro do QSA)
+        return !INVALID_STATUS_VALUES.some(invalid => status.includes(invalid));
+      };
+
+      // slice(1, ...) → pula o primeiro (que vai como "principal" em outra pergunta)
+      const filtered = bdcSocios.slice(1).filter(s => isStatusActive(s) && isCargoValid(s.cargo));
+      // Limita a 3 (era 5) — clientes com QSA gigante não viram tela impossível
+      const seeded = filtered.slice(0, 3).map(s => ({
         nome: s.nome || '',
         cpf: s.cpf || '',
         email: s.email || '',
         phone: s.phone || s.telefone || '',
         cargo: s.cargo || 'Sócio',
         _autoFilled: true,
+        source: 'bdc_qsa',
+        status: 'active',
       }));
       onChange({ ...state, list: seeded });
     }
