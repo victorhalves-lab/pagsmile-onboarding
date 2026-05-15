@@ -54,6 +54,12 @@ const PERSON_DATASET_ALIASES = {
   'related_people_phones':         'related_people_phones',
   'related_people_emails':         'related_people_emails',
   'related_people_addresses':      'related_people_addresses',
+
+  // ── NOVOS DATASETS PF — Sprint Expansão PLD (2026-05-15) ──
+  'judicial_assets':               'judicial_assets',               // 🔥 Bens penhorados, busca-apreensão, indisponibilidade
+  'entrepreneur_quality':          'entrepreneur_quality',          // Score do empreendedor (sucesso/fracasso em empresas)
+  'pep':                           'pep',                           // PEP dedicado (cargo, mandato, parentes)
+  'financial_data':                'financial_data',                // Renda estimada, restituição IR, ativos PF
 };
 
 const PERSON_DATASET_GROUPS = {
@@ -79,7 +85,15 @@ const PERSON_DATASET_GROUPS = {
   // Cross-check financeiro (uso avulso)
   'financial_crosscheck': [
     'basic_data', 'presumed_income', 'financial_interests',
-    'scr_positive_score', 'simples_nacional_collection',
+    'scr_positive_score', 'simples_nacional_collection', 'financial_data',
+  ].join(','),
+
+  // BDC Lookup — KYC/PLD completo PF (novo, para página BdcLookup)
+  'bdc_lookup_full': [
+    'basic_data', 'kyc', 'pep', 'processes', 'collections',
+    'government_debtors', 'judicial_assets', 'entrepreneur_quality',
+    'media_profile_and_exposure', 'relationships', 'first_level_family_kyc',
+    'financial_data', 'electoral_donors', 'public_servants', 'risk_data',
   ].join(','),
 
   // Básico

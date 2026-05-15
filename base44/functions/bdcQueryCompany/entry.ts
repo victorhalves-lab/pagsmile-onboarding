@@ -64,6 +64,12 @@ const COMPANY_DATASET_ALIASES = {
   'industrial_property':      'industrial_property',      // Marcas/patentes da empresa
   'licenses_and_authorizations': 'licenses_and_authorizations', // Licenças e autorizações
 
+  // ── NOVOS DATASETS — Sprint Expansão PLD (2026-05-15) ──
+  'financial_data':           'financial_data',           // 🔥 Balanço + DRE — receita real, EBITDA, ativos
+  'default_business_data':    'default_business_data',    // 🔥 Inadimplência consolidada (protestos, SCR, restrições BACEN)
+  'corporate_chain':          'corporate_chain',          // 🔥 Cadeia societária completa até UBO
+  'digital_attributes':       'digital_attributes',       // Score digital BDC (complementa activity_indicators)
+
   // ── ALIASES LEGADOS (compatibilidade) ──
   'owner_processes':          'owners_lawsuits',
   'owners':                   'relationships',
@@ -110,7 +116,17 @@ const DATASET_GROUPS = {
   // Risco financeiro — dívidas, cobranças, processos
   'financial_risk': [
     'collections', 'government_debtors', 'processes', 'owners_lawsuits',
-    'financial_market',
+    'financial_market', 'default_business_data', 'financial_data',
+  ].join(','),
+
+  // BDC Lookup — KYC/PLD completo (novo, para página BdcLookup)
+  'bdc_lookup_full': [
+    'basic_data', 'registration_data', 'kyc', 'owners_kyc',
+    'political_involvement', 'government_debtors', 'processes',
+    'owners_lawsuits', 'media_profile_and_exposure', 'relationships',
+    'corporate_chain', 'economic_group', 'financial_data',
+    'default_business_data', 'activity_indicators', 'digital_attributes',
+    'esg_and_compliance', 'reputations_and_reviews',
   ].join(','),
 
   // PIX compliance — datasets mínimos para fluxo PIX
@@ -132,6 +148,7 @@ const DATASET_GROUPS = {
     'media_profile_and_exposure', 'reputations_and_reviews', 'awards_and_certifications',
     'activity_indicators', 'marketplace_data', 'collections', 'merchant_category_data',
     'financial_market', 'economic_group', 'industrial_property', 'licenses_and_authorizations',
+    'financial_data', 'default_business_data', 'corporate_chain', 'digital_attributes',
   ].join(','),
 };
 

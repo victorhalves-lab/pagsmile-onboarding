@@ -19,17 +19,22 @@ const BATCH_DEFS = {
   SOCIETARIO: { priority: 'IMPORTANT', datasets: ['relationships', 'economic_group', 'economic_group_relationships', 'configurable_recency_qsa', 'owners_influence', 'owners_electoral_donors'] },
   ESG_COMPLIANCE: { priority: 'IMPORTANT', datasets: ['esg_and_compliance', 'political_involvement', 'media_profile_and_exposure'] },
   // 🟡 COMPLEMENTARES — best-effort
-  DIGITAL_REPUTACAO: { priority: 'COMPLEMENTARY', datasets: ['domains', 'passages', 'online_ads', 'reputations_and_reviews', 'awards_and_certifications', 'activity_indicators', 'marketplace_data', 'merchant_category_data'] },
+  DIGITAL_REPUTACAO: { priority: 'COMPLEMENTARY', datasets: ['domains', 'passages', 'online_ads', 'reputations_and_reviews', 'awards_and_certifications', 'activity_indicators', 'marketplace_data', 'merchant_category_data', 'digital_attributes'] },
   ENRIQUECIMENTO: { priority: 'COMPLEMENTARY', datasets: ['credit_risk', 'credit_score', 'financial_market', 'emails_extended', 'phones_extended', 'addresses_extended', 'related_people_phones', 'related_people_emails', 'related_people_addresses', 'industrial_property', 'owners_industrial_property', 'licenses_and_authorizations', 'company_evolution'] },
+  // 🟠 NOVOS LOTES — Sprint Expansão PLD (2026-05-15)
+  FINANCEIRO_PROFUNDO: { priority: 'IMPORTANT', datasets: ['financial_data', 'default_business_data'] },
+  CADEIA_SOCIETARIA: { priority: 'IMPORTANT', datasets: ['corporate_chain'] },
 };
 
 // Para PF, lotes específicos
 const PF_BATCH_DEFS = {
-  IDENTIDADE: { priority: 'CRITICAL', datasets: ['basic_data', 'kyc'] },
+  IDENTIDADE: { priority: 'CRITICAL', datasets: ['basic_data', 'kyc', 'pep'] },
   LEGAL: { priority: 'CRITICAL', datasets: ['processes', 'collections', 'government_debtors'] },
   FAMILIAR: { priority: 'CRITICAL', datasets: ['first_level_family_kyc', 'personal_relationships'] },
   COMPLIANCE: { priority: 'IMPORTANT', datasets: ['risk_data', 'social_assistance', 'public_servants'] },
-  FINANCEIRO: { priority: 'IMPORTANT', datasets: ['presumed_income', 'financial_interests', 'scr_positive_score', 'simples_nacional_collection', 'electoral_donors'] },
+  FINANCEIRO: { priority: 'IMPORTANT', datasets: ['presumed_income', 'financial_interests', 'scr_positive_score', 'simples_nacional_collection', 'electoral_donors', 'financial_data'] },
+  // 🟠 NOVO LOTE PF — Sprint Expansão PLD (2026-05-15)
+  JURIDICO_PROFUNDO: { priority: 'IMPORTANT', datasets: ['judicial_assets', 'entrepreneur_quality'] },
   REPUTACAO: { priority: 'COMPLEMENTARY', datasets: ['media_profile_and_exposure', 'online_presence'] },
   CONTATOS: { priority: 'COMPLEMENTARY', datasets: ['emails_extended', 'phones_extended', 'addresses_extended', 'related_people_phones', 'related_people_emails', 'related_people_addresses'] },
 };
@@ -279,6 +284,27 @@ function analyzeBlocks(result, responses) {
     }
     if (sanctionedEntities.length > 0) {
       blocks.push({ code: 'B03c', label: 'Entidade do grupo econômico em sanções', severity: 'BLOQUEIO', detail: `Entidades sancionadas: ${sanctionedEntities.join(', ')}.`, score: 850 });
+    }
+  }
+
+  // ── REGRA B12: UBO (beneficiário final) em corporate_chain está sancionado/PEP grave
+  const chain = result?.CorporateChain || result?.corporate_chain;
+  if (chain) {
+    const chainItems = flattenBDCArray(chain);
+    const sanctionedUbos = [];
+    for (const item of chainItems) {
+      const ubos = item?.UltimateBeneficialOwners || item?.UBOs || item?.BeneficialOwners || [];
+      if (Array.isArray(ubos)) {
+        for (const ubo of ubos) {
+          const sanctions = ubo?.Sanctions || [];
+          if (Array.isArray(sanctions) && sanctions.length > 0) {
+            sanctionedUbos.push(ubo?.Name || ubo?.PersonName || 'N/I');
+          }
+        }
+      }
+    }
+    if (sanctionedUbos.length > 0) {
+      blocks.push({ code: 'B12', label: 'Beneficiário final (UBO) em sanções', severity: 'BLOQUEIO', detail: `UBOs sancionados na cadeia societária: ${sanctionedUbos.join(', ')}. Circular BCB 3.978/2020 Art. 14 (identificação do beneficiário final).`, score: 850 });
     }
   }
 
@@ -857,6 +883,158 @@ function analyzeCreditRisk(result) {
   } catch (e) { return { score: 0, items: [{ label: 'Risco de crédito', value: `Erro parse: ${e.message}`, risk: 'INFO', points: 0 }] }; }
 }
 
+// ══════════════════════════════════════════════════════════════════
+// NOVOS ANALYZERS — Sprint Expansão PLD (2026-05-15)
+// ══════════════════════════════════════════════════════════════════
+
+function analyzeDefaults(result) {
+  // default_business_data — inadimplência consolidada (protestos, restrições BACEN, devolução de cheques)
+  try {
+    const items = []; let score = 0;
+    const def = result?.DefaultBusinessData || result?.default_business_data;
+    if (!def) { items.push({ label: 'Inadimplência', value: 'Dataset não consultado', risk: 'INFO', points: 0 }); return { score, items }; }
+    const dItems = flattenBDCArray(def);
+    let totalProtests = 0, totalProtestValue = 0, hasBcbRestriction = false, hasBouncedChecks = false;
+    for (const item of dItems) {
+      totalProtests += Number(item?.TotalProtests ?? item?.ProtestsCount ?? 0);
+      totalProtestValue += Number(item?.TotalProtestsValue ?? item?.ProtestsTotalValue ?? 0);
+      if (item?.HasBcbRestrictions || item?.BcbRestrictionsCount > 0) hasBcbRestriction = true;
+      if (item?.HasBouncedChecks || item?.BouncedChecksCount > 0) hasBouncedChecks = true;
+    }
+    if (totalProtests > 0) {
+      const pts = totalProtestValue > 200000 ? 40 : totalProtestValue > 50000 ? 25 : 15;
+      score += pts;
+      items.push({ label: 'Protestos em cartório', value: `${totalProtests} protesto(s) — R$ ${totalProtestValue.toLocaleString('pt-BR', {minimumFractionDigits:2})}`, risk: totalProtestValue > 200000 ? 'CRITICO' : totalProtestValue > 50000 ? 'ALTO' : 'MEDIO', points: pts });
+    } else {
+      items.push({ label: 'Protestos em cartório', value: 'Nenhum', risk: 'OK', points: 0 });
+    }
+    if (hasBcbRestriction) { score += 30; items.push({ label: 'Restrições BACEN/SCR', value: 'SIM', risk: 'ALTO', points: 30 }); }
+    if (hasBouncedChecks) { score += 20; items.push({ label: 'Devolução de cheques', value: 'SIM', risk: 'ALTO', points: 20 }); }
+    return { score, items };
+  } catch (e) { return { score: 0, items: [{ label: 'Inadimplência', value: `Erro parse: ${e.message}`, risk: 'INFO', points: 0 }] }; }
+}
+
+function analyzeFinancialDeep(result, responses) {
+  // financial_data — balanço + DRE (receita real, EBITDA, ativos). Cross-check com TPV declarado.
+  try {
+    const items = []; let score = 0;
+    const fd = result?.FinancialData || result?.financial_data;
+    if (!fd) { items.push({ label: 'Dados financeiros (balanço/DRE)', value: 'Dataset não consultado', risk: 'INFO', points: 0 }); return { score, items, declaredTpvMismatch: false }; }
+    const fdItems = flattenBDCArray(fd);
+    let revenue = 0, ebitda = null, equity = null;
+    for (const item of fdItems) {
+      revenue = Math.max(revenue, Number(item?.TotalRevenue ?? item?.AnnualRevenue ?? item?.Revenue ?? 0));
+      if (item?.Ebitda != null) ebitda = Number(item.Ebitda);
+      if (item?.Equity != null) equity = Number(item.Equity);
+    }
+    if (revenue > 0) items.push({ label: 'Receita real (BDC)', value: `R$ ${revenue.toLocaleString('pt-BR')}`, risk: 'INFO', points: 0 });
+    if (ebitda != null) {
+      const ebRisk = ebitda < 0 ? 'ALTO' : 'OK';
+      const pts = ebitda < 0 ? 15 : 0;
+      score += pts;
+      items.push({ label: 'EBITDA', value: `R$ ${ebitda.toLocaleString('pt-BR')}`, risk: ebRisk, points: pts });
+    }
+    if (equity != null) {
+      const eqRisk = equity < 0 ? 'CRITICO' : 'OK';
+      const pts = equity < 0 ? 25 : 0;
+      score += pts;
+      items.push({ label: 'Patrimônio líquido', value: `R$ ${equity.toLocaleString('pt-BR')}`, risk: eqRisk, points: pts });
+    }
+
+    // Cross-check: TPV declarado vs receita real
+    let declaredTpvMismatch = false;
+    if (revenue > 0 && Array.isArray(responses)) {
+      let declaredTpvMonthly = 0;
+      for (const r of responses) {
+        const qt = String(r?.questionText || '').toLowerCase();
+        if (qt.includes('tpv') || qt.includes('faturamento mensal') || qt.includes('volume mensal')) {
+          const v = Number(r?.valueNumber || r?.valueText || 0);
+          if (v > 0) { declaredTpvMonthly = v; break; }
+        }
+      }
+      if (declaredTpvMonthly > 0) {
+        const declaredAnnual = declaredTpvMonthly * 12;
+        const ratio = declaredAnnual / revenue;
+        if (ratio > 3) {
+          // Declarado é >3x maior que o real — inconsistência grave
+          score += 30;
+          declaredTpvMismatch = true;
+          items.push({ label: 'Cross-check TPV declarado × receita real', value: `Declarado R$ ${declaredAnnual.toLocaleString('pt-BR')} é ${ratio.toFixed(1)}x maior que receita BDC (R$ ${revenue.toLocaleString('pt-BR')})`, risk: 'ALTO', points: 30 });
+        } else {
+          items.push({ label: 'Cross-check TPV declarado × receita real', value: `Coerente (${ratio.toFixed(2)}x)`, risk: 'OK', points: 0 });
+        }
+      }
+    }
+    return { score, items, declaredTpvMismatch };
+  } catch (e) { return { score: 0, items: [{ label: 'Dados financeiros', value: `Erro parse: ${e.message}`, risk: 'INFO', points: 0 }], declaredTpvMismatch: false }; }
+}
+
+function analyzeCorporateChain(result) {
+  // corporate_chain — cadeia até UBO. Bloqueios já são tratados em analyzeBlocks (B12).
+  // Aqui calculamos profundidade, holdings offshore, complexidade.
+  try {
+    const items = []; let score = 0;
+    const chain = result?.CorporateChain || result?.corporate_chain;
+    if (!chain) { items.push({ label: 'Cadeia societária', value: 'Dataset não consultado', risk: 'INFO', points: 0 }); return { score, items }; }
+    const chainItems = flattenBDCArray(chain);
+    let maxDepth = 0, hasOffshore = false, totalUbos = 0;
+    for (const item of chainItems) {
+      const depth = Number(item?.MaxChainDepth ?? item?.Depth ?? 0);
+      if (depth > maxDepth) maxDepth = depth;
+      if (item?.HasOffshoreEntities || item?.OffshoreEntitiesCount > 0) hasOffshore = true;
+      const ubos = item?.UltimateBeneficialOwners || item?.UBOs || [];
+      if (Array.isArray(ubos)) totalUbos += ubos.length;
+    }
+    if (maxDepth >= 4) { score += 20; items.push({ label: 'Profundidade da cadeia societária', value: `${maxDepth} níveis`, risk: 'ALTO', points: 20 }); }
+    else if (maxDepth >= 3) { score += 10; items.push({ label: 'Profundidade da cadeia societária', value: `${maxDepth} níveis`, risk: 'MEDIO', points: 10 }); }
+    else if (maxDepth > 0) items.push({ label: 'Profundidade da cadeia societária', value: `${maxDepth} níveis`, risk: 'OK', points: 0 });
+
+    if (hasOffshore) { score += 25; items.push({ label: 'Entidades offshore na cadeia', value: 'SIM', risk: 'ALTO', points: 25 }); }
+    if (totalUbos > 0) items.push({ label: 'Beneficiários finais (UBO) identificados', value: `${totalUbos}`, risk: 'INFO', points: 0 });
+    return { score, items };
+  } catch (e) { return { score: 0, items: [{ label: 'Cadeia societária', value: `Erro parse: ${e.message}`, risk: 'INFO', points: 0 }] }; }
+}
+
+function analyzeDigitalAttributes(result) {
+  // digital_attributes — score digital BDC (complementa activity_indicators)
+  try {
+    const items = []; let score = 0;
+    const da = result?.DigitalAttributes || result?.digital_attributes;
+    if (!da) { items.push({ label: 'Atributos digitais', value: 'Dataset não consultado', risk: 'INFO', points: 0 }); return { score, items }; }
+    const dItems = flattenBDCArray(da);
+    for (const item of dItems) {
+      const digScore = Number(item?.DigitalScore ?? item?.OnlineActivityScore);
+      if (!isNaN(digScore) && digScore > 0) {
+        if (digScore < 20) { score += 15; items.push({ label: 'Score digital BDC', value: `${digScore}`, risk: 'MEDIO', points: 15 }); }
+        else items.push({ label: 'Score digital BDC', value: `${digScore}`, risk: 'OK', points: 0 });
+      }
+      const socialPresence = item?.HasSocialMediaPresence;
+      if (socialPresence === false) { score += 5; items.push({ label: 'Presença em redes sociais', value: 'Não detectada', risk: 'MEDIO', points: 5 }); }
+      else if (socialPresence === true) items.push({ label: 'Presença em redes sociais', value: 'SIM', risk: 'OK', points: 0 });
+    }
+    return { score, items };
+  } catch (e) { return { score: 0, items: [{ label: 'Atributos digitais', value: `Erro parse: ${e.message}`, risk: 'INFO', points: 0 }] }; }
+}
+
+// PF novo: bens penhorados
+function analyzeJudicialAssets(result) {
+  try {
+    const items = []; let score = 0;
+    const ja = result?.JudicialAssets || result?.judicial_assets;
+    if (!ja) { items.push({ label: 'Bens penhorados/judiciais', value: 'Dataset não consultado', risk: 'INFO', points: 0 }); return { score, items }; }
+    const jaItems = flattenBDCArray(ja);
+    let total = 0, indisponiveis = 0;
+    for (const item of jaItems) {
+      total += Number(item?.TotalAssets ?? item?.AssetsCount ?? 0);
+      indisponiveis += Number(item?.UnavailableAssetsCount ?? item?.IndisponibilidadeCount ?? 0);
+    }
+    if (indisponiveis > 0) { score += 30; items.push({ label: 'Bens indisponíveis (judicial)', value: `${indisponiveis}`, risk: 'CRITICO', points: 30 }); }
+    if (total > 0 && indisponiveis === 0) items.push({ label: 'Bens em ações judiciais', value: `${total}`, risk: 'MEDIO', points: 10 });
+    if (total === 0) items.push({ label: 'Bens penhorados/judiciais', value: 'Nenhum', risk: 'OK', points: 0 });
+    return { score, items };
+  } catch (e) { return { score: 0, items: [{ label: 'Bens penhorados', value: `Erro parse: ${e.message}`, risk: 'INFO', points: 0 }] }; }
+}
+
 function analyzePersonBlocks(result) {
   const blocks = [];
   const bd = result?.BasicData || result?.basic_data;
@@ -1130,7 +1308,10 @@ Deno.serve(async (req) => {
     if (isPF) {
       const blocks = analyzePersonBlocks(result);
       const sections = analyzePersonData(result);
-      const totalScore = sections.identity.score + sections.compliance.score + sections.reputation.score;
+      // ── NOVO PF: bens penhorados/judiciais (Sprint Expansão PLD)
+      const judicialAssets = analyzeJudicialAssets(result);
+      sections.judicialAssets = judicialAssets;
+      const totalScore = sections.identity.score + sections.compliance.score + sections.reputation.score + judicialAssets.score;
       const baseScore = SEGMENT_BASE_SCORES[templateModel] || 30;
       const finalScore = Math.max(0, Math.min(849, baseScore + totalScore));
       const hasBlock = blocks.length > 0;
@@ -1159,9 +1340,19 @@ Deno.serve(async (req) => {
       const sectorial = analyzeSectorial(result);
       const assets = analyzeAssets(result);
       const creditRisk = analyzeCreditRisk(result);
+      // ── NOVOS ANALYZERS — Sprint Expansão PLD (2026-05-15) ──
+      const defaults = analyzeDefaults(result);
+      const financialDeep = analyzeFinancialDeep(result, responses);
+      const corporateChain = analyzeCorporateChain(result);
+      const digitalAttributes = analyzeDigitalAttributes(result);
+      // Adiciona manual flag M03 se houver divergência grave de TPV
+      if (financialDeep.declaredTpvMismatch) {
+        manualReviewFlags.push({ code: 'M03', label: 'TPV declarado divergente da receita real BDC', detail: 'Volume declarado pelo cliente é >3x maior que a receita real reportada pela BigDataCorp. Encaminhar para análise manual.' });
+      }
 
-      const COMPONENT_WEIGHTS = { identity: 0.10, owners: 0.18, digital: 0.07, compliance: 0.20, reputation: 0.08, financial: 0.08, evolution: 0.06, esg: 0.05, contacts: 0.03, employeesKyc: 0.02, sectorial: 0.02, assets: 0.02, creditRisk: 0.09 };
-      const componentScores = { identity: identity.score, owners: owners.score, digital: digital.score, compliance: compliance.score, reputation: reputation.score, financial: financial.score, evolution: evolution.score, esg: esgData.score, contacts: contacts.score, employeesKyc: employeesKyc.score, sectorial: sectorial.score, assets: assets.score, creditRisk: creditRisk.score };
+      // Pesos rebalanceados — soma = 1.00. Os 4 novos analyzers receberam peso menor pra não desestabilizar scores existentes.
+      const COMPONENT_WEIGHTS = { identity: 0.09, owners: 0.16, digital: 0.06, compliance: 0.18, reputation: 0.07, financial: 0.07, evolution: 0.05, esg: 0.05, contacts: 0.03, employeesKyc: 0.02, sectorial: 0.02, assets: 0.02, creditRisk: 0.08, defaults: 0.04, financialDeep: 0.03, corporateChain: 0.02, digitalAttributes: 0.01 };
+      const componentScores = { identity: identity.score, owners: owners.score, digital: digital.score, compliance: compliance.score, reputation: reputation.score, financial: financial.score, evolution: evolution.score, esg: esgData.score, contacts: contacts.score, employeesKyc: employeesKyc.score, sectorial: sectorial.score, assets: assets.score, creditRisk: creditRisk.score, defaults: defaults.score, financialDeep: financialDeep.score, corporateChain: corporateChain.score, digitalAttributes: digitalAttributes.score };
       let weightedTotal = 0;
       for (const [key, weight] of Object.entries(COMPONENT_WEIGHTS)) {
         weightedTotal += (componentScores[key] || 0) * weight;
@@ -1174,7 +1365,7 @@ Deno.serve(async (req) => {
         type: 'PJ', document: cleanDoc, templateModel, datasetGroup: groupKey,
         datasetsQueried: Object.values(batchDefs).flatMap(b => b.datasets).length,
         elapsedMs: totalElapsed, blocks, hasBlock, manualReviewFlags, batchStatuses,
-        sections: { identity, owners, digital, compliance, reputation, financial, evolution, esg: esgData, contacts, employeesKyc, sectorial, assets, creditRisk },
+        sections: { identity, owners, digital, compliance, reputation, financial, evolution, esg: esgData, contacts, employeesKyc, sectorial, assets, creditRisk, defaults, financialDeep, corporateChain, digitalAttributes },
         scoring: {
           baseScore, variablesScore: Math.round(weightedTotal * 0.6), enrichmentScore: Math.round(weightedTotal * 0.4),
           weightedTotal: Math.round(weightedTotal),
