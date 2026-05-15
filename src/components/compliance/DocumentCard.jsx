@@ -151,18 +151,41 @@ function DocumentCard({ doc, uploadedFile, onUpload, onRemoveAll, onRemoveSingle
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
     >
+      {/* Badge de representante — aparece apenas para docs expandidos por sócio.
+          Garante que o cliente diferencie visualmente "RG do Sócio 1" vs "RG do Sócio 2"
+          mesmo antes de ler o título completo. */}
+      {doc._representativeName && (
+        <div className="mb-2">
+          <span
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide ${
+              doc._representativeIndex === 0
+                ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                : doc._representativeIndex === 1
+                ? 'bg-purple-100 text-purple-800 border border-purple-200'
+                : doc._representativeIndex === 2
+                ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                : 'bg-amber-100 text-amber-800 border border-amber-200'
+            }`}
+          >
+            👤 Sócio {(doc._representativeIndex ?? 0) + 1} — {doc._representativeName}
+          </span>
+        </div>
+      )}
+
       <div className="flex items-start justify-between gap-3 mb-2">
-        <div className="flex items-center gap-2 min-w-0 flex-1">
+        <div className="flex items-start gap-2 min-w-0 flex-1">
           {files.length > 0 ? (
-            <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
+            <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
           ) : isNotAvailable ? (
-            <MessageSquareWarning className="w-5 h-5 text-amber-600 shrink-0" />
+            <MessageSquareWarning className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
           ) : doc.required ? (
-            <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
+            <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
           ) : (
-            <File className="w-5 h-5 text-slate-400 shrink-0" />
+            <File className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
           )}
-          <h4 className="font-semibold text-[#002443] text-sm truncate">
+          {/* break-words substitui truncate — título quebra em múltiplas linhas no mobile
+              ao invés de cortar com "..." escondendo o nome do sócio. */}
+          <h4 className="font-semibold text-[#002443] text-sm leading-snug break-words">
             {doc.label || doc.name}
             {doc.required && <span className="text-red-500 ml-1">*</span>}
           </h4>

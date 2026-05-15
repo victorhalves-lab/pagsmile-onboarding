@@ -26,24 +26,27 @@
 
 // Personal documents that must be collected for EACH legal representative.
 // Detection is keyword-based on the label (case-insensitive, accent-tolerant).
+// Prefixos curtos otimizados para mobile (caso real iPhone: ~280px úteis no card).
+// O detalhamento completo ("CNH ou RG ou RNE ou Passaporte — frente e verso") fica na
+// descrição (doc.description), que o template já carrega. Aqui só o título essencial.
 const PER_REP_DOC_PATTERNS = [
   {
     key: 'identity',
     keywords: ['documento de identidade', 'identidade do', 'rg ou cnh', 'cnh ou rg', 'identidade pessoal', 'documento pessoal'],
     excludes: ['empresa', 'social', 'comercial'],
-    labelPrefix: 'Documento de Identidade (CNH ou RG ou RNE ou Passaporte)',
+    labelPrefix: 'Documento de Identidade',
   },
   {
     key: 'address',
     keywords: ['comprovante de residência', 'comprovante de residencia', 'comprovante de endereço pessoal', 'comprovante de endereco pessoal'],
     excludes: ['empresa', 'comercial', 'sede', 'estabelecimento'],
-    labelPrefix: 'Comprovante de Residência — Conta de Consumo dos últimos 90 dias',
+    labelPrefix: 'Comprovante de Residência',
   },
   {
     key: 'selfie',
     keywords: ['selfie', 'biometria facial', 'foto com documento', 'autorretrato'],
     excludes: [],
-    labelPrefix: 'Selfie com documento de identidade',
+    labelPrefix: 'Selfie com Documento',
   },
 ];
 
@@ -79,14 +82,16 @@ export function expandPerRepresentativeDocs(requiredDocuments, representatives) 
       continue;
     }
 
-    // Multiply this doc — one copy per representative
+    // Multiply this doc — one copy per representative.
+    // Label fica enxuto ("Documento de Identidade") porque o sócio é identificado
+    // pelo badge colorido no topo do card (DocumentCard.jsx).
     reps.forEach((rep, idx) => {
       const repLabel = rep.nome ? rep.nome.trim() : `Representante ${idx + 1}`;
       const baseTypeId = doc.documentTypeId || doc.id || `${pattern.key}_doc`;
       expanded.push({
         ...doc,
         documentTypeId: `${baseTypeId}__rep${idx + 1}`,
-        label: `${pattern.labelPrefix} — Sócio/Representante ${idx + 1} (${repLabel})`,
+        label: pattern.labelPrefix,
         _perRepKey: pattern.key,
         _representativeIndex: idx,
         _representativeName: repLabel,
@@ -94,6 +99,30 @@ export function expandPerRepresentativeDocs(requiredDocuments, representatives) 
       });
     });
   }
+
+  // Diagnóstico: registra quando o expand multiplica docs (ajuda a investigar
+  // casos como "por que apareceram 3 RGs?" — pode ser bug ou pode ser 3 sócios reais).
+  if (reps.length > 1 && typeof window !== 'undefined') {
+    try {
+      const summary = {
+        repsCount: reps.length,
+        repsNames: reps.map(r => r?.nome || '(sem nome)'),
+        expandedTotal: expanded.length,
+        originalTotal: requiredDocuments.length,
+      };
+      // Fire-and-forget — não bloqueia render
+      fetch('/functions/logPublicClientError', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          stage: 'subseller:expand_per_rep_summary',
+          errorMessage: `Expandiu docs para ${reps.length} representantes`,
+          extra: summary,
+        }),
+      }).catch(() => {});
+    } catch {}
+  }
+
   return expanded;
 }
 
