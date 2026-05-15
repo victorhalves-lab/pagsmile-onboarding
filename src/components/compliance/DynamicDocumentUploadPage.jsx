@@ -17,6 +17,7 @@ import { useComplianceSession } from '../../hooks/useComplianceSession';
 import AutoSaveIndicator from './AutoSaveIndicator';
 import PhaseProgressBar from './PhaseProgressBar';
 import ContinueOnMobileButton from './ContinueOnMobileButton';
+import BlockedSubmitDialog from './BlockedSubmitDialog';
 
 export default function DynamicDocumentUploadPage({
   templateId,
@@ -40,6 +41,22 @@ export default function DynamicDocumentUploadPage({
   const [currentStep, setCurrentStep] = useState('docs_upload');
   const [cafResult, setCafResult] = useState(null);
   const cafResultRef = React.useRef(null);
+
+  // Persistent block dialog state (replaces ephemeral toast.error that disappeared
+  // before client could read it — root cause of Pedro Sperandio / Millions case
+  // where 10 docs were uploaded but the "Próximo" button "didn't work").
+  const [blockDialog, setBlockDialog] = useState({
+    open: false,
+    variant: 'missing_docs',
+    missingList: [],
+    reason: '',
+    recovering: false,
+  });
+
+  // Live caseId from BulletproofUploaderWithLazyCase — needed to validate
+  // BEFORE the user clicks Próximo (the old code read localStorage at click time,
+  // which races with React state and cross-tab updates).
+  const [liveCaseInfo, setLiveCaseInfo] = useState({ caseId: '', docLinkToken: '' });
 
   // Session for save & resume
   const {
@@ -223,13 +240,22 @@ export default function DynamicDocumentUploadPage({
   }, [template, documents]);
 
   // Called when user finishes doc uploads and clicks "Próximo" → go to CAF step
-  // FIX 2026-05-14 (caso Millions mobile): toast.error desaparece muito rápido no celular
-  // — o botão estava colado na barra do navegador. Agora:
-  //   • Toda tentativa de avanço é LOGADA no backend (logPublicClientError) com motivo
-  //   • Validação também é exposta visualmente em banner persistente abaixo do botão
-  //   • Toast continua como reforço, mas dura mais (10s)
-  const handleProceedToCaf = () => {
-    // Diagnostic logging — even on success — para conseguirmos investigar futuros casos
+  //
+  // BULLETPROOF VERSION (caso Pedro Sperandio / Millions, 14-mai-2026):
+  // O bug original tinha 3 camadas:
+  //   1. Toast desaparece em 10s e fica escondido pela barra do navegador no mobile
+  //      → cliente acha que o botão "não funciona" / fica preso.
+  //   2. `docsValidation` (no pai) calculava obrigatórios de forma diferente do
+  //      `BulletproofDocumentUploader` (no filho) → 100% no filho, falta-doc no pai.
+  //   3. `localStorage.getItem('created_onboarding_case_id')` perdido no cross-device
+  //      / multi-tab → case_id_missing mesmo com uploads OK no servidor.
+  //
+  // Agora:
+  //   • Confiamos no `allRequiredUploaded` que o filho calcula (única fonte de verdade)
+  //   • Validação extra olha o `documents` state em busca de uploads sem case → recovery
+  //   • Modal persistente (BlockedSubmitDialog) substitui o toast → cliente VÊ o erro
+  //   • Auto-recovery: chama findCaseFromUploads com os documentUploadIds do state
+  const handleProceedToCaf = async () => {
     const logAttempt = (outcome, reason = '') => {
       try {
         callPublicFunction('logPublicClientError', {
@@ -239,9 +265,9 @@ export default function DynamicDocumentUploadPage({
             flowType,
             templateModel,
             templateId: template?.id || null,
-            caseId: localStorage.getItem('created_onboarding_case_id') || null,
+            caseId: liveCaseInfo.caseId || localStorage.getItem('created_onboarding_case_id') || null,
             docsCount: Object.keys(documents).length,
-            totalDocs: docsValidation.totalDocs,
+            allRequiredUploaded,
             outcome,
             reason,
             userAgent: navigator.userAgent,
@@ -251,28 +277,104 @@ export default function DynamicDocumentUploadPage({
       } catch {}
     };
 
-    if (!docsValidation.canProceed) {
-      logAttempt('blocked', docsValidation.reason);
-      toast.error(
-        `${docsValidation.reason}. ${docsValidation.missingList.length > 0 ? `Faltando: ${docsValidation.missingList.slice(0, 3).join(', ')}${docsValidation.missingList.length > 3 ? '...' : ''}` : ''}`,
-        { duration: 10000 }
-      );
+    // ── GATE 1: Filho (BulletproofDocumentUploader) é fonte de verdade ──
+    // O filho já filtra por conditionalLogic + expansão por representante e nos avisa
+    // via onAllRequiredUploaded. Se ele disse true, está válido — não recalcular.
+    if (!allRequiredUploaded) {
+      logAttempt('blocked', 'missing_required_per_child');
+      setBlockDialog({
+        open: true,
+        variant: 'missing_docs',
+        missingList: docsValidation.missingList,
+        reason: docsValidation.reason || 'Ainda faltam documentos obrigatórios.',
+        recovering: false,
+      });
       return;
     }
 
-    // Safety: confirma que o case foi criado antes de avançar para CAF
-    const caseId = localStorage.getItem('created_onboarding_case_id');
+    // ── GATE 2: caseId presente (com auto-recovery) ──
+    let caseId = liveCaseInfo.caseId || localStorage.getItem('created_onboarding_case_id');
+
     if (!skipCaf && !caseId) {
-      logAttempt('blocked', 'case_id_missing');
-      toast.error(
-        'Estamos finalizando a preparação do seu envio. Aguarde 5 segundos e clique novamente.',
-        { duration: 10000 }
-      );
-      return;
+      // AUTO-RECOVERY: clientes têm uploads bem-sucedidos com documentUploadId no state.
+      // Usamos esses IDs para descobrir o caseId server-side.
+      logAttempt('attempting_case_recovery', 'case_id_missing');
+
+      const uploadedIds = [];
+      const fileUris = [];
+      for (const entry of Object.values(documents || {})) {
+        if (entry?.documentUploadId) uploadedIds.push(entry.documentUploadId);
+        if (Array.isArray(entry?.files)) {
+          for (const f of entry.files) {
+            if (f?.documentUploadId) uploadedIds.push(f.documentUploadId);
+            if (f?.uri) fileUris.push(f.uri);
+          }
+        }
+        if (entry?.uri) fileUris.push(entry.uri);
+      }
+
+      if (uploadedIds.length === 0 && fileUris.length === 0) {
+        // Sem nenhuma evidência de upload → caso realmente não existe
+        setBlockDialog({
+          open: true,
+          variant: 'case_missing',
+          missingList: [],
+          reason: 'Nenhum documento foi registrado ainda. Tente recarregar a página.',
+          recovering: false,
+        });
+        return;
+      }
+
+      // Mostra modal de "recuperando..." enquanto chama a API
+      setBlockDialog({
+        open: true,
+        variant: 'recovering',
+        missingList: [],
+        reason: '',
+        recovering: true,
+      });
+
+      try {
+        const res = await callPublicFunction('findCaseFromUploads', {
+          documentUploadIds: uploadedIds.slice(0, 10),
+          fileUris: fileUris.slice(0, 5),
+        });
+        if (res?.ok && res.caseId) {
+          // Restaura no localStorage para tudo voltar a funcionar
+          localStorage.setItem('created_onboarding_case_id', res.caseId);
+          if (res.docLinkToken) localStorage.setItem('created_doc_link_token', res.docLinkToken);
+          if (res.merchantId) localStorage.setItem('created_merchant_id', res.merchantId);
+          caseId = res.caseId;
+          setLiveCaseInfo({ caseId: res.caseId, docLinkToken: res.docLinkToken || '' });
+          logAttempt('case_recovery_success', `caseId=${res.caseId.slice(0, 8)}`);
+          setBlockDialog({ open: false, variant: 'missing_docs', missingList: [], reason: '', recovering: false });
+          // Continua o fluxo normalmente abaixo
+        } else {
+          logAttempt('case_recovery_failed', res?.error || 'unknown');
+          setBlockDialog({
+            open: true,
+            variant: 'case_missing',
+            missingList: [],
+            reason: 'Não foi possível recuperar seu cadastro automaticamente. Por favor, recarregue a página.',
+            recovering: false,
+          });
+          return;
+        }
+      } catch (e) {
+        logAttempt('case_recovery_error', e?.message || 'unknown');
+        setBlockDialog({
+          open: true,
+          variant: 'case_missing',
+          missingList: [],
+          reason: 'Erro ao recuperar seu cadastro. Recarregue a página — seus documentos continuam salvos.',
+          recovering: false,
+        });
+        return;
+      }
     }
 
+    // ── GATE 3: tudo OK, avança ──
     logAttempt('advanced');
-    // Save docs progress immediately on transition
     saveProgressNow({ currentPhase: 'caf', documentsData: documents });
     if (!skipCaf) {
       setCurrentStep('caf_verification');
@@ -638,6 +740,7 @@ export default function DynamicDocumentUploadPage({
           documents={documents}
           setDocuments={setDocuments}
           onAllRequiredUploaded={setAllRequiredUploaded}
+          onCaseReady={setLiveCaseInfo}
         />
       )}
 
@@ -758,6 +861,21 @@ export default function DynamicDocumentUploadPage({
           </Button>
         </div>
       )}
+
+      {/* Persistent block dialog — substitui o toast.error que desaparecia rápido */}
+      <BlockedSubmitDialog
+        open={blockDialog.open}
+        variant={blockDialog.variant}
+        missingList={blockDialog.missingList}
+        reason={blockDialog.reason}
+        caseId={liveCaseInfo.caseId}
+        recovering={blockDialog.recovering}
+        onClose={() => setBlockDialog((p) => ({ ...p, open: false }))}
+        onRetry={() => {
+          setBlockDialog((p) => ({ ...p, open: false }));
+          handleProceedToCaf();
+        }}
+      />
     </div>
   );
 }

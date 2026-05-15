@@ -35,12 +35,39 @@ export default function BulletproofUploaderWithLazyCase({
   documents,
   setDocuments,
   onAllRequiredUploaded,
+  onCaseReady, // ← novo: parent pode acompanhar quando caseId+docToken estiverem prontos
 }) {
   const [caseId, setCaseId] = useState(() => localStorage.getItem('created_onboarding_case_id'));
   const [docToken, setDocToken] = useState(() => localStorage.getItem('created_doc_link_token'));
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState(null);
   const creatingRef = useRef(false); // prevent double-create on React StrictMode
+
+  // CRITICAL FIX (caso Pedro Sperandio / Millions, 14-mai-2026):
+  // Quando o cliente abre o link em duas abas/janelas, ou retoma a sessão noutro
+  // device, o `created_onboarding_case_id` pode ser sobrescrito por outra aba.
+  // Sem este listener, o React state segura o caseId ANTIGO indefinidamente, e o
+  // botão "Próximo" do pai bate em case_id_missing porque lê do localStorage fresco.
+  useEffect(() => {
+    const handleStorage = (e) => {
+      if (e.key === 'created_onboarding_case_id' && e.newValue && e.newValue !== caseId) {
+        setCaseId(e.newValue);
+      }
+      if (e.key === 'created_doc_link_token' && e.newValue && e.newValue !== docToken) {
+        setDocToken(e.newValue);
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, [caseId, docToken]);
+
+  // Notify parent whenever case+token become available so it can use them to
+  // unblock the "Próximo" button validation immediately.
+  useEffect(() => {
+    if (onCaseReady && caseId) {
+      onCaseReady({ caseId, docLinkToken: docToken || '' });
+    }
+  }, [caseId, docToken, onCaseReady]);
 
   // Expand per-representative documents (identity, address proof, selfie)
   // into N copies — one per representative. Declared HERE (before any early return)
