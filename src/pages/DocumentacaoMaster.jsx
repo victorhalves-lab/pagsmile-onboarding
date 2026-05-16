@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   Search, FileText, FileType, BookOpen, Layers, Database, Shield, Zap, Cpu,
-  Filter, Handshake, Stamp, ChevronRight, Printer
+  Filter, Handshake, Stamp, ChevronRight, Printer, ClipboardList
 } from 'lucide-react';
 import { exportChapterToPdf, exportChapterToDocx } from '@/components/doc-master/exportUtils';
 
@@ -20,6 +20,7 @@ import Ch09 from '@/components/doc-master/chapters/Ch09_ModeloDados';
 import Ch10 from '@/components/doc-master/chapters/Ch10_Governanca';
 import Ch11 from '@/components/doc-master/chapters/Ch11_Parceiros';
 import Ch12 from '@/components/doc-master/chapters/Ch12_PropostasContratos';
+import Ch13 from '@/components/doc-master/chapters/Ch13_QuestionariosLeads';
 
 const CHAPTERS = [
   { id: 'ch-01', num: '01', title: 'Visão Geral da Arquitetura', icon: Layers, comp: Ch01, summary: 'Stack, camadas, princípios invioláveis, secrets, roteamento' },
@@ -34,6 +35,7 @@ const CHAPTERS = [
   { id: 'ch-10', num: '10', title: 'Governança & Acessos', icon: Shield, comp: Ch10, summary: 'AccessProfile granular, 2FA TOTP+PIN, auditoria 5 anos' },
   { id: 'ch-11', num: '11', title: 'Parceiros & Pré-KYC', icon: Handshake, comp: Ch11, summary: 'Bureaus externos, Doc-Only, BankDataCollection, Bulk Reprocess' },
   { id: 'ch-12', num: '12', title: 'Propostas, Contratos, Kick-Off', icon: Stamp, comp: Ch12, summary: 'Proposal/Standard/Pix, versionamento, links, IA contratos, Kick-Off' },
+  { id: 'ch-13', num: '13', title: 'Questionários de Leads — Microscópico', icon: ClipboardList, comp: Ch13, summary: 'Lead V5 (12 etapas, 45+18 perguntas, 16 flags) + PIX V4 (7 etapas, 28 perguntas, 11 flags)' },
 ];
 
 export default function DocumentacaoMaster() {
@@ -178,7 +180,7 @@ export default function DocumentacaoMaster() {
 
               <div className="no-print mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[
-                  { label: 'Capítulos', value: '12', sub: 'Microscópicos' },
+                  { label: 'Capítulos', value: '13', sub: 'Microscópicos' },
                   { label: 'Termos no Glossário', value: '120+', sub: 'Definidos' },
                   { label: 'Bloqueios V4', value: '10', sub: 'B01–B10' },
                   { label: 'Funções Backend', value: '175+', sub: 'Documentadas' },
