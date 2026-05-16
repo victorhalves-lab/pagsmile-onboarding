@@ -18,15 +18,15 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 const BDC_BASE_URL = 'https://plataforma.bigdatacorp.com.br';
-const VALIDATIONS_ENDPOINT = '/pessoas/validations';
+const PEOPLE_ENDPOINT = '/pessoas';
 
-async function callBdcValidation(accessToken, tokenId, dataset, body) {
+async function callBdcValidation(accessToken, tokenId, dataset, q) {
   const start = Date.now();
   try {
-    const r = await fetch(`${BDC_BASE_URL}${VALIDATIONS_ENDPOINT}`, {
+    const r = await fetch(`${BDC_BASE_URL}${PEOPLE_ENDPOINT}`, {
       method: 'POST',
       headers: { 'AccessToken': accessToken, 'TokenId': tokenId, 'Accept': 'application/json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ Datasets: dataset, ...body }),
+      body: JSON.stringify({ Datasets: dataset, q }),
     });
     const txt = await r.text();
     const elapsed = Date.now() - start;
@@ -83,39 +83,39 @@ Deno.serve(async (req) => {
     const validations = [];
     const startedAt = Date.now();
 
-    // Phone × CPF
+    // Phone × CPF — dataset BDC: phone_carriers_validation
     if (phone) {
       const cleanPhone = String(phone).replace(/\D/g, '');
-      const r = await callBdcValidation(accessToken, tokenId, 'carriers_phone_validation', { q: `doc{${cleanCpf}};phone{${cleanPhone}}` });
+      const r = await callBdcValidation(accessToken, tokenId, 'phone_carriers_validation', `doc{${cleanCpf}};phone{${cleanPhone}}`);
       if (r.success) {
-        const ex = extractMatchRate(r.data, 'carriers_phone_validation');
-        if (ex) validations.push({ field: 'phone', value: cleanPhone, dataset: 'carriers_phone_validation', ...ex, elapsedMs: r.elapsed });
+        const ex = extractMatchRate(r.data, 'phone_carriers_validation') || { matchRate: 0, confidence: 0, sources: [] };
+        validations.push({ field: 'phone', value: cleanPhone, dataset: 'phone_carriers_validation', ...ex, elapsedMs: r.elapsed });
       } else {
-        validations.push({ field: 'phone', value: cleanPhone, dataset: 'carriers_phone_validation', error: r.error });
+        validations.push({ field: 'phone', value: cleanPhone, dataset: 'phone_carriers_validation', error: r.error });
       }
     }
 
-    // Email × CPF
+    // Email × CPF — dataset BDC: email_carriers_validation
     if (email) {
-      const r = await callBdcValidation(accessToken, tokenId, 'carriers_email_validation', { q: `doc{${cleanCpf}};email{${email}}` });
+      const r = await callBdcValidation(accessToken, tokenId, 'email_carriers_validation', `doc{${cleanCpf}};email{${email}}`);
       if (r.success) {
-        const ex = extractMatchRate(r.data, 'carriers_email_validation');
-        if (ex) validations.push({ field: 'email', value: email, dataset: 'carriers_email_validation', ...ex, elapsedMs: r.elapsed });
+        const ex = extractMatchRate(r.data, 'email_carriers_validation') || { matchRate: 0, confidence: 0, sources: [] };
+        validations.push({ field: 'email', value: email, dataset: 'email_carriers_validation', ...ex, elapsedMs: r.elapsed });
       } else {
-        validations.push({ field: 'email', value: email, dataset: 'carriers_email_validation', error: r.error });
+        validations.push({ field: 'email', value: email, dataset: 'email_carriers_validation', error: r.error });
       }
     }
 
-    // Address × CPF (cep + número)
+    // Address × CPF — dataset BDC: address_carriers_validation
     if (address?.cep) {
       const cleanCep = String(address.cep).replace(/\D/g, '');
       const num = String(address.number || '').trim();
-      const r = await callBdcValidation(accessToken, tokenId, 'carriers_address_validation', { q: `doc{${cleanCpf}};zipcode{${cleanCep}}${num ? `;number{${num}}` : ''}` });
+      const r = await callBdcValidation(accessToken, tokenId, 'address_carriers_validation', `doc{${cleanCpf}};zipcode{${cleanCep}}${num ? `;number{${num}}` : ''}`);
       if (r.success) {
-        const ex = extractMatchRate(r.data, 'carriers_address_validation');
-        if (ex) validations.push({ field: 'address', value: `${cleanCep}${num ? `, ${num}` : ''}`, dataset: 'carriers_address_validation', ...ex, elapsedMs: r.elapsed });
+        const ex = extractMatchRate(r.data, 'address_carriers_validation') || { matchRate: 0, confidence: 0, sources: [] };
+        validations.push({ field: 'address', value: `${cleanCep}${num ? `, ${num}` : ''}`, dataset: 'address_carriers_validation', ...ex, elapsedMs: r.elapsed });
       } else {
-        validations.push({ field: 'address', value: `${cleanCep}${num ? `, ${num}` : ''}`, dataset: 'carriers_address_validation', error: r.error });
+        validations.push({ field: 'address', value: `${cleanCep}${num ? `, ${num}` : ''}`, dataset: 'address_carriers_validation', error: r.error });
       }
     }
 

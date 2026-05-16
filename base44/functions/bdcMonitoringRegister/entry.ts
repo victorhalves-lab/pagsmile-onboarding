@@ -16,7 +16,12 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 const BDC_BASE_URL = 'https://plataforma.bigdatacorp.com.br';
-const MONITORING_ENDPOINT = '/monitoring/subscriptions';
+// IMPORTANTE: o endpoint exato do Monitoring API da BDC é fornecido pelo gerente
+// de conta após contratação do módulo. Use BDC_MONITORING_ENDPOINT no env para
+// sobrescrever caso o caminho padrão "/monitoring/subscriptions" não funcione.
+// Endpoints conhecidos em algumas contas: /monitoring, /monitoramento/inscricoes,
+// /monitoring/api/subscriptions. Confirme com o BDC.
+const MONITORING_ENDPOINT = Deno.env.get('BDC_MONITORING_ENDPOINT') || '/monitoring/subscriptions';
 
 const DEFAULT_DATASETS_PJ = ['kyc', 'owners_kyc', 'processes', 'configurable_recency_qsa', 'esg_and_compliance', 'basic_data', 'government_debtors'];
 const DEFAULT_DATASETS_PF = ['kyc', 'processes', 'scr_positive_score', 'basic_data', 'government_debtors'];
@@ -45,8 +50,10 @@ Deno.serve(async (req) => {
     // Webhook URL — usa próprio bdcMonitoringWebhook desta app + secret
     const secret = Deno.env.get('BDC_WEBHOOK_SECRET');
     if (!secret && action === 'register') return Response.json({ error: 'BDC_WEBHOOK_SECRET not configured — required for webhook registration' }, { status: 500 });
-    const appUrl = Deno.env.get('APP_URL') || `https://${Deno.env.get('BASE44_APP_ID')}.base44.app`;
-    const finalCallback = callbackUrl || `${appUrl}/functions/bdcMonitoringWebhook?secret=${secret}`;
+    // Deriva URL pública da própria request (Base44 expõe funções em app.base44.app/functions/<name>)
+    const reqUrl = new URL(req.url);
+    const appBaseUrl = `${reqUrl.protocol}//${reqUrl.host}`;
+    const finalCallback = callbackUrl || `${appBaseUrl}/functions/bdcMonitoringWebhook?secret=${secret}`;
 
     const payload = {
       Document: cleanDoc,

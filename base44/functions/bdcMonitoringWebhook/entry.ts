@@ -142,9 +142,9 @@ Deno.serve(async (req) => {
       : Array.isArray(payload) ? payload
       : [payload];
 
-    const base44 = await import('npm:@base44/sdk@0.8.25').then(({ createClient }) => createClient({
-      appId: Deno.env.get('BASE44_APP_ID'), requiresAuth: false,
-    }));
+    // Webhook é anônimo (validado pelo secret acima). Usa createClientFromRequest
+    // que expõe asServiceRole mesmo sem usuário autenticado.
+    const base44 = createClientFromRequest(req);
 
     const processed = [];
     for (const ev of events) {
