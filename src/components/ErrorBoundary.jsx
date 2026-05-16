@@ -58,6 +58,15 @@ export default class ErrorBoundary extends React.Component {
     const isTransient = ErrorBoundary._isTransient(error);
     const now = Date.now();
 
+    // ── CRITICAL ERROR CLASS DETECTOR ──
+    // "Cannot access 'X' before initialization" = Temporal Dead Zone bug. Build-time
+    // mistake (useMemo using a const declared later). NEVER transient. ALWAYS log.
+    // We surface a special tag so the suporte team can filter these instantly.
+    const msg = String(error?.message || error || '');
+    const isTdz = /Cannot access ['"]?\w+['"]? before initialization/i.test(msg);
+    const isHoistBug = /is not defined/i.test(msg) || /is not a function/i.test(msg);
+    const errorClass = isTdz ? 'TDZ_BUG' : isHoistBug ? 'HOIST_BUG' : (error?.name || 'UnknownError');
+
     // ── DEBUG LOG ── Shows exactly which error hit this boundary and how often.
     this._totalErrors = (this._totalErrors || 0) + 1;
     console.warn(
@@ -96,11 +105,14 @@ export default class ErrorBoundary extends React.Component {
     // even when the app is in a broken state.
     try {
       const payload = {
-        stage: 'error_boundary',
+        stage: isTdz ? 'error_boundary_TDZ_BUG' : 'error_boundary',
         errorMessage: String(error?.message || error || 'unknown'),
         extra: {
           errorName: String(error?.name || ''),
-          componentStack: String(errorInfo?.componentStack || '').slice(0, 2000),
+          errorClass,
+          isTdz,
+          stack: String(error?.stack || '').slice(0, 3000),
+          componentStack: String(errorInfo?.componentStack || '').slice(0, 3000),
           url: typeof window !== 'undefined' ? window.location.href : '',
           search: typeof window !== 'undefined' ? window.location.search : '',
         },

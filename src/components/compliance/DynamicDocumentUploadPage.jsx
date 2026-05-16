@@ -103,20 +103,6 @@ export default function DynamicDocumentUploadPage({
     } catch {}
   }, [formDataStorageKey]);
 
-  // Detecta representantes que precisam ser confirmados antes do upload.
-  // Só ativa quando há MAIS DE UM representante (caso de duplicação/QSA grande).
-  // Para PFs ou PJs com um único sócio, pula direto para o upload — sem fricção extra.
-  const detectedRepresentatives = useMemo(() => {
-    if (!questions || questions.length === 0) return [];
-    try {
-      return getRepresentativesFromStorage(formDataStorageKey, questions);
-    } catch {
-      return [];
-    }
-  }, [formDataStorageKey, questions]);
-
-  const needsRepConfirmation = detectedRepresentatives.length > 1 && !representativesConfirmed;
-
   // Auto-save documents to server when they change
   useEffect(() => {
     if (Object.keys(documents).length > 0) {
@@ -229,6 +215,24 @@ export default function DynamicDocumentUploadPage({
   const questions = bundle?.questions || [];
   const loadingTemplate = loadingBundle;
   const loadingQuestions = loadingBundle;
+
+  // Detecta representantes que precisam ser confirmados antes do upload.
+  // ⚠️ CRÍTICO: este useMemo PRECISA ficar DEPOIS da declaração de `questions`.
+  // Antes ficava na linha 109 e quebrava em produção com "Cannot access 'W' before
+  // initialization" (TDZ) — minificação renomeia `questions` para uma letra e o
+  // hoisting do useMemo via useState não cobre const declarados depois.
+  // Só ativa quando há MAIS DE UM representante (caso de duplicação/QSA grande).
+  // Para PFs ou PJs com um único sócio, pula direto para o upload — sem fricção extra.
+  const detectedRepresentatives = useMemo(() => {
+    if (!questions || questions.length === 0) return [];
+    try {
+      return getRepresentativesFromStorage(formDataStorageKey, questions);
+    } catch {
+      return [];
+    }
+  }, [formDataStorageKey, questions]);
+
+  const needsRepConfirmation = detectedRepresentatives.length > 1 && !representativesConfirmed;
 
   // Validation result — exposed so mobile UI can show PERSISTENT feedback below the button
   // (toast.error desaparece rápido demais no mobile, especialmente quando o botão fica
