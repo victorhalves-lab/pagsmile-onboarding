@@ -212,10 +212,10 @@ async function revalidateSingleCase(base44, caseId, dryRun) {
   const oldScoreFinal = existingScore?.score_final ?? null;
   const oldSubfaixa = existingScore?.subfaixa ?? null;
 
-  // Determine datasets
+  // Determine datasets (v3 — 2026-05-16: inclui novos datasets dos GAPs 3, 5, 7, 8, 9 + internos)
   const datasets = isPF 
-    ? 'basic_data,kyc,processes,collections,media_profile_and_exposure,online_presence'
-    : 'basic_data,registration_data,history_basic_data,company_evolution,phones_extended,emails_extended,addresses_extended,kyc,owners_kyc,political_involvement,government_debtors,processes,owners_lawsuits,media_profile_and_exposure,relationships,owners_influence,related_people_phones,related_people_emails,related_people_addresses,domains,passages,reputations_and_reviews,activity_indicators,marketplace_data,collections,merchant_category_data';
+    ? 'basic_data,kyc,processes,collections,media_profile_and_exposure,online_presence,first_level_family_kyc,first_level_relatives_kyc,bets_ownership,flags_and_features,financial_data,judicial_assets,related_people_phones,related_people_emails,related_people_addresses'
+    : 'basic_data,registration_data,history_basic_data,company_evolution,phones_extended,emails_extended,addresses_extended,kyc,owners_kyc,economic_group_kyc,political_involvement,government_debtors,processes,lawsuits_distribution_data,owners_lawsuits,owners_lawsuits_distribution,media_profile_and_exposure,relationships,owners_influence,owners_electoral_donors,configurable_recency_qsa,company_group_owners,related_people_phones,related_people_emails,related_people_addresses,domains,passages,reputations_and_reviews,activity_indicators,marketplace_data,collections,merchant_category_data,licenses_and_authorizations,flags_and_features,companies_statistics,financial_data,default_business_data,corporate_chain,esg_and_compliance';
 
   console.log(`[RevalidateBDC] Querying ${doc} (${isPF ? 'PF' : 'PJ'}) for case ${caseId}`);
 

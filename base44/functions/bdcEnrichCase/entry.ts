@@ -16,11 +16,14 @@ const BATCH_DEFS = {
   KYC: { priority: 'CRITICAL', datasets: ['kyc', 'owners_kyc', 'economic_group_kyc'] },
   LEGAL: { priority: 'CRITICAL', datasets: ['processes', 'lawsuits_distribution_data', 'owners_lawsuits', 'owners_lawsuits_distribution', 'government_debtors', 'collections'] },
   // 🟠 IMPORTANTES — 10 retries inline, depois degrada
-  SOCIETARIO: { priority: 'IMPORTANT', datasets: ['relationships', 'economic_group', 'economic_group_relationships', 'configurable_recency_qsa', 'owners_influence', 'owners_electoral_donors'] },
+  // GAP 8: + company_group_owners (agrega empresas com sócios em comum)
+  SOCIETARIO: { priority: 'IMPORTANT', datasets: ['relationships', 'economic_group', 'economic_group_relationships', 'configurable_recency_qsa', 'owners_influence', 'owners_electoral_donors', 'company_group_owners'] },
   ESG_COMPLIANCE: { priority: 'IMPORTANT', datasets: ['esg_and_compliance', 'political_involvement', 'media_profile_and_exposure'] },
   // 🟡 COMPLEMENTARES — best-effort
   DIGITAL_REPUTACAO: { priority: 'COMPLEMENTARY', datasets: ['domains', 'passages', 'online_ads', 'reputations_and_reviews', 'awards_and_certifications', 'activity_indicators', 'marketplace_data', 'merchant_category_data', 'digital_attributes'] },
-  ENRIQUECIMENTO: { priority: 'COMPLEMENTARY', datasets: ['credit_risk', 'credit_score', 'financial_market', 'emails_extended', 'phones_extended', 'addresses_extended', 'related_people_phones', 'related_people_emails', 'related_people_addresses', 'industrial_property', 'owners_industrial_property', 'licenses_and_authorizations', 'company_evolution'] },
+  // GAP 5: + flags_and_features (modelos estatísticos BDC)
+  // GAP 9: + companies_statistics (estatísticas por endereço — detector de endereço-fachada)
+  ENRIQUECIMENTO: { priority: 'COMPLEMENTARY', datasets: ['credit_risk', 'credit_score', 'financial_market', 'emails_extended', 'phones_extended', 'addresses_extended', 'related_people_phones', 'related_people_emails', 'related_people_addresses', 'industrial_property', 'owners_industrial_property', 'licenses_and_authorizations', 'company_evolution', 'flags_and_features', 'companies_statistics'] },
   // 🟠 NOVOS LOTES — Sprint Expansão PLD (2026-05-15)
   FINANCEIRO_PROFUNDO: { priority: 'IMPORTANT', datasets: ['financial_data', 'default_business_data'] },
   CADEIA_SOCIETARIA: { priority: 'IMPORTANT', datasets: ['corporate_chain'] },
@@ -30,13 +33,16 @@ const BATCH_DEFS = {
 const PF_BATCH_DEFS = {
   IDENTIDADE: { priority: 'CRITICAL', datasets: ['basic_data', 'kyc', 'pep'] },
   LEGAL: { priority: 'CRITICAL', datasets: ['processes', 'collections', 'government_debtors'] },
-  FAMILIAR: { priority: 'CRITICAL', datasets: ['first_level_family_kyc', 'personal_relationships'] },
-  COMPLIANCE: { priority: 'IMPORTANT', datasets: ['risk_data', 'social_assistance', 'public_servants'] },
+  // GAP 4: + first_level_relatives_kyc (cobertura agregada do grupo familiar — Circ. 3.978 Art. 14 §2º)
+  FAMILIAR: { priority: 'CRITICAL', datasets: ['first_level_family_kyc', 'first_level_relatives_kyc', 'personal_relationships'] },
+  // GAP 3: + bets_ownership (participação em casas de apostas — SPA/MF)
+  COMPLIANCE: { priority: 'IMPORTANT', datasets: ['risk_data', 'social_assistance', 'public_servants', 'bets_ownership'] },
   FINANCEIRO: { priority: 'IMPORTANT', datasets: ['presumed_income', 'financial_interests', 'scr_positive_score', 'simples_nacional_collection', 'electoral_donors', 'financial_data'] },
   // 🟠 NOVO LOTE PF — Sprint Expansão PLD (2026-05-15)
   JURIDICO_PROFUNDO: { priority: 'IMPORTANT', datasets: ['judicial_assets', 'entrepreneur_quality'] },
   REPUTACAO: { priority: 'COMPLEMENTARY', datasets: ['media_profile_and_exposure', 'online_presence'] },
-  CONTATOS: { priority: 'COMPLEMENTARY', datasets: ['emails_extended', 'phones_extended', 'addresses_extended', 'related_people_phones', 'related_people_emails', 'related_people_addresses'] },
+  // GAP 5: + flags_and_features (modelos estatísticos PF: Findability, IdentityConfidence)
+  CONTATOS: { priority: 'COMPLEMENTARY', datasets: ['emails_extended', 'phones_extended', 'addresses_extended', 'related_people_phones', 'related_people_emails', 'related_people_addresses', 'flags_and_features'] },
 };
 
 // Retry limits por prioridade
@@ -411,6 +417,19 @@ function analyzeBlocks(result, responses) {
       }
     }
   } catch (_) { /* não-bloqueante */ }
+
+  // ── REGRA B13/B14 (sprint v3 — 2026-05-16) ──
+  // Bloqueios novos derivados dos analyzers de processos e endereço.
+  const criminalBlock = detectCriminalBlock(result);
+  if (criminalBlock) blocks.push(criminalBlock);
+
+  const fakeAddrBlock = detectFakeAddressBlock(result);
+  if (fakeAddrBlock) blocks.push(fakeAddrBlock);
+
+  // ── REGRA M04 (sprint v3) ──
+  // Mudança recente de QSA + sócios novos = manual review obrigatório.
+  const qsaFlag = detectRecentQsaChangeFlag(result);
+  if (qsaFlag) manualReviewFlags.push(qsaFlag);
 
   return { blocks, manualReviewFlags };
 }
@@ -1035,32 +1054,518 @@ function analyzeJudicialAssets(result) {
   } catch (e) { return { score: 0, items: [{ label: 'Bens penhorados', value: `Erro parse: ${e.message}`, risk: 'INFO', points: 0 }] }; }
 }
 
+// ══════════════════════════════════════════════════════════════════
+// NOVOS ANALYZERS — Sprint Expansão BDC v3 (2026-05-16)
+// Cobrem os GAPs que estavam consumidos sem análise (processes, political,
+// qsa_changes) + GAPs novos (address intel, financial estimates, company
+// group, licenses, flags, related people, bets).
+// ══════════════════════════════════════════════════════════════════
+
+const CRIMINAL_KW = /criminal|penal|fraude|lavagem|estelionato|sonega|tráfico|trafico|narc/i;
+
+function analyzeProcesses(result) {
+  // GAP INTERNO #1 — processes + lawsuits_distribution_data + owners_lawsuits*
+  try {
+    const items = []; let score = 0;
+    const proc = result?.Processes || result?.processes;
+    const dist = result?.LawsuitsDistributionData || result?.lawsuits_distribution_data;
+    const ownProc = result?.OwnersLawsuits || result?.owners_lawsuits;
+    const ownDist = result?.OwnersLawsuitsDistribution || result?.owners_lawsuits_distribution;
+    if (!proc && !ownProc) { items.push({ label: 'Processos judiciais', value: 'Dataset não consultado', risk: 'INFO', points: 0 }); return { score, items }; }
+
+    const analyzeEntity = (datasets) => {
+      let total = 0, value = 0, criminal = 0, recent = 0;
+      for (const item of datasets) {
+        total += Number(item?.TotalLawsuits ?? item?.NumberOfLawsuits ?? item?.LawsuitsCount ?? 0);
+        value += Number(item?.TotalLawsuitsValue ?? item?.LawsuitsTotalValue ?? 0);
+        recent += Number(item?.LawsuitsLast12Months ?? item?.RecentLawsuits ?? 0);
+        const d = item?.LawsuitsDistribution || item?.DistributionByCourtType || item?.DistributionByLawsuitType || [];
+        if (Array.isArray(d)) for (const x of d) {
+          const t = String(x?.Type || x?.Court || x?.LawsuitType || x?.Description || '');
+          if (CRIMINAL_KW.test(t)) criminal += Number(x?.Count || x?.TotalLawsuits || 1);
+        }
+      }
+      return { total, value, criminal, recent };
+    };
+
+    if (proc || dist) {
+      const r = analyzeEntity([...flattenBDCArray(proc), ...flattenBDCArray(dist)]);
+      if (r.total === 0) items.push({ label: 'Processos da empresa', value: 'Nenhum', risk: 'OK', points: 0 });
+      else {
+        let pts = 0, risk = 'OK';
+        if (r.total > 100) { pts = 25; risk = 'ALTO'; }
+        else if (r.total > 50) { pts = 15; risk = 'MEDIO'; }
+        else if (r.total > 10) { pts = 8; risk = 'MEDIO'; }
+        score += pts;
+        items.push({ label: 'Processos da empresa', value: `${r.total} processo(s)${r.value > 0 ? ` — R$ ${r.value.toLocaleString('pt-BR',{minimumFractionDigits:2})}` : ''}${r.recent > 0 ? ` (${r.recent} nos últimos 12m)` : ''}`, risk, points: pts });
+        if (r.criminal > 0) { score += 60; items.push({ label: 'Processos CRIMINAIS da empresa', value: `${r.criminal} processo(s)`, risk: 'CRITICO', points: 60 }); }
+        if (r.value > 1_000_000) { score += 30; items.push({ label: 'Valor em litígio', value: `R$ ${r.value.toLocaleString('pt-BR',{minimumFractionDigits:2})}`, risk: 'ALTO', points: 30 }); }
+      }
+    }
+    if (ownProc || ownDist) {
+      const r = analyzeEntity([...flattenBDCArray(ownProc), ...flattenBDCArray(ownDist)]);
+      if (r.total > 0) {
+        const pts = r.total > 50 ? 15 : r.total > 20 ? 8 : 0;
+        const risk = pts >= 15 ? 'ALTO' : pts >= 8 ? 'MEDIO' : 'INFO';
+        score += pts;
+        items.push({ label: 'Processos dos sócios (agregado)', value: `${r.total} processo(s)${r.value > 0 ? ` — R$ ${r.value.toLocaleString('pt-BR',{minimumFractionDigits:2})}` : ''}`, risk, points: pts });
+        if (r.criminal > 0) { score += 80; items.push({ label: 'Processos CRIMINAIS de sócios', value: `${r.criminal} processo(s)`, risk: 'CRITICO', points: 80 }); }
+      } else items.push({ label: 'Processos dos sócios', value: 'Nenhum', risk: 'OK', points: 0 });
+    }
+    return { score, items };
+  } catch (e) { return { score: 0, items: [{ label: 'Processos', value: `Erro: ${e.message}`, risk: 'INFO', points: 0 }] }; }
+}
+
+function analyzePoliticalExposure(result) {
+  // GAP INTERNO #2 — political_involvement + owners_electoral_donors + owners_influence
+  try {
+    const items = []; let score = 0;
+    const pi = result?.PoliticalInvolvement || result?.political_involvement;
+    const ed = result?.OwnersElectoralDonors || result?.owners_electoral_donors;
+    const oi = result?.OwnersInfluence || result?.owners_influence;
+    if (!pi && !ed && !oi) { items.push({ label: 'Exposição política', value: 'Dataset não consultado', risk: 'INFO', points: 0 }); return { score, items }; }
+
+    if (pi) {
+      let hasInv = false, contracts = 0;
+      for (const item of flattenBDCArray(pi)) {
+        if (item?.HasPoliticalInvolvement === true || item?.PoliticalInvolvement === true) hasInv = true;
+        contracts += Number(item?.PublicContractsCount ?? item?.GovernmentContractsCount ?? 0);
+      }
+      if (hasInv) { score += 25; items.push({ label: 'Vínculo político identificado', value: 'SIM', risk: 'ALTO', points: 25 }); }
+      if (contracts > 0) { const pts = contracts > 10 ? 15 : 5; score += pts; items.push({ label: 'Contratos com governo', value: `${contracts} contrato(s)`, risk: contracts > 10 ? 'ALTO' : 'MEDIO', points: pts }); }
+    }
+    if (ed) {
+      let total = 0; const donors = [];
+      for (const item of flattenBDCArray(ed)) {
+        const val = Number(item?.TotalDonations ?? item?.DonationsTotalValue ?? item?.TotalDonatedValue ?? 0);
+        total += val;
+        if (val > 0) donors.push({ name: item?.Name || item?.RelatedPersonName || 'N/I', value: val });
+      }
+      if (total > 0) {
+        let pts = 0, risk = 'OK';
+        if (total > 500_000) { pts = 50; risk = 'CRITICO'; }
+        else if (total > 100_000) { pts = 30; risk = 'ALTO'; }
+        else if (total > 10_000) { pts = 10; risk = 'MEDIO'; }
+        score += pts;
+        const top = donors.sort((a, b) => b.value - a.value)[0];
+        items.push({ label: 'Doações eleitorais (sócios)', value: `R$ ${total.toLocaleString('pt-BR',{minimumFractionDigits:2})} total${top ? ` — maior: ${top.name} (R$ ${top.value.toLocaleString('pt-BR',{minimumFractionDigits:2})})` : ''}`, risk, points: pts });
+      } else items.push({ label: 'Doações eleitorais', value: 'Nenhuma', risk: 'OK', points: 0 });
+    }
+    if (oi) {
+      let maxInf = 0; const high = [];
+      for (const item of flattenBDCArray(oi)) {
+        const lv = Number(item?.InfluenceLevel ?? item?.PoliticalInfluenceScore ?? item?.InfluenceScore ?? 0);
+        if (lv > maxInf) maxInf = lv;
+        if (lv > 0.7) high.push(item?.Name || item?.RelatedPersonName || 'N/I');
+      }
+      if (maxInf > 0.7) {
+        const pts = maxInf > 0.9 ? 35 : 20;
+        score += pts;
+        items.push({ label: 'Sócio(s) com alta influência política', value: `${high.join(', ')} (score ${(maxInf * 100).toFixed(0)}%)`, risk: 'ALTO', points: pts });
+      }
+    }
+    return { score, items };
+  } catch (e) { return { score: 0, items: [{ label: 'Exposição política', value: `Erro: ${e.message}`, risk: 'INFO', points: 0 }] }; }
+}
+
+function analyzeQsaChanges(result) {
+  // GAP INTERNO #3 — configurable_recency_qsa
+  try {
+    const items = []; let score = 0;
+    const qsa = result?.ConfigurableRecencyQsa || result?.configurable_recency_qsa;
+    if (!qsa) { items.push({ label: 'Recência do QSA', value: 'Dataset não consultado', risk: 'INFO', points: 0 }); return { score, items }; }
+
+    let total = 0, newOwners = 0;
+    const periods = { last30: 0, last90: 0, last180: 0 };
+    let mostRecent = null;
+    for (const item of flattenBDCArray(qsa)) {
+      const changes = item?.RecentChanges || item?.QsaChanges || item?.Changes || [];
+      if (Array.isArray(changes)) for (const c of changes) {
+        total++;
+        const ds = c?.ChangeDate || c?.Date || c?.OperationDate;
+        if (ds) {
+          const d = new Date(ds);
+          if (!isNaN(d)) {
+            if (!mostRecent || d > mostRecent) mostRecent = d;
+            const days = (Date.now() - d.getTime()) / (24 * 3600 * 1000);
+            if (days <= 30) periods.last30++;
+            if (days <= 90) periods.last90++;
+            if (days <= 180) periods.last180++;
+          }
+        }
+        if (c?.Operation === 'ADD' || c?.ChangeType === 'ENTRY' || c?.Type === 'NewOwner') newOwners++;
+      }
+    }
+
+    if (total === 0) { items.push({ label: 'Mudanças no QSA', value: 'Nenhuma', risk: 'OK', points: 0 }); return { score, items }; }
+
+    if (periods.last30 > 0) {
+      const pts = periods.last30 >= 2 ? 30 : 20;
+      score += pts;
+      items.push({ label: 'Mudanças QSA — últimos 30 dias', value: `${periods.last30} alteração(ões)`, risk: 'CRITICO', points: pts });
+    } else if (periods.last90 > 0) {
+      score += 15;
+      items.push({ label: 'Mudanças QSA — últimos 90 dias', value: `${periods.last90} alteração(ões)`, risk: 'ALTO', points: 15 });
+    } else if (periods.last180 > 0) {
+      score += 8;
+      items.push({ label: 'Mudanças QSA — últimos 180 dias', value: `${periods.last180} alteração(ões)`, risk: 'MEDIO', points: 8 });
+    } else if (mostRecent) {
+      const days = Math.floor((Date.now() - mostRecent) / (24 * 3600 * 1000));
+      items.push({ label: 'Última mudança QSA', value: `Há ${days} dia(s)`, risk: 'OK', points: 0 });
+    }
+    if (newOwners > 0 && periods.last90 > 0) {
+      const pts = newOwners >= 2 ? 15 : 8;
+      score += pts;
+      items.push({ label: 'Novos sócios em 90d', value: `${newOwners} sócio(s) novo(s)`, risk: 'ALTO', points: pts });
+    }
+    return { score, items };
+  } catch (e) { return { score: 0, items: [{ label: 'QSA', value: `Erro: ${e.message}`, risk: 'INFO', points: 0 }] }; }
+}
+
+function analyzeAddressIntelligence(result) {
+  // GAPs 2 + 9 — flag contabilidade + estatísticas por endereço
+  try {
+    const items = []; let score = 0;
+    const addrExt = result?.AddressesExtended || result?.addresses_extended;
+    const stats = result?.CompaniesStatistics || result?.companies_statistics;
+    if (!addrExt && !stats) { items.push({ label: 'Inteligência de endereço', value: 'Dataset não consultado', risk: 'INFO', points: 0 }); return { score, items }; }
+
+    if (addrExt) {
+      let accounting = false, virtual = false, residential = false;
+      const samples = [];
+      for (const a of flattenBDCArray(addrExt)) {
+        const list = a?.Addresses || a?.AddressesList || (Array.isArray(a) ? a : [a]);
+        const all = Array.isArray(list) ? list : [list];
+        for (const item of all) {
+          if (item?.IsAccountingOfficeAddress === true || item?.IsAccountingAddress === true || item?.AddressType === 'ACCOUNTING_OFFICE') {
+            accounting = true;
+            if (samples.length < 1) samples.push(item?.Address || item?.FullAddress || 'sem detalhe');
+          }
+          if (item?.IsVirtualOffice === true || item?.AddressType === 'VIRTUAL_OFFICE') virtual = true;
+          if (item?.IsResidentialAddress === true || item?.AddressType === 'RESIDENTIAL') residential = true;
+        }
+      }
+      if (accounting) { score += 40; items.push({ label: 'Endereço de contabilidade detectado', value: `Empresa registrada em escritório contábil${samples[0] ? ` (${samples[0]})` : ''}. Indicador forte de shell company.`, risk: 'CRITICO', points: 40 }); }
+      if (virtual) { score += 25; items.push({ label: 'Endereço de escritório virtual', value: 'CNPJ em endereço de escritório virtual', risk: 'ALTO', points: 25 }); }
+      if (residential) { score += 10; items.push({ label: 'Endereço residencial', value: 'CNPJ em endereço residencial', risk: 'MEDIO', points: 10 }); }
+    }
+    if (stats) {
+      let totalC = 0, activeC = 0, totalEmp = 0;
+      for (const s of flattenBDCArray(stats)) {
+        totalC = Math.max(totalC, Number(s?.TotalCompanies ?? s?.CompaniesCount ?? 0));
+        activeC = Math.max(activeC, Number(s?.ActiveCompanies ?? s?.ActiveCompaniesCount ?? 0));
+        totalEmp += Number(s?.TotalEmployees ?? s?.EmployeesCount ?? 0);
+      }
+      if (totalC > 0) {
+        const isFake = totalC > 20 && totalEmp === 0;
+        const isHigh = totalC > 50;
+        if (isFake) { score += 60; items.push({ label: 'Endereço-fachada provável', value: `${totalC} empresas no mesmo endereço, ${totalEmp} funcionário(s) agregado(s).`, risk: 'CRITICO', points: 60 }); }
+        else if (isHigh) { score += 20; items.push({ label: 'Endereço de alta densidade empresarial', value: `${totalC} (${activeC} ativa(s))`, risk: 'ALTO', points: 20 }); }
+        else if (totalC > 5) items.push({ label: 'Empresas no mesmo endereço', value: `${totalC} (${activeC} ativa(s))`, risk: 'MEDIO', points: 0 });
+        else items.push({ label: 'Empresas no mesmo endereço', value: `${totalC}`, risk: 'OK', points: 0 });
+      }
+    }
+    if (items.length === 0) items.push({ label: 'Inteligência de endereço', value: 'Sem flags', risk: 'OK', points: 0 });
+    return { score, items };
+  } catch (e) { return { score: 0, items: [{ label: 'Endereço', value: `Erro: ${e.message}`, risk: 'INFO', points: 0 }] }; }
+}
+
+function analyzeFinancialEstimates(result) {
+  // GAP 7 — 4 estimativas + restituição IR
+  try {
+    const items = []; let score = 0;
+    const fd = result?.FinancialData || result?.financial_data;
+    if (!fd) { items.push({ label: 'Estimativas financeiras', value: 'Dataset não consultado', risk: 'INFO', points: 0 }); return { score, items }; }
+
+    const est = {};
+    let irRest = null, irHist = [];
+    for (const item of flattenBDCArray(fd)) {
+      const e = item?.IncomeEstimates || item?.RevenueEstimates || item?.Estimates || {};
+      if (typeof e === 'object') {
+        if (e.IBGE != null) est.IBGE = Number(e.IBGE);
+        if (e.MTE != null) est.MTE = Number(e.MTE);
+        if (e.BIGDATA != null) est.BIGDATA = Number(e.BIGDATA);
+        if (e.BIGDATA_V2 != null) est.BIGDATA_V2 = Number(e.BIGDATA_V2);
+        if (e.COMPANY_OWNERSHIP != null) est.COMPANY_OWNERSHIP = Number(e.COMPANY_OWNERSHIP);
+      }
+      if (item?.IncomeIBGE != null) est.IBGE = Number(item.IncomeIBGE);
+      if (item?.IncomeMTE != null) est.MTE = Number(item.IncomeMTE);
+      if (item?.IncomeBigData != null) est.BIGDATA = Number(item.IncomeBigData);
+      if (item?.IncomeBigDataV2 != null) est.BIGDATA_V2 = Number(item.IncomeBigDataV2);
+      if (item?.IncomeFromCompanyOwnership != null) est.COMPANY_OWNERSHIP = Number(item.IncomeFromCompanyOwnership);
+      if (item?.IrRestitution != null || item?.IncomeTaxRestitution != null) irRest = Number(item.IrRestitution ?? item.IncomeTaxRestitution);
+      const h = item?.IrRestitutionHistory || item?.RestitutionHistory || [];
+      if (Array.isArray(h) && h.length > 0) irHist = h;
+    }
+    const vals = Object.entries(est).filter(([_, v]) => v > 0);
+    if (vals.length === 0) { items.push({ label: 'Estimativas financeiras', value: 'Sem dados', risk: 'INFO', points: 0 }); return { score, items }; }
+
+    for (const [src, val] of vals) items.push({ label: `Estimativa ${src}`, value: `R$ ${val.toLocaleString('pt-BR',{minimumFractionDigits:2})}/mês`, risk: 'INFO', points: 0 });
+    const arr = vals.map(([_, v]) => v);
+    const max = Math.max(...arr), min = Math.min(...arr);
+    if (min > 0 && max / min > 3) { score += 10; items.push({ label: 'Divergência entre estimativas', value: `Máx/Mín = ${(max / min).toFixed(1)}x`, risk: 'MEDIO', points: 10 }); }
+    if (est.COMPANY_OWNERSHIP > 0) {
+      const formalAvg = ((est.IBGE || 0) + (est.MTE || 0)) / 2;
+      if (formalAvg > 0 && est.COMPANY_OWNERSHIP > formalAvg * 5) {
+        score += 25;
+        items.push({ label: 'Renda societária >> renda formal', value: `COMPANY_OWNERSHIP é ${(est.COMPANY_OWNERSHIP / formalAvg).toFixed(1)}x maior — UBO oculto provável`, risk: 'ALTO', points: 25 });
+      }
+    }
+    if (irRest > 0) items.push({ label: 'Restituição IR (último ano)', value: `R$ ${irRest.toLocaleString('pt-BR',{minimumFractionDigits:2})}`, risk: 'OK', points: 0 });
+    if (irHist.length >= 3) items.push({ label: 'Histórico restituições IR', value: `${irHist.length} anos`, risk: 'OK', points: 0 });
+    else if (irHist.length === 0 && irRest == null && est.IBGE > 5000) {
+      score += 10;
+      items.push({ label: 'IR ausente com renda relevante', value: `Sem restituição apesar de renda estimada R$ ${est.IBGE.toLocaleString('pt-BR')}/mês`, risk: 'MEDIO', points: 10 });
+    }
+    return { score, items };
+  } catch (e) { return { score: 0, items: [{ label: 'Financeiro', value: `Erro: ${e.message}`, risk: 'INFO', points: 0 }] }; }
+}
+
+function analyzeCompanyGroupOwners(result) {
+  // GAP 8 — company_group_owners (rede de empresas com sócios em comum)
+  try {
+    const items = []; let score = 0;
+    const cgo = result?.CompanyGroupOwners || result?.company_group_owners;
+    if (!cgo) { items.push({ label: 'Grupo (sócios comuns)', value: 'Dataset não consultado', risk: 'INFO', points: 0 }); return { score, items }; }
+    let total = 0, active = 0, inactive = 0, shared = 0;
+    const tops = [];
+    for (const item of flattenBDCArray(cgo)) {
+      total += Number(item?.TotalRelatedCompanies ?? item?.CompaniesCount ?? item?.RelatedCompaniesCount ?? 0);
+      active += Number(item?.ActiveRelatedCompanies ?? item?.ActiveCompaniesCount ?? 0);
+      inactive += Number(item?.InactiveRelatedCompanies ?? item?.InactiveCompaniesCount ?? 0);
+      shared = Math.max(shared, Number(item?.SharedOwnersCount ?? item?.CommonOwnersCount ?? 0));
+      const rel = item?.RelatedCompanies || item?.Companies || [];
+      if (Array.isArray(rel)) for (const c of rel.slice(0, 5)) tops.push({ name: c?.Name || c?.CompanyName || 'N/I', status: c?.Status || c?.TaxIdStatus || '' });
+    }
+    if (total === 0) { items.push({ label: 'Empresas com sócios em comum', value: 'Nenhuma', risk: 'OK', points: 0 }); return { score, items }; }
+    let pts = 0, risk = 'OK';
+    if (total > 30) { pts = 40; risk = 'CRITICO'; }
+    else if (total > 15) { pts = 25; risk = 'ALTO'; }
+    else if (total > 5) { pts = 10; risk = 'MEDIO'; }
+    score += pts;
+    items.push({ label: 'Empresas com sócios em comum', value: `${total} (${active} ativa(s), ${inactive} inativa(s)${shared > 0 ? `, ${shared} sócio(s) comuns` : ''})`, risk, points: pts });
+    if (inactive > 0 && total > 5 && inactive / total > 0.5) {
+      score += 25;
+      items.push({ label: 'Taxa de inativas no grupo', value: `${((inactive / total) * 100).toFixed(0)}% inativas/baixadas`, risk: 'ALTO', points: 25 });
+    }
+    if (tops.length > 0) items.push({ label: 'Exemplos relacionados', value: tops.slice(0, 3).map(c => `${c.name}${c.status ? ` (${c.status})` : ''}`).join('; '), risk: 'INFO', points: 0 });
+    return { score, items };
+  } catch (e) { return { score: 0, items: [{ label: 'Grupo', value: `Erro: ${e.message}`, risk: 'INFO', points: 0 }] }; }
+}
+
+function analyzeLicenses(result) {
+  // GAP 6 — licenses_and_authorizations
+  try {
+    const items = []; let score = 0;
+    const lic = result?.LicensesAndAuthorizations || result?.licenses_and_authorizations;
+    if (!lic) { items.push({ label: 'Licenças', value: 'Dataset não consultado', risk: 'INFO', points: 0 }); return { score, items }; }
+    let total = 0, active = 0, expired = 0;
+    const types = new Set(); const expSamples = [];
+    for (const item of flattenBDCArray(lic)) {
+      const list = item?.Licenses || item?.LicensesList || (Array.isArray(item) ? item : [item]);
+      const all = Array.isArray(list) ? list : [list];
+      for (const l of all) {
+        if (!l || typeof l !== 'object') continue;
+        total++;
+        const status = String(l?.Status || l?.LicenseStatus || '').toUpperCase();
+        const type = l?.LicenseType || l?.Type || l?.Category || 'N/I';
+        if (type !== 'N/I') types.add(String(type));
+        const exp = l?.ExpiryDate || l?.ValidUntil || l?.ExpirationDate;
+        if (exp) {
+          const ed = new Date(exp);
+          if (!isNaN(ed)) {
+            if (ed < new Date()) { expired++; if (expSamples.length < 3) expSamples.push(`${type} (vencida ${ed.toLocaleDateString('pt-BR')})`); }
+            else active++;
+          }
+        } else if (status.includes('ATIV') || status.includes('VIGENTE') || status === 'OK') active++;
+        else if (status.includes('VENC') || status.includes('EXPIR')) expired++;
+      }
+    }
+    if (total === 0) { items.push({ label: 'Licenças', value: 'Nenhuma registrada', risk: 'INFO', points: 0 }); return { score, items }; }
+    items.push({ label: 'Total de licenças', value: `${total} (${active} ativa(s)${expired > 0 ? `, ${expired} vencida(s)` : ''})`, risk: expired > 0 ? 'MEDIO' : 'OK', points: 0 });
+    if (types.size > 0) items.push({ label: 'Tipos identificados', value: Array.from(types).slice(0, 5).join(', '), risk: 'INFO', points: 0 });
+    if (expired > 0) { const pts = expired >= 3 ? 15 : 8; score += pts; items.push({ label: 'Licenças vencidas', value: expSamples.join('; '), risk: expired >= 3 ? 'ALTO' : 'MEDIO', points: pts }); }
+    return { score, items };
+  } catch (e) { return { score: 0, items: [{ label: 'Licenças', value: `Erro: ${e.message}`, risk: 'INFO', points: 0 }] }; }
+}
+
+function analyzeFlagsAndFeatures(result) {
+  // GAP 5 — flags_and_features (modelos estatísticos BDC)
+  try {
+    const items = []; let score = 0;
+    const ff = result?.FlagsAndFeatures || result?.flags_and_features;
+    if (!ff) { items.push({ label: 'Modelos BDC', value: 'Dataset não consultado', risk: 'INFO', points: 0 }); return { score, items }; }
+    const feats = {};
+    for (const item of flattenBDCArray(ff)) {
+      for (const [k, v] of Object.entries(item || {})) {
+        if (k === 'MatchKeys') continue;
+        if (typeof v === 'number') feats[k] = v;
+        else if (typeof v === 'boolean') feats[k] = v ? 1 : 0;
+        else if (typeof v === 'object' && v?.Value != null) feats[k] = Number(v.Value);
+      }
+    }
+    if (Object.keys(feats).length === 0) { items.push({ label: 'Modelos BDC', value: 'Sem dados', risk: 'INFO', points: 0 }); return { score, items }; }
+    const check = (name, label, thr, pts) => {
+      const v = feats[name];
+      if (v == null) return;
+      if (v < thr) { score += pts; items.push({ label, value: `Score ${(v * 100).toFixed(0)}% (limiar ${(thr * 100).toFixed(0)}%)`, risk: pts >= 20 ? 'ALTO' : 'MEDIO', points: pts }); }
+      else items.push({ label, value: `Score ${(v * 100).toFixed(0)}%`, risk: 'OK', points: 0 });
+    };
+    check('EmploymentStability', 'Estabilidade profissional', 0.4, 10);
+    check('Findability', 'Facilidade de localização', 0.3, 15);
+    check('FinancialSophistication', 'Sofisticação financeira', 0.3, 5);
+    check('IdentityConfidence', 'Confiança de identidade', 0.5, 25);
+    check('BusinessStability', 'Estabilidade do negócio', 0.4, 15);
+    check('OperationalActivity', 'Atividade operacional', 0.3, 20);
+    check('MarketReputation', 'Reputação no mercado', 0.4, 10);
+    return { score, items };
+  } catch (e) { return { score: 0, items: [{ label: 'Modelos', value: `Erro: ${e.message}`, risk: 'INFO', points: 0 }] }; }
+}
+
+function analyzeRelatedPeople(result) {
+  // GAP INTERNO — related_people_*
+  try {
+    const items = []; let score = 0;
+    const rpp = result?.RelatedPeoplePhones || result?.related_people_phones;
+    const rpe = result?.RelatedPeopleEmails || result?.related_people_emails;
+    const rpa = result?.RelatedPeopleAddresses || result?.related_people_addresses;
+    if (!rpp && !rpe && !rpa) { items.push({ label: 'Pessoas relacionadas', value: 'Dataset não consultado', risk: 'INFO', points: 0 }); return { score, items }; }
+    let phones = 0, addrs = 0, peps = 0, sanc = 0;
+    const accum = (ds, counter) => {
+      if (!ds) return 0;
+      let c = 0;
+      for (const x of flattenBDCArray(ds)) {
+        const list = x?.RelatedPeople || x?.People || [];
+        if (Array.isArray(list)) {
+          c += list.length;
+          for (const p of list) {
+            if (p?.IsPEP || p?.IsPep) peps++;
+            if (Array.isArray(p?.Sanctions) && p.Sanctions.length > 0) sanc++;
+          }
+        }
+      }
+      return c;
+    };
+    phones = accum(rpp);
+    accum(rpe);
+    addrs = accum(rpa);
+    if (sanc > 0) { score += 50; items.push({ label: 'Pessoas SANCIONADAS via contatos', value: `${sanc} pessoa(s) sancionada(s) compartilham contato/endereço`, risk: 'CRITICO', points: 50 }); }
+    if (peps > 0) { const pts = peps > 2 ? 20 : 10; score += pts; items.push({ label: 'PEPs via contatos', value: `${peps} PEP(s) compartilham contato`, risk: 'ALTO', points: pts }); }
+    if (phones > 20) { score += 15; items.push({ label: 'Telefone compartilhado', value: `${phones} pessoa(s) com o(s) telefone(s) da empresa`, risk: 'ALTO', points: 15 }); }
+    if (addrs > 30) { score += 10; items.push({ label: 'Endereço compartilhado', value: `${addrs} pessoa(s) no mesmo endereço`, risk: 'MEDIO', points: 10 }); }
+    if (items.length === 0) items.push({ label: 'Pessoas relacionadas', value: 'Sem flags', risk: 'OK', points: 0 });
+    return { score, items };
+  } catch (e) { return { score: 0, items: [{ label: 'Relacionados', value: `Erro: ${e.message}`, risk: 'INFO', points: 0 }] }; }
+}
+
+function analyzeBetsOwnership(result) {
+  // GAP 3 (PF) — bets_ownership
+  try {
+    const items = []; let score = 0;
+    const bo = result?.BetsOwnership || result?.bets_ownership;
+    if (!bo) { items.push({ label: 'Participação em bets', value: 'Dataset não consultado', risk: 'INFO', points: 0 }); return { score, items }; }
+    let total = 0, regulated = 0, pct = 0;
+    const names = [];
+    for (const item of flattenBDCArray(bo)) {
+      const list = item?.Bets || item?.BetsList || item?.Companies || (Array.isArray(item) ? item : [item]);
+      const all = Array.isArray(list) ? list : [list];
+      for (const b of all) {
+        if (!b || typeof b !== 'object' || !b?.Name) continue;
+        total++;
+        if (b?.IsRegulated === true || b?.IsRegisteredSPA === true || b?.SpaRegistered === true) regulated++;
+        const p = Number(b?.Participation ?? b?.ParticipationPercentage ?? 0);
+        pct += p;
+        if (names.length < 5) names.push(`${b.Name}${p > 0 ? ` (${p}%)` : ''}`);
+      }
+    }
+    if (total === 0) { items.push({ label: 'Participação em bets', value: 'Nenhuma', risk: 'OK', points: 0 }); return { score, items }; }
+    const unreg = total - regulated;
+    if (unreg > 0) { score += 60; items.push({ label: 'Participação em bets NÃO-REGULADAS', value: `${unreg} casa(s) sem registro SPA/MF`, risk: 'CRITICO', points: 60 }); }
+    if (regulated > 0) { score += 25; items.push({ label: 'Participação em bets reguladas', value: `${regulated}: ${names.join('; ')}`, risk: 'ALTO', points: 25 }); }
+    if (pct >= 25) { score += 15; items.push({ label: 'Participação relevante em bets', value: `${pct.toFixed(1)}% total — qualifica como UBO de bet`, risk: 'ALTO', points: 15 }); }
+    return { score, items };
+  } catch (e) { return { score: 0, items: [{ label: 'Bets', value: `Erro: ${e.message}`, risk: 'INFO', points: 0 }] }; }
+}
+
+// ── Detector de bloqueio B13 (processos criminais graves) ──
+function detectCriminalBlock(result) {
+  try {
+    const all = [
+      ...flattenBDCArray(result?.Processes || result?.processes),
+      ...flattenBDCArray(result?.LawsuitsDistributionData || result?.lawsuits_distribution_data),
+      ...flattenBDCArray(result?.OwnersLawsuits || result?.owners_lawsuits),
+      ...flattenBDCArray(result?.OwnersLawsuitsDistribution || result?.owners_lawsuits_distribution),
+    ];
+    let crim = 0; const samples = [];
+    for (const item of all) {
+      const d = item?.LawsuitsDistribution || item?.DistributionByCourtType || item?.DistributionByLawsuitType || [];
+      if (Array.isArray(d)) for (const x of d) {
+        const t = String(x?.Type || x?.Court || x?.LawsuitType || x?.Description || '');
+        if (CRIMINAL_KW.test(t)) {
+          crim += Number(x?.Count || x?.TotalLawsuits || 1);
+          if (samples.length < 3) samples.push(t);
+        }
+      }
+    }
+    if (crim >= 3) return { code: 'B13', label: 'Processos criminais graves recorrentes', severity: 'BLOQUEIO', detail: `${crim} processos criminais (ex.: ${samples.join('; ')}). Lei 9.613/1998.`, score: 850 };
+    return null;
+  } catch { return null; }
+}
+
+// ── Detector de bloqueio B14 (endereço-fachada) ──
+function detectFakeAddressBlock(result) {
+  try {
+    const stats = result?.CompaniesStatistics || result?.companies_statistics;
+    if (!stats) return null;
+    let totalC = 0, totalEmp = 0;
+    for (const s of flattenBDCArray(stats)) {
+      totalC = Math.max(totalC, Number(s?.TotalCompanies ?? s?.CompaniesCount ?? 0));
+      totalEmp += Number(s?.TotalEmployees ?? s?.EmployeesCount ?? 0);
+    }
+    // > 50 empresas + 0 funcionários no endereço = bloqueio
+    if (totalC > 50 && totalEmp === 0) {
+      return { code: 'B14', label: 'Endereço-fachada (alta densidade sem funcionários)', severity: 'BLOQUEIO', detail: `${totalC} empresas no mesmo endereço com 0 funcionários agregados. Padrão de coworking-fraude.`, score: 850 };
+    }
+    return null;
+  } catch { return null; }
+}
+
+// ── Detector de manual flag M04 (mudança QSA recente + sem histórico) ──
+function detectRecentQsaChangeFlag(result) {
+  try {
+    const qsa = result?.ConfigurableRecencyQsa || result?.configurable_recency_qsa;
+    if (!qsa) return null;
+    let last30 = 0, newOwners = 0;
+    for (const item of flattenBDCArray(qsa)) {
+      const changes = item?.RecentChanges || item?.QsaChanges || item?.Changes || [];
+      if (Array.isArray(changes)) for (const c of changes) {
+        const ds = c?.ChangeDate || c?.Date || c?.OperationDate;
+        if (ds) {
+          const d = new Date(ds);
+          if (!isNaN(d) && (Date.now() - d.getTime()) / (24 * 3600 * 1000) <= 30) last30++;
+        }
+        if (c?.Operation === 'ADD' || c?.ChangeType === 'ENTRY' || c?.Type === 'NewOwner') newOwners++;
+      }
+    }
+    if (last30 >= 2 || (last30 >= 1 && newOwners >= 2)) {
+      return { code: 'M04', label: 'Mudança recente significativa de QSA', detail: `${last30} alteração(ões) nos últimos 30 dias${newOwners > 0 ? ` e ${newOwners} sócio(s) novo(s)` : ''}. Padrão clássico de empresa antiga "vendida" para fraude — encaminhar para análise manual.` };
+    }
+    return null;
+  } catch { return null; }
+}
+
 function analyzePersonBlocks(result) {
   const blocks = [];
   const bd = result?.BasicData || result?.basic_data;
   if (bd) {
-    const items = flattenBDCArray(bd);
-    const first = items[0] || {};
+    const first = flattenBDCArray(bd)[0] || (typeof bd === 'object' ? bd : {});
     const status = first?.TaxIdStatus || '';
-    if (status && !String(status).toUpperCase().includes('REGULAR')) {
-      blocks.push({ code: 'B01', label: 'CPF Irregular', severity: 'BLOQUEIO', detail: `Situação: ${status}.`, score: 850 });
-    }
-    const birthDate = first?.BirthDate || first?.DateOfBirth;
-    if (birthDate) {
-      const age = (Date.now() - new Date(birthDate).getTime()) / (365.25 * 24 * 3600 * 1000);
-      if (age < 18) blocks.push({ code: 'B02', label: 'Menor de 18 anos', severity: 'BLOQUEIO', detail: `Idade: ${Math.floor(age)}.`, score: 850 });
-    }
+    if (status && !String(status).toUpperCase().includes('REGULAR')) blocks.push({ code: 'B01', label: 'CPF Irregular', severity: 'BLOQUEIO', detail: `Situação: ${status}.`, score: 850 });
+    const bdt = first?.BirthDate || first?.DateOfBirth;
+    if (bdt) { const age = (Date.now() - new Date(bdt).getTime()) / (365.25 * 24 * 3600 * 1000); if (age < 18) blocks.push({ code: 'B02', label: 'Menor de 18 anos', severity: 'BLOQUEIO', detail: `Idade: ${Math.floor(age)}.`, score: 850 }); }
   }
   const kyc = result?.Kyc || result?.kyc;
-  if (kyc) {
-    const kItems = flattenBDCArray(kyc);
-    for (const item of kItems) {
-      const sanctions = item?.Sanctions || [];
-      if (Array.isArray(sanctions) && sanctions.length > 0) {
-        blocks.push({ code: 'B03', label: 'Pessoa em lista de sanções', severity: 'BLOQUEIO', detail: `${sanctions.length} sanção(ões).`, score: 850 });
-      }
-    }
-  }
+  if (kyc) for (const item of flattenBDCArray(kyc)) { const s = item?.Sanctions || []; if (Array.isArray(s) && s.length > 0) blocks.push({ code: 'B03', label: 'Pessoa em lista de sanções', severity: 'BLOQUEIO', detail: `${s.length} sanção(ões).`, score: 850 }); }
   return blocks;
 }
 
@@ -1075,16 +1580,11 @@ function analyzePersonData(result) {
   }
   const pKyc = result?.Kyc || result?.kyc;
   if (pKyc) {
-    const kItems = flattenBDCArray(pKyc);
-    let isPep = false, hasSanctions = false;
-    for (const item of kItems) {
-      if (item?.IsPEP || item?.IsPep) isPep = true;
-      const sanctions = item?.Sanctions || [];
-      if (Array.isArray(sanctions) && sanctions.length > 0) hasSanctions = true;
-    }
+    let isPep = false, hasSanc = false;
+    for (const item of flattenBDCArray(pKyc)) { if (item?.IsPEP || item?.IsPep) isPep = true; if (Array.isArray(item?.Sanctions) && item.Sanctions.length > 0) hasSanc = true; }
     sections.compliance.items.push({ label: 'PEP', value: isPep ? 'SIM' : 'Não', risk: isPep ? 'ALTO' : 'OK', points: isPep ? 40 : 0 });
     if (isPep) sections.compliance.score += 40;
-    if (hasSanctions) { sections.compliance.items.push({ label: 'Sanções', value: 'ENCONTRADA', risk: 'CRITICO', points: 80 }); sections.compliance.score += 80; }
+    if (hasSanc) { sections.compliance.items.push({ label: 'Sanções', value: 'ENCONTRADA', risk: 'CRITICO', points: 80 }); sections.compliance.score += 80; }
   }
   return sections;
 }
@@ -1308,10 +1808,18 @@ Deno.serve(async (req) => {
     if (isPF) {
       const blocks = analyzePersonBlocks(result);
       const sections = analyzePersonData(result);
-      // ── NOVO PF: bens penhorados/judiciais (Sprint Expansão PLD)
       const judicialAssets = analyzeJudicialAssets(result);
       sections.judicialAssets = judicialAssets;
-      const totalScore = sections.identity.score + sections.compliance.score + sections.reputation.score + judicialAssets.score;
+      // ── NOVOS PF v3 (2026-05-16) — GAPs 3, 5, 7 + interno related_people ──
+      const pfFinancialEstimates = analyzeFinancialEstimates(result);
+      const pfBets = analyzeBetsOwnership(result);
+      const pfFlags = analyzeFlagsAndFeatures(result);
+      const pfRelated = analyzeRelatedPeople(result);
+      sections.financialEstimates = pfFinancialEstimates;
+      sections.betsOwnership = pfBets;
+      sections.flagsFeatures = pfFlags;
+      sections.relatedPeople = pfRelated;
+      const totalScore = sections.identity.score + sections.compliance.score + sections.reputation.score + judicialAssets.score + pfFinancialEstimates.score + pfBets.score + pfFlags.score + pfRelated.score;
       const baseScore = SEGMENT_BASE_SCORES[templateModel] || 30;
       const finalScore = Math.max(0, Math.min(849, baseScore + totalScore));
       const hasBlock = blocks.length > 0;
@@ -1345,14 +1853,34 @@ Deno.serve(async (req) => {
       const financialDeep = analyzeFinancialDeep(result, responses);
       const corporateChain = analyzeCorporateChain(result);
       const digitalAttributes = analyzeDigitalAttributes(result);
+      // ── NOVOS ANALYZERS — Sprint Expansão BDC v3 (2026-05-16) ──
+      const processes = analyzeProcesses(result);
+      const politicalExposure = analyzePoliticalExposure(result);
+      const qsaChanges = analyzeQsaChanges(result);
+      const addressIntel = analyzeAddressIntelligence(result);
+      const financialEstimates = analyzeFinancialEstimates(result);
+      const companyGroup = analyzeCompanyGroupOwners(result);
+      const licenses = analyzeLicenses(result);
+      const flagsFeatures = analyzeFlagsAndFeatures(result);
+      const relatedPeople = analyzeRelatedPeople(result);
       // Adiciona manual flag M03 se houver divergência grave de TPV
       if (financialDeep.declaredTpvMismatch) {
         manualReviewFlags.push({ code: 'M03', label: 'TPV declarado divergente da receita real BDC', detail: 'Volume declarado pelo cliente é >3x maior que a receita real reportada pela BigDataCorp. Encaminhar para análise manual.' });
       }
 
-      // Pesos rebalanceados — soma = 1.00. Os 4 novos analyzers receberam peso menor pra não desestabilizar scores existentes.
-      const COMPONENT_WEIGHTS = { identity: 0.09, owners: 0.16, digital: 0.06, compliance: 0.18, reputation: 0.07, financial: 0.07, evolution: 0.05, esg: 0.05, contacts: 0.03, employeesKyc: 0.02, sectorial: 0.02, assets: 0.02, creditRisk: 0.08, defaults: 0.04, financialDeep: 0.03, corporateChain: 0.02, digitalAttributes: 0.01 };
-      const componentScores = { identity: identity.score, owners: owners.score, digital: digital.score, compliance: compliance.score, reputation: reputation.score, financial: financial.score, evolution: evolution.score, esg: esgData.score, contacts: contacts.score, employeesKyc: employeesKyc.score, sectorial: sectorial.score, assets: assets.score, creditRisk: creditRisk.score, defaults: defaults.score, financialDeep: financialDeep.score, corporateChain: corporateChain.score, digitalAttributes: digitalAttributes.score };
+      // Pesos v3 — soma = 1.00. 26 componentes (17 antigos + 9 novos). Calibrados por criticidade PLD.
+      const COMPONENT_WEIGHTS = { identity: 0.07, owners: 0.12, digital: 0.04, compliance: 0.13, reputation: 0.05, financial: 0.05, evolution: 0.04, esg: 0.04, contacts: 0.02, employeesKyc: 0.02, sectorial: 0.02, assets: 0.01, creditRisk: 0.06, defaults: 0.03, financialDeep: 0.03, corporateChain: 0.02, digitalAttributes: 0.01, processes: 0.08, politicalExposure: 0.04, qsaChanges: 0.03, addressIntel: 0.06, financialEstimates: 0.02, companyGroup: 0.04, licenses: 0.01, flagsFeatures: 0.01, relatedPeople: 0.01 };
+      const componentScores = {
+        identity: identity.score, owners: owners.score, digital: digital.score, compliance: compliance.score,
+        reputation: reputation.score, financial: financial.score, evolution: evolution.score, esg: esgData.score,
+        contacts: contacts.score, employeesKyc: employeesKyc.score, sectorial: sectorial.score, assets: assets.score,
+        creditRisk: creditRisk.score, defaults: defaults.score, financialDeep: financialDeep.score,
+        corporateChain: corporateChain.score, digitalAttributes: digitalAttributes.score,
+        processes: processes.score, politicalExposure: politicalExposure.score, qsaChanges: qsaChanges.score,
+        addressIntel: addressIntel.score, financialEstimates: financialEstimates.score,
+        companyGroup: companyGroup.score, licenses: licenses.score, flagsFeatures: flagsFeatures.score,
+        relatedPeople: relatedPeople.score,
+      };
       let weightedTotal = 0;
       for (const [key, weight] of Object.entries(COMPONENT_WEIGHTS)) {
         weightedTotal += (componentScores[key] || 0) * weight;
@@ -1365,7 +1893,7 @@ Deno.serve(async (req) => {
         type: 'PJ', document: cleanDoc, templateModel, datasetGroup: groupKey,
         datasetsQueried: Object.values(batchDefs).flatMap(b => b.datasets).length,
         elapsedMs: totalElapsed, blocks, hasBlock, manualReviewFlags, batchStatuses,
-        sections: { identity, owners, digital, compliance, reputation, financial, evolution, esg: esgData, contacts, employeesKyc, sectorial, assets, creditRisk, defaults, financialDeep, corporateChain, digitalAttributes },
+        sections: { identity, owners, digital, compliance, reputation, financial, evolution, esg: esgData, contacts, employeesKyc, sectorial, assets, creditRisk, defaults, financialDeep, corporateChain, digitalAttributes, processes, politicalExposure, qsaChanges, addressIntel, financialEstimates, companyGroup, licenses, flagsFeatures, relatedPeople },
         scoring: {
           baseScore, variablesScore: Math.round(weightedTotal * 0.6), enrichmentScore: Math.round(weightedTotal * 0.4),
           weightedTotal: Math.round(weightedTotal),
@@ -1414,13 +1942,29 @@ Deno.serve(async (req) => {
       } catch (e) { console.warn('Error saving results:', e.message); }
 
       try {
+        // GAP 11 — extrai links de evidência (PDF/XML/CSV) de cada batch BDC.
+        const evidenceUrls = [];
+        for (const br of batchResults) {
+          if (!br.success || !br.data) continue;
+          const st = br.data.Status || {};
+          for (const [ds, statuses] of Object.entries(st)) {
+            if (Array.isArray(statuses)) for (const s of statuses) {
+              if (s?.EvidenceUrl || s?.EvidenceLink || s?.DownloadUrl) {
+                evidenceUrls.push({ dataset: ds, url: s.EvidenceUrl || s.EvidenceLink || s.DownloadUrl, format: s.EvidenceFormat || 'PDF', generatedAt: s.EvidenceDate || new Date().toISOString() });
+              }
+            }
+          }
+        }
         await base44.asServiceRole.entities.ExternalValidationResult.create({
           onboardingCaseId, provider: 'BigDataCorp',
           validationType: `Enriquecimento ${isPF ? 'PF' : 'PJ'} — ${groupKey} (${successfulBatches}/${totalBatches} lotes)`,
-          endpoint, resultData: result, score: analysis.scoring.finalScore,
+          endpoint,
+          resultData: evidenceUrls.length > 0 ? { ...result, _evidenceUrls: evidenceUrls } : result,
+          score: analysis.scoring.finalScore,
           status: successfulBatches === totalBatches ? 'Sucesso' : 'Sucesso',
           timestamp: new Date().toISOString(), responseTime: totalElapsed,
         });
+        if (evidenceUrls.length > 0) console.log(`[BDC] ${evidenceUrls.length} evidence URL(s) saved for case ${onboardingCaseId}`);
       } catch (e) { console.warn('Error saving ExternalValidationResult:', e.message); }
     }
 
