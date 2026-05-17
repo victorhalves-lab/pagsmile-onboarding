@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Loader2, BookOpen, FileStack, Layers, ShieldCheck, Download, Microscope } from 'lucide-react';
+import { Loader2, BookOpen, FileStack, Layers, ShieldCheck, Download, Microscope, Activity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import DocCapa from '@/components/kyc-doc/DocCapa';
 import DocGlossario from '@/components/kyc-doc/DocGlossario';
@@ -28,6 +28,7 @@ import DocModeloDinamicoKYC from '@/components/kyc-doc/DocModeloDinamicoKYC';
 import DocFunisCaptacao from '@/components/kyc-doc/DocFunisCaptacao';
 import RiskScoringDocTab from '@/components/kyc-doc/risk-scoring/RiskScoringDocTab';
 import DocBdcCafMicroscopico from '@/components/kyc-doc/DocBdcCafMicroscopico';
+import RiskAnalysisDocTab from '@/components/kyc-doc/risk-analysis/RiskAnalysisDocTab';
 
 const TOC = [
   { id: 's0', n: '0', label: 'Glossário — Termos Técnicos e Regulatórios' },
@@ -128,6 +129,13 @@ export default function DocumentoKYCKYB() {
             label="BDC + CAF Microscópico"
             sublabel="Datasets, serviços e custos"
           />
+          <TabButton
+            active={activeTab === 'riskanalysis'}
+            onClick={() => setActiveTab('riskanalysis')}
+            icon={Activity}
+            label="Análise de Risco"
+            sublabel="Tela do olhinho — 12 blocos"
+          />
         </div>
       </div>
 
@@ -146,6 +154,9 @@ export default function DocumentoKYCKYB() {
       )}
       {activeTab === 'bdccaf' && (
         <DocBdcCafMicroscopico />
+      )}
+      {activeTab === 'riskanalysis' && (
+        <RiskAnalysisDocTab />
       )}
     </div>
   );
