@@ -166,7 +166,14 @@ async function validateDdd(phone) {
 
 Deno.serve(async (req) => {
   try {
-    const base44 = createClientFromRequest(req);
+    // Tolerante a requests anônimos (cliente público sem token).
+    // Note: esta função não usa base44 SDK internamente — apenas fetches externos.
+    // O createClient tolerante mantém compatibilidade caso seja chamado de página autenticada.
+    try {
+      createClientFromRequest(req);
+    } catch (_) {
+      // Anônimo — ok, prosseguir sem cliente Base44.
+    }
     const { type, value, cnpjData } = await req.json();
 
     if (type === 'site') {

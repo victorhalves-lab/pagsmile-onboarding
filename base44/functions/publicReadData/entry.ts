@@ -62,7 +62,14 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => ({}));
     const { kind } = body;
-    const base44 = createClientFromRequest(req);
+    // Tolerante a requests anônimos (cliente público sem token).
+    let base44;
+    try {
+      base44 = createClientFromRequest(req);
+    } catch (_) {
+      const { createClient } = await import('npm:@base44/sdk@0.8.25');
+      base44 = createClient({ appId: Deno.env.get('BASE44_APP_ID'), requiresAuth: false });
+    }
 
     if (kind === 'lead_by_id') {
       const { leadId, proposalToken, linkCode } = body;
