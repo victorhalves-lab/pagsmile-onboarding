@@ -31,44 +31,64 @@ Deno.serve(async (req) => {
       dryRun,
     };
 
+    // Helper: processa lista em chunks com pausa para não estourar rate limit.
+    // Para cada item, monta payload com framework_version + required fields existentes
+    // (Base44 revalida o registro inteiro em update; alguns registros legados podem ter
+    // required fields que viraram required depois — re-afirmamos o valor atual).
+    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+    async function backfillChunked(entityName, items, statBucket, requiredFields = []) {
+      const CHUNK = 10;
+      const PAUSE_MS = 400;
+      const errors = [];
+      for (let i = 0; i < items.length; i += CHUNK) {
+        const slice = items.slice(i, i + CHUNK);
+        await Promise.all(slice.map(async (it) => {
+          const payload = { framework_version: 'v4.0' };
+          // Re-afirma required fields presentes; usa fallback se ausente
+          // (registros legados podem ter required fields que viraram required depois).
+          for (const f of requiredFields) {
+            if (it[f] !== undefined && it[f] !== null && it[f] !== '') {
+              payload[f] = it[f];
+            } else {
+              // Fallback seguro por campo (todos não-destrutivos)
+              if (f === 'category') payload[f] = 'COMPLIANCE';
+              else if (f === 'merchantType') payload[f] = 'PJ';
+              else if (f === 'name') payload[f] = it.name || `(sem nome) ${it.id}`;
+            }
+          }
+          try {
+            await base44.asServiceRole.entities[entityName].update(it.id, payload);
+            statBucket.updated++;
+          } catch (e) {
+            errors.push({ id: it.id, error: e.message });
+          }
+        }));
+        if (i + CHUNK < items.length) await sleep(PAUSE_MS);
+      }
+      if (errors.length) statBucket.errors = errors;
+    }
+
     // ── 1. OnboardingCase ─────────────────────────────────────────
     const cases = await base44.asServiceRole.entities.OnboardingCase.list('-created_date', 10000);
     stats.onboardingCases.total = cases.length;
     const casesToFix = cases.filter(c => !c.framework_version);
     stats.onboardingCases.missing = casesToFix.length;
-
-    if (!dryRun) {
-      for (const c of casesToFix) {
-        await base44.asServiceRole.entities.OnboardingCase.update(c.id, { framework_version: 'v4.0' });
-        stats.onboardingCases.updated++;
-      }
-    }
+    if (!dryRun) await backfillChunked('OnboardingCase', casesToFix, stats.onboardingCases, ['merchantId','questionnaireTemplateId']);
 
     // ── 2. ComplianceScore ────────────────────────────────────────
     const scores = await base44.asServiceRole.entities.ComplianceScore.list('-created_date', 10000);
     stats.complianceScores.total = scores.length;
     const scoresToFix = scores.filter(s => !s.framework_version);
     stats.complianceScores.missing = scoresToFix.length;
-
-    if (!dryRun) {
-      for (const s of scoresToFix) {
-        await base44.asServiceRole.entities.ComplianceScore.update(s.id, { framework_version: 'v4.0' });
-        stats.complianceScores.updated++;
-      }
-    }
+    if (!dryRun) await backfillChunked('ComplianceScore', scoresToFix, stats.complianceScores, ['onboarding_case_id']);
 
     // ── 3. QuestionnaireTemplate ──────────────────────────────────
     const templates = await base44.asServiceRole.entities.QuestionnaireTemplate.list('-created_date', 10000);
     stats.questionnaireTemplates.total = templates.length;
     const tplsToFix = templates.filter(t => !t.framework_version);
     stats.questionnaireTemplates.missing = tplsToFix.length;
-
-    if (!dryRun) {
-      for (const t of tplsToFix) {
-        await base44.asServiceRole.entities.QuestionnaireTemplate.update(t.id, { framework_version: 'v4.0' });
-        stats.questionnaireTemplates.updated++;
-      }
-    }
+    if (!dryRun) await backfillChunked('QuestionnaireTemplate', tplsToFix, stats.questionnaireTemplates, ['name','merchantType','category']);
 
     return Response.json({
       success: true,
