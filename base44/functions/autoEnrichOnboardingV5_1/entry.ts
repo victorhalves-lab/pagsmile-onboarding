@@ -41,28 +41,38 @@ Deno.serve(async (req) => {
 
     await base44.asServiceRole.entities.OnboardingCase.update(caseId, { status: 'Em Processamento' });
 
-    // ═══ STEP 1: V5.1 Scoring (5 camadas) ═══
+    // ═══ STEP 1: V5.1 Scoring (5 camadas) — chamada cross-deployment ═══
+    // Por que cross-deployment? O runtime Deno bloqueia chamadas recursivas dentro do
+    // mesmo deployment (508 LOOP_DETECTED) e o SDK retorna 403 em functions.invoke
+    // encadeado. Solução: invocar via base URL externa do app, que vai para outro pool
+    // de isolates. Mesmo padrão usado por autoEnrichOnboarding V4 (cf. functions/autoEnrichOnboarding).
     let scoringResult = null;
     try {
       console.log(`[AutoEnrichV5_1] Step 1: V5.1 scoring...`);
-      const res = await base44.asServiceRole.functions.invoke('bdcEnrichCaseV5_1', { onboardingCaseId: caseId });
-      scoringResult = res?.data;
+      const appId = Deno.env.get('BASE44_APP_ID');
+      const authHeader = req.headers.get('authorization') || req.headers.get('Authorization') || '';
+      const fnUrl = `https://base44.app/api/apps/${appId}/functions/bdcEnrichCaseV5_1`;
+      const fnRes = await fetch(fnUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': authHeader },
+        body: JSON.stringify({ onboardingCaseId: caseId }),
+      });
+      if (!fnRes.ok) {
+        const txt = await fnRes.text();
+        throw new Error(`bdcEnrichCaseV5_1 HTTP ${fnRes.status}: ${txt.slice(0, 200)}`);
+      }
+      scoringResult = await fnRes.json();
       console.log(`[AutoEnrichV5_1] Step 1: score=${scoringResult?.score} cat=${scoringResult?.categoria_decisao}`);
     } catch (e) {
       console.error(`[AutoEnrichV5_1] Step 1 failed: ${e.message}`);
       return Response.json({ success: false, error: e.message }, { status: 500 });
     }
 
-    // ═══ STEP 2: Apply final status (deterministic from categoria_decisao) ═══
+    // ═══ STEP 2: bdcEnrichCaseV5_1 já atualizou OnboardingCase (status + iaDecision + finalDecisionDate).
+    //             Aqui apenas extraímos os campos derivados para a notificação Slack. ═══
     const finalStatus = scoringResult?.status_legacy || 'Manual';
     const finalDecision = scoringResult?.recomendacao_final || 'Revisão Manual';
     const isAuto = scoringResult?.categoria_decisao === 'cat_1_auto_approve';
-
-    await base44.asServiceRole.entities.OnboardingCase.update(caseId, {
-      status: finalStatus,
-      iaDecision: finalDecision,
-      finalDecisionDate: new Date().toISOString(),
-    });
 
     // ═══ STEP 3: Slack notification (best-effort) ═══
     try {
