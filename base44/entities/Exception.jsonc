@@ -1,0 +1,78 @@
+{
+  "name": "Exception",
+  "type": "object",
+  "description": "[V5.1] Cat\u00e1logo das categorias de exce\u00e7\u00e3o V5.1. Permite que um analista s\u00eanior libere um caso bloqueado com justificativa documentada. Substitui o conceito V4 de 'override' por uma taxonomia expl\u00edcita.",
+  "properties": {
+    "codigo": {
+      "type": "string",
+      "description": "C\u00f3digo (cat_1_documental, cat_2_operacional, cat_3_estrutural, cat_4_estrategica)"
+    },
+    "nome": {
+      "type": "string"
+    },
+    "descricao": {
+      "type": "string",
+      "description": "Quando esta categoria de exce\u00e7\u00e3o \u00e9 aplic\u00e1vel"
+    },
+    "papel_requerido": {
+      "type": "string",
+      "enum": [
+        "analista_compliance",
+        "head_compliance",
+        "cco",
+        "comite_credito"
+      ],
+      "description": "Papel m\u00ednimo necess\u00e1rio para aprovar exce\u00e7\u00e3o desta categoria"
+    },
+    "documentos_justificativa": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Documentos que o cliente DEVE enviar antes da exce\u00e7\u00e3o ser aplicada"
+    },
+    "duracao_dias": {
+      "type": "number",
+      "description": "Validade da exce\u00e7\u00e3o em dias (ap\u00f3s esse prazo precisa ser revalidada)"
+    },
+    "registra_em_snapshot": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se true, qualquer uso desta exce\u00e7\u00e3o cria registro imut\u00e1vel em Snapshot"
+    },
+    "ativo": {
+      "type": "boolean",
+      "default": true
+    },
+    "fonte_documento": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "codigo",
+    "nome",
+    "papel_requerido"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

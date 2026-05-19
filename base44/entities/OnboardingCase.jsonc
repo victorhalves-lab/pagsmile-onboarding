@@ -303,6 +303,68 @@
     "currentPendencyRequestId": {
       "type": "string",
       "description": "ID da PendencyRequest atualmente aberta (status='Docs Solicitados'). Vazio quando n\u00e3o h\u00e1 pend\u00eancias em curso."
+    },
+    "framework_version": {
+      "type": "string",
+      "enum": [
+        "v4.0",
+        "v5.1"
+      ],
+      "default": "v4.0",
+      "description": "DNA IMUT\u00c1VEL do caso. Define qual universo de c\u00f3digo processa/exibe este caso. Casos legados (sem este campo) s\u00e3o tratados como v4.0. Casos novos p\u00f3s-rollout V5.1 nascem com v5.1. NUNCA \u00e9 alterado ap\u00f3s cria\u00e7\u00e3o \u2014 quem nasce V4 morre V4, quem nasce V5.1 morre V5.1."
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "tier_1",
+        "tier_2",
+        "tier_3",
+        "subseller_pj",
+        "subseller_pf"
+      ],
+      "description": "[V5.1] Tier resolvido na entrada do pipeline. Tier 1 (\u2264R$50k/m\u00eas), Tier 2 (R$50k-500k), Tier 3 (>R$500k). Marketplace \u00e9 sempre Tier 2 fixo. Subsellers t\u00eam tier pr\u00f3prio."
+    },
+    "segmento_v5_1": {
+      "type": "string",
+      "description": "[V5.1] Segmento V5.1 declarado (ecommerce, gateway, marketplace, dropshipping, infoprodutos, educacao, saas, plataforma_vertical, link_pagamento, foodtech, mpe, pix_merchant, pix_intermediario)"
+    },
+    "morfologia": {
+      "type": "string",
+      "description": "[V5.1] Morfologia operacional resolvida (resolverSegmentoMorfologia)"
+    },
+    "capabilities_ativas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "[V5.1] Capabilities transversais ativadas (ex: cap_financial_capacity_validation, cap_marketplace_kyc, cap_crossborder_compliance, cap_subseller_kyb)"
+    },
+    "risk_score_v5_1": {
+      "type": "number",
+      "description": "[V5.1] Score V5.1 tier-aware. Escala depende do tier (Tier 1: 0-499, Tier 2/3: 0-849, Subseller: 0-999). NUNCA sobrescreve riskScoreV4."
+    },
+    "subfaixa_tier_aware": {
+      "type": "string",
+      "description": "[V5.1] Subfaixa tier-aware (ex: 1A-T1, 2A-T2, 3B-T3, 1A-SubPJ, 2B-SubPF)"
+    },
+    "patch_financeiro_status": {
+      "type": "string",
+      "enum": [
+        "nao_aplicavel",
+        "verde",
+        "amarelo",
+        "laranja",
+        "vermelho"
+      ],
+      "description": "[V5.1] Status do Patch Financeiro: nao_aplicavel (Tier 1 sem segmento cr\u00edtico), verde (coerente), amarelo (diverg\u00eancia <30%), laranja (diverg\u00eancia 30-100%), vermelho (diverg\u00eancia >100% ou docs inv\u00e1lidos)"
+    },
+    "v_financial_coherence": {
+      "type": "number",
+      "description": "[V5.1] Score da vari\u00e1vel V-financial_coherence (0-100). Mede coer\u00eancia entre TPV declarado, capital social, receita anual, comprovantes."
+    },
+    "legacyV4CaseId": {
+      "type": "string",
+      "description": "[V5.1] Quando este caso V5.1 nasceu de 'Reprocessar em V5.1' de um caso V4, aponta para o ID do caso V4 original (que permanece imut\u00e1vel). Vazio para casos V5.1 nativos."
     }
   },
   "required": [

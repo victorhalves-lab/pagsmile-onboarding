@@ -1,0 +1,147 @@
+{
+  "name": "Bloqueio",
+  "type": "object",
+  "description": "[V5.1] Cat\u00e1logo can\u00f4nico dos bloqueios V5.1. Substitui a tabela hardcoded BLOCK_EXPLANATIONS de V4. Cada bloqueio tem c\u00f3digo \u00fanico (B-XXX-NN), severidade, mensagem ao analista e mensagem ao cliente. N\u00c3O toca em bloqueios V4 (B01-B09) \u2014 esses continuam hardcoded no c\u00f3digo legado.",
+  "properties": {
+    "codigo": {
+      "type": "string",
+      "description": "C\u00f3digo can\u00f4nico do bloqueio (formato B-CAT-NN, ex: B-FIN-01, B-DOC-03, B-IDX-05)"
+    },
+    "categoria": {
+      "type": "string",
+      "enum": [
+        "FIN",
+        "DOC",
+        "IDX",
+        "REP",
+        "KYC",
+        "KYB",
+        "CRC",
+        "CAF",
+        "BDC",
+        "SAN",
+        "PEP",
+        "FRA",
+        "OPE",
+        "NUC",
+        "ENRICH"
+      ],
+      "description": "Categoria do bloqueio: FIN=Financeiro, DOC=Documenta\u00e7\u00e3o, IDX=Identidade, REP=Reputa\u00e7\u00e3o, KYC=Know Your Customer, KYB=Know Your Business, CRC=Conselho Regional, CAF=verifica\u00e7\u00e3o CAF, BDC=BigDataCorp, SAN=San\u00e7\u00f5es, PEP=Pessoa Exposta, FRA=Fraude, OPE=Operacional, NUC=N\u00facleo Duro, ENRICH=Enriquecimento"
+    },
+    "titulo": {
+      "type": "string",
+      "description": "T\u00edtulo curto do bloqueio (ex: 'Capital social insuficiente para TPV declarado')"
+    },
+    "severidade": {
+      "type": "string",
+      "enum": [
+        "BLOQUEIO",
+        "ESCALACAO",
+        "CONDICAO",
+        "ALERTA"
+      ],
+      "description": "BLOQUEIO=recusa direta, ESCALACAO=manual review obrigat\u00f3ria, CONDICAO=aprova com condi\u00e7\u00e3o, ALERTA=informativo"
+    },
+    "tiers_aplicaveis": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "tier_1",
+          "tier_2",
+          "tier_3",
+          "subseller_pj",
+          "subseller_pf"
+        ]
+      },
+      "description": "Em quais tiers este bloqueio pode ser disparado"
+    },
+    "segmentos_aplicaveis": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Segmentos onde este bloqueio \u00e9 avaliado. Array vazio = todos os segmentos."
+    },
+    "capabilities_relacionadas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Capabilities V5.1 que disparam este bloqueio (ex: cap_financial_capacity_validation)"
+    },
+    "trigger_logic": {
+      "type": "string",
+      "description": "Pseudo-c\u00f3digo da regra de disparo (ex: 'tpv_anual_declarado > capital_social * 12 AND patch_status != verde')"
+    },
+    "mensagem_analista": {
+      "type": "string",
+      "description": "Mensagem t\u00e9cnica exibida no painel do analista, com causa raiz e a\u00e7\u00e3o recomendada"
+    },
+    "mensagem_cliente": {
+      "type": "string",
+      "description": "Mensagem amig\u00e1vel ao cliente (quando aplic\u00e1vel \u2014 alguns bloqueios s\u00e3o internos)"
+    },
+    "exibe_para_cliente": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se true, a mensagem_cliente \u00e9 mostrada no email de recusa. Default false (bloqueio interno)."
+    },
+    "documentos_para_resolver": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Lista de IDs de DocumentType que, se enviados pelo cliente, podem resolver o bloqueio (usado em fluxo de Pend\u00eancias)"
+    },
+    "exception_categoria": {
+      "type": "string",
+      "enum": [
+        "nenhuma",
+        "cat_1_documental",
+        "cat_2_operacional",
+        "cat_3_estrutural",
+        "cat_4_estrategica"
+      ],
+      "default": "nenhuma",
+      "description": "Categoria de exce\u00e7\u00e3o V5.1 que pode liberar este bloqueio via aprova\u00e7\u00e3o manual"
+    },
+    "ativo": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se false, o bloqueio fica catalogado mas n\u00e3o dispara no pipeline (kill switch)"
+    },
+    "fonte_documento": {
+      "type": "string",
+      "description": "Refer\u00eancia ao documento V5.1 que define este bloqueio (ex: 'V5.1 - Matriz Can\u00f4nica de Decis\u00e3o, Se\u00e7\u00e3o 4.2')"
+    }
+  },
+  "required": [
+    "codigo",
+    "categoria",
+    "titulo",
+    "severidade"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

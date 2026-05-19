@@ -1,0 +1,95 @@
+{
+  "name": "Capability",
+  "type": "object",
+  "description": "[V5.1] Capabilities transversais. S\u00e3o conjuntos de valida\u00e7\u00f5es + datasets + documentos que se aplicam horizontalmente independente do segmento. Ex: cap_financial_capacity_validation se aplica a Tier 2+ e a Tier 1 com segmento cr\u00edtico (gateway, marketplace, dropshipping, crossborder).",
+  "properties": {
+    "codigo": {
+      "type": "string",
+      "description": "C\u00f3digo can\u00f4nico (cap_financial_capacity_validation, cap_marketplace_kyc, cap_crossborder_compliance, cap_subseller_kyb)"
+    },
+    "nome": {
+      "type": "string",
+      "description": "Nome leg\u00edvel"
+    },
+    "descricao": {
+      "type": "string",
+      "description": "O que esta capability faz e quando dispara"
+    },
+    "tiers_padrao": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tiers onde a capability \u00e9 ativada automaticamente"
+    },
+    "segmentos_forca_ativacao": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Segmentos que FOR\u00c7AM ativa\u00e7\u00e3o mesmo em tiers onde n\u00e3o seria padr\u00e3o (ex: dropshipping/gateway for\u00e7am cap_financial_capacity em Tier 1)"
+    },
+    "datasets_requeridos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "C\u00f3digos de Datasets necess\u00e1rios para esta capability funcionar"
+    },
+    "documentos_requeridos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs de DocumentType obrigat\u00f3rios quando esta capability est\u00e1 ativa"
+    },
+    "variaveis_calculadas": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Vari\u00e1veis V5.1 calculadas por esta capability (ex: v_financial_coherence, v_qsa_coherence)"
+    },
+    "bloqueios_possiveis": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "C\u00f3digos de Bloqueio que esta capability pode disparar"
+    },
+    "ativo": {
+      "type": "boolean",
+      "default": true
+    },
+    "fonte_documento": {
+      "type": "string",
+      "description": "Refer\u00eancia ao documento V5.1"
+    }
+  },
+  "required": [
+    "codigo",
+    "nome"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

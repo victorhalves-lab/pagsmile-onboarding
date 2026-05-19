@@ -15,16 +15,14 @@
       "enum": [
         "PF",
         "PJ"
-      ],
-      "description": "Tipo de merchant"
+      ]
     },
     "category": {
       "type": "string",
       "enum": [
         "LEAD_GENERATION",
         "COMPLIANCE"
-      ],
-      "description": "Categoria"
+      ]
     },
     "subCategory": {
       "type": "string",
@@ -37,12 +35,10 @@
       "default": "GENERAL"
     },
     "linkedComplianceTemplateId": {
-      "type": "string",
-      "description": "ID do template de compliance vinculado"
+      "type": "string"
     },
     "model": {
-      "type": "string",
-      "description": "Modelo de question\u00e1rio"
+      "type": "string"
     },
     "isActive": {
       "type": "boolean",
@@ -50,17 +46,14 @@
     },
     "isArchived": {
       "type": "boolean",
-      "default": false,
-      "description": "Se esta vers\u00e3o est\u00e1 arquivada"
+      "default": false
     },
     "version": {
       "type": "number",
-      "default": 1,
-      "description": "Vers\u00e3o do question\u00e1rio"
+      "default": 1
     },
     "previousVersionId": {
-      "type": "string",
-      "description": "ID da vers\u00e3o anterior deste template"
+      "type": "string"
     },
     "usageCount": {
       "type": "number",
@@ -102,6 +95,30 @@
           }
         }
       }
+    },
+    "framework_version": {
+      "type": "string",
+      "enum": [
+        "v4.0",
+        "v5.1"
+      ],
+      "default": "v4.0",
+      "description": "DNA do template. Templates V4 atuais permanecem v4.0. Templates novos V5.1 nascem com v5.1. Links de onboarding herdam este campo, e o caso criado pelo link tamb\u00e9m herda \u2014 garantindo coer\u00eancia ponta-a-ponta."
+    },
+    "tier_v5_1": {
+      "type": "string",
+      "enum": [
+        "tier_1",
+        "tier_2",
+        "tier_3",
+        "subseller_pj",
+        "subseller_pf"
+      ],
+      "description": "[V5.1] Tier alvo deste template (Tier 1 = question\u00e1rio curto, Tier 3 = question\u00e1rio completo)"
+    },
+    "segmento_v5_1": {
+      "type": "string",
+      "description": "[V5.1] Segmento V5.1 deste template (ecommerce, gateway, marketplace, etc.)"
     }
   },
   "required": [

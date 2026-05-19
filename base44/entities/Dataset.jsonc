@@ -1,0 +1,131 @@
+{
+  "name": "Dataset",
+  "type": "object",
+  "description": "[V5.1] Cat\u00e1logo unificado dos datasets de enriquecimento (BDC, CFC, Open Finance, ECF, BrasilAPI, etc). Versiona a fonte, custo e mapeamento para o framework. Casos V4 N\u00c3O usam esta entidade.",
+  "properties": {
+    "codigo": {
+      "type": "string",
+      "description": "C\u00f3digo can\u00f4nico do dataset (ex: bdc_kyc, bdc_processes, cfc_crc_status, of_pix_inflows)"
+    },
+    "nome": {
+      "type": "string",
+      "description": "Nome leg\u00edvel (ex: 'BDC - KYC Pessoa F\u00edsica')"
+    },
+    "fonte": {
+      "type": "string",
+      "enum": [
+        "bdc",
+        "cfc",
+        "openfinance",
+        "ecf",
+        "brasilapi",
+        "caf",
+        "portal_transparencia",
+        "interno",
+        "outro"
+      ],
+      "description": "Origem do dataset"
+    },
+    "endpoint": {
+      "type": "string",
+      "description": "Path/identificador do endpoint da fonte (ex: 'kyc_owners' no BDC)"
+    },
+    "tier_minimo_uso": {
+      "type": "string",
+      "enum": [
+        "tier_1",
+        "tier_2",
+        "tier_3",
+        "subseller_pj",
+        "subseller_pf"
+      ],
+      "description": "Tier m\u00ednimo onde este dataset \u00e9 consultado automaticamente"
+    },
+    "obrigatorio_tiers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tiers onde o dataset \u00e9 OBRIGAT\u00d3RIO (falha = bloqueio)"
+    },
+    "categoria_v5_1": {
+      "type": "string",
+      "enum": [
+        "identidade",
+        "societario",
+        "financeiro",
+        "reputacional",
+        "operacional",
+        "monitoramento_continuo",
+        "credito",
+        "fraude",
+        "outro"
+      ],
+      "description": "Categoria V5.1 para agrupamento no dashboard de Data Confidence"
+    },
+    "capabilities_que_usam": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Capabilities V5.1 que dependem deste dataset"
+    },
+    "variaveis_que_alimenta": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Vari\u00e1veis do score V5.1 que recebem dados deste dataset (ex: v_qsa_coherence, v_financial_coherence)"
+    },
+    "custo_credito": {
+      "type": "number",
+      "default": 0,
+      "description": "Custo aproximado em cr\u00e9ditos por consulta"
+    },
+    "ttl_revalidacao_dias": {
+      "type": "number",
+      "default": 180,
+      "description": "Ap\u00f3s quantos dias o dataset deve ser revalidado para casos em monitoramento cont\u00ednuo"
+    },
+    "ativo": {
+      "type": "boolean",
+      "default": true
+    },
+    "novo_em_v5_1": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se true, \u00e9 um dataset NOVO introduzido em V5.1 (n\u00e3o existia em V4). \u00datil para BDCHealthDashboard separar visualmente."
+    },
+    "fonte_documento": {
+      "type": "string",
+      "description": "Refer\u00eancia ao documento V5.1 (ex: 'V5.1 - Cat\u00e1logo de Datasets, Tabela 3.1')"
+    }
+  },
+  "required": [
+    "codigo",
+    "nome",
+    "fonte"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
