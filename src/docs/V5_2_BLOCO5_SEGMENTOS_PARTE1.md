@@ -199,12 +199,13 @@ Cada doc segue padrão Ultra:
 - [ ] Backend function `urlKycPluginAnalyze` — recebe URL + tipo (devolução/marketing/afiliação/cancelamento), retorna score 0-100 + flags
 - [ ] Usa scraping + InvokeLLM para análise semântica
 
-### FASE 6.7 — Reclame Aqui integration
-- [ ] Backend function `reclameAquiQuery` com cache mensal
+### FASE 6.7 — Reclame Aqui via SCRAPING (Q22)
+- [ ] Backend function `reclameAquiScrape` (fetch + parsing HTML) com cache mensal de 30 dias
 
-### FASE 6.8 — ECAD/AVCB/Alvarás (fallback)
-- [ ] Investigação APIs públicas
-- [ ] Fallback: upload + OCR via ExtractDataFromUploadedFile
+### FASE 6.8 — ECAD/AVCB/Alvarás via UPLOAD MANUAL (Q23)
+- [ ] Novos `DocumentType`: ecad_compliance, avcb_bombeiros, alvara_municipal, alvara_juizado_infancia
+- [ ] Validação humana por analista no painel de revisão
+- [ ] OCR opcional para extrair data de vencimento (nice-to-have)
 
 ### FASE 6.9 — Patch V5.1 estendido
 - [ ] Análise sazonalidade (Ecommerce/Eventos) — pico mensal
@@ -213,7 +214,7 @@ Cada doc segue padrão Ultra:
 - [ ] Chargeback diferido (Infoprodutos) — distribuição temporal
 
 ### FASE 6.10 — Capabilities específicas (real-time)
-- [ ] Overbooking Detector (Eventos)
+- [ ] ~~Overbooking Detector (Eventos)~~ **Q24 — Removido do escopo**
 - [ ] Affiliate Structure Audit (Infoprodutos)
 - [ ] Promessa Compliance (INFO/EC)
 - [ ] Sazonalidade Dinâmica (EC)
@@ -223,8 +224,7 @@ Cada doc segue padrão Ultra:
 - [ ] Slider/timeline antecipação (Eventos)
 - [ ] Score URL plugin visível (INFO)
 
-### FASE 6.12 — Templates fornecidos
-- [ ] Entity `Template` editável com 6 categorias: política devolução, marketing CONAR, política afiliação, contrato mentoria, plano sazonal, política cancelamento Lei 13.872
+### FASE 6.12 — ~~Templates fornecidos~~ **Q25 — Removido do escopo**
 
 ---
 
@@ -242,27 +242,22 @@ Cada doc segue padrão Ultra:
 
 ---
 
-## ❓ PERGUNTAS EM ABERTO (Q21-Q25)
+## ✅ DECISÕES TOMADAS (Q22-Q25) + Q21 EM ESCLARECIMENTO
 
-### Q21 — URL kyc plugin: backend próprio ou serviço externo?
-Diferencial técnico transversal usado em todos os segmentos. Análise: backend function própria (scraping + InvokeLLM) é viável e mantém controle.
-**Status:** ⏳ Aguardando
+### ⏳ Q21 — URL kyc plugin: aguardando esclarecimento
+Recomendação técnica: backend function própria com `fetch` (scraping) + `InvokeLLM` (análise semântica). Aguardando confirmação.
 
-### Q22 — Reclame Aqui: API paga ou scraping?
-Usado mensalmente em todos os segmentos. Reclame Aqui tem API oficial paga (não-pública).
-**Status:** ⏳ Aguardando
+### ✅ Q22 — Reclame Aqui: SCRAPING
+Backend function `reclameAquiScrape` com cache mensal. Sem API paga.
 
-### Q23 — ECAD/AVCB/Alvarás: upload manual + OCR ou integração automatizada?
-Sistemas estaduais variam dramaticamente. Upload + OCR é viável e barato; integração automatizada é cara e complexa.
-**Status:** ⏳ Aguardando
+### ✅ Q23 — ECAD/AVCB/Alvarás: UPLOAD MANUAL
+Novos `DocumentType`: Comprovante ECAD, AVCB, Alvará Municipal, Alvará Juizado da Infância. Validação humana por analista.
 
-### Q24 — Overbooking Detector: webhook ou consulta periódica?
-Exige integração com sistema de venda do cliente. Webhook é real-time mas requer adesão técnica do cliente; consulta periódica (a cada 15 min) é robusta mas tem latência.
-**Status:** ⏳ Aguardando
+### ✅ Q24 — Overbooking Detector: REMOVIDO DO ESCOPO
+Capability não será implementada. Captura declarativa mantém-se, mas sem monitoramento real-time.
 
-### Q25 — Templates fornecidos: entity editável ou arquivos estáticos?
-Editável permite admins customizar; estática é mais simples. Recomendação: entity `Template`.
-**Status:** ⏳ Aguardando
+### ✅ Q25 — Templates fornecidos: REMOVIDO DO ESCOPO
+Sistema valida o que cliente publica; não fornece modelos prontos.
 
 ---
 

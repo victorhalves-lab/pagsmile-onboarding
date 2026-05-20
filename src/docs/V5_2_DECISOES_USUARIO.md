@@ -212,22 +212,28 @@ Não construir infraestrutura de RFC/feature flag/aprovação no código. PagSmi
 
 ---
 
-## Bloco 5 — Segmentos (perguntas em aberto)
+## Bloco 5 — Segmentos (decisões)
 
-### Q21 — URL kyc plugin: backend próprio ou serviço externo?
-**Status:** ⏳ Aguardando
+### ⏳ Q21 — URL kyc plugin: backend próprio ou serviço externo? — AGUARDANDO ESCLARECIMENTO
+**Contexto reapresentado:** ferramenta que acessa URL do cliente (política devolução, landing page de venda, política afiliação) e analisa conteúdo automaticamente.
+**Recomendação técnica:** backend function própria usando `fetch` (scraping) + `InvokeLLM` (análise semântica do texto).
+**Status:** ⏳ Aguardando resposta após esclarecimento
 
-### Q22 — Reclame Aqui: API paga ou scraping?
-**Status:** ⏳ Aguardando
+### ✅ Q22 — Reclame Aqui: SCRAPING
+Backend function própria faz scraping do Reclame Aqui (score + motivos) com cache mensal. Sem contratação de API paga.
+**Implicação técnica:** função `reclameAquiScrape(cnpj_or_company_name)` com fetch + parsing HTML + cache 30 dias.
 
-### Q23 — ECAD/AVCB/Alvarás: upload+OCR ou integração automatizada?
-**Status:** ⏳ Aguardando
+### ✅ Q23 — ECAD/AVCB/Alvarás: UPLOAD MANUAL
+Cliente faz upload do documento (PDF do ECAD em dia, AVCB válido, alvará municipal). Sem integração automatizada com sistemas estaduais.
+**Implicação técnica:** novos `DocumentType` específicos (Comprovante ECAD, AVCB, Alvará Municipal, Alvará Juizado da Infância). Analista valida visualmente o documento enviado. **Pode ter OCR opcional** para extrair data de vencimento, mas validação é humana.
 
-### Q24 — Overbooking Detector: webhook ou consulta periódica?
-**Status:** ⏳ Aguardando
+### ✅ Q24 — Overbooking Detector: DEIXAR DE LADO
+Capability `Overbooking Detector` (monitoramento real-time vendas vs capacidade em Eventos) **não será implementada agora**. Removida do escopo do Bloco 5.
+**Implicação:** pergunta `q_seg_eventos_capacity_venue` ainda captura capacidade declarada, mas sem monitoramento real-time. Bloqueios B-CAPAC-EV-1 (sobrevenda detectada) ficam só como avaliação pós-fato, não preventiva.
 
-### Q25 — Templates fornecidos: entity editável ou arquivos estáticos?
-**Status:** ⏳ Aguardando
+### ✅ Q25 — Templates fornecidos: ESQUECER
+Sem entity `Template` editável; sem arquivos estáticos. Templates de política/marketing/contrato **não serão fornecidos** pelo sistema.
+**Implicação:** cliente é responsável pelas próprias políticas. Sistema valida o que cliente publica, mas não fornece modelos prontos.
 
 ---
 
