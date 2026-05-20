@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
@@ -11,7 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Rocket, Loader2 } from 'lucide-react';
+import { Rocket, Loader2, Scale } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 
@@ -26,8 +27,22 @@ export default function ReprocessV4AsV5_2Button({ latestCase, isAdmin, merchantI
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const fv = latestCase?.framework_version || 'v4.0';
+
+  // [V5.2 Fase 6.5.3] Verifica se já existe um mirror V5.2 deste caso V4
+  // — quando existir, mostramos um botão extra "Comparar V4↔V5.2" que vai
+  // direto pro Comparator (em vez de abrir AlertDialog redundante).
+  // IMPORTANTE: useQuery DEVE vir antes de qualquer early return (Rules of Hooks).
+  const { data: existingMirror } = useQuery({
+    queryKey: ['v5_2-mirror', latestCase?.id],
+    queryFn: async () => {
+      const mirrors = await base44.entities.OnboardingCase.filter({ legacyV4CaseId: latestCase.id });
+      return mirrors[0] || null;
+    },
+    enabled: !!(isAdmin && latestCase?.id && fv !== 'v5.2'),
+  });
+
   if (!isAdmin || !latestCase) return null;
-  const fv = latestCase.framework_version || 'v4.0';
   if (fv === 'v5.2') return null;
 
   const handleConfirm = async () => {
@@ -42,17 +57,14 @@ export default function ReprocessV4AsV5_2Button({ latestCase, isAdmin, merchantI
         return;
       }
       if (data.alreadyExists) {
-        toast.info('Já existe um caso V5.2 espelho — abrindo o existente.');
+        toast.info('Já existe um caso V5.2 espelho — abrindo o Comparator.');
       } else {
         toast.success(`Caso V5.2 criado! ${data.responsesCopied || 0} respostas copiadas.`);
       }
       setOpen(false);
-      // Redireciona para o mesmo merchant — o V5.2 será o novo latestCase
-      if (data.merchantId) {
-        navigate(`/CadastroDetalhe?id=${data.merchantId}`);
-        // Força reload da página para refetch das queries
-        setTimeout(() => window.location.reload(), 100);
-      }
+      // [V5.2 Fase 6.5.3] Após criar/encontrar o mirror, leva direto ao Comparator
+      // — é o ponto de uso mais útil. O admin pode voltar ao CadastroDetalhe pelo header do Comparator.
+      navigate(`/ComparatorV4V5_2?v4=${latestCase.id}`);
     } catch (err) {
       toast.error(`Erro ao reprocessar: ${err.message || err}`);
     } finally {
@@ -62,14 +74,32 @@ export default function ReprocessV4AsV5_2Button({ latestCase, isAdmin, merchantI
 
   return (
     <>
-      <Button
-        variant="outline"
-        onClick={() => setOpen(true)}
-        className="gap-2 text-xs border-[#2bc196]/30 text-[#36706c] hover:bg-[#2bc196]/10"
-        title="Cria um caso V5.2 espelho (sandbox) sem alterar o V4 original"
-      >
-        <Rocket className="w-3.5 h-3.5" /> Reprocessar como V5.2
-      </Button>
+      <div className="flex flex-wrap items-center gap-2">
+        <Button
+          variant="outline"
+          onClick={() => setOpen(true)}
+          className="gap-2 text-xs border-[#2bc196]/30 text-[#36706c] hover:bg-[#2bc196]/10"
+          title={
+            existingMirror
+              ? 'Já existe um mirror V5.2 — clique para criar/atualizar novamente'
+              : 'Cria um caso V5.2 espelho (sandbox) sem alterar o V4 original'
+          }
+        >
+          <Rocket className="w-3.5 h-3.5" />
+          {existingMirror ? 'Reprocessar V5.2 novamente' : 'Reprocessar como V5.2'}
+        </Button>
+
+        {existingMirror && (
+          <Button
+            variant="outline"
+            onClick={() => navigate(`/ComparatorV4V5_2?v4=${latestCase.id}`)}
+            className="gap-2 text-xs border-[#002443]/20 text-[#002443] hover:bg-[#002443]/5"
+            title="Ver V4 e V5.2 lado a lado (auditoria)"
+          >
+            <Scale className="w-3.5 h-3.5" /> Comparar V4 ↔ V5.2
+          </Button>
+        )}
+      </div>
 
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent>

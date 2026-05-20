@@ -97,6 +97,7 @@ const DocumentacaoMaster = lazyPage(() => import('./pages/DocumentacaoMaster'));
 const BdcLookup = lazyPage(() => import('./pages/BdcLookup'));
 const V5_2_Status = lazyPage(() => import('./pages/V5_2_Status'));
 const V5_2_Sandbox = lazyPage(() => import('./pages/V5_2_Sandbox'));
+const ComparatorV4V5_2 = lazyPage(() => import('./pages/ComparatorV4V5_2'));
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -437,6 +438,7 @@ const AuthenticatedApp = () => {
       <Route path="/BdcLookup" element={<LayoutWrapper currentPageName="BdcLookup"><BdcLookup /></LayoutWrapper>} />
       <Route path="/V5_2_Status" element={<LayoutWrapper currentPageName="V5_2_Status"><V5_2_Status /></LayoutWrapper>} />
       <Route path="/V5_2_Sandbox" element={<LayoutWrapper currentPageName="V5_2_Sandbox"><V5_2_Sandbox /></LayoutWrapper>} />
+      <Route path="/ComparatorV4V5_2" element={<LayoutWrapper currentPageName="ComparatorV4V5_2"><ComparatorV4V5_2 /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

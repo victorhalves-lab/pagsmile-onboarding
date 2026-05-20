@@ -181,8 +181,18 @@ Já entregue:
 - ✅ `GerenciarSubsellerLinks` mostra badge V4/V5.2 em cada link gerado
 - ✅ `pages/SubsellerQuestionnaire` rota automaticamente para template V5_2_DYNAMIC quando `link.framework_version === 'v5.2'`. PF/PJ usam o MESMO template — tier resolvido em runtime pela engine. localStorage `v5_2_subseller_merchant_type` para sinalizar à engine. Trilho V4 100% preservado.
 
-##### **▶ 6.5.3 — Próxima: Comparator V4↔V5.2 lado-a-lado**
-- 6.5.4 Glossário inline 50+ termos (DOC6 §2.5.6)
+##### ✅ **6.5.3 — Comparator V4↔V5.2 lado-a-lado (CONCLUÍDA)**
+- ✅ Página `/ComparatorV4V5_2` (rota lazy + LayoutWrapper)
+- ✅ Resolução automática de par via URL: `?v4=<id>`, `?v5=<id>` ou `?v4=&v5=`
+- ✅ `ComparatorHeader` — identificação do merchant + datas dos 2 casos + links de retorno/análise individual
+- ✅ `ComparatorMetricRow` — linha genérica com 3 modos (numeric/categorical/text), delta automático, indicador visual (Igual/Subiu/Caiu/Mudou/Crítico)
+- ✅ `ComparatorBlockagesDiff` — diff inteligente: "Mantidos", "Novos na V5.2", "Removidos pela V5.2"
+- ✅ Seções: Veredito final (decisão+categoria+status), Score breakdown (escalas diferentes, anotação), Operacional (rolling reserve+monitoramento+condições), Bloqueios diff, Pareceres SENTINEL lado a lado
+- ✅ Estados de erro tratados: caso não especificado, par incompleto (sem mirror), casos não encontrados
+- ✅ Disclaimer educativo sobre comparabilidade de escalas V4/V5.2
+- ✅ `ReprocessV4AsV5_2Button` atualizado: detecta mirror existente, mostra botão extra "Comparar V4↔V5.2", redireciona ao Comparator após reprocesso
+
+##### **▶ 6.5.4 — Próxima: Glossário inline 50+ termos (DOC6 §2.5.6)**
 - 6.5.5 Atalhos de teclado DOC6 (15 atalhos)
 - 6.5.6 FeedbackSentinelPanel estruturado (entidade `SentinelFeedback` já existe)
 - 6.5.7 Export Auditoria (PDF/JSON/XLSX da nova tela V5.2)
@@ -249,3 +259,4 @@ Possíveis próximos passos (escolher com o usuário):
 | 2.7 | 2026-05-20 | Fase 6.4-C concluída (Widget V5.2 no DashboardCEO: AdoptionBanner 4 KPIs + FrameworkAdoptionBar V4/V5.1/V5.2 + CategoriaPie cat 1-5 + TierApprovalChart por tier com taxa de aprovação). Toda Fase 6.4 (A+B+C) concluída. Próxima: 6.5 (a definir). |
 | 2.8 | 2026-05-20 | Fase 6.5.1 concluída (refator `AnaliseManual` para V5.2: chips de categoria V5.2 + filtro de bloqueios ativos + CSV ampliado com framework/score V5.2/tier/categoria/bloqueios + indicador de casos transicionais). Próxima: 6.5.2 — Trilho Subseller V5.2 (PJ+PF). |
 | 2.9 | 2026-05-20 | Fase 6.5.2 concluída (Trilho Subseller V5.2 — Schema OnboardingLink + generateSubsellerLink + publicReadContext + FrameworkVersionPicker + GenerateLinkModal reformulado + badge V4/V5.2 em GerenciarSubsellerLinks + SubsellerQuestionnaire com roteamento condicional). Trilho V4 100% preservado — opt-in explícito p/ V5.2 pelo admin. Próxima: 6.5.3 — Comparator V4↔V5.2. |
+| 2.10 | 2026-05-20 | Fase 6.5.3 concluída (Comparator V4↔V5.2 — página dedicada `/ComparatorV4V5_2`, 3 componentes focados (Header/MetricRow/BlockagesDiff), resolução automática de par via URL, diff inteligente de bloqueios em 3 baldes (Mantidos/Novos/Removidos), pareceres SENTINEL lado a lado, ReprocessButton com atalho direto pro Comparator). Próxima: 6.5.4 — Glossário inline. |
