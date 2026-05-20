@@ -156,9 +156,17 @@ Já entregue:
 - ✅ `components/analise-completa/v5_2/AnaliseCompletaV5_2.jsx` — Container com tabs + badges contextuais
 - ✅ Roteamento condicional em `pages/AnaliseCompleta` por `framework_version` — V4 legado 100% preservado
 
-#### **▶ FASE 6.4-C — Próxima (a definir)**
-- (C) Widget V5.2 no `DashboardCEO` (distribuição por `categoria_decisao_v5_2`)
+#### ✅ **FASE 6.4-C — Widget V5.2 no DashboardCEO (CONCLUÍDA)**
+- ✅ `components/ceo-dashboard/CEOV5_2Widget.jsx` — Widget executivo no DashboardCEO
+- ✅ AdoptionBanner: 4 KPIs (% V5.2, Monit. Intensivo Cat 5, Casos com Bloqueios, Transicionais)
+- ✅ FrameworkAdoptionBar: barra empilhada V4 / V5.1 / V5.2 com %s
+- ✅ CategoriaPie: distribuição V5.2 por `categoria_decisao_v5_2` (cat 1-5 coloridas)
+- ✅ TierApprovalChart: barras empilhadas (aprovados/manual/recusados) por tier + taxa %
+- ✅ Plugado em `pages/DashboardCEO.jsx` abaixo de Contratos+Compliance, acima da Auditoria
+
+#### **▶ FASE 6.5 — Próxima (a definir)**
 - ~~(D) Página de Planos de Monitoramento~~ — descartado (monitoramento está em outro sistema)
+- Sugestões: Trilho Subseller V5.2 (PJ+PF integrado ao fluxo atual), Refatorar `AnaliseManual` para V5.2, Comparator V4↔V5.2 lado-a-lado, Glossário inline 50+ termos, Atalhos de teclado DOC6.
 - [ ] `components/cadastro/ExceptionWorkflow.jsx` — aplicar exceção a um bloqueio
 - [ ] Cat 5 → cria `PlanoMonitoramento` + `TermoAdicionalV5_2`
 - [ ] Workflow de aceite do termo pelo seller
@@ -219,3 +227,4 @@ Possíveis próximos passos (escolher com o usuário):
 | 2.4 | 2026-05-20 | Fase 6.3 concluída (Workflow de Exceções V5.2 Cat 1-5 + PlanoMonitoramento + TermoAdicionalV5_2 com hash de integridade). Próxima: Fase 6.4 (a definir). |
 | 2.5 | 2026-05-20 | Fase 6.4-A concluída (Smart Summary Cards: Hero Verdict + Top Alertas + Top Positivos + Cross-Val Summary no topo da aba V5.2). Opção D (Planos de Monitoramento) removida do roadmap a pedido do usuário (monitoramento vive em outro sistema). Próxima: 6.4-B ou 6.4-C. |
 | 2.6 | 2026-05-20 | Fase 6.4-B concluída (refatoração `AnaliseCompleta` com layout DOC6 4-abas — Hero Verdict V5.2 + Tab1 Resumo&Decisão + Tab2 Evidências (Cross-Val 16 + Patch Financeiro 5 dim + Bloqueios + CAF) + Tab3 Dimensional BDC + Tab4 SENTINEL+Auditoria sticky). Roteamento condicional por `framework_version` — layout V4 legado 100% preservado para casos antigos. Próxima: 6.4-C (Widget V5.2 no DashboardCEO). |
+| 2.7 | 2026-05-20 | Fase 6.4-C concluída (Widget V5.2 no DashboardCEO: AdoptionBanner 4 KPIs + FrameworkAdoptionBar V4/V5.1/V5.2 + CategoriaPie cat 1-5 + TierApprovalChart por tier com taxa de aprovação). Toda Fase 6.4 (A+B+C) concluída. Próxima: 6.5 (a definir). |
