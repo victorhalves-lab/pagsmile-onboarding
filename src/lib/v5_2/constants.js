@@ -180,6 +180,10 @@ export function canonicalBlockCode(code) {
 export const FEATURE_FLAGS = {
   // Master switch — habilita nova UI de Análise de Risco V2
   risk_analysis_v2: false,
+  // Engine V5.2 (score, tiers, capabilities, matriz de decisão).
+  // Quando true, novos casos usam calcularScoreV5_2 + resolverTier V5.2 + 5 segmentos novos.
+  // Casos V4/V5.1 existentes continuam com seu framework_version original (imutável).
+  score_engine_v5_2: false,
 };
 
 /**

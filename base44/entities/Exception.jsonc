@@ -1,11 +1,11 @@
 {
   "name": "Exception",
   "type": "object",
-  "description": "[V5.1] Cat\u00e1logo das categorias de exce\u00e7\u00e3o V5.1. Permite que um analista s\u00eanior libere um caso bloqueado com justificativa documentada. Substitui o conceito V4 de 'override' por uma taxonomia expl\u00edcita.",
+  "description": "[V5.2] Cat\u00e1logo das categorias de exce\u00e7\u00e3o. V5.2 adiciona cat_5_monitoramento_intensivo (Categoria 5 da Matriz de Decis\u00e3o DOC5 V5.2). V5.1 tinha apenas 4 categorias (documental/operacional/estrutural/estrat\u00e9gica). A Cat 5 \u00e9 uma exce\u00e7\u00e3o especial \u2014 em vez de simplesmente liberar o bloqueio, ativa um PlanoMonitoramento com TPV cap, rolling reserve adicional e gatilhos de off-boarding \u00e1gil.",
   "properties": {
     "codigo": {
       "type": "string",
-      "description": "C\u00f3digo (cat_1_documental, cat_2_operacional, cat_3_estrutural, cat_4_estrategica)"
+      "description": "C\u00f3digo (cat_1_documental, cat_2_operacional, cat_3_estrutural, cat_4_estrategica, cat_5_monitoramento_intensivo)"
     },
     "nome": {
       "type": "string"
@@ -22,7 +22,7 @@
         "cco",
         "comite_credito"
       ],
-      "description": "Papel m\u00ednimo necess\u00e1rio para aprovar exce\u00e7\u00e3o desta categoria"
+      "description": "Papel m\u00ednimo necess\u00e1rio para aprovar exce\u00e7\u00e3o desta categoria. Cat 5 exige no m\u00ednimo head_compliance."
     },
     "documentos_justificativa": {
       "type": "array",
@@ -39,6 +39,33 @@
       "type": "boolean",
       "default": true,
       "description": "Se true, qualquer uso desta exce\u00e7\u00e3o cria registro imut\u00e1vel em Snapshot"
+    },
+    "exige_termo_adicional": {
+      "type": "boolean",
+      "default": false,
+      "description": "[V5.2] Se true, exige aceite formal do seller via TermoAdicionalV5_2 (Cat 5)"
+    },
+    "exige_plano_monitoramento": {
+      "type": "boolean",
+      "default": false,
+      "description": "[V5.2] Se true, cria PlanoMonitoramento atrelado ao caso (Cat 5)"
+    },
+    "tpv_cap_inicial_pct_padrao": {
+      "type": "number",
+      "description": "[V5.2] % padr\u00e3o de cap TPV inicial para esta categoria"
+    },
+    "rolling_reserve_adicional_pct_padrao": {
+      "type": "number",
+      "description": "[V5.2] % padr\u00e3o adicional de rolling reserve"
+    },
+    "framework_version": {
+      "type": "string",
+      "enum": [
+        "v5.1",
+        "v5.2"
+      ],
+      "default": "v5.2",
+      "description": "Vers\u00e3o do framework que introduziu esta categoria. cat_5 nasceu em v5.2."
     },
     "ativo": {
       "type": "boolean",

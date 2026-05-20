@@ -20,20 +20,35 @@ Todos os documentos de diagnóstico estão em `docs/V5_2_*`:
 ```
 lib/v5_2/
 ├── README.md                    ← este arquivo
-├── constants.js                 ← constantes canônicas (13 dimensões, 4 estados, 10 absolutos, etc.)
+├── index.js                     ← barrel export (importar daqui)
+├── constants.js                 ← constantes canônicas (13 dimensões, 4 estados, 10 absolutos)
+├── segments.js                  ← 15 segmentos canônicos V5.2
+├── tiers.js                     ← Tiers + resolverTier (Marketplace fixo T2, GW/CB sobem a T3)
+├── capabilities.js              ← 4 capabilities canônicas + resolverCapabilities
+├── matrizDecisao.js             ← 5 categorias de decisão
+├── scoringV5_2.js               ← Score engine (ESCALAS CORRIGIDAS: T1/T2/Sub=850, T3=999)
 └── deveConsultarDataset.js      ← lógica condicional unificada
 ```
 
+## 🆕 Entidades V5.2 (Fase 1)
+
+- `PlanoMonitoramento` — atrela a um OnboardingCase aprovado via Cat 5
+- `TermoAdicionalV5_2` — aceite formal do seller (pré-condição para Cat 5)
+- `Exception` (ampliada) — agora inclui `cat_5_monitoramento_intensivo`
+
 ## 🚀 Fases de implementação (status)
 
-- ✅ **FASE 1 — Fundação (em andamento)**
-  - ✅ Schemas atualizados: Dataset, Bloqueio, IntegrationLog, Capability, ComplianceScore
-  - ✅ Nova entidade: `SentinelFeedback` (Q55)
+- ✅ **FASE 1 — Fundação (CONCLUÍDA)**
+  - ✅ Schemas atualizados: Dataset, Bloqueio, IntegrationLog, Capability, ComplianceScore, Exception
+  - ✅ Novas entidades: `SentinelFeedback`, `PlanoMonitoramento`, `TermoAdicionalV5_2`
   - ✅ Constantes canônicas V5.2 (`lib/v5_2/constants.js`)
-  - ✅ Função `deveConsultarDataset` + `montarListaDatasets`
-  - ✅ Feature flag `risk_analysis_v2` (via localStorage override)
-  - ⏳ Seed master data (58 datasets + 72 bloqueios + 4 capabilities)
-  - ⏳ Componentes shared (TopBar/HeroVerdict/SmartSummary)
+  - ✅ Score engine V5.2 (`scoringV5_2.js`) com escalas corrigidas
+  - ✅ Tiers V5.2 (`tiers.js`) — Marketplace fixo T2, Gateway/Crossborder T3
+  - ✅ Capabilities V5.2 (`capabilities.js`) — 4 canônicas
+  - ✅ Matriz Decisão V5.2 (`matrizDecisao.js`) — 5 categorias
+  - ✅ Barrel export (`index.js`)
+  - ✅ Feature flags `risk_analysis_v2` + `score_engine_v5_2`
+  - ⏳ Seed completo 58 datasets + 72 bloqueios (Fase 2)
 - ⏳ **FASE 2 — Abas 1 + 2** (Cross-Validation 16 + Patch Financeiro + Bloqueios DOC5 + CAF)
 - ⏳ **FASE 3 — Abas 3 + 4** (Dimensional BDC com 13 dimensões + SENTINEL + Trilha Auditoria)
 - ⏳ **FASE 4 — Polish + A11Y + Atalhos + Mobile + Training**
@@ -49,19 +64,46 @@ lib/v5_2/
 6. **100% dos campos do `UnifiedRiskAnalysis` atual preservados** no V2
 7. **Datasets `not_consulted` devem ser exibidos** (não ocultados) com explicação
 
-## 🎯 Feature flag
+## 🎯 Feature flags
 
 ```js
-import { isFeatureEnabled } from '@/lib/v5_2/constants';
+import { isFeatureEnabled } from '@/lib/v5_2';
 
-if (isFeatureEnabled('risk_analysis_v2', user)) {
-  // renderiza UnifiedRiskAnalysisV2
-} else {
-  // renderiza UnifiedRiskAnalysis legado
-}
+// UI nova
+if (isFeatureEnabled('risk_analysis_v2', user)) { /* renderiza V2 */ }
+
+// Engine de score V5.2 (escalas corrigidas + 5 segmentos novos)
+if (isFeatureEnabled('score_engine_v5_2', user)) { /* usa calcularScoreV5_2 */ }
 ```
 
 Override local para desenvolvimento:
 ```js
 localStorage.setItem('feature_risk_analysis_v2', 'true');
+localStorage.setItem('feature_score_engine_v5_2', 'true');
+```
+
+## 🔁 Como usar (drop-in V5.1 → V5.2)
+
+```js
+import {
+  resolverTier,
+  resolverCapabilities,
+  calcularScoreV5_2,
+  CATEGORIAS_DECISAO_V5_2,
+} from '@/lib/v5_2';
+
+const tier = resolverTier({ tpvMensalDeclarado: 80_000, segmento: 'gateway', isSubseller: false });
+// → 'tier_2'
+
+const caps = resolverCapabilities({ tier, segmento: 'gateway', isSubseller: false });
+// → ['splits/subseller', 'cap_financial_capacity_validation']
+
+const score = calcularScoreV5_2({
+  tier, segmento: 'gateway', morfologia: 'cartao_heavy',
+  capabilitiesAtivas: caps,
+  variaveisInput: { v_cnpj_valido_e_ativo: 20, v_qsa_coherence: 15 },
+  patchStatus: 'verde',
+  bloqueiosAtivos: [],
+});
+// → { score_final, score_max: 850, categoria_decisao: 'cat_1_auto_approve', ... }
 ``

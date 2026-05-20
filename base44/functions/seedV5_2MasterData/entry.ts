@@ -125,7 +125,7 @@ Deno.serve(async (req) => {
     const mode = body.mode === 'apply' ? 'apply' : 'preview';
     const sections = Array.isArray(body.sections) && body.sections.length > 0
       ? body.sections
-      : ['datasets', 'bloqueios', 'capabilities'];
+      : ['datasets', 'bloqueios', 'capabilities', 'exceptions'];
 
     const summary = {
       mode,
@@ -133,7 +133,58 @@ Deno.serve(async (req) => {
       datasets: { inserted: 0, updated: 0, skipped: 0, details: [] },
       bloqueios: { inserted: 0, updated: 0, skipped: 0, details: [] },
       capabilities: { inserted: 0, updated: 0, skipped: 0, details: [] },
+      exceptions: { inserted: 0, updated: 0, skipped: 0, details: [] },
     };
+
+    // ─── EXCEPTIONS V5.2 (Cat 5 nova) ───
+    if (sections.includes('exceptions')) {
+      const EXCEPTIONS_V5_2 = [
+        {
+          codigo: 'cat_5_monitoramento_intensivo',
+          nome: 'Categoria 5 — Monitoramento Intensivo',
+          descricao: 'Aprovação condicional com plano de monitoramento intensivo. Aplica TPV cap inicial, rolling reserve adicional e gatilhos de off-boarding ágil 24-48h. Exige aceite formal do seller via TermoAdicionalV5_2.',
+          papel_requerido: 'head_compliance',
+          documentos_justificativa: [],
+          duracao_dias: 180,
+          registra_em_snapshot: true,
+          exige_termo_adicional: true,
+          exige_plano_monitoramento: true,
+          tpv_cap_inicial_pct_padrao: 50,
+          rolling_reserve_adicional_pct_padrao: 5,
+          framework_version: 'v5.2',
+          ativo: true,
+          fonte_documento: 'V5.2 DOC5 §50 — Matriz Decisão Cat 5',
+        },
+      ];
+
+      const existing = await base44.asServiceRole.entities.Exception.list();
+      const existingByCode = new Map(existing.map((e) => [e.codigo, e]));
+
+      for (const exc of EXCEPTIONS_V5_2) {
+        const found = existingByCode.get(exc.codigo);
+        if (!found) {
+          if (mode === 'apply') {
+            await base44.asServiceRole.entities.Exception.create(exc);
+          }
+          summary.exceptions.inserted++;
+          summary.exceptions.details.push({ codigo: exc.codigo, action: 'insert' });
+        } else {
+          const patch = {};
+          if (found.framework_version !== 'v5.2') patch.framework_version = 'v5.2';
+          if (found.exige_termo_adicional !== true) patch.exige_termo_adicional = true;
+          if (found.exige_plano_monitoramento !== true) patch.exige_plano_monitoramento = true;
+          if (Object.keys(patch).length > 0) {
+            if (mode === 'apply') {
+              await base44.asServiceRole.entities.Exception.update(found.id, patch);
+            }
+            summary.exceptions.updated++;
+            summary.exceptions.details.push({ codigo: exc.codigo, action: 'update', fields: Object.keys(patch) });
+          } else {
+            summary.exceptions.skipped++;
+          }
+        }
+      }
+    }
 
     // ─── CAPABILITIES ───
     if (sections.includes('capabilities')) {

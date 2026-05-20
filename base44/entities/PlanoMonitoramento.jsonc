@@ -1,0 +1,146 @@
+{
+  "name": "PlanoMonitoramento",
+  "type": "object",
+  "description": "[V5.2] Plano de monitoramento intensivo atrelado a um OnboardingCase aprovado via Categoria 5 (Aprovado com Condi\u00e7\u00f5es + Monitoramento Intensivo). Estrutura DOC5 V5.2 \u00a750. Define gatilhos de off-boarding \u00e1gil 24-48h, TPV cap inicial, rolling reserve adicional, frequ\u00eancia de revis\u00e3o.",
+  "properties": {
+    "onboarding_case_id": {
+      "type": "string"
+    },
+    "merchant_id": {
+      "type": "string"
+    },
+    "framework_version": {
+      "type": "string",
+      "enum": [
+        "v5.2"
+      ],
+      "default": "v5.2"
+    },
+    "categoria_decisao": {
+      "type": "string",
+      "enum": [
+        "cat_5_intensive_monitoring"
+      ],
+      "default": "cat_5_intensive_monitoring"
+    },
+    "bloqueios_mitigados": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "C\u00f3digos de Bloqueio que foram mitigados por este plano (em vez de virar recusa)"
+    },
+    "tpv_cap_inicial_pct": {
+      "type": "number",
+      "description": "% do TPV declarado que vira teto inicial (ex: 50 = 50% do TPV declarado)"
+    },
+    "tpv_cap_valor_absoluto": {
+      "type": "number",
+      "description": "Valor absoluto em R$ do teto TPV inicial"
+    },
+    "rolling_reserve_adicional_pct": {
+      "type": "number",
+      "description": "% adicional de rolling reserve sobre o padr\u00e3o do segmento"
+    },
+    "rolling_reserve_dias_retencao": {
+      "type": "number",
+      "default": 180
+    },
+    "gatilhos_off_boarding_agil": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Lista de gatilhos catalogados que disparam off-boarding em 24-48h (ex: chargeback>3%, fraude>0.5%, vol>cap)"
+    },
+    "frequencia_revisao_dias": {
+      "type": "number",
+      "default": 30,
+      "description": "A cada X dias o plano \u00e9 revisado pela Mesa de Monitoramento"
+    },
+    "data_proxima_revisao": {
+      "type": "string",
+      "format": "date"
+    },
+    "data_promocao_elegivel": {
+      "type": "string",
+      "format": "date",
+      "description": "Data a partir da qual o caso pode ser promovido para categoria 1 (auto-approve)"
+    },
+    "termo_adicional_id": {
+      "type": "string",
+      "description": "ID do TermoAdicionalV5_2 aceito pelo seller"
+    },
+    "termo_aceito": {
+      "type": "boolean",
+      "default": false
+    },
+    "termo_aceito_em": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "ativo",
+        "em_revisao",
+        "promovido",
+        "off_boarded",
+        "cancelado"
+      ],
+      "default": "ativo"
+    },
+    "criado_por": {
+      "type": "string",
+      "description": "Email do analista que criou o plano"
+    },
+    "papel_aprovador": {
+      "type": "string",
+      "enum": [
+        "analista_compliance",
+        "head_compliance",
+        "cco",
+        "comite_credito"
+      ],
+      "description": "Papel do aprovador (Cat 5 exige no m\u00ednimo head_compliance)"
+    },
+    "snapshot_id": {
+      "type": "string",
+      "description": "Snapshot imut\u00e1vel criado quando o plano foi instaurado"
+    },
+    "off_boarding_motivo": {
+      "type": "string",
+      "description": "Quando status=off_boarded, qual gatilho foi disparado"
+    },
+    "off_boarding_data": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "onboarding_case_id",
+    "categoria_decisao"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
