@@ -111,7 +111,15 @@ Já entregue:
 - ✅ Filtro framework em `pages/QuestionariosRecebidos` (limpo via clearFilters)
 - ✅ Badge `V5.2` nas linhas (`CadastroRichRow`) e nos cards (`ComplianceCasesCardsGrid`)
 
-#### **▶ FASE 6.2 — Botão "Reprocessar V4 → V5.2" (PRÓXIMA)** ⬅️
+#### ✅ **FASE 6.2 — Botão "Reprocessar V4 → V5.2" (CONCLUÍDA)**
+- ✅ `functions/reprocessV4AsV5_2` — admin-only, cria caso V5.2 espelho preservando V4 (DNA imutável)
+- ✅ Copia QuestionnaireResponse + vincula via `legacyV4CaseId` + idempotente (não duplica espelho)
+- ✅ Dispara `autoEnrichOnboardingV5_2` cross-deployment (fire-and-forget)
+- ✅ AuditLog `reprocess_v4_to_v5_2` registrado
+- ✅ `components/cadastro/ReprocessV4AsV5_2Button` — modal de confirmação + redirect pós-criação
+- ✅ Plugado em `pages/CadastroDetalhe` no header (só admin, só V4)
+
+#### **▶ FASE 6.3 — Próxima (a definir)**
 - [ ] Em `pages/CadastroDetalhe` — botão admin que cria novo caso V5.2 com `legacyV4CaseId` apontando para o V4
 - [ ] Backend function `reprocessV4AsV5_2` (sandbox de comparação)
 
@@ -154,17 +162,13 @@ Já entregue:
 
 ---
 
-## 📌 PRÓXIMA ENTREGA: **FASE 6.2 — Botão "Reprocessar V4 → V5.2"**
+## 📌 PRÓXIMA ENTREGA: **FASE 6.3 — a definir**
 
-**Objetivo:** permitir ao admin pegar um caso V4 existente e gerar um caso V5.2 paralelo (sandbox de comparação) para validar o novo framework em casos reais sem afetar o histórico V4.
-
-**Onde:**
-- `pages/CadastroDetalhe` — botão admin "Reprocessar como V5.2" (só visível para admin, quando `framework_version === 'v4.0'`)
-
-**Como:**
-- Backend function `reprocessV4AsV5_2` recebe `legacyV4CaseId`, copia merchant + responses + cria novo `OnboardingCase` com `framework_version='v5.2'` + `legacyV4CaseId` apontando para o original
-- Dispara `autoEnrichOnboardingV5_2`
-- Frontend: botão + modal de confirmação + redireciona para o novo caso
+Possíveis próximos passos (escolher com o usuário):
+- **A)** Comparador lado-a-lado V4 ↔ V5.2 (quando o caso tem `legacyV4CaseId`)
+- **B)** Workflow de Exceções V5.2 (cat_5 — Categoria 5 com TermoAdicionalV5_2 + PlanoMonitoramento)
+- **C)** Widget executivo V5.2 no DashboardCEO (distribuição por categoria de decisão)
+- **D)** Aba V5.2 na tela `AnaliseManual` com triagem por categoria_decisao_v5_2
 
 ---
 
@@ -175,3 +179,4 @@ Já entregue:
 | 1.0 | 2026-05-20 | Criação — diagnóstico Blocos 1+2 |
 | 2.0 | 2026-05-20 | Atualização pós-implementação: Fases 1, 2, 3, 3c, 5 (5.1-5.12) marcadas como concluídas. Próxima: Fase 6.1 (Filtros V5.2). |
 | 2.1 | 2026-05-20 | Fase 6.1 concluída (filtros + badge V5.2 em Cadastro, AnaliseManual, QuestionariosRecebidos). Próxima: Fase 6.2 (Reprocessar V4→V5.2). |
+| 2.2 | 2026-05-20 | Fase 6.2 concluída (reprocessV4AsV5_2 + ReprocessV4AsV5_2Button em CadastroDetalhe). Próxima: Fase 6.3 (a definir). |

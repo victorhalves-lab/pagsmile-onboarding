@@ -33,6 +33,7 @@ import CadastroMonitoringEventsBlock from '@/components/cadastro/CadastroMonitor
 import DownloadDossieButton from '@/components/cadastro/DownloadDossieButton';
 import CadastroV5_2Banner from '@/components/cadastro/CadastroV5_2Banner';
 import CadastroV5_2Tab from '@/components/cadastro/CadastroV5_2Tab';
+import ReprocessV4AsV5_2Button from '@/components/cadastro/ReprocessV4AsV5_2Button';
 import { segmentLabel } from '@/lib/segmentLabels';
 
 const STATUS_CONFIG = {
@@ -64,6 +65,15 @@ export default function CadastroDetalhe() {
     },
     enabled: !!merchantId,
   });
+
+  // Current user for admin-gated actions
+  const { data: currentUser } = useQuery({
+    queryKey: ['current-user-cadastro-detalhe'],
+    queryFn: async () => {
+      try { return await base44.auth.me(); } catch { return null; }
+    },
+  });
+  const isAdmin = currentUser?.role === 'admin';
 
   const { data: cases = [] } = useQuery({
     queryKey: ['cadastro-cases-merchant', merchantId],
@@ -356,6 +366,7 @@ export default function CadastroDetalhe() {
                 <Microscope className="w-3.5 h-3.5" /> Análise Completa CAF/BDC
               </Button>
             </Link>
+            <ReprocessV4AsV5_2Button latestCase={latestCase} isAdmin={isAdmin} merchantId={merchantId} />
             <DownloadDossieButton merchantId={merchantId} merchantName={merchant.companyName || merchant.fullName} />
           {(latestCase?.riskScoreV4 != null || latestCase?.riskScore != null || latestScore?.score_final != null) && (() => {
             const scoreV4 = latestCase?.riskScoreV4 ?? latestScore?.score_final;
