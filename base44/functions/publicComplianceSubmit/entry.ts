@@ -202,9 +202,13 @@ Deno.serve(async (req) => {
     // `isSubsellerCase` is ONLY trusted when it comes from a SUBSELLER_COMPLIANCE linkCode.
     const resolvedAgent = linkCommercialAgent?.id ? linkCommercialAgent : verifiedClientAgent;
 
-    // [V5.2 Entrega 4] Flag server-side: novos casos podem nascer em V5.2.
-    // Default false → V4 (compatibilidade total). Casos existentes nunca mudam.
-    const v5_2Enabled = await isV5_2EngineEnabled(base44);
+    // [V5.2 Entrega 4 + Fase 5.8] Resolução do framework_version:
+    //  1) Se o template é V5.2 (subCategory=V5_2_DYNAMIC) → SEMPRE v5.2 (override absoluto)
+    //  2) Senão, respeita a flag server-side (default v4.0)
+    // Casos existentes nunca mudam — DNA é imutável.
+    const isV5_2Template = templates[0]?.subCategory === 'V5_2_DYNAMIC'
+      || templates[0]?.framework_version === 'v5.2';
+    const v5_2Enabled = isV5_2Template || await isV5_2EngineEnabled(base44);
     const frameworkVersion = v5_2Enabled ? 'v5.2' : 'v4.0';
 
     const casePayload = {
@@ -220,6 +224,13 @@ Deno.serve(async (req) => {
       docLinkToken,
       framework_version: frameworkVersion,
     };
+    // [V5.2 Fase 5.8] Captura snapshots da versão do framework para casos V5.2.
+    // _at_start vem do cliente (capturado no bootstrap); _at_submit é agora.
+    if (frameworkVersion === 'v5.2') {
+      casePayload.framework_version_at_start = onboardingCaseData.framework_version_at_start || 'v5.2';
+      casePayload.framework_version_at_submit = 'v5.2';
+      casePayload.is_transitional_case = casePayload.framework_version_at_start !== 'v5.2';
+    }
     if (parentMerchantId) casePayload.parentMerchantId = parentMerchantId;
 
     // Persist additionalRepresentatives (opt-in — só quando o cliente preencheu a lista)

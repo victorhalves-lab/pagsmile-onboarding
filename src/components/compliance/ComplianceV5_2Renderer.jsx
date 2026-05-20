@@ -45,6 +45,21 @@ export default function ComplianceV5_2Renderer({ storageKey, badgeLabel, badgeCo
 
   const [answers, setAnswers] = useState({});
   const [uploadedFiles, setUploadedFiles] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(null); // { merchantId, onboardingCaseId, docLinkToken }
+
+  // Captura framework_version_at_start uma única vez (DNA imutável do bootstrap)
+  const [frameworkAtStart] = useState(() => {
+    try {
+      const existing = localStorage.getItem('v5_2_framework_at_start');
+      if (existing) return existing;
+      const v = 'v5.2';
+      localStorage.setItem('v5_2_framework_at_start', v);
+      return v;
+    } catch {
+      return 'v5.2';
+    }
+  });
 
   // ─── Carrega template V5.2 + perguntas ───
   useEffect(() => {
@@ -153,13 +168,116 @@ export default function ComplianceV5_2Renderer({ storageKey, badgeLabel, badgeCo
     setUploadedFiles((prev) => ({ ...prev, [questionId]: file }));
   };
 
-  const handleSubmit = () => {
-    // Fase 5.8 implementará o submit real. Por ora, persistimos local + mostramos toast.
+  /**
+   * Lookup de resposta por id_canonico (V5.2) com fallback para id Base44.
+   */
+  const findAnswerByCanonical = (idCanonico) => {
+    const q = questions.find((qq) => qq.id_canonico === idCanonico);
+    if (!q) return undefined;
+    return answers[q.id];
+  };
+
+  /**
+   * Submit V5.2 real — chama publicComplianceSubmit forçando framework_version=v5.2.
+   * Reusa a função V4 (que já cobre dedup de Merchant, criação de Case e bulk insert
+   * de QuestionnaireResponse). A engine V5.2 backend continua intocada.
+   */
+  const handleSubmit = async () => {
     if (blocks.hard.length > 0) {
       toast.error('Existem bloqueios críticos. Revise antes de enviar.');
       return;
     }
-    toast.success('Respostas salvas localmente. Submit V5.2 será habilitado na Fase 5.8.');
+    if (!template?.id) {
+      toast.error('Template V5.2 indisponível.');
+      return;
+    }
+    if (visibleQuestions.length === 0) {
+      toast.error('Nenhuma pergunta para enviar.');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const linkCode = urlParams.get('linkCode') || urlParams.get('code') || '';
+      const leadId = urlParams.get('leadId') || '';
+
+      // ─── Monta merchantData a partir de respostas canônicas (com fallback) ───
+      const cpfCnpj = findAnswerByCanonical('q_identidade_cpf_cnpj')
+        || findAnswerByCanonical('q_identidade_cnpj')
+        || findAnswerByCanonical('q_identidade_cpf')
+        || '';
+      const fullName = findAnswerByCanonical('q_identidade_razao_social')
+        || findAnswerByCanonical('q_identidade_nome_completo')
+        || '';
+      const companyName = findAnswerByCanonical('q_identidade_nome_fantasia') || '';
+      const email = findAnswerByCanonical('q_contato_email') || '';
+      const phone = findAnswerByCanonical('q_contato_telefone') || '';
+
+      const merchantData = {
+        type: merchantContext.tipo === 'PF' ? 'PF' : 'PJ',
+        cpfCnpj: String(cpfCnpj || '').replace(/\D/g, ''),
+        fullName: String(fullName || companyName || 'N/A').slice(0, 200),
+        companyName: String(companyName || '').slice(0, 200),
+        email: String(email || '').toLowerCase().trim(),
+        phone: String(phone || '').trim(),
+        onboardingStatus: 'Em Análise',
+      };
+
+      // ─── Monta responses no shape esperado pela função V4 ───
+      const responsesPayload = visibleQuestions
+        .filter((q) => answers[q.id] !== undefined && answers[q.id] !== '')
+        .map((q) => {
+          const v = answers[q.id];
+          const entry = {
+            questionId: q.id,
+            questionText: q.text || '',
+            questionType: q.type || 'TEXT',
+          };
+          if (typeof v === 'boolean') entry.valueBoolean = v;
+          else if (typeof v === 'number') entry.valueNumber = v;
+          else if (Array.isArray(v)) entry.valueArray = v.map(String);
+          else entry.valueText = String(v);
+          return entry;
+        });
+
+      const onboardingCaseData = {
+        status: 'Pendente',
+        priority: tierResult?.tier === 'tier_3' ? 'high' : 'medium',
+        onboardingLinkCode: linkCode,
+        framework_version_at_start: frameworkAtStart,
+      };
+
+      const res = await base44.functions.invoke('publicComplianceSubmit', {
+        templateId: template.id,
+        merchantData,
+        onboardingCaseData,
+        responses: responsesPayload,
+        linkCode,
+        leadId: leadId || undefined,
+      });
+
+      if (res.data?.ok) {
+        setSubmitted({
+          merchantId: res.data.merchantId,
+          onboardingCaseId: res.data.onboardingCaseId,
+          docLinkToken: res.data.docLinkToken,
+          framework_version: res.data.framework_version,
+          deduped: res.data.deduped,
+        });
+        // Limpa autosave para evitar re-submit acidental
+        try { if (storageKey) localStorage.removeItem(storageKey); } catch {}
+        toast.success(res.data.deduped
+          ? 'Onboarding já existente reaproveitado.'
+          : 'Respostas V5.2 enviadas com sucesso.');
+      } else {
+        toast.error('Erro: ' + (res.data?.error || 'falha desconhecida'));
+      }
+    } catch (e) {
+      toast.error('Erro ao enviar: ' + (e?.message || 'desconhecido'));
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (loading) {
@@ -237,20 +355,44 @@ export default function ComplianceV5_2Renderer({ storageKey, badgeLabel, badgeCo
         </CardContent>
       </Card>
 
+      {/* Success state */}
+      {submitted && (
+        <Card className="border-emerald-200 bg-emerald-50">
+          <CardContent className="p-5 text-sm text-emerald-900 space-y-1">
+            <p className="font-bold flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4" />
+              {submitted.deduped ? 'Onboarding já existente reaproveitado' : 'Onboarding V5.2 criado'}
+            </p>
+            <p className="text-xs text-emerald-800/80 font-mono">
+              Caso: {submitted.onboardingCaseId} · Framework: {submitted.framework_version || 'v5.2'}
+            </p>
+            <p className="text-xs text-emerald-800/80">
+              Próximo passo: envio de documentos será habilitado em fase posterior.
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Submit */}
-      <div className="flex justify-end pt-2">
-        <Button
-          onClick={handleSubmit}
-          disabled={blocks.hard.length > 0}
-          className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
-        >
-          Enviar respostas
-        </Button>
-      </div>
+      {!submitted && (
+        <div className="flex justify-end pt-2">
+          <Button
+            onClick={handleSubmit}
+            disabled={blocks.hard.length > 0 || submitting}
+            className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
+          >
+            {submitting ? (
+              <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Enviando…</>
+            ) : (
+              'Enviar respostas'
+            )}
+          </Button>
+        </div>
+      )}
 
       {/* Beta banner */}
       <div className="text-[11px] text-[#002443]/40 text-center pt-4 border-t border-[#002443]/5">
-        Framework V5.2 — Fase 5.7 (Beta). Backend submit completo na Fase 5.8.
+        Framework V5.2 — Fase 5.8 (Beta). Persistência ativa, pipeline de score V5.2 ativará automaticamente.
       </div>
     </div>
   );
