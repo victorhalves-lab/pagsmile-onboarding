@@ -8,16 +8,19 @@
 // chama `routeOnboardingPipeline()`.
 // ─────────────────────────────────────────────────────────────────────
 
-import { isV5_1, FRAMEWORK_V4, FRAMEWORK_V5_1 } from './frameworkConstants';
+import { isV5_1, isV5_2, FRAMEWORK_V4, FRAMEWORK_V5_1, FRAMEWORK_V5_2 } from './frameworkConstants';
 
 /**
- * Decide qual função de pipeline (autoEnrichOnboarding vs autoEnrichOnboardingV5_1)
- * deve processar este caso. NÃO invoca — apenas retorna o nome.
+ * Decide qual função de pipeline (V4, V5.1 ou V5.2) deve processar este caso.
+ * NÃO invoca — apenas retorna o nome.
  *
  * @param {Object} onboardingCase
- * @returns {{ functionName: string, version: 'v4.0'|'v5.1' }}
+ * @returns {{ functionName: string, version: 'v4.0'|'v5.1'|'v5.2' }}
  */
 export function resolverPipelineFunctionName(onboardingCase) {
+  if (isV5_2(onboardingCase)) {
+    return { functionName: 'autoEnrichOnboardingV5_2', version: FRAMEWORK_V5_2 };
+  }
   if (isV5_1(onboardingCase)) {
     return { functionName: 'autoEnrichOnboardingV5_1', version: FRAMEWORK_V5_1 };
   }

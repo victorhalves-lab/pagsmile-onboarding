@@ -1,7 +1,7 @@
 {
   "name": "Snapshot",
   "type": "object",
-  "description": "[V5.1] Registro imut\u00e1vel e audit\u00e1vel de cada execu\u00e7\u00e3o do pipeline V5.1. Arquiva input completo (question\u00e1rio + datasets), output (score, bloqueios, decis\u00e3o), vers\u00e3o do framework usada, exce\u00e7\u00f5es aplicadas. Permite reconstruir 'o que a IA viu' em qualquer momento futuro para auditoria regulat\u00f3ria.",
+  "description": "[V5.1/V5.2] Registro imut\u00e1vel e audit\u00e1vel de cada execu\u00e7\u00e3o do pipeline tier-aware. Arquiva input completo (question\u00e1rio + datasets), output (score, bloqueios, decis\u00e3o), vers\u00e3o do framework usada, exce\u00e7\u00f5es aplicadas. Permite reconstruir 'o que a IA viu' em qualquer momento futuro para auditoria regulat\u00f3ria.",
   "properties": {
     "onboarding_case_id": {
       "type": "string"
@@ -12,10 +12,11 @@
     "framework_version": {
       "type": "string",
       "enum": [
-        "v5.1"
+        "v5.1",
+        "v5.2"
       ],
-      "default": "v5.1",
-      "description": "Snapshots s\u00f3 existem para V5.1 (V4 usa AuditLog/IntegrationLog legados)"
+      "default": "v5.2",
+      "description": "Snapshots s\u00f3 existem para casos tier-aware (V5.1 e V5.2). V4 usa AuditLog/IntegrationLog legados."
     },
     "tipo": {
       "type": "string",
@@ -24,9 +25,10 @@
         "revalidation",
         "exception_applied",
         "manual_decision",
-        "reprocess_from_v4"
+        "reprocess_from_v4",
+        "plano_monitoramento_aplicado"
       ],
-      "description": "Motivo da cria\u00e7\u00e3o do snapshot"
+      "description": "Motivo da cria\u00e7\u00e3o do snapshot. V5.2 adiciona plano_monitoramento_aplicado (Cat 5)."
     },
     "tier": {
       "type": "string"
@@ -44,23 +46,19 @@
       }
     },
     "input_questionario": {
-      "type": "object",
-      "description": "Snapshot completo das respostas do question\u00e1rio no momento da an\u00e1lise"
+      "type": "object"
     },
     "input_datasets": {
-      "type": "object",
-      "description": "Snapshot dos dados de enriquecimento por dataset (chaves = c\u00f3digo do Dataset)"
+      "type": "object"
     },
     "input_documentos": {
       "type": "array",
       "items": {
         "type": "object"
-      },
-      "description": "Snapshot dos documentos enviados (URLs assinadas + metadata)"
+      }
     },
     "output_score_camadas": {
-      "type": "object",
-      "description": "Score por camada (1-5) e final"
+      "type": "object"
     },
     "output_bloqueios_ativos": {
       "type": "array",
@@ -117,13 +115,11 @@
       "type": "number"
     },
     "hash_integridade": {
-      "type": "string",
-      "description": "SHA-256 do conte\u00fado do snapshot para detec\u00e7\u00e3o de adultera\u00e7\u00e3o"
+      "type": "string"
     },
     "imutavel": {
       "type": "boolean",
-      "default": true,
-      "description": "Snapshots NUNCA s\u00e3o alterados. Update \u00e9 proibido por conven\u00e7\u00e3o (RLS for\u00e7a admin para casos extremos de corre\u00e7\u00e3o forense)."
+      "default": true
     }
   },
   "required": [

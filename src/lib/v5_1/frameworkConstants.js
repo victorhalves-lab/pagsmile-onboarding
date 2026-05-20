@@ -7,6 +7,7 @@
 
 export const FRAMEWORK_V4 = 'v4.0';
 export const FRAMEWORK_V5_1 = 'v5.1';
+export const FRAMEWORK_V5_2 = 'v5.2';
 export const DEFAULT_FRAMEWORK = FRAMEWORK_V4;
 
 /**
@@ -18,15 +19,21 @@ export function getFrameworkVersion(entity) {
 }
 
 /**
- * True se o caso/score é V5.1. False para V4 ou indefinido.
+ * True se o caso/score é V5.1.
  */
 export function isV5_1(entity) {
   return getFrameworkVersion(entity) === FRAMEWORK_V5_1;
 }
 
 /**
+ * True se o caso/score é V5.2.
+ */
+export function isV5_2(entity) {
+  return getFrameworkVersion(entity) === FRAMEWORK_V5_2;
+}
+
+/**
  * True se o caso/score é V4 (legado) OU se framework_version está ausente.
- * Use isto como gate defensivo em renderização.
  */
 export function isV4(entity) {
   return getFrameworkVersion(entity) === FRAMEWORK_V4;
@@ -37,6 +44,9 @@ export function isV4(entity) {
  */
 export function getFrameworkBadge(entity) {
   const v = getFrameworkVersion(entity);
+  if (v === FRAMEWORK_V5_2) {
+    return { label: 'V5.2', color: 'bg-purple-100 text-purple-700 border-purple-200' };
+  }
   if (v === FRAMEWORK_V5_1) {
     return { label: 'V5.1', color: 'bg-emerald-100 text-emerald-700 border-emerald-200' };
   }

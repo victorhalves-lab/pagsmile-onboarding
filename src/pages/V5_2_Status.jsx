@@ -10,6 +10,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { FEATURE_FLAGS, DIMENSOES_ANALITICAS, BLOQUEIOS_ABSOLUTOS, SEGMENTOS_CANONICOS, SEGMENTOS_TIER_3_ONLY } from '@/lib/v5_2/constants';
 import { V5_2_SEGMENTS } from '@/lib/v5_2/segments';
+import EngineDryRunPanel from '@/components/v5_2/EngineDryRunPanel';
 
 /**
  * [V5.2] Status Dashboard — controle administrativo do framework V5.2.
@@ -122,6 +123,7 @@ export default function V5_2_Status() {
         <TabsList className="bg-[#f4f4f4] border border-[#002443]/5">
           <TabsTrigger value="entidades">Entidades V5.2</TabsTrigger>
           <TabsTrigger value="seed">Seed Master Data</TabsTrigger>
+          <TabsTrigger value="engine">Engine V5.2 (Dry-Run)</TabsTrigger>
           <TabsTrigger value="dimensoes">13 Dimensões</TabsTrigger>
           <TabsTrigger value="absolutos">10 Bloqueios Absolutos</TabsTrigger>
           <TabsTrigger value="segmentos">15 Segmentos</TabsTrigger>
@@ -191,6 +193,11 @@ export default function V5_2_Status() {
               {seedResult && <SeedResultPanel result={seedResult} />}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* ENGINE V5.2 DRY-RUN */}
+        <TabsContent value="engine" className="mt-4">
+          <EngineDryRunPanel />
         </TabsContent>
 
         {/* DIMENSÕES */}
