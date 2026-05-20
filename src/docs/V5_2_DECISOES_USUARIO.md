@@ -190,23 +190,25 @@ Subseller PF Grau C faz upload do recibo de entrega da DIRPF do exercício anter
 
 ---
 
-## Bloco 4 — Questionário Dinâmico (perguntas em aberto)
+## Bloco 4 — Questionário Dinâmico (decisões)
 
-### Q17 — Reavaliação dinâmica de tier durante o fluxo
-**Pergunta:** Real-time (escala enquanto cliente preenche) ou só pós-submit?
-**Status:** ⏳ Aguardando resposta
+### ✅ Q17 — Reavaliação dinâmica de tier durante o fluxo: **DIRETIVA-MÃE — salvar tudo, implementar no fim**
+Usuário reforçou a estratégia global: continuar diagnosticando, salvar plano completo de implementação, implementar tudo de uma vez no final de forma consistente.
+**Implicação técnica:** Decisão entre "real-time" vs "pós-submit" fica registrada como item de implementação a ser refinada na fase de execução. A recomendação default é **real-time** (alinhado com doc § Cap 9 — motor dinâmico) — confirmaremos antes de implementar.
 
-### Q18 — Modalidade A "Reportar divergência"
-**Pergunta:** Reportar divergência vai para Revisão Manual ou só registra em auditoria?
-**Status:** ⏳ Aguardando resposta
+### ✅ Q18 — Modalidade A "Reportar divergência": **Revisão Manual**
+Quando cliente reportar divergência em dado autoritativo BDC (Receita), o caso vai automaticamente para **Revisão Manual** (não é só registro em auditoria).
+**Implicação:** `OnboardingCase.status = "Manual"` + `escalationReason = "client_reported_bdc_divergence"` + entrada em `AuditLog` com detalhes do campo divergente.
 
-### Q19 — `q_t2_revenue_proof` em Tier 1 dos 4 críticos
-**Pergunta:** Upload obrigatório no momento OU declaração + envio em até 15 dias?
-**Status:** ⏳ Aguardando resposta
+### ✅ Q19 — `q_t2_revenue_proof` em Tier 1 dos 4 críticos: **Upload + Declaração (AMBOS)**
+Cliente deve fornecer **ambos** no momento:
+1. **Declaração** (input numérico/select com faturamento anual)
+2. **Upload obrigatório** do documento comprobatório (declaração de faturamento assinada por contador, ECF, DRE simplificado, etc.)
+**Implicação:** Pergunta `q_t2_revenue_proof` é composta — input declarativo + DocumentType obrigatório no mesmo step. Sem upload, fluxo não avança.
 
-### Q20 — Workflow formal de mudanças (RFC + comitê quinzenal)
-**Pergunta:** Está OK assumir que vocês cuidam disso fora do sistema (processo organizacional)?
-**Status:** ⏳ Aguardando resposta
+### ✅ Q20 — Workflow formal de mudanças (RFC + comitê quinzenal): **OK — processo organizacional, fora do sistema**
+Não construir infraestrutura de RFC/feature flag/aprovação no código. PagSmile gerencia esse processo via documentação interna (Notion/Confluence) ou ferramenta externa.
+**Implicação:** Sistema apenas precisa registrar `framework_version` em cada caso (já implementado) — não precisa de UI de RFC nem workflow de aprovação.
 
 ---
 

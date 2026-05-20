@@ -316,22 +316,17 @@ Se divergem → flag `is_transitional_case` + revisão.
 
 ---
 
-## ❓ PERGUNTAS EM ABERTO (Q17-Q20)
+## ✅ DECISÕES TOMADAS (Q17-Q20)
 
-### Q17 — Reavaliação dinâmica de tier durante o fluxo
-**Pergunta:** Implementar real-time (escala enquanto cliente preenche) ou só pós-submit?
-- **Real-time:** UX mais complexa, mas alinha com doc § Cap 9
-- **Pós-submit:** Mais simples; cliente preenche tudo, depois sistema decide
-**Status:** ⏳ Aguardando
+### Q17 — DIRETIVA-MÃE: salvar tudo, implementar no fim
+Estratégia global confirmada: diagnosticar todos os blocos, salvar plano completo, implementar tudo junto no final de forma consistente.
+**Default técnico:** Tier dinâmico real-time (alinhado com doc § Cap 9), a confirmar na execução.
 
-### Q18 — Modalidade A "Reportar divergência"
-**Pergunta:** Quando cliente reportar divergência em dado autoritativo, vai para Revisão Manual ou só registra em auditoria?
-**Status:** ⏳ Aguardando
+### Q18 — Reportar divergência → Revisão Manual
+Caso `status = "Manual"` + `escalationReason = "client_reported_bdc_divergence"` + entrada em `AuditLog`.
 
-### Q19 — `q_t2_revenue_proof` em Tier 1 dos 4 críticos
-**Pergunta:** Upload obrigatório no momento OU declaração inicial + envio do doc em até 15 dias?
-**Status:** ⏳ Aguardando
+### Q19 — `q_t2_revenue_proof`: Upload + Declaração (AMBOS obrigatórios)
+Pergunta composta — input declarativo + DocumentType obrigatório no mesmo step.
 
-### Q20 — Workflow formal de mudanças (RFC + comitê)
-**Pergunta:** Está OK assumir que vocês cuidam disso fora do sistema (processo organizacional, não código)?
-**Status:** ⏳ Aguardando
+### Q20 — Workflow de mudanças: processo organizacional fora do sistema
+Sistema só registra `framework_version` (já feito). Sem UI de RFC/feature flag.

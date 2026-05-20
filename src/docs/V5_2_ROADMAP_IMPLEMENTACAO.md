@@ -176,13 +176,15 @@
 - [ ] Adicionar 9 campos: `categoria_funcional`, `modalidade_origem`, `cross_check_bdc`, `variaveis_risk_score`, `b_series_disparados`, `norma_regulatoria`, `documentos_relacionados`, `framework_version_intro`, `framework_version_removed`
 
 #### FASE 5.2 — Seed 80 perguntas canônicas (Tier 1+2+3+Subsellers)
-- [ ] 14 IDs Tier 1, 16 IDs Tier 2, 22 IDs Tier 3, 16 Sub PJ, 12 Sub PF, 1 transversal `q_t2_revenue_proof`
+- [ ] 14 IDs Tier 1, 16 IDs Tier 2, 22 IDs Tier 3, 16 Sub PJ, 12 Sub PF
+- [ ] `q_t2_revenue_proof` como pergunta **composta** (Q19): input declarativo (faturamento anual) + DocumentType **upload obrigatório** no mesmo step — ambos exigidos no fluxo
 - (65 perguntas segmento ficam no Bloco 5)
 
-#### FASE 5.3 — Motor de Tiering Dinâmico
+#### FASE 5.3 — Motor de Tiering Dinâmico (real-time — Q17 default)
 - [ ] `lib/v5_1/tieringEngine.js` com `evaluateTierDuringFlow()` + `classifySubsellerGrauDuringFlow()`
 - [ ] Snapshot de estado em `ComplianceSession`: `tier_history`, `bdc_signals_so_far`, `segments_detected`, `capabilities_requested`
 - [ ] Princípio "tier crescente único" + "primeiro sinal escala"
+- [ ] Re-render do questionário quando tier escala em tempo real
 
 #### FASE 5.4 — Microcopy oficial centralizado
 - [ ] `lib/v5_1/microcopy.js` com constantes padronizadas
@@ -190,7 +192,7 @@
 
 #### FASE 5.5 — 4 Modalidades A/B/C/D na UX
 - [ ] `<ConfirmCard>`, `<HybridField>`, `<CollectedField>`, `<DerivedInfo>`
-- [ ] Botão "Reportar divergência" em Modalidade A → registra em `AuditLog`
+- [ ] Botão "Reportar divergência" em Modalidade A → **Revisão Manual** (Q18) + `AuditLog` com `escalationReason = "client_reported_bdc_divergence"`
 
 #### FASE 5.6 — B-series durante o fluxo (real-time)
 - [ ] `lib/v5_1/blocksEvaluator.js` com `evaluateBlocksDuringFlow()`
