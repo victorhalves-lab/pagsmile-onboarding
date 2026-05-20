@@ -9,7 +9,7 @@ import {
   Link as LinkIcon, Copy, Check, ExternalLink, Info,
   Plus, BarChart3, Trash2, Loader2, RefreshCw,
   TrendingUp, MousePointer, FileCheck, ChevronDown, ChevronUp,
-  ClipboardList, Shield, Zap, ShoppingCart, Cloud, CreditCard, Globe, Briefcase
+  ClipboardList, Shield, Zap, ShoppingCart, Cloud, CreditCard, Globe, Briefcase, Rocket
 } from 'lucide-react';
 import { toast } from 'sonner';
 import LinkAnalyticsDashboard from '../components/analytics/LinkAnalyticsDashboard';
@@ -104,6 +104,9 @@ export default function GerarLinkOnboarding() {
       { key: 'MERCHANT', label: 'Merchant', desc: 'Estabelecimento comercial padrão', icon: CreditCard, color: '#2bc196', url: `${base}/ComplianceDinamico?model=ComplianceEcommerceV4` },
       { key: 'GATEWAY', label: 'Gateway', desc: 'Integrador / facilitador de pagamentos', icon: Globe, color: '#002443', url: `${base}/ComplianceDinamico?model=ComplianceGatewayV4` },
       { key: 'MARKETPLACE', label: 'Marketplace', desc: 'Plataforma com sellers / sub-merchants', icon: ShoppingCart, color: '#36706c', url: `${base}/ComplianceDinamico?model=ComplianceMarketplaceV4` },
+    ],
+    compliance_v5_2: [
+      { key: 'V5_2_DYNAMIC', label: 'V5.2 Dinâmico (BETA)', desc: 'Tier-aware + dynamic questionnaire (escala automaticamente)', icon: Rocket, color: '#2bc196', url: `${base}/ComplianceDinamico?v=5.2` },
     ]
   };
 
@@ -284,6 +287,23 @@ export default function GerarLinkOnboarding() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {quickLinks.compliance_by_type.map(item => <QuickLinkCard key={item.key} item={item} />)}
+            </div>
+          </div>
+
+          {/* V5.2 Dinâmico (BETA) */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 rounded-xl bg-[#2bc196]/10 flex items-center justify-center"><Rocket className="w-4 h-4 text-[#2bc196]" /></div>
+              <div>
+                <h2 className="text-base font-bold text-[#002443] flex items-center gap-2">
+                  Framework V5.2
+                  <Badge className="bg-[#2bc196]/15 text-[#36706c] border-0 text-[10px] font-bold">BETA</Badge>
+                </h2>
+                <p className="text-xs text-[#002443]/40">Questionário dinâmico tier-aware (Tier 1/2/3/Subseller resolvido em tempo real)</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {quickLinks.compliance_v5_2.map(item => <QuickLinkCard key={item.key} item={item} />)}
             </div>
           </div>
         </div>
