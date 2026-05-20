@@ -246,19 +246,51 @@ Já entregue:
 
 ---
 
-## 🟡 FASE 3b — Tier 3 com Módulos (FUTURA)
+## ✅ FASE 3b — Tier 3 com 9 Módulos Especializados (CONCLUÍDA)
 
-- [ ] Base Tier 3 + 9 Módulos (Gateway, Marketplace, PV fan-out, Dropshipping, Infoprodutos, Turismo, Eventos, Splits/Subseller, Crossborder pesado)
-- [ ] Score base por segmento Tier 3 com tabela canônica
+- ✅ `lib/v5_2/tier3Modules.js` — catálogo declarativo dos 9 módulos canônicos T3 (DOC4 Bloco 3 §3.3):
+  - **M_GW** Gateway/PSP/BaaS (splits/subseller + financial_capacity)
+  - **M_MKT** Marketplace (splits/subseller)
+  - **M_PV** Plataforma Vertical (fan-out por vertical: saúde/foodtech/educação)
+  - **M_DS** Dropshipping (financial_capacity + crossborder)
+  - **M_INFO** Infoprodutos (chargeback + afiliados + CVM)
+  - **M_TUR** Turismo (CADASTUR + sazonalidade + financial_capacity)
+  - **M_EVT** Eventos (AVCB + meia-entrada + overbooking)
+  - **M_SPL** Splits/Subseller (transversal — qualquer segmento com splits)
+  - **M_CB** Crossborder pesado (FATF + OFAC + UK HMT + UN + EU + país risco)
+- ✅ Cada módulo declara: fundamentação regulatória, segmentos elegíveis, capabilities requeridas, datasets requeridos, bloqueios possíveis, variável de score que alimenta, penalidades configuráveis (fail/warning)
+- ✅ `resolverModulosT3Ativos()` — função pura que decide quais módulos rodam por (tier, segmento, capabilities_ativas)
+- ✅ `aplicarPenalidadesT3()` — calcula impacto agregado dos módulos T3 ativos baseado nos resultados das capabilities (pass/warning/fail)
+- ✅ Tabela base segmento+tier já tinha Tier 3 canônico (escala 0-999) em `scoringV5_2.js` desde Fase 2
+- ✅ **Integrado em scoringV5_2.js**: Camada 4 agora chama `resolverModulosT3Ativos` + `aplicarPenalidadesT3` e expõe `modulos_t3_ativos` + `modulos_t3_detalhes` na resposta — analista vê quais módulos foram avaliados e penalidades de cada um
+- ✅ `bloqueiosPossiveisT3()` + `datasetsRequeridosT3()` — helpers para o pipeline pré-filtrar catálogo de bloqueios e validar consultas obrigatórias
 
 ---
 
-## 🟡 FASE 4 — Capabilities Executáveis (FUTURA)
+## ✅ FASE 4 — Capabilities Executáveis (CONCLUÍDA)
 
-- [ ] `cap_financial_capacity_validation` — pipeline 5 etapas
-- [ ] `cap_financial_capacity_validation_pf` (3 fontes: Renda × Pix + DIRPF + Fluxo Pix)
-- [ ] Bloqueios PF-específicos (8 novos)
-- [ ] Bloqueios Subseller PJ específicos (3 novos)
+- ✅ `lib/v5_2/financialCapacityValidation.js`:
+  - **PJ — 5 dimensões** (`avaliarCapacidadeFinanceiraPJ`):
+    1. TPV declarado vs BDC (verde ≤20% / amarelo 20-50% / laranja 50-100% / **vermelho >100% E TPV > capital×12 → B-FIN-1**)
+    2. Faturamento DOC vs ECF (>100% → **B-FIN-2**)
+    3. CRC ativo do contador (inativo em segmentos regulados → **B-FIN-3**)
+    4. Fluxo de caixa Open Finance (cobertura saldo/TPV <10% → **B-FIN-4**)
+    5. Coerência setorial (TPV vs P90 do segmento)
+  - **PF — 4 dimensões** (`avaliarCapacidadeFinanceiraPF`):
+    1. Renda declarada vs score crédito PF (score <300 + renda >10k → **B-PF-1**)
+    2. Comprometimento de renda (TPV >50× renda → **B-PF-2**)
+    3. Idade do CPF (menor de idade → **B-PF-FRAUDE-1**)
+    4. Restrições financeiras (>R$50k → **B-PF-3**)
+  - `consolidarStatusPatch()` → status verde/amarelo/laranja/vermelho (regra V5.2 §17)
+  - `calcularVFinancialCoherence()` → v ∈ {+20, -10, -40, -100} alimenta C3
+  - `avaliarCapacidadeFinanceira()` — dispatcher PJ/PF por merchantType
+- ✅ `lib/v5_2/bloqueiosPFSubseller.js` — **catálogo canônico V5.2** de 11 bloqueios novos:
+  - **8 Bloqueios PF**: B-PF-1 (score+renda), B-PF-2 (comprometimento), B-PF-3 (restrições R$50k+), B-PF-PEP-1 (PEP/sancionado), B-PF-SANC-1 (sanção internacional — **núcleo duro regulatório**), B-PF-FRAUDE-1 (menor de idade / CPF inválido — **núcleo duro**), B-PF-DOC-1 (docs ausentes 48h+), B-PF-CB-1 (cross-border sem capability)
+  - **3 Bloqueios Subseller PJ**: B-SUB-PJ-1 (excede teto grau C >R$500k), B-SUB-PJ-2 (seller mestre sem splits/subseller), B-SUB-PJ-3 (UBO já recusado em outro subseller — anti-fraude)
+  - Cada bloqueio declara: severidade, decisão padrão, categoria de exceção, fundamentação regulatória (Lei 13.810/2019, Resol. BCB 80/2021, Circ. BCB 3.978, etc.), núcleo duro sim/não
+  - `avaliarBloqueiosPFSubseller()` — função pura que avalia contexto (tier, isSubseller, grau, resultado financeiro, BDC, seller mestre, UBO já recusado) e retorna disparados
+  - `bloqueiosPFSubsellerComoCatalogo()` — helper para reaproveitar com o engine `avaliarBloqueios.js` já existente
+- ✅ Tudo exportado pelo barrel `lib/v5_2/index.js` — disponível para o pipeline (`autoEnrichOnboardingV5_2`, `bdcEnrichCaseV5_2`) puxar em uma chamada
 
 ---
 
@@ -300,3 +332,5 @@ Possíveis próximos passos (escolher com o usuário):
 | 2.12 | 2026-05-20 | Fase 6.5.6 concluída (FeedbackSentinelPanel estruturado DOC4 §19.8 + DOC6 §2.6.6 + Q55 — catálogo canônico de 3 tipos + 9 categorias mapeadas ao enum SentinelFeedback, fluxo de 3 passos com filtro condicional de categorias por tipo, comentário obrigatório quando errou/parcial, persistência denormalizando contexto SENTINEL/framework/tier/segmento/morfologia, histórico inline de feedbacks anteriores. Plugado em Tab4SentinelAuditoria com data-shortcut-item). Próxima: 6.5.7 — Export Auditoria (PDF/JSON/XLSX). |
 | 2.13 | 2026-05-20 | Fase 6.5.4 concluída (Glossário inline sistemático DOC6 §2.5.6 — 50+ termos canônicos no GLOSSARY_V5_2, componente Term com popover categorizado + fundamentação regulatória, TermBlock wrapper inteligente para bloqueios dinâmicos via aliases. Plugado em HeroVerdictV5_2 + Tab1/Tab2/Tab4 + SmartSummaryCards: tier badges, categorias de decisão, status do Patch, bloqueios B-*, cross-val status, SENTINEL, framework_version, capabilities, snapshot, morfologias, divergence/mismatch). Próxima: 6.5.7 — Export Auditoria (último item da Fase 6). |
 | 2.14 | 2026-05-20 | Fase 6.5.7 concluída — ÚLTIMO ITEM DA FASE 6 (Export Auditoria XLSX adicionado ao DossieV5_2Button: workbook multi-aba determinístico — Resumo, Score V5.2, Bloqueios, Cross-Val 16, Patch Financ., SENTINEL, Exceções, Plano Cat 5, Snapshot ref. PDF e JSON já existiam da Fase 6.5.5, agora os 3 formatos compartilham mesmo hash SHA-256 via buildDossieV5_2). **FASE 6 V5.2 100% CONCLUÍDA.** Próximas frentes: Fase 7 (Pós-Decisão & Monitoramento Contínuo) e Fase 8 (Off-Boarding Ágil 24-48h). |
+| 2.15 | 2026-05-20 | Fase 3b concluída (Tier 3 com 9 Módulos especializados — `lib/v5_2/tier3Modules.js` com catálogo declarativo: M_GW Gateway / M_MKT Marketplace / M_PV Plat. Vertical fan-out / M_DS Dropshipping / M_INFO Infoprodutos / M_TUR Turismo / M_EVT Eventos / M_SPL Splits transversal / M_CB Crossborder pesado. Cada módulo declara fundamentação regulatória, datasets requeridos, bloqueios possíveis, penalidades. Integrado na Camada 4 do scoringV5_2 — analista vê quais módulos rodaram e impacto de cada um). Próxima: Fase 4. |
+| 2.16 | 2026-05-20 | Fase 4 concluída (Capabilities Executáveis — `lib/v5_2/financialCapacityValidation.js` com PJ 5 dimensões + PF 4 dimensões, consolidando status do Patch Financeiro V5.1 e calculando v_financial_coherence. `lib/v5_2/bloqueiosPFSubseller.js` com 11 bloqueios canônicos: 8 PF (B-PF-1..3, PEP, SANC núcleo-duro, FRAUDE-1 núcleo-duro, DOC-1, CB-1) + 3 Subseller PJ (B-SUB-PJ-1 teto grau C, B-SUB-PJ-2 seller sem splits, B-SUB-PJ-3 UBO já recusado anti-fraude). Avaliador puro `avaliarBloqueiosPFSubseller()` + helper para reaproveitar catálogo no engine `avaliarBloqueios.js`. Exportado via barrel). **FASES 3b + 4 V5.2 CONCLUÍDAS.** |

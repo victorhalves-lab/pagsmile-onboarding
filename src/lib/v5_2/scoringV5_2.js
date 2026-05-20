@@ -20,6 +20,7 @@
 import { TIERS } from './tiers';
 import { CATEGORIAS_DECISAO_V5_2 } from './matrizDecisao';
 import { SCORE_SCALES_BY_TIER } from './constants';
+import { resolverModulosT3Ativos, aplicarPenalidadesT3 } from './tier3Modules';
 
 // ── Escalas máximas por tier (V5.2 — CORRETAS) ──
 export const SCORE_MAX_POR_TIER = {
@@ -128,11 +129,17 @@ function camada3_variaveis({ variaveisInput = {} }) {
   return { valor: total, aplicadas, positivas, negativas };
 }
 
-// ── C4: Capabilities transversais ──
-function camada4_capabilities({ capabilitiesAtivas = [], resultadosCapabilities = {} }) {
+// ── C4: Capabilities transversais + Módulos Tier 3 (Fase 3b) ──
+function camada4_capabilities({
+  capabilitiesAtivas = [],
+  resultadosCapabilities = {},
+  tier,
+  segmento,
+}) {
   let total = 0;
   const motivos = [];
 
+  // 4a) Capabilities transversais
   for (const cap of capabilitiesAtivas) {
     const res = resultadosCapabilities[cap];
     if (!res) {
@@ -148,7 +155,24 @@ function camada4_capabilities({ capabilitiesAtivas = [], resultadosCapabilities 
     }
   }
 
-  return { valor: total, explicacao: motivos.join('; ') || 'Capabilities OK (0)' };
+  // 4b) Módulos Tier 3 (Fase 3b) — apenas em tier_3
+  const modulosT3 = resolverModulosT3Ativos({
+    tier,
+    segmento,
+    capabilities_ativas: capabilitiesAtivas,
+  });
+  const t3 = aplicarPenalidadesT3(modulosT3, resultadosCapabilities);
+  if (t3.total !== 0) {
+    total += t3.total;
+    motivos.push(`Tier 3 módulos (${modulosT3.map((m) => m.short).join(', ')}): ${t3.total}`);
+  }
+
+  return {
+    valor: total,
+    explicacao: motivos.join('; ') || 'Capabilities OK (0)',
+    modulos_t3_ativos: modulosT3.map((m) => m.codigo),
+    modulos_t3_detalhes: t3.detalhes,
+  };
 }
 
 // ── C5: Patch Financeiro ──
@@ -211,7 +235,7 @@ export function calcularScoreV5_2(input) {
   const c1 = camada1_baseSegmentoTier({ segmento, tier });
   const c2 = camada2_morfologia({ morfologia, segmento });
   const c3 = camada3_variaveis({ variaveisInput });
-  const c4 = camada4_capabilities({ capabilitiesAtivas, resultadosCapabilities });
+  const c4 = camada4_capabilities({ capabilitiesAtivas, resultadosCapabilities, tier, segmento });
   const c5 = camada5_patchFinanceiro({ patchStatus });
 
   const scoreBruto = c1.valor + c2.valor + c3.valor + c4.valor + c5.valor;

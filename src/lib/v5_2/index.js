@@ -21,3 +21,6 @@ export * from './crossValidation16';
 export * from './tieringEngine';
 export * from './microcopy';
 export * from './realtimeBlockEngine';
+export * from './tier3Modules';
+export * from './financialCapacityValidation';
+export * from './bloqueiosPFSubseller';
