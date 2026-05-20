@@ -32,6 +32,111 @@ function resolverTier({ tpvMensalDeclarado, segmento, isSubseller, merchantType 
   return TIERS.TIER_2; // cap em T2 para os demais
 }
 
+// ── Triggers Tier Real-Time (DOC4 Bloco 3 §3.4) ──
+const TRIGGERS_FORCAM_T3 = ['pep_socio', 'sancao_internacional', 'processo_criminal_socio'];
+const TRIGGERS_T1_PARA_T2 = [
+  'mcc_alto_risco', 'empresa_recem_aberta', 'capital_social_baixo',
+  'multi_mei_pulverizacao', 'endereco_virtual_suspeito', 'dominio_recente',
+  'historico_chargeback_alto', 'reclamacoes_graves', 'tpv_incompativel_capital',
+];
+
+function avaliarTriggersTier({ merchant, bdcData, questionario, contexto }) {
+  const d = [];
+  if (questionario.tem_socio_pep === true || bdcData.has_pep === true) d.push('pep_socio');
+  if (bdcData.has_international_sanction === true || questionario.tem_sancao === true) d.push('sancao_internacional');
+  if (bdcData.has_criminal_lawsuit === true) d.push('processo_criminal_socio');
+  const mccAltoRisco = ['7995', '5993', '5816', '6051', '5967', '7273'];
+  if (mccAltoRisco.includes(String(merchant.mcc || questionario.mcc || ''))) d.push('mcc_alto_risco');
+  const tpvAnual = (Number(contexto.tpvDeclarado) || 0) * 12;
+  const capital = Number(bdcData.capital_social) || Number(merchant.capital_social) || 0;
+  if (capital > 0 && tpvAnual > capital * 24) d.push('tpv_incompativel_capital');
+  if (bdcData.idade_empresa_meses != null && bdcData.idade_empresa_meses < 6) d.push('empresa_recem_aberta');
+  if (merchant.type === 'PJ' && capital > 0 && capital < 1000) d.push('capital_social_baixo');
+  if (['b2c_crossborder', 'b2b_crossborder'].includes(contexto.morfologia) || contexto.segmento === 'crossborder') d.push('crossborder_operacao');
+  if (['educacao', 'foodtech', 'plataforma_vertical'].includes(contexto.segmento) && questionario.tem_licenca_setorial === false) d.push('setor_regulado_sem_licenca');
+  if (contexto.morfologia === 'multi_mei' || questionario.tem_multiplos_meis === true) d.push('multi_mei_pulverizacao');
+  if (questionario.chargeback_pct != null && Number(questionario.chargeback_pct) > 2) d.push('historico_chargeback_alto');
+  if (bdcData.reclamacoes_graves_count != null && bdcData.reclamacoes_graves_count > 5) d.push('reclamacoes_graves');
+  if (bdcData.endereco_tipo === 'virtual' || questionario.endereco_virtual === true) d.push('endereco_virtual_suspeito');
+  if (bdcData.dominio_idade_dias != null && bdcData.dominio_idade_dias < 90) d.push('dominio_recente');
+  return d;
+}
+
+function resolverTierComTriggers(tierBase, triggers = []) {
+  if (tierBase === TIERS.SUBSELLER_PJ || tierBase === TIERS.SUBSELLER_PF) {
+    return { tier_final: tierBase, escalado: false, motivo: 'Subseller — fluxo dedicado' };
+  }
+  if (triggers.some((t) => TRIGGERS_FORCAM_T3.includes(t))) {
+    return {
+      tier_final: TIERS.TIER_3,
+      escalado: tierBase !== TIERS.TIER_3,
+      motivo: `Triggers de núcleo regulatório: ${triggers.filter((t) => TRIGGERS_FORCAM_T3.includes(t)).join(', ')}`,
+    };
+  }
+  if (tierBase === TIERS.TIER_1) {
+    const esc = triggers.filter((t) => TRIGGERS_T1_PARA_T2.includes(t));
+    if (esc.length > 0) return { tier_final: TIERS.TIER_2, escalado: true, motivo: `Escala T1→T2: ${esc.join(', ')}` };
+  }
+  return { tier_final: tierBase, escalado: false, motivo: 'Sem triggers de escalada' };
+}
+
+// ── Avaliação de bloqueios via catálogo ──
+function bloqueioAplicavel(bloqueio, ctx) {
+  if (!bloqueio.ativo) return false;
+  if (bloqueio.tiers_aplicaveis?.length > 0 && !bloqueio.tiers_aplicaveis.includes(ctx.tier)) return false;
+  const segs = bloqueio.segmentos_aplicaveis || [];
+  if (segs.length > 0 && !segs.includes('all') && !segs.includes(ctx.segmento)) return false;
+  const morfs = bloqueio.morfologias_aplicaveis || [];
+  if (morfs.length > 0 && !morfs.includes('all') && !morfs.includes(ctx.morfologia)) return false;
+  const caps = bloqueio.capabilities_relacionadas || [];
+  if (caps.length > 0 && !caps.some((c) => (ctx.capabilities_ativas || []).includes(c))) return false;
+  return true;
+}
+
+function avaliarTriggerBloqueio(bloqueio, ctx) {
+  if (ctx.bloqueios_forcados?.includes(bloqueio.codigo)) return { disparou: true, razao: 'forçado pelo pipeline' };
+  for (const nomeVar of (bloqueio.variaveis_alimentadoras || [])) {
+    const v = ctx.variaveis_input?.[nomeVar];
+    if (v == null) continue;
+    const valor = typeof v === 'object' ? Number(v.valor) || 0 : Number(v) || 0;
+    if (valor < 0) return { disparou: true, razao: `variável ${nomeVar} negativa (${valor})` };
+  }
+  for (const ds of (bloqueio.datasets_consumidos || [])) {
+    if (ctx.datasets_red_flags?.includes(ds)) return { disparou: true, razao: `dataset ${ds} sinalizou red flag` };
+  }
+  return { disparou: false, razao: '' };
+}
+
+function avaliarBloqueios(catalogo = [], ctx = {}) {
+  const detalhes = [];
+  const ativos = [];
+  for (const b of catalogo) {
+    if (!bloqueioAplicavel(b, ctx)) continue;
+    const { disparou, razao } = avaliarTriggerBloqueio(b, ctx);
+    if (!disparou) continue;
+    ativos.push(b.codigo);
+    detalhes.push({
+      codigo: b.codigo, titulo: b.titulo, categoria: b.categoria,
+      severidade: b.severidade, decisao_padrao: b.decisao_padrao,
+      nucleo_duro_regulatorio: !!b.nucleo_duro_regulatorio,
+      exception_categoria: b.exception_categoria || 'nenhuma', razao,
+    });
+  }
+  return { bloqueios_ativos: ativos, detalhes };
+}
+
+function aplicarBloqueiosNaCategoria(catScore, detalhes = []) {
+  if (detalhes.length === 0) return catScore;
+  if (detalhes.some((d) => d.nucleo_duro_regulatorio)) return 'cat_4_block';
+  if (detalhes.some((d) => d.decisao_padrao === 'monitoramento_intensivo') && catScore !== 'cat_4_block') {
+    return 'cat_5_intensive_monitoring';
+  }
+  if (detalhes.some((d) => d.severidade === 'BLOQUEIO')) return 'cat_4_block';
+  if (detalhes.some((d) => d.severidade === 'ESCALACAO') && catScore === 'cat_1_auto_approve') return 'cat_3_manual_review';
+  if (detalhes.some((d) => d.severidade === 'CONDICAO') && catScore === 'cat_1_auto_approve') return 'cat_2_conditional';
+  return catScore;
+}
+
 // ── segmentos críticos (escala mais conservadora) ──
 const SEGMENTOS_CRITICOS = ['gateway', 'marketplace', 'dropshipping', 'crossborder'];
 const isSegmentoCritico = (s) => SEGMENTOS_CRITICOS.includes(s);
@@ -263,7 +368,14 @@ Deno.serve(async (req) => {
     if (!caseId) return Response.json({ error: 'onboardingCaseId obrigatório' }, { status: 400 });
 
     // ─── Load case ───
-    const [oc] = await base44.asServiceRole.entities.OnboardingCase.filter({ id: caseId });
+    let oc = null;
+    try {
+      const rows = await base44.asServiceRole.entities.OnboardingCase.filter({ id: caseId });
+      oc = rows?.[0] || null;
+    } catch (e) {
+      // SDK lança Base44Error quando id é inválido — tratamos como not_found
+      return Response.json({ error: 'case_not_found', detail: e.message }, { status: 404 });
+    }
     if (!oc) return Response.json({ error: 'case_not_found' }, { status: 404 });
 
     // GUARD: só processa V5.2 (ou dryRun forçado em qualquer)
@@ -309,23 +421,65 @@ Deno.serve(async (req) => {
     const isSubseller = !!oc.isSubsellerCase;
     const merchantType = merchant?.type || 'PJ';
 
-    // ─── Resolve ───
-    const tier = resolverTier({ tpvMensalDeclarado: tpvDeclarado, segmento, isSubseller, merchantType });
+    // Flags extraídas do questionário (proxy V5.2 — pipeline completo virá depois)
+    const questionarioFlags = {
+      tem_socio_pep: responses.some((r) => /pep|pol[ií]tica/i.test(r.questionText || '') && String(r.valueText || '').toLowerCase().includes('sim')),
+      tem_sancao: responses.some((r) => /san[cç][aã]o/i.test(r.questionText || '') && String(r.valueText || '').toLowerCase().includes('sim')),
+      mcc: merchant?.mcc || null,
+    };
+
+    // ─── STEP 1: Resolve tier base (TPV) ───
+    const tierBase = resolverTier({ tpvMensalDeclarado: tpvDeclarado, segmento, isSubseller, merchantType });
     const morfologia = resolverMorfologia({ distribuicaoTpv: distrib, segmento, modeloVenda, paisAtuacao });
+
+    // ─── STEP 2: Avalia triggers de tier real-time ───
+    // bdcData vazio neste MVP — enrichment real virá em pipeline downstream
+    const bdcData = {};
+    const triggersDisparados = avaliarTriggersTier({
+      merchant: merchant || {},
+      bdcData,
+      questionario: questionarioFlags,
+      contexto: { tpvDeclarado, segmento, morfologia },
+    });
+    const { tier_final: tier, escalado, motivo: motivoEscalada } = resolverTierComTriggers(tierBase, triggersDisparados);
+    if (escalado) {
+      console.log(`[bdcEnrichCaseV5_2] Tier escalado ${tierBase}→${tier}: ${motivoEscalada}`);
+    }
+
+    // ─── STEP 3: Resolve capabilities com tier final ───
     const capabilitiesAtivas = resolverCapabilities({ tier, segmento, morfologia, isSubseller });
 
-    // MVP: variáveis/resultados vazios. Enrichment real virá na Entrega 3 (pipeline).
+    // MVP: variáveis vazias. Pipeline completo de enrichment virá em fase posterior.
     const variaveisInput = {};
     const resultadosCapabilities = {};
     const patchStatus = 'nao_aplicavel';
-    const bloqueiosAtivos = [];
 
+    // ─── STEP 4: Carrega catálogo de bloqueios + avalia ───
+    let bloqueiosDetalhes = [];
+    let bloqueiosAtivos = [];
+    try {
+      const catalogo = await base44.asServiceRole.entities.Bloqueio.list('-created_date', 200);
+      const res = avaliarBloqueios(catalogo, {
+        tier, segmento, morfologia,
+        capabilities_ativas: capabilitiesAtivas,
+        variaveis_input: variaveisInput,
+        datasets_red_flags: [],
+      });
+      bloqueiosAtivos = res.bloqueios_ativos;
+      bloqueiosDetalhes = res.detalhes;
+      console.log(`[bdcEnrichCaseV5_2] Bloqueios avaliados: ${bloqueiosAtivos.length} ativos`);
+    } catch (e) {
+      console.warn(`[bdcEnrichCaseV5_2] Falha ao avaliar bloqueios (catálogo vazio?): ${e.message}`);
+    }
+
+    // ─── STEP 5: Score ───
     const scoreOut = calcularScoreV5_2({
       tier, segmento, morfologia, capabilitiesAtivas,
       variaveisInput, resultadosCapabilities, patchStatus, bloqueiosAtivos,
     });
 
-    const categoria = scoreOut.categoria_decisao;
+    // ─── STEP 6: Aplica bloqueios na categoria de decisão ───
+    const categoria = aplicarBloqueiosNaCategoria(scoreOut.categoria_decisao, bloqueiosDetalhes);
     const statusLegacy = categoriaToStatusLegacy(categoria);
     const recomendacao = categoriaToRecomendacao(categoria);
 
@@ -339,11 +493,16 @@ Deno.serve(async (req) => {
         caseId,
         framework_version: 'v5.2',
         framework_atual_do_caso: fv,
-        tier, segmento, morfologia,
+        tier_base: tierBase, tier, escalado, motivo_escalada: motivoEscalada,
+        triggers_disparados: triggersDisparados,
+        segmento, morfologia,
         capabilities_ativas: capabilitiesAtivas,
         score: scoreOut.score_final, score_max: scoreOut.score_max,
         subfaixa_tier_aware: scoreOut.subfaixa_tier_aware,
+        categoria_decisao_score: scoreOut.categoria_decisao,
         categoria_decisao: categoria,
+        bloqueios_ativos: bloqueiosAtivos,
+        bloqueios_detalhes: bloqueiosDetalhes,
         status_legacy: statusLegacy,
         recomendacao_final: recomendacao,
         camadas: scoreOut.camadas,
@@ -355,7 +514,9 @@ Deno.serve(async (req) => {
     const snapshotInput = {
       questionario: responses.map((r) => ({ q: r.questionText, a: r.valueText })),
       merchant: { type: merchant?.type, cpfCnpj: merchant?.cpfCnpj },
-      tier, segmento, morfologia, capabilities_ativas: capabilitiesAtivas,
+      tier_base: tierBase, tier_final: tier, tier_escalado: escalado, motivo_escalada: motivoEscalada,
+      triggers_disparados: triggersDisparados,
+      segmento, morfologia, capabilities_ativas: capabilitiesAtivas,
       tpv_declarado: tpvDeclarado, modelo_venda: modeloVenda, pais_atuacao: paisAtuacao,
     };
     const snapshotOutput = {
@@ -379,6 +540,8 @@ Deno.serve(async (req) => {
       output_score_camadas: scoreOut.camadas,
       output_bloqueios_ativos: bloqueiosAtivos,
       output_categoria_decisao: categoria,
+      // categoria_decisao_score guardada dentro de output_score_camadas como metadado opcional
+      ...(scoreOut.categoria_decisao !== categoria ? { output_sentinel_parecer: `Categoria do score isolado: ${scoreOut.categoria_decisao}. Categoria final após bloqueios: ${categoria}.` } : {}),
       output_subfaixa_tier_aware: scoreOut.subfaixa_tier_aware,
       output_patch_financeiro: { status: patchStatus },
       datasets_obtidos: [], datasets_faltantes: [],
@@ -448,11 +611,16 @@ Deno.serve(async (req) => {
       success: true,
       caseId,
       framework_version: 'v5.2',
-      tier, segmento, morfologia,
+      tier_base: tierBase, tier, escalado, motivo_escalada: motivoEscalada,
+      triggers_disparados: triggersDisparados,
+      segmento, morfologia,
       capabilities_ativas: capabilitiesAtivas,
       score: scoreOut.score_final, score_max: scoreOut.score_max,
       subfaixa_tier_aware: scoreOut.subfaixa_tier_aware,
+      categoria_decisao_score: scoreOut.categoria_decisao,
       categoria_decisao: categoria,
+      bloqueios_ativos: bloqueiosAtivos,
+      bloqueios_detalhes: bloqueiosDetalhes,
       status_legacy: statusLegacy,
       recomendacao_final: recomendacao,
       snapshot_id: snapshot.id,

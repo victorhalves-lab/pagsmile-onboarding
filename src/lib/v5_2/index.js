@@ -15,3 +15,5 @@ export * from './matrizDecisao';
 export * from './scoringV5_2';
 export * from './deveConsultarDataset';
 export * from './segments';
+export * from './triggersTier';
+export * from './avaliarBloqueios';
