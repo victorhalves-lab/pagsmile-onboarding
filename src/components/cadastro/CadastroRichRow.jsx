@@ -6,6 +6,7 @@ import {
   DollarSign, UserCheck, FileText, AlertTriangle, TrendingUp
 } from 'lucide-react';
 import { segmentLabel } from '@/lib/segmentLabels';
+import { V5_2Badge } from '@/components/v5_2/FrameworkVersionFilter';
 
 const STATUS_CONFIG = {
   'Pendente': { color: 'bg-gray-100 text-gray-700', label: 'Pendente' },
@@ -82,6 +83,7 @@ export default function CadastroRichRow({
                 {merchant.companyName || merchant.fullName}
               </span>
               <Badge variant="outline" className="text-[10px] shrink-0">{merchant.type}</Badge>
+              <V5_2Badge frameworkVersion={oCase?.framework_version} />
               {merchant.fullName && merchant.companyName && merchant.fullName !== merchant.companyName && (
                 <span className="text-[11px] text-[var(--pagsmile-blue)]/40 truncate">
                   ({merchant.fullName})

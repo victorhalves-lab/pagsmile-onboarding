@@ -11,6 +11,7 @@ import CadastroDashboard from '@/components/cadastro/CadastroDashboard';
 import ExportReportModal from '@/components/cadastro/ExportReportModal';
 import CadastroRichRow from '@/components/cadastro/CadastroRichRow';
 import MergeDuplicatesModal from '@/components/cadastro/MergeDuplicatesModal';
+import FrameworkVersionFilter from '@/components/v5_2/FrameworkVersionFilter';
 
 const ORIGIN_LABELS = {
   'questionario_leads_pagsmile_v5': 'Questionário V5',
@@ -24,6 +25,7 @@ export default function Cadastro() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const [duplicateOnly, setDuplicateOnly] = useState(false);
+  const [frameworkFilter, setFrameworkFilter] = useState('all'); // 'all' | 'v4.0' | 'v5.2'
   const [viewMode, setViewMode] = useState('list');
   const [exportOpen, setExportOpen] = useState(false);
   const [mergeOpen, setMergeOpen] = useState(false);
@@ -145,6 +147,17 @@ export default function Cadastro() {
     return count;
   }, [sellers, duplicateCountMap]);
 
+  // Contadores framework (para o chip)
+  const frameworkCounts = useMemo(() => {
+    let v4 = 0, v52 = 0;
+    sellers.forEach(m => {
+      const c = caseMap[m.id];
+      const fv = c?.framework_version || 'v4.0';
+      if (fv === 'v5.2') v52 += 1; else v4 += 1;
+    });
+    return { all: sellers.length, v4, v52 };
+  }, [sellers, caseMap]);
+
   // Filtros
   const filtered = useMemo(() => {
     return sellers.filter(m => {
@@ -157,9 +170,14 @@ export default function Cadastro() {
       const matchStatus = statusFilter === 'all' || m.onboardingStatus === statusFilter;
       const matchType = typeFilter === 'all' || m.type === typeFilter;
       const matchDup = !duplicateOnly || duplicateCountMap[m.id] > 1;
-      return matchSearch && matchStatus && matchType && matchDup;
+      let matchFramework = true;
+      if (frameworkFilter !== 'all') {
+        const fv = caseMap[m.id]?.framework_version || 'v4.0';
+        matchFramework = fv === frameworkFilter;
+      }
+      return matchSearch && matchStatus && matchType && matchDup && matchFramework;
     });
-  }, [sellers, search, statusFilter, typeFilter, duplicateOnly, duplicateCountMap]);
+  }, [sellers, search, statusFilter, typeFilter, duplicateOnly, duplicateCountMap, frameworkFilter, caseMap]);
 
   if (loadingMerchants) {
     return (
@@ -272,6 +290,11 @@ export default function Cadastro() {
               <AlertTriangle className="w-4 h-4 mr-1.5" />
               Só duplicados
             </Button>
+          </div>
+
+          {/* Filtro Framework V4 ↔ V5.2 */}
+          <div className="mt-3 flex justify-end">
+            <FrameworkVersionFilter value={frameworkFilter} onChange={setFrameworkFilter} counts={frameworkCounts} />
           </div>
 
           {/* Lista enriquecida */}

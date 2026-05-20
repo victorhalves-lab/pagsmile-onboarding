@@ -22,6 +22,7 @@ import DocOnlyLinkModal from '@/components/compliance/DocOnlyLinkModal';
 import CafOnlyLinkModal from '@/components/compliance/CafOnlyLinkModal';
 import DocsAndCafLinkModal from '@/components/compliance/DocsAndCafLinkModal';
 import AssignCaseToPartnerModal from '@/components/partners-compliance/AssignCaseToPartnerModal';
+import { V5_2Badge } from '@/components/v5_2/FrameworkVersionFilter';
 
 // ── Helpers ──
 const getTimeInQueue = (createdDate) => {
@@ -210,6 +211,7 @@ function CaseCard({
           <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
             {getModelBadge(getCaseModel(c))}
             {getStatusBadge(c.status)}
+            <V5_2Badge frameworkVersion={c.framework_version} />
           </div>
         </div>
 

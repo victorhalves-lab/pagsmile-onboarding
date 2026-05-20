@@ -11,6 +11,7 @@ import ComplianceCasesCardsGrid from '@/components/compliance/ComplianceCasesCar
 import BulkActionsBar from '@/components/compliance/BulkActionsBar';
 import DraftsTab from '@/components/compliance/DraftsTab';
 import SubsellerCasesTab from '@/components/compliance/SubsellerCasesTab';
+import FrameworkVersionFilter from '@/components/v5_2/FrameworkVersionFilter';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 
 export default function QuestionariosRecebidos() {
@@ -24,6 +25,7 @@ export default function QuestionariosRecebidos() {
   const [analystFilter, setAnalystFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [modelFilter, setModelFilter] = useState('all');
+  const [frameworkFilter, setFrameworkFilter] = useState('all'); // all | v4.0 | v5.2
   const [sortField, setSortField] = useState('created_date');
   const [sortOrder, setSortOrder] = useState('desc');
   const [currentPage, setCurrentPage] = useState(1);
@@ -163,6 +165,8 @@ export default function QuestionariosRecebidos() {
       const matchesPriority = priorityFilter === 'all' || c.priority === priorityFilter;
       const caseModel = getCaseModel(c);
       const matchesModel = modelFilter === 'all' || caseModel === modelFilter;
+      const fv = c.framework_version || 'v4.0';
+      const matchesFramework = frameworkFilter === 'all' || fv === frameworkFilter;
       let matchesScore = true;
       if (scoreFilter !== 'all') {
         const v4 = c.riskScoreV4;
@@ -184,7 +188,7 @@ export default function QuestionariosRecebidos() {
         else if (dateFilter === 'week') matchesDate = caseDate >= new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
         else if (dateFilter === 'month') matchesDate = caseDate >= new Date(now.getFullYear(), now.getMonth(), 1);
       }
-      return matchesSearch && matchesStatus && matchesMerchantType && matchesScore && matchesDate && matchesAnalyst && matchesPriority && matchesModel;
+      return matchesSearch && matchesStatus && matchesMerchantType && matchesScore && matchesDate && matchesAnalyst && matchesPriority && matchesModel && matchesFramework;
     }).sort((a, b) => {
       let aValue = a[sortField];
       let bValue = b[sortField];
@@ -194,7 +198,15 @@ export default function QuestionariosRecebidos() {
       }
       return sortOrder === 'asc' ? (aValue > bValue ? 1 : -1) : (aValue < bValue ? 1 : -1);
     });
-  }, [onboardingCases, merchantMap, linksMap, templatesMap, searchTerm, statusFilter, merchantTypeFilter, scoreFilter, dateFilter, analystFilter, priorityFilter, modelFilter, sortField, sortOrder]);
+  }, [onboardingCases, merchantMap, linksMap, templatesMap, searchTerm, statusFilter, merchantTypeFilter, scoreFilter, dateFilter, analystFilter, priorityFilter, modelFilter, frameworkFilter, sortField, sortOrder]);
+
+  const frameworkCounts = React.useMemo(() => {
+    let v4 = 0, v52 = 0;
+    onboardingCases.forEach(c => {
+      if ((c.framework_version || 'v4.0') === 'v5.2') v52 += 1; else v4 += 1;
+    });
+    return { all: onboardingCases.length, v4, v52 };
+  }, [onboardingCases]);
 
   // ── Pagination ──
   const totalPages = Math.ceil(filteredCases.length / itemsPerPage);
@@ -223,6 +235,7 @@ export default function QuestionariosRecebidos() {
   const clearFilters = () => {
     setStatusFilter('all'); setMerchantTypeFilter('all'); setScoreFilter('all');
     setDateFilter('all'); setAnalystFilter('all'); setPriorityFilter('all'); setModelFilter('all');
+    setFrameworkFilter('all');
   };
 
   const isLoadingAll = casesLoading || merchantsLoading;
@@ -289,6 +302,10 @@ export default function QuestionariosRecebidos() {
             priorityFilter={priorityFilter} onPriorityFilterChange={setPriorityFilter}
             statusFilter={statusFilter} analysts={analysts} onClearFilters={clearFilters}
           />
+
+          <div className="flex justify-end">
+            <FrameworkVersionFilter value={frameworkFilter} onChange={setFrameworkFilter} counts={frameworkCounts} />
+          </div>
 
           <ComplianceCasesCardsGrid
             paginatedCases={paginatedCases} filteredCasesCount={filteredCases.length}

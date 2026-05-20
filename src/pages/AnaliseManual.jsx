@@ -9,6 +9,7 @@ import {
   Download, Filter,
 } from 'lucide-react';
 import ComplianceCasesCardsGrid from '@/components/compliance/ComplianceCasesCardsGrid';
+import FrameworkVersionFilter from '@/components/v5_2/FrameworkVersionFilter';
 
 /**
  * AnaliseManual — página dedicada para casos que caíram em revisão manual.
@@ -28,6 +29,7 @@ export default function AnaliseManual() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all'); // all | Manual | Docs Solicitados
   const [agingFilter, setAgingFilter] = useState('all');   // all | over24h | over72h
+  const [frameworkFilter, setFrameworkFilter] = useState('all'); // all | v4.0 | v5.2
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRows, setSelectedRows] = useState([]);
   const [expandedRow, setExpandedRow] = useState(null);
@@ -130,6 +132,15 @@ export default function AnaliseManual() {
     };
   }, [onboardingCases]);
 
+  // Contadores framework para o filtro
+  const frameworkCounts = React.useMemo(() => {
+    let v4 = 0, v52 = 0;
+    onboardingCases.forEach(c => {
+      if ((c.framework_version || 'v4.0') === 'v5.2') v52 += 1; else v4 += 1;
+    });
+    return { all: onboardingCases.length, v4, v52 };
+  }, [onboardingCases]);
+
   // ── Filtros ──
   const filteredCases = React.useMemo(() => {
     const now = Date.now();
@@ -140,6 +151,11 @@ export default function AnaliseManual() {
         const hours = (now - new Date(c.updated_date).getTime()) / 36e5;
         if (agingFilter === 'over24h' && hours <= 24) return false;
         if (agingFilter === 'over72h' && hours <= 72) return false;
+      }
+
+      if (frameworkFilter !== 'all') {
+        const fv = c.framework_version || 'v4.0';
+        if (fv !== frameworkFilter) return false;
       }
 
       if (searchTerm) {
@@ -154,7 +170,7 @@ export default function AnaliseManual() {
       }
       return true;
     });
-  }, [onboardingCases, merchantMap, statusFilter, agingFilter, searchTerm]);
+  }, [onboardingCases, merchantMap, statusFilter, agingFilter, searchTerm, frameworkFilter]);
 
   const totalPages = Math.ceil(filteredCases.length / itemsPerPage);
   const paginatedCases = filteredCases.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -269,9 +285,9 @@ export default function AnaliseManual() {
         />
       </div>
 
-      {/* Busca */}
-      <div className="bg-white rounded-xl border border-[#002443]/10 p-3">
-        <div className="relative">
+      {/* Busca + Filtro Framework */}
+      <div className="bg-white rounded-xl border border-[#002443]/10 p-3 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+        <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#002443]/50" />
           <Input
             placeholder="Buscar por cliente, CNPJ/CPF, e-mail ou ID..."
@@ -280,6 +296,11 @@ export default function AnaliseManual() {
             className="pl-9"
           />
         </div>
+        <FrameworkVersionFilter
+          value={frameworkFilter}
+          onChange={(v) => { setFrameworkFilter(v); setCurrentPage(1); }}
+          counts={frameworkCounts}
+        />
       </div>
 
       {/* Resultados */}

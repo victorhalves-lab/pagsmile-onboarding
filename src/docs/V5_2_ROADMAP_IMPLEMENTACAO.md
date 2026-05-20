@@ -102,15 +102,16 @@ Já entregue:
 - ✅ Banner + Aba no `CadastroDetalhe`
 - ✅ Card de link V5.2
 
-### 🔴 FASE 6 — Próximos itens (PENDENTES)
+### 🔴 FASE 6 — Próximos itens
 
-#### **▶ FASE 6.1 — Filtros V5.2 nas listagens (PRÓXIMA)** ⬅️
-- [ ] Filtro `framework_version` em `pages/Cadastro` (chip "V5.2 BETA" + filtro)
-- [ ] Filtro `framework_version` em `pages/AnaliseManual`
-- [ ] Filtro `framework_version` em `pages/QuestionariosRecebidos`
-- [ ] Badge V5.2 nos cards de fila
+#### ✅ **FASE 6.1 — Filtros V5.2 nas listagens (CONCLUÍDA)**
+- ✅ `components/v5_2/FrameworkVersionFilter` — componente shared (chips + badge `V5_2Badge`)
+- ✅ Filtro framework + contadores em `pages/Cadastro`
+- ✅ Filtro framework em `pages/AnaliseManual` (ao lado da busca)
+- ✅ Filtro framework em `pages/QuestionariosRecebidos` (limpo via clearFilters)
+- ✅ Badge `V5.2` nas linhas (`CadastroRichRow`) e nos cards (`ComplianceCasesCardsGrid`)
 
-#### **FASE 6.2 — Botão "Reprocessar V4 → V5.2"**
+#### **▶ FASE 6.2 — Botão "Reprocessar V4 → V5.2" (PRÓXIMA)** ⬅️
 - [ ] Em `pages/CadastroDetalhe` — botão admin que cria novo caso V5.2 com `legacyV4CaseId` apontando para o V4
 - [ ] Backend function `reprocessV4AsV5_2` (sandbox de comparação)
 
@@ -153,18 +154,17 @@ Já entregue:
 
 ---
 
-## 📌 PRÓXIMA ENTREGA: **FASE 6.1 — Filtros V5.2 nas listagens**
+## 📌 PRÓXIMA ENTREGA: **FASE 6.2 — Botão "Reprocessar V4 → V5.2"**
 
-**Objetivo:** o analista precisa conseguir filtrar a fila apenas pelos casos V5.2 (e ver o badge claramente) para começar a operar V5.2 em produção sem se confundir com V4.
+**Objetivo:** permitir ao admin pegar um caso V4 existente e gerar um caso V5.2 paralelo (sandbox de comparação) para validar o novo framework em casos reais sem afetar o histórico V4.
 
 **Onde:**
-- `pages/Cadastro` (lista mestre de cadastros)
-- `pages/AnaliseManual` (fila de análise)
-- `pages/QuestionariosRecebidos` (recebidos)
+- `pages/CadastroDetalhe` — botão admin "Reprocessar como V5.2" (só visível para admin, quando `framework_version === 'v4.0'`)
 
 **Como:**
-- Filtro lateral / chip novo: "Framework" com opções `Todos` / `V4` / `V5.2 BETA`
-- Badge visual no card/row do caso quando `framework_version === 'v5.2'`
+- Backend function `reprocessV4AsV5_2` recebe `legacyV4CaseId`, copia merchant + responses + cria novo `OnboardingCase` com `framework_version='v5.2'` + `legacyV4CaseId` apontando para o original
+- Dispara `autoEnrichOnboardingV5_2`
+- Frontend: botão + modal de confirmação + redireciona para o novo caso
 
 ---
 
@@ -174,3 +174,4 @@ Já entregue:
 |---|---|---|
 | 1.0 | 2026-05-20 | Criação — diagnóstico Blocos 1+2 |
 | 2.0 | 2026-05-20 | Atualização pós-implementação: Fases 1, 2, 3, 3c, 5 (5.1-5.12) marcadas como concluídas. Próxima: Fase 6.1 (Filtros V5.2). |
+| 2.1 | 2026-05-20 | Fase 6.1 concluída (filtros + badge V5.2 em Cadastro, AnaliseManual, QuestionariosRecebidos). Próxima: Fase 6.2 (Reprocessar V4→V5.2). |
