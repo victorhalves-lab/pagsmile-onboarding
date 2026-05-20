@@ -7,6 +7,7 @@ import V5_2PlanoMonitoramentoCard from './V5_2PlanoMonitoramentoCard';
 import SmartSummaryCards from './v5_2/SmartSummaryCards';
 import Term from '@/components/v5_2/glossary/Term';
 import GlossaryDrawer from '@/components/v5_2/glossary/GlossaryDrawer';
+import DossieV5_2Button from '@/components/v5_2/dossie/DossieV5_2Button';
 
 /**
  * [V5.2 Fase 5.11] Aba dedicada V5.2 — renderiza:
@@ -85,8 +86,9 @@ export default function CadastroV5_2Tab({ latestCase, latestScore, onRefetch }) 
 
   return (
     <div className="space-y-4">
-      {/* Toolbar V5.2 — link p/ Glossário */}
-      <div className="flex items-center justify-end">
+      {/* Toolbar V5.2 — Dossiê auditável + link p/ Glossário */}
+      <div className="flex items-center justify-end gap-2">
+        <DossieV5_2Button caseId={latestCase.id} merchantName={latestCase.merchantName} />
         <GlossaryDrawer variant="icon" />
       </div>
 
