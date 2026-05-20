@@ -27,7 +27,7 @@
 | 1 | Master Index + Glossário + Mapa Base44 + Tier Framework Pt1 | ✅ Diagnosticado | `docs/V5_2_BLOCO1_FUNDAMENTOS.md` |
 | 2 | DOC3 Datasets + DOC5 V5.2 Bloqueios | ✅ Diagnosticado | `docs/V5_2_BLOCO2_DATASETS_BLOQUEIOS.md` |
 | 3 | Tier 1, 2, 3 + Subseller PJ/PF (5 docs microscópicos) | ✅ Diagnosticado | `docs/V5_2_BLOCO3_TIERS.md` |
-| 4 | Questionário Dinâmico E1 | ⏳ Pendente | — |
+| 4 | Questionário Dinâmico E1 | ✅ Diagnosticado | `docs/V5_2_BLOCO4_QUESTIONARIO.md` |
 | 5 | Segmentos (13 docs) — pode ser dividido em 5a/5b/5c | ⏳ Pendente | — |
 | 6 | REDESIGN_AnaliseDeRisco + Especificação Datasets Tela | ⏳ Pendente | — |
 | 7 | DELTA Segmentos + Apêndice V5.1 | ⏳ Pendente | — |
@@ -168,14 +168,47 @@
 - [ ] `crossborder` (renomeado de cap_crossborder_compliance)
 - [ ] `recurrence` (nova)
 
-### FASE 5 — Questionário V5.2 (semana 5+)
+### FASE 5 — Questionário Dinâmico V5.2 (Bloco 4 — semanas 5-7)
 
-- [ ] Pergunta universal `q_t2_revenue_proof` no questionário (Apêndice §A.2)
-- [ ] Templates V5.2 por Tier (Tier 1 light / Tier 3 completo)
-- [ ] Steps de Patch Financeiro (Tier 2+)
-- [ ] Steps de Capabilities
-- [ ] Steps segmento-específicos
-- **Detalhes virão no Bloco 4 (QuestionarioDinamico_V5_1_Microscopico)**
+**Detalhes completos em `docs/V5_2_BLOCO4_QUESTIONARIO.md`**
+
+#### FASE 5.1 — Schema `Question` ampliado
+- [ ] Adicionar 9 campos: `categoria_funcional`, `modalidade_origem`, `cross_check_bdc`, `variaveis_risk_score`, `b_series_disparados`, `norma_regulatoria`, `documentos_relacionados`, `framework_version_intro`, `framework_version_removed`
+
+#### FASE 5.2 — Seed 80 perguntas canônicas (Tier 1+2+3+Subsellers)
+- [ ] 14 IDs Tier 1, 16 IDs Tier 2, 22 IDs Tier 3, 16 Sub PJ, 12 Sub PF, 1 transversal `q_t2_revenue_proof`
+- (65 perguntas segmento ficam no Bloco 5)
+
+#### FASE 5.3 — Motor de Tiering Dinâmico
+- [ ] `lib/v5_1/tieringEngine.js` com `evaluateTierDuringFlow()` + `classifySubsellerGrauDuringFlow()`
+- [ ] Snapshot de estado em `ComplianceSession`: `tier_history`, `bdc_signals_so_far`, `segments_detected`, `capabilities_requested`
+- [ ] Princípio "tier crescente único" + "primeiro sinal escala"
+
+#### FASE 5.4 — Microcopy oficial centralizado
+- [ ] `lib/v5_1/microcopy.js` com constantes padronizadas
+- [ ] Helper `getMicrocopy(key, context)` com placeholder `[Nome do seller mestre]`
+
+#### FASE 5.5 — 4 Modalidades A/B/C/D na UX
+- [ ] `<ConfirmCard>`, `<HybridField>`, `<CollectedField>`, `<DerivedInfo>`
+- [ ] Botão "Reportar divergência" em Modalidade A → registra em `AuditLog`
+
+#### FASE 5.6 — B-series durante o fluxo (real-time)
+- [ ] `lib/v5_1/blocksEvaluator.js` com `evaluateBlocksDuringFlow()`
+- [ ] Hook após cada resposta dispara B-series
+
+#### FASE 5.7 — Reavaliação tier pós-enriquecimento
+- [ ] `reevaluateTierAfterEnrichment()` em `bdcEnrichCaseV5_1`
+- [ ] Email de re-engagement se tier escala pós-submit
+
+#### FASE 5.8 — Versionamento por sessão
+- [ ] 3 campos: `framework_version_at_start/at_submit/at_decision` em `OnboardingCase`
+- [ ] Flag `is_transitional_case`
+
+#### FASE 5.9 — TTL de retomada por tier
+- [ ] `ComplianceSession.expires_at` por tier (T1/T2=30d, T3=45d, Subseller=15d)
+
+#### FASE 5.10 — Mapa regulatório consultável
+- [ ] `pages/MapaRegulatorio` para auditores
 
 ### FASE 6 — UI Refatorada (semana 6+)
 
@@ -202,10 +235,11 @@ Ver arquivo separado: `docs/V5_2_DECISOES_USUARIO.md`
 
 ## 📌 PRÓXIMO PASSO
 
-**Aguardando usuário enviar Bloco 4:**
-- `QuestionarioDinamico_V5_1_Microscopico` (Sub-Entrega E1)
+**Aguardando usuário enviar Bloco 5:**
+- 13 docs de segmento microscópicos (Sub-Entrega E2)
+  - Ecommerce, Marketplace, Gateway, SaaS, Infoprodutos, Plataforma Vertical, Turismo, Eventos, Serviços B2B, Dropshipping, Serviços Locais, Educação, Crossborder
 
-Depois Bloco 5 (13 segmentos) + Bloco 6 (REDESIGN) + Bloco 7 (DELTA + Apêndice).
+Depois Bloco 6 (REDESIGN AnaliseDeRisco + Espec. Datasets Tela) + Bloco 7 (DELTA + Apêndice V5.1).
 
 ---
 

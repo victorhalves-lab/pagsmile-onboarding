@@ -190,6 +190,26 @@ Subseller PF Grau C faz upload do recibo de entrega da DIRPF do exercício anter
 
 ---
 
+## Bloco 4 — Questionário Dinâmico (perguntas em aberto)
+
+### Q17 — Reavaliação dinâmica de tier durante o fluxo
+**Pergunta:** Real-time (escala enquanto cliente preenche) ou só pós-submit?
+**Status:** ⏳ Aguardando resposta
+
+### Q18 — Modalidade A "Reportar divergência"
+**Pergunta:** Reportar divergência vai para Revisão Manual ou só registra em auditoria?
+**Status:** ⏳ Aguardando resposta
+
+### Q19 — `q_t2_revenue_proof` em Tier 1 dos 4 críticos
+**Pergunta:** Upload obrigatório no momento OU declaração + envio em até 15 dias?
+**Status:** ⏳ Aguardando resposta
+
+### Q20 — Workflow formal de mudanças (RFC + comitê quinzenal)
+**Pergunta:** Está OK assumir que vocês cuidam disso fora do sistema (processo organizacional)?
+**Status:** ⏳ Aguardando resposta
+
+---
+
 ## 🔒 PRINCÍPIOS NÃO-NEGOCIÁVEIS DEFINIDOS
 
 1. **DNA imutável** — caso V4 nascido nasce V4, V5.1 nasce V5.1, V5.2 nasce V5.2 (preservação histórica)
