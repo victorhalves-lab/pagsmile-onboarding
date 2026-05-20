@@ -2,6 +2,17 @@
 
 **Documento vivo — atualizado a cada entrega**
 
+> ## ⚠️ REGRA PERMANENTE DE COMUNICAÇÃO (definida pelo usuário em 2026-05-20)
+>
+> **Ao final de TODA entrega, o assistente DEVE explicitamente declarar qual é a PRÓXIMA entrega.**
+>
+> - É **obrigatório**, não opcional.
+> - Formato exigido: encerrar a resposta com uma linha clara no padrão
+>   `▶ Próxima entrega: <Fase X.Y — nome curto + escopo em 1 linha>`
+> - Vale para qualquer entrega — feature, refactor, fix, doc. Sempre.
+> - Se não houver próxima entrega clara, listar 2-4 opções e pedir ao usuário para escolher.
+> - Esta regra está registrada aqui para que QUALQUER assistente futuro a respeite.
+
 | Campo | Conteúdo |
 |---|---|
 | Versão | 2.0 |
@@ -119,11 +130,7 @@ Já entregue:
 - ✅ `components/cadastro/ReprocessV4AsV5_2Button` — modal de confirmação + redirect pós-criação
 - ✅ Plugado em `pages/CadastroDetalhe` no header (só admin, só V4)
 
-#### **▶ FASE 6.3 — Próxima (a definir)**
-- [ ] Em `pages/CadastroDetalhe` — botão admin que cria novo caso V5.2 com `legacyV4CaseId` apontando para o V4
-- [ ] Backend function `reprocessV4AsV5_2` (sandbox de comparação)
-
-#### **FASE 6.3 — UI de workflow de exceções (Cat 1-5)**
+#### **▶ FASE 6.3 — UI de workflow de exceções (Cat 1-5) (PRÓXIMA — sugerida)**
 - [ ] `components/cadastro/ExceptionWorkflow.jsx` — aplicar exceção a um bloqueio
 - [ ] Cat 5 → cria `PlanoMonitoramento` + `TermoAdicionalV5_2`
 - [ ] Workflow de aceite do termo pelo seller
@@ -180,3 +187,4 @@ Possíveis próximos passos (escolher com o usuário):
 | 2.0 | 2026-05-20 | Atualização pós-implementação: Fases 1, 2, 3, 3c, 5 (5.1-5.12) marcadas como concluídas. Próxima: Fase 6.1 (Filtros V5.2). |
 | 2.1 | 2026-05-20 | Fase 6.1 concluída (filtros + badge V5.2 em Cadastro, AnaliseManual, QuestionariosRecebidos). Próxima: Fase 6.2 (Reprocessar V4→V5.2). |
 | 2.2 | 2026-05-20 | Fase 6.2 concluída (reprocessV4AsV5_2 + ReprocessV4AsV5_2Button em CadastroDetalhe). Próxima: Fase 6.3 (a definir). |
+| 2.3 | 2026-05-20 | **Regra permanente registrada**: ao final de toda entrega, o assistente sempre declara a próxima. Adicionada ao topo do roadmap. |
