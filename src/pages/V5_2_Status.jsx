@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { FEATURE_FLAGS, DIMENSOES_ANALITICAS, BLOQUEIOS_ABSOLUTOS, SEGMENTOS_CANONICOS, SEGMENTOS_TIER_3_ONLY } from '@/lib/v5_2/constants';
+import { V5_2_SEGMENTS } from '@/lib/v5_2/segments';
 
 /**
  * [V5.2] Status Dashboard — controle administrativo do framework V5.2.
@@ -123,7 +124,7 @@ export default function V5_2_Status() {
           <TabsTrigger value="seed">Seed Master Data</TabsTrigger>
           <TabsTrigger value="dimensoes">13 Dimensões</TabsTrigger>
           <TabsTrigger value="absolutos">10 Bloqueios Absolutos</TabsTrigger>
-          <TabsTrigger value="segmentos">13 Segmentos</TabsTrigger>
+          <TabsTrigger value="segmentos">15 Segmentos</TabsTrigger>
         </TabsList>
 
         {/* ENTIDADES STATUS */}
@@ -253,16 +254,38 @@ export default function V5_2_Status() {
         <TabsContent value="segmentos" className="mt-4">
           <Card>
             <CardHeader>
-              <CardTitle>13 Segmentos Canônicos V5.2</CardTitle>
-              <CardDescription>3 são Tier 3-only (Marketplace, Gateway, Crossborder)</CardDescription>
+              <CardTitle>15 Segmentos Canônicos V5.2</CardTitle>
+              <CardDescription>
+                10 segmentos legados (compatíveis com V4) + 5 novos V5.2 (turismo, eventos, servicos_b2b, servicos_locais, crossborder).
+                Fonte única em <code>lib/v5_2/segments.js</code>.
+              </CardDescription>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-              {SEGMENTOS_CANONICOS.map((seg) => (
-                <div key={seg} className="p-3 rounded-xl border border-[#002443]/5 bg-white">
-                  <p className="font-mono text-xs text-[#002443]">{seg}</p>
-                  {SEGMENTOS_TIER_3_ONLY.includes(seg) && (
-                    <Badge className="bg-red-100 text-red-700 border-0 text-[9px] mt-1">TIER 3-ONLY</Badge>
-                  )}
+            <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {V5_2_SEGMENTS.map((seg) => (
+                <div key={seg.id} className="p-3 rounded-xl border border-[#002443]/5 bg-white">
+                  <div className="flex items-start gap-2">
+                    <span className="text-2xl">{seg.icon}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="font-bold text-sm text-[#002443]">{seg.label}</p>
+                        {seg.isNewInV5_2 && (
+                          <Badge className="bg-[#2bc196] text-white border-0 text-[9px]">NOVO V5.2</Badge>
+                        )}
+                        {seg.fixedTier && (
+                          <Badge className="bg-amber-100 text-amber-700 border-0 text-[9px]">TIER FIXO</Badge>
+                        )}
+                      </div>
+                      <p className="font-mono text-[10px] text-[#002443]/40 mt-0.5">{seg.id}</p>
+                      <p className="text-xs text-[#002443]/60 mt-1 leading-relaxed">{seg.description}</p>
+                      <div className="flex items-center gap-1 mt-2 flex-wrap">
+                        <Badge variant="outline" className="text-[9px]">{seg.group}</Badge>
+                        <Badge variant="outline" className="text-[9px]">{seg.defaultTier}</Badge>
+                        {seg.requiresCapabilities.map(cap => (
+                          <Badge key={cap} className="bg-indigo-50 text-indigo-700 border-0 text-[9px]">{cap}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               ))}
             </CardContent>

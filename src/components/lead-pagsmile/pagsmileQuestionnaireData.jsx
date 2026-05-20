@@ -1,80 +1,21 @@
 // ============================================================
 // QUESTIONÁRIO DE LEADS PAGSMILE v5.0 — DADOS CENTRALIZADOS
-// 10 segmentos | 45 perguntas + 18 condicionais + 16 flags
+// V5.2: 15 segmentos (10 legados + 5 novos) | adapta-se à
+// fonte da verdade canônica em lib/v5_2/segments.js
 // ============================================================
 
-export const SEGMENTS = [
-  {
-    id: 'gateway',
-    label: 'Gateway / PSP',
-    description: 'Processa pagamentos para sub-sellers em sites próprios. Seus clientes (merchants) têm checkout no site deles, você processa por trás.',
-    group: 'intermediario',
-    icon: '🔗',
-  },
-  {
-    id: 'marketplace',
-    label: 'Marketplace',
-    description: 'Sub-sellers vendem dentro do mesmo site/app. Compradores compram de vários vendedores em um só lugar (ex: Mercado Livre, Shopee, iFood).',
-    group: 'intermediario',
-    icon: '🏪',
-  },
-  {
-    id: 'plataforma_vertical',
-    label: 'Plataforma Vertical',
-    description: 'Foodtech, PDV, agendamento, ticketing, fitness, delivery com split. Software vertical que processa pagamentos para os estabelecimentos da sua rede.',
-    group: 'intermediario',
-    icon: '📱',
-  },
-  {
-    id: 'ecommerce',
-    label: 'E-commerce',
-    description: 'Loja virtual com estoque e entrega. Você vende seus próprios produtos online e faz a logística de envio.',
-    group: 'merchant',
-    icon: '🛒',
-  },
-  {
-    id: 'dropshipping',
-    label: 'Dropshipping',
-    description: 'Loja sem estoque, fornecedor envia direto. Você vende online mas o fornecedor cuida do estoque e entrega ao cliente final.',
-    group: 'merchant',
-    icon: '📦',
-  },
-  {
-    id: 'infoprodutos',
-    label: 'Infoprodutos',
-    description: 'Cursos, e-books, mentorias, áreas de membros, co-produções com afiliados. Produtos digitais vendidos online, podendo ter rede de afiliados (Hotmart/Eduzz/Kiwify).',
-    group: 'merchant',
-    icon: '🎓',
-  },
-  {
-    id: 'saas',
-    label: 'SaaS',
-    description: 'Software por assinatura recorrente. Seus clientes pagam mensalidade para usar seu software/plataforma.',
-    group: 'merchant',
-    icon: '💻',
-  },
-  {
-    id: 'educacao',
-    label: 'Educação',
-    description: 'Escola, faculdade, curso presencial. Instituição de ensino com mensalidades e matrículas (presencial ou híbrido).',
-    group: 'merchant',
-    icon: '🏫',
-  },
-  {
-    id: 'link_pagamento',
-    label: 'Link de Pagamento',
-    description: 'Vende por Instagram/WhatsApp com links. Não tem loja virtual, envia link de pagamento direto ao cliente por redes sociais ou mensagem.',
-    group: 'merchant',
-    icon: '🔗',
-  },
-  {
-    id: 'mpe',
-    label: 'MPE',
-    description: 'Pequeno negócio local. Loja física, prestador de serviço, autônomo. Fatura até R$4,8M/ano.',
-    group: 'merchant',
-    icon: '🏠',
-  },
-];
+import { V5_2_SEGMENTS } from '@/lib/v5_2/segments';
+
+// SEGMENTS mantém o mesmo shape esperado pelos componentes existentes
+// (id, label, description, group, icon) — derivado do catálogo canônico V5.2.
+export const SEGMENTS = V5_2_SEGMENTS.map(s => ({
+  id: s.id,
+  label: s.label,
+  description: s.description,
+  group: s.group,
+  icon: s.icon,
+  isNewInV5_2: s.isNewInV5_2 || false,
+}));
 
 export const CARGO_OPTIONS = [
   'Sócio/Proprietário', 'CEO/Diretor', 'Gerente', 'Financeiro', 'TI', 'Marketing'

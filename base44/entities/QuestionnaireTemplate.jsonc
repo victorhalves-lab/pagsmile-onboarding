@@ -3,12 +3,10 @@
   "type": "object",
   "properties": {
     "name": {
-      "type": "string",
-      "description": "Nome do template de question\u00e1rio"
+      "type": "string"
     },
     "description": {
-      "type": "string",
-      "description": "Descri\u00e7\u00e3o do prop\u00f3sito do question\u00e1rio"
+      "type": "string"
     },
     "merchantType": {
       "type": "string",
@@ -30,9 +28,11 @@
         "MERCHAN",
         "GATEWAY",
         "MARKETPLACE",
-        "GENERAL"
+        "GENERAL",
+        "V5_2_DYNAMIC"
       ],
-      "default": "GENERAL"
+      "default": "GENERAL",
+      "description": "V5_2_DYNAMIC marca o template \u00fanico din\u00e2mico tier-aware V5.2."
     },
     "linkedComplianceTemplateId": {
       "type": "string"
@@ -100,10 +100,11 @@
       "type": "string",
       "enum": [
         "v4.0",
-        "v5.1"
+        "v5.1",
+        "v5.2"
       ],
       "default": "v4.0",
-      "description": "DNA do template. Templates V4 atuais permanecem v4.0. Templates novos V5.1 nascem com v5.1. Links de onboarding herdam este campo, e o caso criado pelo link tamb\u00e9m herda \u2014 garantindo coer\u00eancia ponta-a-ponta."
+      "description": "DNA do template. v4.0 = legado. v5.2 = novo padr\u00e3o (template \u00fanico din\u00e2mico tier-aware). v5.1 mantido por retro-compat (n\u00e3o usado em prod)."
     },
     "tier_v5_1": {
       "type": "string",
@@ -114,11 +115,11 @@
         "subseller_pj",
         "subseller_pf"
       ],
-      "description": "[V5.1] Tier alvo deste template (Tier 1 = question\u00e1rio curto, Tier 3 = question\u00e1rio completo)"
+      "description": "[V5.1/V5.2] Tier alvo. No V5.2 din\u00e2mico, este campo fica vazio (engine resolve em runtime)."
     },
     "segmento_v5_1": {
       "type": "string",
-      "description": "[V5.1] Segmento V5.1 deste template (ecommerce, gateway, marketplace, etc.)"
+      "description": "[V5.1/V5.2] Segmento alvo. No V5.2 din\u00e2mico, vazio (engine resolve em runtime)."
     }
   },
   "required": [

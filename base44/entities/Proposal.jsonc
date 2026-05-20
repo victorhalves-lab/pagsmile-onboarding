@@ -3,16 +3,13 @@
   "type": "object",
   "properties": {
     "leadId": {
-      "type": "string",
-      "description": "ID do Lead"
+      "type": "string"
     },
     "codigo": {
-      "type": "string",
-      "description": "C\u00f3digo \u00fanico da proposta (PROP-YYYY-NNNNN)"
+      "type": "string"
     },
     "proposalName": {
-      "type": "string",
-      "description": "Nome da proposta"
+      "type": "string"
     },
     "status": {
       "type": "string",
@@ -26,8 +23,7 @@
         "expirada",
         "cancelada"
       ],
-      "default": "rascunho",
-      "description": "Status da proposta"
+      "default": "rascunho"
     },
     "origem": {
       "type": "string",
@@ -36,8 +32,7 @@
         "priscila_automatica",
         "priscila_assistida"
       ],
-      "default": "manual",
-      "description": "Origem da proposta"
+      "default": "manual"
     },
     "sourceFlow": {
       "type": "string",
@@ -51,8 +46,7 @@
         "from_existing_proposal_rates",
         "proposal_versioning"
       ],
-      "default": "manual_creation",
-      "description": "Caminho de origem da cria\u00e7\u00e3o da proposta"
+      "default": "manual_creation"
     },
     "businessSubCategory": {
       "type": "string",
@@ -66,25 +60,27 @@
         "mpe",
         "dropshipping",
         "plataformas_verticais",
-        "link_pagamento"
+        "plataforma_vertical",
+        "link_pagamento",
+        "turismo",
+        "eventos",
+        "servicos_b2b",
+        "servicos_locais",
+        "crossborder"
       ],
-      "description": "Segmento de neg\u00f3cio do cliente"
+      "description": "Segmento de neg\u00f3cio do cliente. V5.2 ampliou de 10 para 15 segmentos can\u00f4nicos."
     },
     "chosenPartnerId": {
-      "type": "string",
-      "description": "ID do Parceiro selecionado para a proposta"
+      "type": "string"
     },
     "chosenPartnerName": {
-      "type": "string",
-      "description": "Nome do Parceiro selecionado"
+      "type": "string"
     },
     "rates": {
       "type": "object",
-      "description": "Taxas oferecidas por bandeira e tipo",
       "properties": {
         "cartao": {
           "type": "object",
-          "description": "Taxas de cart\u00e3o por bandeira",
           "properties": {
             "visa": {
               "type": "object",
@@ -215,16 +211,13 @@
           "type": "number"
         },
         "taxa3ds": {
-          "type": "number",
-          "description": "Custo de 3DS em R$"
+          "type": "number"
         },
         "setup": {
-          "type": "number",
-          "description": "Valor de setup em R$"
+          "type": "number"
         },
         "forex": {
-          "type": "number",
-          "description": "Taxa de Forex em percentual (%)"
+          "type": "number"
         },
         "rav": {
           "type": "object",
@@ -256,98 +249,130 @@
         },
         "percentualAntecipacao": {
           "type": "number"
+        },
+        "reservaFinanceira": {
+          "type": "object",
+          "properties": {
+            "pix": {
+              "type": "object",
+              "properties": {
+                "percentual": {
+                  "type": "number",
+                  "enum": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5
+                  ]
+                },
+                "diasRetencao": {
+                  "type": "number",
+                  "default": 90
+                },
+                "ativa": {
+                  "type": "boolean",
+                  "default": true
+                }
+              }
+            },
+            "cartao": {
+              "type": "object",
+              "properties": {
+                "percentual": {
+                  "type": "number",
+                  "enum": [
+                    5,
+                    10,
+                    15,
+                    20
+                  ]
+                },
+                "diasRetencao": {
+                  "type": "number",
+                  "default": 180
+                },
+                "ativa": {
+                  "type": "boolean",
+                  "default": true
+                }
+              }
+            },
+            "disclaimer": {
+              "type": "string"
+            }
+          }
         }
       }
     },
     "taxaFinalOverrides": {
-      "type": "object",
-      "description": "Sobrescritas manuais da taxa final por parcela."
+      "type": "object"
     },
     "hideCalculationColumns": {
       "type": "boolean",
-      "default": false,
-      "description": "Se true, oculta as colunas de c\u00e1lculo."
+      "default": false
     },
     "hideRange13a21": {
       "type": "boolean",
-      "default": false,
-      "description": "Se true, oculta as parcelas de 13x a 21x."
+      "default": false
     },
     "clienteNome": {
-      "type": "string",
-      "description": "Nome da empresa do cliente"
+      "type": "string"
     },
     "clienteCnpj": {
-      "type": "string",
-      "description": "CNPJ do cliente"
+      "type": "string"
     },
     "clienteContato": {
-      "type": "string",
-      "description": "Nome do contato principal"
+      "type": "string"
     },
     "clienteMcc": {
-      "type": "string",
-      "description": "MCC do cliente"
+      "type": "string"
     },
     "terms": {
-      "type": "string",
-      "description": "Termos e condi\u00e7\u00f5es"
+      "type": "string"
     },
     "validUntil": {
       "type": "string",
-      "format": "date-time",
-      "description": "Data de validade"
+      "format": "date-time"
     },
     "sentDate": {
       "type": "string",
-      "format": "date-time",
-      "description": "Data de envio"
+      "format": "date-time"
     },
     "acceptedDate": {
       "type": "string",
-      "format": "date-time",
-      "description": "Data de aceite"
+      "format": "date-time"
     },
     "rejectedDate": {
       "type": "string",
-      "format": "date-time",
-      "description": "Data de recusa"
+      "format": "date-time"
     },
     "rejectedReason": {
-      "type": "string",
-      "description": "Motivo da recusa"
+      "type": "string"
     },
     "counterProposalDetails": {
-      "type": "object",
-      "description": "Detalhes da contraproposta"
+      "type": "object"
     },
     "publicLinkCode": {
-      "type": "string",
-      "description": "C\u00f3digo \u00fanico para acesso p\u00fablico"
+      "type": "string"
     },
     "tokenPublico": {
-      "type": "string",
-      "description": "Token p\u00fablico para acesso \u00e0 proposta"
+      "type": "string"
     },
     "publicSlug": {
-      "type": "string",
-      "description": "Slug p\u00fablico personalizado (ex: empresa-abc-a7f3) para URL amig\u00e1vel"
+      "type": "string"
     },
     "estimatedRevenue": {
-      "type": "number",
-      "description": "Receita mensal estimada"
+      "type": "number"
     },
     "estimatedCost": {
-      "type": "number",
-      "description": "Custo mensal estimado"
+      "type": "number"
     },
     "estimatedMargin": {
-      "type": "number",
-      "description": "Margem mensal estimada"
+      "type": "number"
     },
     "profitabilityDetails": {
       "type": "object",
-      "description": "Detalhamento completo da rentabilidade calculada",
       "properties": {
         "tpvBase": {
           "type": "number"
@@ -379,34 +404,27 @@
       }
     },
     "responsavelId": {
-      "type": "string",
-      "description": "ID do respons\u00e1vel pela proposta"
+      "type": "string"
     },
     "responsavelNome": {
-      "type": "string",
-      "description": "Nome do respons\u00e1vel"
+      "type": "string"
     },
     "mensagemEnvio": {
-      "type": "string",
-      "description": "Mensagem personalizada no envio"
+      "type": "string"
     },
     "version": {
       "type": "number",
-      "default": 1,
-      "description": "N\u00famero da vers\u00e3o da proposta"
+      "default": 1
     },
     "previousVersionId": {
-      "type": "string",
-      "description": "ID da vers\u00e3o anterior desta proposta"
+      "type": "string"
     },
     "rootProposalId": {
-      "type": "string",
-      "description": "ID da primeira vers\u00e3o desta proposta"
+      "type": "string"
     },
     "isCurrentVersion": {
       "type": "boolean",
-      "default": true,
-      "description": "Indica se esta \u00e9 a vers\u00e3o mais recente da proposta"
+      "default": true
     }
   },
   "required": [

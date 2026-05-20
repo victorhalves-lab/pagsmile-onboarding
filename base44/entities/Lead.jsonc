@@ -54,8 +54,7 @@
         "ativado",
         "perdido"
       ],
-      "default": "questionario_preenchido",
-      "description": "Status atual do lead no funil"
+      "default": "questionario_preenchido"
     },
     "businessSubCategory": {
       "type": "string",
@@ -69,41 +68,40 @@
         "mpe",
         "dropshipping",
         "plataformas_verticais",
+        "plataforma_vertical",
         "link_pagamento",
+        "turismo",
+        "eventos",
+        "servicos_b2b",
+        "servicos_locais",
+        "crossborder",
         "MERCHAN",
         "GATEWAY",
         "MARKETPLACE",
         "GENERAL"
       ],
-      "description": "Segmento de neg\u00f3cio do lead"
+      "description": "Segmento de neg\u00f3cio do lead. V5.2 ampliou de 10 para 15 segmentos can\u00f4nicos (adicionou turismo, eventos, servicos_b2b, servicos_locais, crossborder). Valores legados PT-BR/UPPERCASE mantidos por compatibilidade com leads antigos."
     },
     "leadQuestionnaireTemplateId": {
-      "type": "string",
-      "description": "ID do QuestionnaireTemplate de Lead usado"
+      "type": "string"
     },
     "recommendedComplianceTemplateId": {
-      "type": "string",
-      "description": "ID do QuestionnaireTemplate de Compliance recomendado"
+      "type": "string"
     },
     "onboardingCaseId": {
-      "type": "string",
-      "description": "ID do OnboardingCase gerado"
+      "type": "string"
     },
     "currentProposalId": {
-      "type": "string",
-      "description": "ID da proposta ativa"
+      "type": "string"
     },
     "commercialAgentId": {
-      "type": "string",
-      "description": "ID do vendedor/agente comercial respons\u00e1vel"
+      "type": "string"
     },
     "commercialAgentName": {
-      "type": "string",
-      "description": "Nome do vendedor/agente comercial respons\u00e1vel"
+      "type": "string"
     },
     "priscilaQualityScore": {
-      "type": "number",
-      "description": "Score de qualidade PRISCILA (0-100)"
+      "type": "number"
     },
     "priscilaRiskLevel": {
       "type": "string",
@@ -113,8 +111,7 @@
         "ALTO",
         "CRITICO",
         "EM_ANALISE"
-      ],
-      "description": "N\u00edvel de risco avaliado pela PRISCILA"
+      ]
     },
     "priscilaDecisionPath": {
       "type": "string",
@@ -123,53 +120,41 @@
         "AUTO_COM_FLAG",
         "REVISAO_MANUAL",
         "REJEITAR"
-      ],
-      "description": "Caminho de decis\u00e3o sugerido pela PRISCILA"
+      ]
     },
     "priscilaAnalysisReport": {
-      "type": "object",
-      "description": "Relat\u00f3rio detalhado da an\u00e1lise PRISCILA"
+      "type": "object"
     },
     "questionnaireData": {
-      "type": "object",
-      "description": "Dados completos do question\u00e1rio preenchido"
+      "type": "object"
     },
     "tpvMensal": {
-      "type": "number",
-      "description": "TPV mensal declarado"
+      "type": "number"
     },
     "ticketMedio": {
-      "type": "number",
-      "description": "Ticket m\u00e9dio declarado"
+      "type": "number"
     },
     "transacoesMes": {
-      "type": "number",
-      "description": "Transa\u00e7\u00f5es por m\u00eas"
+      "type": "number"
     },
     "expectativaCrescimento": {
-      "type": "string",
-      "description": "Expectativa de crescimento"
+      "type": "string"
     },
     "protocolo": {
-      "type": "string",
-      "description": "Protocolo \u00fanico do lead"
+      "type": "string"
     },
     "origemLead": {
-      "type": "string",
-      "description": "UTM Source ou canal de origem"
+      "type": "string"
     },
     "onboardingLinkCode": {
-      "type": "string",
-      "description": "C\u00f3digo do link de onboarding usado"
+      "type": "string"
     },
     "lastInteractionDate": {
       "type": "string",
-      "format": "date-time",
-      "description": "Data da \u00faltima intera\u00e7\u00e3o"
+      "format": "date-time"
     },
     "leadQualifierScore": {
-      "type": "number",
-      "description": "Score do Lead Qualifier IA (0-100)"
+      "type": "number"
     },
     "leadQualifierLevel": {
       "type": "string",
@@ -181,21 +166,17 @@
         "INSUFICIENTE",
         "PENDENTE"
       ],
-      "default": "PENDENTE",
-      "description": "Classifica\u00e7\u00e3o de maturidade do lead pela IA"
+      "default": "PENDENTE"
     },
     "leadQualifierReport": {
-      "type": "object",
-      "description": "Relat\u00f3rio completo do Lead Qualifier IA"
+      "type": "object"
     },
     "leadQualifierDate": {
       "type": "string",
-      "format": "date-time",
-      "description": "Data da \u00faltima an\u00e1lise do Lead Qualifier"
+      "format": "date-time"
     },
     "expectedRates": {
       "type": "object",
-      "description": "Expectativa de taxas do lead",
       "properties": {
         "mdr1x": {
           "type": "number"
@@ -220,7 +201,6 @@
         },
         "pix": {
           "type": "object",
-          "description": "Taxa PIX atual do cliente",
           "properties": {
             "tipo": {
               "type": "string",
@@ -237,20 +217,16 @@
       }
     },
     "introducerId": {
-      "type": "string",
-      "description": "ID do Introducer que indicou este lead"
+      "type": "string"
     },
     "introducerReferralCode": {
-      "type": "string",
-      "description": "C\u00f3digo de refer\u00eancia do Introducer"
+      "type": "string"
     },
     "introducerName": {
-      "type": "string",
-      "description": "Nome do Introducer para exibi\u00e7\u00e3o r\u00e1pida"
+      "type": "string"
     },
     "iaRiskScore": {
-      "type": "number",
-      "description": "Score de risco avan\u00e7ado gerado pela IA (0-100)"
+      "type": "number"
     },
     "iaDecision": {
       "type": "string",
@@ -260,24 +236,20 @@
         "REJEITAR",
         "PENDENTE"
       ],
-      "default": "PENDENTE",
-      "description": "Decis\u00e3o de risco sugerida pela IA avan\u00e7ada"
+      "default": "PENDENTE"
     },
     "iaSuggestions": {
       "type": "array",
       "items": {
         "type": "string"
-      },
-      "description": "Sugest\u00f5es da IA para o time de vendas"
+      }
     },
     "iaAnalysisReport": {
-      "type": "string",
-      "description": "Relat\u00f3rio completo da an\u00e1lise de risco IA"
+      "type": "string"
     },
     "iaAnalysisDate": {
       "type": "string",
-      "format": "date-time",
-      "description": "Data da \u00faltima an\u00e1lise de risco IA"
+      "format": "date-time"
     },
     "iaPriority": {
       "type": "string",
@@ -286,16 +258,13 @@
         "ALTA",
         "MEDIA",
         "BAIXA"
-      ],
-      "description": "Prioridade de atendimento sugerida pela IA"
+      ]
     },
     "bdcEnrichmentData": {
-      "type": "object",
-      "description": "Dados BDC brutos do enriquecimento (activity_indicators, domains, MCC, etc.)"
+      "type": "object"
     },
     "bdcLeadScore": {
-      "type": "number",
-      "description": "Score calculado com dados BDC verificados (0-100)"
+      "type": "number"
     },
     "bdcScoreLevel": {
       "type": "string",
@@ -305,28 +274,23 @@
         "REGULAR",
         "FRACO",
         "INSUFICIENTE"
-      ],
-      "description": "Classifica\u00e7\u00e3o do score BDC enriquecido"
+      ]
     },
     "bdcFlags": {
       "type": "array",
       "items": {
         "type": "string"
-      },
-      "description": "Flags BDC ativas (ex: BDC_SHELL_COMPANY, BDC_NO_ACTIVITY)"
+      }
     },
     "bdcCrossValidation": {
-      "type": "object",
-      "description": "Resultado da cross-validation declarado vs BDC verificado"
+      "type": "object"
     },
     "bdcDueReport": {
-      "type": "object",
-      "description": "Relat\u00f3rio de deep due diligence BDC (KYC, processos, san\u00e7\u00f5es)"
+      "type": "object"
     },
     "bdcEnrichmentDate": {
       "type": "string",
-      "format": "date-time",
-      "description": "Data do \u00faltimo enriquecimento BDC"
+      "format": "date-time"
     }
   },
   "required": [

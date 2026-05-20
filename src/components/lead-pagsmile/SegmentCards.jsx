@@ -14,12 +14,17 @@ export default function SegmentCards({ value, onChange }) {
       key={seg.id}
       type="button"
       onClick={() => onChange(seg.id)}
-      className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-200
+      className={`relative w-full text-left p-4 rounded-xl border-2 transition-all duration-200
         ${value === seg.id
           ? 'border-[#2bc196] bg-[#2bc196]/10 shadow-md ring-1 ring-[#2bc196]/20'
           : 'border-[#002443]/10 bg-white hover:border-[#2bc196]/40 hover:shadow-sm'
         }`}
     >
+      {seg.isNewInV5_2 && (
+        <span className="absolute top-2 right-2 text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#2bc196] text-white tracking-wide">
+          NOVO
+        </span>
+      )}
       <div className="flex items-start gap-3">
         <span className="text-2xl">{seg.icon}</span>
         <div className="flex-1 min-w-0">
