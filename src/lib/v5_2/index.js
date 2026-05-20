@@ -17,3 +17,4 @@ export * from './deveConsultarDataset';
 export * from './segments';
 export * from './triggersTier';
 export * from './avaliarBloqueios';
+export * from './crossValidation16';
