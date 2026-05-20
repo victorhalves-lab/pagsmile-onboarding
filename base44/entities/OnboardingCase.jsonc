@@ -374,6 +374,47 @@
     "plano_monitoramento_id": {
       "type": "string",
       "description": "[V5.2] ID do PlanoMonitoramento atrelado quando categoria=cat_5_intensive_monitoring."
+    },
+    "framework_version_at_start": {
+      "type": "string",
+      "enum": [
+        "v4.0",
+        "v5.1",
+        "v5.2"
+      ],
+      "description": "[V5.2 Fase 5.8] Vers\u00e3o do framework vigente quando o seller INICIOU o question\u00e1rio. Capturado uma \u00fanica vez no bootstrap."
+    },
+    "framework_version_at_submit": {
+      "type": "string",
+      "enum": [
+        "v4.0",
+        "v5.1",
+        "v5.2"
+      ],
+      "description": "[V5.2 Fase 5.8] Vers\u00e3o do framework no MOMENTO DA SUBMISS\u00c3O. Pode diferir de _at_start se houve mudan\u00e7a de vers\u00e3o durante o preenchimento (caso transicional)."
+    },
+    "framework_version_at_decision": {
+      "type": "string",
+      "enum": [
+        "v4.0",
+        "v5.1",
+        "v5.2"
+      ],
+      "description": "[V5.2 Fase 5.8] Vers\u00e3o do framework no MOMENTO DA DECIS\u00c3O FINAL (an\u00e1lise conclu\u00edda pelo SENTINEL/analista). Imut\u00e1vel ap\u00f3s decis\u00e3o."
+    },
+    "is_transitional_case": {
+      "type": "boolean",
+      "default": false,
+      "description": "[V5.2 Fase 5.8] True quando framework_version_at_start != framework_version_at_submit ou _at_decision. Sinaliza ao analista que houve transi\u00e7\u00e3o de framework durante a vida do caso."
+    },
+    "grau": {
+      "type": "string",
+      "enum": [
+        "A",
+        "B",
+        "C"
+      ],
+      "description": "[V5.2 Fase 3c] Grau do subseller (A/B/C). Resolu\u00e7\u00e3o: Subseller PJ por TPV (A:\u226430k, B:30k-200k, C:200k-500k); Subseller PF por renda mensal l\u00edquida (A:<2k, B:2k-10k, C:>10k). N\u00e3o aplic\u00e1vel a sellers principais."
     }
   },
   "required": [

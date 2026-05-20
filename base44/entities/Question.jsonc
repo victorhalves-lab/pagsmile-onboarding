@@ -26,9 +26,10 @@
         "BOOLEAN",
         "EMAIL",
         "PHONE",
-        "CPF_CNPJ"
+        "CPF_CNPJ",
+        "COMPOSITE"
       ],
-      "description": "Tipo de resposta esperado"
+      "description": "Tipo de resposta esperado. COMPOSITE permite input + upload no mesmo step (ex: q_t2_revenue_proof)."
     },
     "options": {
       "type": "array",
@@ -111,6 +112,135 @@
     "sourceEntityPath": {
       "type": "string",
       "description": "Caminho para pr\u00e9-preenchimento"
+    },
+    "categoria_funcional": {
+      "type": "string",
+      "enum": [
+        "identidade",
+        "atividade_economica",
+        "volumetria",
+        "modelo_operacional",
+        "estrutura_societaria",
+        "compliance_pld",
+        "internacional_crossborder",
+        "splits_marketplace",
+        "recorrencia_assinaturas",
+        "documental",
+        "declaracao_atestacao",
+        "subseller_pj",
+        "subseller_pf",
+        "outra"
+      ],
+      "description": "[V5.2] Categoria funcional da pergunta. Usada para agrupamento na UI e roteamento por capability."
+    },
+    "modalidade_origem": {
+      "type": "string",
+      "enum": [
+        "modalidade_a_bdc_confirmacao",
+        "modalidade_b_bdc_input_hibrido",
+        "modalidade_c_input_puro",
+        "modalidade_d_derivado",
+        "modalidade_e_documento_upload"
+      ],
+      "description": "[V5.2] Modalidade de coleta \u2014 A: confirmar dado BDC, B: input h\u00edbrido (sugere mas aceita override), C: input puro (sem BDC), D: derivado automaticamente, E: upload de documento."
+    },
+    "cross_check_bdc": {
+      "type": "object",
+      "description": "[V5.2] Configura\u00e7\u00e3o de cross-check com BDC quando aplic\u00e1vel (Modalidade A/B).",
+      "properties": {
+        "dataset": {
+          "type": "string",
+          "description": "C\u00f3digo can\u00f4nico do dataset BDC (ex: 'basic_data', 'kyc_owners')"
+        },
+        "campo_bdc": {
+          "type": "string",
+          "description": "Path do campo no payload BDC (ex: 'taxIdNumber', 'companyName')"
+        },
+        "tolerancia_divergencia_pct": {
+          "type": "number",
+          "description": "% de toler\u00e2ncia (0-1) para valores num\u00e9ricos antes de marcar diverg\u00eancia"
+        },
+        "field_id_cv16": {
+          "type": "string",
+          "description": "ID do campo na Cross-Validation 16 campos (ex: 'razao_social', 'capital_social')"
+        }
+      }
+    },
+    "variaveis_risk_score": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "[V5.2] C\u00f3digos das vari\u00e1veis V-* (V01-V60+) que esta pergunta alimenta no Risk Score."
+    },
+    "b_series_disparados": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "[V5.2] C\u00f3digos de Bloqueio B-* que esta pergunta pode disparar (avalia\u00e7\u00e3o real-time durante o fluxo)."
+    },
+    "norma_regulatoria": {
+      "type": "string",
+      "description": "[V5.2] Fundamenta\u00e7\u00e3o regulat\u00f3ria que justifica esta pergunta (ex: 'Circ. BCB 3.978 Art. 19', 'Lei 9.613/1998 Art. 11', 'Resol. BCB 403/2024')."
+    },
+    "documentos_relacionados": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "[V5.2] IDs de DocumentType que se tornam exigidos quando esta pergunta \u00e9 respondida de determinada forma. Para tipo COMPOSITE, o(s) documento(s) \u00e9(s\u00e3o) obrigat\u00f3rio(s) no mesmo step."
+    },
+    "framework_version_intro": {
+      "type": "string",
+      "enum": [
+        "v4.0",
+        "v5.1",
+        "v5.2"
+      ],
+      "default": "v5.2",
+      "description": "[V5.2] Vers\u00e3o do framework em que esta pergunta foi introduzida. Permite versionamento + retrocompat."
+    },
+    "framework_version_removed": {
+      "type": "string",
+      "enum": [
+        "v4.0",
+        "v5.1",
+        "v5.2"
+      ],
+      "description": "[V5.2] Se preenchido, indica a vers\u00e3o a partir da qual esta pergunta N\u00c3O deve mais ser usada (preserva o hist\u00f3rico mas para de exibir em fluxos novos)."
+    },
+    "tiers_aplicaveis": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "tier_1",
+          "tier_2",
+          "tier_3",
+          "subseller_pj",
+          "subseller_pf"
+        ]
+      },
+      "description": "[V5.2] Tiers em que esta pergunta deve aparecer. Array vazio = todos."
+    },
+    "segmentos_aplicaveis": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "[V5.2] Segmentos can\u00f4nicos em que esta pergunta aparece (vazio ou ['all'] = todos)."
+    },
+    "capabilities_ativam": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "[V5.2] Capabilities cuja ativa\u00e7\u00e3o dispara a exibi\u00e7\u00e3o desta pergunta (ex: ['crossborder'], ['splits/subseller'])."
+    },
+    "id_canonico": {
+      "type": "string",
+      "description": "[V5.2] ID can\u00f4nico est\u00e1vel da pergunta no cat\u00e1logo V5.2 (ex: 'q_t2_revenue_proof', 'q_t3_marketplace_splits_kyc'). Independente do ID Base44."
     }
   },
   "required": [
@@ -125,7 +255,11 @@
         "role": "admin"
       }
     },
-    "read": true,
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
     "update": {
       "user_condition": {
         "role": "admin"
