@@ -5,6 +5,8 @@ import { Loader2, AlertTriangle, Layers, Scale, FileText } from 'lucide-react';
 import ComparatorHeader from '@/components/comparator/ComparatorHeader';
 import ComparatorMetricRow from '@/components/comparator/ComparatorMetricRow';
 import ComparatorBlockagesDiff from '@/components/comparator/ComparatorBlockagesDiff';
+import Term from '@/components/v5_2/glossary/Term';
+import GlossaryDrawer from '@/components/v5_2/glossary/GlossaryDrawer';
 
 /**
  * [V5.2 Fase 6.5.3] Página Comparator V4↔V5.2 lado a lado.
@@ -153,6 +155,11 @@ export default function ComparatorV4V5_2() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-5 pb-12">
+      {/* Toolbar — abre o Glossário V5.2 */}
+      <div className="flex items-center justify-end gap-2">
+        <GlossaryDrawer />
+      </div>
+
       <ComparatorHeader merchant={merchant} v4Case={v4Case} v5_2Case={v5_2Case} />
 
       {/* ── Veredito Final ── */}
@@ -166,7 +173,7 @@ export default function ComparatorV4V5_2() {
           critical={v4Decision === 'Aprovado' && v5_2Decision === 'Recusado'}
         />
         <ComparatorMetricRow
-          label="Subfaixa V4 / Categoria V5.2"
+          label={<>Subfaixa V4 / <Term code="cat_1_auto_approve" inline>Categoria V5.2</Term></>}
           hint="V4 usa 8 subfaixas (1A-5). V5.2 usa 5 categorias (cat_1 a cat_5)."
           v4Value={v4Subfaixa}
           v5_2Value={v5_2Categoria || v5_2Subfaixa}
@@ -189,20 +196,20 @@ export default function ComparatorV4V5_2() {
           divergenceMode="text"
         />
         <ComparatorMetricRow
-          label="Tier resolvido (V5.2 apenas)"
+          label={<><Term code="tier_1" inline>Tier resolvido</Term> (V5.2 apenas)</>}
           hint="V4 não tem conceito de tier — usa segmento fixo. V5.2 resolve tier em runtime."
           v4Value="N/A (V4 não tem tier)"
           v5_2Value={v5_2Tier}
           divergenceMode="text"
         />
         <ComparatorMetricRow
-          label="Morfologia (V5.2 apenas)"
+          label={<><Term code="morfologia_a" inline>Morfologia</Term> (V5.2 apenas)</>}
           v4Value="N/A"
           v5_2Value={v5_2Morf}
           divergenceMode="text"
         />
         <ComparatorMetricRow
-          label="Patch Financeiro (V5.2 apenas)"
+          label={<><Term code="patch_financeiro" inline>Patch Financeiro</Term> (V5.2 apenas)</>}
           hint="Cross-check declarado vs observado (TPV, faturamento, CRC, fluxo de caixa, coerência setorial)"
           v4Value="N/A"
           v5_2Value={v5_2PatchStatus}
@@ -214,7 +221,7 @@ export default function ComparatorV4V5_2() {
       {/* ── Operacional ── */}
       <Section title="Configuração operacional" icon={FileText} description="Parâmetros que governam o relacionamento pós-aprovação">
         <ComparatorMetricRow
-          label="Rolling Reserve"
+          label={<Term code="rolling_reserve" inline>Rolling Reserve</Term>}
           hint="% de retenção sobre o TPV"
           v4Value={v4Rolling != null ? `${v4Rolling}%` : null}
           v5_2Value={v5_2Rolling != null ? `${v5_2Rolling}%` : null}

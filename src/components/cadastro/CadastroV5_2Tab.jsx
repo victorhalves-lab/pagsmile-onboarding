@@ -5,6 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import V5_2ExceptionWorkflow from './V5_2ExceptionWorkflow';
 import V5_2PlanoMonitoramentoCard from './V5_2PlanoMonitoramentoCard';
 import SmartSummaryCards from './v5_2/SmartSummaryCards';
+import Term from '@/components/v5_2/glossary/Term';
+import GlossaryDrawer from '@/components/v5_2/glossary/GlossaryDrawer';
 
 /**
  * [V5.2 Fase 5.11] Aba dedicada V5.2 — renderiza:
@@ -83,6 +85,11 @@ export default function CadastroV5_2Tab({ latestCase, latestScore, onRefetch }) 
 
   return (
     <div className="space-y-4">
+      {/* Toolbar V5.2 — link p/ Glossário */}
+      <div className="flex items-center justify-end">
+        <GlossaryDrawer variant="icon" />
+      </div>
+
       {/* Smart Summary Cards [Fase 6.4-A] — veredicto + 3 cards executivos no topo */}
       <SmartSummaryCards latestScore={latestScore} />
 
@@ -91,7 +98,7 @@ export default function CadastroV5_2Tab({ latestCase, latestScore, onRefetch }) 
         <CardHeader className="pb-3">
           <CardTitle className="text-base flex items-center gap-2">
             <Rocket className="w-4 h-4 text-[#2bc196]" />
-            Análise V5.2 — Score Tier-Aware
+            Análise <Term code="framework_version" inline>V5.2</Term> — Score <Term code="tier_1" inline>Tier-Aware</Term>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -106,9 +113,11 @@ export default function CadastroV5_2Tab({ latestCase, latestScore, onRefetch }) 
               )}
             </div>
             {latestScore.categoria_decisao_v5_1 && (
-              <Badge className="bg-[#2bc196]/15 text-[#36706c] border-0 text-xs">
-                {latestScore.categoria_decisao_v5_1}
-              </Badge>
+              <Term code={latestScore.categoria_decisao_v5_1} inline>
+                <Badge className="bg-[#2bc196]/15 text-[#36706c] border-0 text-xs cursor-help">
+                  {latestScore.categoria_decisao_v5_1}
+                </Badge>
+              </Term>
             )}
           </div>
         </CardContent>
@@ -204,7 +213,7 @@ export default function CadastroV5_2Tab({ latestCase, latestScore, onRefetch }) 
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
             <GitCompare className="w-4 h-4 text-[#002443]/60" />
-            Cross-Validation 16 Campos V5.2
+            <Term code="cross_validation_16" inline>Cross-Validation 16 Campos V5.2</Term>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -257,7 +266,7 @@ export default function CadastroV5_2Tab({ latestCase, latestScore, onRefetch }) 
           <CardHeader className="pb-3">
             <CardTitle className="text-sm flex items-center gap-2">
               <Database className="w-4 h-4 text-[#002443]/60" />
-              Patch Financeiro — 5 Dimensões
+              <Term code="patch_financeiro" inline>Patch Financeiro — 5 Dimensões</Term>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -293,7 +302,7 @@ export default function CadastroV5_2Tab({ latestCase, latestScore, onRefetch }) 
             <div className="flex items-center justify-between flex-wrap gap-2">
               <CardTitle className="text-sm flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 text-red-500" />
-                Bloqueios V5.2 Ativos ({bloqueios.length})
+                <Term code="bloqueio_absoluto" inline>Bloqueios V5.2 Ativos</Term> ({bloqueios.length})
               </CardTitle>
               <V5_2ExceptionWorkflow
                 caseId={latestCase.id}
