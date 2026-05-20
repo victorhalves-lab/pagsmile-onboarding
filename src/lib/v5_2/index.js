@@ -18,3 +18,5 @@ export * from './segments';
 export * from './triggersTier';
 export * from './avaliarBloqueios';
 export * from './crossValidation16';
+export * from './tieringEngine';
+export * from './microcopy';
