@@ -189,6 +189,19 @@ export const COMPLIANCE_MODEL_REGISTRY = {
     badgeColor: 'bg-blue-100 text-blue-700',
   },
 
+  // ─── V5.2 — Template dinâmico tier-aware (Fase 5.7) ───
+  // Coexiste com V4. Quando model === 'ComplianceV5_2Dynamic', ComplianceDinamico
+  // dispatcha para o renderer V5.2 em vez do DynamicQuestionnaire legado.
+  ComplianceV5_2Dynamic: {
+    storageKey: 'compliance_data_v5_2_dynamic',
+    documentsStorageKey: 'documents_v5_2_dynamic',
+    documentUploadPage: 'DocumentUploadFull',
+    flowType: 'v5_2_dynamic',
+    badgeLabel: 'V5.2 DINÂMICO',
+    badgeColor: 'bg-[#2bc196]/15 text-[#36706c]',
+    isV5_2: true,
+  },
+
   // ─── Subseller PF (upload nativo em página separada) ───
   subseller_pf: {
     storageKey: 'compliance_data_subseller_pf',
