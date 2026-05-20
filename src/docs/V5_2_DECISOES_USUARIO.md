@@ -214,10 +214,14 @@ Não construir infraestrutura de RFC/feature flag/aprovação no código. PagSmi
 
 ## Bloco 5 — Segmentos (decisões)
 
-### ⏳ Q21 — URL kyc plugin: backend próprio ou serviço externo? — AGUARDANDO ESCLARECIMENTO
-**Contexto reapresentado:** ferramenta que acessa URL do cliente (política devolução, landing page de venda, política afiliação) e analisa conteúdo automaticamente.
-**Recomendação técnica:** backend function própria usando `fetch` (scraping) + `InvokeLLM` (análise semântica do texto).
-**Status:** ⏳ Aguardando resposta após esclarecimento
+### ✅ Q21 — URL kyc plugin: BACKEND FUNCTION PRÓPRIA
+Implementar como backend function PagSmile usando `fetch` (scraping da URL declarada pelo cliente) + `InvokeLLM` (análise semântica do texto extraído com prompt específico por tipo de página: política devolução, landing page marketing, política afiliação, política cancelamento).
+**Implicação técnica:**
+- Função `urlKycPluginAnalyze({ url, analysisType, criteria })` retorna `{ score: 0-100, flags: [...], excerpts: [...] }`
+- `analysisType`: `return_policy` | `marketing_promises` | `affiliate_structure` | `cancellation_policy` | `subscription_cancel_ux`
+- Cada `analysisType` tem prompt LLM dedicado com checklist de critérios canônicos
+- Cache 90 dias por (url + analysisType) — revalidação trimestral
+- Custos: ~R$ 0,80-1,50 por análise (InvokeLLM padrão)
 
 ### ✅ Q22 — Reclame Aqui: SCRAPING
 Backend function própria faz scraping do Reclame Aqui (score + motivos) com cache mensal. Sem contratação de API paga.

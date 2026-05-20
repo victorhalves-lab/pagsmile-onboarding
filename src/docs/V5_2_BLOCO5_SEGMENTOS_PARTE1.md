@@ -195,9 +195,12 @@ Cada doc segue padrão Ultra:
 ### FASE 6.5 — Classificador de morfologia
 - [ ] `lib/v5_1/morphologyClassifier.js` por segmento
 
-### FASE 6.6 — URL kyc plugin (PRIORITÁRIO)
-- [ ] Backend function `urlKycPluginAnalyze` — recebe URL + tipo (devolução/marketing/afiliação/cancelamento), retorna score 0-100 + flags
-- [ ] Usa scraping + InvokeLLM para análise semântica
+### FASE 6.6 — URL kyc plugin (PRIORITÁRIO — Q21 confirmado)
+- [ ] Backend function `urlKycPluginAnalyze({ url, analysisType, criteria })`
+- [ ] 5 `analysisType`: `return_policy`, `marketing_promises`, `affiliate_structure`, `cancellation_policy`, `subscription_cancel_ux`
+- [ ] Prompt LLM dedicado por tipo com checklist de critérios canônicos
+- [ ] Retorna `{ score: 0-100, flags: [...], excerpts: [...] }`
+- [ ] Cache 90 dias por (url + analysisType)
 
 ### FASE 6.7 — Reclame Aqui via SCRAPING (Q22)
 - [ ] Backend function `reclameAquiScrape` (fetch + parsing HTML) com cache mensal de 30 dias
@@ -244,8 +247,8 @@ Cada doc segue padrão Ultra:
 
 ## ✅ DECISÕES TOMADAS (Q22-Q25) + Q21 EM ESCLARECIMENTO
 
-### ⏳ Q21 — URL kyc plugin: aguardando esclarecimento
-Recomendação técnica: backend function própria com `fetch` (scraping) + `InvokeLLM` (análise semântica). Aguardando confirmação.
+### ✅ Q21 — URL kyc plugin: BACKEND FUNCTION PRÓPRIA
+`urlKycPluginAnalyze({ url, analysisType, criteria })` — fetch + InvokeLLM por tipo de página (5 analysisTypes). Cache trimestral. ~R$ 1,50/análise.
 
 ### ✅ Q22 — Reclame Aqui: SCRAPING
 Backend function `reclameAquiScrape` com cache mensal. Sem API paga.
