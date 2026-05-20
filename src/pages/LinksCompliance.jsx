@@ -12,10 +12,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import LinkAnalyticsDashboard from '../components/analytics/LinkAnalyticsDashboard';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
+import { isFeatureEnabled } from '@/lib/v5_2/constants';
+import { Rocket } from 'lucide-react';
 
 export default function LinksCompliance() {
   const { t } = useTranslation();
   const [copiedKey, setCopiedKey] = useState(null);
+  const v5_2Enabled = isFeatureEnabled('risk_analysis_v2');
   const [expandedLinkId, setExpandedLinkId] = useState(null);
   const [activeTab, setActiveTab] = useState('links');
   const queryClient = useQueryClient();
@@ -42,6 +45,16 @@ export default function LinksCompliance() {
   };
 
 
+
+  // [V5.2 BETA] Questionários tier-aware — só aparecem quando feature flag ativa.
+  // Coexistem com V4 sem substituir.
+  const quickLinksV5_2 = [
+    { key: 'V5_2_TIER1_LITE', label: 'V5.2 Tier 1 Lite (TPV ≤ R$50k)', desc: 'Questionário curto adaptativo para micro-merchants. Tier 1 com upgrade automático se TPV/BDC indicar Tier 2+. ~30 perguntas.', icon: Rocket, color: '#2bc196', url: `${base}/ComplianceDinamico?model=v5_2_tier1_lite&framework=v5.2` },
+    { key: 'V5_2_TIER2_PADRAO', label: 'V5.2 Tier 2 Padrão (R$50k–500k)', desc: 'Questionário V5.2 universal Tier 2. Patch Financeiro ativado. ~60 perguntas + cross-validation 16 campos.', icon: Rocket, color: '#36706c', url: `${base}/ComplianceDinamico?model=v5_2_tier2_padrao&framework=v5.2` },
+    { key: 'V5_2_TIER3_ENHANCED', label: 'V5.2 Tier 3 Enhanced (TPV > R$500k)', desc: 'Questionário V5.2 completo Tier 3 + 9 módulos especializados. Escala de score 0-999. ~100 perguntas + SENTINEL especializado.', icon: Rocket, color: '#002443', url: `${base}/ComplianceDinamico?model=v5_2_tier3_enhanced&framework=v5.2` },
+    { key: 'V5_2_SUBSELLER_PJ', label: 'V5.2 Subseller PJ', desc: 'Questionário V5.2 para subsellers PJ (3 graus A/B/C). Aplica em sub-credenciamento Marketplace/Gateway.', icon: Rocket, color: '#7c3aed', url: `${base}/ComplianceDinamico?model=v5_2_subseller_pj&framework=v5.2` },
+    { key: 'V5_2_SUBSELLER_PF', label: 'V5.2 Subseller PF', desc: 'Questionário V5.2 para subsellers PF (3 graus A/B/C). Identidade reforçada + Patch Financeiro PF.', icon: Rocket, color: '#a855f7', url: `${base}/ComplianceDinamico?model=v5_2_subseller_pf&framework=v5.2` },
+  ];
 
   const quickLinksPixV4 = [
     { key: 'PIX_MERCHANT_V4', label: 'PIX Merchant v4', desc: '40 perguntas em 8 blocos. Compliance PIX + Conta para merchants. Foco em volume, natureza, PLD/FT e UBOs. Pré-preenchimento Lead.', icon: CreditCard, color: '#2bc196', url: `${base}/ComplianceDinamico?model=CompliancePixMerchantV4` },
@@ -173,6 +186,30 @@ export default function LinksCompliance() {
       {/* Links Rápidos */}
       {activeTab === 'links' && (
         <div className="space-y-6">
+          {/* [V5.2 BETA] — Tier-aware (só aparece se feature flag ativa) */}
+          {v5_2Enabled && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#002443] to-[#2bc196] flex items-center justify-center">
+                  <Rocket className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-base font-bold text-[#002443]">V5.2 Tier-aware (BETA)</h2>
+                  <p className="text-xs text-[#002443]/40">
+                    Questionários V5.2 dinâmicos por tier + segmento + morfologia. Backend ainda em desenvolvimento — uso experimental.
+                  </p>
+                </div>
+                <Badge className="bg-gradient-to-r from-[#002443] to-[#2bc196] text-white border-0 text-[10px] ml-2">V5.2 BETA</Badge>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {quickLinksV5_2.map(item => <QuickLinkCard key={item.key} item={item} />)}
+              </div>
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800">
+                ⚠️ <strong>Coexistência:</strong> Estes links V5.2 NÃO substituem os V4 abaixo. Para desativar, vá em <code>/V5_2_Status</code> e desligue a feature flag <code>risk_analysis_v2</code>.
+              </div>
+            </div>
+          )}
+
           {/* PIX v4 — Merchants e Intermediários */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">

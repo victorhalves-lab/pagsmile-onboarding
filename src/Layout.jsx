@@ -35,7 +35,8 @@ import {
   Database,
   RotateCcw,
   AlertTriangle,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Rocket
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -182,6 +183,7 @@ export default function Layout({ children, currentPageName }) {
       label: t('menu.administration'),
       icon: Settings,
       items: [
+        { label: 'V5.2 Status (BETA)', path: 'V5_2_Status', icon: Rocket, adminOnly: true, highlight: true },
         { label: 'Governança', path: 'Governanca', icon: Shield, adminOnly: true, highlight: true },
         { label: 'Perfis de Acesso', path: 'GestaoPerfis', icon: Shield, adminOnly: true },
         { label: 'Usuários & Perfis', path: 'GestaoUsuarios', icon: Users, adminOnly: true },
