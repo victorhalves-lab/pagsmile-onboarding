@@ -28,7 +28,7 @@
 | 2 | DOC3 Datasets + DOC5 V5.2 Bloqueios | ✅ Diagnosticado | `docs/V5_2_BLOCO2_DATASETS_BLOQUEIOS.md` |
 | 3 | Tier 1, 2, 3 + Subseller PJ/PF (5 docs microscópicos) | ✅ Diagnosticado | `docs/V5_2_BLOCO3_TIERS.md` |
 | 4 | Questionário Dinâmico E1 | ✅ Diagnosticado | `docs/V5_2_BLOCO4_QUESTIONARIO.md` |
-| 5 | Segmentos (13 docs) | 🔄 Em andamento (8/13) | `PARTE1.md` + `PARTE2.md` + `PARTE3.md` (GW/MKT/PV) |
+| 5 | Segmentos (13 docs) | ✅ **COMPLETO (13/13)** | `PARTE1` + `PARTE2` + `PARTE3` + `PARTE4` (TUR/SAAS/B2B/SL) |
 | 6 | REDESIGN_AnaliseDeRisco + Especificação Datasets Tela | ⏳ Pendente | — |
 | 7 | DELTA Segmentos + Apêndice V5.1 | ⏳ Pendente | — |
 
