@@ -53,6 +53,11 @@ export default function PropostaPublica() {
   // O cliente precisa decidir ativamente quando ir (em vez de redirect automático).
   const [showProximoPassoModal, setShowProximoPassoModal] = useState(false);
   const [complianceUrlAfterAccept, setComplianceUrlAfterAccept] = useState(null);
+  // Compliance URL resolvido async quando a proposta já está aceita (usa segmento
+  // granular vindo do questionário V5 → modelo V4 correto). Declarado AQUI no topo
+  // junto com os outros hooks para respeitar rules-of-hooks (não pode ficar após
+  // early returns de loading/error).
+  const [complianceUrl, setComplianceUrl] = useState(null);
 
   // ROBUSTO: hook com 5 tentativas, fallback por slug, e distinção clara entre
   // "erro de rede" e "não encontrada". Resolve o bug onde clientes viam
@@ -70,6 +75,33 @@ export default function PropostaPublica() {
   // Inicia o worker da fila de aceite persistente — sincroniza aceites pendentes
   // mesmo se o cliente voltar dias depois.
   useEffect(() => { startAcceptWorker(); }, []);
+
+  // Resolve compliance URL (com lead) quando a proposta já está aceita — usa
+  // o segmento granular vindo do questionário V5 (questionnaireData.segmento).
+  useEffect(() => {
+    let cancelled = false;
+    if (proposta?.status !== 'aceita') { setComplianceUrl(null); return; }
+    (async () => {
+      let lead = null;
+      if (proposta.leadId) {
+        try {
+          const res = await callPublicFunction('publicReadData', {
+            kind: 'lead_by_id',
+            leadId: proposta.leadId,
+            proposalToken: proposta?.tokenPublico || token,
+          });
+          lead = res?.lead || null;
+        } catch { /* fallback abaixo */ }
+      }
+      const model = lead
+        ? resolveComplianceModel(lead)
+        : resolveComplianceModel({ businessSubCategory: proposta.businessSubCategory });
+      if (!cancelled) {
+        setComplianceUrl(`${window.location.origin}/ComplianceDinamico?model=${model}&leadId=${proposta.leadId || ''}`);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [proposta?.status, proposta?.leadId, proposta?.businessSubCategory, proposta?.tokenPublico, token]);
 
   // Register view via public backend function (idempotent on server side)
   useEffect(() => {
@@ -134,9 +166,16 @@ export default function PropostaPublica() {
       });
 
       // Step 2 — Build compliance URL localmente (não depende do servidor)
-      const model = proposta.businessSubCategory
-        ? resolveComplianceModel({ businessSubCategory: proposta.businessSubCategory })
-        : resolveComplianceModel({});
+      // Busca o lead completo para usar o segmento granular do questionário V5
+      // (questionnaireData.segmento → ComplianceXV4). Cai para businessSubCategory
+      // se o lead não carregar (offline / proposta sem leadId).
+      let leadForModel = null;
+      if (proposta.leadId) {
+        leadForModel = await fetchLeadForCompliance(proposta.leadId);
+      }
+      const model = leadForModel
+        ? resolveComplianceModel(leadForModel)
+        : resolveComplianceModel({ businessSubCategory: proposta.businessSubCategory });
 
       const keysToClean = [
         'compliance_session_token',
@@ -237,15 +276,6 @@ export default function PropostaPublica() {
   const isExpired = proposta.status === 'expirada' || (proposta.validUntil && new Date(proposta.validUntil) < new Date() && !['aceita', 'recusada', 'contraproposta'].includes(proposta.status));
 
   const isAlreadyResponded = ['aceita', 'recusada'].includes(proposta.status);
-  const getComplianceUrl = () => {
-    if (proposta.status !== 'aceita') return null;
-    const model = proposta.businessSubCategory
-      ? resolveComplianceModel({ businessSubCategory: proposta.businessSubCategory })
-      : resolveComplianceModel({});
-    return `${window.location.origin}/ComplianceDinamico?model=${model}&leadId=${proposta.leadId || ''}`;
-  };
-  
-  const complianceUrl = getComplianceUrl();
 
   const handleGoToCompliance = () => {
     if (!complianceUrl) return;
