@@ -29,8 +29,8 @@
 | 3 | Tier 1, 2, 3 + Subseller PJ/PF (5 docs microscópicos) | ✅ Diagnosticado | `docs/V5_2_BLOCO3_TIERS.md` |
 | 4 | Questionário Dinâmico E1 | ✅ Diagnosticado | `docs/V5_2_BLOCO4_QUESTIONARIO.md` |
 | 5 | Segmentos (13 docs) | ✅ **COMPLETO (13/13)** | `PARTE1` + `PARTE2` + `PARTE3` + `PARTE4` (TUR/SAAS/B2B/SL) |
-| 6 | REDESIGN_AnaliseDeRisco + Especificação Datasets Tela | ⏳ Pendente | — |
-| 7 | DELTA Segmentos + Apêndice V5.1 | ⏳ Pendente | — |
+| 6 | REDESIGN_AnaliseDeRisco + Especificação Datasets Tela + DELTA Segmentos | ✅ **COMPLETO** | `docs/V5_2_BLOCO6_REDESIGN_ANALISE_RISCO.md` |
+| 7 | Apêndice V5.1 Patch Financeiro | ✅ Embarcado nos Blocos 1-5 | — |
 
 ---
 
@@ -237,15 +237,16 @@ Ver arquivo separado: `docs/V5_2_DECISOES_USUARIO.md`
 
 ## 📌 PRÓXIMO PASSO
 
-**Bloco 5 em andamento — 8/13 segmentos diagnosticados (TODOS OS 4 CRÍTICOS COMPLETOS):**
-- ✅ Parte 1: Ecommerce, Eventos (parcial), Infoprodutos → `PARTE1.md`
-- ✅ Parte 2: Crossborder (#4 críticos), Dropshipping (#2 críticos), Eventos completo → `PARTE2.md`
-- ✅ Parte 3: Gateway (#1 críticos), Marketplace (#3 críticos), Plataforma Vertical → `PARTE3.md`
-- ⏳ Faltam 5 segmentos (Partes 4-5):
-  - Turismo, Educação, SaaS
-  - FoodTech, MPE, Pix, Link Pagamento, Serviços B2B/Locais
+**🎉 DIAGNÓSTICO COMPLETO — TODOS OS 7 BLOCOS FINALIZADOS:**
+- ✅ Bloco 1: Fundamentos
+- ✅ Bloco 2: Datasets/Bloqueios
+- ✅ Bloco 3: Tiers
+- ✅ Bloco 4: Questionário Dinâmico
+- ✅ Bloco 5: 13 segmentos (PARTE1-4)
+- ✅ **Bloco 6: REDESIGN_AnaliseDeRisco + DELTA Segmentos + Especificação Datasets Tela**
+- ✅ Bloco 7: Apêndice V5.1 Patch Financeiro (embarcado nos demais)
 
-Depois Bloco 6 (REDESIGN AnaliseDeRisco + Espec. Datasets Tela) + Bloco 7 (DELTA + Apêndice V5.1).
+**Pronto para iniciar FASE 1 de implementação** — validação de entidades (Dataset/Bloqueio/IntegrationLog/ComplianceScore/Snapshot) + componentes shared (TopBar/HeroVerdict/SmartSummary) + feature flag `risk_analysis_v2`.
 
 ---
 
