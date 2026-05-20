@@ -222,8 +222,16 @@ Já entregue:
 - ✅ Marcado com `data-shortcut-item` (integra com atalhos j/k da Fase 6.5.5)
 - ✅ Plugado em `Tab4SentinelAuditoria` abaixo do parecer SENTINEL — null-safe (oculta se não houver `sentinel_recommendation`)
 
-##### **▶ Próxima entrega:**
-- 6.5.7 Export Auditoria (PDF/JSON/XLSX da nova tela V5.2) — ÚLTIMO ITEM DA FASE 6
+##### ✅ **6.5.7 — Export Auditoria PDF/JSON/XLSX (CONCLUÍDA — último item da Fase 6)**
+- ✅ PDF Regulatório já existia (Fase 6.5.5): capa com hash SHA-256 + 9 seções (Identificação, Classificação, Score 5 camadas, Patch Financeiro, Bloqueios, Cross-Val 16, Plano Cat 5, SENTINEL, Exceções, Snapshot ref) com rodapé hash em todas as páginas
+- ✅ JSON Imutável já existia (Fase 6.5.5): envelope canônico ordenado + hash SHA-256 determinístico + fundamento regulatório
+- ✅ **NOVO: XLSX Auditoria** — `components/v5_2/dossie/dossieXlsxGenerator.js` — workbook multi-aba (Resumo / Score V5.2 / Bloqueios / Cross-Val 16 / Patch Financ. / SENTINEL / Exceções / Plano Cat 5 / Snapshot ref.) com colunas dimensionadas, ideal para auditores que trabalham em planilhas. Abas Exceções/Plano/Snapshot só aparecem quando há dados
+- ✅ Plugado no `DossieV5_2Button` (Aba 4 / SENTINEL & Auditoria) como terceira opção do dropdown junto com PDF e JSON
+- ✅ Naming canônico: `dossie-v5_2_${slug}_${timestamp}.xlsx` — slug do merchant + ISO timestamp
+- ✅ Mesmo hash SHA-256 nos 3 formatos (PDF/JSON/XLSX compartilham `buildDossieV5_2`) → verificação cruzada de integridade
+
+##### **▶ Fase 6 V5.2 100% concluída.**
+- Próximas frentes: Fase 7 (Pós-Decisão & Monitoramento Contínuo) e Fase 8 (Off-Boarding Ágil 24-48h)
 - [ ] `components/cadastro/ExceptionWorkflow.jsx` — aplicar exceção a um bloqueio
 - [ ] Cat 5 → cria `PlanoMonitoramento` + `TermoAdicionalV5_2`
 - [ ] Workflow de aceite do termo pelo seller
@@ -291,3 +299,4 @@ Possíveis próximos passos (escolher com o usuário):
 | 2.11 | 2026-05-20 | Fase 6.5.5 concluída (15 atalhos canônicos DOC6 §5.5 — shortcutsCatalog + useKeyboardShortcutsV5_2 com sequências/ignora inputs/modais, KeyboardShortcutsPanel "?", SearchOverlay "/", ShortcutsHintBadge sticky, V5_2ShortcutsProvider orquestrando tabs 1-4 + j/k + Esc cascata + ações a/c/m/r/s/e roteadas para AnaliseManual + p dispara dossiê PDF inline + g c copia caseId. Plugado em AnaliseCompletaV5_2 com data-shortcut-item nos 4 TabsContent). Próxima: 6.5.6 — FeedbackSentinelPanel estruturado. |
 | 2.12 | 2026-05-20 | Fase 6.5.6 concluída (FeedbackSentinelPanel estruturado DOC4 §19.8 + DOC6 §2.6.6 + Q55 — catálogo canônico de 3 tipos + 9 categorias mapeadas ao enum SentinelFeedback, fluxo de 3 passos com filtro condicional de categorias por tipo, comentário obrigatório quando errou/parcial, persistência denormalizando contexto SENTINEL/framework/tier/segmento/morfologia, histórico inline de feedbacks anteriores. Plugado em Tab4SentinelAuditoria com data-shortcut-item). Próxima: 6.5.7 — Export Auditoria (PDF/JSON/XLSX). |
 | 2.13 | 2026-05-20 | Fase 6.5.4 concluída (Glossário inline sistemático DOC6 §2.5.6 — 50+ termos canônicos no GLOSSARY_V5_2, componente Term com popover categorizado + fundamentação regulatória, TermBlock wrapper inteligente para bloqueios dinâmicos via aliases. Plugado em HeroVerdictV5_2 + Tab1/Tab2/Tab4 + SmartSummaryCards: tier badges, categorias de decisão, status do Patch, bloqueios B-*, cross-val status, SENTINEL, framework_version, capabilities, snapshot, morfologias, divergence/mismatch). Próxima: 6.5.7 — Export Auditoria (último item da Fase 6). |
+| 2.14 | 2026-05-20 | Fase 6.5.7 concluída — ÚLTIMO ITEM DA FASE 6 (Export Auditoria XLSX adicionado ao DossieV5_2Button: workbook multi-aba determinístico — Resumo, Score V5.2, Bloqueios, Cross-Val 16, Patch Financ., SENTINEL, Exceções, Plano Cat 5, Snapshot ref. PDF e JSON já existiam da Fase 6.5.5, agora os 3 formatos compartilham mesmo hash SHA-256 via buildDossieV5_2). **FASE 6 V5.2 100% CONCLUÍDA.** Próximas frentes: Fase 7 (Pós-Decisão & Monitoramento Contínuo) e Fase 8 (Off-Boarding Ágil 24-48h). |

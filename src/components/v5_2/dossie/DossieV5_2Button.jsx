@@ -8,10 +8,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { FileText, Download, Loader2, FileJson, FileBadge, ShieldCheck } from 'lucide-react';
+import { FileText, Download, Loader2, FileJson, FileBadge, ShieldCheck, FileSpreadsheet } from 'lucide-react';
 import { toast } from 'sonner';
 import { buildDossieV5_2, dossieToJson, downloadBlob } from '@/lib/v5_2/dossieBuilder';
 import { generateDossiePdf } from './dossiePdfGenerator';
+import { generateDossieXlsx } from './dossieXlsxGenerator';
 
 /**
  * [V5.2 Fase 6.5.5] Botão "Dossiê Auditável V5.2" — gera JSON ou PDF imutável
@@ -23,7 +24,7 @@ import { generateDossiePdf } from './dossiePdfGenerator';
  *   - variant: 'default' (padrão) | 'compact' (sem texto, só ícone)
  */
 export default function DossieV5_2Button({ caseId, merchantName, variant = 'default' }) {
-  const [loading, setLoading] = useState(null); // 'json' | 'pdf' | null
+  const [loading, setLoading] = useState(null); // 'json' | 'pdf' | 'xlsx' | null
 
   const slug = (merchantName || 'merchant')
     .toLowerCase()
@@ -55,6 +56,12 @@ export default function DossieV5_2Button({ caseId, merchantName, variant = 'defa
         const blob = generateDossiePdf(dossie);
         downloadBlob(blob, `dossie-v5_2_${slug}_${timestamp}.pdf`);
         toast.success('Dossiê PDF gerado', {
+          description: `Hash SHA-256: ${dossie.hash.substring(0, 16)}…`,
+        });
+      } else if (format === 'xlsx') {
+        const blob = generateDossieXlsx(dossie);
+        downloadBlob(blob, `dossie-v5_2_${slug}_${timestamp}.xlsx`);
+        toast.success('Dossiê XLSX gerado', {
           description: `Hash SHA-256: ${dossie.hash.substring(0, 16)}…`,
         });
       }
@@ -98,6 +105,13 @@ export default function DossieV5_2Button({ caseId, merchantName, variant = 'defa
           <div className="flex-1">
             <div className="text-xs font-semibold">PDF Regulatório</div>
             <div className="text-[10px] text-[#002443]/50">Layout para entrega externa</div>
+          </div>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleExport('xlsx')} disabled={isLoading} className="cursor-pointer">
+          <FileSpreadsheet className="w-4 h-4 mr-2 text-emerald-600" />
+          <div className="flex-1">
+            <div className="text-xs font-semibold">XLSX Auditoria</div>
+            <div className="text-[10px] text-[#002443]/50">Planilha multi-aba para auditoria</div>
           </div>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleExport('json')} disabled={isLoading} className="cursor-pointer">
