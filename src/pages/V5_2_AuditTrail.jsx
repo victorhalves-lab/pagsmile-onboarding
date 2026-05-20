@@ -5,7 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, AlertTriangle, History, ArrowLeft, ShieldCheck, Layers } from 'lucide-react';
+import { Loader2, AlertTriangle, History, ArrowLeft, ShieldCheck, Layers, FlaskConical } from 'lucide-react';
 import AuditTimelineEvent from '@/components/v5_2/audit/AuditTimelineEvent';
 import SnapshotDiffViewer from '@/components/v5_2/audit/SnapshotDiffViewer';
 import GlossaryDrawer from '@/components/v5_2/glossary/GlossaryDrawer';
@@ -142,6 +142,12 @@ export default function V5_2_AuditTrail() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <Button asChild variant="outline" size="sm" className="gap-2">
+            <Link to={`/V5_2_ReplayStudio?caseId=${caseId}`}>
+              <FlaskConical className="w-4 h-4 text-[#2bc196]" />
+              Replay Studio
+            </Link>
+          </Button>
           <DossieV5_2Button caseId={caseId} merchantName={merchant?.fullName} />
           <GlossaryDrawer variant="icon" />
         </div>
