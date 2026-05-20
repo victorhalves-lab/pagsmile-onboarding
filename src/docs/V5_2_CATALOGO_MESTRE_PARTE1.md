@@ -13,7 +13,7 @@
 >
 > **Decisões de governança V5.2 vigentes (sobrescrevem qualquer ambiguidade do V5.1):**
 > 1. Marketplace é **Tier 2 fixo** (não Tier 3-only como o E1 V5.1 sugeria — errata V5.1 já corrigiu)
-> 2. **3 segmentos Tier 3-only**: gateway, marketplace (tier 2 fixo, mas com módulo T3-like aplicado), crossborder
+> 2. **2 segmentos Tier 3-only**: gateway, crossborder (marketplace fica em Tier 2 fixo)
 > 3. **B-CNPJ-NOVO** é regra transversal a todos os tiers e subsellers (V5.2 mantém)
 > 4. **15 segmentos canônicos V5.2** (10 legados V5.1 + 5 novos: turismo, eventos, servicos_b2b, servicos_locais, crossborder)
 > 5. Score scale por tier: T1=0-499, T2=0-849, T3=0-999, Subseller=0-999
@@ -96,7 +96,7 @@
 
 #### Tier 1/2 → Tier 3 (qualquer sinal escala):
 - TPV declarado > R$ 500.000/mês
-- Segmento Tier 3-only: **gateway, crossborder** (marketplace é Tier 2 fixo com módulo T3-like)
+- Segmento Tier 3-only: **gateway, crossborder** (marketplace é Tier 2 fixo)
 - Capability `splits/subseller` solicitada (força T3)
 - Capability `crossborder` pesado solicitada
 - Chargeback declarado > 3%
@@ -127,7 +127,7 @@
 | infoprodutos | ✅ | ✅ | ✅ | — | — |
 | turismo | — | ✅ | ✅ | — | — |
 | eventos | — | ✅ | ✅ | — | — |
-| **marketplace** | — | **✅ FIXO** | ✅ módulo | (não) | **✅** |
+| **marketplace** | — | **✅ FIXO** | — | (não) | **✅** |
 | **gateway** | — | — | ✅ | **✅ T3-only** | **✅** |
 | **crossborder** | — | — | ✅ | **✅ T3-only** | **✅** |
 
@@ -314,7 +314,7 @@ function evaluateTier(currentTier, response, allResponses, bdcSignals, capabilit
   // ── ESCALAÇÃO T1/T2 → T3 ──
   if (['TIER_1', 'TIER_2'].includes(currentTier)) {
     if (response.tpv_monthly > 500_000) newTier = 'TIER_3';
-    if (TIER_3_ONLY_SEGMENTS.includes(seg)) newTier = 'TIER_3'; // gateway, crossborder
+    if (TIER_3_ONLY_SEGMENTS.includes(seg)) newTier = 'TIER_3'; // gateway, crossborder (marketplace NUNCA escala para T3 — fica fixo em T2)
     if (capabilities.includes('splits/subseller')) newTier = 'TIER_3';
     if (capabilities.includes('crossborder_heavy')) newTier = 'TIER_3';
     if (response.chargeback_history > 3) newTier = 'TIER_3';

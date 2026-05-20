@@ -15,10 +15,11 @@
 - **Documentos adicionais**: nenhum específico além de Tier 3 base
 - **B-series específicos**: nenhum
 
-### 7.2 seg_marketplace — Marketplace (CRÍTICO, Tier 2 FIXO)
-- **Score base T2/T3**: 170
+### 7.2 seg_marketplace — Marketplace (CRÍTICO, Tier 2 FIXO — NÃO escala para Tier 3 por volume)
+- **Score base T2**: 170 (escala 0-849 V5.2)
 - **Detecção**: descrição "marketplace" + capability splits + > 50 sub-merchants
-- **Perguntas T3 módulo (8)**: número de sub-merchants ativos, taxa de KYC sub-merchant, take rate, política de PLD sub-merchant, modelo de retenção, base ativa de sellers, política antifraude, integração com bandeiras
+- **Tier**: SEMPRE Tier 2, independente de TPV. Não há "marketplace Tier 3" no V5.2 — o módulo de marketplace é aplicado dentro do Tier 2.
+- **Perguntas T2 módulo (8)**: número de sub-merchants ativos, taxa de KYC sub-merchant, take rate, política de PLD sub-merchant, modelo de retenção, base ativa de sellers, política antifraude, integração com bandeiras
 - **Documentos adicionais**: D15 (PLD), Política KYC sub-merchant, Termos adesão, Screenshot, Relatório base ativa
 - **B-series**: B17 (PLD inadequada), B-MKT-PROD-CRIT-1 (sub-merchants em produtos proibidos)
 - **Capabilities forçadas**: `splits/subseller` + `cap_financial_capacity_validation`
