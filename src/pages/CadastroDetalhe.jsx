@@ -31,6 +31,7 @@ import CadastroPartnerActivityBlock from '@/components/cadastro/CadastroPartnerA
 import EnterpriseExecutiveSummary from '@/components/cadastro/EnterpriseExecutiveSummary';
 import CadastroMonitoringEventsBlock from '@/components/cadastro/CadastroMonitoringEventsBlock';
 import DownloadDossieButton from '@/components/cadastro/DownloadDossieButton';
+import CadastroV5_2Banner from '@/components/cadastro/CadastroV5_2Banner';
 import { segmentLabel } from '@/lib/segmentLabels';
 
 const STATUS_CONFIG = {
@@ -373,6 +374,9 @@ export default function CadastroDetalhe() {
           </div>
         </div>
       </div>
+
+      {/* V5.2 Banner — só renderiza para casos framework_version=v5.2 */}
+      <CadastroV5_2Banner latestCase={latestCase} />
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
