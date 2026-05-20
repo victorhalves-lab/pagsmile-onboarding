@@ -1,11 +1,11 @@
 {
   "name": "Capability",
   "type": "object",
-  "description": "[V5.1] Capabilities transversais. S\u00e3o conjuntos de valida\u00e7\u00f5es + datasets + documentos que se aplicam horizontalmente independente do segmento. Ex: cap_financial_capacity_validation se aplica a Tier 2+ e a Tier 1 com segmento cr\u00edtico (gateway, marketplace, dropshipping, crossborder).",
+  "description": "[V5.2] Capabilities transversais. S\u00e3o conjuntos de valida\u00e7\u00f5es + datasets + documentos que se aplicam horizontalmente independente do segmento. Em V5.2 h\u00e1 4 capabilities can\u00f4nicas: splits/subseller (Marketplace+Gateway), crossborder (Crossborder+segmentos com receita internacional), recurrence (SaaS+assinaturas), cap_financial_capacity_validation (Patch Financeiro Tier 2+).",
   "properties": {
     "codigo": {
       "type": "string",
-      "description": "C\u00f3digo can\u00f4nico (cap_financial_capacity_validation, cap_marketplace_kyc, cap_crossborder_compliance, cap_subseller_kyb)"
+      "description": "C\u00f3digo can\u00f4nico V5.2. 4 capabilities oficiais: 'splits/subseller', 'crossborder', 'recurrence', 'cap_financial_capacity_validation'. PF: 'cap_financial_capacity_validation_pf'."
     },
     "nome": {
       "type": "string",
@@ -14,6 +14,13 @@
     "descricao": {
       "type": "string",
       "description": "O que esta capability faz e quando dispara"
+    },
+    "obrigatoria_para_segmentos": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "[V5.2] Segmentos onde a capability \u00e9 OBRIGAT\u00d3RIA (Marketplace exige splits/subseller, SaaS exige recurrence, Crossborder exige crossborder)"
     },
     "tiers_padrao": {
       "type": "array",
@@ -48,7 +55,7 @@
       "items": {
         "type": "string"
       },
-      "description": "Vari\u00e1veis V5.1 calculadas por esta capability (ex: v_financial_coherence, v_qsa_coherence)"
+      "description": "Vari\u00e1veis V5.1/V5.2 calculadas por esta capability (ex: v_financial_coherence, v_qsa_coherence, v_cap_splits_kyc_completeness)"
     },
     "bloqueios_possiveis": {
       "type": "array",
@@ -57,13 +64,20 @@
       },
       "description": "C\u00f3digos de Bloqueio que esta capability pode disparar"
     },
+    "sentinel_prompts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "[V5.2] IDs can\u00f4nicos de prompts SENTINEL especializados que usam esta capability (ex: ['sentinel_marketplace_tier3_splits_v5_1'])"
+    },
     "ativo": {
       "type": "boolean",
       "default": true
     },
     "fonte_documento": {
       "type": "string",
-      "description": "Refer\u00eancia ao documento V5.1"
+      "description": "Refer\u00eancia ao documento V5.1/V5.2"
     }
   },
   "required": [

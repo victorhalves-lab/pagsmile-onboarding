@@ -1,15 +1,19 @@
 {
   "name": "Dataset",
   "type": "object",
-  "description": "[V5.1] Cat\u00e1logo unificado dos datasets de enriquecimento (BDC, CFC, Open Finance, ECF, BrasilAPI, etc). Versiona a fonte, custo e mapeamento para o framework. Casos V4 N\u00c3O usam esta entidade.",
+  "description": "[V5.2] Cat\u00e1logo unificado dos ~58 datasets de enriquecimento (BDC + CFC + Open Finance + ECF + BrasilAPI + CAF). Versiona a fonte, custo, mapeamento para o framework + onde aparece visualmente nas 13 dimens\u00f5es anal\u00edticas da Aba 3 da tela de An\u00e1lise de Risco. Casos V4 N\u00c3O usam esta entidade.",
   "properties": {
     "codigo": {
       "type": "string",
-      "description": "C\u00f3digo can\u00f4nico do dataset (ex: bdc_kyc, bdc_processes, cfc_crc_status, of_pix_inflows)"
+      "description": "C\u00f3digo can\u00f4nico do dataset (ex: basic_data, owners_kyc, cadastur_active, country_risk_index, conselhos_profissionais)"
     },
     "nome": {
       "type": "string",
-      "description": "Nome leg\u00edvel (ex: 'BDC - KYC Pessoa F\u00edsica')"
+      "description": "Nome t\u00e9cnico interno (ex: 'BDC - KYC Pessoa F\u00edsica')"
+    },
+    "nome_amigavel": {
+      "type": "string",
+      "description": "[V5.2] Nome amig\u00e1vel exibido em TODA a UI (Aba 3, Aba 4, sidebar, modal, PDF). DEVE ser uniforme \u2014 n\u00e3o usar 'Dados Cadastrais' em uma tela e 'Cadastro PJ' em outra."
     },
     "fonte": {
       "type": "string",
@@ -46,7 +50,7 @@
       "items": {
         "type": "string"
       },
-      "description": "Tiers onde o dataset \u00e9 OBRIGAT\u00d3RIO (falha = bloqueio)"
+      "description": "Tiers onde o dataset \u00e9 OBRIGAT\u00d3RIO (falha = bloqueio fail-fast pipeline)"
     },
     "categoria_v5_1": {
       "type": "string",
@@ -61,21 +65,86 @@
         "fraude",
         "outro"
       ],
-      "description": "Categoria V5.1 para agrupamento no dashboard de Data Confidence"
+      "description": "Categoria V5.1 legada (manter por compat)"
+    },
+    "dimensao_analitica": {
+      "type": "string",
+      "enum": [
+        "identidade_cadastro",
+        "socios_beneficiarios",
+        "estrutura_societaria",
+        "sancoes_internacionais_nacionais",
+        "processos_compliance",
+        "atividade_reputacao",
+        "financeiro_mercado",
+        "trabalho_esg",
+        "compliance_setorial",
+        "pld_ft",
+        "risco_pais_internacional",
+        "caf_biometria_screening",
+        "outras_integracoes"
+      ],
+      "description": "[V5.2] Dimens\u00e3o anal\u00edtica prim\u00e1ria da Aba 3 (1 das 13). PLD/FT e risco_pais_internacional s\u00e3o NOVAS V5.2."
     },
     "capabilities_que_usam": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "Capabilities V5.1 que dependem deste dataset"
+      "description": "Capabilities V5.2 que dependem deste dataset (can\u00f4nicas: splits/subseller, crossborder, recurrence, cap_financial_capacity_validation)"
+    },
+    "segmentos_ativam": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "[V5.2] Segmentos que ATIVAM consulta deste dataset. ['all'] = universal. Usado por deveConsultarDataset()."
+    },
+    "morfologias_ativam": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "[V5.2] Morfologias espec\u00edficas que ativam (ex: ['A'] para PV Sa\u00fade). ['all'] = qualquer morfologia."
+    },
+    "capabilities_ativam": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "[V5.2] Capabilities que ATIVAM consulta (ex: ['crossborder'] para sanctions_uk_hmt)."
+    },
+    "requires_trigger": {
+      "type": "boolean",
+      "default": false,
+      "description": "[V5.2] Se true, dataset s\u00f3 \u00e9 consultado quando trigger especial \u00e9 atendido (ex: first_level_relatives_kyc s\u00f3 se UBO PEP/sancionado)."
     },
     "variaveis_que_alimenta": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "Vari\u00e1veis do score V5.1 que recebem dados deste dataset (ex: v_qsa_coherence, v_financial_coherence)"
+      "description": "Vari\u00e1veis V-* alimentadas (V01-V60+) (ex: v_qsa_coherence, v_financial_coherence)"
+    },
+    "bloqueios_que_alimenta": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "[V5.2] C\u00f3digos can\u00f4nicos de Bloqueios B-* que este dataset pode alimentar (ex: ['B-FIN-1', 'B03'])."
+    },
+    "campo_cross_val": {
+      "type": "string",
+      "description": "[V5.2] Se este dataset alimenta um dos 16 campos da Cross-Validation V5.1, indicar qual (ex: 'tpv_mensal_declarado', 'razao_social')."
+    },
+    "obrigatorio": {
+      "type": "boolean",
+      "default": false,
+      "description": "[V5.2] Se true, falha na consulta aborta o pipeline. Datasets required: basic_data, owners_kyc, sanctions_international, mte_lista_suja."
+    },
+    "glossario_tooltip": {
+      "type": "string",
+      "description": "[V5.2] Texto did\u00e1tico do gloss\u00e1rio inline (\u00edcone \u24d8) exibido em todos os locais onde o dataset aparece (Aba 3 + Aba 2 + modal). Uniforme."
     },
     "custo_credito": {
       "type": "number",
@@ -89,16 +158,22 @@
     },
     "ativo": {
       "type": "boolean",
-      "default": true
+      "default": true,
+      "description": "Se false, dataset fica catalogado mas n\u00e3o dispara no pipeline (kill switch + use para datasets ainda n\u00e3o contratados com BDC)"
+    },
+    "contratado": {
+      "type": "boolean",
+      "default": true,
+      "description": "[V5.2] Status comercial \u2014 se false, indica que o dataset existe no cat\u00e1logo mas ainda n\u00e3o est\u00e1 contratado com o provedor. Pipeline pula automaticamente (not_consulted)."
     },
     "novo_em_v5_1": {
       "type": "boolean",
       "default": false,
-      "description": "Se true, \u00e9 um dataset NOVO introduzido em V5.1 (n\u00e3o existia em V4). \u00datil para BDCHealthDashboard separar visualmente."
+      "description": "Se true, \u00e9 um dataset NOVO introduzido em V5.1+ (n\u00e3o existia em V4)."
     },
     "fonte_documento": {
       "type": "string",
-      "description": "Refer\u00eancia ao documento V5.1 (ex: 'V5.1 - Cat\u00e1logo de Datasets, Tabela 3.1')"
+      "description": "Refer\u00eancia ao documento V5.1/V5.2 (ex: 'V5.2 - Cat\u00e1logo de Datasets, Tabela 3.1')"
     }
   },
   "required": [

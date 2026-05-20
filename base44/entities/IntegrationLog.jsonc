@@ -14,9 +14,15 @@
       "type": "string",
       "enum": [
         "CAF",
-        "BigDataCorp"
+        "BigDataCorp",
+        "CFC",
+        "OpenFinance",
+        "ECF",
+        "BrasilAPI",
+        "PortalTransparencia",
+        "Outro"
       ],
-      "description": "Provedor da integra\u00e7\u00e3o"
+      "description": "Provedor da integra\u00e7\u00e3o (V5.2 expandido)"
     },
     "service_type": {
       "type": "string",
@@ -70,6 +76,10 @@
       ],
       "description": "Tipo de servi\u00e7o chamado"
     },
+    "dataset_codigo": {
+      "type": "string",
+      "description": "[V5.2] C\u00f3digo can\u00f4nico do Dataset consultado (refer\u00eancia cruzada com entidade Dataset). Pode ser usado em vez de service_type para datasets BDC novos V5.2."
+    },
     "request_id": {
       "type": "string",
       "description": "ID da requisi\u00e7\u00e3o no provedor"
@@ -90,9 +100,49 @@
         "success",
         "failed",
         "timeout",
-        "cancelled"
+        "cancelled",
+        "empty",
+        "error",
+        "not_consulted"
       ],
-      "default": "pending"
+      "default": "pending",
+      "description": "[V5.2] Status estendido. Novos estados: 'empty' (consultado mas sem dados \u2014 n\u00e3o \u00e9 erro), 'error' (falha no provedor), 'not_consulted' (n\u00e3o aplic\u00e1vel neste caso conforme l\u00f3gica condicional)."
+    },
+    "not_consulted_reason": {
+      "type": "string",
+      "enum": [
+        "tier_1_below_threshold",
+        "tier_2_below_threshold",
+        "capability_crossborder_not_active",
+        "capability_splits_subseller_not_active",
+        "capability_recurrence_not_active",
+        "segment_not_applicable",
+        "morfologia_not_applicable",
+        "trigger_not_met",
+        "cost_optimization",
+        "dataset_not_contracted",
+        "other"
+      ],
+      "description": "[V5.2] Raz\u00e3o pela qual o dataset N\u00c3O foi consultado. 10 raz\u00f5es catalogadas. Usado para renderizar tooltip explicativo no DatasetCard estado 'not_consulted'."
+    },
+    "dimensao_analitica": {
+      "type": "string",
+      "enum": [
+        "identidade_cadastro",
+        "socios_beneficiarios",
+        "estrutura_societaria",
+        "sancoes_internacionais_nacionais",
+        "processos_compliance",
+        "atividade_reputacao",
+        "financeiro_mercado",
+        "trabalho_esg",
+        "compliance_setorial",
+        "pld_ft",
+        "risco_pais_internacional",
+        "caf_biometria_screening",
+        "outras_integracoes"
+      ],
+      "description": "[V5.2] Dimens\u00e3o anal\u00edtica prim\u00e1ria do dataset (denormalizado para queries r\u00e1pidas na Aba 3)."
     },
     "result_status": {
       "type": "string",
@@ -145,7 +195,7 @@
     },
     "duration_ms": {
       "type": "number",
-      "description": "Dura\u00e7\u00e3o da chamada em ms"
+      "description": "Dura\u00e7\u00e3o da chamada em ms (alias para elapsed_ms)"
     },
     "image_urls": {
       "type": "array",

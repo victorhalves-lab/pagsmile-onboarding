@@ -14,10 +14,11 @@
       "type": "string",
       "enum": [
         "v4.0",
-        "v5.1"
+        "v5.1",
+        "v5.2"
       ],
       "default": "v4.0",
-      "description": "DNA do score. Espelha framework_version do OnboardingCase. Casos sem o campo s\u00e3o v4.0."
+      "description": "DNA do score. Casos sem o campo s\u00e3o v4.0. v5.2 adiciona cross_validation_results estruturado + impact_score_top_alerts."
     },
     "segmento": {
       "type": "string",
@@ -34,7 +35,12 @@
         "educacao",
         "mpe",
         "pix_merchant",
-        "pix_intermediario"
+        "pix_intermediario",
+        "turismo",
+        "eventos",
+        "servicos_b2b",
+        "servicos_locais",
+        "crossborder"
       ]
     },
     "questionario_id": {
@@ -354,7 +360,7 @@
     },
     "patch_financeiro_dimensoes": {
       "type": "object",
-      "description": "[V5.1] Detalhe das 5 dimens\u00f5es: tpv_declarado_vs_capital, faturamento_doc_vs_declarado, crc_status, fluxo_caixa, coerencia_setor"
+      "description": "[V5.1/V5.2] Detalhe das 5 dimens\u00f5es do Patch Financeiro: tpv_declarado_vs_bdc, faturamento_doc_vs_ecf, crc_status, fluxo_caixa_open_finance, coerencia_setor. Cada dimens\u00e3o tem {valor_declarado, valor_observado, divergencia_pct, bloqueio_disparado}."
     },
     "v_financial_coherence": {
       "type": "number"
@@ -371,7 +377,29 @@
       "items": {
         "type": "object"
       },
-      "description": "[V5.1] Cross-validation dos 16 campos can\u00f4nicos V5.1"
+      "description": "[V5.1] Cross-validation dos 16 campos can\u00f4nicos V5.1 (legado \u2014 manter)"
+    },
+    "cross_validation_results": {
+      "type": "object",
+      "description": "[V5.2] Resultado estruturado da Cross-Validation 16 campos V5.1. Schema: {fields: [{field_id, label, declared_value, bdc_value, source_dataset, status (match/divergence/mismatch/unknown), divergence_pct, peso_v5_1, bloqueio_disparado}], summary: {match_count, divergence_count, mismatch_count, unknown_count, score_cross_val}}. Renderizado em Aba 2 da nova tela."
+    },
+    "impact_score_top_alerts": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "[V5.2] Top 3 alertas priorizados por impact_score (determin\u00edstico: severidade \u00d7 peso_regulat\u00f3rio \u00d7 custo_financeiro_estimado). Renderizado em Smart Summary Card 1. Schema: [{red_flag_id, title, severity, source, impact_score, why_it_matters, suggested_action}]"
+    },
+    "top_positivos": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "[V5.2] Top 3 pontos positivos (contexto balanceado) renderizado em Smart Summary Card 2"
+    },
+    "cross_validation_summary": {
+      "type": "object",
+      "description": "[V5.2] Sum\u00e1rio compacto do Cross-Val 16 campos para Smart Summary Card 3 (counts + diverg\u00eancias/mismatches list)"
     },
     "snapshot_id": {
       "type": "string",

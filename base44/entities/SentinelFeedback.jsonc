@@ -1,0 +1,149 @@
+{
+  "name": "SentinelFeedback",
+  "type": "object",
+  "description": "[V5.2] Feedback estruturado do analista sobre a recomenda\u00e7\u00e3o SENTINEL ap\u00f3s decis\u00e3o final. Alimenta o loop de melhoria cont\u00ednua da IA (DOC4 Cap. 19.8). Persistido ap\u00f3s cada decis\u00e3o para an\u00e1lise de drift, precis\u00e3o e calibra\u00e7\u00e3o dos prompts especializados.",
+  "properties": {
+    "onboarding_case_id": {
+      "type": "string",
+      "description": "ID do OnboardingCase analisado"
+    },
+    "compliance_score_id": {
+      "type": "string",
+      "description": "ID do ComplianceScore que gerou a recomenda\u00e7\u00e3o avaliada"
+    },
+    "analyst_email": {
+      "type": "string",
+      "description": "Email do analista que registrou o feedback"
+    },
+    "analyst_role": {
+      "type": "string",
+      "enum": [
+        "compliance_l1",
+        "compliance_senior",
+        "compliance_officer",
+        "auditoria_interna",
+        "outro"
+      ],
+      "description": "Papel do analista"
+    },
+    "sentinel_recommendation": {
+      "type": "string",
+      "enum": [
+        "Aprovado",
+        "Aprovado com Condi\u00e7\u00f5es",
+        "Revis\u00e3o Manual",
+        "Recusado"
+      ],
+      "description": "Recomenda\u00e7\u00e3o que o SENTINEL deu"
+    },
+    "final_decision": {
+      "type": "string",
+      "enum": [
+        "Aprovado",
+        "Aprovado com Condi\u00e7\u00f5es",
+        "Revis\u00e3o Manual",
+        "Recusado"
+      ],
+      "description": "Decis\u00e3o final do analista (humano)"
+    },
+    "decision_match": {
+      "type": "boolean",
+      "description": "True se sentinel_recommendation == final_decision. M\u00e9trica prim\u00e1ria de precis\u00e3o da IA."
+    },
+    "feedback_type": {
+      "type": "string",
+      "enum": [
+        "acertou",
+        "errou",
+        "parcialmente"
+      ],
+      "description": "Tipo de feedback: \ud83d\udc4d acertou / \ud83d\udc4e errou / \ud83e\udd14 parcialmente correto (bot\u00f5es do FeedbackSentinelPanel)"
+    },
+    "comment": {
+      "type": "string",
+      "description": "Coment\u00e1rio livre do analista (obrigat\u00f3rio se feedback_type=errou ou parcialmente)"
+    },
+    "sentinel_version": {
+      "type": "string",
+      "description": "Vers\u00e3o do SENTINEL que gerou a recomenda\u00e7\u00e3o avaliada (ex: 'gemini_3_1_pro_tier3', 'sentinel_marketplace_tier3_splits_v5_1')"
+    },
+    "prompt_especializado_id": {
+      "type": "string",
+      "description": "ID can\u00f4nico do prompt especializado usado (ex: 'sentinel_gateway_tier3_baas_v5_1'). Usado para an\u00e1lise de drift por prompt."
+    },
+    "framework_version": {
+      "type": "string",
+      "enum": [
+        "v4.0",
+        "v5.1",
+        "v5.2"
+      ],
+      "description": "Framework version do caso analisado"
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "tier_1",
+        "tier_2",
+        "tier_3",
+        "subseller_pj",
+        "subseller_pf"
+      ],
+      "description": "Tier do caso (denormalizado para queries anal\u00edticas)"
+    },
+    "segmento": {
+      "type": "string",
+      "description": "Segmento V5.1/V5.2 do caso (denormalizado para queries anal\u00edticas)"
+    },
+    "morfologia": {
+      "type": "string",
+      "description": "Morfologia A-F do caso"
+    },
+    "feedback_categories": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "missed_red_flag",
+          "false_positive",
+          "wrong_severity_up",
+          "wrong_severity_down",
+          "missed_positive",
+          "wrong_regulatory_basis",
+          "wrong_suggested_action",
+          "good_overall",
+          "outro"
+        ]
+      },
+      "description": "Categorias espec\u00edficas de erro/acerto. \u00datil para tagging anal\u00edtico."
+    }
+  },
+  "required": [
+    "onboarding_case_id",
+    "feedback_type",
+    "sentinel_recommendation",
+    "final_decision"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
