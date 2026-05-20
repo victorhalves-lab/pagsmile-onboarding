@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import ComplianceCasesCardsGrid from '@/components/compliance/ComplianceCasesCardsGrid';
 import FrameworkVersionFilter from '@/components/v5_2/FrameworkVersionFilter';
+import AnaliseManualV5_2Stats from '@/components/compliance/AnaliseManualV5_2Stats';
 
 /**
  * AnaliseManual — página dedicada para casos que caíram em revisão manual.
@@ -30,6 +31,8 @@ export default function AnaliseManual() {
   const [statusFilter, setStatusFilter] = useState('all'); // all | Manual | Docs Solicitados
   const [agingFilter, setAgingFilter] = useState('all');   // all | over24h | over72h
   const [frameworkFilter, setFrameworkFilter] = useState('all'); // all | v4.0 | v5.2
+  const [categoriaV5_2Filter, setCategoriaV5_2Filter] = useState('all'); // all | cat_2_conditional | cat_3_manual_review | cat_4_block | cat_5_intensive_monitoring
+  const [bloqueiosV5_2Filter, setBloqueiosV5_2Filter] = useState(false); // só casos com bloqueios ativos
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRows, setSelectedRows] = useState([]);
   const [expandedRow, setExpandedRow] = useState(null);
@@ -158,6 +161,12 @@ export default function AnaliseManual() {
         if (fv !== frameworkFilter) return false;
       }
 
+      // [V5.2 Fase 6.5.1] Filtros V5.2 — só aplicam quando frameworkFilter === 'v5.2'
+      if (frameworkFilter === 'v5.2') {
+        if (categoriaV5_2Filter !== 'all' && c.categoria_decisao_v5_2 !== categoriaV5_2Filter) return false;
+        if (bloqueiosV5_2Filter === true && !(Array.isArray(c.bloqueiosAtivos) && c.bloqueiosAtivos.length > 0)) return false;
+      }
+
       if (searchTerm) {
         const m = merchantMap[c.merchantId];
         const q = searchTerm.toLowerCase();
@@ -170,20 +179,32 @@ export default function AnaliseManual() {
       }
       return true;
     });
-  }, [onboardingCases, merchantMap, statusFilter, agingFilter, searchTerm, frameworkFilter]);
+  }, [onboardingCases, merchantMap, statusFilter, agingFilter, searchTerm, frameworkFilter, categoriaV5_2Filter, bloqueiosV5_2Filter]);
+
+  // [V5.2] Casos V5.2 dentro da fila — usado pelos chips de categoria
+  const v52CasesInQueue = React.useMemo(
+    () => onboardingCases.filter(c => (c.framework_version || 'v4.0') === 'v5.2'),
+    [onboardingCases]
+  );
 
   const totalPages = Math.ceil(filteredCases.length / itemsPerPage);
   const paginatedCases = filteredCases.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const handleExport = () => {
     const csv = [
-      ['ID', 'Cliente', 'CNPJ/CPF', 'Status', 'Score V4', 'Subfaixa', 'Decisão IA', 'Aguardando há (h)', 'Última Atualização'].join(','),
+      ['ID', 'Cliente', 'CNPJ/CPF', 'Status', 'Framework', 'Score V4', 'Score V5.2', 'Subfaixa', 'Tier', 'Categoria V5.2', 'Bloqueios Ativos', 'Decisão IA', 'Aguardando há (h)', 'Última Atualização'].join(','),
       ...filteredCases.map(c => {
         const m = merchantMap[c.merchantId];
         const hours = ((Date.now() - new Date(c.updated_date).getTime()) / 36e5).toFixed(1);
+        const bloqueios = Array.isArray(c.bloqueiosAtivos) ? c.bloqueiosAtivos.length : 0;
         return [
           c.id, `"${m?.fullName || 'N/A'}"`, m?.cpfCnpj || '', c.status,
-          c.riskScoreV4 ?? '', c.subfaixa ?? '', c.iaDecision ?? '',
+          c.framework_version || 'v4.0',
+          c.riskScoreV4 ?? '', c.risk_score_v5_1 ?? '',
+          c.subfaixa ?? '', c.tier ?? '',
+          c.categoria_decisao_v5_2 ?? '',
+          bloqueios,
+          c.iaDecision ?? '',
           hours, new Date(c.updated_date).toLocaleString('pt-BR'),
         ].join(',');
       }),
@@ -298,10 +319,26 @@ export default function AnaliseManual() {
         </div>
         <FrameworkVersionFilter
           value={frameworkFilter}
-          onChange={(v) => { setFrameworkFilter(v); setCurrentPage(1); }}
+          onChange={(v) => {
+            setFrameworkFilter(v);
+            setCurrentPage(1);
+            // Reseta filtros V5.2 quando sai do contexto V5.2
+            if (v !== 'v5.2') { setCategoriaV5_2Filter('all'); setBloqueiosV5_2Filter(false); }
+          }}
           counts={frameworkCounts}
         />
       </div>
+
+      {/* [V5.2 Fase 6.5.1] Stats V5.2 — aparece só quando filtra por V5.2 */}
+      {frameworkFilter === 'v5.2' && v52CasesInQueue.length > 0 && (
+        <AnaliseManualV5_2Stats
+          cases={v52CasesInQueue}
+          categoriaFilter={categoriaV5_2Filter}
+          onCategoriaChange={(v) => { setCategoriaV5_2Filter(v); setCurrentPage(1); }}
+          bloqueiosFilter={bloqueiosV5_2Filter}
+          onBloqueiosChange={(v) => { setBloqueiosV5_2Filter(v); setCurrentPage(1); }}
+        />
+      )}
 
       {/* Resultados */}
       {filteredCases.length === 0 && !casesLoading ? (
