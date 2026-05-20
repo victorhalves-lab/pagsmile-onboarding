@@ -3,14 +3,18 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { 
-  X, Plus, Loader2, Upload, Eye, Paintbrush, Shield, Link as LinkIcon
+  X, Plus, Loader2, Upload, Eye, Paintbrush, Shield, Link as LinkIcon, Rocket
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import FrameworkVersionPicker from './FrameworkVersionPicker';
 
 const PAGSMILE_GREEN = '#2bc196';
 const PAGSMILE_BLUE = '#002443';
 
 export default function GenerateLinkModal({ merchant, onGenerate, onClose, isPending }) {
+  // [V5.2 Fase 6.5.2] Framework version do link — default V4 (zero regressão).
+  // Admin escolhe explicitamente antes do passo de branding.
+  const [frameworkVersion, setFrameworkVersion] = useState('v4.0');
   const [mode, setMode] = useState(null); // null = choosing, 'pagsmile' | 'custom'
   // Pré-preenche com o nome do cliente (seller) — usuário pode editar se quiser.
   const [brandName, setBrandName] = useState(merchant?.fullName || merchant?.companyName || '');
@@ -34,9 +38,9 @@ export default function GenerateLinkModal({ merchant, onGenerate, onClose, isPen
 
   const handleGenerate = () => {
     if (mode === 'custom') {
-      onGenerate({ brandName, brandLogoUrl, brandPrimaryColor, brandSecondaryColor, customSlug: slugValue || undefined });
+      onGenerate({ branding: { brandName, brandLogoUrl, brandPrimaryColor, brandSecondaryColor, customSlug: slugValue || undefined }, frameworkVersion });
     } else {
-      onGenerate(customSlug ? { customSlug: slugValue } : null);
+      onGenerate({ branding: customSlug ? { customSlug: slugValue } : null, frameworkVersion });
     }
   };
 
@@ -60,9 +64,39 @@ export default function GenerateLinkModal({ merchant, onGenerate, onClose, isPen
         </div>
 
         <div className="px-6 py-5 space-y-5">
+          {/* [V5.2 Fase 6.5.2] Step 0: Framework version (V4 vs V5.2) — sempre antes de tudo */}
+          {!mode && (
+            <FrameworkVersionPicker value={frameworkVersion} onChange={setFrameworkVersion} />
+          )}
+
+          {/* Indicador da versão escolhida nas etapas seguintes */}
+          {mode && (
+            <div className={`p-2.5 rounded-lg border flex items-center gap-2 ${
+              frameworkVersion === 'v5.2'
+                ? 'bg-[#2bc196]/5 border-[#2bc196]/30'
+                : 'bg-blue-50 border-blue-200'
+            }`}>
+              {frameworkVersion === 'v5.2' ? (
+                <Rocket className="w-3.5 h-3.5 text-[#2bc196]" />
+              ) : (
+                <Shield className="w-3.5 h-3.5 text-blue-600" />
+              )}
+              <span className="text-[11px] font-semibold text-[#002443]">
+                Framework: {frameworkVersion === 'v5.2' ? 'V5.2 (Novo)' : 'V4 (Atual)'}
+              </span>
+              <button
+                type="button"
+                onClick={() => setMode(null)}
+                className="ml-auto text-[10px] text-[#002443]/60 hover:text-[#002443] underline"
+              >
+                trocar
+              </button>
+            </div>
+          )}
+
           {/* Step 1: Choose mode */}
           {!mode && (
-            <div className="space-y-3">
+            <div className="space-y-3 pt-2 border-t border-slate-100">
               <p className="text-sm font-semibold text-[#002443]">Escolha o estilo do link:</p>
               
               <button

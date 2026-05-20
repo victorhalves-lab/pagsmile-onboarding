@@ -172,8 +172,16 @@ Já entregue:
 - ✅ Reset automático de filtros V5.2 ao sair do contexto V5.2
 - ✅ CSV de export ampliado: framework, score V5.2, tier, categoria V5.2, bloqueios ativos
 
-##### **▶ 6.5.2 — Próxima: Trilho Subseller V5.2 (PJ+PF) integrado ao fluxo atual**
-- 6.5.3 Comparator V4↔V5.2 lado-a-lado
+##### ✅ **6.5.2 — Trilho Subseller V5.2 (PJ+PF) (CONCLUÍDA)**
+- ✅ Schema `OnboardingLink` ampliado com `framework_version` (v4.0 default — opt-in p/ v5.2)
+- ✅ `functions/generateSubsellerLink` aceita `frameworkVersion` e seleciona template V5_2_DYNAMIC quando v5.2; mantém subseller_v2/subseller para v4.0
+- ✅ `functions/publicReadContext` expõe `framework_version` no link público
+- ✅ `components/subseller/FrameworkVersionPicker.jsx` — seletor V4 vs V5.2 (BETA) no GenerateLinkModal
+- ✅ `GenerateLinkModal` reformulado: passo 0 = framework, passo 1 = estilo, passo 2 = branding. Indicador da versão escolhida nas etapas seguintes.
+- ✅ `GerenciarSubsellerLinks` mostra badge V4/V5.2 em cada link gerado
+- ✅ `pages/SubsellerQuestionnaire` rota automaticamente para template V5_2_DYNAMIC quando `link.framework_version === 'v5.2'`. PF/PJ usam o MESMO template — tier resolvido em runtime pela engine. localStorage `v5_2_subseller_merchant_type` para sinalizar à engine. Trilho V4 100% preservado.
+
+##### **▶ 6.5.3 — Próxima: Comparator V4↔V5.2 lado-a-lado**
 - 6.5.4 Glossário inline 50+ termos (DOC6 §2.5.6)
 - 6.5.5 Atalhos de teclado DOC6 (15 atalhos)
 - 6.5.6 FeedbackSentinelPanel estruturado (entidade `SentinelFeedback` já existe)
@@ -240,3 +248,4 @@ Possíveis próximos passos (escolher com o usuário):
 | 2.6 | 2026-05-20 | Fase 6.4-B concluída (refatoração `AnaliseCompleta` com layout DOC6 4-abas — Hero Verdict V5.2 + Tab1 Resumo&Decisão + Tab2 Evidências (Cross-Val 16 + Patch Financeiro 5 dim + Bloqueios + CAF) + Tab3 Dimensional BDC + Tab4 SENTINEL+Auditoria sticky). Roteamento condicional por `framework_version` — layout V4 legado 100% preservado para casos antigos. Próxima: 6.4-C (Widget V5.2 no DashboardCEO). |
 | 2.7 | 2026-05-20 | Fase 6.4-C concluída (Widget V5.2 no DashboardCEO: AdoptionBanner 4 KPIs + FrameworkAdoptionBar V4/V5.1/V5.2 + CategoriaPie cat 1-5 + TierApprovalChart por tier com taxa de aprovação). Toda Fase 6.4 (A+B+C) concluída. Próxima: 6.5 (a definir). |
 | 2.8 | 2026-05-20 | Fase 6.5.1 concluída (refator `AnaliseManual` para V5.2: chips de categoria V5.2 + filtro de bloqueios ativos + CSV ampliado com framework/score V5.2/tier/categoria/bloqueios + indicador de casos transicionais). Próxima: 6.5.2 — Trilho Subseller V5.2 (PJ+PF). |
+| 2.9 | 2026-05-20 | Fase 6.5.2 concluída (Trilho Subseller V5.2 — Schema OnboardingLink + generateSubsellerLink + publicReadContext + FrameworkVersionPicker + GenerateLinkModal reformulado + badge V4/V5.2 em GerenciarSubsellerLinks + SubsellerQuestionnaire com roteamento condicional). Trilho V4 100% preservado — opt-in explícito p/ V5.2 pelo admin. Próxima: 6.5.3 — Comparator V4↔V5.2. |

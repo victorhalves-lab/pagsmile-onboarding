@@ -60,7 +60,14 @@ export default function SubsellerQuestionnaire() {
     secondaryColor: onboardingLink.brandSecondaryColor,
   } : null;
 
-  // Step 1: Show PF/PJ selector
+  // [V5.2 Fase 6.5.2] Trilho V5.2 — quando o link foi gerado com framework_version='v5.2',
+  // o template já é o V5_2_DYNAMIC (template único dinâmico tier-aware). PF/PJ é o MESMO
+  // template — o tier (subseller_pj/subseller_pf) é resolvido em runtime pela engine V5.2
+  // a partir do merchantType escolhido + respostas. Mantém o `MerchantTypeSelector` para
+  // a engine saber se ativa `cap_financial_capacity_validation_pf` ou `_pj`.
+  const isV5_2Link = onboardingLink?.framework_version === 'v5.2';
+
+  // Step 1: Show PF/PJ selector (mantido idêntico em ambos os trilhos)
   if (!merchantType) {
     return (
       <MerchantTypeSelector
@@ -70,6 +77,33 @@ export default function SubsellerQuestionnaire() {
     );
   }
 
+  // ── TRILHO V5.2 ──────────────────────────────────────────────────────
+  // Template único (V5_2_DYNAMIC) já vinculado ao link via questionnaireTemplateId.
+  // PF e PJ usam o MESMO templateId — diferencia internamente via merchantType.
+  if (isV5_2Link) {
+    // Persiste o merchantType selecionado para que a engine V5.2 saiba qual tier
+    // resolver (subseller_pj vs subseller_pf) ao processar as respostas.
+    try {
+      localStorage.setItem('v5_2_subseller_merchant_type', merchantType);
+    } catch {}
+
+    const isPF = merchantType === 'PF';
+    return (
+      <DynamicQuestionnaire
+        templateId={onboardingLink.questionnaireTemplateId}
+        storageKey={isPF ? 'compliance_data_v5_2_subseller_pf' : 'compliance_data_v5_2_subseller_pj'}
+        documentUploadPage="SubsellerDocUpload"
+        flowType={isPF ? 'subseller_pf' : 'subseller'}
+        badgeLabel={isPF ? 'SUBSELLER PF · V5.2' : 'SUBSELLER PJ · V5.2'}
+        badgeColor="bg-[#2bc196]/15 text-[#2bc196] border border-[#2bc196]/30"
+        questionsPerStep={4}
+        branding={branding}
+        isPublicView={true}
+      />
+    );
+  }
+
+  // ── TRILHO V4 (LEGADO — preservado integralmente) ────────────────────
   // Step 2a: PF flow — uses subseller_pf template (BACEN-compliant, 55 perguntas)
   if (merchantType === 'PF') {
     return (

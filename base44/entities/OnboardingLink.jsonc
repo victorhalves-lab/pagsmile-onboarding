@@ -110,6 +110,15 @@
     "brandSecondaryColor": {
       "type": "string",
       "description": "Cor secund\u00e1ria hex do cliente (ex: #1A1A1A)"
+    },
+    "framework_version": {
+      "type": "string",
+      "enum": [
+        "v4.0",
+        "v5.2"
+      ],
+      "default": "v4.0",
+      "description": "[V5.2 Fase 6.5.2] Framework de risco usado pelos casos gerados a partir deste link. v4.0 = trilho legado (templates por segmento). v5.2 = trilho novo (template \u00fanico din\u00e2mico tier-aware). Casos herdam imutavelmente esta vers\u00e3o na cria\u00e7\u00e3o."
     }
   },
   "required": [
@@ -122,8 +131,16 @@
         "role": "admin"
       }
     },
-    "read": true,
-    "update": true,
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
     "delete": {
       "user_condition": {
         "role": "admin"

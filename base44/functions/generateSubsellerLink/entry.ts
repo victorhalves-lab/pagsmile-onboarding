@@ -13,7 +13,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Forbidden: Admin access required' }, { status: 403 });
     }
 
-    const { parentMerchantId, parentMerchantName, expiresInDays, complianceType, branding } = await req.json();
+    const { parentMerchantId, parentMerchantName, expiresInDays, complianceType, branding, frameworkVersion } = await req.json();
 
     if (!parentMerchantId) {
       return Response.json({ error: 'parentMerchantId is required' }, { status: 400 });
@@ -31,16 +31,34 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Merchant must be approved to generate subseller links' }, { status: 400 });
     }
 
-    // Buscar template de subseller v2
-    let templates = await base44.asServiceRole.entities.QuestionnaireTemplate.filter({ model: 'subseller_v2', isActive: true });
-    if (!templates.length) {
-      // Fallback to legacy
-      templates = await base44.asServiceRole.entities.QuestionnaireTemplate.filter({ model: 'subseller', isActive: true });
-    }
-    const template = templates[0];
+    // [V5.2 Fase 6.5.2] Framework version do link (default v4.0 — opt-in explícito p/ V5.2)
+    const fwVersion = frameworkVersion === 'v5.2' ? 'v5.2' : 'v4.0';
 
-    if (!template) {
-      return Response.json({ error: 'Subseller questionnaire template not found' }, { status: 500 });
+    // Resolve template conforme framework version
+    let template = null;
+    if (fwVersion === 'v5.2') {
+      // V5.2: template único dinâmico tier-aware (subCategory=V5_2_DYNAMIC).
+      // Funciona para subseller_pj e subseller_pf (tier resolvido em runtime pela engine).
+      const v5_2Templates = await base44.asServiceRole.entities.QuestionnaireTemplate.filter({
+        subCategory: 'V5_2_DYNAMIC',
+        isActive: true,
+      });
+      template = v5_2Templates[0];
+      if (!template) {
+        return Response.json({
+          error: 'Template V5.2 dinâmico não encontrado. Execute seedV5_2MasterData antes de gerar links V5.2.',
+        }, { status: 500 });
+      }
+    } else {
+      // V4.0 (legado): mantém comportamento atual — subseller_v2 com fallback subseller.
+      let templates = await base44.asServiceRole.entities.QuestionnaireTemplate.filter({ model: 'subseller_v2', isActive: true });
+      if (!templates.length) {
+        templates = await base44.asServiceRole.entities.QuestionnaireTemplate.filter({ model: 'subseller', isActive: true });
+      }
+      template = templates[0];
+      if (!template) {
+        return Response.json({ error: 'Subseller questionnaire template not found' }, { status: 500 });
+      }
     }
 
     // Gerar código único
@@ -71,6 +89,7 @@ Deno.serve(async (req) => {
       completedCount: 0,
       complianceType: complianceType || 'GENERIC',
       expiresAt,
+      framework_version: fwVersion,
     };
 
     // Adicionar branding se fornecido
@@ -97,6 +116,7 @@ Deno.serve(async (req) => {
         parentMerchantId,
         uniqueCode,
         questionnaireTemplateId: template.id,
+        framework_version: fwVersion,
       }
     });
 
@@ -110,6 +130,7 @@ Deno.serve(async (req) => {
         parentMerchantName: parentMerchantName || merchant.fullName,
         questionnaireTemplateId: template.id,
         expiresAt,
+        framework_version: fwVersion,
       }
     });
 

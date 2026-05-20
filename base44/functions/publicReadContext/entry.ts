@@ -99,6 +99,7 @@ Deno.serve(async (req) => {
           introducerId: l.introducerId,
           introducerReferralCode: l.introducerReferralCode,
           complianceType: l.complianceType,
+          framework_version: l.framework_version || 'v4.0',
         },
       });
     }

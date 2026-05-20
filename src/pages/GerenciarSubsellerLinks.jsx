@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { 
   Link as LinkIcon, Copy, Check, Search, Loader2, 
   Building2, Users, Plus, ExternalLink, ToggleLeft, ToggleRight, Calendar,
-  Paintbrush, ChevronDown, ChevronRight, Pencil
+  Paintbrush, ChevronDown, ChevronRight, Pencil, Rocket, Shield
 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
@@ -49,11 +49,19 @@ export default function GerenciarSubsellerLinks() {
   });
 
   // Gerar link via backend function
+  // [V5.2 Fase 6.5.2] Aceita { branding, frameworkVersion } do GenerateLinkModal.
+  // Backward-compat: se receber só objeto branding antigo, mantém comportamento V4.
   const createLinkMutation = useMutation({
-    mutationFn: async (branding) => {
+    mutationFn: async (input) => {
+      // Normaliza input: novo formato { branding, frameworkVersion } OU legacy branding-direto
+      const isNewFormat = input && typeof input === 'object' && ('branding' in input || 'frameworkVersion' in input);
+      const branding = isNewFormat ? input.branding : input;
+      const frameworkVersion = isNewFormat ? input.frameworkVersion : 'v4.0';
+
       const payload = {
         parentMerchantId: selectedMerchant.id,
         parentMerchantName: selectedMerchant.fullName || selectedMerchant.companyName,
+        frameworkVersion: frameworkVersion === 'v5.2' ? 'v5.2' : 'v4.0',
       };
       if (branding) {
         payload.branding = branding;
@@ -232,6 +240,16 @@ export default function GerenciarSubsellerLinks() {
                                     <Badge className="bg-emerald-100 text-emerald-700 text-[10px]">{t('sl.active')}</Badge>
                                   ) : (
                                     <Badge className="bg-red-100 text-red-700 text-[10px]">{t('sl.inactive')}</Badge>
+                                  )}
+                                  {/* [V5.2 Fase 6.5.2] Badge framework — V5.2 destaca, V4 fica discreto */}
+                                  {link.framework_version === 'v5.2' ? (
+                                    <Badge className="bg-[#2bc196]/15 text-[#2bc196] border border-[#2bc196]/30 text-[10px] gap-1">
+                                      <Rocket className="w-2.5 h-2.5" /> V5.2
+                                    </Badge>
+                                  ) : (
+                                    <Badge className="bg-slate-100 text-slate-600 text-[10px] gap-1">
+                                      <Shield className="w-2.5 h-2.5" /> V4
+                                    </Badge>
                                   )}
                                   {link.brandName && (
                                     <Badge className="bg-purple-100 text-purple-700 text-[10px] gap-1">
