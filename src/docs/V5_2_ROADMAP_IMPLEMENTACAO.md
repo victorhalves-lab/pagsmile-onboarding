@@ -202,8 +202,16 @@ Já entregue:
 - ✅ Plugado em `AnaliseCompletaV5_2` (provider + marcação dos 4 TabsContent com `data-shortcut-item`)
 - ✅ Resp. WCAG: kbd boxes legíveis, contraste 4.5:1, screen-reader labels nos botões
 
-##### **▶ Próximas (na ordem do roadmap)**
-- 6.5.6 FeedbackSentinelPanel estruturado (entidade `SentinelFeedback` já existe)
+##### ✅ **6.5.6 — FeedbackSentinelPanel estruturado (CONCLUÍDA)**
+- ✅ `feedbackCategoriesCatalog.js` — catálogo canônico dos 3 tipos de feedback (acertou/parcialmente/errou) + 9 categorias mapeadas 1:1 ao enum `SentinelFeedback.feedback_categories`
+- ✅ `FeedbackSentinelPanel.jsx` — fluxo 3 passos: (1) botões 👍🤔👎 com cores/descrições, (2) categorias específicas com checkboxes filtradas por tipo de feedback, (3) textarea com obrigatoriedade quando errou/parcial (mín. 5 chars)
+- ✅ Persistência via `base44.entities.SentinelFeedback.create` denormalizando contexto (sentinel_version, framework_version, tier, segmento, morfologia, decision_match calculado)
+- ✅ Histórico de feedbacks anteriores do mesmo caso renderizado inline (`FeedbackHistoryItem` com emoji, autor, timestamp, comentário e tags de categoria)
+- ✅ Validação client-side com mensagens inline + estado `touched` + spinner de envio + toasts de sucesso/erro
+- ✅ Marcado com `data-shortcut-item` (integra com atalhos j/k da Fase 6.5.5)
+- ✅ Plugado em `Tab4SentinelAuditoria` abaixo do parecer SENTINEL — null-safe (oculta se não houver `sentinel_recommendation`)
+
+##### **▶ Próxima entrega:**
 - 6.5.7 Export Auditoria (PDF/JSON/XLSX da nova tela V5.2)
 - [ ] `components/cadastro/ExceptionWorkflow.jsx` — aplicar exceção a um bloqueio
 - [ ] Cat 5 → cria `PlanoMonitoramento` + `TermoAdicionalV5_2`
@@ -270,3 +278,4 @@ Possíveis próximos passos (escolher com o usuário):
 | 2.9 | 2026-05-20 | Fase 6.5.2 concluída (Trilho Subseller V5.2 — Schema OnboardingLink + generateSubsellerLink + publicReadContext + FrameworkVersionPicker + GenerateLinkModal reformulado + badge V4/V5.2 em GerenciarSubsellerLinks + SubsellerQuestionnaire com roteamento condicional). Trilho V4 100% preservado — opt-in explícito p/ V5.2 pelo admin. Próxima: 6.5.3 — Comparator V4↔V5.2. |
 | 2.10 | 2026-05-20 | Fase 6.5.3 concluída (Comparator V4↔V5.2 — página dedicada `/ComparatorV4V5_2`, 3 componentes focados (Header/MetricRow/BlockagesDiff), resolução automática de par via URL, diff inteligente de bloqueios em 3 baldes (Mantidos/Novos/Removidos), pareceres SENTINEL lado a lado, ReprocessButton com atalho direto pro Comparator). Próxima: 6.5.4 — Glossário inline. |
 | 2.11 | 2026-05-20 | Fase 6.5.5 concluída (15 atalhos canônicos DOC6 §5.5 — shortcutsCatalog + useKeyboardShortcutsV5_2 com sequências/ignora inputs/modais, KeyboardShortcutsPanel "?", SearchOverlay "/", ShortcutsHintBadge sticky, V5_2ShortcutsProvider orquestrando tabs 1-4 + j/k + Esc cascata + ações a/c/m/r/s/e roteadas para AnaliseManual + p dispara dossiê PDF inline + g c copia caseId. Plugado em AnaliseCompletaV5_2 com data-shortcut-item nos 4 TabsContent). Próxima: 6.5.6 — FeedbackSentinelPanel estruturado. |
+| 2.12 | 2026-05-20 | Fase 6.5.6 concluída (FeedbackSentinelPanel estruturado DOC4 §19.8 + DOC6 §2.6.6 + Q55 — catálogo canônico de 3 tipos + 9 categorias mapeadas ao enum SentinelFeedback, fluxo de 3 passos com filtro condicional de categorias por tipo, comentário obrigatório quando errou/parcial, persistência denormalizando contexto SENTINEL/framework/tier/segmento/morfologia, histórico inline de feedbacks anteriores. Plugado em Tab4SentinelAuditoria com data-shortcut-item). Próxima: 6.5.7 — Export Auditoria (PDF/JSON/XLSX). |

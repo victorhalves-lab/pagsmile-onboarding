@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Brain, FileLock2, Hash, History as HistoryIcon, FileText } from 'lucide-react';
 import AnaliseTimelineIntegracoes from '../AnaliseTimelineIntegracoes';
+import FeedbackSentinelPanel from '@/components/v5_2/feedback/FeedbackSentinelPanel';
 
 /**
  * [V5.2 Fase 6.4-B] Aba 4 — SENTINEL + Auditoria (DOC6 §2.6.6).
@@ -168,6 +169,9 @@ export default function Tab4SentinelAuditoria({ latestCase, latestScore, integra
         <SentinelParecerCompleto latestScore={latestScore} />
         <TrilhaAuditoriaSidebar latestCase={latestCase} latestScore={latestScore} />
       </div>
+
+      {/* [V5.2 Fase 6.5.6] Feedback estruturado do analista sobre o SENTINEL */}
+      <FeedbackSentinelPanel latestCase={latestCase} latestScore={latestScore} />
 
       {/* Timeline reaproveitada do V4 */}
       <AnaliseTimelineIntegracoes
