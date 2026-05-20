@@ -460,7 +460,14 @@ export default function CadastroDetalhe() {
         </TabsContent>
         {latestCase?.framework_version === 'v5.2' && (
           <TabsContent value="v5_2">
-            <CadastroV5_2Tab latestCase={latestCase} latestScore={latestScore} />
+            <CadastroV5_2Tab
+              latestCase={latestCase}
+              latestScore={latestScore}
+              onRefetch={() => {
+                queryClient.invalidateQueries({ queryKey: ['cadastro-scores', allCaseIds] });
+                queryClient.invalidateQueries({ queryKey: ['cadastro-cases-merchant', merchantId] });
+              }}
+            />
           </TabsContent>
         )}
         <TabsContent value="regulatory">

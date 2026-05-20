@@ -130,7 +130,17 @@ Já entregue:
 - ✅ `components/cadastro/ReprocessV4AsV5_2Button` — modal de confirmação + redirect pós-criação
 - ✅ Plugado em `pages/CadastroDetalhe` no header (só admin, só V4)
 
-#### **▶ FASE 6.3 — UI de workflow de exceções (Cat 1-5) (PRÓXIMA — sugerida)**
+#### ✅ **FASE 6.3 — Workflow de Exceções V5.2 (Cat 1-5) (CONCLUÍDA)**
+- ✅ Cat 5 (`cat_5_monitoramento_intensivo`) seedada no catálogo `Exception` (+ marca v5.2 nas cat 1-4 existentes)
+- ✅ `functions/applyV5_2Exception` — admin-only, valida bloqueios, atualiza ComplianceScore (overrides_aplicados + bloqueios mitigados removidos)
+- ✅ Cat 5 → cria `PlanoMonitoramento` + `TermoAdicionalV5_2` (rascunho aguardando aceite) + atualiza OnboardingCase
+- ✅ Snapshot imutável de cada exceção aplicada
+- ✅ `functions/acceptTermoAdicionalV5_2` — público (seller via link) com hash SHA-256 de integridade
+- ✅ `components/cadastro/V5_2ExceptionWorkflow` — modal multi-step (categoria + bloqueios → config Cat 5 → justificativa → resultado)
+- ✅ `components/cadastro/V5_2PlanoMonitoramentoCard` — card com plano + termo + ação de registrar aceite
+- ✅ Plugado em `CadastroV5_2Tab` (botão "Aplicar Exceção V5.2" no header de bloqueios + card de plano + histórico de overrides)
+
+#### **▶ FASE 6.4 — Próxima (a definir)**
 - [ ] `components/cadastro/ExceptionWorkflow.jsx` — aplicar exceção a um bloqueio
 - [ ] Cat 5 → cria `PlanoMonitoramento` + `TermoAdicionalV5_2`
 - [ ] Workflow de aceite do termo pelo seller
@@ -188,3 +198,4 @@ Possíveis próximos passos (escolher com o usuário):
 | 2.1 | 2026-05-20 | Fase 6.1 concluída (filtros + badge V5.2 em Cadastro, AnaliseManual, QuestionariosRecebidos). Próxima: Fase 6.2 (Reprocessar V4→V5.2). |
 | 2.2 | 2026-05-20 | Fase 6.2 concluída (reprocessV4AsV5_2 + ReprocessV4AsV5_2Button em CadastroDetalhe). Próxima: Fase 6.3 (a definir). |
 | 2.3 | 2026-05-20 | **Regra permanente registrada**: ao final de toda entrega, o assistente sempre declara a próxima. Adicionada ao topo do roadmap. |
+| 2.4 | 2026-05-20 | Fase 6.3 concluída (Workflow de Exceções V5.2 Cat 1-5 + PlanoMonitoramento + TermoAdicionalV5_2 com hash de integridade). Próxima: Fase 6.4 (a definir). |

@@ -2,6 +2,8 @@ import React from 'react';
 import { Rocket, Layers, BarChart3, ShieldAlert, ShieldCheck, GitCompare, Database, AlertTriangle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import V5_2ExceptionWorkflow from './V5_2ExceptionWorkflow';
+import V5_2PlanoMonitoramentoCard from './V5_2PlanoMonitoramentoCard';
 
 /**
  * [V5.2 Fase 5.11] Aba dedicada V5.2 — renderiza:
@@ -51,7 +53,7 @@ function EmptyState({ children }) {
   return <p className="text-xs text-[#002443]/50 italic">{children}</p>;
 }
 
-export default function CadastroV5_2Tab({ latestCase, latestScore }) {
+export default function CadastroV5_2Tab({ latestCase, latestScore, onRefetch }) {
   if (!latestCase || latestCase.framework_version !== 'v5.2') {
     return (
       <div className="bg-white rounded-xl p-8 text-center text-sm text-slate-500">
@@ -280,14 +282,21 @@ export default function CadastroV5_2Tab({ latestCase, latestScore }) {
         </Card>
       )}
 
-      {/* Bloqueios ativos detalhados */}
+      {/* Bloqueios ativos detalhados + Aplicar Exceção V5.2 */}
       {bloqueios.length > 0 && (
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-red-500" />
-              Bloqueios V5.2 Ativos ({bloqueios.length})
-            </CardTitle>
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-red-500" />
+                Bloqueios V5.2 Ativos ({bloqueios.length})
+              </CardTitle>
+              <V5_2ExceptionWorkflow
+                caseId={latestCase.id}
+                bloqueiosAtivos={bloqueios}
+                onApplied={onRefetch}
+              />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-1.5">
@@ -297,6 +306,35 @@ export default function CadastroV5_2Tab({ latestCase, latestScore }) {
                 </Badge>
               ))}
             </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Plano de Monitoramento (Cat 5) — só renderiza se existir */}
+      <V5_2PlanoMonitoramentoCard caseId={latestCase.id} />
+
+      {/* Overrides aplicados (exceções históricas) */}
+      {Array.isArray(latestScore.overrides_aplicados) && latestScore.overrides_aplicados.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-amber-600" />
+              Exceções Aplicadas
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-1.5">
+              {latestScore.overrides_aplicados.map((o, idx) => {
+                const [codigo, blocos, email, data] = String(o).split(':');
+                return (
+                  <li key={idx} className="text-[11px] border-l-2 border-amber-300 pl-2 py-1">
+                    <p className="font-semibold text-[#002443]">{codigo}</p>
+                    <p className="text-[#002443]/60">Bloqueios: <code className="font-mono">{blocos}</code></p>
+                    <p className="text-[#002443]/50">Por {email} em {data ? new Date(data).toLocaleString('pt-BR') : '—'}</p>
+                  </li>
+                );
+              })}
+            </ul>
           </CardContent>
         </Card>
       )}
