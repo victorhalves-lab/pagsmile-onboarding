@@ -1,7 +1,9 @@
 import React from 'react';
-import { Rocket, Layers, BarChart3, ShieldAlert, ShieldCheck, GitCompare, Database, AlertTriangle } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Rocket, Layers, BarChart3, ShieldAlert, ShieldCheck, GitCompare, Database, AlertTriangle, History } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import V5_2ExceptionWorkflow from './V5_2ExceptionWorkflow';
 import V5_2PlanoMonitoramentoCard from './V5_2PlanoMonitoramentoCard';
 import SmartSummaryCards from './v5_2/SmartSummaryCards';
@@ -86,8 +88,14 @@ export default function CadastroV5_2Tab({ latestCase, latestScore, onRefetch }) 
 
   return (
     <div className="space-y-4">
-      {/* Toolbar V5.2 — Dossiê auditável + link p/ Glossário */}
+      {/* Toolbar V5.2 — Trilha de auditoria + Dossiê auditável + link p/ Glossário */}
       <div className="flex items-center justify-end gap-2">
+        <Button asChild variant="outline" size="sm" className="gap-2">
+          <Link to={`/V5_2_AuditTrail?caseId=${latestCase.id}`}>
+            <History className="w-4 h-4" />
+            Trilha de Auditoria
+          </Link>
+        </Button>
         <DossieV5_2Button caseId={latestCase.id} merchantName={latestCase.merchantName} />
         <GlossaryDrawer variant="icon" />
       </div>
