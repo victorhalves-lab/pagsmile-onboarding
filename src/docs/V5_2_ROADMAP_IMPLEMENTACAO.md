@@ -192,8 +192,17 @@ Já entregue:
 - ✅ Disclaimer educativo sobre comparabilidade de escalas V4/V5.2
 - ✅ `ReprocessV4AsV5_2Button` atualizado: detecta mirror existente, mostra botão extra "Comparar V4↔V5.2", redireciona ao Comparator após reprocesso
 
-##### **▶ 6.5.4 — Próxima: Glossário inline 50+ termos (DOC6 §2.5.6)**
-- 6.5.5 Atalhos de teclado DOC6 (15 atalhos)
+##### ✅ **6.5.5 — Atalhos de teclado DOC6 (15 atalhos) (CONCLUÍDA)**
+- ✅ `components/v5_2/shortcuts/shortcutsCatalog.js` — catálogo canônico dos 15 atalhos (DOC6 §5.5 + Princípio 7)
+- ✅ `useKeyboardShortcutsV5_2` — hook global com suporte a sequências (`g c`), ignora foco em inputs/textareas/modais, timeout de sequência 1000ms
+- ✅ `KeyboardShortcutsPanel` — modal "?" com lista por categoria (Navegação, Ações de Decisão, Ferramentas) e kbd boxes
+- ✅ `SearchOverlay` — busca leve "/" com scrollIntoView + ↑↓ entre hits + flash highlight
+- ✅ `ShortcutsHintBadge` — badge fixo bottom-right com tooltip "?"
+- ✅ `V5_2ShortcutsProvider` — orquestrador: tabs 1-4, j/k navegação entre `[data-shortcut-item]`, Esc com cascata (overlay → cadastro), ações a/c/m/r/s/e roteiam para AnaliseManual, `p` dispara dossiê PDF inline, `g c` copia caseId, `?` abre painel
+- ✅ Plugado em `AnaliseCompletaV5_2` (provider + marcação dos 4 TabsContent com `data-shortcut-item`)
+- ✅ Resp. WCAG: kbd boxes legíveis, contraste 4.5:1, screen-reader labels nos botões
+
+##### **▶ Próximas (na ordem do roadmap)**
 - 6.5.6 FeedbackSentinelPanel estruturado (entidade `SentinelFeedback` já existe)
 - 6.5.7 Export Auditoria (PDF/JSON/XLSX da nova tela V5.2)
 - [ ] `components/cadastro/ExceptionWorkflow.jsx` — aplicar exceção a um bloqueio
@@ -260,3 +269,4 @@ Possíveis próximos passos (escolher com o usuário):
 | 2.8 | 2026-05-20 | Fase 6.5.1 concluída (refator `AnaliseManual` para V5.2: chips de categoria V5.2 + filtro de bloqueios ativos + CSV ampliado com framework/score V5.2/tier/categoria/bloqueios + indicador de casos transicionais). Próxima: 6.5.2 — Trilho Subseller V5.2 (PJ+PF). |
 | 2.9 | 2026-05-20 | Fase 6.5.2 concluída (Trilho Subseller V5.2 — Schema OnboardingLink + generateSubsellerLink + publicReadContext + FrameworkVersionPicker + GenerateLinkModal reformulado + badge V4/V5.2 em GerenciarSubsellerLinks + SubsellerQuestionnaire com roteamento condicional). Trilho V4 100% preservado — opt-in explícito p/ V5.2 pelo admin. Próxima: 6.5.3 — Comparator V4↔V5.2. |
 | 2.10 | 2026-05-20 | Fase 6.5.3 concluída (Comparator V4↔V5.2 — página dedicada `/ComparatorV4V5_2`, 3 componentes focados (Header/MetricRow/BlockagesDiff), resolução automática de par via URL, diff inteligente de bloqueios em 3 baldes (Mantidos/Novos/Removidos), pareceres SENTINEL lado a lado, ReprocessButton com atalho direto pro Comparator). Próxima: 6.5.4 — Glossário inline. |
+| 2.11 | 2026-05-20 | Fase 6.5.5 concluída (15 atalhos canônicos DOC6 §5.5 — shortcutsCatalog + useKeyboardShortcutsV5_2 com sequências/ignora inputs/modais, KeyboardShortcutsPanel "?", SearchOverlay "/", ShortcutsHintBadge sticky, V5_2ShortcutsProvider orquestrando tabs 1-4 + j/k + Esc cascata + ações a/c/m/r/s/e roteadas para AnaliseManual + p dispara dossiê PDF inline + g c copia caseId. Plugado em AnaliseCompletaV5_2 com data-shortcut-item nos 4 TabsContent). Próxima: 6.5.6 — FeedbackSentinelPanel estruturado. |

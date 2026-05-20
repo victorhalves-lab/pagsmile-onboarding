@@ -8,6 +8,7 @@ import Tab1ResumoDecisao from './Tab1ResumoDecisao';
 import Tab2Evidencias from './Tab2Evidencias';
 import Tab3DimensionalBDC from './Tab3DimensionalBDC';
 import Tab4SentinelAuditoria from './Tab4SentinelAuditoria';
+import V5_2ShortcutsProvider from '@/components/v5_2/shortcuts/V5_2ShortcutsProvider';
 
 /**
  * [V5.2 Fase 6.4-B] Container da nova tela DOC6 — Hero Verdict + 4 abas.
@@ -33,6 +34,16 @@ export default function AnaliseCompletaV5_2({
 
   return (
     <div className="space-y-4">
+      {/* [V5.2 Fase 6.5.5] Atalhos de teclado: 15 atalhos canônicos DOC6 §5.5.
+          Provider renderiza badge fixo + painel "?" + busca "/" + binding global. */}
+      <V5_2ShortcutsProvider
+        caseId={latestCase?.id}
+        merchantId={merchant?.id}
+        merchantName={merchant?.companyName || merchant?.fullName}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
+
       {/* V5.2 Banner */}
       <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#2bc196]/10 border border-[#2bc196]/30 w-fit">
         <Rocket className="w-3.5 h-3.5 text-[#2bc196]" />
@@ -93,36 +104,44 @@ export default function AnaliseCompletaV5_2({
         </TabsList>
 
         <TabsContent value="resumo" className="mt-4">
-          <Tab1ResumoDecisao latestCase={latestCase} latestScore={latestScore} />
+          <div data-shortcut-item data-shortcut-label="Resumo e Decisão">
+            <Tab1ResumoDecisao latestCase={latestCase} latestScore={latestScore} />
+          </div>
         </TabsContent>
 
         <TabsContent value="evidencias" className="mt-4">
-          <Tab2Evidencias
-            latestCase={latestCase}
-            latestScore={latestScore}
-            cafValidations={cafValidations}
-            cafLogs={cafLogs}
-            merchant={merchant}
-          />
+          <div data-shortcut-item data-shortcut-label="Evidências e Cross-Validation">
+            <Tab2Evidencias
+              latestCase={latestCase}
+              latestScore={latestScore}
+              cafValidations={cafValidations}
+              cafLogs={cafLogs}
+              merchant={merchant}
+            />
+          </div>
         </TabsContent>
 
         <TabsContent value="dimensional" className="mt-4">
-          <Tab3DimensionalBDC
-            bdcValidations={bdcValidations}
-            bdcLogs={bdcLogs}
-            merchant={merchant}
-            latestScore={latestScore}
-            responses={responses}
-          />
+          <div data-shortcut-item data-shortcut-label="Dimensional BDC">
+            <Tab3DimensionalBDC
+              bdcValidations={bdcValidations}
+              bdcLogs={bdcLogs}
+              merchant={merchant}
+              latestScore={latestScore}
+              responses={responses}
+            />
+          </div>
         </TabsContent>
 
         <TabsContent value="sentinel" className="mt-4">
-          <Tab4SentinelAuditoria
-            latestCase={latestCase}
-            latestScore={latestScore}
-            integrationLogs={integrationLogs}
-            validations={validations}
-          />
+          <div data-shortcut-item data-shortcut-label="SENTINEL e Auditoria">
+            <Tab4SentinelAuditoria
+              latestCase={latestCase}
+              latestScore={latestScore}
+              integrationLogs={integrationLogs}
+              validations={validations}
+            />
+          </div>
         </TabsContent>
       </Tabs>
     </div>
