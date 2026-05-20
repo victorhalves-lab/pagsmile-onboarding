@@ -69,7 +69,31 @@ Deno.serve(async (req) => {
       return Response.json({ skipped: true, reason: 'already_enriched' });
     }
 
-    console.log(`[AutoEnrich] ═══ Starting UNIFIED pipeline for case ${caseId} ═══`);
+    // ═══ V5.2 ROUTER (Fase 5.9) ═══
+    // Se o caso nasceu como v5.2 (DNA imutável), delega ao pipeline V5.2 dedicado
+    // e SAI. V4 segue 100% intocado para todos os outros casos.
+    if (onboardingCase.framework_version === 'v5.2') {
+      console.log(`[AutoEnrich] ⇢ V5.2 case detected — routing to autoEnrichOnboardingV5_2`);
+      try {
+        const v52Res = await base44.asServiceRole.functions.invoke('autoEnrichOnboardingV5_2', {
+          onboardingCaseId: caseId,
+        });
+        return Response.json({
+          success: true,
+          routed_to: 'v5.2',
+          v52Result: v52Res?.data || null,
+        });
+      } catch (v52Err) {
+        console.error(`[AutoEnrich] V5.2 router error: ${v52Err.message}`);
+        return Response.json({
+          success: false,
+          routed_to: 'v5.2',
+          error: v52Err.message,
+        }, { status: 500 });
+      }
+    }
+
+    console.log(`[AutoEnrich] ═══ Starting UNIFIED pipeline (V4) for case ${caseId} ═══`);
 
     await base44.asServiceRole.entities.OnboardingCase.update(caseId, { status: 'Em Processamento' });
 
