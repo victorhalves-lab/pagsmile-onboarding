@@ -140,21 +140,26 @@
 - [ ] Cada módulo: +5-15 perguntas, +3-10 docs, +5-15 CVs, +5-15 variáveis, +1-5 B-series
 - [ ] Score base por segmento Tier 3 com tabela canônica (saas=110, ecommerce=150, marketplace=170, gateway=180, eventos=220, infoprodutos=240, turismo=250, dropshipping=260)
 
-### FASE 3c — Subsellers PJ/PF (Bloco 3)
+### FASE 3c — Subsellers PJ/PF (Bloco 3) — REVISADO
+
+**⚠️ DIRETIVA:** Subseller mantém o **modelo operacional atual** — link gerado pelo cliente em `GerenciarSubsellerLinks` + fluxo `SubsellerQuestionnaire` → `SubsellerDocUpload` → análise. Apenas **questionário, documentos e algumas queries BDC** mudam. **CAF segue igual.** NÃO criar webhooks, SDKs, ou 3 modos de integração.
+
+**Mudanças necessárias:**
 
 - [ ] Adicionar campo `grau` (enum A/B/C) ao `OnboardingCase`
-- [ ] Adicionar campo `seller_mestre_id` (FK Tier 3) + `seller_mestre_segmento`
 - [ ] Resolver Grau:
   - Subseller PJ: por TPV (A: ≤R$30k / B: R$30k-200k / C: R$200k-500k)
   - Subseller PF: por **renda mensal líquida** (A: <R$2k / B: R$2k-10k / C: >R$10k)
-- [ ] Implementar fórmula: `Score_subseller = Score_base_seller_mestre × fator_grau + Σ(variáveis)` (fator A=0.4, B=0.6, C=0.8)
-- [ ] Capability nova `cap_financial_capacity_validation_pf` (3 fontes — Renda × Pix + DIRPF + Fluxo Pix)
+- [ ] Atualizar `functions/scoreSubseller` com fórmula V5: `Score_subseller = Score_base_seller_mestre × fator_grau + Σ(variáveis)` (fator A=0.4, B=0.6, C=0.8)
+- [ ] **Atualizar questionário** de Subseller PJ e PF para V5 (perguntas tier-aware por Grau)
+- [ ] **Atualizar lista de documentos** solicitados por Grau
+- [ ] **Atualizar queries BDC** — adicionar datasets PF específicos (`pix_recebedor_titularidade` crítico em todos os Graus, datasets do Grau C)
+- [ ] **CAF segue exatamente igual** — zero mudança no pipeline CAF
+- [ ] Capability nova `cap_financial_capacity_validation_pf` (3 fontes — Renda × Pix + DIRPF upload + Fluxo Pix)
 - [ ] Bloqueios PF-específicos (8 novos): B-FIN-PF-1/2/3, B-PIX-PF-1, B-PF-PROFCONS-1, B-PF-IDADE-1, B-CB-PAIS-PF-1, B-LGPDPF-SAUDE-1
 - [ ] Bloqueios Subseller PJ específicos (3 novos): B-SUB-1, B-SUB-2, B-SUB-3
-- [ ] Dataset crítico `pix_recebedor_titularidade` (mesmo em Grau A)
-- [ ] Sanções progressivas ao seller mestre por KYC inadequado (10%/20%/30%)
-- [ ] 3 modos de integração subseller (API direta / SDK Drop-in / White-label hosted)
-- [ ] Webhook subseller → seller mestre com decisão
+- [ ] Dataset crítico `pix_recebedor_titularidade` no catálogo (BDC — Q15 confirmada)
+- [ ] DIRPF Grau C = upload pelo cliente (Q16 confirmada)
 
 ### FASE 4 — Capabilities Executáveis (semana 4)
 

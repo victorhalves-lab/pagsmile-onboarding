@@ -151,23 +151,42 @@ Mas SIM implementar:
 
 ---
 
-## Bloco 3 — Tiers + Subsellers (perguntas em aberto)
+## Bloco 3 — Tiers + Subsellers (decisões)
 
-### Q13 — 3 modos de integração subseller
-Implementar **todos os 3** (API direta + SDK Drop-in + White-label) ou só um para começar?
-**Status:** ⏳ Aguardando resposta
+### ⚠️ DIRETIVA CRÍTICA DO USUÁRIO (2026-05-20)
 
-### Q14 — Webhook subseller → seller mestre
-Construir infraestrutura agora ou deixar pendente para depois?
-**Status:** ⏳ Aguardando resposta
+**Subseller segue o modelo OPERACIONAL QUE JÁ EXISTE HOJE no V4** — não inventar nova arquitetura.
 
-### Q15 — Pix recebedor titularidade (dataset crítico)
-Validar via BDC, integração PSP direta, ou Open Finance?
-**Status:** ⏳ Aguardando resposta
+**Como funciona hoje (e vai continuar):**
+- Para cada **cliente fechado** (seller mestre), o sistema **gera um link de subseller segmentado** para esse cliente
+- O cliente compartilha esse link com seus subsellers (PJ ou PF)
+- Subseller acessa o link e **preenche o questionário** (igual fluxo de onboarding normal, só que é o questionário de subseller)
+- PagSmile **valida, enriquece com BDC + CAF, decide** — igual aos casos normais
+- Funcionalidade já existe em `pages/SubsellerQuestionnaire`, `pages/SubsellerDocUpload`, `pages/GerenciarSubsellerLinks`, `functions/generateSubsellerLink`, `functions/scoreSubseller`
 
-### Q16 — DIRPF upload para Subseller PF Grau C
-Upload pelo cliente (mais simples) ou integração com Receita (mais caro)?
-**Status:** ⏳ Aguardando resposta
+**O que MUDA em V5.2:**
+1. ✅ **Questionário de perguntas** — atualizado para o modelo V5 (tier-aware, Grau A/B/C)
+2. ✅ **Documentos solicitados** — atualizado para listas V5
+3. ⚠️ **Queries BDC** — podem mudar algumas consultas (datasets PF específicos como `pix_recebedor_titularidade`, datasets dos 3 Graus)
+4. ❌ **CAF segue IGUAL** — não muda nada no pipeline CAF
+
+**O que NÃO MUDA / NÃO INVENTAR:**
+- ❌ Não criar "3 modos de integração" (API direta, SDK Drop-in, White-label) — isso foi invenção do agente
+- ❌ Não criar webhooks para "seller mestre" — não existe esse conceito de webhook
+- ❌ Não criar infraestrutura de SDK compartilhável
+- ✅ Reaproveitar o modelo de **link gerado por cliente** que já existe
+
+### ✅ Q13 — DESCARTADA
+Os "3 modos de integração" foram invenção do agente. **Modelo correto:** link gerado pelo painel admin para o cliente compartilhar com seus subsellers (como funciona hoje em `GerenciarSubsellerLinks`).
+
+### ✅ Q14 — DESCARTADA
+"Webhook subseller → seller mestre" foi invenção do agente. **Modelo correto:** seller mestre vê o status dos seus subsellers no painel admin PagSmile (como funciona hoje).
+
+### ✅ Q15 — Pix recebedor titularidade: **BDC**
+Validar via BigDataCorp. Adicionar dataset `pix_recebedor_titularidade` ao catálogo (já alinhado com Bloco 2 Q10 — seedar dataset com `ativo=false` se não contratado ainda no BDC).
+
+### ✅ Q16 — DIRPF Grau C: **Upload pelo cliente**
+Subseller PF Grau C faz upload do recibo de entrega da DIRPF do exercício anterior. Sem integração direta com Receita.
 
 ---
 

@@ -568,19 +568,28 @@ seg_crossborder → (alto)
 
 ---
 
-## 📌 DECISÕES NECESSÁRIAS (para o usuário)
+## 📌 DECISÕES TOMADAS (2026-05-20)
 
-### Q13 — Implementar 3 modos de integração subseller?
-Vamos implementar **todos os 3 modos** (API direta + SDK Drop-in + White-label) ou só **um para começar** (qual)?
+### ⚠️ DIRETIVA CRÍTICA — Subseller segue modelo atual
 
-### Q14 — Webhook de subseller para seller mestre
-Webhook é nova infraestrutura. **Construir agora** ou deixar pendente?
+**Não inventar nova arquitetura para Subseller.** O modelo OPERACIONAL continua igual ao V4:
+- Painel admin gera **link de subseller** segmentado por cliente fechado
+- Cliente compartilha link com seus subsellers (PJ ou PF)
+- Subseller preenche questionário, faz upload de docs
+- PagSmile valida + enriquece + decide
+- Funcionalidade já existe em `pages/GerenciarSubsellerLinks`, `pages/SubsellerQuestionnaire`, `pages/SubsellerDocUpload`, `functions/generateSubsellerLink`, `functions/scoreSubseller`
 
-### Q15 — Pix recebedor titularidade
-Onde vamos validar a titularidade do Pix? Via BDC? Via integração direta com PSP? Via Open Finance?
+**O que muda no V5.2:**
+- ✅ Perguntas do questionário (V5 tier-aware por Grau)
+- ✅ Lista de documentos
+- ⚠️ Algumas queries BDC (datasets PF novos)
+- ❌ CAF segue exatamente igual
+- ❌ Não criar webhooks, SDKs, ou "modos de integração"
 
-### Q16 — DIRPF upload para Subseller PF Grau C
-Upload pelo usuário (cliente envia recibo)? Ou via integração com Receita (custo alto)? Vamos com upload por enquanto?
+### Q13 e Q14 — DESCARTADAS (inventei conceitos que não existem no V4 atual)
+
+### ✅ Q15 — Pix recebedor titularidade: **BDC**
+### ✅ Q16 — DIRPF Grau C: **Upload pelo cliente** (sem integração Receita)
 
 ---
 
