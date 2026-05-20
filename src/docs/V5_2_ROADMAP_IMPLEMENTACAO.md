@@ -28,7 +28,7 @@
 | 2 | DOC3 Datasets + DOC5 V5.2 Bloqueios | ✅ Diagnosticado | `docs/V5_2_BLOCO2_DATASETS_BLOQUEIOS.md` |
 | 3 | Tier 1, 2, 3 + Subseller PJ/PF (5 docs microscópicos) | ✅ Diagnosticado | `docs/V5_2_BLOCO3_TIERS.md` |
 | 4 | Questionário Dinâmico E1 | ✅ Diagnosticado | `docs/V5_2_BLOCO4_QUESTIONARIO.md` |
-| 5 | Segmentos (13 docs) — pode ser dividido em 5a/5b/5c | ⏳ Pendente | — |
+| 5 | Segmentos (13 docs) | 🔄 Em andamento (3/13) | `docs/V5_2_BLOCO5_SEGMENTOS_PARTE1.md` (EC/EV/INFO) |
 | 6 | REDESIGN_AnaliseDeRisco + Especificação Datasets Tela | ⏳ Pendente | — |
 | 7 | DELTA Segmentos + Apêndice V5.1 | ⏳ Pendente | — |
 
@@ -237,9 +237,13 @@ Ver arquivo separado: `docs/V5_2_DECISOES_USUARIO.md`
 
 ## 📌 PRÓXIMO PASSO
 
-**Aguardando usuário enviar Bloco 5:**
-- 13 docs de segmento microscópicos (Sub-Entrega E2)
-  - Ecommerce, Marketplace, Gateway, SaaS, Infoprodutos, Plataforma Vertical, Turismo, Eventos, Serviços B2B, Dropshipping, Serviços Locais, Educação, Crossborder
+**Bloco 5 em andamento — 3/13 segmentos diagnosticados:**
+- ✅ Ecommerce, Eventos, Infoprodutos → `docs/V5_2_BLOCO5_SEGMENTOS_PARTE1.md`
+- ⏳ Faltam 10 segmentos (próximos lotes de 3):
+  - Marketplace, Gateway, Dropshipping (críticos)
+  - Educação, SaaS, Plataforma Vertical
+  - Turismo, Serviços B2B, Serviços Locais
+  - Crossborder (crítico)
 
 Depois Bloco 6 (REDESIGN AnaliseDeRisco + Espec. Datasets Tela) + Bloco 7 (DELTA + Apêndice V5.1).
 

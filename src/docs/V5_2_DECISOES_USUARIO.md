@@ -212,6 +212,25 @@ Não construir infraestrutura de RFC/feature flag/aprovação no código. PagSmi
 
 ---
 
+## Bloco 5 — Segmentos (perguntas em aberto)
+
+### Q21 — URL kyc plugin: backend próprio ou serviço externo?
+**Status:** ⏳ Aguardando
+
+### Q22 — Reclame Aqui: API paga ou scraping?
+**Status:** ⏳ Aguardando
+
+### Q23 — ECAD/AVCB/Alvarás: upload+OCR ou integração automatizada?
+**Status:** ⏳ Aguardando
+
+### Q24 — Overbooking Detector: webhook ou consulta periódica?
+**Status:** ⏳ Aguardando
+
+### Q25 — Templates fornecidos: entity editável ou arquivos estáticos?
+**Status:** ⏳ Aguardando
+
+---
+
 ## 🔒 PRINCÍPIOS NÃO-NEGOCIÁVEIS DEFINIDOS
 
 1. **DNA imutável** — caso V4 nascido nasce V4, V5.1 nasce V5.1, V5.2 nasce V5.2 (preservação histórica)
