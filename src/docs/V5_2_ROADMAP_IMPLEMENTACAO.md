@@ -147,8 +147,16 @@ Já entregue:
 - ✅ Card 3: Cross-Val 16 Summary (barra visual + 4 counts + top issues)
 - ✅ Plugado no topo do `CadastroV5_2Tab` (acima das 5 camadas — DOC6 §3)
 
-#### **▶ FASE 6.4-B — Próxima (a definir entre B/C)**
-- (B) Refatorar `pages/AnaliseCompleta` para layout DOC6 4-abas (V5.2)
+#### ✅ **FASE 6.4-B — Refatoração `AnaliseCompleta` 4-abas V5.2 (CONCLUÍDA)**
+- ✅ `components/analise-completa/v5_2/HeroVerdictV5_2.jsx` — 5 decisões (cat 1-5) + score grande + chips bloqueios + causa principal
+- ✅ `components/analise-completa/v5_2/Tab1ResumoDecisao.jsx` — Smart Summary + Alertas Priorizados + Positivos + Mini-Parecer + Ações
+- ✅ `components/analise-completa/v5_2/Tab2Evidencias.jsx` — Cross-Val 16 campos tabela + Patch Financeiro 5 dimensões + Bloqueios + CAF
+- ✅ `components/analise-completa/v5_2/Tab3DimensionalBDC.jsx` — Análise dimensional BDC (reusa AnaliseBdcCompleta V4)
+- ✅ `components/analise-completa/v5_2/Tab4SentinelAuditoria.jsx` — Parecer SENTINEL completo + Trilha sticky + Timeline
+- ✅ `components/analise-completa/v5_2/AnaliseCompletaV5_2.jsx` — Container com tabs + badges contextuais
+- ✅ Roteamento condicional em `pages/AnaliseCompleta` por `framework_version` — V4 legado 100% preservado
+
+#### **▶ FASE 6.4-C — Próxima (a definir)**
 - (C) Widget V5.2 no `DashboardCEO` (distribuição por `categoria_decisao_v5_2`)
 - ~~(D) Página de Planos de Monitoramento~~ — descartado (monitoramento está em outro sistema)
 - [ ] `components/cadastro/ExceptionWorkflow.jsx` — aplicar exceção a um bloqueio
@@ -210,3 +218,4 @@ Possíveis próximos passos (escolher com o usuário):
 | 2.3 | 2026-05-20 | **Regra permanente registrada**: ao final de toda entrega, o assistente sempre declara a próxima. Adicionada ao topo do roadmap. |
 | 2.4 | 2026-05-20 | Fase 6.3 concluída (Workflow de Exceções V5.2 Cat 1-5 + PlanoMonitoramento + TermoAdicionalV5_2 com hash de integridade). Próxima: Fase 6.4 (a definir). |
 | 2.5 | 2026-05-20 | Fase 6.4-A concluída (Smart Summary Cards: Hero Verdict + Top Alertas + Top Positivos + Cross-Val Summary no topo da aba V5.2). Opção D (Planos de Monitoramento) removida do roadmap a pedido do usuário (monitoramento vive em outro sistema). Próxima: 6.4-B ou 6.4-C. |
+| 2.6 | 2026-05-20 | Fase 6.4-B concluída (refatoração `AnaliseCompleta` com layout DOC6 4-abas — Hero Verdict V5.2 + Tab1 Resumo&Decisão + Tab2 Evidências (Cross-Val 16 + Patch Financeiro 5 dim + Bloqueios + CAF) + Tab3 Dimensional BDC + Tab4 SENTINEL+Auditoria sticky). Roteamento condicional por `framework_version` — layout V4 legado 100% preservado para casos antigos. Próxima: 6.4-C (Widget V5.2 no DashboardCEO). |

@@ -12,6 +12,7 @@ import AnaliseCafCompleta from '@/components/analise-completa/AnaliseCafCompleta
 import AnaliseBdcCompleta from '@/components/analise-completa/AnaliseBdcCompleta';
 import AnaliseCruzada from '@/components/analise-completa/AnaliseCruzada';
 import AnaliseTimelineIntegracoes from '@/components/analise-completa/AnaliseTimelineIntegracoes';
+import AnaliseCompletaV5_2 from '@/components/analise-completa/v5_2/AnaliseCompletaV5_2';
 
 export default function AnaliseCompleta() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -138,52 +139,72 @@ export default function AnaliseCompleta() {
         </div>
       </div>
 
-      {/* 1. Resumo Executivo — linguagem de negócio */}
-      <AnaliseResumoExecutivo
-        merchant={merchant}
-        latestCase={latestCase}
-        latestScore={latestScore}
-        cafValidations={cafValidations}
-        cafLogs={cafLogs}
-        bdcValidations={bdcValidations}
-        bdcLogs={bdcLogs}
-      />
+      {/* [V5.2 Fase 6.4-B] Roteamento condicional:
+          • Casos v5.2 → novo layout DOC6 (Hero Verdict + 4 abas)
+          • Casos v4.0/v5.1 → layout V4 legado preservado 100% intacto */}
+      {latestCase?.framework_version === 'v5.2' ? (
+        <AnaliseCompletaV5_2
+          merchant={merchant}
+          latestCase={latestCase}
+          latestScore={latestScore}
+          cafValidations={cafValidations}
+          cafLogs={cafLogs}
+          bdcValidations={bdcValidations}
+          bdcLogs={bdcLogs}
+          integrationLogs={integrationLogs}
+          validations={validations}
+          responses={responses}
+        />
+      ) : (
+        <>
+          {/* 1. Resumo Executivo — linguagem de negócio */}
+          <AnaliseResumoExecutivo
+            merchant={merchant}
+            latestCase={latestCase}
+            latestScore={latestScore}
+            cafValidations={cafValidations}
+            cafLogs={cafLogs}
+            bdcValidations={bdcValidations}
+            bdcLogs={bdcLogs}
+          />
 
-      {/* 2. Análise de Risco V4 — Visão Microscópica com explicações */}
-      <BdcV4AnalysisPanel latestScore={latestScore} />
+          {/* 2. Análise de Risco V4 — Visão Microscópica com explicações */}
+          <BdcV4AnalysisPanel latestScore={latestScore} />
 
-      {/* 3. Análise Cruzada CAF + BDC */}
-      <AnaliseCruzada
-        merchant={merchant}
-        cafValidations={cafValidations}
-        cafLogs={cafLogs}
-        bdcValidations={bdcValidations}
-        bdcLogs={bdcLogs}
-        responses={responses}
-      />
+          {/* 3. Análise Cruzada CAF + BDC */}
+          <AnaliseCruzada
+            merchant={merchant}
+            cafValidations={cafValidations}
+            cafLogs={cafLogs}
+            bdcValidations={bdcValidations}
+            bdcLogs={bdcLogs}
+            responses={responses}
+          />
 
-      {/* 4. CAF — Todos os resultados microscópicos */}
-      <AnaliseCafCompleta
-        cafValidations={cafValidations}
-        cafLogs={cafLogs}
-        merchant={merchant}
-        latestCase={latestCase}
-      />
+          {/* 4. CAF — Todos os resultados microscópicos */}
+          <AnaliseCafCompleta
+            cafValidations={cafValidations}
+            cafLogs={cafLogs}
+            merchant={merchant}
+            latestCase={latestCase}
+          />
 
-      {/* 5. BDC — Dados brutos por dataset */}
-      <AnaliseBdcCompleta
-        bdcValidations={bdcValidations}
-        bdcLogs={bdcLogs}
-        merchant={merchant}
-        latestScore={latestScore}
-        responses={responses}
-      />
+          {/* 5. BDC — Dados brutos por dataset */}
+          <AnaliseBdcCompleta
+            bdcValidations={bdcValidations}
+            bdcLogs={bdcLogs}
+            merchant={merchant}
+            latestScore={latestScore}
+            responses={responses}
+          />
 
-      {/* 6. Timeline de todas as integrações */}
-      <AnaliseTimelineIntegracoes
-        integrationLogs={integrationLogs}
-        validations={validations}
-      />
+          {/* 6. Timeline de todas as integrações */}
+          <AnaliseTimelineIntegracoes
+            integrationLogs={integrationLogs}
+            validations={validations}
+          />
+        </>
+      )}
     </div>
   );
 }
