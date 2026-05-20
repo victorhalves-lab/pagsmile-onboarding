@@ -1,5 +1,17 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
+// [V5.2 Entrega 4] Flag server-side inline (Deno functions não permitem local imports).
+// Armazenada em IntegrationConfig.services_enabled (campo array do schema fixo).
+const V5_2_FLAG_PROVIDER = 'V5_2_Flags';
+const V5_2_FLAG_KEY = 'score_engine_v5_2';
+async function isV5_2EngineEnabled(base44) {
+  try {
+    const rows = await base44.asServiceRole.entities.IntegrationConfig.filter({ provider: V5_2_FLAG_PROVIDER });
+    const services = rows[0]?.services_enabled;
+    return Array.isArray(services) && services.includes(V5_2_FLAG_KEY);
+  } catch (_) { return false; }
+}
+
 /**
  * PUBLIC endpoint — consolidates Merchant + OnboardingCase + QuestionnaireResponse creation
  * for the public compliance flow (ComplianceDinamico / DocumentUploadFull / DocumentUploadPix).
@@ -190,6 +202,11 @@ Deno.serve(async (req) => {
     // `isSubsellerCase` is ONLY trusted when it comes from a SUBSELLER_COMPLIANCE linkCode.
     const resolvedAgent = linkCommercialAgent?.id ? linkCommercialAgent : verifiedClientAgent;
 
+    // [V5.2 Entrega 4] Flag server-side: novos casos podem nascer em V5.2.
+    // Default false → V4 (compatibilidade total). Casos existentes nunca mudam.
+    const v5_2Enabled = await isV5_2EngineEnabled(base44);
+    const frameworkVersion = v5_2Enabled ? 'v5.2' : 'v4.0';
+
     const casePayload = {
       merchantId: merchant.id,
       questionnaireTemplateId: templateId,
@@ -201,6 +218,7 @@ Deno.serve(async (req) => {
       commercialAgentName: resolvedAgent?.name || '',
       isSubsellerCase: !!isSubsellerLink, // server-trusted only — ignore client
       docLinkToken,
+      framework_version: frameworkVersion,
     };
     if (parentMerchantId) casePayload.parentMerchantId = parentMerchantId;
 
@@ -279,6 +297,7 @@ Deno.serve(async (req) => {
       merchantId: merchant.id,
       onboardingCaseId: onboardingCase.id,
       docLinkToken,
+      framework_version: frameworkVersion,
     });
   } catch (error) {
     console.error('publicComplianceSubmit error:', error);

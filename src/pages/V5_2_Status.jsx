@@ -12,6 +12,7 @@ import { FEATURE_FLAGS, DIMENSOES_ANALITICAS, BLOQUEIOS_ABSOLUTOS, SEGMENTOS_CAN
 import { V5_2_SEGMENTS } from '@/lib/v5_2/segments';
 import EngineDryRunPanel from '@/components/v5_2/EngineDryRunPanel';
 import CaseDryRunPanel from '@/components/v5_2/CaseDryRunPanel';
+import ServerFlagPanel from '@/components/v5_2/ServerFlagPanel';
 
 /**
  * [V5.2] Status Dashboard — controle administrativo do framework V5.2.
@@ -88,7 +89,10 @@ export default function V5_2_Status() {
         </div>
       </div>
 
-      {/* Feature Flag */}
+      {/* SERVER-SIDE Flag (Entrega 4) */}
+      <ServerFlagPanel />
+
+      {/* Feature Flag UI legada (localStorage — só UI) */}
       <Card className="border-2 border-[#2bc196]/20">
         <CardHeader>
           <div className="flex items-center justify-between">
