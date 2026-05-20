@@ -202,6 +202,17 @@ Já entregue:
 - ✅ Plugado em `AnaliseCompletaV5_2` (provider + marcação dos 4 TabsContent com `data-shortcut-item`)
 - ✅ Resp. WCAG: kbd boxes legíveis, contraste 4.5:1, screen-reader labels nos botões
 
+##### ✅ **6.5.4 — Glossário inline sistemático (CONCLUÍDA — retomada na ordem do roadmap)**
+- ✅ `lib/v5_2/glossary.js` — 50+ termos canônicos DOC6 §2.5.6 (Tiers 5 + Morfologias 6 + Categorias Decisão 5 + Patch Financeiro 6 + Capabilities 5 + Bloqueios 8 + PLD/FT 4 + Cross-Val 3 + Outros 5)
+- ✅ `components/v5_2/glossary/Term.jsx` — gatilho com sublinhado pontilhado + ícone ⓘ, popover com categoria colorida + short + full + fundamentação regulatória
+- ✅ `components/v5_2/glossary/TermBlock.jsx` — wrapper inteligente que resolve códigos dinâmicos (bloqueios B-* / status do Patch) para o termo correto do catálogo via tabela de aliases
+- ✅ Plugado em `HeroVerdictV5_2` (tier badge clicável + label "Bloqueios ativos" + cada chip de bloqueio individual com `<TermBlock>`)
+- ✅ Plugado em `Tab1ResumoDecisao` (título "Mini-Parecer SENTINEL")
+- ✅ Plugado em `Tab2Evidencias` (Cross-Validation 16 título + status "divergence/mismatch" clicáveis + Patch Financeiro título + badge de status do patch + Bloqueios título + cada bloqueio com `<TermBlock>`)
+- ✅ Plugado em `Tab4SentinelAuditoria` (Parecer SENTINEL título + sidebar de auditoria: framework_version, tier, morfologia, capabilities, snapshot, categoria, sentinel — todos com tooltip explicativo)
+- ✅ Plugado em `SmartSummaryCards` (categoria final clicável + Cross-Val 16 título)
+- ✅ Graceful fail: códigos não encontrados renderizam texto sem tooltip — nunca quebra a tela
+
 ##### ✅ **6.5.6 — FeedbackSentinelPanel estruturado (CONCLUÍDA)**
 - ✅ `feedbackCategoriesCatalog.js` — catálogo canônico dos 3 tipos de feedback (acertou/parcialmente/errou) + 9 categorias mapeadas 1:1 ao enum `SentinelFeedback.feedback_categories`
 - ✅ `FeedbackSentinelPanel.jsx` — fluxo 3 passos: (1) botões 👍🤔👎 com cores/descrições, (2) categorias específicas com checkboxes filtradas por tipo de feedback, (3) textarea com obrigatoriedade quando errou/parcial (mín. 5 chars)
@@ -212,7 +223,7 @@ Já entregue:
 - ✅ Plugado em `Tab4SentinelAuditoria` abaixo do parecer SENTINEL — null-safe (oculta se não houver `sentinel_recommendation`)
 
 ##### **▶ Próxima entrega:**
-- 6.5.7 Export Auditoria (PDF/JSON/XLSX da nova tela V5.2)
+- 6.5.7 Export Auditoria (PDF/JSON/XLSX da nova tela V5.2) — ÚLTIMO ITEM DA FASE 6
 - [ ] `components/cadastro/ExceptionWorkflow.jsx` — aplicar exceção a um bloqueio
 - [ ] Cat 5 → cria `PlanoMonitoramento` + `TermoAdicionalV5_2`
 - [ ] Workflow de aceite do termo pelo seller
@@ -279,3 +290,4 @@ Possíveis próximos passos (escolher com o usuário):
 | 2.10 | 2026-05-20 | Fase 6.5.3 concluída (Comparator V4↔V5.2 — página dedicada `/ComparatorV4V5_2`, 3 componentes focados (Header/MetricRow/BlockagesDiff), resolução automática de par via URL, diff inteligente de bloqueios em 3 baldes (Mantidos/Novos/Removidos), pareceres SENTINEL lado a lado, ReprocessButton com atalho direto pro Comparator). Próxima: 6.5.4 — Glossário inline. |
 | 2.11 | 2026-05-20 | Fase 6.5.5 concluída (15 atalhos canônicos DOC6 §5.5 — shortcutsCatalog + useKeyboardShortcutsV5_2 com sequências/ignora inputs/modais, KeyboardShortcutsPanel "?", SearchOverlay "/", ShortcutsHintBadge sticky, V5_2ShortcutsProvider orquestrando tabs 1-4 + j/k + Esc cascata + ações a/c/m/r/s/e roteadas para AnaliseManual + p dispara dossiê PDF inline + g c copia caseId. Plugado em AnaliseCompletaV5_2 com data-shortcut-item nos 4 TabsContent). Próxima: 6.5.6 — FeedbackSentinelPanel estruturado. |
 | 2.12 | 2026-05-20 | Fase 6.5.6 concluída (FeedbackSentinelPanel estruturado DOC4 §19.8 + DOC6 §2.6.6 + Q55 — catálogo canônico de 3 tipos + 9 categorias mapeadas ao enum SentinelFeedback, fluxo de 3 passos com filtro condicional de categorias por tipo, comentário obrigatório quando errou/parcial, persistência denormalizando contexto SENTINEL/framework/tier/segmento/morfologia, histórico inline de feedbacks anteriores. Plugado em Tab4SentinelAuditoria com data-shortcut-item). Próxima: 6.5.7 — Export Auditoria (PDF/JSON/XLSX). |
+| 2.13 | 2026-05-20 | Fase 6.5.4 concluída (Glossário inline sistemático DOC6 §2.5.6 — 50+ termos canônicos no GLOSSARY_V5_2, componente Term com popover categorizado + fundamentação regulatória, TermBlock wrapper inteligente para bloqueios dinâmicos via aliases. Plugado em HeroVerdictV5_2 + Tab1/Tab2/Tab4 + SmartSummaryCards: tier badges, categorias de decisão, status do Patch, bloqueios B-*, cross-val status, SENTINEL, framework_version, capabilities, snapshot, morfologias, divergence/mismatch). Próxima: 6.5.7 — Export Auditoria (último item da Fase 6). |

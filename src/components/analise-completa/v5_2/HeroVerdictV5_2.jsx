@@ -2,6 +2,8 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle2, AlertTriangle, ShieldAlert, Eye, XCircle, ShieldOff } from 'lucide-react';
+import Term from '@/components/v5_2/glossary/Term';
+import TermBlock from '@/components/v5_2/glossary/TermBlock';
 
 /**
  * [V5.2 Fase 6.4-B] Hero Verdict — Camada 1 da nova tela DOC6.
@@ -112,12 +114,12 @@ export default function HeroVerdictV5_2({ latestCase, latestScore }) {
             </h1>
             <p className="text-sm text-[#002443]/70 mt-1">{causa}</p>
 
-            {/* Tier + Segmento + Subfaixa */}
+            {/* Tier + Segmento + Subfaixa — com glossário inline */}
             <div className="flex items-center gap-2 mt-3 flex-wrap">
               {tier && (
-                <Badge variant="outline" className="text-[10px] font-mono">
+                <Term code={tier} inline className="text-[10px] font-mono border border-current/20 rounded px-2 py-0.5">
                   {tier.toUpperCase()}
-                </Badge>
+                </Term>
               )}
               {segmento && (
                 <Badge variant="outline" className="text-[10px]">
@@ -136,7 +138,7 @@ export default function HeroVerdictV5_2({ latestCase, latestScore }) {
           {score != null && (
             <div className="text-right flex-shrink-0">
               <p className="text-[10px] uppercase tracking-widest font-bold text-[#002443]/40 mb-1">
-                Score V5.2
+                <Term code="framework_version" inline>Score V5.2</Term>
               </p>
               <p className={`text-5xl font-bold font-mono ${config.text}`}>{score}</p>
               <p className="text-[10px] text-[#002443]/40 font-mono">
@@ -146,17 +148,22 @@ export default function HeroVerdictV5_2({ latestCase, latestScore }) {
           )}
         </div>
 
-        {/* Chips de bloqueios ativos */}
+        {/* Chips de bloqueios ativos — com glossário inline em cada B-* conhecido */}
         {bloqueios.length > 0 && (
           <div className="mt-4 pt-4 border-t border-current/10">
             <p className="text-[10px] uppercase font-semibold text-[#002443]/50 mb-2">
-              Bloqueios ativos ({bloqueios.length})
+              <Term code="bloqueio_absoluto" inline>Bloqueios ativos</Term> ({bloqueios.length})
             </p>
             <div className="flex flex-wrap gap-1.5">
               {bloqueios.slice(0, 8).map((b) => (
-                <Badge key={b} className="bg-red-100 text-red-700 border border-red-200 text-[10px] font-mono">
+                <TermBlock
+                  key={b}
+                  blockCode={b}
+                  inline
+                  className="bg-red-100 text-red-700 border border-red-200 text-[10px] font-mono px-2 py-0.5 rounded"
+                >
                   {b}
-                </Badge>
+                </TermBlock>
               ))}
               {bloqueios.length > 8 && (
                 <Badge variant="outline" className="text-[10px]">

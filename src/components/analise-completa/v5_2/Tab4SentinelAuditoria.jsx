@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Brain, FileLock2, Hash, History as HistoryIcon, FileText } from 'lucide-react';
 import AnaliseTimelineIntegracoes from '../AnaliseTimelineIntegracoes';
 import FeedbackSentinelPanel from '@/components/v5_2/feedback/FeedbackSentinelPanel';
+import Term from '@/components/v5_2/glossary/Term';
 
 /**
  * [V5.2 Fase 6.4-B] Aba 4 — SENTINEL + Auditoria (DOC6 §2.6.6).
@@ -18,7 +19,8 @@ function TrilhaCard({ label, value, mono = false, icon: Icon }) {
     <div className="flex items-start gap-2 text-xs">
       {Icon && <Icon className="w-3.5 h-3.5 text-[#002443]/40 flex-shrink-0 mt-0.5" />}
       <div className="flex-1 min-w-0">
-        <p className="text-[9px] uppercase font-bold text-[#002443]/40 tracking-wide">{label}</p>
+        {/* label pode ser string ou ReactNode (com <Term>) */}
+        <div className="text-[9px] uppercase font-bold text-[#002443]/40 tracking-wide">{label}</div>
         <p className={`text-xs text-[#002443]/85 ${mono ? 'font-mono break-all' : ''}`}>{String(value)}</p>
       </div>
     </div>
@@ -59,7 +61,7 @@ function SentinelParecerCompleto({ latestScore }) {
         <div className="flex items-center justify-between flex-wrap gap-2">
           <CardTitle className="text-sm font-bold flex items-center gap-2">
             <Brain className="w-4 h-4 text-[#2bc196]" />
-            Parecer SENTINEL Completo
+            Parecer <Term code="sentinel" inline>SENTINEL</Term> Completo
           </CardTitle>
           {latestScore.sentinel_recommendation && (
             <Badge variant="outline" className="text-[10px]">
@@ -111,12 +113,12 @@ function TrilhaAuditoriaSidebar({ latestCase, latestScore }) {
       </CardHeader>
       <CardContent className="space-y-4">
         <TrilhaCard
-          label="Framework Version"
+          label={<Term code="framework_version" inline>Framework Version</Term>}
           value={latestCase?.framework_version || latestScore?.framework_version}
           icon={HistoryIcon}
         />
         <TrilhaCard
-          label="Tier"
+          label={latestCase?.tier ? <Term code={latestCase.tier} inline>Tier</Term> : 'Tier'}
           value={latestCase?.tier}
           mono
         />
@@ -125,16 +127,16 @@ function TrilhaAuditoriaSidebar({ latestCase, latestScore }) {
           value={latestCase?.segmento_v5_1}
         />
         <TrilhaCard
-          label="Morfologia"
+          label={latestCase?.morfologia ? <Term code={`morfologia_${String(latestCase.morfologia).toLowerCase()}`} inline>Morfologia</Term> : 'Morfologia'}
           value={latestCase?.morfologia}
           mono
         />
         <TrilhaCard
-          label="Capabilities Ativas"
+          label={<Term code="capabilities_ativas" inline>Capabilities Ativas</Term>}
           value={Array.isArray(latestCase?.capabilities_ativas) ? latestCase.capabilities_ativas.join(', ') : null}
         />
         <TrilhaCard
-          label="Snapshot Hash"
+          label={<Term code="snapshot" inline>Snapshot Hash</Term>}
           value={latestScore?.snapshot_id || '—'}
           mono
           icon={Hash}
@@ -145,11 +147,14 @@ function TrilhaAuditoriaSidebar({ latestCase, latestScore }) {
           mono
         />
         <TrilhaCard
-          label="Categoria Decisão"
+          label={(() => {
+            const cat = latestCase?.categoria_decisao_v5_2 || latestScore?.categoria_decisao_v5_1;
+            return cat ? <Term code={cat} inline>Categoria Decisão</Term> : 'Categoria Decisão';
+          })()}
           value={latestCase?.categoria_decisao_v5_2 || latestScore?.categoria_decisao_v5_1}
         />
         <TrilhaCard
-          label="SENTINEL Version"
+          label={<Term code="sentinel" inline>SENTINEL Version</Term>}
           value={latestScore?.versao_agente}
           mono
         />

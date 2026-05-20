@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { GitCompare, TrendingDown, TrendingUp, Shield, Banknote, Fingerprint, Check, X, AlertTriangle } from 'lucide-react';
 import AnaliseCafCompleta from '../AnaliseCafCompleta';
+import Term from '@/components/v5_2/glossary/Term';
+import TermBlock from '@/components/v5_2/glossary/TermBlock';
 
 /**
  * [V5.2 Fase 6.4-B] Aba 2 — Evidências & Cross-Validation (DOC6 §2.6.4).
@@ -27,7 +29,7 @@ function CrossValTable16({ cvResults }) {
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-bold flex items-center gap-2">
             <GitCompare className="w-4 h-4 text-blue-500" />
-            Cross-Validation 16 campos V5.1
+            <Term code="cross_validation_16" inline>Cross-Validation 16 campos V5.1</Term>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -44,7 +46,7 @@ function CrossValTable16({ cvResults }) {
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-bold flex items-center gap-2">
           <GitCompare className="w-4 h-4 text-blue-500" />
-          Cross-Validation 16 campos V5.1 ({fields.length})
+          <Term code="cross_validation_16" inline>Cross-Validation 16 campos V5.1</Term> ({fields.length})
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -73,10 +75,21 @@ function CrossValTable16({ cvResults }) {
                       {f.bdc_value != null ? String(f.bdc_value) : '—'}
                     </td>
                     <td className="py-2 px-2 text-center">
-                      <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded ${sty.bg} ${sty.text} text-[10px] font-semibold`}>
-                        <Icon className="w-2.5 h-2.5" />
-                        {sty.label}
-                      </span>
+                      {f.status === 'divergence' || f.status === 'mismatch' ? (
+                        <Term
+                          code={f.status === 'divergence' ? 'divergence' : 'mismatch'}
+                          inline
+                          className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded ${sty.bg} ${sty.text} text-[10px] font-semibold`}
+                        >
+                          <Icon className="w-2.5 h-2.5" />
+                          {sty.label}
+                        </Term>
+                      ) : (
+                        <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded ${sty.bg} ${sty.text} text-[10px] font-semibold`}>
+                          <Icon className="w-2.5 h-2.5" />
+                          {sty.label}
+                        </span>
+                      )}
                     </td>
                     <td className="py-2 px-2 text-right font-mono text-[10px] text-[#002443]/50">
                       {f.peso_v5_1 ?? '—'}
@@ -119,11 +132,15 @@ function PatchFinanceiroPanel({ status, dimensoes }) {
         <div className="flex items-center justify-between flex-wrap gap-2">
           <CardTitle className="text-sm font-bold flex items-center gap-2">
             <Banknote className="w-4 h-4 text-blue-500" />
-            Patch Financeiro V5.1 — 5 dimensões
+            <Term code="patch_financeiro" inline>Patch Financeiro V5.1 — 5 dimensões</Term>
           </CardTitle>
-          <Badge className={`${statusGeral.bg} ${statusGeral.text} border-current/20 text-[10px]`}>
+          <TermBlock
+            patchStatus={status}
+            inline
+            className={`${statusGeral.bg} ${statusGeral.text} border border-current/20 text-[10px] rounded px-2 py-0.5`}
+          >
             {statusGeral.label}
-          </Badge>
+          </TermBlock>
         </div>
       </CardHeader>
       <CardContent className="space-y-2">
@@ -169,15 +186,20 @@ function BloqueiosDetalhados({ bloqueios }) {
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-bold flex items-center gap-2">
           <Shield className="w-4 h-4 text-red-500" />
-          Bloqueios Detalhados ({bloqueios.length})
+          <Term code="bloqueio_absoluto" inline>Bloqueios Detalhados</Term> ({bloqueios.length})
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex flex-wrap gap-1.5">
           {bloqueios.map((b) => (
-            <Badge key={b} className="bg-red-100 text-red-700 border border-red-200 text-[10px] font-mono px-2 py-1">
+            <TermBlock
+              key={b}
+              blockCode={b}
+              inline
+              className="bg-red-100 text-red-700 border border-red-200 text-[10px] font-mono px-2 py-1 rounded"
+            >
               {b}
-            </Badge>
+            </TermBlock>
           ))}
         </div>
         <p className="text-[10px] text-[#002443]/40 mt-3 italic">

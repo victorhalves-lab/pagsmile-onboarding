@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ShieldAlert, ShieldCheck, GitCompare, TrendingUp, TrendingDown } from 'lucide-react';
+import Term from '@/components/v5_2/glossary/Term';
 
 /**
  * [V5.2 Fase 6.4-A] Smart Summary Cards — 3 cards executivos no topo da aba V5.2.
@@ -49,9 +50,13 @@ function HeroVerdict({ score, subfaixa, categoria }) {
             </div>
           </div>
           {categoria && (
-            <Badge className={`${color} text-xs font-bold border px-3 py-1.5`}>
+            <Term
+              code={categoria}
+              inline
+              className={`${color} text-xs font-bold border px-3 py-1.5 rounded`}
+            >
               {categoria.replace(/_/g, ' ').toUpperCase()}
-            </Badge>
+            </Term>
           )}
         </div>
       </CardContent>
@@ -167,7 +172,9 @@ function CrossValSummaryCard({ summary, divergencias, mismatches }) {
       <CardContent className="py-4 px-4">
         <div className="flex items-center gap-2 mb-3 pb-2 border-b border-[#002443]/5">
           <GitCompare className="w-4 h-4 text-blue-500" />
-          <h3 className="text-xs font-bold uppercase tracking-wide text-[#002443]">Cross-Val 16</h3>
+          <h3 className="text-xs font-bold uppercase tracking-wide text-[#002443]">
+            <Term code="cross_validation_16" inline>Cross-Val 16</Term>
+          </h3>
           {total > 0 && (
             <Badge className="bg-blue-50 text-blue-700 border-blue-200 text-[10px] ml-auto">
               {m}/{total} match

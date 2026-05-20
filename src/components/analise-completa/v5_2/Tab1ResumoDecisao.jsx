@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ShieldAlert, ShieldCheck, FileText, ListChecks } from 'lucide-react';
 import SmartSummaryCards from '@/components/cadastro/v5_2/SmartSummaryCards';
+import Term from '@/components/v5_2/glossary/Term';
 
 /**
  * [V5.2 Fase 6.4-B] Aba 1 — Resumo & Decisão (padrão DOC6 §2.6.3).
@@ -86,7 +87,7 @@ function MiniParecerSentinel({ sumario, parecer }) {
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-bold flex items-center gap-2">
           <FileText className="w-4 h-4 text-[#2bc196]" />
-          Mini-Parecer SENTINEL (executivo)
+          Mini-Parecer <Term code="sentinel" inline>SENTINEL</Term> (executivo)
         </CardTitle>
       </CardHeader>
       <CardContent>
