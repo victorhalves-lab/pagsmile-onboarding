@@ -77,7 +77,21 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Lista de representantes — vem do payload (cliente público) ou do caso (admin)
+    // ── POLÍTICA V5.2 — UM ÚNICO REPRESENTANTE LEGAL (decisão 2026-05-20):
+    // Não geramos mais links CAF para representantes adicionais. KYC é coletado
+    // apenas do representante principal no fluxo do próprio caso (PublicOnboarding).
+    // Esta função fica como NO-OP por compatibilidade — chamadas existentes não quebram,
+    // mas nenhum link é gerado. Os links já gerados antes desta data continuam válidos.
+    console.log('[generateMultiCafLinks] V5.2 policy: single representative — no-op');
+    return Response.json({
+      success: true,
+      links: [],
+      count: 0,
+      note: 'V5.2 policy: KYC coletado apenas do representante principal. Links múltiplos descontinuados.',
+    });
+
+    // ─────── CÓDIGO LEGADO ABAIXO — preservado para reativação futura ─────────
+    // eslint-disable-next-line no-unreachable
     const repsRaw = Array.isArray(clientReps) && clientReps.length > 0
       ? clientReps
       : (Array.isArray(onboardingCase.additionalRepresentatives) ? onboardingCase.additionalRepresentatives : []);

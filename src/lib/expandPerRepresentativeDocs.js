@@ -69,11 +69,18 @@ function matchPattern(label) {
 
 export function expandPerRepresentativeDocs(requiredDocuments, representatives) {
   if (!Array.isArray(requiredDocuments)) return requiredDocuments || [];
-  // Filtra: precisa ter dados E não estar marcado como inativo pelo cliente.
-  // O status 'inactive' vem da tela ConfirmRepresentativesStep, onde o cliente
-  // declara que aquela pessoa não é mais sócia/administradora ativa.
+  // POLÍTICA V5.2 — UM ÚNICO REPRESENTANTE LEGAL (decisão de 2026-05-20):
+  // Coletamos KYC apenas do PRIMEIRO representante ativo (o "principal" — quem
+  // assina pela empresa). Sócios/UBOs adicionais são validados via BDC (QSA da
+  // Receita + owners_kyc + sanctions) e NÃO precisam mandar RG/selfie/comprovante
+  // de endereço. Isso reduz: (a) fricção do cliente, (b) carga no CAF (picos de
+  // requisições face_liveness/facematch), (c) custo CAF por caso.
+  // O cliente confirma quem é o principal na tela ConfirmRepresentativesStep,
+  // mas só geramos docs para ESSE único representante.
   const reps = Array.isArray(representatives)
-    ? representatives.filter(r => r && (r.nome || r.cpf) && r.status !== 'inactive')
+    ? representatives
+        .filter(r => r && (r.nome || r.cpf) && r.status !== 'inactive')
+        .slice(0, 1) // ← LIMITE: apenas o primeiro representante ativo
     : [];
 
   // No reps configured → no expansion, leave template as-is
@@ -140,39 +147,25 @@ export function expandPerRepresentativeDocs(requiredDocuments, representatives) 
  * answered questions.
  */
 export function getRepresentativesFromStorage(formDataKey, questions) {
+  // POLÍTICA V5.2 — UM ÚNICO REPRESENTANTE LEGAL (decisão 2026-05-20):
+  // Sempre retornamos no máximo 1 representante (o principal). Sócios/UBOs do QSA
+  // não geram solicitação de documentos pessoais — eles são validados via BDC.
   let formData = {};
   try { formData = JSON.parse(localStorage.getItem(formDataKey) || '{}'); } catch { formData = {}; }
 
-  // 0. Se já existe uma confirmação do cliente (tela ConfirmRepresentativesStep),
-  // use ela diretamente — é a fonte de verdade após o cliente confirmar quem é ativo.
+  // 0. Se já existe confirmação do cliente, pega só o PRIMEIRO ativo.
   try {
     const confirmedRaw = localStorage.getItem(`${formDataKey}__representatives_confirmed`);
     if (confirmedRaw) {
       const confirmed = JSON.parse(confirmedRaw);
       if (Array.isArray(confirmed) && confirmed.length > 0) {
-        return confirmed;
+        const active = confirmed.filter(r => r?.status !== 'inactive');
+        return active.slice(0, 1);
       }
     }
   } catch {}
 
-  // 1. Find REPRESENTATIVES_LIST answer
-  let additional = [];
-  for (const q of (questions || [])) {
-    const val = formData[q.id];
-    const textLower = normalize(q.text || '');
-    const isRepsList = q.type === 'REPRESENTATIVES_LIST'
-      || (textLower.includes('representante legal') && (textLower.includes('mais de um') || textLower.includes('outros')));
-    if (isRepsList && val && typeof val === 'object' && Array.isArray(val.list) && val.hasMultiple) {
-      additional = val.list.filter(r => r?.nome || r?.cpf).map(r => ({
-        ...r,
-        source: r.source || (r._autoFilled ? 'bdc_qsa' : 'declared'),
-        status: r.status || 'active',
-      }));
-      break;
-    }
-  }
-
-  // 2. Find principal: scan questions for the rep name + CPF
+  // 1. Localiza o representante PRINCIPAL declarado no questionário (nome + CPF).
   const findVal = (kws) => {
     for (const q of (questions || [])) {
       const t = normalize(q.text || '');
@@ -185,15 +178,9 @@ export function getRepresentativesFromStorage(formDataKey, questions) {
   };
   const principalName = findVal(['nome do representante', 'responsavel legal', 'representante legal', 'socio administrador', 'nome completo']);
   const principalCpf = findVal(['cpf do representante', 'cpf do responsavel', 'cpf']);
-  const principal = (principalName || principalCpf)
-    ? [{ nome: principalName, cpf: principalCpf, source: 'principal_declared', status: 'active' }]
-    : [];
 
-  // Deduplica por CPF — se o principal também aparece na lista do BDC, mantém só o principal.
-  const principalCpfDigits = (principalCpf || '').replace(/\D/g, '');
-  const dedupedAdditional = principalCpfDigits
-    ? additional.filter(r => (r.cpf || '').replace(/\D/g, '') !== principalCpfDigits)
-    : additional;
-
-  return [...principal, ...dedupedAdditional];
+  if (principalName || principalCpf) {
+    return [{ nome: principalName, cpf: principalCpf, source: 'principal_declared', status: 'active' }];
+  }
+  return [];
 }
