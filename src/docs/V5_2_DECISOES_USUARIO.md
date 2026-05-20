@@ -151,6 +151,26 @@ Mas SIM implementar:
 
 ---
 
+## Bloco 3 — Tiers + Subsellers (perguntas em aberto)
+
+### Q13 — 3 modos de integração subseller
+Implementar **todos os 3** (API direta + SDK Drop-in + White-label) ou só um para começar?
+**Status:** ⏳ Aguardando resposta
+
+### Q14 — Webhook subseller → seller mestre
+Construir infraestrutura agora ou deixar pendente para depois?
+**Status:** ⏳ Aguardando resposta
+
+### Q15 — Pix recebedor titularidade (dataset crítico)
+Validar via BDC, integração PSP direta, ou Open Finance?
+**Status:** ⏳ Aguardando resposta
+
+### Q16 — DIRPF upload para Subseller PF Grau C
+Upload pelo cliente (mais simples) ou integração com Receita (mais caro)?
+**Status:** ⏳ Aguardando resposta
+
+---
+
 ## 🔒 PRINCÍPIOS NÃO-NEGOCIÁVEIS DEFINIDOS
 
 1. **DNA imutável** — caso V4 nascido nasce V4, V5.1 nasce V5.1, V5.2 nasce V5.2 (preservação histórica)
@@ -160,3 +180,10 @@ Mas SIM implementar:
 5. **Categoria 5 (Monitoramento Intensivo) é V5.2 NOVA** — diferente das Cats 1-4 (V5.1 temporárias)
 6. **Bloqueios operacionais do cliente NUNCA recusam** — vão sempre para Aprovado c/ Cond. + Monitoramento (diretiva executiva V5.2)
 7. **Tier 3 score = 0-999** (todos os outros tiers = 0-850)
+8. **Subseller PJ/PF tem 3 GRAUS A/B/C**, não tiers escalonados
+9. **Score subseller herda do seller mestre** com fator_grau (A=0.4, B=0.6, C=0.8)
+10. **Subseller PF usa RENDA MENSAL LÍQUIDA** (não TPV) para resolver Grau
+11. **`pix_recebedor_titularidade` é dataset crítico** em QUALQUER Grau PF (defesa anti-fraude primária)
+12. **B-CNPJ-NOVO é regra TRANSVERSAL** em todos os tiers + subsellers (CNPJ <6 meses → Revisão Manual obrigatória)
+13. **Tier 3 tem Base + 9 Módulos** (não é monolítico) — único tier modular
+14. **NÃO existe Tier 4** — sellers gigantes (>R$50M/mês) ficam em Tier 3 com monitoramento intensivo

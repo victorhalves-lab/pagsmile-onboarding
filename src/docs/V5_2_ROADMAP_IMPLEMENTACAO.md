@@ -26,7 +26,7 @@
 |---|---|---|---|
 | 1 | Master Index + Glossário + Mapa Base44 + Tier Framework Pt1 | ✅ Diagnosticado | `docs/V5_2_BLOCO1_FUNDAMENTOS.md` |
 | 2 | DOC3 Datasets + DOC5 V5.2 Bloqueios | ✅ Diagnosticado | `docs/V5_2_BLOCO2_DATASETS_BLOQUEIOS.md` |
-| 3 | Tier 1, 2, 3 + Subseller PJ/PF (5 docs microscópicos) | ⏳ Pendente | — |
+| 3 | Tier 1, 2, 3 + Subseller PJ/PF (5 docs microscópicos) | ✅ Diagnosticado | `docs/V5_2_BLOCO3_TIERS.md` |
 | 4 | Questionário Dinâmico E1 | ⏳ Pendente | — |
 | 5 | Segmentos (13 docs) — pode ser dividido em 5a/5b/5c | ⏳ Pendente | — |
 | 6 | REDESIGN_AnaliseDeRisco + Especificação Datasets Tela | ⏳ Pendente | — |
@@ -126,11 +126,35 @@
 
 ### FASE 3 — Pipeline Steps Completos (semana 3)
 
-- [ ] Step 1: `resolverTier()` com todos os triggers de escalação (TierFramework §3.2)
-- [ ] Regra B-CNPJ-NOVO (CNPJ < 6 meses → revisão manual) — TierFramework §3.6
-- [ ] Step 2: `resolverCapabilities()` completo
+- [ ] Step 1: `resolverTier()` com **TODOS os 14 triggers** de escalação (Bloco 3):
+  - TPV mensal, MCC alto risco, segmento T3-only (6), capability splits/crossborder, PEP, sanção, criminal, CB declarado >1%, conta encerrada, COAF/BCB declarado, rede laranja, cadeia PJ-sócia >2 níveis
+- [ ] Regra **B-CNPJ-NOVO transversal** (CNPJ <6 meses → revisão manual em TODOS os tiers + subsellers)
+- [ ] Step 2: `resolverCapabilities()` completo (splits/subseller, crossborder, recurrence, cap_financial_capacity_validation, cap_financial_capacity_validation_pf)
 - [ ] Step 3: `resolverSegmentoMorfologia()` para 13 segmentos × 6 morfologias
 - [ ] Step 9: Cross-Validation 16 campos V5.1 (não 8)
+- [ ] Cross-Validations PF específicas (6 novas — pix_titularidade crítico)
+
+### FASE 3b — Refactor Tier 3 com Módulos (Bloco 3)
+
+- [ ] Implementar conceito **Base Tier 3 + 9 Módulos** (Gateway, Marketplace, PV fan-out, Dropshipping, Infoprodutos, Turismo, Eventos, Splits/Subseller, Crossborder pesado)
+- [ ] Cada módulo: +5-15 perguntas, +3-10 docs, +5-15 CVs, +5-15 variáveis, +1-5 B-series
+- [ ] Score base por segmento Tier 3 com tabela canônica (saas=110, ecommerce=150, marketplace=170, gateway=180, eventos=220, infoprodutos=240, turismo=250, dropshipping=260)
+
+### FASE 3c — Subsellers PJ/PF (Bloco 3)
+
+- [ ] Adicionar campo `grau` (enum A/B/C) ao `OnboardingCase`
+- [ ] Adicionar campo `seller_mestre_id` (FK Tier 3) + `seller_mestre_segmento`
+- [ ] Resolver Grau:
+  - Subseller PJ: por TPV (A: ≤R$30k / B: R$30k-200k / C: R$200k-500k)
+  - Subseller PF: por **renda mensal líquida** (A: <R$2k / B: R$2k-10k / C: >R$10k)
+- [ ] Implementar fórmula: `Score_subseller = Score_base_seller_mestre × fator_grau + Σ(variáveis)` (fator A=0.4, B=0.6, C=0.8)
+- [ ] Capability nova `cap_financial_capacity_validation_pf` (3 fontes — Renda × Pix + DIRPF + Fluxo Pix)
+- [ ] Bloqueios PF-específicos (8 novos): B-FIN-PF-1/2/3, B-PIX-PF-1, B-PF-PROFCONS-1, B-PF-IDADE-1, B-CB-PAIS-PF-1, B-LGPDPF-SAUDE-1
+- [ ] Bloqueios Subseller PJ específicos (3 novos): B-SUB-1, B-SUB-2, B-SUB-3
+- [ ] Dataset crítico `pix_recebedor_titularidade` (mesmo em Grau A)
+- [ ] Sanções progressivas ao seller mestre por KYC inadequado (10%/20%/30%)
+- [ ] 3 modos de integração subseller (API direta / SDK Drop-in / White-label hosted)
+- [ ] Webhook subseller → seller mestre com decisão
 
 ### FASE 4 — Capabilities Executáveis (semana 4)
 
@@ -173,12 +197,10 @@ Ver arquivo separado: `docs/V5_2_DECISOES_USUARIO.md`
 
 ## 📌 PRÓXIMO PASSO
 
-**Aguardando usuário enviar Bloco 3:**
-- Tier1_V5_1_Microscopico
-- Tier2_V5_1_Microscopico
-- Tier3_V5_1_Microscopico
-- SubsellerPJ_V5_1_Microscopico
-- SubsellerPF_V5_1_Microscopico
+**Aguardando usuário enviar Bloco 4:**
+- `QuestionarioDinamico_V5_1_Microscopico` (Sub-Entrega E1)
+
+Depois Bloco 5 (13 segmentos) + Bloco 6 (REDESIGN) + Bloco 7 (DELTA + Apêndice).
 
 ---
 
