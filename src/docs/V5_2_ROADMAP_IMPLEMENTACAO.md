@@ -140,7 +140,17 @@ Já entregue:
 - ✅ `components/cadastro/V5_2PlanoMonitoramentoCard` — card com plano + termo + ação de registrar aceite
 - ✅ Plugado em `CadastroV5_2Tab` (botão "Aplicar Exceção V5.2" no header de bloqueios + card de plano + histórico de overrides)
 
-#### **▶ FASE 6.4 — Próxima (a definir)**
+#### ✅ **FASE 6.4-A — Smart Summary Cards (CONCLUÍDA)**
+- ✅ `components/cadastro/v5_2/SmartSummaryCards.jsx` — Hero Verdict (score + subfaixa + categoria) + 3 cards executivos
+- ✅ Card 1: Top Alertas priorizados por impact_score (severidade colorida + why_it_matters)
+- ✅ Card 2: Top Pontos Positivos (contexto balanceado)
+- ✅ Card 3: Cross-Val 16 Summary (barra visual + 4 counts + top issues)
+- ✅ Plugado no topo do `CadastroV5_2Tab` (acima das 5 camadas — DOC6 §3)
+
+#### **▶ FASE 6.4-B — Próxima (a definir entre B/C)**
+- (B) Refatorar `pages/AnaliseCompleta` para layout DOC6 4-abas (V5.2)
+- (C) Widget V5.2 no `DashboardCEO` (distribuição por `categoria_decisao_v5_2`)
+- ~~(D) Página de Planos de Monitoramento~~ — descartado (monitoramento está em outro sistema)
 - [ ] `components/cadastro/ExceptionWorkflow.jsx` — aplicar exceção a um bloqueio
 - [ ] Cat 5 → cria `PlanoMonitoramento` + `TermoAdicionalV5_2`
 - [ ] Workflow de aceite do termo pelo seller
@@ -199,3 +209,4 @@ Possíveis próximos passos (escolher com o usuário):
 | 2.2 | 2026-05-20 | Fase 6.2 concluída (reprocessV4AsV5_2 + ReprocessV4AsV5_2Button em CadastroDetalhe). Próxima: Fase 6.3 (a definir). |
 | 2.3 | 2026-05-20 | **Regra permanente registrada**: ao final de toda entrega, o assistente sempre declara a próxima. Adicionada ao topo do roadmap. |
 | 2.4 | 2026-05-20 | Fase 6.3 concluída (Workflow de Exceções V5.2 Cat 1-5 + PlanoMonitoramento + TermoAdicionalV5_2 com hash de integridade). Próxima: Fase 6.4 (a definir). |
+| 2.5 | 2026-05-20 | Fase 6.4-A concluída (Smart Summary Cards: Hero Verdict + Top Alertas + Top Positivos + Cross-Val Summary no topo da aba V5.2). Opção D (Planos de Monitoramento) removida do roadmap a pedido do usuário (monitoramento vive em outro sistema). Próxima: 6.4-B ou 6.4-C. |

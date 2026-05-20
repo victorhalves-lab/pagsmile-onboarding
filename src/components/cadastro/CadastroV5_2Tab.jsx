@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import V5_2ExceptionWorkflow from './V5_2ExceptionWorkflow';
 import V5_2PlanoMonitoramentoCard from './V5_2PlanoMonitoramentoCard';
+import SmartSummaryCards from './v5_2/SmartSummaryCards';
 
 /**
  * [V5.2 Fase 5.11] Aba dedicada V5.2 — renderiza:
@@ -82,6 +83,9 @@ export default function CadastroV5_2Tab({ latestCase, latestScore, onRefetch }) 
 
   return (
     <div className="space-y-4">
+      {/* Smart Summary Cards [Fase 6.4-A] — veredicto + 3 cards executivos no topo */}
+      <SmartSummaryCards latestScore={latestScore} />
+
       {/* Header */}
       <Card>
         <CardHeader className="pb-3">
