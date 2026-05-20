@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Play, Eye, CheckCircle2, AlertCircle, Database, Shield, Layers, Rocket, FlaskConical } from 'lucide-react';
+import { Loader2, Play, Eye, CheckCircle2, AlertCircle, Database, Shield, Layers, Rocket, FlaskConical, MessageSquareText, ExternalLink, ListChecks } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
@@ -133,6 +134,8 @@ export default function V5_2_Status() {
           <TabsTrigger value="dimensoes">13 Dimensões</TabsTrigger>
           <TabsTrigger value="absolutos">10 Bloqueios Absolutos</TabsTrigger>
           <TabsTrigger value="segmentos">15 Segmentos</TabsTrigger>
+          <TabsTrigger value="questions">Questions V5.2</TabsTrigger>
+          <TabsTrigger value="sandbox">Sandbox UI</TabsTrigger>
         </TabsList>
 
         {/* ENTIDADES STATUS */}
@@ -309,7 +312,129 @@ export default function V5_2_Status() {
             </CardContent>
           </Card>
         </TabsContent>
+        {/* QUESTIONS V5.2 — seed do catálogo canônico */}
+        <TabsContent value="questions" className="mt-4">
+          <QuestionsV5_2Panel />
+        </TabsContent>
+
+        {/* SANDBOX UI — atalho para a página de teste */}
+        <TabsContent value="sandbox" className="mt-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FlaskConical className="w-5 h-5 text-[#2bc196]" />
+                Sandbox de Questionário V5.2
+              </CardTitle>
+              <CardDescription>
+                Tela admin-only que renderiza o questionário V5.2 ao vivo com filtragem dinâmica por tier/segmento/capability + tieringEngine + bloqueios em tempo real.
+                Útil para validar microcopy, fluxo das 5 modalidades (A/B/C/D/E) e tier escalation banner antes do soft launch.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link to="/V5_2_Sandbox">
+                <Button className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white">
+                  <ExternalLink className="w-4 h-4 mr-2" />
+                  Abrir Sandbox
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
+    </div>
+  );
+}
+
+function QuestionsV5_2Panel() {
+  const [running, setRunning] = React.useState(false);
+  const [result, setResult] = React.useState(null);
+
+  const run = async (mode) => {
+    setRunning(true);
+    setResult(null);
+    try {
+      const res = await base44.functions.invoke('seedV5_2Questions', { mode });
+      setResult(res.data);
+      toast.success(mode === 'apply' ? 'Questions V5.2 aplicadas' : 'Preview gerado — confira antes de aplicar');
+    } catch (e) {
+      toast.error('Erro: ' + (e.message || 'desconhecido'));
+    } finally {
+      setRunning(false);
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <ListChecks className="w-5 h-5 text-[#2bc196]" />
+          Catálogo de Perguntas V5.2 (Fase 5.2)
+        </CardTitle>
+        <CardDescription>
+          Seed idempotente das perguntas canônicas do questionário dinâmico V5.2 — cria o
+          QuestionnaireTemplate master (<code>subCategory=V5_2_DYNAMIC</code>) e popula
+          ~16 perguntas das 5 modalidades. Aditivo: nunca sobrescreve perguntas existentes.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex gap-3">
+          <Button variant="outline" onClick={() => run('preview')} disabled={running} className="border-[#002443]/20">
+            {running ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Eye className="w-4 h-4 mr-2" />}
+            Preview (dry-run)
+          </Button>
+          <Button onClick={() => run('apply')} disabled={running || !result} className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white">
+            {running ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Play className="w-4 h-4 mr-2" />}
+            Aplicar
+          </Button>
+        </div>
+
+        {result?.summary && (
+          <div className="space-y-3">
+            <div className="bg-[#f4f4f4] rounded-xl p-4">
+              <p className="text-sm font-bold text-[#002443] mb-2">
+                {result.mode === 'preview' ? '🔍 Preview (sem escrita)' : '✅ Aplicado'}
+              </p>
+              <p className="text-xs text-[#002443]/70">{result.message}</p>
+              {result.catalog_size !== undefined && (
+                <p className="text-xs text-[#002443]/60 mt-1">
+                  Catálogo atual: <strong>{result.catalog_size}</strong> perguntas
+                </p>
+              )}
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <MiniStat label="Template" value={result.summary.template?.created ? 'criado' : (result.summary.template?.found ? 'já existe' : 'pendente')} tone="indigo" />
+              <MiniStat label="Inseridas" value={result.summary.questions?.inserted ?? 0} tone="emerald" />
+              <MiniStat label="Atualizadas" value={result.summary.questions?.updated ?? 0} tone="amber" />
+              <MiniStat label="Skipped" value={result.summary.questions?.skipped ?? 0} tone="slate" />
+            </div>
+          </div>
+        )}
+
+        <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-xs text-blue-900">
+          <div className="flex items-start gap-2">
+            <MessageSquareText className="w-4 h-4 mt-0.5 shrink-0" />
+            <div>
+              Perguntas são identificadas por <code className="bg-white px-1 rounded">id_canonico</code>{' '}
+              (ex: <code>q_t2_revenue_proof</code>). Ajustes manuais feitos diretamente em Question são preservados — o seed só completa campos vazios.
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function MiniStat({ label, value, tone = 'slate' }) {
+  const toneClass = {
+    emerald: 'bg-emerald-50 text-emerald-700 border-emerald-100',
+    amber: 'bg-amber-50 text-amber-700 border-amber-100',
+    indigo: 'bg-indigo-50 text-indigo-700 border-indigo-100',
+    slate: 'bg-slate-50 text-slate-700 border-slate-200',
+  }[tone];
+  return (
+    <div className={`rounded-lg border px-3 py-2 ${toneClass}`}>
+      <div className="text-[10px] uppercase tracking-wider opacity-70">{label}</div>
+      <div className="text-lg font-bold">{value}</div>
     </div>
   );
 }
