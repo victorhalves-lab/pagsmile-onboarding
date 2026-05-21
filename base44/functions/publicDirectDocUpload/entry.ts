@@ -3,33 +3,24 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 /**
  * PUBLIC endpoint — BULLETPROOF direct document upload.
  *
- * Receives the file as BASE64 inside a JSON body (via base44.functions.invoke).
- * This approach is 100% reliable on public routes because:
- *   - base44.functions.invoke is the SDK's native public-safe channel (already works anonymous)
- *   - We avoid the fragile SDK client-side UploadPrivateFile/UploadFile path
- *   - Server decodes base64 → File → uses asServiceRole.integrations.Core.UploadPrivateFile
+ * Recebe arquivo BASE64 via JSON body. Salva no **Supabase Storage** (sem consumir
+ * créditos Base44). O fileUri persistido segue o formato "supabase://<bucket>/<path>"
+ * e é resolvido em download pelo getPrivateDocumentUrl.
  *
- * Request JSON body:
- *   - caseId              (string, required)
- *   - documentTypeId      (string, required)
- *   - documentName        (string, optional)
- *   - docLinkToken        (string, required when ComplianceDocOnly)
- *   - notAvailable        (boolean, optional)
- *   - notAvailableReason  (string, required when notAvailable=true, ≥10 chars)
- *   - fileBase64          (string, required unless notAvailable=true)
- *   - fileName            (string, required when fileBase64)
- *   - fileType            (string, required when fileBase64)
- *   - fileSize            (number, optional)
- *   - uploadDate          (ISO string, optional)
+ * Mudança 2026-05-21:
+ *   - Migrado de Base44 UploadPrivateFile (que consome 1 crédito/upload) para Supabase
+ *     Storage REST API. Custo Base44 por upload agora = 0.
+ *   - Documentos antigos no Base44 storage ("mp/private/...") continuam funcionando
+ *     graças ao fallback no getPrivateDocumentUrl.
  *
- * Response: { ok, documentUploadId, fileUri, fileUrl, fileName, fileSize, fileType } | { ok:false, error }
+ * Request JSON body (igual ao anterior):
+ *   - caseId, documentTypeId, documentName, docLinkToken
+ *   - notAvailable, notAvailableReason
+ *   - fileBase64, fileName, fileType, fileSize, uploadDate
  *
- * VerifAI auto-trigger DESATIVADO (2026-05-21) — consumia créditos de integração Base44
- * a cada upload. Análise documentoscópica fica disponível sob demanda via botão manual
- * no painel do analista (cafVerifaiDocs chamado pelo analista quando necessário).
+ * Response: { ok, documentUploadId, fileUri, fileUrl, fileName, fileSize, fileType }
  */
 
-// Decode base64 (data URL or raw) into a Uint8Array
 function base64ToBytes(b64) {
   const commaIdx = b64.indexOf(',');
   const raw = commaIdx >= 0 ? b64.slice(commaIdx + 1) : b64;
@@ -37,6 +28,50 @@ function base64ToBytes(b64) {
   const bytes = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
   return bytes;
+}
+
+// Sanitiza nome do arquivo e monta path único dentro do bucket Supabase.
+function buildSupabasePath(fileName) {
+  const now = new Date();
+  const yyyy = now.getUTCFullYear();
+  const mm = String(now.getUTCMonth() + 1).padStart(2, '0');
+  const ts = now.getTime();
+  const rand = Math.random().toString(36).slice(2, 10);
+  const safe = String(fileName || 'arquivo')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z0-9._-]/g, '_')
+    .slice(0, 80);
+  return `${yyyy}/${mm}/${ts}_${rand}_${safe}`;
+}
+
+// Upload direto pro Supabase Storage via REST API (zero crédito Base44).
+async function uploadToSupabase(bytes, fileName, fileType) {
+  const supaUrl = Deno.env.get('SUPABASE_URL');
+  const supaKey = Deno.env.get('SUPABASE_SERVICE_KEY');
+  const bucket = Deno.env.get('SUPABASE_BUCKET') || 'compliance-docs';
+  if (!supaUrl || !supaKey) {
+    throw new Error('SUPABASE_URL/SUPABASE_SERVICE_KEY não configurados');
+  }
+  const base = supaUrl.replace(/\/+$/, '');
+  const path = buildSupabasePath(fileName);
+  const endpoint = `${base}/storage/v1/object/${bucket}/${encodeURI(path)}`;
+
+  const res = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${supaKey}`,
+      'apikey': supaKey,
+      'Content-Type': fileType || 'application/octet-stream',
+      'x-upsert': 'false',
+      'cache-control': '3600',
+    },
+    body: bytes,
+  });
+  if (!res.ok) {
+    const errText = await res.text().catch(() => '');
+    throw new Error(`Supabase upload ${res.status}: ${errText.slice(0, 300)}`);
+  }
+  return { fileUri: `supabase://${bucket}/${path}`, path, bucket };
 }
 
 Deno.serve(async (req) => {
@@ -76,7 +111,6 @@ Deno.serve(async (req) => {
     }
 
     // Tolerante a tokens de cliente inválidos/expirados: fallback para client anônimo.
-    // Todas as operações usam asServiceRole, então não dependem do user context.
     let base44;
     try {
       base44 = createClientFromRequest(req);
@@ -132,21 +166,16 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Branch B: decode base64 → File → upload server-side via asServiceRole
-    let fileBlob;
+    // Branch B: decode base64 → bytes
+    let fileBytes;
     try {
-      const bytes = base64ToBytes(fileBase64);
-      fileBlob = new File([bytes], fileName || 'arquivo', { type: fileType || 'application/octet-stream' });
+      fileBytes = base64ToBytes(fileBase64);
     } catch (decodeErr) {
       console.error('[publicDirectDocUpload] BASE64_DECODE_ERROR:', decodeErr?.message);
       return Response.json({ ok: false, error: 'Falha ao decodificar arquivo: ' + decodeErr?.message }, { status: 400 });
     }
 
-    // IDEMPOTENCY CHECK — if the client retries (e.g. due to a perceived network timeout
-    // while the server was still processing), we must NOT create a duplicate DocumentUpload.
-    // We check: same case + same documentTypeId + same fileSize + same fileName created in the
-    // last 60 seconds → return the existing doc as if the current upload had just succeeded.
-    // This solves the "cliente reenvia várias vezes porque viu erro mas o upload deu certo" loop.
+    // IDEMPOTENCY CHECK — evita duplicar quando cliente reenvia por achar que falhou.
     try {
       const recentDocs = await base44.asServiceRole.entities.DocumentUpload.filter({
         onboardingCaseId: caseId,
@@ -178,18 +207,15 @@ Deno.serve(async (req) => {
       console.warn(`[publicDirectDocUpload] DEDUP_CHECK_FAILED (non-fatal):`, dedupErr?.message);
     }
 
-    let uploadResult;
+    // ─── UPLOAD AO SUPABASE STORAGE (sem custo Base44) ───
+    let supaResult;
     try {
-      uploadResult = await base44.asServiceRole.integrations.Core.UploadPrivateFile({ file: fileBlob });
+      supaResult = await uploadToSupabase(fileBytes, fileName, fileType);
     } catch (uploadErr) {
-      console.error(`[publicDirectDocUpload] UPLOAD_FAILED caseId=${caseId} docType=${documentTypeId} name=${fileName}:`, uploadErr?.message);
+      console.error(`[publicDirectDocUpload] SUPABASE_UPLOAD_FAILED caseId=${caseId} docType=${documentTypeId} name=${fileName}:`, uploadErr?.message);
       return Response.json({ ok: false, error: 'Falha ao salvar arquivo: ' + (uploadErr?.message || 'erro desconhecido') }, { status: 500 });
     }
-
-    const fileUri = uploadResult?.file_uri;
-    if (!fileUri) {
-      return Response.json({ ok: false, error: 'Servidor não retornou URI do arquivo' }, { status: 500 });
-    }
+    const fileUri = supaResult.fileUri;
 
     let createdDoc;
     try {
@@ -213,8 +239,7 @@ Deno.serve(async (req) => {
       return Response.json({ ok: false, error: 'Falha ao registrar documento: ' + (createErr?.message || 'erro desconhecido') }, { status: 500 });
     }
 
-    console.log(`[publicDirectDocUpload] CREATED id=${createdDoc?.id} docType=${documentTypeId} size=${fileSize} duration=${Date.now() - startedAt}ms`);
-    // VerifAI auto-trigger desativado — ver topo do arquivo.
+    console.log(`[publicDirectDocUpload] CREATED id=${createdDoc?.id} docType=${documentTypeId} size=${fileSize} storage=supabase duration=${Date.now() - startedAt}ms`);
 
     // Audit trail — non-blocking
     try {
@@ -231,7 +256,7 @@ Deno.serve(async (req) => {
         userAgent: (headers.get('user-agent') || '').slice(0, 500),
         referer: (headers.get('referer') || '').slice(0, 500),
         docLinkToken: (docLinkToken || '').slice(0, 6),
-        metadata: { documentTypeId, fileName: (fileName || '').slice(0, 200), fileSize, fileType, notAvailable: false },
+        metadata: { documentTypeId, fileName: (fileName || '').slice(0, 200), fileSize, fileType, notAvailable: false, storage: 'supabase' },
         serverTimestamp: new Date().toISOString(),
       }).catch(() => {});
     } catch (_) { /* silent */ }
