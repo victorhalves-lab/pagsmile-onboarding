@@ -24,9 +24,30 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
  *
  * Response: { ok, documentUploadId, fileUri, fileUrl, fileName, fileSize, fileType } | { ok:false, error }
  *
- * VerifAI auto-trigger DESATIVADO (2026-05-21) — consumia créditos de integração Base44
- * a cada upload (chamada externa a api.combateafraude.com).
+ * Side effect (fire-and-forget): triggers cafVerifaiDocs for documentoscopia.
  */
+
+// FIX (2026-04-22): base44.asServiceRole.functions.invoke does NOT exist in the SDK.
+// We must call the cafVerifaiDocs endpoint over plain HTTP using the app's internal URL.
+// This runs fire-and-forget — documentoscopia must never block the client's upload response.
+async function triggerVerifaiAsync(documentUploadId, onboardingCaseId, req) {
+  try {
+    const reqUrl = new URL(req.url);
+    // Build sibling function URL from the current request URL (same host/app path)
+    const verifaiUrl = reqUrl.href.replace(/\/publicDirectDocUpload(\?.*)?$/, '/cafVerifaiDocs');
+    // Non-awaited: we truly want fire-and-forget. If the caller aborts, this may get cut
+    // off, but that's acceptable — cafReconcilePendingTransactions picks up stragglers.
+    fetch(verifaiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ documentUploadId, onboardingCaseId }),
+    }).catch((err) => {
+      console.warn('[publicDirectDocUpload] VerifAI trigger fetch failed:', err?.message);
+    });
+  } catch (err) {
+    console.warn('[publicDirectDocUpload] VerifAI trigger setup failed:', err?.message);
+  }
+}
 
 // Decode base64 (data URL or raw) into a Uint8Array
 function base64ToBytes(b64) {
@@ -213,7 +234,10 @@ Deno.serve(async (req) => {
     }
 
     console.log(`[publicDirectDocUpload] CREATED id=${createdDoc?.id} docType=${documentTypeId} size=${fileSize} duration=${Date.now() - startedAt}ms`);
-    // VerifAI auto-trigger desativado — ver topo do arquivo.
+
+    if (createdDoc?.id) {
+      triggerVerifaiAsync(createdDoc.id, caseId, req);
+    }
 
     // Audit trail — non-blocking
     try {
