@@ -16,21 +16,32 @@ function DocRequestPanel({ latestCase, merchantEmail }) {
   const [copied, setCopied] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [sending, setSending] = useState(false);
-  const [token, setToken] = useState(latestCase?.docLinkToken || '');
+  const [docUrl, setDocUrl] = useState('');
 
-  const generateToken = async () => {
+  // Gera link via backend `generateDocOnlyLink`: valida template + cria token seguro
+  // e devolve URL no formato /PublicOnboarding?case=...&token=...&mode=docs_only
+  // (fluxo "upload puro" — sem CAF, sem BDC, sem consumir créditos).
+  const generateLink = async () => {
     if (!latestCase) return;
     setGenerating(true);
-    const newToken = crypto.randomUUID().replace(/-/g, '').slice(0, 24);
-    await base44.entities.OnboardingCase.update(latestCase.id, { docLinkToken: newToken });
-    setToken(newToken);
-    setGenerating(false);
-    toast.success('Token gerado com sucesso');
+    try {
+      const res = await base44.functions.invoke('generateDocOnlyLink', {
+        caseId: latestCase.id,
+        baseUrl: window.location.origin,
+      });
+      const data = res?.data || {};
+      if (!data.success || !data.url) {
+        toast.error(data.error || 'Falha ao gerar link.');
+        return;
+      }
+      setDocUrl(data.url);
+      toast.success(`Link gerado — ${data.requiredDocsCount} documento(s) requerido(s)`);
+    } catch (err) {
+      toast.error(err?.message || 'Erro ao gerar link.');
+    } finally {
+      setGenerating(false);
+    }
   };
-
-  const docUrl = token
-    ? `${window.location.origin}/ComplianceDocOnly?caseId=${latestCase?.id}&token=${token}`
-    : '';
 
   const handleCopy = () => {
     navigator.clipboard.writeText(docUrl);
@@ -57,8 +68,8 @@ function DocRequestPanel({ latestCase, merchantEmail }) {
         <LinkIcon className="w-4 h-4 text-amber-600" />
         <h3 className="text-sm font-semibold text-amber-800">Solicitar Documentos ao Cliente</h3>
       </div>
-      {!token ? (
-        <Button onClick={generateToken} disabled={generating} size="sm" className="bg-amber-600 hover:bg-amber-700 text-white">
+      {!docUrl ? (
+        <Button onClick={generateLink} disabled={generating || latestCase?.docCompleted} size="sm" className="bg-amber-600 hover:bg-amber-700 text-white">
           {generating ? 'Gerando...' : 'Gerar Link de Documentos'}
         </Button>
       ) : (
