@@ -50,8 +50,14 @@ Deno.serve(async (req) => {
         }, { status: 500 });
       }
     } else {
-      // V4.0 (legado): mantém comportamento atual — subseller_v2 com fallback subseller.
-      let templates = await base44.asServiceRole.entities.QuestionnaireTemplate.filter({ model: 'subseller_v2', isActive: true });
+      // V4.0: novo template lite PJ é a primeira escolha; fallback para subseller_v2 / subseller (legado).
+      // O frontend (SubsellerQuestionnaire.jsx) decide PF vs PJ e dispatcha para o template correto.
+      // O link no V4 carrega o template PJ por default — quando o cliente escolhe PF na primeira tela,
+      // o frontend troca para o template PF dinamicamente.
+      let templates = await base44.asServiceRole.entities.QuestionnaireTemplate.filter({ model: 'subseller_pj_lite_v4', isActive: true });
+      if (!templates.length) {
+        templates = await base44.asServiceRole.entities.QuestionnaireTemplate.filter({ model: 'subseller_v2', isActive: true });
+      }
       if (!templates.length) {
         templates = await base44.asServiceRole.entities.QuestionnaireTemplate.filter({ model: 'subseller', isActive: true });
       }

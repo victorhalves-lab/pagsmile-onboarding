@@ -211,6 +211,27 @@ export const COMPLIANCE_MODEL_REGISTRY = {
     badgeLabel: 'SUBSELLER PF',
     badgeColor: 'bg-purple-100 text-purple-700',
   },
+
+  // ─── V4 Simplificado — Subseller Lite (PF + PJ) ───
+  // Versões enxutas dos templates de subseller V4 (~32 perguntas PF, ~28 PJ).
+  // Endereço via ViaCEP, identidade via CAF, sem confirmação visual de dados Receita,
+  // segmento PJ vira pergunta condicional dentro do próprio questionário.
+  subseller_pf_lite_v4: {
+    storageKey: 'compliance_data_subseller_pf_lite_v4',
+    documentsStorageKey: 'documents_subseller_pf_lite_v4',
+    documentUploadPage: 'SubsellerDocUpload',
+    flowType: 'subseller_pf',
+    badgeLabel: 'SUBSELLER PF',
+    badgeColor: 'bg-purple-100 text-purple-700',
+  },
+  subseller_pj_lite_v4: {
+    storageKey: 'compliance_data_subseller_pj_lite_v4',
+    documentsStorageKey: 'documents_subseller_pj_lite_v4',
+    documentUploadPage: 'SubsellerDocUpload',
+    flowType: 'subseller',
+    badgeLabel: 'SUBSELLER',
+    badgeColor: 'bg-indigo-100 text-indigo-700',
+  },
 };
 
 // Default seguro quando o model não é reconhecido.

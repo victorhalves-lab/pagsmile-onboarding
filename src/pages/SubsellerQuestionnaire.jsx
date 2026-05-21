@@ -5,11 +5,9 @@ import { callPublicFunction } from '@/lib/publicApi';
 import { Loader2, AlertTriangle } from 'lucide-react';
 import DynamicQuestionnaire from '../components/compliance/DynamicQuestionnaire';
 import MerchantTypeSelector from '../components/subseller/MerchantTypeSelector';
-import SubsellerSegmentSelector from '../components/subseller/SubsellerSegmentSelector';
 
 export default function SubsellerQuestionnaire() {
   const [merchantType, setMerchantType] = useState(null); // null = show selector, 'PF' or 'PJ'
-  const [selectedSegment, setSelectedSegment] = useState(null); // PJ: segmento V4 escolhido
   const urlParams = new URLSearchParams(window.location.search);
   const linkCode = urlParams.get('ref');
 
@@ -103,13 +101,14 @@ export default function SubsellerQuestionnaire() {
     );
   }
 
-  // ── TRILHO V4 (LEGADO — preservado integralmente) ────────────────────
-  // Step 2a: PF flow — uses subseller_pf template (BACEN-compliant, 55 perguntas)
+  // ── TRILHO V4 SIMPLIFICADO ───────────────────────────────────────────
+  // Versão enxuta: PF e PJ usam templates lite (subseller_pf_lite_v4 / subseller_pj_lite_v4).
+  // PJ não tem mais a tela de "escolher segmento" — vira pergunta dentro do questionário.
   if (merchantType === 'PF') {
     return (
       <DynamicQuestionnaire
-        templateModel="subseller_pf"
-        storageKey="compliance_data_subseller_pf"
+        templateModel="subseller_pf_lite_v4"
+        storageKey="compliance_data_subseller_pf_lite_v4"
         documentUploadPage="SubsellerDocUpload"
         flowType="subseller_pf"
         badgeLabel="SUBSELLER PF"
@@ -121,25 +120,13 @@ export default function SubsellerQuestionnaire() {
     );
   }
 
-  // Step 2b: PJ flow — primeiro escolhe o segmento V4 (9 opções, sem PIX)
-  if (merchantType === 'PJ' && !selectedSegment) {
-    return (
-      <SubsellerSegmentSelector
-        onSelect={setSelectedSegment}
-        onBack={() => setMerchantType(null)}
-        branding={branding}
-      />
-    );
-  }
-
-  // Step 2c: PJ flow — carrega o template V4 do segmento escolhido (mesmo rigor que seller direto)
   return (
     <DynamicQuestionnaire
-      templateModel={selectedSegment.model}
-      storageKey={selectedSegment.storageKey}
+      templateModel="subseller_pj_lite_v4"
+      storageKey="compliance_data_subseller_pj_lite_v4"
       documentUploadPage="SubsellerDocUpload"
-      flowType={`subseller_${selectedSegment.model}`}
-      badgeLabel={`SUBSELLER • ${selectedSegment.title.toUpperCase()}`}
+      flowType="subseller"
+      badgeLabel="SUBSELLER"
       badgeColor="bg-indigo-100 text-indigo-700"
       questionsPerStep={4}
       branding={branding}
