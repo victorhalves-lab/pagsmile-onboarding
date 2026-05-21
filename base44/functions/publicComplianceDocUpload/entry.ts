@@ -1,18 +1,9 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
-// Fire-and-forget VerifAI analysis for a newly created DocumentUpload.
-// Errors here NEVER block the upload response — VerifAI is best-effort; the pipeline
-// will re-try for any doc still in validationStatus="Pendente" later.
-async function triggerVerifaiAsync(base44, documentUploadId, onboardingCaseId) {
-  try {
-    await base44.asServiceRole.functions.invoke('cafVerifaiDocs', {
-      documentUploadId,
-      onboardingCaseId,
-    });
-  } catch (err) {
-    console.warn('[publicComplianceDocUpload] VerifAI trigger failed (non-blocking):', err?.message);
-  }
-}
+// VerifAI auto-trigger DESATIVADO (2026-05-21) — consumia créditos de integração Base44
+// a cada documento enviado (chamada externa a api.combateafraude.com).
+// Os documentos continuam sendo salvos normalmente; análise documentoscópica fica
+// disponível sob demanda via cafVerifaiDocs chamado manualmente pelo analista.
 
 /**
  * PUBLIC endpoint — creates DocumentUpload records for a given OnboardingCase.
@@ -123,10 +114,7 @@ Deno.serve(async (req) => {
         const createdDoc = await base44.asServiceRole.entities.DocumentUpload.create(payload);
         console.log(`[publicComplianceDocUpload] CREATED idx=${i} id=${createdDoc?.id} documentTypeId=${d.documentTypeId} notAvailable=${isNotAvailable} file=${d.fileName || 'N/A'}`);
         created.push({ id: createdDoc?.id, documentTypeId: d.documentTypeId, documentName: payload.documentName, notAvailable: isNotAvailable });
-        // Fire-and-forget VerifAI analysis — skip for notAvailable docs (nothing to verify).
-        if (createdDoc?.id && !isNotAvailable) {
-          triggerVerifaiAsync(base44, createdDoc.id, caseId);
-        }
+        // VerifAI auto-trigger desativado — ver topo do arquivo.
       } catch (createErr) {
         console.error(`[publicComplianceDocUpload] CREATE_FAILED idx=${i} documentTypeId=${d.documentTypeId} error=${createErr.message}`);
         failed.push({
