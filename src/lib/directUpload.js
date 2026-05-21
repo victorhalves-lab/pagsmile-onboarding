@@ -126,12 +126,23 @@ export async function directUploadDocument({
       fileSize: file.size || 0,
       uploadDate: new Date().toISOString(),
     };
-    // CRITICAL: use callPublicFunction (no retry) instead of ...WithRetry.
-    // Retrying a 2MB base64 payload runs JSON.stringify up to 9x on the main
-    // thread for a single upload — that is what was blocking the UI thread
-    // and triggering "Página sem resposta". If the upload legitimately fails,
-    // the user can click retry manually; the backend is idempotent.
-    const data = await callPublicFunction('publicDirectDocUpload', payload);
+    // NOTE: We use callPublicFunction (no retry wrapper) to avoid re-running
+    // JSON.stringify on the 2MB base64 payload — that was the cause of the old
+    // "Página sem resposta" freeze. Instead, we do ONE manual retry ONLY for the
+    // gateway-envelope error (Base44 anonymous gateway 401/403 false-negative),
+    // because the server is idempotent (60s dedup) so re-sending the same payload
+    // returns the existing record without creating a duplicate.
+    let data;
+    try {
+      data = await callPublicFunction('publicDirectDocUpload', payload);
+    } catch (err) {
+      if (err?.isGatewayEnvelope || err?.retryable) {
+        await new Promise((r) => setTimeout(r, 2000));
+        data = await callPublicFunction('publicDirectDocUpload', payload);
+      } else {
+        throw err;
+      }
+    }
     // Free the huge base64 strings immediately (both our local copy and the
     // payload reference) so GC can reclaim them before the next upload.
     fileBase64 = null;

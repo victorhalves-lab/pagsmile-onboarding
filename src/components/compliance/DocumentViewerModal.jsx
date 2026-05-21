@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, XCircle, ExternalLink, Download, FileText, Image, Loader2 } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 
 export default function DocumentViewerModal({ 
   open, 
@@ -18,23 +19,53 @@ export default function DocumentViewerModal({
 }) {
   const [imgError, setImgError] = useState(false);
   const [pdfError, setPdfError] = useState(false);
+  // Signed URL state — for private documents we need to fetch a temporary URL
+  // via getPrivateDocumentUrl. Without this, document.fileUrl points to a
+  // private base44 URI that the browser can't access (404/cadeado).
+  const [signedUrl, setSignedUrl] = useState(null);
+  const [loadingUrl, setLoadingUrl] = useState(false);
+  const [urlError, setUrlError] = useState(null);
 
-  // Reset errors when document changes
-  React.useEffect(() => {
+  // Resolve which URL to actually use for preview/download:
+  // - If document is private (isPrivate=true) and we have fileUri → fetch signed URL
+  // - Otherwise use fileUrl directly (legacy/public docs)
+  useEffect(() => {
     setImgError(false);
     setPdfError(false);
-  }, [document?.id]);
+    setSignedUrl(null);
+    setUrlError(null);
+    if (!open || !document) return;
+    const isPrivate = document.isPrivate === true;
+    const uri = document.fileUri || document.fileUrl;
+    if (!isPrivate || !uri) return; // public doc — use fileUrl as-is
+    setLoadingUrl(true);
+    base44.functions.invoke('getPrivateDocumentUrl', {
+      file_uri: uri,
+      documentUploadId: document.id,
+      expiresIn: 600,
+    })
+      .then((res) => {
+        if (res?.data?.signed_url) setSignedUrl(res.data.signed_url);
+        else setUrlError('Não foi possível gerar link de visualização.');
+      })
+      .catch((err) => setUrlError(err?.message || 'Falha ao obter link do documento'))
+      .finally(() => setLoadingUrl(false));
+  }, [open, document?.id]);
 
   if (!document) return null;
+
+  // The effective URL to use for preview/download — signed URL for private docs,
+  // raw fileUrl for legacy/public docs.
+  const effectiveUrl = signedUrl || (document.isPrivate ? null : document.fileUrl);
 
   const isImage = document.fileType?.includes('image');
   const isPdf = document.fileType?.includes('pdf');
   const canValidate = !document.validationStatus || document.validationStatus === 'Pendente';
 
   const handleDownload = async () => {
-    if (!document.fileUrl) return;
+    if (!effectiveUrl) return;
     try {
-      const response = await fetch(document.fileUrl);
+      const response = await fetch(effectiveUrl);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = window.document.createElement('a');
@@ -46,7 +77,7 @@ export default function DocumentViewerModal({
       a.remove();
     } catch {
       // Fallback: open in new tab
-      window.open(document.fileUrl, '_blank');
+      window.open(effectiveUrl, '_blank');
     }
   };
 
@@ -55,9 +86,9 @@ export default function DocumentViewerModal({
       <FileText className="w-12 h-12 text-[#002443]/30 mb-3" />
       <p className="text-sm text-[#282828]/50 mb-1">Pré-visualização não disponível</p>
       <p className="text-xs text-[#282828]/30 mb-4">Use os botões abaixo para abrir ou baixar o documento</p>
-      {document.fileUrl && (
+      {effectiveUrl && (
         <div className="flex gap-2">
-          <a href={document.fileUrl} target="_blank" rel="noopener noreferrer">
+          <a href={effectiveUrl} target="_blank" rel="noopener noreferrer">
             <Button variant="outline" size="sm">
               <ExternalLink className="w-4 h-4 mr-2" />
               Abrir em nova aba
@@ -81,9 +112,9 @@ export default function DocumentViewerModal({
               {isImage ? <Image className="w-5 h-5 text-purple-500" /> : <FileText className="w-5 h-5 text-red-500" />}
               {document.documentName || 'Documento'}
             </DialogTitle>
-            {document.fileUrl && (
+            {effectiveUrl && (
               <div className="flex gap-2">
-                <a href={document.fileUrl} target="_blank" rel="noopener noreferrer">
+                <a href={effectiveUrl} target="_blank" rel="noopener noreferrer">
                   <Button variant="ghost" size="sm" className="text-[#002443]/60 hover:text-[#002443]">
                     <ExternalLink className="w-4 h-4" />
                   </Button>
@@ -98,17 +129,28 @@ export default function DocumentViewerModal({
 
         <div className="flex flex-col gap-4">
           {/* Document Preview */}
-          <div className="bg-[#f4f4f4] rounded-xl border border-[#002443]/5 overflow-hidden" style={{ minHeight: '400px', maxHeight: '60vh' }}>
-            {isImage && document.fileUrl && !imgError ? (
+          <div className="bg-[#f4f4f4] rounded-xl border border-[#002443]/5 overflow-hidden flex items-center justify-center" style={{ minHeight: '400px', maxHeight: '60vh' }}>
+            {loadingUrl ? (
+              <div className="flex flex-col items-center justify-center h-64">
+                <Loader2 className="w-8 h-8 text-[#2bc196] animate-spin mb-3" />
+                <p className="text-sm text-[#282828]/60">Carregando documento…</p>
+              </div>
+            ) : urlError ? (
+              <div className="flex flex-col items-center justify-center h-64 px-6 text-center">
+                <XCircle className="w-10 h-10 text-red-400 mb-3" />
+                <p className="text-sm font-medium text-[#002443] mb-1">Falha ao carregar o documento</p>
+                <p className="text-xs text-[#282828]/50">{urlError}</p>
+              </div>
+            ) : isImage && effectiveUrl && !imgError ? (
               <img 
-                src={document.fileUrl} 
+                src={effectiveUrl} 
                 alt={document.documentName}
                 className="w-full h-full object-contain max-h-[60vh]"
                 onError={() => setImgError(true)}
               />
-            ) : isPdf && document.fileUrl && !pdfError ? (
+            ) : isPdf && effectiveUrl && !pdfError ? (
               <object
-                data={document.fileUrl}
+                data={effectiveUrl}
                 type="application/pdf"
                 className="w-full min-h-[400px]"
                 style={{ height: '60vh' }}

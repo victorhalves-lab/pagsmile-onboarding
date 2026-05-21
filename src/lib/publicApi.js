@@ -136,23 +136,26 @@ export async function callPublicFunction(functionName, payload = {}) {
 
   // ⚡ Gateway wrap detection: Base44 gateway sometimes wraps a SUCCESSFUL
   // function response with a 401/403 envelope when the anonymous request
-  // outran the gateway's auth-validation timeout (~3s for anon). The function
-  // already executed server-side — the document was saved, the session was
-  // updated, etc. The envelope shape is always:
-  //   { message: "Authentication required to view users",
-  //     detail: "You must be logged in to perform this operation.",
-  //     traceback: null, extra_data: null, request_id: null }
-  // Returning an error here causes the client to retry or show a fake failure,
-  // while the backend has already done the work (and is idempotent). Instead,
-  // surface it as a "likely-succeeded-but-unverifiable" response so the caller
-  // can decide to verify via a follow-up fetch or just proceed.
+  // outran the gateway's auth-validation timeout. We CANNOT assume success
+  // here — if we return { ok: true } without the real function payload
+  // (documentUploadId, fileUri etc), the UI saves a phantom entry that
+  // shows green toast but renders empty file list. That is exactly what
+  // made clients click "Não tenho este documento" in the 2026-05-19 cases.
+  //
+  // Correct behavior: throw a retryable error so callPublicFunctionWithRetry
+  // retries (backend is idempotent — dedup within 60s prevents duplicates),
+  // or the direct caller catches it and shows a real error message to the
+  // user instead of a fake success.
   const isGatewayAuthEnvelope =
     (res.status === 401 || res.status === 403) &&
     body && typeof body === 'object' &&
     typeof body.message === 'string' &&
     /authentication required|must be logged in|this app is private/i.test(body.message + ' ' + (body.detail || ''));
   if (isGatewayAuthEnvelope) {
-    return { ok: true, _gatewayEnvelope: true, _originalStatus: res.status };
+    const err = new Error('Conexão instável durante o envio. Aguarde 2 segundos e tente novamente — seus dados estão seguros.');
+    err.isGatewayEnvelope = true;
+    err.retryable = true;
+    throw err;
   }
 
   if (!res.ok) {
@@ -177,12 +180,15 @@ export async function callPublicFunctionWithRetry(functionName, payload, { maxAt
       lastErr = err;
       const msg = String(err?.message || '').toLowerCase();
       const retryable =
+        err?.retryable === true ||
+        err?.isGatewayEnvelope === true ||
         msg.includes('network') ||
         msg.includes('timeout') ||
         msg.includes('aborted') ||
         msg.includes('failed to fetch') ||
         msg.includes('load failed') ||
-        msg.includes('http 5');
+        msg.includes('http 5') ||
+        msg.includes('conexão instável');
       if (!retryable || attempt === maxAttempts - 1) throw err;
       await new Promise((r) => setTimeout(r, backoffMs * (attempt + 1)));
     }
