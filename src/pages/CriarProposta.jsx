@@ -279,15 +279,26 @@ export default function CriarProposta() {
 
   const validate = () => {
     const newErrors = {};
-    if (!form.clienteNome) newErrors.clienteNome = t('criar_prop.required');
-    if (!form.clienteCnpj || form.clienteCnpj.replace(/\D/g, '').length !== 14) newErrors.clienteCnpj = t('criar_prop.invalid_cnpj');
-    if (!form.clienteMcc) newErrors.clienteMcc = t('criar_prop.required');
-    if (!form.clienteContato) newErrors.clienteContato = t('criar_prop.required');
-    if (!form.businessSubCategory) newErrors.businessSubCategory = t('criar_prop.select_business');
+    const missingLabels = [];
+    if (!form.clienteNome) { newErrors.clienteNome = t('criar_prop.required'); missingLabels.push('Nome do cliente'); }
+    if (!form.clienteCnpj || form.clienteCnpj.replace(/\D/g, '').length !== 14) { newErrors.clienteCnpj = t('criar_prop.invalid_cnpj'); missingLabels.push('CNPJ válido'); }
+    if (!form.clienteMcc) { newErrors.clienteMcc = t('criar_prop.required'); missingLabels.push('MCC'); }
+    if (!form.clienteContato) { newErrors.clienteContato = t('criar_prop.required'); missingLabels.push('Contato'); }
+    if (!form.businessSubCategory) { newErrors.businessSubCategory = t('criar_prop.select_business'); missingLabels.push('Segmento de negócio'); }
     const hasAnyCardRate = Object.values(rates.cartao || {}).some(b => b && (b.avista || b.de2a6x || b.de7a12x));
-    if (!hasAnyCardRate) newErrors.cartao = t('criar_prop.fill_card_rate');
-    if (rates.pix?.valor && isNaN(parseTaxa(rates.pix.valor))) newErrors.pix = t('criar_prop.invalid_value');
+    if (!hasAnyCardRate) { newErrors.cartao = t('criar_prop.fill_card_rate'); missingLabels.push('Pelo menos uma taxa de cartão (qualquer bandeira)'); }
+    if (rates.pix?.valor && isNaN(parseTaxa(rates.pix.valor))) { newErrors.pix = t('criar_prop.invalid_value'); missingLabels.push('Taxa PIX (valor inválido)'); }
     setErrors(newErrors);
+    if (missingLabels.length > 0) {
+      // Mostra exatamente o que falta — toast persistente até o usuário fechar.
+      toast.error(`Preencha: ${missingLabels.join(' • ')}`, { duration: 8000 });
+      // Faz scroll até o primeiro campo com erro (usa data-field ou class de borda vermelha).
+      setTimeout(() => {
+        const firstErrorField = Object.keys(newErrors)[0];
+        const el = document.querySelector(`[data-field="${firstErrorField}"], [name="${firstErrorField}"], .border-red-400, .border-red-500`);
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    }
     return Object.keys(newErrors).length === 0;
   };
 
@@ -385,25 +396,37 @@ export default function CriarProposta() {
   };
 
   const handleGerarProposta = async () => {
-    if (!validate()) { toast.error(t('criar_prop.fill_required')); return; }
-    setSaving(true);
-    const data = await buildPropostaData('enviada');
-    let created;
-    if (editId) { await base44.entities.Proposal.update(editId, data); created = { id: editId }; }
-    else { created = await base44.entities.Proposal.create(data); }
-    await base44.entities.AuditLog.create({
-      entityName: 'Proposal', entityId: created.id, actionType: 'CREATE',
-      actionDescription: `Proposta ${data.codigo} gerada para ${data.clienteNome}`,
-      changedBy: data.responsavelNome || 'admin', changeDate: new Date().toISOString(),
-      details: { codigo: data.codigo, clienteNome: data.clienteNome, status: data.status }
-    });
-    if (effectiveLeadId) {
-      await base44.entities.Lead.update(effectiveLeadId, { currentProposalId: created.id, status: 'proposta_enviada', lastInteractionDate: new Date().toISOString() });
-      await base44.entities.LeadActivity.create({ leadId: effectiveLeadId, activityType: 'proposta_criada', description: `Proposta ${data.codigo} criada`, performedBy: data.responsavelNome || 'admin', activityDate: new Date().toISOString() });
+    if (!validate()) return; // toast detalhado já é emitido dentro de validate()
+    try {
+      setSaving(true);
+      const data = await buildPropostaData('enviada');
+      let created;
+      if (editId) { await base44.entities.Proposal.update(editId, data); created = { id: editId }; }
+      else { created = await base44.entities.Proposal.create(data); }
+      // AuditLog não bloqueia a navegação se falhar (não-crítico).
+      try {
+        await base44.entities.AuditLog.create({
+          entityName: 'Proposal', entityId: created.id, actionType: 'CREATE',
+          actionDescription: `Proposta ${data.codigo} gerada para ${data.clienteNome}`,
+          changedBy: data.responsavelNome || 'admin', changeDate: new Date().toISOString(),
+          details: { codigo: data.codigo, clienteNome: data.clienteNome, status: data.status }
+        });
+      } catch (auditErr) { console.warn('[CriarProposta] AuditLog falhou (não-crítico):', auditErr); }
+      // Vínculo com Lead também não bloqueia (não-crítico).
+      if (effectiveLeadId) {
+        try {
+          await base44.entities.Lead.update(effectiveLeadId, { currentProposalId: created.id, status: 'proposta_enviada', lastInteractionDate: new Date().toISOString() });
+          await base44.entities.LeadActivity.create({ leadId: effectiveLeadId, activityType: 'proposta_criada', description: `Proposta ${data.codigo} criada`, performedBy: data.responsavelNome || 'admin', activityDate: new Date().toISOString() });
+        } catch (leadErr) { console.warn('[CriarProposta] Vínculo com Lead falhou (não-crítico):', leadErr); }
+      }
+      toast.success(t('criar_prop.generated'));
+      navigate(createPageUrl('PropostaDetalhes') + `?id=${created.id}`);
+    } catch (err) {
+      console.error('[CriarProposta] Falha ao gerar proposta:', err);
+      toast.error(`Erro ao gerar proposta: ${err?.message || 'tente novamente'}`, { duration: 8000 });
+    } finally {
+      setSaving(false);
     }
-    toast.success(t('criar_prop.generated'));
-    setSaving(false);
-    navigate(createPageUrl('PropostaDetalhes') + `?id=${created.id}`);
   };
 
   return (
