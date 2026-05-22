@@ -64,6 +64,7 @@ const FIELD_LABELS = {
   cargoOutro: 'Cargo (detalhar)',
   modeloCobranca: 'Modelo de cobrança',
   descricaoNegocio: 'Descrição do negócio',
+  mixProdutosServicos: 'Detalhamento do que vende',
   antifraude: 'Antifraude / 3DS',
   licencaBCB: 'Licença BCB',
   splitPagamento: 'Split de pagamento',
@@ -172,6 +173,9 @@ export function validateStepV5(step, form) {
     if (!form.modeloCobranca) out.push(err('modeloCobranca'));
     if (!form.descricaoNegocio || form.descricaoNegocio.trim().length < 10) {
       out.push(err('descricaoNegocio', 'Descreva seu negócio (mín. 10 caracteres)'));
+    }
+    if (!form.mixProdutosServicos || form.mixProdutosServicos.trim().length < 30) {
+      out.push(err('mixProdutosServicos', 'Detalhe o que você vende (mín. 30 caracteres) — quanto mais detalhe, melhor a proposta'));
     }
     if (ANTIFRAUDE_SEGMENTS.includes(form.segmento) && !form.antifraude) {
       out.push(err('antifraude'));
