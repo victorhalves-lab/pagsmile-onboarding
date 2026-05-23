@@ -1,6 +1,7 @@
 import React from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import ButtonSelector from './ButtonSelector';
+import StepProdutos from './StepProdutos';
 import {
   MODELO_COBRANCA_OPTIONS, SUB_SELLERS_OPTIONS, PLATAFORMA_OPTIONS,
   ANTIFRAUDE_OPTIONS, ANTIFRAUDE_SEGMENTS, LICENCA_BCB_OPTIONS, SPLIT_PAGAMENTO_OPTIONS,
@@ -47,35 +48,8 @@ export default function StepModeloNegocio({ form, updateField, errors }) {
         {errors?.descricaoNegocio && <p className="text-xs text-red-500">Descreva seu negócio (mín. 10 caracteres)</p>}
       </div>
 
-      {/* P11.1 — Mix de produtos/serviços (NOVO — pergunta aberta detalhada) */}
-      <div className="space-y-1" data-field="mixProdutosServicos">
-        <div className="rounded-xl border-2 border-[#2bc196]/30 bg-[#2bc196]/5 p-4 space-y-2">
-          <label className="text-sm font-bold text-[#002443] flex items-center gap-2">
-            <span className="text-base">⭐</span>
-            Conte em detalhes o que você vende *
-          </label>
-          <p className="text-xs text-[#002443]/70 leading-relaxed">
-            Descreva o <strong>mix de produtos ou serviços</strong> que processa pagamentos (ex: moda feminina + acessórios; cursos de finanças + mentorias 1:1; suplementos + cosméticos importados; SaaS de gestão para clínicas).
-          </p>
-          <div className="rounded-lg bg-white border border-[#2bc196]/30 px-3 py-2 text-[11px] text-[#002443]/80 leading-relaxed">
-            💡 <strong>Quanto mais detalhe você der aqui, mais sob medida será a sua proposta.</strong> Respostas genéricas como <em>"vendo produtos online"</em> geram apenas <strong>propostas padrão de mercado</strong> — sem otimização de taxas para o seu perfil.
-          </div>
-          <Textarea
-            value={form.mixProdutosServicos || ''}
-            onChange={(e) => updateField('mixProdutosServicos', e.target.value.slice(0, 1000))}
-            placeholder="Ex: Vendemos moda feminina (vestidos, blusas, calças) + acessórios (bolsas, bijuterias) pelo Instagram e e-commerce próprio. Ticket médio R$ 180. Coleção nova a cada 45 dias. Atendemos todo o Brasil via Correios."
-            className={`rounded-xl min-h-[120px] bg-white ${errors?.mixProdutosServicos ? 'border-red-400' : 'border-[#2bc196]/30'}`}
-            maxLength={1000}
-          />
-          <div className="flex items-center justify-between">
-            <p className="text-[10px] text-[#002443]/40">Mínimo 30 caracteres para uma análise melhor</p>
-            <p className="text-[10px] text-[#002443]/40">{(form.mixProdutosServicos || '').length}/1000</p>
-          </div>
-          {errors?.mixProdutosServicos && (
-            <p className="text-xs text-red-500">Descreva com no mínimo 30 caracteres — quanto mais detalhe, melhor a proposta</p>
-          )}
-        </div>
-      </div>
+      {/* NOVO — Tipo de Produto + Quais produtos vende (Físico/Digital/Ambos + chips multi-seleção) */}
+      <StepProdutos form={form} updateField={updateField} errors={errors} />
 
       {/* P12 — Qtd sub-sellers (condicional: intermediários) */}
       {isIntermediario && (

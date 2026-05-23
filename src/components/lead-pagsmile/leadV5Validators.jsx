@@ -64,7 +64,8 @@ const FIELD_LABELS = {
   cargoOutro: 'Cargo (detalhar)',
   modeloCobranca: 'Modelo de cobrança',
   descricaoNegocio: 'Descrição do negócio',
-  mixProdutosServicos: 'Detalhamento do que vende',
+  tipoProduto: 'Tipo de produto',
+  produtosSelecionados: 'Produtos vendidos',
   antifraude: 'Antifraude / 3DS',
   licencaBCB: 'Licença BCB',
   splitPagamento: 'Split de pagamento',
@@ -106,6 +107,7 @@ const FIELD_LABELS = {
   custoAntifraude: 'Custo antifraude',
   taxa3ds: 'Taxa 3DS',
   mixOperacao: 'Composição da operação',
+  doresMercado: 'Dores no mercado',
   encerrado: 'Já foi encerrado',
   chargeback: 'Taxa de chargeback',
   medPix: 'Taxa de MED PIX',
@@ -174,8 +176,13 @@ export function validateStepV5(step, form) {
     if (!form.descricaoNegocio || form.descricaoNegocio.trim().length < 10) {
       out.push(err('descricaoNegocio', 'Descreva seu negócio (mín. 10 caracteres)'));
     }
-    if (!form.mixProdutosServicos || form.mixProdutosServicos.trim().length < 30) {
-      out.push(err('mixProdutosServicos', 'Detalhe o que você vende (mín. 30 caracteres) — quanto mais detalhe, melhor a proposta'));
+    // NOVAS perguntas: Tipo de Produto + Multi-produtos
+    if (!form.tipoProduto) {
+      out.push(err('tipoProduto', 'Selecione o tipo de produto (Físico, Digital ou Ambos)'));
+    }
+    const prods = form.produtosSelecionados || [];
+    if (!Array.isArray(prods) || prods.length === 0) {
+      out.push(err('produtosSelecionados', 'Selecione pelo menos 1 produto que você vende'));
     }
     if (ANTIFRAUDE_SEGMENTS.includes(form.segmento) && !form.antifraude) {
       out.push(err('antifraude'));
@@ -190,31 +197,15 @@ export function validateStepV5(step, form) {
   }
 
   if (step === 5) {
-    // Composição da Operação — total deve somar 100% (estimado)
+    // Composição da Operação — sliders dinâmicos baseados nos produtos selecionados
+    const produtos = form.produtosSelecionados || [];
     const mix = form.mixOperacao || {};
-    const fixedTotal =
-      (Number(mix.ecommerce) || 0) +
-      (Number(mix.dropshipping) || 0) +
-      (Number(mix.infoproduto) || 0) +
-      (Number(mix.saas) || 0) +
-      (Number(mix.educacao) || 0);
-    const outros = Array.isArray(mix.outros) ? mix.outros : [];
-    const outrosTotal = outros.reduce((s, o) => s + (Number(o?.percentual) || 0), 0);
-    const total = fixedTotal + outrosTotal;
-
-    if (total !== 100) {
-      out.push(err('mixOperacao', `Composição da operação deve somar 100% (atual: ${total}%)`));
-    }
-    // Cada "Outros" precisa ter nome (mín 2 chars) e percentual > 0
-    for (let i = 0; i < outros.length; i++) {
-      const o = outros[i] || {};
-      const nome = String(o.nome || '').trim();
-      const pct = Number(o.percentual) || 0;
-      if (!nome || nome.length < 2) {
-        out.push(err('mixOperacao', `Categoria "Outros" #${i + 1}: informe o nome`));
-      }
-      if (pct <= 0) {
-        out.push(err('mixOperacao', `Categoria "Outros" #${i + 1}: percentual deve ser maior que zero`));
+    if (produtos.length === 0) {
+      out.push(err('mixOperacao', 'Selecione produtos na etapa anterior antes de prosseguir'));
+    } else {
+      const total = produtos.reduce((s, p) => s + (Number(mix[p.nome]) || 0), 0);
+      if (total !== 100) {
+        out.push(err('mixOperacao', `Composição da operação deve somar 100% (atual: ${total}%)`));
       }
     }
   }
@@ -271,14 +262,24 @@ export function validateStepV5(step, form) {
     if (!form.taxa3ds) out.push(err('taxa3ds'));
   }
 
+  if (step === 9) {
+    // Dores no Mercado — SEMPRE obrigatória (pelo menos 1 selecionada)
+    const dores = form.doresMercado || [];
+    if (!Array.isArray(dores) || dores.length === 0) {
+      out.push(err('doresMercado', 'Selecione pelo menos 1 dor do mercado'));
+    }
+  }
+
   if (step === 10) {
     if (!form.encerrado) out.push(err('encerrado'));
-    const jaProcessa = form.jaProcessa === 'Sim, já processo';
-    const dist = jaProcessa ? (form.distribuicao || {}) : (form.distribuicaoDesejada || {});
-    const temCartao = (dist.credito || 0) > 0;
-    const temPix = (dist.pix || 0) > 0;
-    if (jaProcessa && temCartao && !form.chargeback) out.push(err('chargeback'));
-    if (temPix && !form.medPix) out.push(err('medPix'));
+    // Chargeback — SEMPRE obrigatório (a menos que marque "Não processo cartão")
+    if (!form.naoProcessaCartao && !form.chargeback) {
+      out.push(err('chargeback', 'Informe a taxa de chargeback ou marque "Não processo cartão"'));
+    }
+    // MED PIX — SEMPRE obrigatório (a menos que marque "Não processo PIX")
+    if (!form.naoProcessaPix && !form.medPix) {
+      out.push(err('medPix', 'Informe a taxa de MED PIX ou marque "Não processo PIX"'));
+    }
   }
 
   if (step === 11) {

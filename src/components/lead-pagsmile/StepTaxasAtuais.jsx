@@ -1,11 +1,29 @@
 import React from 'react';
 import CurrencyNumberInput from './CurrencyNumberInput';
+import ComprovantesUpload from './ComprovantesUpload';
 import { Info } from 'lucide-react';
 
-/** ETAPA 7 — Taxas Atuais (obrigatórias se já processa) */
+/** ETAPA 7 — Taxas Atuais (obrigatórias se já processa). Upload de comprovantes SEMPRE visível. */
 export default function StepTaxasAtuais({ form, updateField, errors = {} }) {
   const jaProcessa = form.jaProcessa === 'Sim, já processo';
-  if (!jaProcessa) return null;
+
+  // Quando NÃO processa, mostra só o upload (caso tenha proposta de outro player)
+  if (!jaProcessa) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-lg font-bold text-[#002443]">Comprovantes de Outros Processadores</h2>
+          <p className="text-xs text-[#002443]/50 mt-1">
+            Mesmo não processando hoje, se você tem propostas de outros players em mãos, pode anexá-las aqui.
+          </p>
+        </div>
+        <ComprovantesUpload
+          value={form.comprovantesTaxas || []}
+          onChange={(v) => updateField('comprovantesTaxas', v)}
+        />
+      </div>
+    );
+  }
 
   const dist = form.distribuicao || {};
   const temPix = (dist.pix || 0) > 0;
@@ -95,6 +113,12 @@ export default function StepTaxasAtuais({ form, updateField, errors = {} }) {
           <CurrencyNumberInput value={form.taxa3ds} onChange={(v) => updateField('taxa3ds', v)} placeholder="0.45" />
         </div>
       </div>
+
+      {/* Upload de comprovantes — sempre visível, opcional */}
+      <ComprovantesUpload
+        value={form.comprovantesTaxas || []}
+        onChange={(v) => updateField('comprovantesTaxas', v)}
+      />
     </div>
   );
 }

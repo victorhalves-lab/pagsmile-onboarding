@@ -1,13 +1,16 @@
 import React from 'react';
 import ButtonSelector from './ButtonSelector';
-import { ENCERRADO_OPTIONS, CHARGEBACK_OPTIONS, MED_PIX_OPTIONS } from './pagsmileQuestionnaireData';
+import { ENCERRADO_OPTIONS } from './pagsmileQuestionnaireData';
+import { CHARGEBACK_FAIXAS, MED_PIX_FAIXAS } from './productsCatalog';
 
-/** ETAPA 9 — Compliance e Risco (P34-P35.1) */
+/**
+ * ETAPA — Compliance e Risco
+ * Chargeback e MED PIX são SEMPRE visíveis e obrigatórios.
+ * Cliente pode marcar checkbox "Não processo cartão" / "Não processo PIX" para pular.
+ */
 export default function StepComplianceRisco({ form, updateField, errors = {} }) {
-  const jaProcessa = form.jaProcessa === 'Sim, já processo';
-  const dist = jaProcessa ? (form.distribuicao || {}) : (form.distribuicaoDesejada || {});
-  const temCartao = (dist.credito || 0) > 0;
-  const temPix = (dist.pix || 0) > 0;
+  const naoProcessaCartao = !!form.naoProcessaCartao;
+  const naoProcessaPix = !!form.naoProcessaPix;
 
   return (
     <div className="space-y-6">
@@ -22,24 +25,62 @@ export default function StepComplianceRisco({ form, updateField, errors = {} }) 
         {errors?.encerrado && <p className="text-xs text-red-500">Campo obrigatório</p>}
       </div>
 
-      {/* P35 — Chargeback (condicional: já processa + cartão > 0%) */}
-      {jaProcessa && temCartao && (
-        <div className="space-y-2" data-field="chargeback">
-          <label className="text-sm font-semibold text-[#002443]">Taxa de chargeback atual (%) *</label>
-          <ButtonSelector options={CHARGEBACK_OPTIONS} value={form.chargeback} onChange={(v) => updateField('chargeback', v)} columns={5} />
-          {errors?.chargeback && <p className="text-xs text-red-500">Informe a taxa de chargeback</p>}
-        </div>
-      )}
+      {/* Chargeback — SEMPRE VISÍVEL com checkbox de exceção */}
+      <div className="space-y-3" data-field="chargeback">
+        <label className="text-sm font-semibold text-[#002443]">Qual sua taxa de chargeback atual? *</label>
+        {!naoProcessaCartao && (
+          <ButtonSelector
+            options={CHARGEBACK_FAIXAS}
+            value={form.chargeback}
+            onChange={(v) => updateField('chargeback', v)}
+            columns={3}
+          />
+        )}
+        <label className="flex items-center gap-2 cursor-pointer pt-1">
+          <input
+            type="checkbox"
+            checked={naoProcessaCartao}
+            onChange={(e) => {
+              updateField('naoProcessaCartao', e.target.checked);
+              if (e.target.checked) updateField('chargeback', '');
+            }}
+            className="w-4 h-4 rounded border-[#002443]/30 text-[#2bc196] focus:ring-[#2bc196]"
+          />
+          <span className="text-xs text-[#002443]/70">Não processo pagamento de cartão</span>
+        </label>
+        {errors?.chargeback && (
+          <p className="text-xs text-red-500">Informe a taxa de chargeback ou marque "Não processo cartão"</p>
+        )}
+      </div>
 
-      {/* P35.1 — MED PIX (NOVO v5.0 — condicional: PIX > 0%) */}
-      {temPix && (
-        <div className="space-y-2" data-field="medPix">
-          <label className="text-sm font-semibold text-[#002443]">Taxa de MED PIX (%) *</label>
-          <p className="text-xs text-[#002443]/50">MED = Mecanismo Especial de Devolução do Banco Central</p>
-          <ButtonSelector options={MED_PIX_OPTIONS} value={form.medPix} onChange={(v) => updateField('medPix', v)} columns={5} />
-          {errors?.medPix && <p className="text-xs text-red-500">Informe a taxa de MED PIX</p>}
-        </div>
-      )}
+      {/* MED PIX — SEMPRE VISÍVEL com checkbox de exceção */}
+      <div className="space-y-3" data-field="medPix">
+        <label className="text-sm font-semibold text-[#002443]">Qual sua taxa de MED PIX atual? *</label>
+        <p className="text-xs text-[#002443]/50">MED = Mecanismo Especial de Devolução do Banco Central</p>
+        {!naoProcessaPix && (
+          <ButtonSelector
+            options={MED_PIX_FAIXAS}
+            value={form.medPix}
+            onChange={(v) => updateField('medPix', v)}
+            columns={4}
+          />
+        )}
+        <label className="flex items-center gap-2 cursor-pointer pt-1">
+          <input
+            type="checkbox"
+            checked={naoProcessaPix}
+            onChange={(e) => {
+              updateField('naoProcessaPix', e.target.checked);
+              if (e.target.checked) updateField('medPix', '');
+            }}
+            className="w-4 h-4 rounded border-[#002443]/30 text-[#2bc196] focus:ring-[#2bc196]"
+          />
+          <span className="text-xs text-[#002443]/70">Não processo PIX</span>
+        </label>
+        {errors?.medPix && (
+          <p className="text-xs text-red-500">Informe a taxa de MED PIX ou marque "Não processo PIX"</p>
+        )}
+      </div>
     </div>
   );
 }

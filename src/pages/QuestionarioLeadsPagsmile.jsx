@@ -125,21 +125,15 @@ export default function QuestionarioLeadsPagsmile() {
       return;
     }
     setShowValidation(false);
-    const jaProcessa = form.jaProcessa === 'Sim, já processo';
-    let next = step + 1;
-    // Skip "Taxas Atuais" (8) and "Processador" (9) when client is not yet processing
-    if (next === 8 && !jaProcessa) next = 10;
-    if (next === 9 && !jaProcessa) next = 10;
-    setStep(Math.min(next, STEPS.length - 1));
+    // Etapas 8 (Taxas) e 9 (Processador+Dores) agora SEMPRE aparecem
+    // - Etapa 8: se não processa, mostra só upload de comprovantes
+    // - Etapa 9: dores no mercado são SEMPRE visíveis (independente de processar)
+    setStep(Math.min(step + 1, STEPS.length - 1));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const prevStep = () => {
-    const jaProcessa = form.jaProcessa === 'Sim, já processo';
-    let prev = step - 1;
-    if (prev === 9 && !jaProcessa) prev = 7;
-    if (prev === 8 && !jaProcessa) prev = 7;
-    setStep(Math.max(prev, 0));
+    setStep(Math.max(step - 1, 0));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 

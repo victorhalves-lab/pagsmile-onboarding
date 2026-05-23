@@ -1,175 +1,118 @@
 import React from 'react';
-import { Plus, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 
 /**
- * MixOperacaoSlider — Composição da operação do cliente.
- * Categorias fixas: E-commerce, Dropshipping, Infoproduto, SaaS, Educação.
- * "Outros" é uma lista dinâmica: cliente pode adicionar várias categorias livres
- * com nome + percentual. Total deve somar 100%.
+ * MixOperacaoSlider — Composição da operação BASEADA NOS PRODUTOS SELECIONADOS.
+ * Recebe a lista de produtos que o cliente escolheu na Etapa 4 e gera 1 slider para cada.
+ * O cliente distribui % entre eles. Total deve somar 100%.
  *
- * value = {
- *   ecommerce: number, dropshipping: number, infoproduto: number,
- *   saas: number, educacao: number,
- *   outros: [{ nome: string, percentual: number }, ...]
- * }
+ * value = { [nomeProduto]: percentual, ... }
  */
 
-const FIXED_CATEGORIES = [
-  { key: 'ecommerce',    label: 'E-commerce',   color: '#2bc196', hint: 'Loja virtual com estoque próprio' },
-  { key: 'dropshipping', label: 'Dropshipping', color: '#36706c', hint: 'Loja sem estoque, fornecedor envia direto' },
-  { key: 'infoproduto',  label: 'Infoproduto',  color: '#5cf7cf', hint: 'Cursos, e-books, mentorias, áreas de membros' },
-  { key: 'saas',         label: 'SaaS',         color: '#1e90c8', hint: 'Software por assinatura recorrente' },
-  { key: 'educacao',     label: 'Educação',     color: '#002443', hint: 'Escola, faculdade, curso presencial / instituição' },
-];
+const COR_FISICO = '#2bc196';
+const COR_DIGITAL = '#1e90c8';
 
-export default function MixOperacaoSlider({ value, onChange }) {
-  const safeValue = {
-    ecommerce: 0, dropshipping: 0, infoproduto: 0, saas: 0, educacao: 0,
-    outros: [],
-    ...(value || {}),
-  };
+export default function MixOperacaoSlider({ value, onChange, produtos = [] }) {
+  const safeValue = value || {};
 
-  const total =
-    FIXED_CATEGORIES.reduce((s, c) => s + (Number(safeValue[c.key]) || 0), 0) +
-    (safeValue.outros || []).reduce((s, o) => s + (Number(o.percentual) || 0), 0);
-
+  const total = produtos.reduce((s, p) => s + (Number(safeValue[p.nome]) || 0), 0);
   const isValid = total === 100;
 
-  const setFixed = (key, raw) => {
+  const setPct = (nome, raw) => {
     const v = Math.max(0, Math.min(100, parseInt(raw, 10) || 0));
-    onChange({ ...safeValue, [key]: v });
+    onChange({ ...safeValue, [nome]: v });
   };
 
-  const addOutro = () => {
-    onChange({
-      ...safeValue,
-      outros: [...(safeValue.outros || []), { nome: '', percentual: 0 }],
+  // Auto-distribui igualmente entre todos os produtos
+  const distribuirIgual = () => {
+    if (produtos.length === 0) return;
+    const base = Math.floor(100 / produtos.length);
+    const resto = 100 - base * produtos.length;
+    const nova = {};
+    produtos.forEach((p, i) => {
+      nova[p.nome] = i === 0 ? base + resto : base;
     });
+    onChange(nova);
   };
 
-  const updateOutro = (idx, field, raw) => {
-    const list = [...(safeValue.outros || [])];
-    if (field === 'percentual') {
-      list[idx] = { ...list[idx], percentual: Math.max(0, Math.min(100, parseInt(raw, 10) || 0)) };
-    } else {
-      list[idx] = { ...list[idx], nome: String(raw || '').slice(0, 60) };
-    }
-    onChange({ ...safeValue, outros: list });
-  };
-
-  const removeOutro = (idx) => {
-    const list = [...(safeValue.outros || [])];
-    list.splice(idx, 1);
-    onChange({ ...safeValue, outros: list });
-  };
-
-  const renderRow = ({ key, label, color, hint, val, onPct, isOther, idx, nome, onNome, onRemove }) => (
-    <div key={key} className="space-y-1.5">
-      {isOther ? (
-        <div className="flex items-center gap-2">
-          <Input
-            placeholder='Nome da categoria (ex: "Eventos", "Consultoria")'
-            value={nome}
-            onChange={(e) => onNome(e.target.value)}
-            className="flex-1 h-9 text-sm"
-          />
-          <button
-            type="button"
-            onClick={onRemove}
-            className="text-[#002443]/40 hover:text-red-500 p-1 rounded transition-colors"
-            title="Remover esta categoria"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      ) : (
-        <div className="flex justify-between items-center">
-          <div>
-            <span className="text-sm font-medium text-[#002443]/80">{label}</span>
-            {hint && <p className="text-[10px] text-[#002443]/40 mt-0.5">{hint}</p>}
-          </div>
-          <span className="text-sm font-bold" style={{ color }}>{val || 0}%</span>
-        </div>
-      )}
-
-      <div className="flex items-center gap-3">
-        <input
-          type="range"
-          min={0}
-          max={100}
-          value={val || 0}
-          onChange={(e) => onPct(e.target.value)}
-          className="flex-1 h-2 rounded-full appearance-none cursor-pointer"
-          style={{
-            background: `linear-gradient(to right, ${color} 0%, ${color} ${val || 0}%, #e5e7eb ${val || 0}%, #e5e7eb 100%)`,
-          }}
-        />
-        <input
-          type="number"
-          min={0}
-          max={100}
-          value={val || 0}
-          onChange={(e) => onPct(e.target.value)}
-          className="w-16 h-8 text-center text-sm font-mono rounded-lg border border-[#002443]/10 bg-white"
-        />
-        {isOther && (
-          <span className="text-sm font-bold w-10 text-right" style={{ color }}>%</span>
-        )}
+  if (produtos.length === 0) {
+    return (
+      <div className="rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-sm text-amber-900">
+        ⚠️ Volte para a etapa <strong>Modelo de Negócio</strong> e selecione pelo menos 1 produto antes de prosseguir.
       </div>
-    </div>
-  );
+    );
+  }
+
+  const fisicos = produtos.filter(p => p.categoria === 'Físico');
+  const digitais = produtos.filter(p => p.categoria === 'Digital');
+
+  const renderSlider = (p) => {
+    const cor = p.categoria === 'Físico' ? COR_FISICO : COR_DIGITAL;
+    const val = Number(safeValue[p.nome]) || 0;
+    return (
+      <div key={p.nome} className="space-y-1.5">
+        <div className="flex justify-between items-center">
+          <span className="text-sm font-medium text-[#002443]/80">{p.nome}</span>
+          <span className="text-sm font-bold" style={{ color: cor }}>{val}%</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <input
+            type="range"
+            min={0}
+            max={100}
+            value={val}
+            onChange={(e) => setPct(p.nome, e.target.value)}
+            className="flex-1 h-2 rounded-full appearance-none cursor-pointer"
+            style={{
+              background: `linear-gradient(to right, ${cor} 0%, ${cor} ${val}%, #e5e7eb ${val}%, #e5e7eb 100%)`,
+            }}
+          />
+          <input
+            type="number"
+            min={0}
+            max={100}
+            value={val}
+            onChange={(e) => setPct(p.nome, e.target.value)}
+            className="w-16 h-8 text-center text-sm font-mono rounded-lg border border-[#002443]/10 bg-white"
+          />
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-5">
       {/* Disclaimer */}
       <div className="rounded-xl bg-[#5cf7cf]/10 border border-[#2bc196]/20 px-4 py-3 text-xs text-[#002443]/80 leading-relaxed">
-        💡 <strong>Os percentuais podem ser estimados.</strong> Não precisa ser exato — uma aproximação do peso de cada categoria na sua operação é suficiente. O importante é nos dar uma visão geral do que você vende.
+        💡 <strong>Os percentuais podem ser estimados.</strong> Não precisa ser exato — uma aproximação do peso de cada produto na sua operação já nos ajuda muito.
       </div>
 
-      {/* Categorias fixas */}
-      <div className="space-y-4">
-        {FIXED_CATEGORIES.map((c) =>
-          renderRow({
-            key: c.key,
-            label: c.label,
-            color: c.color,
-            hint: c.hint,
-            val: safeValue[c.key],
-            onPct: (raw) => setFixed(c.key, raw),
-          })
-        )}
-      </div>
+      {/* Botão distribuir igual */}
+      <button
+        type="button"
+        onClick={distribuirIgual}
+        className="text-xs font-medium text-[#2bc196] hover:underline"
+      >
+        Distribuir igualmente entre {produtos.length} produto{produtos.length > 1 ? 's' : ''}
+      </button>
 
-      {/* Outros (lista dinâmica) */}
-      {(safeValue.outros || []).length > 0 && (
-        <div className="space-y-4 pt-2 border-t border-[#002443]/10">
-          <p className="text-xs font-bold uppercase tracking-wider text-[#002443]/50">Outros</p>
-          {safeValue.outros.map((o, idx) =>
-            renderRow({
-              key: `outro-${idx}`,
-              color: '#8b5cf6',
-              val: o.percentual,
-              onPct: (raw) => updateOutro(idx, 'percentual', raw),
-              isOther: true,
-              idx,
-              nome: o.nome || '',
-              onNome: (raw) => updateOutro(idx, 'nome', raw),
-              onRemove: () => removeOutro(idx),
-            })
+      {/* Sliders agrupados */}
+      {fisicos.length > 0 && (
+        <div className="space-y-4">
+          {digitais.length > 0 && (
+            <p className="text-[11px] font-bold uppercase tracking-wider text-[#002443]/40">Produtos Físicos</p>
           )}
+          {fisicos.map(renderSlider)}
         </div>
       )}
 
-      <Button
-        type="button"
-        variant="outline"
-        onClick={addOutro}
-        className="w-full rounded-xl border-dashed border-[#002443]/20 text-[#002443]/70 hover:bg-[#2bc196]/5 hover:border-[#2bc196]/40 hover:text-[#002443] gap-2"
-      >
-        <Plus className="w-4 h-4" /> Adicionar outra categoria
-      </Button>
+      {digitais.length > 0 && (
+        <div className="space-y-4 pt-2">
+          {fisicos.length > 0 && (
+            <p className="text-[11px] font-bold uppercase tracking-wider text-[#002443]/40 border-t border-[#002443]/10 pt-3">Produtos Digitais</p>
+          )}
+          {digitais.map(renderSlider)}
+        </div>
+      )}
 
       {/* Total */}
       <div
