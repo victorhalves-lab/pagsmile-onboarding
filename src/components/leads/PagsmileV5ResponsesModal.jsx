@@ -196,7 +196,8 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
     negocio: [
       { label: 'Modelo de Cobrança', value: qd.modeloCobranca },
       { label: 'Breve Descrição do Negócio', value: qd.descricaoNegocio },
-      { label: '⭐ Detalhamento do que vende (mix completo)', value: qd.mixProdutosServicos, highlight: true },
+      { label: '⭐ Tipo de Produto', value: qd.tipoProduto, highlight: true },
+      { label: '⭐ Produtos que Vende', value: (qd.produtosSelecionados || []).map(p => p?.nome).filter(Boolean), highlight: true },
       { label: 'Plataforma', value: qd.plataforma },
       { label: 'Antifraude / 3DS', value: qd.antifraude },
       // Condicionais Intermediários
@@ -249,10 +250,13 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
       { label: 'Processador Atual', value: qd.processador === '__other__' ? (qd.processadorOutro || 'Outro') : qd.processador },
       { label: 'Processador (Outro)', value: qd.processador === '__other__' ? qd.processadorOutro : null },
       { label: 'Satisfação com Processador', value: qd.satisfacao },
-      { label: 'Principal Dor Atual', value: qd.dorAtual },
-      { label: 'Dor (Outro)', value: qd.dorOutro },
+      { label: 'Principal Dor com Processador Atual', value: qd.dorAtual },
+      { label: 'Dor com Processador (Outro)', value: qd.dorOutro },
       { label: 'Usa Antecipação?', value: qd.antecipacao },
       { label: 'Sabe as Taxas?', value: qd.sabeTaxas },
+      // NOVO V5.1 — Dores no Mercado (sempre obrigatórias)
+      { label: '⭐ Dores no Mercado de Pagamentos', value: qd.doresMercado, highlight: true },
+      { label: 'Outras Dores no Mercado', value: qd.doresMercadoOutro },
     ],
     taxas_atuais: [
       { label: 'MDR Crédito à Vista (1x)', value: qd.mdrAvista, isPercent: true },
@@ -269,8 +273,8 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
     ],
     compliance: [
       { label: 'Já foi encerrado por algum processador?', value: qd.encerrado },
-      { label: 'Taxa de Chargeback', value: qd.chargeback },
-      { label: 'Taxa de MED PIX', value: qd.medPix },
+      { label: 'Taxa de Chargeback', value: qd.naoProcessaCartao ? 'Não processa cartão' : qd.chargeback },
+      { label: 'Taxa de MED PIX', value: qd.naoProcessaPix ? 'Não processa PIX' : qd.medPix },
     ],
     fechamento: [
       { label: 'Quando quer começar a operar', value: qd.urgencia },
@@ -474,42 +478,123 @@ export default function PagsmileV5ResponsesModal({ open, onClose, lead }) {
                       </div>
                     )}
 
-                    {/* Mix de Operação (composição estimada) */}
+                    {/* Mix de Operação — sliders dinâmicos por PRODUTO selecionado (V5.1) */}
                     {qd.mixOperacao && (() => {
-                      const m = qd.mixOperacao;
-                      const fixed = [
-                        { label: 'E-commerce', value: m.ecommerce },
-                        { label: 'Dropshipping', value: m.dropshipping },
-                        { label: 'Infoproduto', value: m.infoproduto },
-                        { label: 'SaaS', value: m.saas },
-                        { label: 'Educação', value: m.educacao },
-                      ];
-                      const outros = Array.isArray(m.outros) ? m.outros : [];
-                      const total = fixed.reduce((s, f) => s + (Number(f.value) || 0), 0)
-                        + outros.reduce((s, o) => s + (Number(o?.percentual) || 0), 0);
-                      if (total === 0) return null;
-                      return (
-                        <div className="pt-4 border-t border-[#e2e8f0]">
-                          <div className="flex items-center justify-between mb-3">
-                            <p className="text-xs font-bold text-[#002443]/55 uppercase tracking-wider">Composição da Operação</p>
-                            <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${
-                              Math.round(total) === 100 ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
-                            }`}>
-                              Total: {Math.round(total)}%
-                            </span>
+                      const m = qd.mixOperacao || {};
+                      const produtos = Array.isArray(qd.produtosSelecionados) ? qd.produtosSelecionados : [];
+
+                      // V5.1: estrutura nova { [nomeProduto]: pct }
+                      const novaEstrutura = produtos.length > 0 && produtos.some(p => p?.nome && m[p.nome] !== undefined);
+                      // Legado V5.0: estrutura antiga { ecommerce, dropshipping, infoproduto, saas, educacao, outros: [] }
+                      const legacy = !novaEstrutura && (m.ecommerce || m.dropshipping || m.infoproduto || m.saas || m.educacao || (Array.isArray(m.outros) && m.outros.length > 0));
+
+                      if (novaEstrutura) {
+                        const fisicos = produtos.filter(p => p.categoria === 'Físico');
+                        const digitais = produtos.filter(p => p.categoria === 'Digital');
+                        const total = produtos.reduce((s, p) => s + (Number(m[p.nome]) || 0), 0);
+                        return (
+                          <div className="pt-4 border-t border-[#e2e8f0]">
+                            <div className="flex items-center justify-between mb-3">
+                              <p className="text-xs font-bold text-[#002443]/55 uppercase tracking-wider">
+                                Composição por Produto ({qd.tipoProduto || '—'})
+                              </p>
+                              <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${
+                                Math.round(total) === 100 ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
+                              }`}>
+                                Total: {Math.round(total)}%
+                              </span>
+                            </div>
+                            {fisicos.length > 0 && (
+                              <div className="space-y-3 mb-4">
+                                {digitais.length > 0 && (
+                                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40">Produtos Físicos</p>
+                                )}
+                                {fisicos.map(p => <DistributionBar key={p.nome} label={p.nome} value={m[p.nome]} />)}
+                              </div>
+                            )}
+                            {digitais.length > 0 && (
+                              <div className="space-y-3">
+                                {fisicos.length > 0 && (
+                                  <p className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40 pt-2 border-t border-[#e2e8f0]/50">Produtos Digitais</p>
+                                )}
+                                {digitais.map(p => <DistributionBar key={p.nome} label={p.nome} value={m[p.nome]} />)}
+                              </div>
+                            )}
                           </div>
-                          <div className="space-y-3">
-                            {fixed.map(f => <DistributionBar key={f.label} label={f.label} value={f.value} />)}
-                            {outros.map((o, i) => (
-                              <DistributionBar key={`outros-${i}`} label={o?.nome || `Outro ${i+1}`} value={o?.percentual} />
-                            ))}
+                        );
+                      }
+
+                      // Render legado (leads V5.0 antigos)
+                      if (legacy) {
+                        const fixed = [
+                          { label: 'E-commerce', value: m.ecommerce },
+                          { label: 'Dropshipping', value: m.dropshipping },
+                          { label: 'Infoproduto', value: m.infoproduto },
+                          { label: 'SaaS', value: m.saas },
+                          { label: 'Educação', value: m.educacao },
+                        ];
+                        const outros = Array.isArray(m.outros) ? m.outros : [];
+                        const total = fixed.reduce((s, f) => s + (Number(f.value) || 0), 0)
+                          + outros.reduce((s, o) => s + (Number(o?.percentual) || 0), 0);
+                        return (
+                          <div className="pt-4 border-t border-[#e2e8f0]">
+                            <div className="flex items-center justify-between mb-3">
+                              <p className="text-xs font-bold text-[#002443]/55 uppercase tracking-wider">Composição da Operação (versão antiga)</p>
+                              <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${
+                                Math.round(total) === 100 ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
+                              }`}>
+                                Total: {Math.round(total)}%
+                              </span>
+                            </div>
+                            <div className="space-y-3">
+                              {fixed.map(f => <DistributionBar key={f.label} label={f.label} value={f.value} />)}
+                              {outros.map((o, i) => (
+                                <DistributionBar key={`outros-${i}`} label={o?.nome || `Outro ${i+1}`} value={o?.percentual} />
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                      );
+                        );
+                      }
+                      return null;
                     })()}
 
                     {distTotal === 0 && distParcTotal === 0 && distDesTotal === 0 && !qd.mixOperacao && (
                       <p className="text-sm text-[#002443]/40 italic text-center py-8">Nenhuma distribuição informada</p>
+                    )}
+                  </div>
+                ) : activeSection === 'taxas_atuais' ? (
+                  <div className="space-y-4">
+                    <div className="space-y-2.5">
+                      {(sectionContent.taxas_atuais || []).map((field, i) => (
+                        <FieldRow key={i} {...field} />
+                      ))}
+                    </div>
+                    {/* Comprovantes anexados (V5.1 — opcional, sem OCR) */}
+                    {Array.isArray(qd.comprovantesTaxas) && qd.comprovantesTaxas.length > 0 && (
+                      <div className="mt-4 pt-4 border-t border-[#e2e8f0]">
+                        <p className="text-xs text-[#002443]/55 font-medium mb-3 flex items-center gap-1.5">
+                          <FileText className="w-3.5 h-3.5 text-[#2bc196]" />
+                          Comprovantes Anexados ({qd.comprovantesTaxas.length})
+                        </p>
+                        <div className="space-y-2">
+                          {qd.comprovantesTaxas.map((f, i) => (
+                            <a
+                              key={i}
+                              href={f.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-3 p-3 rounded-xl bg-[#2bc196]/5 border border-[#2bc196]/20 hover:bg-[#2bc196]/10 transition-colors group"
+                            >
+                              <FileText className="w-4 h-4 text-[#2bc196] shrink-0" />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs font-medium text-[#002443] truncate">{f.name || `Arquivo ${i + 1}`}</p>
+                                {f.size && <p className="text-[10px] text-[#002443]/40">{(f.size / 1024).toFixed(0)} KB</p>}
+                              </div>
+                              <ExternalLink className="w-3.5 h-3.5 text-[#002443]/40 group-hover:text-[#2bc196] shrink-0" />
+                            </a>
+                          ))}
+                        </div>
+                      </div>
                     )}
                   </div>
                 ) : activeSection === 'compliance' ? (
