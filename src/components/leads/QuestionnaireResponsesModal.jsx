@@ -26,9 +26,7 @@ const SECTION_CONFIG = [
   { id: 'taxas_cartao', label: 'Taxas de Cartão', icon: CreditCard, accent: 'bg-pink-500', orderRange: [41, 50] },
   { id: 'taxas_outras', label: 'PIX, Boleto & Outras', icon: DollarSign, accent: 'bg-teal-500', orderRange: [51, 58] },
   { id: 'produtos', label: 'Produtos & Integrações', icon: Package, accent: 'bg-orange-500', orderRange: [59, 65] },
-  { id: 'complementar', label: 'Complementares', icon: FileText, accent: 'bg-slate-500', orderRange: [66, 94.99] },
-  // Seção dedicada para os Top 5 maiores clientes (gateways/marketplaces V4 — order 95.x-96.x)
-  { id: 'top5_clientes', label: 'Top 5 Maiores Clientes', icon: Briefcase, accent: 'bg-rose-500', orderRange: [95, 97] },
+  { id: 'complementar', label: 'Complementares', icon: FileText, accent: 'bg-slate-500', orderRange: [66, 80] },
   { id: 'arquivos', label: 'Arquivos Enviados', icon: Paperclip, accent: 'bg-emerald-500', orderRange: [-1, -1] },
   { id: 'extras', label: 'Dados Extras', icon: ShoppingBag, accent: 'bg-gray-500', orderRange: [-2, -2] },
   { id: 'enrichment', label: 'Enriquecimento v5', icon: FileSearch, accent: 'bg-purple-500', orderRange: [-3, -3] },
