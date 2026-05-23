@@ -23,6 +23,15 @@ const DEFAULT_LINKS = {
   ComplianceMarketplaceV4:        'https://cadastro.io/119c66a9c7f1e2618b20b3a41f656d3b',
   CompliancePixMerchantV4:        'https://cadastro.io/22bd30f9dfad265e9c5f8497bbbea476',
   CompliancePixIntermediarioV4:   'https://cadastro.io/22bd30f9dfad265e9c5f8497bbbea476',
+  // Subsellers — usam link genérico cadastro.io (admin pode sobrescrever via ComplianceConfig).
+  // Não estamos mexendo no MerchantLinkV4 (decisão do builder em 23/Mai).
+  // Chaves: os valores REAIS de templateModel passados por SubsellerDocUpload.jsx
+  // são 'subseller_pf' e 'subseller_v2' (NÃO os names da entidade QuestionnaireTemplate).
+  subseller_pf:                   'https://cadastro.io/9f7d5853b6dc373b07c2498557ffc410',
+  subseller_v2:                   'https://cadastro.io/9f7d5853b6dc373b07c2498557ffc410',
+  // Aliases para os nomes "*_lite_v4" caso outro lugar passe esse formato:
+  subseller_pj_lite_v4:           'https://cadastro.io/9f7d5853b6dc373b07c2498557ffc410',
+  subseller_pf_lite_v4:           'https://cadastro.io/9f7d5853b6dc373b07c2498557ffc410',
 };
 
 Deno.serve(async (req) => {

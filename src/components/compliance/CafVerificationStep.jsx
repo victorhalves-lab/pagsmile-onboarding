@@ -15,6 +15,7 @@ import CafManualSelfieUpload from './CafManualSelfieUpload';
 import BdcFallbackVerification from './BdcFallbackVerification';
 import CafErrorDiagnostic from './CafErrorDiagnostic';
 import CafMobileProgressBar from './CafMobileProgressBar';
+import CafFallbackLinkCard from './CafFallbackLinkCard';
 import { buildCafFallbackUrl, fetchCafFallbackLinks } from '@/lib/cafOnboardingLinks';
 
 /**
@@ -775,32 +776,45 @@ export default function CafVerificationStep({
   // === RENDER ===
 
   if (phase === 'done') {
+    const doneCafUrl = buildCafFallbackUrl(complianceModel, {
+      onboardingCaseId,
+      cnpj: merchantCnpj,
+      cpf: resolvedPerson?.cpf || personCpf,
+      name: resolvedPerson?.name || personName,
+      email: merchantEmail,
+      linksOverride: cafLinksOverride,
+    });
     return (
-      <div className="text-center py-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4">
-          <CheckCircle2 className="w-8 h-8 text-green-600" />
+      <div className="space-y-6">
+        <div className="text-center py-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4">
+            <CheckCircle2 className="w-8 h-8 text-green-600" />
+          </div>
+          <h3 className="text-lg font-bold text-[#002443] mb-2">Verificação Concluída!</h3>
+          <p className="text-sm text-[#002443]/60 mb-2">
+            Documento e prova de vida verificados com sucesso.
+          </p>
+          <div className="flex flex-col items-center gap-1 mb-6">
+            <div className="flex items-center gap-2 text-xs text-green-600">
+              <CheckCircle2 className="w-3.5 h-3.5" /> Documento frente capturado {savedResults.front ? '✓ salvo' : ''}
+            </div>
+            <div className="flex items-center gap-2 text-xs text-green-600">
+              <CheckCircle2 className="w-3.5 h-3.5" /> Documento verso capturado {savedResults.back ? '✓ salvo' : ''}
+            </div>
+            <div className="flex items-center gap-2 text-xs text-green-600">
+              <CheckCircle2 className="w-3.5 h-3.5" /> Prova de vida aprovada {savedResults.liveness ? '✓ salvo' : ''}
+            </div>
+          </div>
+          <Button
+            onClick={() => onComplete?.({ status: 'approved', savedResults })}
+            className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-8 h-12 rounded-xl"
+          >
+            Continuar <ArrowRight className="w-4 h-4 ml-2" />
+          </Button>
         </div>
-        <h3 className="text-lg font-bold text-[#002443] mb-2">Verificação Concluída!</h3>
-        <p className="text-sm text-[#002443]/60 mb-2">
-          Documento e prova de vida verificados com sucesso.
-        </p>
-        <div className="flex flex-col items-center gap-1 mb-6">
-          <div className="flex items-center gap-2 text-xs text-green-600">
-            <CheckCircle2 className="w-3.5 h-3.5" /> Documento frente capturado {savedResults.front ? '✓ salvo' : ''}
-          </div>
-          <div className="flex items-center gap-2 text-xs text-green-600">
-            <CheckCircle2 className="w-3.5 h-3.5" /> Documento verso capturado {savedResults.back ? '✓ salvo' : ''}
-          </div>
-          <div className="flex items-center gap-2 text-xs text-green-600">
-            <CheckCircle2 className="w-3.5 h-3.5" /> Prova de vida aprovada {savedResults.liveness ? '✓ salvo' : ''}
-          </div>
-        </div>
-        <Button
-          onClick={() => onComplete?.({ status: 'approved', savedResults })}
-          className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white px-8 h-12 rounded-xl"
-        >
-          Continuar <ArrowRight className="w-4 h-4 ml-2" />
-        </Button>
+
+        {/* Lembrete: se o cliente fez pelo link CAF, precisa mandar o print pra garantir conciliação */}
+        {doneCafUrl && <CafFallbackLinkCard variant="done" cafFallbackUrl={doneCafUrl} />}
       </div>
     );
   }
@@ -943,6 +957,36 @@ export default function CafVerificationStep({
               )}
             </Button>
           </div>
+
+          {/* Alternativa CAF (link externo) — sempre disponível desde o início */}
+          {(() => {
+            const readyCafUrl = buildCafFallbackUrl(complianceModel, {
+              onboardingCaseId,
+              cnpj: merchantCnpj,
+              cpf: resolvedPerson?.cpf || personCpf,
+              name: resolvedPerson?.name || personName,
+              email: merchantEmail,
+              linksOverride: cafLinksOverride,
+            });
+            if (!readyCafUrl) return null;
+            return (
+              <CafFallbackLinkCard
+                variant="ready"
+                cafFallbackUrl={readyCafUrl}
+                onCafFallbackClick={() => {
+                  callPublicFunction('cafFallbackLinkOpened', {
+                    onboardingCaseId: onboardingCaseId || '',
+                    docLinkToken,
+                    complianceModel: complianceModel || '',
+                    fallbackUrl: readyCafUrl,
+                    attemptCount: 0,
+                    errorName: 'user_opt_in_ready_screen',
+                    errorMessage: 'Cliente optou pelo link CAF antes de iniciar o SDK',
+                  }).catch(() => {});
+                }}
+              />
+            );
+          })()}
         </div>
       )}
 

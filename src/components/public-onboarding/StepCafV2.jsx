@@ -10,6 +10,7 @@ import { ArrowLeft } from 'lucide-react';
  */
 export default function StepCafV2({
   merchant, caseId, onBack, onComplete, canGoBack,
+  complianceModel,   // ← novo: permite renderizar o link CAF correto (cadastro.io por segmento)
 }) {
   return (
     <div>
@@ -17,6 +18,9 @@ export default function StepCafV2({
         personName={merchant?.fullName || ''}
         personCpf={merchant?.cpfCnpj || ''}
         onboardingCaseId={caseId}
+        complianceModel={complianceModel}
+        merchantCnpj={merchant?.cpfCnpj || ''}
+        merchantEmail={merchant?.email || ''}
         onComplete={(result) => onComplete(result)}
       />
 

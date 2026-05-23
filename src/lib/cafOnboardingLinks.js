@@ -58,6 +58,12 @@ export const CAF_ONBOARDING_LINKS_BY_COMPLIANCE_V4 = {
   // PIX — mesmo link oficial para merchant e intermediário
   CompliancePixMerchantV4:        'https://cadastro.io/22bd30f9dfad265e9c5f8497bbbea476',
   CompliancePixIntermediarioV4:   'https://cadastro.io/22bd30f9dfad265e9c5f8497bbbea476',
+  // Subsellers (defaults frontend — admin pode sobrescrever via ComplianceConfig).
+  // Chaves batem com os templateModel reais passados por SubsellerDocUpload.jsx.
+  subseller_pf:                   'https://cadastro.io/9f7d5853b6dc373b07c2498557ffc410',
+  subseller_v2:                   'https://cadastro.io/9f7d5853b6dc373b07c2498557ffc410',
+  subseller_pj_lite_v4:           'https://cadastro.io/9f7d5853b6dc373b07c2498557ffc410',
+  subseller_pf_lite_v4:           'https://cadastro.io/9f7d5853b6dc373b07c2498557ffc410',
 };
 
 /**
