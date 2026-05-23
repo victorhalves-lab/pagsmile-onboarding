@@ -21,6 +21,10 @@ function cleanSectionName(rawSection) {
 
 function extractSection(questionText) {
   if (!questionText) return 'Geral';
+  // Detect "Top 5 maiores clientes" group (gateways/marketplaces)
+  if (/top\s*5\s*maior(es)?\s*cliente|maior\s*cliente.*top\s*5/i.test(questionText)) {
+    return 'Top 5 Maiores Clientes';
+  }
   // Try "Section - Question" pattern
   const dashSplit = questionText.split(' - ');
   if (dashSplit.length > 1) return cleanSectionName(dashSplit[0]);

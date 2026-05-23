@@ -279,4 +279,59 @@ export const QUESTIONS_V5_2 = [
     tiers_aplicaveis: ['subseller_pf'],
     segmentos_aplicaveis: ['all'],
   },
+
+  // ════════════════════════════════════════════════════════════════════════
+  // CAPABILITY: splits/subseller — Top 5 Maiores Clientes (sub-sellers)
+  // ════════════════════════════════════════════════════════════════════════
+  // Obrigatório para gateways e marketplaces — pedido em 23/Mai/2026.
+  // Cada cliente tem 3 perguntas: CNPJ, Nome/Razão Social, Descrição do modelo.
+  // Aparecem só quando a capability splits/subseller está ativa (= segmentos
+  // gateway+marketplace+plataforma_vertical no V5.2).
+  ...Array.from({ length: 5 }, (_, i) => {
+    const n = i + 1;
+    const ordinal = ['1º', '2º', '3º', '4º', '5º'][i];
+    return [
+      {
+        id_canonico: `q_cap_splits_top5_${n}_cnpj`,
+        order: 450 + (i * 10),
+        text: `CNPJ do ${ordinal} maior cliente (Top 5)`,
+        type: 'CPF_CNPJ',
+        isRequired: true,
+        categoria_funcional: 'splits_marketplace',
+        modalidade_origem: 'modalidade_c_input_puro',
+        capabilities_ativam: ['splits/subseller'],
+        helpText: i === 0 ? 'Informe os 5 maiores clientes (em volume) que operam pela sua plataforma.' : undefined,
+        framework_version_intro: 'v5.2',
+        tiers_aplicaveis: ['tier_2', 'tier_3'],
+        segmentos_aplicaveis: ['marketplace', 'gateway', 'plataforma_vertical'],
+      },
+      {
+        id_canonico: `q_cap_splits_top5_${n}_nome`,
+        order: 451 + (i * 10),
+        text: `Nome / Razão Social do ${ordinal} maior cliente`,
+        type: 'TEXT',
+        isRequired: true,
+        categoria_funcional: 'splits_marketplace',
+        modalidade_origem: 'modalidade_c_input_puro',
+        capabilities_ativam: ['splits/subseller'],
+        framework_version_intro: 'v5.2',
+        tiers_aplicaveis: ['tier_2', 'tier_3'],
+        segmentos_aplicaveis: ['marketplace', 'gateway', 'plataforma_vertical'],
+      },
+      {
+        id_canonico: `q_cap_splits_top5_${n}_modelo`,
+        order: 452 + (i * 10),
+        text: `Descrição do modelo de negócio do ${ordinal} maior cliente`,
+        type: 'TEXT',
+        isRequired: true,
+        categoria_funcional: 'splits_marketplace',
+        modalidade_origem: 'modalidade_c_input_puro',
+        capabilities_ativam: ['splits/subseller'],
+        helpText: i === 0 ? 'O que esse cliente vende/faz e como opera através da sua plataforma.' : undefined,
+        framework_version_intro: 'v5.2',
+        tiers_aplicaveis: ['tier_2', 'tier_3'],
+        segmentos_aplicaveis: ['marketplace', 'gateway', 'plataforma_vertical'],
+      },
+    ];
+  }).flat(),
 ];
