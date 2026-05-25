@@ -109,6 +109,7 @@ export default function Layout({ children, currentPageName }) {
       label: t('menu.leads_proposals'),
       icon: Inbox,
       items: [
+        { label: t('menu.hub_propostas') || 'Hub de Propostas', path: 'HubPropostas', icon: FileText, highlight: true },
         { label: 'Dashboard CEO', path: 'DashboardCEO', icon: BarChart3 },
         { label: 'Dashboard Comercial', path: 'DashboardComercial', icon: LayoutDashboard },
         { label: t('menu.questionnaire_links'), path: 'LinksQuestionariosLeads', icon: LinkIcon },

@@ -100,6 +100,10 @@ const V5_2_Sandbox = lazyPage(() => import('./pages/V5_2_Sandbox'));
 const ComparatorV4V5_2 = lazyPage(() => import('./pages/ComparatorV4V5_2'));
 const V5_2_AuditTrail = lazyPage(() => import('./pages/V5_2_AuditTrail'));
 const V5_2_ReplayStudio = lazyPage(() => import('./pages/V5_2_ReplayStudio'));
+const HubPropostas = lazyPage(() => import('./pages/HubPropostas'));
+const GlobalQuestionnaireForm = lazyPage(() => import('./pages/GlobalQuestionnaireForm'));
+const GlobalPublicProposal = lazyPage(() => import('./pages/GlobalPublicProposal'));
+const GlobalComplianceForm = lazyPage(() => import('./pages/GlobalComplianceForm'));
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -183,6 +187,11 @@ const PublicRoutes = () => (
 
     {/* Bank Data Collection (public, client-facing) */}
     <Route path="/BankDataCollect" element={<LayoutWrapper currentPageName="BankDataCollect"><BankDataCollect /></LayoutWrapper>} />
+
+    {/* Propostas Global (público, USD, trilíngue) */}
+    <Route path="/GlobalQuestionnaireForm" element={<LayoutWrapper currentPageName="GlobalQuestionnaireForm"><GlobalQuestionnaireForm /></LayoutWrapper>} />
+    <Route path="/GlobalPublicProposal" element={<LayoutWrapper currentPageName="GlobalPublicProposal"><GlobalPublicProposal /></LayoutWrapper>} />
+    <Route path="/GlobalComplianceForm" element={<LayoutWrapper currentPageName="GlobalComplianceForm"><GlobalComplianceForm /></LayoutWrapper>} />
 
     {/* Slug redirect — short URLs */}
     <Route path="/s/:slug" element={<LayoutWrapper currentPageName="SlugRedirect"><SlugRedirect /></LayoutWrapper>} />
@@ -443,6 +452,7 @@ const AuthenticatedApp = () => {
       <Route path="/ComparatorV4V5_2" element={<LayoutWrapper currentPageName="ComparatorV4V5_2"><ComparatorV4V5_2 /></LayoutWrapper>} />
       <Route path="/V5_2_AuditTrail" element={<LayoutWrapper currentPageName="V5_2_AuditTrail"><V5_2_AuditTrail /></LayoutWrapper>} />
       <Route path="/V5_2_ReplayStudio" element={<LayoutWrapper currentPageName="V5_2_ReplayStudio"><V5_2_ReplayStudio /></LayoutWrapper>} />
+      <Route path="/HubPropostas" element={<LayoutWrapper currentPageName="HubPropostas"><HubPropostas /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
