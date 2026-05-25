@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Flag, Globe2, Handshake } from 'lucide-react';
 import GestaoPropostas from './GestaoPropostas';
 import GlobalHub from '@/components/global/GlobalHub';
+import UnifiedProposalsList from '@/components/unified/UnifiedProposalsList';
 
 /**
  * Hub central de Propostas. Switch entre:
@@ -12,7 +13,7 @@ import GlobalHub from '@/components/global/GlobalHub';
 const TABS = [
   { id: 'brasil', label: 'Propostas Brasil', icon: Flag,     accent: 'from-yellow-400 to-green-500' },
   { id: 'global', label: 'Propostas Global', icon: Globe2,   accent: 'from-[#2bc196] to-[#5cf7cf]' },
-  { id: 'juntas', label: 'Propostas Juntas', icon: Handshake,accent: 'from-[#002443] to-[#003366]' },
+  { id: 'juntas', label: 'Propostas Unificadas', icon: Handshake,accent: 'from-[#002443] to-[#003366]' },
 ];
 
 export default function HubPropostas() {
@@ -45,15 +46,7 @@ export default function HubPropostas() {
       {/* Conteúdo */}
       {tab === 'brasil' && <GestaoPropostas />}
       {tab === 'global' && <GlobalHub />}
-      {tab === 'juntas' && (
-        <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-10 text-center">
-          <Handshake className="w-12 h-12 text-[#002443]/30 mx-auto mb-3" />
-          <h3 className="text-lg font-bold text-[#002443]">Propostas Juntas</h3>
-          <p className="text-sm text-[#002443]/60 max-w-md mx-auto mt-2">
-            Visão consolidada de propostas Brasil + Global do mesmo cliente. Em breve.
-          </p>
-        </div>
-      )}
+      {tab === 'juntas' && <UnifiedProposalsList />}
     </div>
   );
 }

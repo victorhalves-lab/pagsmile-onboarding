@@ -104,6 +104,8 @@ const HubPropostas = lazyPage(() => import('./pages/HubPropostas'));
 const GlobalQuestionnaireForm = lazyPage(() => import('./pages/GlobalQuestionnaireForm'));
 const GlobalPublicProposal = lazyPage(() => import('./pages/GlobalPublicProposal'));
 const GlobalComplianceForm = lazyPage(() => import('./pages/GlobalComplianceForm'));
+const CriarPropostaUnificada = lazyPage(() => import('./pages/CriarPropostaUnificada'));
+const PropostaUnificadaPublica = lazyPage(() => import('./pages/PropostaUnificadaPublica'));
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -195,6 +197,9 @@ const PublicRoutes = () => (
 
     {/* Slug redirect — short URLs */}
     <Route path="/s/:slug" element={<LayoutWrapper currentPageName="SlugRedirect"><SlugRedirect /></LayoutWrapper>} />
+
+    {/* Proposta Unificada Pública (Brasil + Global em tabs) */}
+    <Route path="/u/:slug" element={<PropostaUnificadaPublica />} />
 
     {/* Friendly public slug URLs for proposals and contracts */}
     <Route path="/p/:slug" element={<LayoutWrapper currentPageName="PublicSlugRedirect"><PublicSlugRedirect type="proposal" /></LayoutWrapper>} />
@@ -453,6 +458,7 @@ const AuthenticatedApp = () => {
       <Route path="/V5_2_AuditTrail" element={<LayoutWrapper currentPageName="V5_2_AuditTrail"><V5_2_AuditTrail /></LayoutWrapper>} />
       <Route path="/V5_2_ReplayStudio" element={<LayoutWrapper currentPageName="V5_2_ReplayStudio"><V5_2_ReplayStudio /></LayoutWrapper>} />
       <Route path="/HubPropostas" element={<LayoutWrapper currentPageName="HubPropostas"><HubPropostas /></LayoutWrapper>} />
+      <Route path="/CriarPropostaUnificada" element={<LayoutWrapper currentPageName="CriarPropostaUnificada"><CriarPropostaUnificada /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

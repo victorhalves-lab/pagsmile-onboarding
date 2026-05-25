@@ -56,7 +56,7 @@ const PUBLIC_PATHS_LOWER = new Set(Array.from(PUBLIC_PATHS).map(p => p.toLowerCa
 
 // Public URL prefixes (e.g. /p/:slug, /parceiro/:id, etc.).
 const PUBLIC_PREFIXES = [
-  '/parceiro/', '/s/', '/p/', '/pp/', '/pix/', '/c/',
+  '/parceiro/', '/s/', '/p/', '/pp/', '/pix/', '/c/', '/u/',
 ];
 
 function normalizePath(pathname) {
