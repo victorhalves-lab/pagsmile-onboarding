@@ -45,6 +45,10 @@ export const PUBLIC_PATHS = new Set([
   '/LivenessSimulation',
   // Bank data collection (partner doc flow)
   '/BankDataCollect',
+  // Propostas Global (public, USD, trilingual)
+  '/GlobalQuestionnaireForm',
+  '/GlobalPublicProposal',
+  '/GlobalComplianceForm',
 ]);
 
 // Case-insensitive lookup set.
