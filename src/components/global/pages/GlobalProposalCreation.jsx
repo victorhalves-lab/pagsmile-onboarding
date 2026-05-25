@@ -12,6 +12,8 @@ import { toast } from 'sonner';
 import { INTERCHANGE_OPTIONS, MCC_OPTIONS } from '@/lib/global/interchangeData';
 import InterchangeSelector from '@/components/global/InterchangeSelector';
 import CountrySelector from '@/components/global/public/CountrySelector';
+import CountryPricingBuilder from '@/components/global/proposal-creation/CountryPricingBuilder';
+import { HR_INDUSTRIES } from '@/lib/global/regulatoryAlerts';
 
 /**
  * Editor de Proposta Global. Permite criar uma proposta em USD com:
@@ -31,6 +33,9 @@ export default function GlobalProposalCreation() {
     language: 'en',
     mccs: [],
     target_markets: [],
+    pricing_model: 'cross_border_interchange',
+    declared_industries: [], // HR industries do lead (gera alertas)
+    country_pricing: [],
     base_cost_percentage: 0.5,
     selected_interchange_type: 'combined_avg',
     interchange_percentage: 0,
@@ -38,9 +43,13 @@ export default function GlobalProposalCreation() {
     markup_percentage: 1.0,
     fixed_fee_per_transaction: 0.30,
     setup_fee: 0,
-    refund_fee: 0.50,
-    chargeback_fee: 15.00,
-    risk_control_fee: 0,
+    refund_fee: 1,
+    chargeback_fee: 1,
+    risk_control_fee: 0.1,
+    settlement_fee_usd: 50,
+    fx_percentage: 3,
+    settlement_frequency_days: 30,
+    settlement_currency: 'USD',
     rolling_reserve_percentage: 5,
     rolling_reserve_days: 90,
     settlement_days: 'D+2',
@@ -101,11 +110,18 @@ export default function GlobalProposalCreation() {
 
   const saveM = useMutation({
     mutationFn: async () => {
-      if (!form.client_name || !form.contact_email || !form.mccs.length) {
-        throw new Error('Preencha cliente, e-mail e ao menos um MCC.');
+      if (!form.client_name || !form.contact_email) {
+        throw new Error('Preencha cliente e e-mail.');
       }
+      if (form.pricing_model === 'cross_border_interchange' && !form.mccs.length) {
+        throw new Error('Modo Interchange++ exige ao menos um MCC.');
+      }
+      if ((form.pricing_model === 'local_payments' || form.pricing_model === 'hybrid') && !form.country_pricing.length) {
+        throw new Error('Modo Local Payments exige ao menos um país com canais.');
+      }
+      const { declared_industries, ...rest } = form;
       const payload = {
-        ...form,
+        ...rest,
         final_rate_percentage: Number(finalRate.toFixed(3)),
         final_fixed_fee: Number(finalFixed.toFixed(3)),
         status: 'sent',
@@ -131,6 +147,30 @@ export default function GlobalProposalCreation() {
     <div className="grid lg:grid-cols-3 gap-4">
       {/* Coluna principal — formulário */}
       <div className="lg:col-span-2 space-y-4">
+        {/* Toggle de modelo de pricing */}
+        <Card className="border-[#2bc196]/30 bg-gradient-to-br from-white to-[#2bc196]/5">
+          <CardContent className="pt-4">
+            <Label className="text-xs font-bold uppercase tracking-wider text-[#002443]/60 mb-2 block">Modelo de Pricing</Label>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { code: 'cross_border_interchange', label: 'Cross-Border USD', desc: 'Interchange++ em USD' },
+                { code: 'local_payments',            label: 'Local Payments',  desc: 'Por país × canal × método' },
+                { code: 'hybrid',                    label: 'Híbrido',         desc: 'USD + Local Payments' },
+              ].map(opt => (
+                <button key={opt.code} type="button" onClick={() => setF('pricing_model', opt.code)}
+                  className={`p-2 rounded-lg border-2 transition-all text-left ${
+                    form.pricing_model === opt.code
+                      ? 'border-[#2bc196] bg-[#2bc196]/10'
+                      : 'border-[#002443]/10 bg-white hover:border-[#2bc196]/40'
+                  }`}>
+                  <div className="text-xs font-bold text-[#002443]">{opt.label}</div>
+                  <div className="text-[10px] text-[#002443]/60 mt-0.5">{opt.desc}</div>
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
         <Card className="border-[#002443]/5">
           <CardHeader><CardTitle className="text-base flex items-center gap-2"><FileText className="w-4 h-4 text-[#2bc196]" /> Cliente</CardTitle></CardHeader>
           <CardContent className="space-y-3">
@@ -174,6 +214,43 @@ export default function GlobalProposalCreation() {
           </CardContent>
         </Card>
 
+        {/* HR Industries — sempre visível (alimenta alertas regulatórios) */}
+        <Card className="border-[#002443]/5">
+          <CardHeader><CardTitle className="text-base">Indústrias declaradas (HR)</CardTitle></CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-1.5">
+              {HR_INDUSTRIES.map(ind => (
+                <button key={ind.code} type="button"
+                  onClick={() => toggleArr('declared_industries', ind.code)}
+                  className={`text-xs px-2.5 py-1 rounded-full border transition-all ${
+                    form.declared_industries.includes(ind.code)
+                      ? 'bg-amber-500 text-white border-amber-500'
+                      : 'bg-white text-[#002443]/70 border-[#002443]/10 hover:border-amber-400'
+                  }`}>
+                  {ind.label}
+                </button>
+              ))}
+            </div>
+            <p className="text-[10px] text-[#002443]/50 mt-2">
+              Marque as indústrias do cliente — geram alertas regulatórios automáticos por país.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Builder de pricing por país (Local/Hybrid) */}
+        {(form.pricing_model === 'local_payments' || form.pricing_model === 'hybrid') && (
+          <Card className="border-[#002443]/5">
+            <CardHeader><CardTitle className="text-base flex items-center gap-2"><DollarSign className="w-4 h-4 text-[#2bc196]" /> Pricing por País</CardTitle></CardHeader>
+            <CardContent>
+              <CountryPricingBuilder
+                value={form.country_pricing}
+                onChange={(v) => setF('country_pricing', v)}
+                declaredIndustries={form.declared_industries}
+              />
+            </CardContent>
+          </Card>
+        )}
+
         <Card className="border-[#002443]/5">
           <CardHeader><CardTitle className="text-base">MCCs & Mercados</CardTitle></CardHeader>
           <CardContent className="space-y-3">
@@ -207,8 +284,10 @@ export default function GlobalProposalCreation() {
           </CardContent>
         </Card>
 
+        {/* Composição cross-border só aparece nos modelos cross_border_interchange e hybrid */}
+        {(form.pricing_model === 'cross_border_interchange' || form.pricing_model === 'hybrid') && (
         <Card className="border-[#002443]/5">
-          <CardHeader><CardTitle className="text-base flex items-center gap-2"><DollarSign className="w-4 h-4 text-[#2bc196]" /> Composição da Taxa</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base flex items-center gap-2"><DollarSign className="w-4 h-4 text-[#2bc196]" /> Composição da Taxa (Cross-Border USD)</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             <div>
               <Label className="text-xs mb-1.5 block">Interchange (escolha o tier ou personalize)</Label>
@@ -239,18 +318,32 @@ export default function GlobalProposalCreation() {
             </div>
           </CardContent>
         </Card>
+        )}
 
         <Card className="border-[#002443]/5">
-          <CardHeader><CardTitle className="text-base">Outras Taxas & Reserva</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base">Outras Taxas & Settlement</CardTitle></CardHeader>
           <CardContent className="grid grid-cols-2 gap-3">
-            <div><Label className="text-xs">Setup Fee (USD)</Label><Input type="number" step="0.01" value={form.setup_fee} onChange={e => setF('setup_fee', e.target.value)} /></div>
-            <div><Label className="text-xs">Refund Fee (USD)</Label><Input type="number" step="0.01" value={form.refund_fee} onChange={e => setF('refund_fee', e.target.value)} /></div>
-            <div><Label className="text-xs">Chargeback Fee (USD)</Label><Input type="number" step="0.01" value={form.chargeback_fee} onChange={e => setF('chargeback_fee', e.target.value)} /></div>
-            <div><Label className="text-xs">Risk Control Fee (USD)</Label><Input type="number" step="0.01" value={form.risk_control_fee} onChange={e => setF('risk_control_fee', e.target.value)} /></div>
+            <div><Label className="text-xs">Setup Fee (USD)</Label><Input type="number" step="0.01" value={form.setup_fee} onChange={e => setF('setup_fee', e.target.value)} placeholder="0 = FREE" /></div>
+            <div><Label className="text-xs">Refund Fee (USD/trx)</Label><Input type="number" step="0.01" value={form.refund_fee} onChange={e => setF('refund_fee', e.target.value)} /></div>
+            <div><Label className="text-xs">Chargeback Fee (USD/trx)</Label><Input type="number" step="0.01" value={form.chargeback_fee} onChange={e => setF('chargeback_fee', e.target.value)} /></div>
+            <div><Label className="text-xs">Risk Control (USD/trx cartão)</Label><Input type="number" step="0.01" value={form.risk_control_fee} onChange={e => setF('risk_control_fee', e.target.value)} /></div>
+            <div><Label className="text-xs">Settlement Fee (USD/wire)</Label><Input type="number" step="1" value={form.settlement_fee_usd} onChange={e => setF('settlement_fee_usd', e.target.value)} /></div>
+            <div><Label className="text-xs">FX Spread (%)</Label><Input type="number" step="0.1" value={form.fx_percentage} onChange={e => setF('fx_percentage', e.target.value)} /></div>
+            <div><Label className="text-xs">Settlement freq. (dias)</Label><Input type="number" value={form.settlement_frequency_days} onChange={e => setF('settlement_frequency_days', e.target.value)} /></div>
+            <div>
+              <Label className="text-xs">Settlement currency</Label>
+              <Select value={form.settlement_currency} onValueChange={v => setF('settlement_currency', v)}>
+                <SelectTrigger className="h-10"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="USD">USD</SelectItem>
+                  <SelectItem value="EUR">EUR</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <div><Label className="text-xs">Rolling Reserve (%)</Label><Input type="number" step="0.1" value={form.rolling_reserve_percentage} onChange={e => setF('rolling_reserve_percentage', e.target.value)} /></div>
             <div><Label className="text-xs">Rolling Reserve (dias)</Label><Input type="number" value={form.rolling_reserve_days} onChange={e => setF('rolling_reserve_days', e.target.value)} /></div>
             <div>
-              <Label className="text-xs">Settlement</Label>
+              <Label className="text-xs">Settlement D+</Label>
               <Select value={form.settlement_days} onValueChange={v => setF('settlement_days', v)}>
                 <SelectTrigger className="h-10"><SelectValue /></SelectTrigger>
                 <SelectContent>

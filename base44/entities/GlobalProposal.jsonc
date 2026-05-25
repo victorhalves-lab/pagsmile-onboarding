@@ -1,0 +1,293 @@
+{
+  "name": "GlobalProposal",
+  "type": "object",
+  "properties": {
+    "questionnaire_id": {
+      "type": "string",
+      "description": "ID do GlobalQuestionnaire de origem"
+    },
+    "client_name": {
+      "type": "string"
+    },
+    "contact_name": {
+      "type": "string"
+    },
+    "contact_email": {
+      "type": "string"
+    },
+    "language": {
+      "type": "string",
+      "enum": [
+        "en",
+        "pt",
+        "zh"
+      ],
+      "default": "en"
+    },
+    "mccs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "target_markets": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "pricing_model": {
+      "type": "string",
+      "enum": [
+        "cross_border_interchange",
+        "local_payments",
+        "hybrid"
+      ],
+      "default": "cross_border_interchange",
+      "description": "cross_border_interchange = USD Interchange++ (legado). local_payments = pricing por pa\u00eds \u00d7 canal \u00d7 m\u00e9todo. hybrid = ambos."
+    },
+    "base_cost_percentage": {
+      "type": "number",
+      "default": 0.5
+    },
+    "selected_interchange_type": {
+      "type": "string",
+      "enum": [
+        "visa_low",
+        "visa_avg",
+        "visa_high",
+        "master_low",
+        "master_avg",
+        "master_high",
+        "combined_low",
+        "combined_avg",
+        "combined_high",
+        "custom"
+      ]
+    },
+    "interchange_percentage": {
+      "type": "number"
+    },
+    "interchange_fixed": {
+      "type": "number"
+    },
+    "markup_percentage": {
+      "type": "number"
+    },
+    "fixed_fee_per_transaction": {
+      "type": "number",
+      "description": "Gateway fee em USD"
+    },
+    "final_rate_percentage": {
+      "type": "number"
+    },
+    "final_fixed_fee": {
+      "type": "number"
+    },
+    "country_pricing": {
+      "type": "array",
+      "description": "Pricing por pa\u00eds quando pricing_model = local_payments ou hybrid. Cada item representa um pa\u00eds com seus m\u00e9todos.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "country": {
+            "type": "string",
+            "description": "C\u00f3digo ISO-2"
+          },
+          "country_name": {
+            "type": "string"
+          },
+          "methods": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "channel_id": {
+                  "type": "string",
+                  "description": "ID do GlobalCountryChannel de refer\u00eancia (opcional, pode ser custom)"
+                },
+                "method_category": {
+                  "type": "string",
+                  "description": "cards, bank_transfer, cash, qr_code, wallet, etc"
+                },
+                "method_label": {
+                  "type": "string",
+                  "description": "Label vis\u00edvel na proposta (ex: 'Debit and Credit Cards')"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Visa, MC, AMEX / lista de bancos / lojas, etc"
+                },
+                "rate_pct": {
+                  "type": "number"
+                },
+                "fixed": {
+                  "type": "number"
+                },
+                "fixed_currency": {
+                  "type": "string",
+                  "description": "Moeda do fixo (PEN, MXN, USD)"
+                },
+                "min_per_trx": {
+                  "type": "number"
+                },
+                "min_per_trx_currency": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "payin",
+                    "payout"
+                  ],
+                  "default": "payin"
+                },
+                "amount_range_label": {
+                  "type": "string",
+                  "description": "Texto vis\u00edvel para limites (ex: '1 MXN - 200,000 MXN')"
+                }
+              }
+            }
+          },
+          "taxes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "tax_type": {
+                  "type": "string"
+                },
+                "percentage": {
+                  "type": "number"
+                },
+                "label": {
+                  "type": "string",
+                  "description": "Texto exibido na proposta (no idioma da proposta)"
+                }
+              }
+            }
+          },
+          "restrictions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Avisos regulat\u00f3rios vis\u00edveis ao cliente (ex: 'Mandatory local license for Sports Betting')"
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "setup_fee": {
+      "type": "number"
+    },
+    "refund_fee": {
+      "type": "number"
+    },
+    "chargeback_fee": {
+      "type": "number"
+    },
+    "risk_control_fee": {
+      "type": "number",
+      "description": "USD por transa\u00e7\u00e3o aprovada de cart\u00e3o (default 0.1)"
+    },
+    "settlement_fee_usd": {
+      "type": "number",
+      "description": "Fee por wire internacional de settlement (default 50)"
+    },
+    "fx_percentage": {
+      "type": "number",
+      "description": "Spread cambial aplicado em settlement (default 3)"
+    },
+    "settlement_frequency_days": {
+      "type": "number",
+      "default": 30,
+      "description": "Frequ\u00eancia de settlement em dias (30 = mensal)"
+    },
+    "settlement_currency": {
+      "type": "string",
+      "enum": [
+        "USD",
+        "EUR"
+      ],
+      "default": "USD"
+    },
+    "rolling_reserve_percentage": {
+      "type": "number"
+    },
+    "rolling_reserve_days": {
+      "type": "number"
+    },
+    "settlement_days": {
+      "type": "string"
+    },
+    "valid_until": {
+      "type": "string",
+      "format": "date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "sent",
+        "accepted",
+        "counter_proposal",
+        "rejected"
+      ],
+      "default": "sent"
+    },
+    "public_link_token": {
+      "type": "string"
+    },
+    "counter_proposal_rate": {
+      "type": "number"
+    },
+    "counter_proposal_fixed_fee": {
+      "type": "number"
+    },
+    "counter_proposal_settlement_days": {
+      "type": "string"
+    },
+    "counter_proposal_notes": {
+      "type": "string"
+    },
+    "version": {
+      "type": "number",
+      "default": 1
+    },
+    "parent_proposal_id": {
+      "type": "string"
+    },
+    "change_notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "client_name",
+    "contact_name",
+    "contact_email"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,227 @@
+{
+  "name": "GlobalCountryChannel",
+  "type": "object",
+  "description": "Cat\u00e1logo mestre de canais de pagamento por pa\u00eds no m\u00f3dulo Global. Uma linha = um pa\u00eds \u00d7 provider \u00d7 m\u00e9todo. Importado da planilha GLOBAL PAYMENTS PUBLIC VERSION.",
+  "properties": {
+    "country": {
+      "type": "string",
+      "description": "C\u00f3digo ISO-2 do pa\u00eds (AR, MX, CO, CL, PE, EC, BO, CR, GT, PA, UY, PY, SV, NG, KE, GH, SA, AE, TR, KR, TH, ID, PH, VN, MY, JP, CN, SG, AU)"
+    },
+    "country_name": {
+      "type": "string",
+      "description": "Nome do pa\u00eds em ingl\u00eas (para busca r\u00e1pida)"
+    },
+    "region": {
+      "type": "string",
+      "enum": [
+        "LATAM",
+        "CENTRAL_AMERICA",
+        "APAC",
+        "AFRICA",
+        "MEA",
+        "TURKEY"
+      ],
+      "description": "Regi\u00e3o geogr\u00e1fica para agrupamento"
+    },
+    "provider": {
+      "type": "string",
+      "description": "Nome do provider/parceiro Pagsmile (KUSHKI, KHIPU, MONNET, IZIPAY, ETPAY, etc). Confidencial \u2014 vai pra interno, N\u00c3O aparece em proposta p\u00fablica."
+    },
+    "payment_method": {
+      "type": "string",
+      "description": "M\u00e9todo de pagamento: Credit/Debit Card, Cash, Bank Transfer, QR Code, Wallet, PIX, OXXO, SPEI, PSE, DEBIN, Webpay, etc."
+    },
+    "method_category": {
+      "type": "string",
+      "enum": [
+        "cards",
+        "bank_transfer",
+        "cash",
+        "qr_code",
+        "wallet",
+        "carrier_billing",
+        "other"
+      ],
+      "description": "Categoria normalizada do m\u00e9todo"
+    },
+    "integration_type": {
+      "type": "string",
+      "enum": [
+        "Direct",
+        "Via PSP",
+        "Mixed"
+      ],
+      "description": "Direct (com provider) ou Via PSP (third-party)"
+    },
+    "payin_or_payout": {
+      "type": "string",
+      "enum": [
+        "PAYIN",
+        "PAYOUT",
+        "BOTH"
+      ],
+      "default": "PAYIN"
+    },
+    "collection_points": {
+      "type": "string",
+      "description": "Lista de bancos/redes/wallets/lojas suportadas (texto livre da planilha)"
+    },
+    "transaction_limits": {
+      "type": "string",
+      "description": "Limites de transa\u00e7\u00e3o no formato original (ex: '1 ~ 30,000 PEN' ou 'tied to bank authorization')"
+    },
+    "confirmation_time": {
+      "type": "string",
+      "description": "Tempo de confirma\u00e7\u00e3o (Real time, 1H, etc)"
+    },
+    "operational_status": {
+      "type": "string",
+      "enum": [
+        "ONLINE",
+        "OFFLINE",
+        "TESTING"
+      ],
+      "default": "ONLINE"
+    },
+    "usage_status": {
+      "type": "string",
+      "enum": [
+        "PRIMARY",
+        "BACK UP",
+        "DEPRECATED"
+      ],
+      "default": "PRIMARY",
+      "description": "PRIMARY = canal principal em produ\u00e7\u00e3o. BACK UP = conting\u00eancia."
+    },
+    "requires_onboarding": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se true, o canal exige onboarding adicional (MID/API/HR)"
+    },
+    "onboarding_type": {
+      "type": "string",
+      "enum": [
+        "MID",
+        "API",
+        "HR Merchants",
+        "Both (LR / HR)",
+        "Both (LR / HR), API",
+        "N/A"
+      ],
+      "description": "Tipo de onboarding exigido pelo canal"
+    },
+    "allowed_hr_industries": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "forex",
+          "crypto",
+          "sport_betting",
+          "casino",
+          "microcredit",
+          "adult_content"
+        ]
+      },
+      "description": "Ind\u00fastrias HR (High Risk) que ESTE canal aceita processar"
+    },
+    "prohibited_industries": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Ind\u00fastrias estritamente proibidas neste canal"
+    },
+    "regulatory_requirements": {
+      "type": "string",
+      "description": "Requisitos regulat\u00f3rios (ex: 'Casino requires COLJUEGOS license', 'CNVB authorization for microcredit')"
+    },
+    "comments": {
+      "type": "string",
+      "description": "Coment\u00e1rios adicionais da planilha"
+    },
+    "default_payin_rate_pct": {
+      "type": "number",
+      "description": "Taxa percentual default para payin (vem da \u00faltima proposta calibrada para este canal)"
+    },
+    "default_payin_fixed": {
+      "type": "number",
+      "description": "Fixo default por transa\u00e7\u00e3o (na moeda local)"
+    },
+    "default_payin_fixed_currency": {
+      "type": "string",
+      "description": "Moeda do fixo (PEN, MXN, COP, USD, CLP, etc)"
+    },
+    "default_payin_min": {
+      "type": "number",
+      "description": "M\u00ednimo por transa\u00e7\u00e3o (ex: Min 4 PEN)"
+    },
+    "default_payout_rate_pct": {
+      "type": "number"
+    },
+    "default_payout_fixed": {
+      "type": "number"
+    },
+    "default_payout_fixed_currency": {
+      "type": "string"
+    },
+    "default_payout_min_amount": {
+      "type": "number"
+    },
+    "default_payout_max_amount": {
+      "type": "number"
+    },
+    "internal_responsible_team": {
+      "type": "string",
+      "enum": [
+        "Partnership",
+        "Tech",
+        "Compliance",
+        "Multiple"
+      ],
+      "description": "Time interno respons\u00e1vel pelo onboarding deste canal"
+    },
+    "internal_responsible_emails": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se false, o canal n\u00e3o aparece no construtor de propostas (n\u00e3o dispon\u00edvel para novas propostas)"
+    },
+    "imported_from": {
+      "type": "string",
+      "description": "Nome do arquivo XLSX de origem + timestamp (auditoria)"
+    }
+  },
+  "required": [
+    "country",
+    "provider",
+    "payment_method"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

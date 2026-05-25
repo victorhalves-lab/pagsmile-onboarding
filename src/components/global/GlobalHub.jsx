@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Globe2, LayoutDashboard, ClipboardList, FileText, Kanban, Calculator, Table2, Link as LinkIcon, ShieldCheck, Plus, BookOpen } from 'lucide-react';
+import { Globe2, LayoutDashboard, ClipboardList, FileText, Kanban, Calculator, Table2, Link as LinkIcon, ShieldCheck, Plus, BookOpen, Database } from 'lucide-react';
 import GlobalDashboard from './pages/GlobalDashboard';
 import GlobalLeadQuestionnaireDashboard from './pages/GlobalLeadQuestionnaireDashboard';
 import GlobalQuestionnaireCenter from './pages/GlobalQuestionnaireCenter';
@@ -8,6 +8,7 @@ import GlobalProposalCenter from './pages/GlobalProposalCenter';
 import GlobalPipelineKanban from './pages/GlobalPipelineKanban';
 import GlobalRevenueSimulator from './pages/GlobalRevenueSimulator';
 import GlobalInterchangeViewer from './pages/GlobalInterchangeViewer';
+import GlobalCountriesChannels from './pages/GlobalCountriesChannels';
 import GlobalComplianceDashboard from './pages/GlobalComplianceDashboard';
 import GlobalComplianceReceived from './pages/GlobalComplianceReceived';
 import GlobalHowItWorks from './pages/GlobalHowItWorks';
@@ -25,6 +26,7 @@ const TABS = [
   { id: 'pipeline',           label: 'Pipeline',          icon: Kanban,          component: GlobalPipelineKanban,            group: 'Propostas' },
   { id: 'simulator',          label: 'Simulador',         icon: Calculator,      component: GlobalRevenueSimulator,          group: 'Análise' },
   { id: 'interchange',        label: 'Interchange',       icon: Table2,          component: GlobalInterchangeViewer,         group: 'Análise' },
+  { id: 'countries_channels', label: 'Canais por País',   icon: Database,        component: GlobalCountriesChannels,         group: 'Catálogo' },
   { id: 'compliance_link',    label: 'Link Compliance',   icon: LinkIcon,        component: GlobalComplianceDashboard,       group: 'Compliance' },
   { id: 'compliance_received',label: 'KYC Recebidos',     icon: ShieldCheck,     component: GlobalComplianceReceived,        group: 'Compliance' },
   { id: 'how_it_works',       label: 'Como Funciona',     icon: BookOpen,        component: GlobalHowItWorks,                group: 'Ajuda' },

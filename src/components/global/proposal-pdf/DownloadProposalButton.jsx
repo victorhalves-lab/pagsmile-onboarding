@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Download, FileImage, FileText, Loader2 } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import ProposalDownloadContent from './ProposalDownloadContent';
+import CountryPricingPdfTemplate from './CountryPricingPdfTemplate';
 import { downloadProposalAsPDF, downloadProposalAsPNG } from './proposalDownloadUtils';
 
 /**
@@ -45,10 +46,15 @@ export default function DownloadProposalButton({ proposal, variant = 'outline', 
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Render off-screen do template para captura */}
+      {/* Render off-screen do template para captura.
+          Escolhe template: local_payments / hybrid => CountryPricingPdfTemplate (estilo Roblox)
+          cross_border_interchange => template Interchange++ legado */}
       <div style={{ position: 'fixed', top: 0, left: '-10000px', pointerEvents: 'none' }}>
         <div ref={targetRef}>
-          <ProposalDownloadContent proposal={proposal} lang={proposal.language || 'en'} />
+          {(proposal.pricing_model === 'local_payments' || proposal.pricing_model === 'hybrid')
+            ? <CountryPricingPdfTemplate proposal={proposal} lang={proposal.language || 'en'} />
+            : <ProposalDownloadContent proposal={proposal} lang={proposal.language || 'en'} />
+          }
         </div>
       </div>
     </>

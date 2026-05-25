@@ -1,0 +1,89 @@
+{
+  "name": "GlobalCountryFee",
+  "type": "object",
+  "description": "Cat\u00e1logo de impostos e taxas regulat\u00f3rias por pa\u00eds (VAT, IOF, GMF, Withholding). Renderizado automaticamente nas propostas locais.",
+  "properties": {
+    "country": {
+      "type": "string",
+      "description": "C\u00f3digo ISO-2 do pa\u00eds"
+    },
+    "country_name": {
+      "type": "string"
+    },
+    "tax_type": {
+      "type": "string",
+      "enum": [
+        "VAT",
+        "IOF",
+        "GMF",
+        "Withholding",
+        "Other"
+      ],
+      "description": "Tipo do imposto"
+    },
+    "tax_code": {
+      "type": "string",
+      "description": "C\u00f3digo curto exibido na proposta (ex: 'VAT', 'IOF')"
+    },
+    "percentage": {
+      "type": "number",
+      "description": "Percentual do imposto"
+    },
+    "applies_to": {
+      "type": "string",
+      "enum": [
+        "processing_fee",
+        "total_amount",
+        "settlement",
+        "payout_amount"
+      ],
+      "default": "processing_fee",
+      "description": "Sobre o que incide o imposto"
+    },
+    "label_en": {
+      "type": "string",
+      "description": "Texto exibido na proposta em ingl\u00eas (ex: 'VAT: 21% of the processing fee')"
+    },
+    "label_pt": {
+      "type": "string"
+    },
+    "label_zh": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o interna do imposto"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "country",
+    "tax_type",
+    "percentage"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
