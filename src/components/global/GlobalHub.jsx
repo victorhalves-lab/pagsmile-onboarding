@@ -1,9 +1,5 @@
 import React, { useState } from 'react';
-import {
-  LayoutDashboard, ClipboardList, FileText, Columns3, Table2,
-  Calculator, ShieldCheck, Globe
-} from 'lucide-react';
-import { useTranslation } from '@/lib/i18n/LanguageContext';
+import { Globe2, LayoutDashboard, ClipboardList, FileText, Kanban, Calculator, Table2, Link as LinkIcon, ShieldCheck, Plus } from 'lucide-react';
 import GlobalDashboard from './pages/GlobalDashboard';
 import GlobalLeadQuestionnaireDashboard from './pages/GlobalLeadQuestionnaireDashboard';
 import GlobalQuestionnaireCenter from './pages/GlobalQuestionnaireCenter';
@@ -16,95 +12,78 @@ import GlobalComplianceDashboard from './pages/GlobalComplianceDashboard';
 import GlobalComplianceReceived from './pages/GlobalComplianceReceived';
 
 /**
- * Hub interno do módulo Propostas Global.
- * Sub-navegação por tabs para navegar entre as 10 telas do app importado
- * (Dashboard, Questionários, Propostas, Pipeline, Interchange, Simulador, Compliance).
+ * Navegação interna do hub Global. Lista de sub-páginas controladas por estado local.
+ * Padrão visual Pagsmile (azul/verde) e sem refletir nada do Brasil para evitar acoplamento.
  */
+const TABS = [
+  { id: 'dashboard',          label: 'Dashboard',         icon: LayoutDashboard, component: GlobalDashboard,                 group: 'Geral' },
+  { id: 'lead_link',          label: 'Link Questionário', icon: LinkIcon,        component: GlobalLeadQuestionnaireDashboard, group: 'Captação' },
+  { id: 'questionnaires',     label: 'Questionários',     icon: ClipboardList,   component: GlobalQuestionnaireCenter,       group: 'Captação' },
+  { id: 'create_proposal',    label: 'Criar Proposta',    icon: Plus,            component: GlobalProposalCreation,          group: 'Propostas' },
+  { id: 'proposals',          label: 'Propostas',         icon: FileText,        component: GlobalProposalCenter,            group: 'Propostas' },
+  { id: 'pipeline',           label: 'Pipeline',          icon: Kanban,          component: GlobalPipelineKanban,            group: 'Propostas' },
+  { id: 'simulator',          label: 'Simulador',         icon: Calculator,      component: GlobalRevenueSimulator,          group: 'Análise' },
+  { id: 'interchange',        label: 'Interchange',       icon: Table2,          component: GlobalInterchangeViewer,         group: 'Análise' },
+  { id: 'compliance_link',    label: 'Link Compliance',   icon: LinkIcon,        component: GlobalComplianceDashboard,       group: 'Compliance' },
+  { id: 'compliance_received',label: 'KYC Recebidos',     icon: ShieldCheck,     component: GlobalComplianceReceived,        group: 'Compliance' },
+];
+
 export default function GlobalHub() {
-  const { t } = useTranslation();
+  const [active, setActive] = useState('dashboard');
+  const ActiveComp = (TABS.find(t => t.id === active) || TABS[0]).component;
 
-  const [section, setSection] = useState(() => {
-    try { return sessionStorage.getItem('hub_propostas_global_section') || 'dashboard'; } catch { return 'dashboard'; }
-  });
-
-  const changeSection = (s) => {
-    setSection(s);
-    try { sessionStorage.setItem('hub_propostas_global_section', s); } catch {}
-  };
-
-  const SECTIONS = [
-    { id: 'dashboard', label: t('global.nav.dashboard') || 'Dashboard', icon: LayoutDashboard },
-    { id: 'lead_link', label: t('global.nav.lead_link') || 'Link Questionário', icon: ClipboardList },
-    { id: 'questionnaires', label: t('global.nav.questionnaires') || 'Questionários', icon: ClipboardList, highlight: true },
-    { id: 'create_proposal', label: t('global.nav.create_proposal') || 'Criar Proposta', icon: FileText },
-    { id: 'proposals', label: t('global.nav.proposals') || 'Propostas', icon: FileText },
-    { id: 'pipeline', label: t('global.nav.pipeline') || 'Pipeline', icon: Columns3 },
-    { id: 'simulator', label: t('global.nav.simulator') || 'Simulador', icon: Calculator },
-    { id: 'interchange', label: t('global.nav.interchange') || 'Interchange', icon: Table2 },
-    { id: 'compliance_link', label: t('global.nav.compliance_link') || 'Link Compliance', icon: ShieldCheck },
-    { id: 'compliance_received', label: t('global.nav.compliance_received') || 'KYC Recebidos', icon: ShieldCheck },
-  ];
+  // Agrupa por categoria preservando ordem.
+  const groups = TABS.reduce((acc, t) => {
+    (acc[t.group] = acc[t.group] || []).push(t);
+    return acc;
+  }, {});
 
   return (
-    <div className="space-y-6">
-      {/* Hero do módulo Global */}
-      <div className="bg-gradient-to-r from-[#002443] via-[#1e3a5f] to-[#36706c] rounded-2xl p-6 shadow-lg">
-        <div className="flex items-center gap-4">
-          <div className="p-3 rounded-xl bg-white/10">
-            <Globe className="w-6 h-6 text-[#5cf7cf]" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-white">{t('global.hub.title') || 'Propostas Global'}</h1>
-            <p className="text-white/60 text-sm mt-1">
-              {t('global.hub.subtitle') || 'Propostas em USD, Interchange Visa/Mastercard, fluxo trilíngue (EN/PT/ZH)'}
-            </p>
-          </div>
+    <div className="space-y-4">
+      {/* Header */}
+      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-5 flex items-center gap-4">
+        <div className="p-3 rounded-xl bg-gradient-to-br from-[#2bc196]/15 to-[#5cf7cf]/15">
+          <Globe2 className="w-6 h-6 text-[#2bc196]" />
+        </div>
+        <div>
+          <h2 className="text-lg font-bold text-[#002443]">Propostas Global</h2>
+          <p className="text-xs text-[#002443]/60">USD · Visa/Mastercard Interchange · Fluxo trilíngue EN/PT/ZH</p>
         </div>
       </div>
 
-      {/* Sub-navegação horizontal scrollável */}
-      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-2 overflow-x-auto">
-        <div className="flex gap-1 min-w-max">
-          {SECTIONS.map(s => {
-            const Icon = s.icon;
-            const isActive = section === s.id;
-            return (
-              <button
-                key={s.id}
-                onClick={() => changeSection(s.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all relative ${
-                  isActive
-                    ? 'bg-[#2bc196]/10 text-[#002443] font-semibold'
-                    : 'text-[#002443]/60 hover:text-[#002443] hover:bg-[#f4f4f4]'
-                }`}
-              >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-[#2bc196]' : ''}`} />
-                <span>{s.label}</span>
-                {s.highlight && !isActive && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#2bc196] animate-pulse" />
-                )}
-                {isActive && (
-                  <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-[#2bc196] rounded-full" />
-                )}
-              </button>
-            );
-          })}
+      {/* Sub-navegação agrupada */}
+      <div className="bg-white rounded-2xl border border-[#002443]/5 shadow-sm p-3">
+        <div className="flex flex-wrap gap-4">
+          {Object.entries(groups).map(([groupName, items]) => (
+            <div key={groupName} className="flex flex-col gap-1">
+              <span className="text-[9px] font-bold uppercase tracking-wider text-[#002443]/40 px-2">{groupName}</span>
+              <div className="flex flex-wrap gap-1">
+                {items.map(tab => {
+                  const Icon = tab.icon;
+                  const isActive = active === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActive(tab.id)}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                        isActive
+                          ? 'bg-[#2bc196] text-white shadow-sm'
+                          : 'text-[#002443]/70 hover:bg-[#2bc196]/8 hover:text-[#002443]'
+                      }`}
+                    >
+                      <Icon className="w-3.5 h-3.5" />
+                      {tab.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* Conteúdo da seção ativa */}
-      <div>
-        {section === 'dashboard' && <GlobalDashboard onNavigate={changeSection} />}
-        {section === 'lead_link' && <GlobalLeadQuestionnaireDashboard />}
-        {section === 'questionnaires' && <GlobalQuestionnaireCenter onNavigate={changeSection} />}
-        {section === 'create_proposal' && <GlobalProposalCreation onNavigate={changeSection} />}
-        {section === 'proposals' && <GlobalProposalCenter onNavigate={changeSection} />}
-        {section === 'pipeline' && <GlobalPipelineKanban />}
-        {section === 'simulator' && <GlobalRevenueSimulator />}
-        {section === 'interchange' && <GlobalInterchangeViewer />}
-        {section === 'compliance_link' && <GlobalComplianceDashboard />}
-        {section === 'compliance_received' && <GlobalComplianceReceived />}
-      </div>
+      {/* Conteúdo da aba ativa */}
+      <ActiveComp />
     </div>
   );
 }
