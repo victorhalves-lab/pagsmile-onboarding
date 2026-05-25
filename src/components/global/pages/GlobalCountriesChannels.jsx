@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Upload, Search, Filter, Globe2, AlertTriangle, CheckCircle2, Trash2, Database, RefreshCw } from 'lucide-react';
+import { Upload, Search, Filter, Globe2, AlertTriangle, CheckCircle2, Trash2, Database, RefreshCw, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 
 /**
@@ -20,6 +20,7 @@ export default function GlobalCountriesChannels() {
   const [usageFilter, setUsageFilter] = useState('all');
   const [importing, setImporting] = useState(false);
   const [seedingFees, setSeedingFees] = useState(false);
+  const [seedingFull, setSeedingFull] = useState(false);
   const fileInputRef = useRef(null);
 
   const { data: items = [], isLoading } = useQuery({
@@ -77,6 +78,19 @@ export default function GlobalCountriesChannels() {
     }
   };
 
+  const handleSeedFullCatalog = async () => {
+    if (!confirm('Isto vai SUBSTITUIR todos os canais e impostos pelo catálogo completo (PDF Roblox + XLSX consolidados, sem Brasil). Continuar?')) return;
+    setSeedingFull(true);
+    try {
+      const res = await base44.functions.invoke('seedGlobalCatalogComplete', {});
+      if (res.data?.success) {
+        toast.success(`Catálogo carregado: ${res.data.channels_inserted} canais + ${res.data.fees_inserted} impostos em ${res.data.countries_covered?.length || 0} países.`);
+        qc.invalidateQueries({ queryKey: ['globalCountryChannels'] });
+        qc.invalidateQueries({ queryKey: ['globalCountryFees'] });
+      } else toast.error(res.data?.error || 'Erro');
+    } finally { setSeedingFull(false); }
+  };
+
   const handleSeedFees = async () => {
     setSeedingFees(true);
     try {
@@ -111,6 +125,10 @@ export default function GlobalCountriesChannels() {
           </div>
           <div className="flex gap-2">
             <input ref={fileInputRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleImport} />
+            <Button variant="outline" size="sm" onClick={handleSeedFullCatalog} disabled={seedingFull} className="gap-1.5 border-[#2bc196] text-[#2bc196] hover:bg-[#2bc196]/10">
+              <Sparkles className={`w-4 h-4 ${seedingFull ? 'animate-pulse' : ''}`} />
+              Carregar Catálogo Completo
+            </Button>
             <Button variant="outline" size="sm" onClick={handleSeedFees} disabled={seedingFees} className="gap-1.5">
               <RefreshCw className={`w-4 h-4 ${seedingFees ? 'animate-spin' : ''}`} />
               Atualizar Impostos

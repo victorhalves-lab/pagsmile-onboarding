@@ -40,6 +40,25 @@ export const REGULATORY_ALERTS = [
 
   // Uruguay
   { country: 'UY', triggers: ['microcredit', 'adult_content'],    severity: 'critical', message: 'Microcredit and Adult Content are strictly prohibited in Uruguay.' },
+
+  // El Salvador
+  { country: 'SV', triggers: ['forex', 'crypto', 'adult_content'],severity: 'high',     message: 'Forex, Crypto and Adult Content have very limited availability in El Salvador.' },
+
+  // Paraguay
+  { country: 'PY', triggers: ['casino', 'sport_betting'],         severity: 'high',     message: 'Casino and Betting require local license in Paraguay.' },
+
+  // Nigeria / Kenya / Ghana (Africa)
+  { country: 'NG', triggers: ['forex', 'casino', 'sport_betting', 'crypto'], severity: 'high', message: 'Nigeria: separate account and pricing for high-risk merchants. Channel onboarding mandatory.' },
+  { country: 'KE', triggers: ['forex', 'casino', 'sport_betting', 'crypto'], severity: 'high', message: 'Kenya: separate account/pricing for high-risk merchants. Channel onboarding mandatory.' },
+  { country: 'GH', triggers: ['forex', 'casino', 'sport_betting', 'crypto'], severity: 'high', message: 'Ghana: separate account/pricing for high-risk merchants. Channel onboarding mandatory.' },
+
+  // Middle East
+  { country: 'SA', triggers: ['casino', 'sport_betting', 'adult_content', 'crypto'], severity: 'critical', message: 'Saudi Arabia: Casino, Betting, Crypto and Adult Content strictly prohibited by Sharia law.' },
+  { country: 'AE', triggers: ['casino', 'sport_betting', 'adult_content'],  severity: 'critical', message: 'UAE: Casino, Betting and Adult Content strictly prohibited.' },
+
+  // Asia
+  { country: 'KR', triggers: ['crypto', 'adult_content'],         severity: 'high',     message: 'South Korea: Crypto and Adult Content have strict regulatory limits.' },
+  { country: 'TH', triggers: ['casino', 'sport_betting'],         severity: 'high',     message: 'Thailand: Casino and Betting are highly regulated; TrueMoney does not support H5 checkout (desktop/app only).' },
 ];
 
 // Avalia alertas relevantes para uma combinação de country + industries declarados.

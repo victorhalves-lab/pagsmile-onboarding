@@ -13,6 +13,18 @@ export const COUNTRIES = [
   { code: 'CO', flag: '🇨🇴', region: 'LATAM',name: { en: 'Colombia',        pt: 'Colômbia',       zh: '哥伦比亚' } },
   { code: 'PE', flag: '🇵🇪', region: 'LATAM',name: { en: 'Peru',            pt: 'Peru',           zh: '秘鲁' } },
   { code: 'UY', flag: '🇺🇾', region: 'LATAM',name: { en: 'Uruguay',         pt: 'Uruguai',        zh: '乌拉圭' } },
+  { code: 'BO', flag: '🇧🇴', region: 'LATAM',name: { en: 'Bolivia',         pt: 'Bolívia',        zh: '玻利维亚' } },
+  { code: 'EC', flag: '🇪🇨', region: 'LATAM',name: { en: 'Ecuador',         pt: 'Equador',        zh: '厄瓜多尔' } },
+  { code: 'PY', flag: '🇵🇾', region: 'LATAM',name: { en: 'Paraguay',        pt: 'Paraguai',       zh: '巴拉圭' } },
+  { code: 'CR', flag: '🇨🇷', region: 'LATAM',name: { en: 'Costa Rica',      pt: 'Costa Rica',     zh: '哥斯达黎加' } },
+  { code: 'GT', flag: '🇬🇹', region: 'LATAM',name: { en: 'Guatemala',       pt: 'Guatemala',      zh: '危地马拉' } },
+  { code: 'PA', flag: '🇵🇦', region: 'LATAM',name: { en: 'Panama',          pt: 'Panamá',         zh: '巴拿马' } },
+  { code: 'SV', flag: '🇸🇻', region: 'LATAM',name: { en: 'El Salvador',     pt: 'El Salvador',    zh: '萨尔瓦多' } },
+  { code: 'NG', flag: '🇳🇬', region: 'MEA',  name: { en: 'Nigeria',         pt: 'Nigéria',        zh: '尼日利亚' } },
+  { code: 'KE', flag: '🇰🇪', region: 'MEA',  name: { en: 'Kenya',           pt: 'Quênia',         zh: '肯尼亚' } },
+  { code: 'GH', flag: '🇬🇭', region: 'MEA',  name: { en: 'Ghana',           pt: 'Gana',           zh: '加纳' } },
+  { code: 'TR', flag: '🇹🇷', region: 'MEA',  name: { en: 'Turkey',          pt: 'Turquia',        zh: '土耳其' } },
+  { code: 'MY', flag: '🇲🇾', region: 'APAC', name: { en: 'Malaysia',        pt: 'Malásia',        zh: '马来西亚' } },
 
   // Europa
   { code: 'GB', flag: '🇬🇧', region: 'EU',   name: { en: 'United Kingdom',  pt: 'Reino Unido',    zh: '英国' } },
