@@ -9,7 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Save, FileText, DollarSign, TrendingUp, Calculator as Calc } from 'lucide-react';
 import { toast } from 'sonner';
-import { INTERCHANGE_OPTIONS, MCC_OPTIONS, TARGET_MARKETS } from '@/lib/global/interchangeData';
+import { INTERCHANGE_OPTIONS, MCC_OPTIONS } from '@/lib/global/interchangeData';
+import InterchangeSelector from '@/components/global/InterchangeSelector';
+import CountrySelector from '@/components/global/public/CountrySelector';
 
 /**
  * Editor de Proposta Global. Permite criar uma proposta em USD com:
@@ -194,19 +196,12 @@ export default function GlobalProposalCreation() {
             </div>
             <div>
               <Label className="text-xs">Mercados-alvo</Label>
-              <div className="flex flex-wrap gap-1 mt-1 max-h-32 overflow-y-auto">
-                {TARGET_MARKETS.map(m => (
-                  <button
-                    key={m}
-                    type="button"
-                    onClick={() => toggleArr('target_markets', m)}
-                    className={`text-xs px-2 py-1 rounded-full border transition-colors ${
-                      form.target_markets.includes(m)
-                        ? 'bg-[#002443] text-white border-[#002443]'
-                        : 'bg-white text-[#002443]/70 border-[#002443]/10 hover:bg-[#002443]/5'
-                    }`}
-                  >{m}</button>
-                ))}
+              <div className="mt-1">
+                <CountrySelector
+                  value={form.target_markets}
+                  onChange={(arr) => setF('target_markets', arr)}
+                  lang="pt"
+                />
               </div>
             </div>
           </CardContent>
@@ -215,38 +210,30 @@ export default function GlobalProposalCreation() {
         <Card className="border-[#002443]/5">
           <CardHeader><CardTitle className="text-base flex items-center gap-2"><DollarSign className="w-4 h-4 text-[#2bc196]" /> Composição da Taxa</CardTitle></CardHeader>
           <CardContent className="space-y-3">
-            <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label className="text-xs mb-1.5 block">Interchange (escolha o tier ou personalize)</Label>
+              <InterchangeSelector
+                value={form.selected_interchange_type}
+                onChange={v => setF('selected_interchange_type', v)}
+                customPct={form.interchange_percentage}
+                customFixed={form.interchange_fixed}
+                onCustomChange={(field, val) => {
+                  if (field === 'pct') setF('interchange_percentage', val);
+                  else setF('interchange_fixed', val);
+                }}
+              />
+            </div>
+            <div className="grid grid-cols-3 gap-3 pt-2 border-t border-[#002443]/5">
               <div>
-                <Label className="text-xs">Custo Base Pagsmile (%)</Label>
+                <Label className="text-xs">Custo Base (%)</Label>
                 <Input type="number" step="0.01" value={form.base_cost_percentage} onChange={e => setF('base_cost_percentage', e.target.value)} />
-              </div>
-              <div>
-                <Label className="text-xs">Tipo de Interchange</Label>
-                <Select value={form.selected_interchange_type} onValueChange={v => setF('selected_interchange_type', v)}>
-                  <SelectTrigger className="h-10"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {INTERCHANGE_OPTIONS.map(o => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label className="text-xs">Interchange (%)</Label>
-                <Input type="number" step="0.001" value={form.interchange_percentage}
-                  disabled={form.selected_interchange_type !== 'custom'}
-                  onChange={e => setF('interchange_percentage', e.target.value)} />
-              </div>
-              <div>
-                <Label className="text-xs">Interchange fixo (USD)</Label>
-                <Input type="number" step="0.01" value={form.interchange_fixed}
-                  disabled={form.selected_interchange_type !== 'custom'}
-                  onChange={e => setF('interchange_fixed', e.target.value)} />
               </div>
               <div>
                 <Label className="text-xs">Markup (%)</Label>
                 <Input type="number" step="0.01" value={form.markup_percentage} onChange={e => setF('markup_percentage', e.target.value)} />
               </div>
               <div>
-                <Label className="text-xs">Fixed Fee por Transação (USD)</Label>
+                <Label className="text-xs">Fixed Fee Trx (USD)</Label>
                 <Input type="number" step="0.01" value={form.fixed_fee_per_transaction} onChange={e => setF('fixed_fee_per_transaction', e.target.value)} />
               </div>
             </div>

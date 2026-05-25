@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Search, Trash2, Copy, ExternalLink, FileText, Filter } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import DownloadProposalButton from '@/components/global/proposal-pdf/DownloadProposalButton';
 
 /**
  * Listagem de GlobalProposal com filtros, ações de cópia de link público, abrir página pública e exclusão.
@@ -107,7 +108,8 @@ export default function GlobalProposalCenter() {
                   {p.created_date ? format(new Date(p.created_date), 'dd/MM/yy') : '—'}
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <div className="inline-flex gap-1">
+                  <div className="inline-flex gap-1 items-center">
+                    <DownloadProposalButton proposal={p} variant="ghost" size="sm" />
                     <Button size="icon" variant="ghost" onClick={() => copyLink(p)} title="Copiar link público">
                       <Copy className="w-4 h-4" />
                     </Button>

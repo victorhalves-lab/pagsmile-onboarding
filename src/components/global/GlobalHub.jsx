@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Globe2, LayoutDashboard, ClipboardList, FileText, Kanban, Calculator, Table2, Link as LinkIcon, ShieldCheck, Plus } from 'lucide-react';
+import { Globe2, LayoutDashboard, ClipboardList, FileText, Kanban, Calculator, Table2, Link as LinkIcon, ShieldCheck, Plus, BookOpen } from 'lucide-react';
 import GlobalDashboard from './pages/GlobalDashboard';
 import GlobalLeadQuestionnaireDashboard from './pages/GlobalLeadQuestionnaireDashboard';
 import GlobalQuestionnaireCenter from './pages/GlobalQuestionnaireCenter';
@@ -10,6 +10,7 @@ import GlobalRevenueSimulator from './pages/GlobalRevenueSimulator';
 import GlobalInterchangeViewer from './pages/GlobalInterchangeViewer';
 import GlobalComplianceDashboard from './pages/GlobalComplianceDashboard';
 import GlobalComplianceReceived from './pages/GlobalComplianceReceived';
+import GlobalHowItWorks from './pages/GlobalHowItWorks';
 
 /**
  * Navegação interna do hub Global. Lista de sub-páginas controladas por estado local.
@@ -26,6 +27,7 @@ const TABS = [
   { id: 'interchange',        label: 'Interchange',       icon: Table2,          component: GlobalInterchangeViewer,         group: 'Análise' },
   { id: 'compliance_link',    label: 'Link Compliance',   icon: LinkIcon,        component: GlobalComplianceDashboard,       group: 'Compliance' },
   { id: 'compliance_received',label: 'KYC Recebidos',     icon: ShieldCheck,     component: GlobalComplianceReceived,        group: 'Compliance' },
+  { id: 'how_it_works',       label: 'Como Funciona',     icon: BookOpen,        component: GlobalHowItWorks,                group: 'Ajuda' },
 ];
 
 export default function GlobalHub() {

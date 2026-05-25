@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { CheckCircle2, XCircle, MessageSquare, FileText, AlertTriangle, DollarSign, Clock } from 'lucide-react';
+import { XCircle, MessageSquare, CheckCircle2, AlertTriangle, DollarSign, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { usePublicGlobalI18n } from '@/components/global/public/usePublicGlobalI18n';
 import PublicGlobalShell from '@/components/global/public/PublicGlobalShell';
+import ProposalAcceptedScreen from '@/components/global/public/ProposalAcceptedScreen';
 
 /**
  * Página pública da proposta Global. Acessada via ?token=<public_link_token>.
@@ -74,11 +75,7 @@ export default function GlobalPublicProposal() {
   if (actionState === 'accepted' || proposal.status === 'accepted') {
     return (
       <PublicGlobalShell title={t('prop_title')} lang={lang} setLang={setLang}>
-        <div className="p-10 text-center">
-          <CheckCircle2 className="w-12 h-12 text-green-600 mx-auto mb-3" />
-          <h2 className="text-xl font-bold text-[#002443] mb-2">{t('prop_accepted_title')}</h2>
-          <p className="text-[#002443]/70">{t('prop_accepted_desc')}</p>
-        </div>
+        <ProposalAcceptedScreen t={t} lang={lang} />
       </PublicGlobalShell>
     );
   }
