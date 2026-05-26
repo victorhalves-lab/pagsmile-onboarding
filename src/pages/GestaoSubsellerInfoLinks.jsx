@@ -235,24 +235,26 @@ export default function GestaoSubsellerInfoLinks() {
 
       {/* Modal */}
       <Dialog open={open} onOpenChange={(v) => (v ? setOpen(true) : resetAndClose())}>
-        <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
+        <DialogContent className="w-[95vw] sm:max-w-xl max-h-[85vh] overflow-y-auto p-5 space-y-4">
+          <DialogHeader className="pb-0">
             <DialogTitle>Novo link para Gateway</DialogTitle>
           </DialogHeader>
 
           {/* Tabs */}
-          <div className="grid grid-cols-2 gap-1 p-1 bg-[#f4f4f4] rounded-xl">
+          <div className="flex gap-1 p-1 bg-[#f4f4f4] rounded-xl">
             <button
+              type="button"
               onClick={() => { setMode('existing'); setForm(emptyForm); }}
-              className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-xs font-bold transition-all ${
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-xs font-bold transition-all ${
                 mode === 'existing' ? 'bg-white text-[#002443] shadow-sm' : 'text-[#002443]/50 hover:text-[#002443]'
               }`}
             >
               <Building2 className="w-4 h-4" /> Cliente já fechado
             </button>
             <button
+              type="button"
               onClick={() => { setMode('new'); setForm(emptyForm); }}
-              className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-xs font-bold transition-all ${
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-xs font-bold transition-all ${
                 mode === 'new' ? 'bg-white text-[#002443] shadow-sm' : 'text-[#002443]/50 hover:text-[#002443]'
               }`}
             >
