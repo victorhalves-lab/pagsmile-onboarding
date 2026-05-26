@@ -39,9 +39,9 @@ const emptyForm = {
 
 export default function GestaoSubsellerInfoLinks() {
   const qc = useQueryClient();
-  const [open, setOpen] = useState(false);
+  // step: null | 'choose' | 'existing' | 'new'
+  const [step, setStep] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
-  const [mode, setMode] = useState('existing'); // 'existing' | 'new'
   const [search, setSearch] = useState('');
   const [form, setForm] = useState(emptyForm);
 
@@ -55,7 +55,7 @@ export default function GestaoSubsellerInfoLinks() {
     queryKey: ['merchants-pj-aprovados'],
     queryFn: () => base44.entities.Merchant.filter({ type: 'PJ', onboardingStatus: 'Aprovado' }, '-created_date', 500),
     initialData: [],
-    enabled: open && mode === 'existing',
+    enabled: step === 'existing',
   });
 
   const filteredMerchants = useMemo(() => {
@@ -70,9 +70,8 @@ export default function GestaoSubsellerInfoLinks() {
   }, [merchants, search]);
 
   const resetAndClose = () => {
-    setOpen(false);
+    setStep(null);
     setForm(emptyForm);
-    setMode('existing');
     setSearch('');
   };
 
@@ -118,9 +117,10 @@ export default function GestaoSubsellerInfoLinks() {
     toast.success('Link copiado!');
   };
 
-  const canSubmit =
+  const canSubmitExisting = !!form.merchantId && !!form.gateway_name.trim() && !createMut.isPending;
+  const canSubmitNew =
     !!form.gateway_name.trim() &&
-    (mode === 'new' ? form.gateway_cnpj.replace(/\D/g, '').length === 14 : !!form.merchantId) &&
+    form.gateway_cnpj.replace(/\D/g, '').length === 14 &&
     !createMut.isPending;
 
   return (
@@ -142,7 +142,7 @@ export default function GestaoSubsellerInfoLinks() {
           <Link to={createPageUrl('SubsellerInfoRecebidos')}>
             <Button variant="outline"><Inbox className="w-4 h-4 mr-2" /> Inbox</Button>
           </Link>
-          <Button onClick={() => setOpen(true)}><Plus className="w-4 h-4 mr-2" /> Novo link</Button>
+          <Button onClick={() => setStep('choose')}><Plus className="w-4 h-4 mr-2" /> Novo link</Button>
         </div>
       </div>
 
@@ -171,7 +171,7 @@ export default function GestaoSubsellerInfoLinks() {
         <Card><CardContent className="p-12 text-center">
           <LinkIcon className="w-10 h-10 text-[#002443]/20 mx-auto mb-3" />
           <p className="text-sm text-[#002443]/60 mb-4">Nenhum link gerado ainda.</p>
-          <Button onClick={() => setOpen(true)}><Plus className="w-4 h-4 mr-2" /> Criar primeiro link</Button>
+          <Button onClick={() => setStep('choose')}><Plus className="w-4 h-4 mr-2" /> Criar primeiro link</Button>
         </CardContent></Card>
       ) : (
         <div className="grid md:grid-cols-2 gap-4">
@@ -233,164 +233,161 @@ export default function GestaoSubsellerInfoLinks() {
         </div>
       )}
 
-      {/* Modal */}
-      <Dialog open={open} onOpenChange={(v) => (v ? setOpen(true) : resetAndClose())}>
-        <DialogContent className="w-[95vw] sm:max-w-xl max-h-[85vh] overflow-y-auto p-5 space-y-4">
-          <DialogHeader className="pb-0">
-            <DialogTitle>Novo link para Gateway</DialogTitle>
+      {/* MODAL 1 — escolher caminho */}
+      <Dialog open={step === 'choose'} onOpenChange={(v) => !v && resetAndClose()}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Como deseja criar o link?</DialogTitle>
           </DialogHeader>
-
-          {/* Tabs */}
-          <div className="flex gap-1 p-1 bg-[#f4f4f4] rounded-xl">
+          <div className="grid grid-cols-1 gap-3 mt-2">
             <button
               type="button"
-              onClick={() => { setMode('existing'); setForm(emptyForm); }}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-xs font-bold transition-all ${
-                mode === 'existing' ? 'bg-white text-[#002443] shadow-sm' : 'text-[#002443]/50 hover:text-[#002443]'
-              }`}
+              onClick={() => setStep('existing')}
+              className="text-left p-4 border-2 border-[#002443]/10 hover:border-[#2bc196] hover:bg-[#2bc196]/5 rounded-xl transition-all flex items-start gap-3"
             >
-              <Building2 className="w-4 h-4" /> Cliente já fechado
+              <div className="w-10 h-10 rounded-lg bg-[#002443]/5 flex items-center justify-center flex-shrink-0">
+                <Building2 className="w-5 h-5 text-[#002443]" />
+              </div>
+              <div>
+                <div className="text-sm font-bold text-[#002443]">Cliente já fechado</div>
+                <div className="text-xs text-[#002443]/60 mt-0.5">Selecione um Gateway PJ aprovado da base.</div>
+              </div>
             </button>
             <button
               type="button"
-              onClick={() => { setMode('new'); setForm(emptyForm); }}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-xs font-bold transition-all ${
-                mode === 'new' ? 'bg-white text-[#002443] shadow-sm' : 'text-[#002443]/50 hover:text-[#002443]'
-              }`}
+              onClick={() => setStep('new')}
+              className="text-left p-4 border-2 border-[#002443]/10 hover:border-[#2bc196] hover:bg-[#2bc196]/5 rounded-xl transition-all flex items-start gap-3"
             >
-              <UserPlus className="w-4 h-4" /> Cadastrar manualmente
+              <div className="w-10 h-10 rounded-lg bg-[#002443]/5 flex items-center justify-center flex-shrink-0">
+                <UserPlus className="w-5 h-5 text-[#002443]" />
+              </div>
+              <div>
+                <div className="text-sm font-bold text-[#002443]">Cadastrar novo cliente</div>
+                <div className="text-xs text-[#002443]/60 mt-0.5">Gateway que ainda não está na base.</div>
+              </div>
             </button>
           </div>
+        </DialogContent>
+      </Dialog>
 
-          {/* JORNADA 1 — selecionar cliente fechado */}
-          {mode === 'existing' && (
-            <div className="space-y-3">
-              <div className="relative">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#002443]/40 pointer-events-none" />
-                <Input
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Buscar por nome, CNPJ ou email..."
-                  className="pl-9"
-                />
-              </div>
-
-              <div className="max-h-64 overflow-y-auto border border-[#002443]/10 rounded-xl divide-y divide-[#002443]/5">
-                {filteredMerchants.length === 0 ? (
-                  <div className="p-6 text-center text-xs text-[#002443]/40">
-                    {merchants.length === 0 ? 'Nenhum cliente PJ aprovado encontrado.' : 'Nenhum resultado para a busca.'}
-                  </div>
-                ) : (
-                  filteredMerchants.slice(0, 50).map(m => {
-                    const selected = form.merchantId === m.id;
-                    return (
-                      <button
-                        key={m.id}
-                        onClick={() => selectMerchant(m)}
-                        className={`w-full text-left p-3 hover:bg-[#2bc196]/5 transition-colors flex items-center gap-3 ${selected ? 'bg-[#2bc196]/10' : ''}`}
-                      >
-                        <div className="w-8 h-8 rounded-lg bg-[#002443]/5 flex items-center justify-center flex-shrink-0">
-                          <Building2 className="w-4 h-4 text-[#002443]/60" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-semibold text-[#002443] truncate">{m.companyName || m.fullName}</div>
-                          <div className="text-[11px] text-[#002443]/50 truncate">
-                            {m.cpfCnpj ? formatCnpj(m.cpfCnpj) : '—'} {m.email && `· ${m.email}`}
-                          </div>
-                        </div>
-                        {selected && <CheckCircle2 className="w-5 h-5 text-[#2bc196] flex-shrink-0" />}
-                      </button>
-                    );
-                  })
-                )}
-              </div>
-
-              {form.merchantId && (
-                <div className="bg-[#2bc196]/5 border border-[#2bc196]/20 rounded-xl p-3 space-y-2">
-                  <p className="text-[11px] font-bold text-[#002443] uppercase">Selecionado · revise os contatos</p>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Input
-                      value={form.gateway_contact_name}
-                      onChange={(e) => setForm({ ...form, gateway_contact_name: e.target.value })}
-                      placeholder="Contato"
-                      className="h-9 text-xs"
-                    />
-                    <Input
-                      value={form.gateway_contact_email}
-                      onChange={(e) => setForm({ ...form, gateway_contact_email: e.target.value })}
-                      placeholder="Email"
-                      type="email"
-                      className="h-9 text-xs"
-                    />
-                  </div>
-                  <Textarea
-                    value={form.notes}
-                    onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                    placeholder="Notas internas (opcional)"
-                    className="h-16 text-xs"
-                  />
-                </div>
-              )}
-
-              <Button className="w-full" onClick={() => createMut.mutate(form)} disabled={!canSubmit}>
-                {createMut.isPending ? 'Criando...' : form.merchantId ? `Gerar link para ${form.gateway_name}` : 'Selecione um cliente acima'}
-              </Button>
+      {/* MODAL 2 — selecionar cliente existente */}
+      <Dialog open={step === 'existing'} onOpenChange={(v) => !v && resetAndClose()}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Selecionar cliente Gateway</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#002443]/40 pointer-events-none" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Buscar por nome, CNPJ ou email..."
+                className="pl-9"
+              />
             </div>
-          )}
 
-          {/* JORNADA 2 — cadastro manual */}
-          {mode === 'new' && (
-            <div className="space-y-3">
-              <p className="text-[11px] text-[#002443]/50 bg-[#002443]/[0.03] rounded-lg p-2">
-                Use esta opção para Gateways que ainda não fecharam contrato com a Pagsmile.
-              </p>
-              <div>
-                <Label className="text-xs">Nome do Gateway *</Label>
-                <Input
-                  value={form.gateway_name}
-                  onChange={(e) => setForm({ ...form, gateway_name: e.target.value })}
-                  placeholder="Ex: Gateway XYZ"
-                />
-              </div>
-              <div>
-                <Label className="text-xs">CNPJ *</Label>
-                <Input
-                  value={formatCnpj(form.gateway_cnpj)}
-                  onChange={(e) => setForm({ ...form, gateway_cnpj: e.target.value.replace(/\D/g, '').slice(0, 14) })}
-                  placeholder="00.000.000/0000-00"
-                  inputMode="numeric"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label className="text-xs">Contato (nome)</Label>
-                  <Input
-                    value={form.gateway_contact_name}
-                    onChange={(e) => setForm({ ...form, gateway_contact_name: e.target.value })}
-                  />
+            <div className="max-h-72 overflow-y-auto border border-[#002443]/10 rounded-xl divide-y divide-[#002443]/5">
+              {filteredMerchants.length === 0 ? (
+                <div className="p-6 text-center text-xs text-[#002443]/40">
+                  {merchants.length === 0 ? 'Nenhum cliente PJ aprovado encontrado.' : 'Nenhum resultado.'}
                 </div>
-                <div>
-                  <Label className="text-xs">Contato (email)</Label>
-                  <Input
-                    value={form.gateway_contact_email}
-                    onChange={(e) => setForm({ ...form, gateway_contact_email: e.target.value })}
-                    type="email"
-                  />
-                </div>
-              </div>
-              <div>
-                <Label className="text-xs">Notas internas</Label>
-                <Textarea
-                  value={form.notes}
-                  onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                  className="h-20"
-                />
-              </div>
-              <Button className="w-full" onClick={() => createMut.mutate(form)} disabled={!canSubmit}>
+              ) : (
+                filteredMerchants.slice(0, 50).map(m => {
+                  const selected = form.merchantId === m.id;
+                  return (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => selectMerchant(m)}
+                      className={`w-full text-left p-3 hover:bg-[#2bc196]/5 transition-colors flex items-center gap-3 ${selected ? 'bg-[#2bc196]/10' : ''}`}
+                    >
+                      <div className="w-8 h-8 rounded-lg bg-[#002443]/5 flex items-center justify-center flex-shrink-0">
+                        <Building2 className="w-4 h-4 text-[#002443]/60" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-semibold text-[#002443] truncate">{m.companyName || m.fullName}</div>
+                        <div className="text-[11px] text-[#002443]/50 truncate">
+                          {m.cpfCnpj ? formatCnpj(m.cpfCnpj) : '—'}{m.email && ` · ${m.email}`}
+                        </div>
+                      </div>
+                      {selected && <CheckCircle2 className="w-5 h-5 text-[#2bc196] flex-shrink-0" />}
+                    </button>
+                  );
+                })
+              )}
+            </div>
+
+            <div className="flex gap-2 pt-1">
+              <Button type="button" variant="outline" onClick={() => { setForm(emptyForm); setStep('choose'); }} className="flex-1">
+                Voltar
+              </Button>
+              <Button onClick={() => createMut.mutate(form)} disabled={!canSubmitExisting} className="flex-1">
                 {createMut.isPending ? 'Criando...' : 'Gerar link'}
               </Button>
             </div>
-          )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* MODAL 3 — cadastrar novo cliente */}
+      <Dialog open={step === 'new'} onOpenChange={(v) => !v && resetAndClose()}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Cadastrar novo Gateway</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label className="text-xs">Nome do Gateway *</Label>
+              <Input
+                value={form.gateway_name}
+                onChange={(e) => setForm({ ...form, gateway_name: e.target.value })}
+                placeholder="Ex: Gateway XYZ"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">CNPJ *</Label>
+              <Input
+                value={formatCnpj(form.gateway_cnpj)}
+                onChange={(e) => setForm({ ...form, gateway_cnpj: e.target.value.replace(/\D/g, '').slice(0, 14) })}
+                placeholder="00.000.000/0000-00"
+                inputMode="numeric"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs">Contato (nome)</Label>
+                <Input
+                  value={form.gateway_contact_name}
+                  onChange={(e) => setForm({ ...form, gateway_contact_name: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label className="text-xs">Contato (email)</Label>
+                <Input
+                  type="email"
+                  value={form.gateway_contact_email}
+                  onChange={(e) => setForm({ ...form, gateway_contact_email: e.target.value })}
+                />
+              </div>
+            </div>
+            <div>
+              <Label className="text-xs">Notas internas</Label>
+              <Textarea
+                value={form.notes}
+                onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                className="h-20"
+              />
+            </div>
+            <div className="flex gap-2 pt-1">
+              <Button type="button" variant="outline" onClick={() => { setForm(emptyForm); setStep('choose'); }} className="flex-1">
+                Voltar
+              </Button>
+              <Button onClick={() => createMut.mutate(form)} disabled={!canSubmitNew} className="flex-1">
+                {createMut.isPending ? 'Criando...' : 'Gerar link'}
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
