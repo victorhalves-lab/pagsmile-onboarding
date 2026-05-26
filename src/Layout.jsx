@@ -179,6 +179,8 @@ export default function Layout({ children, currentPageName }) {
         { label: t('menu.landing_pages'), path: 'GestaoLandingPages', icon: LinkIcon },
         { label: t('menu.meeting_questionnaire'), path: 'QuestionarioReuniao', icon: ClipboardList },
         { label: t('menu.robot_questionnaire'), path: 'ProcessMeetingNotes', icon: Brain },
+        { label: '📋 Coleta Subsellers (Gateway)', path: 'GestaoSubsellerInfoLinks', icon: LinkIcon, highlight: true },
+        { label: '📥 Inbox Subsellers (Gateway)', path: 'SubsellerInfoRecebidos', icon: Inbox, highlight: true },
       ]
     },
     {
