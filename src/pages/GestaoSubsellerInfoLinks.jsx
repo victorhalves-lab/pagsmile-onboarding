@@ -235,7 +235,7 @@ export default function GestaoSubsellerInfoLinks() {
 
       {/* MODAL 1 — escolher caminho */}
       <Dialog open={step === 'choose'} onOpenChange={(v) => !v && resetAndClose()}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-[440px]">
           <DialogHeader>
             <DialogTitle>Como deseja criar o link?</DialogTitle>
           </DialogHeader>
@@ -272,7 +272,7 @@ export default function GestaoSubsellerInfoLinks() {
 
       {/* MODAL 2 — selecionar cliente existente */}
       <Dialog open={step === 'existing'} onOpenChange={(v) => !v && resetAndClose()}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-[560px] max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Selecionar cliente Gateway</DialogTitle>
           </DialogHeader>
@@ -332,7 +332,7 @@ export default function GestaoSubsellerInfoLinks() {
 
       {/* MODAL 3 — cadastrar novo cliente */}
       <Dialog open={step === 'new'} onOpenChange={(v) => !v && resetAndClose()}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-[560px] max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Cadastrar novo Gateway</DialogTitle>
           </DialogHeader>
