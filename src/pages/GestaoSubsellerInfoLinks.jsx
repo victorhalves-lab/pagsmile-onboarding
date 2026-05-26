@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Plus, Copy, Check, ExternalLink, Link as LinkIcon, Building2, Users, FileText, Power, PowerOff, Inbox } from 'lucide-react';
+import { Plus, Copy, Check, ExternalLink, Link as LinkIcon, Building2, Users, FileText, Power, PowerOff, Inbox, Search, UserPlus, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -16,11 +16,35 @@ function genToken() {
   return crypto.randomUUID().replace(/-/g, '').slice(0, 20);
 }
 
+const emptyForm = { gateway_name: '', gateway_contact_name: '', gateway_contact_email: '', notes: '', merchantId: null };
+
 export default function GestaoSubsellerInfoLinks() {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [copiedId, setCopiedId] = useState(null);
-  const [form, setForm] = useState({ gateway_name: '', gateway_contact_name: '', gateway_contact_email: '', notes: '' });
+  // Jornada: 'existing' (cliente fechado) ou 'new' (cadastro manual)
+  const [mode, setMode] = useState('existing');
+  const [search, setSearch] = useState('');
+  const [form, setForm] = useState(emptyForm);
+
+  // Carrega Merchants PJ aprovados (clientes Gateway fechados)
+  const { data: merchants = [] } = useQuery({
+    queryKey: ['merchants-pj-aprovados'],
+    queryFn: () => base44.entities.Merchant.filter({ type: 'PJ', onboardingStatus: 'Aprovado' }, '-created_date', 500),
+    initialData: [],
+    enabled: open,
+  });
+
+  const filteredMerchants = useMemo(() => {
+    if (!search.trim()) return merchants;
+    const q = search.toLowerCase();
+    return merchants.filter(m =>
+      (m.companyName || '').toLowerCase().includes(q) ||
+      (m.fullName || '').toLowerCase().includes(q) ||
+      (m.cpfCnpj || '').includes(q) ||
+      (m.email || '').toLowerCase().includes(q)
+    );
+  }, [merchants, search]);
 
   const { data: links = [], isLoading } = useQuery({
     queryKey: ['subsellerInfoCollections'],
@@ -29,16 +53,31 @@ export default function GestaoSubsellerInfoLinks() {
   });
 
   const createMut = useMutation({
-    mutationFn: (data) => base44.entities.SubsellerInfoCollection.create({
-      ...data, unique_token: genToken(), is_active: true,
-    }),
+    mutationFn: (data) => {
+      const { merchantId, ...rest } = data;
+      return base44.entities.SubsellerInfoCollection.create({
+        ...rest, unique_token: genToken(), is_active: true,
+      });
+    },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['subsellerInfoCollections'] });
       setOpen(false);
-      setForm({ gateway_name: '', gateway_contact_name: '', gateway_contact_email: '', notes: '' });
+      setForm(emptyForm);
+      setMode('existing');
+      setSearch('');
       toast.success('Link criado!');
     },
   });
+
+  const selectMerchant = (m) => {
+    setForm({
+      gateway_name: m.companyName || m.fullName || '',
+      gateway_contact_name: m.fullName || '',
+      gateway_contact_email: m.email || '',
+      notes: form.notes,
+      merchantId: m.id,
+    });
+  };
 
   const toggleMut = useMutation({
     mutationFn: ({ id, is_active }) => base44.entities.SubsellerInfoCollection.update(id, { is_active }),
@@ -160,36 +199,129 @@ export default function GestaoSubsellerInfoLinks() {
         </div>
       )}
 
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
+      <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setForm(emptyForm); setMode('existing'); setSearch(''); } }}>
+        <DialogContent className="max-w-2xl">
           <DialogHeader><DialogTitle>Novo link para Gateway</DialogTitle></DialogHeader>
-          <div className="space-y-4 pt-2">
-            <div>
-              <Label>Nome do Gateway *</Label>
-              <Input value={form.gateway_name} onChange={(e) => setForm({ ...form, gateway_name: e.target.value })} placeholder="Ex: Gateway XYZ" />
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label>Contato (nome)</Label>
-                <Input value={form.gateway_contact_name} onChange={(e) => setForm({ ...form, gateway_contact_name: e.target.value })} />
-              </div>
-              <div>
-                <Label>Contato (email)</Label>
-                <Input value={form.gateway_contact_email} onChange={(e) => setForm({ ...form, gateway_contact_email: e.target.value })} type="email" />
-              </div>
-            </div>
-            <div>
-              <Label>Notas internas</Label>
-              <Textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className="h-20" />
-            </div>
-            <Button
-              className="w-full"
-              onClick={() => createMut.mutate(form)}
-              disabled={!form.gateway_name?.trim() || createMut.isPending}
+
+          {/* Switch de jornada */}
+          <div className="grid grid-cols-2 gap-2 p-1 bg-[#f4f4f4] rounded-xl">
+            <button
+              onClick={() => { setMode('existing'); setForm(emptyForm); }}
+              className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-xs font-bold transition-all ${
+                mode === 'existing' ? 'bg-white text-[#002443] shadow-sm' : 'text-[#002443]/50 hover:text-[#002443]'
+              }`}
             >
-              {createMut.isPending ? 'Criando...' : 'Gerar link'}
-            </Button>
+              <Building2 className="w-4 h-4" /> Cliente já fechado
+            </button>
+            <button
+              onClick={() => { setMode('new'); setForm(emptyForm); }}
+              className={`flex items-center justify-center gap-2 py-2.5 px-3 rounded-lg text-xs font-bold transition-all ${
+                mode === 'new' ? 'bg-white text-[#002443] shadow-sm' : 'text-[#002443]/50 hover:text-[#002443]'
+              }`}
+            >
+              <UserPlus className="w-4 h-4" /> Gateway novo (manual)
+            </button>
           </div>
+
+          {/* JORNADA 1: Selecionar Gateway fechado */}
+          {mode === 'existing' && (
+            <div className="space-y-3 pt-2">
+              <div className="relative">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#002443]/40" />
+                <Input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Buscar por nome, CNPJ ou email..."
+                  className="pl-9"
+                />
+              </div>
+
+              <div className="max-h-72 overflow-y-auto border border-[#002443]/10 rounded-xl divide-y divide-[#002443]/5">
+                {filteredMerchants.length === 0 ? (
+                  <div className="p-6 text-center text-xs text-[#002443]/40">
+                    {merchants.length === 0 ? 'Nenhum cliente PJ aprovado encontrado.' : 'Nenhum resultado para a busca.'}
+                  </div>
+                ) : (
+                  filteredMerchants.slice(0, 50).map(m => {
+                    const selected = form.merchantId === m.id;
+                    return (
+                      <button
+                        key={m.id}
+                        onClick={() => selectMerchant(m)}
+                        className={`w-full text-left p-3 hover:bg-[#2bc196]/5 transition-colors flex items-center gap-3 ${
+                          selected ? 'bg-[#2bc196]/10' : ''
+                        }`}
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-[#002443]/5 flex items-center justify-center flex-shrink-0">
+                          <Building2 className="w-4 h-4 text-[#002443]/60" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-semibold text-[#002443] truncate">
+                            {m.companyName || m.fullName}
+                          </div>
+                          <div className="text-[11px] text-[#002443]/50 truncate">
+                            {m.cpfCnpj} {m.email && `· ${m.email}`}
+                          </div>
+                        </div>
+                        {selected && <CheckCircle2 className="w-5 h-5 text-[#2bc196] flex-shrink-0" />}
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+
+              {form.merchantId && (
+                <div className="bg-[#2bc196]/5 border border-[#2bc196]/20 rounded-xl p-3 space-y-2">
+                  <p className="text-[11px] font-bold text-[#002443] uppercase">Selecionado · revise os contatos</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Input value={form.gateway_contact_name} onChange={(e) => setForm({ ...form, gateway_contact_name: e.target.value })} placeholder="Contato" className="h-9 text-xs" />
+                    <Input value={form.gateway_contact_email} onChange={(e) => setForm({ ...form, gateway_contact_email: e.target.value })} placeholder="Email" type="email" className="h-9 text-xs" />
+                  </div>
+                  <Textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Notas internas (opcional)" className="h-16 text-xs" />
+                </div>
+              )}
+
+              <Button
+                className="w-full"
+                onClick={() => createMut.mutate(form)}
+                disabled={!form.merchantId || !form.gateway_name?.trim() || createMut.isPending}
+              >
+                {createMut.isPending ? 'Criando...' : form.merchantId ? `Gerar link para ${form.gateway_name}` : 'Selecione um cliente acima'}
+              </Button>
+            </div>
+          )}
+
+          {/* JORNADA 2: Novo Gateway manual */}
+          {mode === 'new' && (
+            <div className="space-y-4 pt-2">
+              <div>
+                <Label>Nome do Gateway *</Label>
+                <Input value={form.gateway_name} onChange={(e) => setForm({ ...form, gateway_name: e.target.value })} placeholder="Ex: Gateway XYZ" />
+                <p className="text-[11px] text-[#002443]/40 mt-1">Use esta opção para Gateways que ainda não fecharam contrato com a Pagsmile.</p>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Contato (nome)</Label>
+                  <Input value={form.gateway_contact_name} onChange={(e) => setForm({ ...form, gateway_contact_name: e.target.value })} />
+                </div>
+                <div>
+                  <Label>Contato (email)</Label>
+                  <Input value={form.gateway_contact_email} onChange={(e) => setForm({ ...form, gateway_contact_email: e.target.value })} type="email" />
+                </div>
+              </div>
+              <div>
+                <Label>Notas internas</Label>
+                <Textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} className="h-20" />
+              </div>
+              <Button
+                className="w-full"
+                onClick={() => createMut.mutate(form)}
+                disabled={!form.gateway_name?.trim() || createMut.isPending}
+              >
+                {createMut.isPending ? 'Criando...' : 'Gerar link'}
+              </Button>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>
