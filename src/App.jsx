@@ -119,6 +119,9 @@ const GlobalSimulador = lazyPage(() => import('./pages/GlobalSimulador'));
 const GlobalLinksCompliance = lazyPage(() => import('./pages/GlobalLinksCompliance'));
 const GlobalKYCRecebidos = lazyPage(() => import('./pages/GlobalKYCRecebidos'));
 const GlobalComoFunciona = lazyPage(() => import('./pages/GlobalComoFunciona'));
+const GestaoSubsellerInfoLinks = lazyPage(() => import('./pages/GestaoSubsellerInfoLinks'));
+const SubsellerInfoRecebidos = lazyPage(() => import('./pages/SubsellerInfoRecebidos'));
+const SubsellerInfoForm = lazyPage(() => import('./pages/SubsellerInfoForm'));
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -183,6 +186,7 @@ const PublicRoutes = () => (
     {/* Subseller */}
     <Route path="/SubsellerQuestionnaire" element={<LayoutWrapper currentPageName="SubsellerQuestionnaire"><SubsellerQuestionnaire /></LayoutWrapper>} />
     <Route path="/SubsellerDocUpload" element={<LayoutWrapper currentPageName="SubsellerDocUpload"><SubsellerDocUpload /></LayoutWrapper>} />
+    <Route path="/SubsellerInfoForm" element={<LayoutWrapper currentPageName="SubsellerInfoForm"><SubsellerInfoForm /></LayoutWrapper>} />
     <Route path="/ComplianceDocOnly" element={<ComplianceDocOnlyRedirect />} />
     {/* Both /onboarding (legacy) and /PublicOnboarding (new — matches pages.config.js) render the same page.
         /PublicOnboarding is the canonical URL because it matches a page key in pages.config.js, which is what
@@ -485,6 +489,8 @@ const AuthenticatedApp = () => {
       <Route path="/GlobalLinksCompliance" element={<LayoutWrapper currentPageName="GlobalLinksCompliance"><GlobalLinksCompliance /></LayoutWrapper>} />
       <Route path="/GlobalKYCRecebidos" element={<LayoutWrapper currentPageName="GlobalKYCRecebidos"><GlobalKYCRecebidos /></LayoutWrapper>} />
       <Route path="/GlobalComoFunciona" element={<LayoutWrapper currentPageName="GlobalComoFunciona"><GlobalComoFunciona /></LayoutWrapper>} />
+      <Route path="/GestaoSubsellerInfoLinks" element={<LayoutWrapper currentPageName="GestaoSubsellerInfoLinks"><GestaoSubsellerInfoLinks /></LayoutWrapper>} />
+      <Route path="/SubsellerInfoRecebidos" element={<LayoutWrapper currentPageName="SubsellerInfoRecebidos"><SubsellerInfoRecebidos /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

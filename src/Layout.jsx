@@ -194,6 +194,8 @@ export default function Layout({ children, currentPageName }) {
         { label: t('menu.document_management'), path: 'GestaoDocumentos', icon: FileText },
         { label: t('menu.revalidation'), path: 'GestaoRevalidacao', icon: History },
         { label: t('menu.subaccount_links'), path: 'GerenciarSubsellerLinks', icon: Users },
+        { label: 'Coleta Subsellers (Gateway)', path: 'GestaoSubsellerInfoLinks', icon: LinkIcon, highlight: true },
+        { label: 'Inbox Subsellers (Gateway)', path: 'SubsellerInfoRecebidos', icon: Inbox },
         { label: 'Risk Scoring', path: 'RiskScoringV4', icon: Shield },
         { label: 'Risk Scoring Subcontas', path: 'RiskScoringSubcontas', icon: Shield },
         { label: 'Escalações Questionáveis', path: 'EscalationsReview', icon: AlertTriangle, highlight: true },

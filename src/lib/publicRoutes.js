@@ -15,6 +15,7 @@ export const PUBLIC_PATHS = new Set([
   '/OnboardingCompletion',
   '/SubsellerQuestionnaire',
   '/SubsellerDocUpload',
+  '/SubsellerInfoForm',
   '/QuestionarioSimplificadoPublico',
   '/QuestionarioLeadsPagsmile',
   '/LeadPixV4',

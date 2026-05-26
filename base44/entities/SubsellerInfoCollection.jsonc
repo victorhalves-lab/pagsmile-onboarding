@@ -1,0 +1,79 @@
+{
+  "name": "SubsellerInfoCollection",
+  "type": "object",
+  "description": "Link de coleta de informa\u00e7\u00f5es iniciais de subsellers, gerado por n\u00f3s para o cliente Gateway. O Gateway preenche uma lista de subsellers (nome, CNPJ, modelo, oferta, volumetria, conta banc\u00e1ria).",
+  "properties": {
+    "gateway_name": {
+      "type": "string",
+      "description": "Nome do cliente Gateway que receber\u00e1 o link"
+    },
+    "gateway_contact_email": {
+      "type": "string",
+      "description": "Email de contato do respons\u00e1vel no Gateway"
+    },
+    "gateway_contact_name": {
+      "type": "string",
+      "description": "Nome do respons\u00e1vel no Gateway"
+    },
+    "unique_token": {
+      "type": "string",
+      "description": "Token \u00fanico do link p\u00fablico"
+    },
+    "custom_slug": {
+      "type": "string",
+      "description": "Slug amig\u00e1vel opcional"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Notas internas sobre este link"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "submissions_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Quantas submiss\u00f5es (envios) j\u00e1 foram feitas neste link"
+    },
+    "total_subsellers_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Total de subsellers acumulados em todas as submiss\u00f5es"
+    },
+    "last_submission_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "gateway_name",
+    "unique_token"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
