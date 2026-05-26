@@ -43,8 +43,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 import LanguageSelector from '@/components/LanguageSelector';
 import SidebarContextSwitch from '@/components/global/SidebarContextSwitch';
-import { getAppContext, subscribeAppContext, setAppContext, GLOBAL_PAGES } from '@/lib/global/globalContext';
-import { Globe2, Calculator, Table2 } from 'lucide-react';
+import { getAppContext, subscribeAppContext, setAppContext, GLOBAL_PAGES, UNIFIED_PAGES } from '@/lib/global/globalContext';
+import { Globe2, Calculator, Table2, Link2 } from 'lucide-react';
 
 export default function Layout({ children, currentPageName }) {
   const { t } = useTranslation();
@@ -55,10 +55,12 @@ export default function Layout({ children, currentPageName }) {
   });
   const [appContext, setAppContextState] = React.useState(getAppContext());
   React.useEffect(() => subscribeAppContext(setAppContextState), []);
-  // Auto-sync: quando o usuário navega para uma página Global, ativa o contexto Global.
+  // Auto-sync: ao navegar para uma página Global/Unificado, ativa o contexto correspondente.
   React.useEffect(() => {
     if (GLOBAL_PAGES.has(currentPageName) && appContext !== 'global') {
       setAppContext('global');
+    } else if (UNIFIED_PAGES.has(currentPageName) && appContext !== 'unified') {
+      setAppContext('unified');
     }
   }, [currentPageName, appContext]);
 
@@ -250,7 +252,32 @@ export default function Layout({ children, currentPageName }) {
     }
   ];
 
-  const menuStructure = appContext === 'global' ? menuStructureGlobal : menuStructureBrasil;
+  const menuStructureUnified = [
+    {
+      id: 'unified_propostas',
+      label: 'Propostas Unificadas',
+      icon: Link2,
+      items: [
+        { label: 'Hub de Propostas', path: 'HubPropostas', icon: LayoutDashboard, highlight: true },
+        { label: 'Criar Proposta Unificada', path: 'CriarPropostaUnificada', icon: FileCheck, highlight: true },
+        { label: 'Propostas Brasil', path: 'GestaoPropostas', icon: FileText },
+        { label: 'Propostas Global', path: 'GlobalPropostas', icon: Globe2 },
+      ]
+    },
+    {
+      id: 'unified_help',
+      label: 'Ajuda',
+      icon: BookOpen,
+      items: [
+        { label: 'Como Funciona', path: 'HowItWorks', icon: BookOpen },
+      ]
+    },
+  ];
+
+  const menuStructure =
+    appContext === 'global' ? menuStructureGlobal
+    : appContext === 'unified' ? menuStructureUnified
+    : menuStructureBrasil;
 
   // Auto-expand section containing active page (hooks MUST be before any early return)
   const prevPageRef = React.useRef(currentPageName);
@@ -456,6 +483,7 @@ export default function Layout({ children, currentPageName }) {
   const cadastroItem = { label: 'Cadastro', path: 'Cadastro', icon: Database };
   const adminSections = menuStructure.filter(s => s.id === 'admin');
   const isGlobalCtx = appContext === 'global';
+  const isUnifiedCtx = appContext === 'unified';
 
   const renderSections = (sections, isMobile = false) => (
     <div className="space-y-0.5">
@@ -529,8 +557,24 @@ export default function Layout({ children, currentPageName }) {
                 </>
               )}
 
+              {/* ═════════ MODO UNIFICADO ═════════ */}
+              {isUnifiedCtx && (
+                <>
+                  <div className="mb-1">
+                    <NavItem
+                      item={{ label: 'Hub de Propostas', path: 'HubPropostas', icon: Link2, highlight: true }}
+                      isActive={currentPageName === 'HubPropostas'}
+                      isCollapsed={collapsed}
+                    />
+                  </div>
+                  <SectionDivider isCollapsed={collapsed} />
+                  {!collapsed && <div className="px-3 mb-1"><span className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/20">Propostas Unificadas</span></div>}
+                  {renderSections(menuStructure)}
+                </>
+              )}
+
               {/* ═════════ MODO BRASIL (default) ═════════ */}
-              {!isGlobalCtx && (
+              {!isGlobalCtx && !isUnifiedCtx && (
                 <>
               {/* Home */}
               <div className="mb-1">
