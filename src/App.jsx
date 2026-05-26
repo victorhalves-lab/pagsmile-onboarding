@@ -106,6 +106,19 @@ const GlobalPublicProposal = lazyPage(() => import('./pages/GlobalPublicProposal
 const GlobalComplianceForm = lazyPage(() => import('./pages/GlobalComplianceForm'));
 const CriarPropostaUnificada = lazyPage(() => import('./pages/CriarPropostaUnificada'));
 const PropostaUnificadaPublica = lazyPage(() => import('./pages/PropostaUnificadaPublica'));
+// ── Páginas standalone do mundo Global (sidebar separada) ──
+const GlobalDashboard = lazyPage(() => import('./pages/GlobalDashboard'));
+const GlobalLeadLinks = lazyPage(() => import('./pages/GlobalLeadLinks'));
+const GlobalLeadsRecebidos = lazyPage(() => import('./pages/GlobalLeadsRecebidos'));
+const GlobalPropostas = lazyPage(() => import('./pages/GlobalPropostas'));
+const GlobalCriarProposta = lazyPage(() => import('./pages/GlobalCriarProposta'));
+const GlobalPipeline = lazyPage(() => import('./pages/GlobalPipeline'));
+const GlobalCanaisPaises = lazyPage(() => import('./pages/GlobalCanaisPaises'));
+const GlobalInterchange = lazyPage(() => import('./pages/GlobalInterchange'));
+const GlobalSimulador = lazyPage(() => import('./pages/GlobalSimulador'));
+const GlobalLinksCompliance = lazyPage(() => import('./pages/GlobalLinksCompliance'));
+const GlobalKYCRecebidos = lazyPage(() => import('./pages/GlobalKYCRecebidos'));
+const GlobalComoFunciona = lazyPage(() => import('./pages/GlobalComoFunciona'));
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -459,6 +472,19 @@ const AuthenticatedApp = () => {
       <Route path="/V5_2_ReplayStudio" element={<LayoutWrapper currentPageName="V5_2_ReplayStudio"><V5_2_ReplayStudio /></LayoutWrapper>} />
       <Route path="/HubPropostas" element={<LayoutWrapper currentPageName="HubPropostas"><HubPropostas /></LayoutWrapper>} />
       <Route path="/CriarPropostaUnificada" element={<LayoutWrapper currentPageName="CriarPropostaUnificada"><CriarPropostaUnificada /></LayoutWrapper>} />
+      {/* Rotas Global (sidebar separada) */}
+      <Route path="/GlobalDashboard" element={<LayoutWrapper currentPageName="GlobalDashboard"><GlobalDashboard /></LayoutWrapper>} />
+      <Route path="/GlobalLeadLinks" element={<LayoutWrapper currentPageName="GlobalLeadLinks"><GlobalLeadLinks /></LayoutWrapper>} />
+      <Route path="/GlobalLeadsRecebidos" element={<LayoutWrapper currentPageName="GlobalLeadsRecebidos"><GlobalLeadsRecebidos /></LayoutWrapper>} />
+      <Route path="/GlobalPropostas" element={<LayoutWrapper currentPageName="GlobalPropostas"><GlobalPropostas /></LayoutWrapper>} />
+      <Route path="/GlobalCriarProposta" element={<LayoutWrapper currentPageName="GlobalCriarProposta"><GlobalCriarProposta /></LayoutWrapper>} />
+      <Route path="/GlobalPipeline" element={<LayoutWrapper currentPageName="GlobalPipeline"><GlobalPipeline /></LayoutWrapper>} />
+      <Route path="/GlobalCanaisPaises" element={<LayoutWrapper currentPageName="GlobalCanaisPaises"><GlobalCanaisPaises /></LayoutWrapper>} />
+      <Route path="/GlobalInterchange" element={<LayoutWrapper currentPageName="GlobalInterchange"><GlobalInterchange /></LayoutWrapper>} />
+      <Route path="/GlobalSimulador" element={<LayoutWrapper currentPageName="GlobalSimulador"><GlobalSimulador /></LayoutWrapper>} />
+      <Route path="/GlobalLinksCompliance" element={<LayoutWrapper currentPageName="GlobalLinksCompliance"><GlobalLinksCompliance /></LayoutWrapper>} />
+      <Route path="/GlobalKYCRecebidos" element={<LayoutWrapper currentPageName="GlobalKYCRecebidos"><GlobalKYCRecebidos /></LayoutWrapper>} />
+      <Route path="/GlobalComoFunciona" element={<LayoutWrapper currentPageName="GlobalComoFunciona"><GlobalComoFunciona /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Save, FileText, DollarSign, TrendingUp, Calculator as Calc } from 'lucide-react';
 import { toast } from 'sonner';
-import { INTERCHANGE_OPTIONS, MCC_OPTIONS } from '@/lib/global/interchangeData';
+import { INTERCHANGE_OPTIONS, MCC_OPTIONS, VISA_INTERCHANGE_RATES, MASTERCARD_INTERCHANGE_RATES } from '@/lib/global/interchangeData';
 import InterchangeSelector from '@/components/global/InterchangeSelector';
 import CountrySelector from '@/components/global/public/CountrySelector';
 import CountryPricingBuilder from '@/components/global/proposal-creation/CountryPricingBuilder';
@@ -302,6 +302,30 @@ export default function GlobalProposalCreation() {
                 }}
               />
             </div>
+
+            {/* Tabela COMPLETA de programas Interchange — Visa & Mastercard linha-a-linha */}
+            <details className="border border-[#002443]/10 rounded-lg overflow-hidden">
+              <summary className="bg-[#f4f4f4] px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#002443]/70 cursor-pointer hover:bg-[#f4f4f4]/80 select-none">
+                Ver tabela completa de Interchange (Visa + Mastercard, USD)
+              </summary>
+              <div className="p-3 space-y-3">
+                <InterchangeTable title="Visa — Card Not Present (USD)" rows={VISA_INTERCHANGE_RATES} onPick={(r) => {
+                  setF('selected_interchange_type', 'custom');
+                  setF('interchange_percentage', r.rate_percentage);
+                  setF('interchange_fixed', r.rate_fixed);
+                  toast.success(`${r.program_name} aplicado`);
+                }} />
+                <InterchangeTable title="Mastercard — Card Not Present (USD)" rows={MASTERCARD_INTERCHANGE_RATES} onPick={(r) => {
+                  setF('selected_interchange_type', 'custom');
+                  setF('interchange_percentage', r.rate_percentage);
+                  setF('interchange_fixed', r.rate_fixed);
+                  toast.success(`${r.program_name} aplicado`);
+                }} />
+                <p className="text-[10px] text-[#002443]/50">
+                  Clique em qualquer linha para aplicar o programa como Interchange Custom.
+                </p>
+              </div>
+            </details>
             <div className="grid grid-cols-3 gap-3 pt-2 border-t border-[#002443]/5">
               <div>
                 <Label className="text-xs">Custo Base (%)</Label>
@@ -381,6 +405,34 @@ export default function GlobalProposalCreation() {
           </CardContent>
         </Card>
       </div>
+    </div>
+  );
+}
+
+function InterchangeTable({ title, rows, onPick }) {
+  return (
+    <div className="border border-[#002443]/10 rounded-lg overflow-hidden">
+      <div className="bg-white px-3 py-2 text-[11px] font-bold text-[#002443] border-b border-[#002443]/10">{title}</div>
+      <table className="w-full text-xs">
+        <thead className="bg-[#f4f4f4]/50 text-[#002443]/60">
+          <tr>
+            <th className="text-left px-3 py-1.5 font-semibold">Programa</th>
+            <th className="text-left px-3 py-1.5 font-semibold">Tipo de Cartão</th>
+            <th className="text-right px-3 py-1.5 font-semibold">Taxa %</th>
+            <th className="text-right px-3 py-1.5 font-semibold">Fixo USD</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-[#002443]/5">
+          {rows.map((r, i) => (
+            <tr key={i} onClick={() => onPick?.(r)} className="hover:bg-[#2bc196]/5 cursor-pointer transition-colors">
+              <td className="px-3 py-1.5 font-medium text-[#002443]">{r.program_name}</td>
+              <td className="px-3 py-1.5 text-[#002443]/70">{r.card_type}</td>
+              <td className="px-3 py-1.5 text-right font-mono text-[#002443]">{r.rate_percentage.toFixed(2)}%</td>
+              <td className="px-3 py-1.5 text-right font-mono text-[#002443]">${r.rate_fixed.toFixed(2)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

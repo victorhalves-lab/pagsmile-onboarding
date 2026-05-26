@@ -9,7 +9,7 @@ import GlobalPipelineKanban from './pages/GlobalPipelineKanban';
 import GlobalRevenueSimulator from './pages/GlobalRevenueSimulator';
 import GlobalInterchangeViewer from './pages/GlobalInterchangeViewer';
 import GlobalCountriesChannels from './pages/GlobalCountriesChannels';
-import GlobalComplianceDashboard from './pages/GlobalComplianceDashboard';
+import GlobalComplianceDashboard from './pages/GlobalComplianceDashboard.jsx';
 import GlobalComplianceReceived from './pages/GlobalComplianceReceived';
 import GlobalHowItWorks from './pages/GlobalHowItWorks';
 

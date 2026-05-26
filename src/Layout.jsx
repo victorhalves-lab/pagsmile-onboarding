@@ -42,6 +42,9 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useTranslation } from '@/lib/i18n/LanguageContext';
 import LanguageSelector from '@/components/LanguageSelector';
+import SidebarContextSwitch from '@/components/global/SidebarContextSwitch';
+import { getAppContext, subscribeAppContext, setAppContext, GLOBAL_PAGES } from '@/lib/global/globalContext';
+import { Globe2, Calculator, Table2 } from 'lucide-react';
 
 export default function Layout({ children, currentPageName }) {
   const { t } = useTranslation();
@@ -50,6 +53,14 @@ export default function Layout({ children, currentPageName }) {
   const [collapsed, setCollapsed] = React.useState(() => {
     try { return localStorage.getItem('sidebar_collapsed') === 'true'; } catch { return false; }
   });
+  const [appContext, setAppContextState] = React.useState(getAppContext());
+  React.useEffect(() => subscribeAppContext(setAppContextState), []);
+  // Auto-sync: quando o usuário navega para uma página Global, ativa o contexto Global.
+  React.useEffect(() => {
+    if (GLOBAL_PAGES.has(currentPageName) && appContext !== 'global') {
+      setAppContext('global');
+    }
+  }, [currentPageName, appContext]);
 
   // ⚡ SECURITY + STABILITY: on public routes we MUST NOT call base44.auth.me().
   // The SDK crashes anonymous visitors with a MessagePort/instanceof TypeError when
@@ -103,7 +114,50 @@ export default function Layout({ children, currentPageName }) {
     if (next) setExpandedSections([]);
   };
 
-  const menuStructure = [
+  const menuStructureGlobal = [
+    {
+      id: 'global_leads',
+      label: 'Leads & Propostas',
+      icon: Inbox,
+      items: [
+        { label: 'Dashboard Global', path: 'GlobalDashboard', icon: LayoutDashboard, highlight: true },
+        { label: 'Link Questionário', path: 'GlobalLeadLinks', icon: LinkIcon },
+        { label: 'Questionários Recebidos', path: 'GlobalLeadsRecebidos', icon: ClipboardList },
+        { label: 'Pipeline', path: 'GlobalPipeline', icon: Users },
+        { label: 'Propostas', path: 'GlobalPropostas', icon: FileText },
+        { label: 'Criar Proposta', path: 'GlobalCriarProposta', icon: FileCheck },
+      ]
+    },
+    {
+      id: 'global_compliance',
+      label: 'Compliance',
+      icon: Shield,
+      items: [
+        { label: 'Link Compliance', path: 'GlobalLinksCompliance', icon: LinkIcon },
+        { label: 'KYC Recebidos', path: 'GlobalKYCRecebidos', icon: FileCheck, highlight: true },
+      ]
+    },
+    {
+      id: 'global_catalog',
+      label: 'Catálogo & Análise',
+      icon: Database,
+      items: [
+        { label: 'Canais por País', path: 'GlobalCanaisPaises', icon: Database },
+        { label: 'Tabela Interchange', path: 'GlobalInterchange', icon: Table2 },
+        { label: 'Simulador', path: 'GlobalSimulador', icon: Calculator },
+      ]
+    },
+    {
+      id: 'global_help',
+      label: 'Ajuda',
+      icon: BookOpen,
+      items: [
+        { label: 'Como Funciona', path: 'GlobalComoFunciona', icon: BookOpen },
+      ]
+    }
+  ];
+
+  const menuStructureBrasil = [
     {
       id: 'leads',
       label: t('menu.leads_proposals'),
@@ -195,6 +249,8 @@ export default function Layout({ children, currentPageName }) {
       ]
     }
   ];
+
+  const menuStructure = appContext === 'global' ? menuStructureGlobal : menuStructureBrasil;
 
   // Auto-expand section containing active page (hooks MUST be before any early return)
   const prevPageRef = React.useRef(currentPageName);
@@ -399,6 +455,7 @@ export default function Layout({ children, currentPageName }) {
   const secondarySections = menuStructure.filter(s => ['tools', 'integrations'].includes(s.id));
   const cadastroItem = { label: 'Cadastro', path: 'Cadastro', icon: Database };
   const adminSections = menuStructure.filter(s => s.id === 'admin');
+  const isGlobalCtx = appContext === 'global';
 
   const renderSections = (sections, isMobile = false) => (
     <div className="space-y-0.5">
@@ -428,7 +485,7 @@ export default function Layout({ children, currentPageName }) {
           <aside className={`hidden lg:flex flex-col ${sidebarWidth} bg-[#002443] h-screen fixed left-0 top-0 z-20 transition-all duration-300 ease-in-out`}>
             
             {/* Logo + Language */}
-            <div className={`border-b border-white/8 flex items-center ${collapsed ? 'px-3 py-4 justify-center flex-col gap-3' : 'px-5 py-4 justify-between'}`}>
+            <div className={`border-b border-white/8 ${collapsed ? 'px-3 py-4 flex flex-col items-center gap-3' : 'px-5 py-4'}`}>
               {collapsed ? (
                 <>
                   <div className="w-8 h-8 rounded-lg bg-[#2bc196] flex items-center justify-center">
@@ -437,20 +494,44 @@ export default function Layout({ children, currentPageName }) {
                   <LanguageSelector variant="sidebar-collapsed" />
                 </>
               ) : (
-                <>
+                <div className="flex items-center justify-between">
                   <img 
                     src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6983b65f017b96d5f695f9bb/cc0a80f40_Logo-modo-escuro.png" 
                     alt="Pagsmile" 
                     className="h-7 w-auto"
                   />
                   <LanguageSelector variant="sidebar" />
-                </>
+                </div>
               )}
+            </div>
+
+            {/* Switch Brasil ↔ Global */}
+            <div className={`border-b border-white/8 ${collapsed ? 'px-2 py-2' : 'px-3 py-3'}`}>
+              <SidebarContextSwitch collapsed={collapsed} />
             </div>
 
             {/* Navigation */}
             <nav className={`flex-1 min-h-0 ${collapsed ? 'px-2' : 'px-3'} py-3 overflow-y-auto sidebar-nav`}>
-              
+
+              {/* ═════════ MODO GLOBAL ═════════ */}
+              {isGlobalCtx && (
+                <>
+                  <div className="mb-1">
+                    <NavItem
+                      item={{ label: 'Dashboard Global', path: 'GlobalDashboard', icon: Globe2, highlight: true }}
+                      isActive={currentPageName === 'GlobalDashboard'}
+                      isCollapsed={collapsed}
+                    />
+                  </div>
+                  <SectionDivider isCollapsed={collapsed} />
+                  {!collapsed && <div className="px-3 mb-1"><span className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/20">Operações Globais</span></div>}
+                  {renderSections(menuStructure)}
+                </>
+              )}
+
+              {/* ═════════ MODO BRASIL (default) ═════════ */}
+              {!isGlobalCtx && (
+                <>
               {/* Home */}
               <div className="mb-1">
                 <NavItem 
@@ -541,6 +622,8 @@ export default function Layout({ children, currentPageName }) {
                   isCollapsed={collapsed}
                 />
               </div>
+                </>
+              )}
 
             </nav>
 
