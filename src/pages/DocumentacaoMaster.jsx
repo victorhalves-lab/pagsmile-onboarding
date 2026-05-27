@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   Search, FileText, FileType, BookOpen, Layers, Database, Shield, Zap, Cpu,
-  Filter, Handshake, Stamp, ChevronRight, Printer, ClipboardList
+  Filter, Handshake, Stamp, ChevronRight, Printer, ClipboardList, Globe2, Link2
 } from 'lucide-react';
 import { exportChapterToPdf, exportChapterToDocx } from '@/components/doc-master/exportUtils';
 
@@ -26,6 +26,8 @@ import Ch15 from '@/components/doc-master/chapters/Ch15_EngineV5_2';
 import Ch16 from '@/components/doc-master/chapters/Ch16_QuestionarioV5_2';
 import Ch17 from '@/components/doc-master/chapters/Ch17_Cat5_Excecoes';
 import Ch18 from '@/components/doc-master/chapters/Ch18_ColetaSubsellersGateway';
+import Ch19 from '@/components/doc-master/chapters/Ch19_MundoGlobal';
+import Ch20 from '@/components/doc-master/chapters/Ch20_PropostasUnificadas';
 
 const CHAPTERS = [
   { id: 'ch-01', num: '01', title: 'Visão Geral da Arquitetura', icon: Layers, comp: Ch01, summary: 'Stack, camadas, princípios invioláveis, secrets, roteamento' },
@@ -46,6 +48,8 @@ const CHAPTERS = [
   { id: 'ch-16', num: '16', title: 'V5.2 — Questionário Dinâmico (catálogo único)', icon: ClipboardList, comp: Ch16, summary: 'NOVO V5.2: catálogo 80+65 perguntas, 5 modalidades (A/B/C/D/E), real-time block engine, tier escalation banner' },
   { id: 'ch-17', num: '17', title: 'V5.2 — Cat 5 Monitoramento Intensivo + Exceções', icon: Shield, comp: Ch17, summary: 'NOVO V5.2: Categoria 5, PlanoMonitoramento, TermoAdicional aceite seller, BdcMonitoringEvent, gatilhos off-boarding, SentinelFeedback' },
   { id: 'ch-18', num: '18', title: 'Coleta de Subsellers via Gateway (Pré-KYC em Massa)', icon: Handshake, comp: Ch18, summary: 'Fluxo NOVO: links únicos por Gateway, formulário público em massa (14 campos × N subsellers), inbox de submissões, exportação XLSX — pré-triagem antes de disparar KYC individual' },
+  { id: 'ch-19', num: '19', title: 'Mundo Global — USD / Multi-país / Trilíngue', icon: Globe2, comp: Ch19, summary: 'Trilho paralelo internacional: GlobalQuestionnaire, GlobalProposal (Interchange++ ou local_payments), catálogo GlobalCountryChannel (~250 país×provider×método), GlobalCountryFee (VAT/IOF/GMF), KYC tri-língue, simulador' },
+  { id: 'ch-20', num: '20', title: 'Propostas Unificadas — Brasil + Global em 1 Link', icon: Link2, comp: Ch20, summary: 'UnifiedProposalPackage agregador (sem duplicar dados), link público /u/:slug com tabs BR/Global, aceite independente por lado, publicUnifiedProposal, wizard 2 modos (Linkar/Criar do zero)' },
 ];
 
 export default function DocumentacaoMaster() {
@@ -190,7 +194,7 @@ export default function DocumentacaoMaster() {
 
               <div className="no-print mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[
-                  { label: 'Capítulos', value: '18', sub: 'V4 + V5.2 + Coleta Subsellers' },
+                  { label: 'Capítulos', value: '20', sub: 'V4 + V5.2 + Coleta + Global + Unificado' },
                   { label: 'Termos no Glossário', value: '120+', sub: 'Definidos' },
                   { label: 'Bloqueios', value: '10 + 72', sub: 'V4 + V5.2' },
                   { label: 'Funções Backend', value: '175+', sub: 'Documentadas' },
