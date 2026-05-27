@@ -21,6 +21,10 @@ import Ch10 from '@/components/doc-master/chapters/Ch10_Governanca';
 import Ch11 from '@/components/doc-master/chapters/Ch11_Parceiros';
 import Ch12 from '@/components/doc-master/chapters/Ch12_PropostasContratos';
 import Ch13 from '@/components/doc-master/chapters/Ch13_QuestionariosLeads';
+import Ch14 from '@/components/doc-master/chapters/Ch14_FrameworkV5_2';
+import Ch15 from '@/components/doc-master/chapters/Ch15_EngineV5_2';
+import Ch16 from '@/components/doc-master/chapters/Ch16_QuestionarioV5_2';
+import Ch17 from '@/components/doc-master/chapters/Ch17_Cat5_Excecoes';
 
 const CHAPTERS = [
   { id: 'ch-01', num: '01', title: 'Visão Geral da Arquitetura', icon: Layers, comp: Ch01, summary: 'Stack, camadas, princípios invioláveis, secrets, roteamento' },
@@ -36,6 +40,10 @@ const CHAPTERS = [
   { id: 'ch-11', num: '11', title: 'Parceiros & Pré-KYC', icon: Handshake, comp: Ch11, summary: 'Bureaus externos, Doc-Only, BankDataCollection, Bulk Reprocess' },
   { id: 'ch-12', num: '12', title: 'Propostas, Contratos, Kick-Off', icon: Stamp, comp: Ch12, summary: 'Proposal/Standard/Pix, versionamento, links, IA contratos, Kick-Off' },
   { id: 'ch-13', num: '13', title: 'Questionários de Leads — Microscópico', icon: ClipboardList, comp: Ch13, summary: 'Lead V5 (12 etapas, 45+18 perguntas, 16 flags) + PIX V4 (7 etapas, 28 perguntas, 11 flags)' },
+  { id: 'ch-14', num: '14', title: 'V5.2 — Framework (Tiers, Capabilities, Segmentos)', icon: Layers, comp: Ch14, summary: 'NOVO V5.2 (aditivo, V4 preservado): DNA versioning, 3 tiers + sub-tiers, 4 capabilities, 15 segmentos, morfologias' },
+  { id: 'ch-15', num: '15', title: 'V5.2 — Engine (Scoring, 58 Datasets, 72 Bloqueios, Cross-Val 16)', icon: Cpu, comp: Ch15, summary: 'NOVO V5.2: 5 camadas tier-aware, 13 dimensões analíticas, Patch Financeiro 5 dim, Matriz 5 categorias, Snapshot imutável' },
+  { id: 'ch-16', num: '16', title: 'V5.2 — Questionário Dinâmico (catálogo único)', icon: ClipboardList, comp: Ch16, summary: 'NOVO V5.2: catálogo 80+65 perguntas, 5 modalidades (A/B/C/D/E), real-time block engine, tier escalation banner' },
+  { id: 'ch-17', num: '17', title: 'V5.2 — Cat 5 Monitoramento Intensivo + Exceções', icon: Shield, comp: Ch17, summary: 'NOVO V5.2: Categoria 5, PlanoMonitoramento, TermoAdicional aceite seller, BdcMonitoringEvent, gatilhos off-boarding, SentinelFeedback' },
 ];
 
 export default function DocumentacaoMaster() {
@@ -180,9 +188,9 @@ export default function DocumentacaoMaster() {
 
               <div className="no-print mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[
-                  { label: 'Capítulos', value: '13', sub: 'Microscópicos' },
+                  { label: 'Capítulos', value: '17', sub: 'V4 + V5.2 (aditivo)' },
                   { label: 'Termos no Glossário', value: '120+', sub: 'Definidos' },
-                  { label: 'Bloqueios V4', value: '10', sub: 'B01–B10' },
+                  { label: 'Bloqueios', value: '10 + 72', sub: 'V4 + V5.2' },
                   { label: 'Funções Backend', value: '175+', sub: 'Documentadas' },
                 ].map((s, i) => (
                   <div key={i} className="bg-white rounded-md border border-[#e8e8e8] p-3">

@@ -26,6 +26,8 @@ import DocDocCompParceiros from '@/components/kyc-doc/DocDocCompParceiros';
 import DocTemplatesMicroscopico from '@/components/kyc-doc/DocTemplatesMicroscopico';
 import DocModeloDinamicoKYC from '@/components/kyc-doc/DocModeloDinamicoKYC';
 import DocFunisCaptacao from '@/components/kyc-doc/DocFunisCaptacao';
+import DocFrameworkV5_2 from '@/components/kyc-doc/DocFrameworkV5_2';
+import DocCategoria5Monitoramento from '@/components/kyc-doc/DocCategoria5Monitoramento';
 import RiskScoringDocTab from '@/components/kyc-doc/risk-scoring/RiskScoringDocTab';
 import DocBdcCafMicroscopico from '@/components/kyc-doc/DocBdcCafMicroscopico';
 import RiskAnalysisDocTab from '@/components/kyc-doc/risk-analysis/RiskAnalysisDocTab';
@@ -51,6 +53,8 @@ const TOC = [
   { id: 's17', n: '17', label: 'Link de Documentos Exclusivos — Fluxo Acelerado' },
   { id: 's18', n: '18', label: 'Doc Compliance Parceiros + Coleta Bancária + Export Pré-KYC' },
   { id: 's19', n: '19', label: 'Funis de Captação de Leads — Lead V5, PIX V4 e Fechamento (Pré-KYC)' },
+  { id: 's20', n: '20', label: '[V5.2] Framework V5.2 — Tiers, Capabilities, 5 Categorias, 72 Bloqueios' },
+  { id: 's21', n: '21', label: '[V5.2] Categoria 5 — Monitoramento Intensivo + Exceções Avançadas' },
 ];
 
 export default function DocumentoKYCKYB() {
@@ -99,7 +103,7 @@ export default function DocumentoKYCKYB() {
             onClick={() => setActiveTab('manual')}
             icon={BookOpen}
             label="Manual de Processos"
-            sublabel="20 seções completas"
+            sublabel="22 seções (V4 + V5.2)"
           />
           <TabButton
             active={activeTab === 'templates'}
@@ -307,12 +311,14 @@ function ManualContent({ templates, questionsByTemplate }) {
         <div id="s17" className="doc-break"><DocDocOnlyLink /></div>
         <div id="s18" className="doc-break"><DocDocCompParceiros /></div>
         <div id="s19" className="doc-break"><DocFunisCaptacao /></div>
+        <div id="s20" className="doc-break"><DocFrameworkV5_2 /></div>
+        <div id="s21" className="doc-break"><DocCategoria5Monitoramento /></div>
       </div>
 
       {/* ═══ FOOTER ═══ */}
       <div className="doc-footer mt-10 mx-8 border-t border-[#e0e0e0] pt-4 pb-6 text-center">
         <p className="text-[11px] text-[#1a1a1a]/30">
-          PagSmile — Manual de Processos KYC/KYB — Compliance V4.0
+          PagSmile — Manual de Processos KYC/KYB — Compliance V4.0 + V5.2 (aditivo)
         </p>
         <p className="text-[10px] text-[#1a1a1a]/20 mt-1">
           Documento Confidencial — {new Date().toLocaleDateString('pt-BR')} — Todos os direitos reservados
