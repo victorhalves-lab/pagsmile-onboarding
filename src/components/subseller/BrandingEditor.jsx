@@ -21,10 +21,27 @@ export default function BrandingEditor({ link, onUpdate }) {
   const handleLogoUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    // Limite de 5MB — uploads maiores costumam travar silenciosamente
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Arquivo muito grande. Máximo 5MB.');
+      e.target.value = '';
+      return;
+    }
+
     setUploading(true);
-    const { file_url } = await base44.integrations.Core.UploadFile({ file });
-    setBrandLogoUrl(file_url);
-    setUploading(false);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      if (!file_url) throw new Error('Upload não retornou URL.');
+      setBrandLogoUrl(file_url);
+      toast.success('Logo enviado!');
+    } catch (err) {
+      toast.error('Falha ao enviar logo: ' + (err?.message || 'erro desconhecido'));
+    } finally {
+      setUploading(false);
+      // Limpa o input para permitir reenviar o mesmo arquivo após erro
+      e.target.value = '';
+    }
   };
 
   const handleSave = async () => {

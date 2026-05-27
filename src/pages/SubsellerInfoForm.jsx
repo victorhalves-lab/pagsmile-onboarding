@@ -42,7 +42,7 @@ export default function SubsellerInfoForm() {
   const [submitterEmail, setSubmitterEmail] = useState('');
   const [rows, setRows] = useState(() => Array.from({ length: INITIAL_ROWS }, emptySubseller));
 
-  // Carrega contexto do link
+  // Carrega contexto do link (via função pública — a entidade tem RLS admin-only)
   useEffect(() => {
     if (!token) {
       setError('Link inválido — token ausente.');
@@ -51,18 +51,19 @@ export default function SubsellerInfoForm() {
     }
     (async () => {
       try {
-        const list = await base44.entities.SubsellerInfoCollection.filter({ unique_token: token });
-        if (!list || list.length === 0) {
-          setError('Link não encontrado ou expirado.');
-        } else if (list[0].is_active === false) {
+        const res = await base44.functions.invoke('publicReadSubsellerInfoCollection', { token });
+        const data = res?.data || {};
+        if (data.status === 'ok' && data.collection) {
+          setCollection(data.collection);
+        } else if (data.status === 'inactive') {
           setError('Este link foi desativado.');
-        } else if (list[0].expires_at && new Date(list[0].expires_at) < new Date()) {
+        } else if (data.status === 'expired') {
           setError('Este link expirou.');
         } else {
-          setCollection(list[0]);
+          setError('Link não encontrado ou expirado.');
         }
       } catch (e) {
-        setError('Não foi possível validar este link.');
+        setError('Não foi possível validar este link. Tente novamente em instantes.');
       } finally {
         setLoading(false);
       }
