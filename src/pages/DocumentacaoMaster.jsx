@@ -25,6 +25,7 @@ import Ch14 from '@/components/doc-master/chapters/Ch14_FrameworkV5_2';
 import Ch15 from '@/components/doc-master/chapters/Ch15_EngineV5_2';
 import Ch16 from '@/components/doc-master/chapters/Ch16_QuestionarioV5_2';
 import Ch17 from '@/components/doc-master/chapters/Ch17_Cat5_Excecoes';
+import Ch18 from '@/components/doc-master/chapters/Ch18_ColetaSubsellersGateway';
 
 const CHAPTERS = [
   { id: 'ch-01', num: '01', title: 'Visão Geral da Arquitetura', icon: Layers, comp: Ch01, summary: 'Stack, camadas, princípios invioláveis, secrets, roteamento' },
@@ -44,6 +45,7 @@ const CHAPTERS = [
   { id: 'ch-15', num: '15', title: 'V5.2 — Engine (Scoring, 58 Datasets, 72 Bloqueios, Cross-Val 16)', icon: Cpu, comp: Ch15, summary: 'NOVO V5.2: 5 camadas tier-aware, 13 dimensões analíticas, Patch Financeiro 5 dim, Matriz 5 categorias, Snapshot imutável' },
   { id: 'ch-16', num: '16', title: 'V5.2 — Questionário Dinâmico (catálogo único)', icon: ClipboardList, comp: Ch16, summary: 'NOVO V5.2: catálogo 80+65 perguntas, 5 modalidades (A/B/C/D/E), real-time block engine, tier escalation banner' },
   { id: 'ch-17', num: '17', title: 'V5.2 — Cat 5 Monitoramento Intensivo + Exceções', icon: Shield, comp: Ch17, summary: 'NOVO V5.2: Categoria 5, PlanoMonitoramento, TermoAdicional aceite seller, BdcMonitoringEvent, gatilhos off-boarding, SentinelFeedback' },
+  { id: 'ch-18', num: '18', title: 'Coleta de Subsellers via Gateway (Pré-KYC em Massa)', icon: Handshake, comp: Ch18, summary: 'Fluxo NOVO: links únicos por Gateway, formulário público em massa (14 campos × N subsellers), inbox de submissões, exportação XLSX — pré-triagem antes de disparar KYC individual' },
 ];
 
 export default function DocumentacaoMaster() {
@@ -188,7 +190,7 @@ export default function DocumentacaoMaster() {
 
               <div className="no-print mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[
-                  { label: 'Capítulos', value: '17', sub: 'V4 + V5.2 (aditivo)' },
+                  { label: 'Capítulos', value: '18', sub: 'V4 + V5.2 + Coleta Subsellers' },
                   { label: 'Termos no Glossário', value: '120+', sub: 'Definidos' },
                   { label: 'Bloqueios', value: '10 + 72', sub: 'V4 + V5.2' },
                   { label: 'Funções Backend', value: '175+', sub: 'Documentadas' },

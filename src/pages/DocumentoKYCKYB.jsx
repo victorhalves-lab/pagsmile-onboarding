@@ -28,6 +28,7 @@ import DocModeloDinamicoKYC from '@/components/kyc-doc/DocModeloDinamicoKYC';
 import DocFunisCaptacao from '@/components/kyc-doc/DocFunisCaptacao';
 import DocFrameworkV5_2 from '@/components/kyc-doc/DocFrameworkV5_2';
 import DocCategoria5Monitoramento from '@/components/kyc-doc/DocCategoria5Monitoramento';
+import DocColetaSubsellersGateway from '@/components/kyc-doc/DocColetaSubsellersGateway';
 import RiskScoringDocTab from '@/components/kyc-doc/risk-scoring/RiskScoringDocTab';
 import DocBdcCafMicroscopico from '@/components/kyc-doc/DocBdcCafMicroscopico';
 import RiskAnalysisDocTab from '@/components/kyc-doc/risk-analysis/RiskAnalysisDocTab';
@@ -55,6 +56,7 @@ const TOC = [
   { id: 's19', n: '19', label: 'Funis de Captação de Leads — Lead V5, PIX V4 e Fechamento (Pré-KYC)' },
   { id: 's20', n: '20', label: '[V5.2] Framework V5.2 — Tiers, Capabilities, 5 Categorias, 72 Bloqueios' },
   { id: 's21', n: '21', label: '[V5.2] Categoria 5 — Monitoramento Intensivo + Exceções Avançadas' },
+  { id: 's22', n: '22', label: 'Coleta de Subsellers via Gateway — Fluxo Pré-KYC em Massa' },
 ];
 
 export default function DocumentoKYCKYB() {
@@ -103,7 +105,7 @@ export default function DocumentoKYCKYB() {
             onClick={() => setActiveTab('manual')}
             icon={BookOpen}
             label="Manual de Processos"
-            sublabel="22 seções (V4 + V5.2)"
+            sublabel="23 seções (V4 + V5.2 + Coleta)"
           />
           <TabButton
             active={activeTab === 'templates'}
@@ -313,6 +315,7 @@ function ManualContent({ templates, questionsByTemplate }) {
         <div id="s19" className="doc-break"><DocFunisCaptacao /></div>
         <div id="s20" className="doc-break"><DocFrameworkV5_2 /></div>
         <div id="s21" className="doc-break"><DocCategoria5Monitoramento /></div>
+        <div id="s22" className="doc-break"><DocColetaSubsellersGateway /></div>
       </div>
 
       {/* ═══ FOOTER ═══ */}
