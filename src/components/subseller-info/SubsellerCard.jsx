@@ -57,19 +57,46 @@ export default function SubsellerCard({ idx, row, token, onUpdate, onRemove }) {
   };
 
   return (
-    <Card className={`transition-all ${filled ? 'border-[#2bc196]/40 shadow-sm' : 'border-[#002443]/5'}`}>
-      <CardContent className="p-5 space-y-4">
+    <Card
+      className={`relative overflow-hidden transition-all border-2 ${
+        filled
+          ? 'border-[#2bc196]/50 shadow-lg shadow-[#2bc196]/10'
+          : 'border-[#002443]/10 shadow-md'
+      }`}
+    >
+      {/* Faixa lateral colorida para reforçar a separação */}
+      <div
+        className={`absolute left-0 top-0 bottom-0 w-1.5 ${
+          filled ? 'bg-[#2bc196]' : 'bg-[#002443]/20'
+        }`}
+        aria-hidden="true"
+      />
+
+      <CardContent className="p-5 md:p-6 space-y-4 pl-6 md:pl-7">
         {/* Cabeçalho */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold ${filled ? 'bg-[#2bc196] text-white' : 'bg-[#f4f4f4] text-[#002443]/40'}`}>
+        <div className="flex items-center justify-between pb-3 border-b border-[#002443]/8">
+          <div className="flex items-center gap-3">
+            <div
+              className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black tabular-nums ${
+                filled ? 'bg-[#2bc196] text-white shadow-md shadow-[#2bc196]/30' : 'bg-[#f4f4f4] text-[#002443]/50'
+              }`}
+            >
               {idx + 1}
             </div>
-            <span className="text-sm font-semibold text-[#002443]">
-              {row.company_name || `Subseller #${idx + 1}`}
-            </span>
+            <div className="min-w-0">
+              <div className="text-base font-bold text-[#002443] truncate">
+                {row.company_name || `Subseller #${idx + 1}`}
+              </div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40">
+                {(row.person_type || 'PJ') === 'PJ' ? 'Pessoa Jurídica' : 'Pessoa Física'}
+              </div>
+            </div>
           </div>
-          <button onClick={onRemove} className="text-[#002443]/30 hover:text-red-500 transition-colors p-1">
+          <button
+            onClick={onRemove}
+            className="text-[#002443]/30 hover:text-red-500 hover:bg-red-50 transition-colors p-2 rounded-lg flex-shrink-0"
+            title="Remover este subseller"
+          >
             <Trash2 className="w-4 h-4" />
           </button>
         </div>

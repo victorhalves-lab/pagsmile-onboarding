@@ -264,16 +264,46 @@ export default function SubsellerInfoForm() {
       </div>
 
       {/* Cards */}
-      <div className="space-y-4">
+      <div className="space-y-10">
         {rows.map((row, idx) => (
-          <SubsellerCard
-            key={idx}
-            idx={idx}
-            row={row}
-            token={token}
-            onUpdate={(field, value) => update(idx, field, value)}
-            onRemove={() => removeRow(idx)}
-          />
+          <div key={idx} className="relative">
+            {/* Divisor entre subsellers */}
+            {idx > 0 && (
+              <div className="flex items-center gap-4 mb-6 -mt-4" aria-hidden="true">
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#002443]/15 to-transparent" />
+                <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#f4f4f4] border border-[#002443]/8">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#2bc196]" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50">
+                    Próximo subseller
+                  </span>
+                </div>
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#002443]/15 to-transparent" />
+              </div>
+            )}
+
+            {/* Banner numerado por cima do card */}
+            <div className="flex items-center gap-3 mb-3 px-1">
+              <div className="text-3xl md:text-4xl font-black text-[#002443]/15 leading-none tabular-nums">
+                #{String(idx + 1).padStart(2, '0')}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#2bc196]">
+                  Subseller {idx + 1} de {rows.length}
+                </div>
+                <div className="text-xs text-[#002443]/50 truncate">
+                  {row.company_name?.trim() || 'Aguardando preenchimento...'}
+                </div>
+              </div>
+            </div>
+
+            <SubsellerCard
+              idx={idx}
+              row={row}
+              token={token}
+              onUpdate={(field, value) => update(idx, field, value)}
+              onRemove={() => removeRow(idx)}
+            />
+          </div>
         ))}
       </div>
 
