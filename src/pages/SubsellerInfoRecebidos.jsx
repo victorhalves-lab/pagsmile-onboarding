@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Inbox, Search, Download, Building2, ExternalLink, Calendar, Users, FileSpreadsheet, ChevronDown, ChevronRight } from 'lucide-react';
+import { Inbox, Search, Download, Building2, ExternalLink, Calendar, Users, FileSpreadsheet, ChevronDown, ChevronRight, FileText, User } from 'lucide-react';
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
@@ -99,9 +99,13 @@ export default function SubsellerInfoRecebidos() {
           'Preenchido por': sub.submitter_name || '',
           'Email preenchedor': sub.submitter_email || '',
           'Status': STATUS_LABELS[sub.status]?.label || sub.status,
-          'Razão Social': s.company_name || '',
+          'Tipo': s.person_type || 'PJ',
+          'Nome / Razão Social': s.company_name || '',
           'CNPJ': s.cnpj || '',
-          'Modelo de Negócio': s.business_model || '',
+          'CPF': s.cpf || '',
+          'RG': s.rg || '',
+          'CNAE': s.cnae || '',
+          'Modelo de Negócio': s.business_model === 'outro' ? `outro: ${s.business_model_other || ''}` : (s.business_model || ''),
           'O que vende': s.what_they_sell || '',
           'Site / Link da oferta': s.offer_url || '',
           'Explicação da oferta': s.offer_explanation || '',
@@ -113,6 +117,7 @@ export default function SubsellerInfoRecebidos() {
           'Tipo Conta': s.bank_account_type || '',
           'Titular': s.bank_holder_name || '',
           'CPF/CNPJ Titular': s.bank_holder_document || '',
+          'Documentos enviados': (s.documents || []).length,
         });
       }
     }
@@ -306,27 +311,90 @@ export default function SubsellerInfoRecebidos() {
                 {detailOpen.submitter_name && ` · por ${detailOpen.submitter_name}`}
                 {detailOpen.submitter_email && ` (${detailOpen.submitter_email})`}
               </div>
-              {(detailOpen.subsellers || []).map((s, i) => (
-                <div key={i} className="border border-[#002443]/10 rounded-xl p-4 bg-[#f4f4f4]/30">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="w-7 h-7 rounded-lg bg-[#2bc196] text-white flex items-center justify-center text-xs font-bold">{i + 1}</div>
-                    <h4 className="text-sm font-bold text-[#002443]">{s.company_name || '(sem nome)'}</h4>
-                  </div>
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
-                    <div><span className="text-[#002443]/40">CNPJ:</span> {s.cnpj || '—'}</div>
-                    <div><span className="text-[#002443]/40">Modelo:</span> {s.business_model || '—'}</div>
-                    <div><span className="text-[#002443]/40">Vende:</span> {s.what_they_sell || '—'}</div>
-                    <div><span className="text-[#002443]/40">TPV:</span> R$ {s.monthly_tpv || '—'}</div>
-                    <div><span className="text-[#002443]/40">Ticket:</span> R$ {s.average_ticket || '—'}</div>
-                    <div className="col-span-2"><span className="text-[#002443]/40">Site:</span> {s.offer_url || '—'}</div>
-                    {s.offer_explanation && <div className="col-span-2"><span className="text-[#002443]/40">Oferta:</span> {s.offer_explanation}</div>}
-                    <div className="col-span-2 pt-2 mt-2 border-t border-[#002443]/10">
-                      <span className="text-[#002443]/40">Conta:</span> {s.bank_name} · Ag {s.bank_agency} · Cc {s.bank_account} ({s.bank_account_type})
-                      {s.bank_holder_name && ` · Titular: ${s.bank_holder_name}`}
+              {(detailOpen.subsellers || []).map((s, i) => {
+                const isPJ = (s.person_type || 'PJ') === 'PJ';
+                return (
+                  <div key={i} className="border border-[#002443]/10 rounded-xl p-4 bg-[#f4f4f4]/30">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-lg bg-[#2bc196] text-white flex items-center justify-center text-xs font-bold">{i + 1}</div>
+                        <h4 className="text-sm font-bold text-[#002443]">{s.company_name || '(sem nome)'}</h4>
+                      </div>
+                      <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${isPJ ? 'bg-[#002443]/10 text-[#002443]' : 'bg-amber-50 text-amber-700'}`}>
+                        {isPJ ? <Building2 className="w-3 h-3" /> : <User className="w-3 h-3" />}
+                        {isPJ ? 'PJ' : 'PF'}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+                      {isPJ ? (
+                        <>
+                          <div><span className="text-[#002443]/40">CNPJ:</span> {s.cnpj || '—'}</div>
+                          <div><span className="text-[#002443]/40">CNAE:</span> {s.cnae || '—'}</div>
+                        </>
+                      ) : (
+                        <>
+                          <div><span className="text-[#002443]/40">CPF:</span> {s.cpf || '—'}</div>
+                          <div><span className="text-[#002443]/40">RG:</span> {s.rg || '—'}</div>
+                        </>
+                      )}
+                      <div><span className="text-[#002443]/40">Modelo:</span> {s.business_model || '—'}</div>
+                      <div><span className="text-[#002443]/40">Vende:</span> {s.what_they_sell || '—'}</div>
+                      {s.business_model === 'outro' && s.business_model_other && (
+                        <div className="col-span-2"><span className="text-[#002443]/40">Detalhe "outro":</span> {s.business_model_other}</div>
+                      )}
+                      <div><span className="text-[#002443]/40">TPV:</span> R$ {s.monthly_tpv || '—'}</div>
+                      <div><span className="text-[#002443]/40">Ticket:</span> R$ {s.average_ticket || '—'}</div>
+                      <div className="col-span-2"><span className="text-[#002443]/40">Site:</span> {s.offer_url || '—'}</div>
+                      {s.offer_explanation && <div className="col-span-2"><span className="text-[#002443]/40">Oferta:</span> {s.offer_explanation}</div>}
+                      <div className="col-span-2 pt-2 mt-2 border-t border-[#002443]/10">
+                        <span className="text-[#002443]/40">Conta:</span> {s.bank_name} · Ag {s.bank_agency} · Cc {s.bank_account} ({s.bank_account_type})
+                        {s.bank_holder_name && ` · Titular: ${s.bank_holder_name}`}
+                      </div>
+
+                      {/* Documentos */}
+                      {(s.documents || []).length > 0 && (
+                        <div className="col-span-2 pt-2 mt-2 border-t border-[#002443]/10">
+                          <div className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/40 mb-1.5">
+                            Documentos enviados ({(s.documents || []).length})
+                          </div>
+                          <div className="space-y-1">
+                            {(s.documents || []).map((doc, dIdx) => (
+                              <div key={dIdx} className="flex items-center justify-between bg-white rounded px-2 py-1.5">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <FileText className="w-3.5 h-3.5 text-[#002443]/40 flex-shrink-0" />
+                                  <div className="min-w-0">
+                                    <div className="text-[11px] font-semibold text-[#002443] truncate">{doc.doc_label || doc.doc_type}</div>
+                                    <div className="text-[10px] text-[#002443]/40 truncate">{doc.file_name}</div>
+                                  </div>
+                                </div>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  className="h-7 px-2 flex-shrink-0"
+                                  onClick={async () => {
+                                    try {
+                                      const res = await base44.functions.invoke('getPrivateDocumentUrl', {
+                                        file_uri: doc.file_uri,
+                                      });
+                                      const url = res?.data?.signed_url;
+                                      if (url) window.open(url, '_blank');
+                                      else toast.error('Não foi possível gerar o link.');
+                                    } catch (e) {
+                                      toast.error('Erro ao baixar documento.');
+                                    }
+                                  }}
+                                >
+                                  <Download className="w-3 h-3" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </DialogContent>

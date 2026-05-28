@@ -25,16 +25,42 @@
       "items": {
         "type": "object",
         "properties": {
+          "person_type": {
+            "type": "string",
+            "enum": [
+              "PJ",
+              "PF"
+            ],
+            "default": "PJ",
+            "description": "Tipo do subseller: PJ (empresa) ou PF (pessoa f\u00edsica)"
+          },
           "company_name": {
             "type": "string",
-            "description": "Raz\u00e3o Social / Nome Fantasia"
+            "description": "Raz\u00e3o Social / Nome Fantasia (PJ) ou Nome Completo (PF)"
           },
           "cnpj": {
-            "type": "string"
+            "type": "string",
+            "description": "CNPJ (PJ)"
+          },
+          "cpf": {
+            "type": "string",
+            "description": "CPF (PF)"
+          },
+          "rg": {
+            "type": "string",
+            "description": "RG (PF)"
+          },
+          "cnae": {
+            "type": "string",
+            "description": "C\u00f3digo CNAE da atividade principal (PJ)"
           },
           "business_model": {
             "type": "string",
             "description": "Modelo de neg\u00f3cio (ex: e-commerce, marketplace, SaaS, link de pagamento)"
+          },
+          "business_model_other": {
+            "type": "string",
+            "description": "Descri\u00e7\u00e3o obrigat\u00f3ria quando business_model = 'outro'"
           },
           "what_they_sell": {
             "type": "string",
@@ -80,6 +106,38 @@
           "bank_holder_document": {
             "type": "string",
             "description": "CPF/CNPJ do titular"
+          },
+          "documents": {
+            "type": "array",
+            "description": "Documentos enviados para este subseller (URIs do Supabase).",
+            "items": {
+              "type": "object",
+              "properties": {
+                "doc_type": {
+                  "type": "string",
+                  "description": "C\u00f3digo do tipo de documento. PJ: contrato_social | doc_socio | selfie_socio | comprovante_endereco_empresa. PF: documento_id | selfie_documento | comprovante_residencia."
+                },
+                "doc_label": {
+                  "type": "string"
+                },
+                "file_uri": {
+                  "type": "string"
+                },
+                "file_name": {
+                  "type": "string"
+                },
+                "file_size": {
+                  "type": "number"
+                },
+                "file_type": {
+                  "type": "string"
+                },
+                "uploaded_at": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
           }
         }
       }

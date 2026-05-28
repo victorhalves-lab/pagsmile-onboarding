@@ -45,19 +45,24 @@ Deno.serve(async (req) => {
 
     // Sanitiza subsellers (mantém só campos do schema)
     const allowedKeys = new Set([
-      'company_name','cnpj','business_model','what_they_sell','offer_url','offer_explanation',
+      'person_type','company_name','cnpj','cpf','rg','cnae','business_model','business_model_other',
+      'what_they_sell','offer_url','offer_explanation',
       'monthly_tpv','average_ticket','bank_name','bank_agency','bank_account',
-      'bank_account_type','bank_holder_name','bank_holder_document'
+      'bank_account_type','bank_holder_name','bank_holder_document','documents'
     ]);
     const cleaned = subsellers
       .map(s => {
         const out = {};
         for (const [k, v] of Object.entries(s || {})) {
-          if (allowedKeys.has(k) && v !== undefined && v !== null && v !== '') out[k] = v;
+          if (!allowedKeys.has(k)) continue;
+          if (v === undefined || v === null || v === '') continue;
+          out[k] = v;
         }
+        if (!out.person_type) out.person_type = 'PJ';
         return out;
       })
-      .filter(s => s.company_name || s.cnpj); // exige pelo menos nome ou CNPJ
+      // Aceita PJ com nome ou CNPJ, PF com nome ou CPF
+      .filter(s => s.company_name || s.cnpj || s.cpf);
 
     if (cleaned.length === 0) {
       return Response.json({ error: 'Preencha ao menos Nome ou CNPJ em cada subseller' }, { status: 400 });

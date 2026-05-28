@@ -3,30 +3,29 @@ import { callPublicFunction } from '@/lib/publicApi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
-import { Plus, Trash2, Building2, Send, CheckCircle2, Sparkles, ArrowRight, Loader2, Users } from 'lucide-react';
+import { Plus, Building2, Send, CheckCircle2, Sparkles, ArrowRight, Loader2, Users } from 'lucide-react';
 import { toast } from 'sonner';
+import SubsellerCard from '@/components/subseller-info/SubsellerCard';
 
 const INITIAL_ROWS = 10;
 
 const emptySubseller = () => ({
-  company_name: '', cnpj: '', business_model: '', what_they_sell: '',
-  offer_url: '', offer_explanation: '',
+  person_type: 'PJ',
+  company_name: '', cnpj: '', cpf: '', rg: '', cnae: '',
+  business_model: '', business_model_other: '',
+  what_they_sell: '', offer_url: '', offer_explanation: '',
   monthly_tpv: '', average_ticket: '',
   bank_name: '', bank_agency: '', bank_account: '', bank_account_type: 'corrente',
   bank_holder_name: '', bank_holder_document: '',
+  documents: [],
 });
 
-function formatCnpj(v) {
-  const digits = String(v || '').replace(/\D/g, '').slice(0, 14);
-  return digits
-    .replace(/^(\d{2})(\d)/, '$1.$2')
-    .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
-    .replace(/\.(\d{3})(\d)/, '.$1/$2')
-    .replace(/(\d{4})(\d)/, '$1-$2');
-}
+// Documentos exigidos por tipo de pessoa
+const REQUIRED_DOCS = {
+  PJ: ['contrato_social', 'doc_socio', 'selfie_socio', 'comprovante_endereco_empresa'],
+  PF: ['documento_id', 'selfie_documento', 'comprovante_residencia'],
+};
 
 export default function SubsellerInfoForm() {
   const params = new URLSearchParams(window.location.search);
@@ -42,7 +41,6 @@ export default function SubsellerInfoForm() {
   const [submitterEmail, setSubmitterEmail] = useState('');
   const [rows, setRows] = useState(() => Array.from({ length: INITIAL_ROWS }, emptySubseller));
 
-  // Carrega contexto do link (via função pública — a entidade tem RLS admin-only)
   useEffect(() => {
     if (!token) {
       setError('Link inválido — token ausente.');
@@ -73,7 +71,10 @@ export default function SubsellerInfoForm() {
   }, [token]);
 
   const validRowsCount = useMemo(
-    () => rows.filter(r => (r.company_name?.trim() || r.cnpj?.trim())).length,
+    () => rows.filter(r => {
+      const isPJ = (r.person_type || 'PJ') === 'PJ';
+      return (r.company_name?.trim() && (isPJ ? r.cnpj?.trim() : r.cpf?.trim()));
+    }).length,
     [rows]
   );
 
@@ -85,10 +86,45 @@ export default function SubsellerInfoForm() {
   const addManyRows = (n) => setRows(prev => [...prev, ...Array.from({ length: n }, emptySubseller)]);
   const removeRow = (idx) => setRows(prev => prev.filter((_, i) => i !== idx));
 
+  // Valida cada subseller antes de submeter
+  const validateBeforeSubmit = (filled) => {
+    for (let i = 0; i < filled.length; i++) {
+      const r = filled[i];
+      const isPJ = (r.person_type || 'PJ') === 'PJ';
+      const label = r.company_name || `Subseller #${i + 1}`;
+
+      if (!r.company_name?.trim()) {
+        return `${label}: nome obrigatório.`;
+      }
+      if (isPJ && !r.cnpj?.trim()) return `${label}: CNPJ obrigatório.`;
+      if (!isPJ && !r.cpf?.trim()) return `${label}: CPF obrigatório.`;
+
+      if (r.business_model === 'outro' && !r.business_model_other?.trim()) {
+        return `${label}: descreva qual é o modelo de negócio (campo "Outro").`;
+      }
+
+      const requiredDocs = REQUIRED_DOCS[isPJ ? 'PJ' : 'PF'];
+      const docTypesPresent = new Set((r.documents || []).map(d => d.doc_type));
+      const missing = requiredDocs.filter(t => !docTypesPresent.has(t));
+      if (missing.length > 0) {
+        return `${label}: faltam documentos obrigatórios (${missing.length}).`;
+      }
+    }
+    return null;
+  };
+
   const handleSubmit = async () => {
-    const filled = rows.filter(r => (r.company_name?.trim() || r.cnpj?.trim()));
+    const filled = rows.filter(r => {
+      const isPJ = (r.person_type || 'PJ') === 'PJ';
+      return (r.company_name?.trim() && (isPJ ? r.cnpj?.trim() : r.cpf?.trim()));
+    });
     if (filled.length === 0) {
-      toast.error('Preencha ao menos um subseller (Nome ou CNPJ).');
+      toast.error('Preencha ao menos um subseller (nome + CNPJ/CPF).');
+      return;
+    }
+    const err = validateBeforeSubmit(filled);
+    if (err) {
+      toast.error(err);
       return;
     }
     setSubmitting(true);
@@ -177,8 +213,8 @@ export default function SubsellerInfoForm() {
             Olá, {collection.gateway_name}! 👋
           </h1>
           <p className="text-white/70 text-base max-w-2xl">
-            Preencha abaixo as informações iniciais dos seus subsellers. Quanto mais detalhado for o
-            preenchimento, mais rápido nosso time analisa e libera o onboarding.
+            Preencha abaixo as informações dos seus subsellers e envie os documentos exigidos.
+            Cada subseller pode ser PJ ou PF — selecione corretamente para que os campos certos apareçam.
           </p>
         </div>
       </div>
@@ -229,121 +265,16 @@ export default function SubsellerInfoForm() {
 
       {/* Cards */}
       <div className="space-y-4">
-        {rows.map((row, idx) => {
-          const filled = !!(row.company_name?.trim() || row.cnpj?.trim());
-          return (
-            <Card key={idx} className={`transition-all ${filled ? 'border-[#2bc196]/40 shadow-sm' : 'border-[#002443]/5'}`}>
-              <CardContent className="p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold ${filled ? 'bg-[#2bc196] text-white' : 'bg-[#f4f4f4] text-[#002443]/40'}`}>
-                      {idx + 1}
-                    </div>
-                    <span className="text-sm font-semibold text-[#002443]">
-                      {row.company_name || 'Subseller #' + (idx + 1)}
-                    </span>
-                  </div>
-                  <button onClick={() => removeRow(idx)} className="text-[#002443]/30 hover:text-red-500 transition-colors p-1">
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <Label className="text-xs">Razão Social / Nome Fantasia *</Label>
-                    <Input value={row.company_name} onChange={(e) => update(idx, 'company_name', e.target.value)} placeholder="Ex: Loja XYZ Ltda" />
-                  </div>
-                  <div>
-                    <Label className="text-xs">CNPJ *</Label>
-                    <Input value={row.cnpj} onChange={(e) => update(idx, 'cnpj', formatCnpj(e.target.value))} placeholder="00.000.000/0000-00" />
-                  </div>
-                  <div>
-                    <Label className="text-xs">Modelo de Negócio</Label>
-                    <Select value={row.business_model} onValueChange={(v) => update(idx, 'business_model', v)}>
-                      <SelectTrigger><SelectValue placeholder="Selecione..." /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="ecommerce">E-commerce</SelectItem>
-                        <SelectItem value="marketplace">Marketplace</SelectItem>
-                        <SelectItem value="saas">SaaS / Assinatura</SelectItem>
-                        <SelectItem value="link_pagamento">Link de Pagamento</SelectItem>
-                        <SelectItem value="infoprodutos">Infoprodutos / Cursos</SelectItem>
-                        <SelectItem value="dropshipping">Dropshipping</SelectItem>
-                        <SelectItem value="servicos">Serviços</SelectItem>
-                        <SelectItem value="outro">Outro</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label className="text-xs">O que vende?</Label>
-                    <Input value={row.what_they_sell} onChange={(e) => update(idx, 'what_they_sell', e.target.value)} placeholder="Ex: Roupas femininas" />
-                  </div>
-                  <div className="md:col-span-2">
-                    <Label className="text-xs">Site ou Link da Oferta</Label>
-                    <Input value={row.offer_url} onChange={(e) => update(idx, 'offer_url', e.target.value)} placeholder="https://..." />
-                  </div>
-                  <div className="md:col-span-2">
-                    <Label className="text-xs">Explicação da oferta (se não houver site)</Label>
-                    <Textarea
-                      value={row.offer_explanation}
-                      onChange={(e) => update(idx, 'offer_explanation', e.target.value)}
-                      placeholder="Descreva claramente o produto/serviço, valor, condições..."
-                      className="h-20"
-                    />
-                  </div>
-
-                  {/* Volumetria */}
-                  <div className="md:col-span-2 pt-2">
-                    <div className="text-[11px] font-bold uppercase tracking-wider text-[#002443]/40 mb-2">Volumetria estimada</div>
-                  </div>
-                  <div>
-                    <Label className="text-xs">TPV Mensal (R$)</Label>
-                    <Input type="number" value={row.monthly_tpv} onChange={(e) => update(idx, 'monthly_tpv', e.target.value)} placeholder="Ex: 50000" />
-                  </div>
-                  <div>
-                    <Label className="text-xs">Ticket Médio (R$)</Label>
-                    <Input type="number" value={row.average_ticket} onChange={(e) => update(idx, 'average_ticket', e.target.value)} placeholder="Ex: 150" />
-                  </div>
-
-                  {/* Conta bancária */}
-                  <div className="md:col-span-2 pt-2">
-                    <div className="text-[11px] font-bold uppercase tracking-wider text-[#002443]/40 mb-2">Conta bancária para liquidação</div>
-                  </div>
-                  <div>
-                    <Label className="text-xs">Banco</Label>
-                    <Input value={row.bank_name} onChange={(e) => update(idx, 'bank_name', e.target.value)} placeholder="Ex: Itaú, Bradesco..." />
-                  </div>
-                  <div>
-                    <Label className="text-xs">Tipo de Conta</Label>
-                    <Select value={row.bank_account_type} onValueChange={(v) => update(idx, 'bank_account_type', v)}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="corrente">Corrente</SelectItem>
-                        <SelectItem value="poupanca">Poupança</SelectItem>
-                        <SelectItem value="pagamento">Pagamento</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label className="text-xs">Agência</Label>
-                    <Input value={row.bank_agency} onChange={(e) => update(idx, 'bank_agency', e.target.value)} placeholder="0000" />
-                  </div>
-                  <div>
-                    <Label className="text-xs">Conta</Label>
-                    <Input value={row.bank_account} onChange={(e) => update(idx, 'bank_account', e.target.value)} placeholder="00000-0" />
-                  </div>
-                  <div>
-                    <Label className="text-xs">Titular da Conta</Label>
-                    <Input value={row.bank_holder_name} onChange={(e) => update(idx, 'bank_holder_name', e.target.value)} placeholder="Nome do titular" />
-                  </div>
-                  <div>
-                    <Label className="text-xs">CPF/CNPJ do Titular</Label>
-                    <Input value={row.bank_holder_document} onChange={(e) => update(idx, 'bank_holder_document', e.target.value)} placeholder="Documento do titular" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
+        {rows.map((row, idx) => (
+          <SubsellerCard
+            key={idx}
+            idx={idx}
+            row={row}
+            token={token}
+            onUpdate={(field, value) => update(idx, field, value)}
+            onRemove={() => removeRow(idx)}
+          />
+        ))}
       </div>
 
       {/* Add more */}
