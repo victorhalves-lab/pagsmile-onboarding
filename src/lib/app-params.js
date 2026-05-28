@@ -50,6 +50,11 @@ const PUBLIC_PATH_MARKERS = [
 	'/onboardingcompletion',
 	'/subsellerquestionnaire',
 	'/subsellerdocupload',
+	'/subsellerinfoform',
+	'/bankdatacollect',
+	'/globalquestionnaireform',
+	'/globalpublicproposal',
+	'/globalcomplianceform',
 	'/questionariosimplificadopublico',
 	'/questionarioleadspagsmile',
 	'/leadpixv4',
@@ -80,6 +85,7 @@ const PUBLIC_PATH_MARKERS = [
 	'/pp/',
 	'/pix/',
 	'/c/',
+	'/u/',
 ];
 
 const isOnPublicRoute = () => {
