@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { base44 } from '@/api/base44Client';
+import { callPublicFunction } from '@/lib/publicApi';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -51,19 +51,21 @@ export default function SubsellerInfoForm() {
     }
     (async () => {
       try {
-        const res = await base44.functions.invoke('publicReadSubsellerInfoCollection', { token });
-        const data = res?.data || {};
-        if (data.status === 'ok' && data.collection) {
+        const data = await callPublicFunction('publicReadSubsellerInfoCollection', { token });
+        if (data?.status === 'ok' && data.collection) {
           setCollection(data.collection);
-        } else if (data.status === 'inactive') {
+        } else if (data?.status === 'inactive') {
           setError('Este link foi desativado.');
-        } else if (data.status === 'expired') {
+        } else if (data?.status === 'expired') {
           setError('Este link expirou.');
         } else {
           setError('Link não encontrado ou expirado.');
         }
       } catch (e) {
-        setError('Não foi possível validar este link. Tente novamente em instantes.');
+        const msg = String(e?.message || '');
+        if (msg.includes('404')) setError('Link não encontrado ou expirado.');
+        else if (msg.includes('403')) setError('Este link foi desativado ou expirou.');
+        else setError('Não foi possível validar este link. Tente novamente em instantes.');
       } finally {
         setLoading(false);
       }
@@ -91,7 +93,7 @@ export default function SubsellerInfoForm() {
     }
     setSubmitting(true);
     try {
-      const res = await base44.functions.invoke('publicSubsellerInfoSubmit', {
+      const data = await callPublicFunction('publicSubsellerInfoSubmit', {
         token,
         submitter_name: submitterName,
         submitter_email: submitterEmail,
@@ -101,14 +103,14 @@ export default function SubsellerInfoForm() {
           average_ticket: r.average_ticket ? Number(r.average_ticket) : undefined,
         })),
       });
-      if (res?.data?.success) {
+      if (data?.success) {
         setDone(true);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
-        toast.error(res?.data?.error || 'Erro ao enviar.');
+        toast.error(data?.error || 'Erro ao enviar.');
       }
     } catch (e) {
-      toast.error('Erro ao enviar. Tente novamente.');
+      toast.error(e?.message || 'Erro ao enviar. Tente novamente.');
     } finally {
       setSubmitting(false);
     }
