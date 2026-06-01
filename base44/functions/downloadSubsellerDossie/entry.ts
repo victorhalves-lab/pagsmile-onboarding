@@ -69,47 +69,55 @@ const STATUS_LABELS = {
   archived: 'Arquivado',
 };
 
+// Baixa um documento individual (signed URL + fetch + bytes). Não toca no zip — só retorna o blob.
+async function fetchDocBytes(doc) {
+  if (!doc.file_uri) return { ok: false, doc };
+  try {
+    const url = await getSupabaseSignedUrl(doc.file_uri, 300);
+    const resp = await fetch(url);
+    if (!resp.ok) return { ok: false, doc };
+    const buf = await resp.arrayBuffer();
+    if (!buf || buf.byteLength === 0) return { ok: false, doc };
+    return { ok: true, doc, buf };
+  } catch (err) {
+    console.error(`Erro baixando doc ${doc.file_name}:`, err.message);
+    return { ok: false, doc };
+  }
+}
+
 async function addDocsToFolder(zip, folderPath, documents) {
   if (!documents || documents.length === 0) return { added: 0, failed: 0 };
+
+  // Baixa todos em paralelo (muito mais rápido)
+  const results = await Promise.all(documents.map(fetchDocBytes));
+
   let added = 0;
   let failed = 0;
   const usedNames = new Set();
 
-  for (const doc of documents) {
-    if (!doc.file_uri) { failed++; continue; }
-    try {
-      const url = await getSupabaseSignedUrl(doc.file_uri, 180);
-      const resp = await fetch(url);
-      if (!resp.ok) { failed++; continue; }
-      const buf = await resp.arrayBuffer();
-      if (!buf || buf.byteLength === 0) { failed++; continue; }
+  for (const r of results) {
+    if (!r.ok) { failed++; continue; }
+    const { doc, buf } = r;
+    const docType = sanitize(doc.doc_type || 'documento');
+    const original = sanitize(doc.file_name || 'arquivo');
+    let fileName = `${docType}__${original}`;
 
-      // Nome amigável: "contrato_social__arquivo-original.pdf"
-      const docType = sanitize(doc.doc_type || 'documento');
-      const original = sanitize(doc.file_name || 'arquivo');
-      let fileName = `${docType}__${original}`;
-
-      // Evita colisões
-      let suffix = 1;
-      let finalName = fileName;
-      while (usedNames.has(finalName)) {
-        const parts = fileName.split('.');
-        if (parts.length > 1) {
-          const ext = parts.pop();
-          finalName = `${parts.join('.')}_${suffix}.${ext}`;
-        } else {
-          finalName = `${fileName}_${suffix}`;
-        }
-        suffix++;
+    let suffix = 1;
+    let finalName = fileName;
+    while (usedNames.has(finalName)) {
+      const parts = fileName.split('.');
+      if (parts.length > 1) {
+        const ext = parts.pop();
+        finalName = `${parts.join('.')}_${suffix}.${ext}`;
+      } else {
+        finalName = `${fileName}_${suffix}`;
       }
-      usedNames.add(finalName);
-
-      zip.file(`${folderPath}/${finalName}`, new Uint8Array(buf));
-      added++;
-    } catch (err) {
-      console.error(`Erro baixando doc ${doc.file_name}:`, err.message);
-      failed++;
+      suffix++;
     }
+    usedNames.add(finalName);
+
+    zip.file(`${folderPath}/${finalName}`, new Uint8Array(buf));
+    added++;
   }
   return { added, failed };
 }
@@ -176,22 +184,27 @@ Deno.serve(async (req) => {
     const allRows = [];
     let totalAdded = 0;
     let totalFailed = 0;
-    let subsellerCounter = 0;
 
+    // Achata todos os subsellers de todas as submissões em uma lista única
+    const flatSubsellers = [];
     for (const sub of allSubs) {
       for (let i = 0; i < (sub.subsellers || []).length; i++) {
-        const s = sub.subsellers[i];
-        subsellerCounter++;
-        allRows.push(buildSubsellerRow(gateway_name, sub, s, STATUS_LABELS));
-
-        // Pasta por subseller dentro da pasta do Gateway
-        const docId = s.cnpj || s.cpf || `idx${subsellerCounter}`;
-        const folder = `${sanitize(gateway_name)}/Subseller_${String(subsellerCounter).padStart(2, '0')}_${sanitize(s.company_name || 'sem_nome')}_${sanitize(docId)}`;
-        const { added, failed } = await addDocsToFolder(zip, `${folder}/documentos`, s.documents || []);
-        totalAdded += added;
-        totalFailed += failed;
+        flatSubsellers.push({ sub, s: sub.subsellers[i] });
       }
     }
+
+    // Processa todos os subsellers em paralelo (cada um já paraleliza seus docs internamente)
+    await Promise.all(flatSubsellers.map(async ({ sub, s }, idx) => {
+      const counter = idx + 1;
+      allRows.push(buildSubsellerRow(gateway_name, sub, s, STATUS_LABELS));
+      const docId = s.cnpj || s.cpf || `idx${counter}`;
+      const folder = `${sanitize(gateway_name)}/Subseller_${String(counter).padStart(2, '0')}_${sanitize(s.company_name || 'sem_nome')}_${sanitize(docId)}`;
+      const { added, failed } = await addDocsToFolder(zip, `${folder}/documentos`, s.documents || []);
+      totalAdded += added;
+      totalFailed += failed;
+    }));
+
+    const subsellerCounter = flatSubsellers.length;
 
     // Planilha consolidada na raiz
     if (allRows.length > 0) {
