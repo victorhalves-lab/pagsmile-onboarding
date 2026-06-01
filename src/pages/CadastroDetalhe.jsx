@@ -33,6 +33,7 @@ import CadastroRevalidationBlock from '@/components/cadastro/CadastroRevalidatio
 import CadastroPartnerActivityBlock from '@/components/cadastro/CadastroPartnerActivityBlock';
 import EnterpriseExecutiveSummary from '@/components/cadastro/EnterpriseExecutiveSummary';
 import CadastroMonitoringEventsBlock from '@/components/cadastro/CadastroMonitoringEventsBlock';
+import CadastroMonitoringExtendedBlock from '@/components/cadastro/CadastroMonitoringExtendedBlock';
 import DownloadDossieButton from '@/components/cadastro/DownloadDossieButton';
 import CadastroV5_2Banner from '@/components/cadastro/CadastroV5_2Banner';
 import CadastroV5_2Tab from '@/components/cadastro/CadastroV5_2Tab';
@@ -487,6 +488,8 @@ export default function CadastroDetalhe() {
         <TabsContent value="compliance">
           <div className="space-y-4">
             <CadastroComplianceTab score={latestScore} latestCase={latestCase} allScores={scores} allCases={cases} allCaseIds={allCaseIds} integrationLogs={integrationLogs} validations={validations} />
+            <CadastroMonitoringExtendedBlock allCaseIds={allCaseIds} merchantId={merchantId} merchantDoc={merchant?.cpfCnpj} />
+            <CadastroMonitoringEventsBlock document={merchant?.cpfCnpj} onboardingCaseId={latestCase?.id} merchantId={merchantId} />
             <CadastroRevalidationBlock merchantId={merchantId} />
             <CadastroSessionDraftsBlock merchantEmail={merchant?.email} />
           </div>
