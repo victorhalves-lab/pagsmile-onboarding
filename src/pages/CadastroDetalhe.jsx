@@ -34,6 +34,7 @@ import DownloadDossieButton from '@/components/cadastro/DownloadDossieButton';
 import CadastroV5_2Banner from '@/components/cadastro/CadastroV5_2Banner';
 import CadastroV5_2Tab from '@/components/cadastro/CadastroV5_2Tab';
 import ReprocessV4AsV5_2Button from '@/components/cadastro/ReprocessV4AsV5_2Button';
+import CadastroCompletenessAuditModal from '@/components/cadastro/CadastroCompletenessAuditModal';
 import { segmentLabel } from '@/lib/segmentLabels';
 
 const STATUS_CONFIG = {
@@ -367,6 +368,7 @@ export default function CadastroDetalhe() {
               </Button>
             </Link>
             <ReprocessV4AsV5_2Button latestCase={latestCase} isAdmin={isAdmin} merchantId={merchantId} />
+            {isAdmin && <CadastroCompletenessAuditModal merchantId={merchantId} merchantName={merchant.companyName || merchant.fullName} />}
             <DownloadDossieButton merchantId={merchantId} merchantName={merchant.companyName || merchant.fullName} />
           {(latestCase?.riskScoreV4 != null || latestCase?.riskScore != null || latestScore?.score_final != null) && (() => {
             const scoreV4 = latestCase?.riskScoreV4 ?? latestScore?.score_final;
