@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Building2, User, Mail, Phone, MapPin, Globe, Calendar, Shield, FileText, Users, FileCheck, Stamp, BarChart3, History, Database, Microscope, Handshake, Briefcase, Brain, ClipboardList, UserCheck, ShieldCheck, Rocket } from 'lucide-react';
+import { ArrowLeft, Building2, User, Mail, Phone, MapPin, Globe, Calendar, Shield, FileText, Users, FileCheck, Stamp, BarChart3, History, Database, Microscope, Handshake, Briefcase, Brain, ClipboardList, UserCheck, ShieldCheck, Rocket, GitBranch, Inbox } from 'lucide-react';
 import CasePartnerAssignments from '@/components/partners-compliance/CasePartnerAssignments';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,8 @@ import CadastroHistoricoTab from '@/components/cadastro/CadastroHistoricoTab';
 import CadastroEnrichmentTab from '@/components/cadastro/CadastroEnrichmentTab';
 import CadastroRegulatoryPanel from '@/components/cadastro/CadastroRegulatoryPanel';
 import CadastroComercialTab from '@/components/cadastro/CadastroComercialTab';
+import CadastroOrigemTab from '@/components/cadastro/CadastroOrigemTab';
+import CadastroGatewayCollectionsTab from '@/components/cadastro/CadastroGatewayCollectionsTab';
 import CadastroLeadIATab from '@/components/cadastro/CadastroLeadIATab';
 import CadastroPendenciasTab from '@/components/cadastro/CadastroPendenciasTab';
 import CadastroRepresentantesTab from '@/components/cadastro/CadastroRepresentantesTab';
@@ -115,6 +117,14 @@ export default function CadastroDetalhe() {
     queryFn: () => base44.entities.Merchant.filter({ parentMerchantId: merchantId }),
     enabled: !!merchantId && !merchant?.isSubseller,
   });
+
+  // Check if this merchant is a Gateway that has subseller collection links
+  const { data: gatewayCollections = [] } = useQuery({
+    queryKey: ['cadastro-gateway-check', merchant?.cpfCnpj],
+    queryFn: () => base44.entities.SubsellerInfoCollection.filter({ gateway_cnpj: merchant.cpfCnpj }),
+    enabled: !!merchant?.cpfCnpj && !merchant?.isSubseller,
+  });
+  const isGatewayWithCollections = gatewayCollections.length > 0;
 
   // Fetch latest OnboardingCase per subseller to surface score V4 + subfaixa in the list
   const subsellerIds = useMemo(() => subsellersRaw.map(s => s.id), [subsellersRaw]);
@@ -397,8 +407,12 @@ export default function CadastroDetalhe() {
         <TabsList className="bg-white border border-[var(--pagsmile-blue)]/8 p-1 rounded-xl flex-wrap h-auto">
           <TabsTrigger value="overview" className="text-xs gap-1"><BarChart3 className="w-3 h-3" />Visão Geral</TabsTrigger>
           <TabsTrigger value="dados" className="text-xs gap-1"><FileText className="w-3 h-3" />Dados Cadastrais</TabsTrigger>
+          <TabsTrigger value="origem" className="text-xs gap-1"><GitBranch className="w-3 h-3" />Origem & Captação</TabsTrigger>
           <TabsTrigger value="comercial" className="text-xs gap-1"><Briefcase className="w-3 h-3" />Comercial</TabsTrigger>
           <TabsTrigger value="lead-ia" className="text-xs gap-1"><Brain className="w-3 h-3" />Lead & IA</TabsTrigger>
+          {isGatewayWithCollections && (
+            <TabsTrigger value="gateway" className="text-xs gap-1 data-[state=active]:bg-amber-50 data-[state=active]:text-amber-700"><Inbox className="w-3 h-3" />Coletas Gateway ({gatewayCollections.length})</TabsTrigger>
+          )}
           <TabsTrigger value="documentos" className="text-xs gap-1"><FileCheck className="w-3 h-3" />Documentos</TabsTrigger>
           <TabsTrigger value="pendencias" className="text-xs gap-1"><ClipboardList className="w-3 h-3" />Pendências</TabsTrigger>
           <TabsTrigger value="representantes" className="text-xs gap-1"><UserCheck className="w-3 h-3" />Representantes</TabsTrigger>
@@ -429,9 +443,17 @@ export default function CadastroDetalhe() {
             <CadastroBankDataBlock allCaseIds={allCaseIds} merchantId={merchantId} />
           </div>
         </TabsContent>
+        <TabsContent value="origem">
+          <CadastroOrigemTab merchant={merchant} allLeads={allLeads} />
+        </TabsContent>
         <TabsContent value="comercial">
           <CadastroComercialTab lead={lead} allLeads={allLeads} />
         </TabsContent>
+        {isGatewayWithCollections && (
+          <TabsContent value="gateway">
+            <CadastroGatewayCollectionsTab merchant={merchant} />
+          </TabsContent>
+        )}
         <TabsContent value="lead-ia">
           <CadastroLeadIATab lead={lead} latestCase={latestCase} />
         </TabsContent>
