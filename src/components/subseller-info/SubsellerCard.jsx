@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Download } from 'lucide-react';
 import PersonTypeToggle from './PersonTypeToggle';
 import DocSlot from './DocSlot';
+import PullMerchantModal from './PullMerchantModal';
 
 function formatCnpj(v) {
   const d = String(v || '').replace(/\D/g, '').slice(0, 14);
@@ -37,10 +39,17 @@ const DOC_SLOTS_PF = [
   { key: 'comprovante_residencia', label: 'Comprovante de residência', required: true, multiple: false },
 ];
 
-export default function SubsellerCard({ idx, row, token, onUpdate, onRemove }) {
+export default function SubsellerCard({ idx, row, token, onUpdate, onRemove, onReplaceRow, allowPullMerchant = false }) {
   const isPJ = (row.person_type || 'PJ') === 'PJ';
   const filled = !!(row.company_name?.trim() || (isPJ ? row.cnpj?.trim() : row.cpf?.trim()));
   const slots = isPJ ? DOC_SLOTS_PJ : DOC_SLOTS_PF;
+  const [pullOpen, setPullOpen] = useState(false);
+
+  const handlePulled = (pulledSubseller) => {
+    // Substitui a row inteira pelos dados puxados (preserva nada do que estava antes —
+    // o operador escolheu puxar, então o card vira o cliente puxado).
+    if (onReplaceRow) onReplaceRow(pulledSubseller);
+  };
 
   const docsByType = (type) => (row.documents || []).filter(d => d.doc_type === type);
 
@@ -92,13 +101,26 @@ export default function SubsellerCard({ idx, row, token, onUpdate, onRemove }) {
               </div>
             </div>
           </div>
-          <button
-            onClick={onRemove}
-            className="text-[#002443]/30 hover:text-red-500 hover:bg-red-50 transition-colors p-2 rounded-lg flex-shrink-0"
-            title="Remover este subseller"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-1 flex-shrink-0">
+            {allowPullMerchant && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setPullOpen(true)}
+                className="h-8 text-xs border-[#2bc196]/40 text-[#36706c] hover:bg-[#2bc196]/5"
+                title="Puxar dados de um cliente já cadastrado na plataforma"
+              >
+                <Download className="w-3.5 h-3.5 mr-1" /> Puxar cliente
+              </Button>
+            )}
+            <button
+              onClick={onRemove}
+              className="text-[#002443]/30 hover:text-red-500 hover:bg-red-50 transition-colors p-2 rounded-lg"
+              title="Remover este subseller"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
         {/* Toggle PJ / PF */}
@@ -301,6 +323,12 @@ export default function SubsellerCard({ idx, row, token, onUpdate, onRemove }) {
           </div>
         </div>
       </CardContent>
+
+      <PullMerchantModal
+        open={pullOpen}
+        onClose={() => setPullOpen(false)}
+        onPull={handlePulled}
+      />
     </Card>
   );
 }

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { callPublicFunction } from '@/lib/publicApi';
+import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -40,6 +41,18 @@ export default function SubsellerInfoForm() {
   const [submitterName, setSubmitterName] = useState('');
   const [submitterEmail, setSubmitterEmail] = useState('');
   const [rows, setRows] = useState(() => Array.from({ length: INITIAL_ROWS }, emptySubseller));
+  const [isInternalAdmin, setIsInternalAdmin] = useState(false);
+
+  // Detecta se quem está preenchendo é um admin logado (fluxo de cadastro manual interno).
+  // Se for, libera o botão "Puxar cliente existente" nos cards.
+  useEffect(() => {
+    (async () => {
+      try {
+        const me = await base44.auth.me();
+        if (me?.role === 'admin') setIsInternalAdmin(true);
+      } catch { /* visitante público — ok */ }
+    })();
+  }, []);
 
   useEffect(() => {
     if (!token) {
@@ -85,6 +98,10 @@ export default function SubsellerInfoForm() {
   const addRow = () => setRows(prev => [...prev, emptySubseller()]);
   const addManyRows = (n) => setRows(prev => [...prev, ...Array.from({ length: n }, emptySubseller)]);
   const removeRow = (idx) => setRows(prev => prev.filter((_, i) => i !== idx));
+  const replaceRow = (idx, newRow) => {
+    // Mescla com o template vazio pra garantir todos os campos do schema
+    setRows(prev => prev.map((r, i) => (i === idx ? { ...emptySubseller(), ...newRow } : r)));
+  };
 
   // Valida cada subseller antes de submeter
   const validateBeforeSubmit = (filled) => {
@@ -302,6 +319,8 @@ export default function SubsellerInfoForm() {
               token={token}
               onUpdate={(field, value) => update(idx, field, value)}
               onRemove={() => removeRow(idx)}
+              onReplaceRow={(newRow) => replaceRow(idx, newRow)}
+              allowPullMerchant={isInternalAdmin}
             />
           </div>
         ))}
