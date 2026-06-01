@@ -130,21 +130,23 @@ export default function SubsellerInfoRecebidos() {
     toast.success(`Exportado: ${rows.length} subsellers`);
   };
 
-  // Baixa ZIP (dossiê) chamando a function e tratando como blob binário
+  // Baixa ZIP: backend retorna base64 dentro de JSON (preserva binário sem corromper)
   const downloadDossie = async ({ gatewayKey, payload, fileFallback }) => {
     setDossieLoading(gatewayKey);
     try {
-      const res = await base44.functions.invoke('downloadSubsellerDossie', payload, {
-        responseType: 'blob',
-      });
-      const blob = res?.data instanceof Blob ? res.data : new Blob([res?.data], { type: 'application/zip' });
-      if (!blob || blob.size === 0) throw new Error('Arquivo vazio');
+      const res = await base44.functions.invoke('downloadSubsellerDossie', payload);
+      const data = res?.data || {};
+      if (data.error || !data.zip_base64) {
+        throw new Error(data.error || 'Resposta inválida do servidor');
+      }
 
-      // Pega filename do header se vier
-      const disposition = res?.headers?.['content-disposition'] || '';
-      const match = /filename="?([^"]+)"?/.exec(disposition);
-      const fileName = match?.[1] || fileFallback;
+      // Decodifica base64 → bytes
+      const binary = atob(data.zip_base64);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      const blob = new Blob([bytes], { type: 'application/zip' });
 
+      const fileName = data.file_name || fileFallback;
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -154,12 +156,12 @@ export default function SubsellerInfoRecebidos() {
       a.remove();
       URL.revokeObjectURL(url);
 
-      const added = res?.headers?.['x-docs-added'];
-      const failed = res?.headers?.['x-docs-failed'];
-      toast.success(`Dossiê gerado${added ? ` · ${added} doc(s)` : ''}${failed && Number(failed) > 0 ? ` · ${failed} falha(s)` : ''}`);
+      const added = data.docs_added || 0;
+      const failed = data.docs_failed || 0;
+      toast.success(`Dossiê gerado · ${added} doc(s)${failed > 0 ? ` · ${failed} falha(s)` : ''}`);
     } catch (e) {
       console.error(e);
-      toast.error('Erro ao gerar dossiê. Tente novamente.');
+      toast.error(`Erro ao gerar dossiê: ${e.message}`);
     } finally {
       setDossieLoading(null);
     }

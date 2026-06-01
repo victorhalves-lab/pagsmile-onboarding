@@ -150,16 +150,13 @@ Deno.serve(async (req) => {
       // Documentos
       const { added, failed } = await addDocsToFolder(zip, `${folder}/documentos`, s.documents || []);
 
-      const zipBuf = await zip.generateAsync({ type: 'uint8array', compression: 'DEFLATE' });
+      const zipB64 = await zip.generateAsync({ type: 'base64', compression: 'DEFLATE' });
       const fileName = `${folder}.zip`;
-      return new Response(zipBuf, {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/zip',
-          'Content-Disposition': `attachment; filename="${fileName}"`,
-          'X-Docs-Added': String(added),
-          'X-Docs-Failed': String(failed),
-        },
+      return Response.json({
+        zip_base64: zipB64,
+        file_name: fileName,
+        docs_added: added,
+        docs_failed: failed,
       });
     }
 
@@ -205,17 +202,14 @@ Deno.serve(async (req) => {
       zip.file(`${sanitize(gateway_name)}/planilha_subsellers.xlsx`, new Uint8Array(xlsxBuf));
     }
 
-    const zipBuf = await zip.generateAsync({ type: 'uint8array', compression: 'DEFLATE' });
+    const zipB64 = await zip.generateAsync({ type: 'base64', compression: 'DEFLATE' });
     const fileName = `Dossie_${sanitize(gateway_name)}_${new Date().toISOString().slice(0, 10)}.zip`;
-    return new Response(zipBuf, {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/zip',
-        'Content-Disposition': `attachment; filename="${fileName}"`,
-        'X-Docs-Added': String(totalAdded),
-        'X-Docs-Failed': String(totalFailed),
-        'X-Subsellers': String(subsellerCounter),
-      },
+    return Response.json({
+      zip_base64: zipB64,
+      file_name: fileName,
+      docs_added: totalAdded,
+      docs_failed: totalFailed,
+      subsellers: subsellerCounter,
     });
   } catch (err) {
     console.error('downloadSubsellerDossie error:', err);
