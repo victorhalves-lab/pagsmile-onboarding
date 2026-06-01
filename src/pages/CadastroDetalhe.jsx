@@ -11,6 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import CadastroOverviewTab from '@/components/cadastro/CadastroOverviewTab';
 import CadastroDadosTab from '@/components/cadastro/CadastroDadosTab';
 import CadastroDocumentosTab from '@/components/cadastro/CadastroDocumentosTab';
+import CadastroDocumentosUnificadoTab from '@/components/cadastro/CadastroDocumentosUnificadoTab';
 import CadastroDocumentJustificationsBlock from '@/components/cadastro/CadastroDocumentJustificationsBlock';
 import CadastroAllProposalsTab from '@/components/cadastro/CadastroAllProposalsTab';
 import CadastroComplianceTab from '@/components/cadastro/CadastroComplianceTab';
@@ -460,7 +461,15 @@ export default function CadastroDetalhe() {
         <TabsContent value="documentos">
           <div className="space-y-4">
             <CadastroDocumentJustificationsBlock documents={documents} />
-            <CadastroDocumentosTab documents={documents} latestCase={latestCase} merchantEmail={merchant?.email} />
+            <CadastroDocumentosUnificadoTab
+              documents={documents}
+              latestCase={latestCase}
+              merchantEmail={merchant?.email}
+              merchant={merchant}
+              integrationLogs={integrationLogs}
+              contracts={allContracts}
+              allCases={cases}
+            />
           </div>
         </TabsContent>
         <TabsContent value="pendencias">
