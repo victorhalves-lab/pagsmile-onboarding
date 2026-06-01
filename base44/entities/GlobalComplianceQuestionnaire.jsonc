@@ -1,0 +1,288 @@
+{
+  "name": "GlobalComplianceQuestionnaire",
+  "type": "object",
+  "properties": {
+    "questionnaire_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "submitted",
+        "in_review",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending"
+    },
+    "language": {
+      "type": "string",
+      "enum": [
+        "en",
+        "pt",
+        "zh"
+      ],
+      "default": "en"
+    },
+    "applying_for": {
+      "type": "string",
+      "enum": [
+        "Merchant",
+        "Master Merchant (PSP License Required)",
+        "Introducer"
+      ]
+    },
+    "payment_direction": {
+      "type": "string",
+      "enum": [
+        "Pay-in",
+        "Pay-out",
+        "Both"
+      ]
+    },
+    "legal_business_name": {
+      "type": "string"
+    },
+    "trade_name_dba": {
+      "type": "string"
+    },
+    "registered_business_address": {
+      "type": "string"
+    },
+    "physical_office_address": {
+      "type": "string"
+    },
+    "registered_country": {
+      "type": "string"
+    },
+    "corporate_website": {
+      "type": "string"
+    },
+    "onboarding_product_url": {
+      "type": "string"
+    },
+    "business_nature": {
+      "type": "string"
+    },
+    "regulatory_licenses": {
+      "type": "string"
+    },
+    "estimated_monthly_volume_usd": {
+      "type": "number"
+    },
+    "estimated_avg_transaction_usd": {
+      "type": "number"
+    },
+    "countries_of_operation": {
+      "type": "string"
+    },
+    "years_in_business": {
+      "type": "number"
+    },
+    "tax_registration_number": {
+      "type": "string"
+    },
+    "company_type": {
+      "type": "string"
+    },
+    "ubos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "nationality": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "ownership_percentage": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "directors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "job_title": {
+            "type": "string"
+          },
+          "first_name": {
+            "type": "string"
+          },
+          "last_name": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "directors_same_as_ubos": {
+      "type": "boolean",
+      "default": false
+    },
+    "accounting_contact_name": {
+      "type": "string"
+    },
+    "accounting_contact_email": {
+      "type": "string"
+    },
+    "accounting_invoice_address": {
+      "type": "string"
+    },
+    "support_contact_name": {
+      "type": "string"
+    },
+    "support_contact_email": {
+      "type": "string"
+    },
+    "support_contact_phone": {
+      "type": "string"
+    },
+    "compliance_contact_name": {
+      "type": "string"
+    },
+    "compliance_contact_email": {
+      "type": "string"
+    },
+    "application_regions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "payment_methods": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "q_sanctions_list": {
+      "type": "boolean"
+    },
+    "q_sanctions_list_detail": {
+      "type": "string"
+    },
+    "q_pep": {
+      "type": "boolean"
+    },
+    "q_pep_detail": {
+      "type": "string"
+    },
+    "q_sanctioned_country": {
+      "type": "boolean"
+    },
+    "q_sanctioned_country_detail": {
+      "type": "string"
+    },
+    "q_sanctioned_ownership": {
+      "type": "boolean"
+    },
+    "q_sanctioned_ownership_detail": {
+      "type": "string"
+    },
+    "q_pagsmile_dealings": {
+      "type": "boolean"
+    },
+    "q_pagsmile_dealings_detail": {
+      "type": "string"
+    },
+    "q_value_exchange": {
+      "type": "boolean"
+    },
+    "q_value_exchange_detail": {
+      "type": "string"
+    },
+    "doc_corp_documents_url": {
+      "type": "string"
+    },
+    "doc_bank_statement_url": {
+      "type": "string"
+    },
+    "doc_ids": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "file_url": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "doc_address_proofs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "file_url": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "doc_company_address_proof_url": {
+      "type": "string"
+    },
+    "doc_pilot_llc_url": {
+      "type": "string"
+    },
+    "doc_license_url": {
+      "type": "string"
+    },
+    "doc_ownership_chart_url": {
+      "type": "string"
+    },
+    "certifier_name": {
+      "type": "string"
+    },
+    "certifier_job_title": {
+      "type": "string"
+    },
+    "certifier_email": {
+      "type": "string"
+    },
+    "certification_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "public_link_token": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "legal_business_name",
+    "registered_country",
+    "business_nature"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

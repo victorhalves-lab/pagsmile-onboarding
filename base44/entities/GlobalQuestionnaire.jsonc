@@ -1,0 +1,148 @@
+{
+  "name": "GlobalQuestionnaire",
+  "type": "object",
+  "properties": {
+    "contact_name": {
+      "type": "string"
+    },
+    "contact_email": {
+      "type": "string"
+    },
+    "contact_phone": {
+      "type": "string"
+    },
+    "contact_phone_country_code": {
+      "type": "string"
+    },
+    "contact_role": {
+      "type": "string"
+    },
+    "company_name": {
+      "type": "string"
+    },
+    "business_type": {
+      "type": "string"
+    },
+    "business_model": {
+      "type": "string"
+    },
+    "products_services": {
+      "type": "string"
+    },
+    "mcc": {
+      "type": "string"
+    },
+    "monthly_tpv": {
+      "type": "number",
+      "description": "TPV mensal em USD"
+    },
+    "average_ticket": {
+      "type": "number"
+    },
+    "monthly_transactions": {
+      "type": "number"
+    },
+    "credit_percentage": {
+      "type": "number"
+    },
+    "debit_percentage": {
+      "type": "number"
+    },
+    "visa_percentage": {
+      "type": "number"
+    },
+    "mastercard_percentage": {
+      "type": "number"
+    },
+    "amex_percentage": {
+      "type": "number"
+    },
+    "other_brands_percentage": {
+      "type": "number"
+    },
+    "has_current_partner": {
+      "type": "boolean"
+    },
+    "current_rate_percentage": {
+      "type": "number"
+    },
+    "current_fixed_fee": {
+      "type": "number"
+    },
+    "other_current_fees": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "value": {
+            "type": "number"
+          },
+          "fee_type": {
+            "type": "string",
+            "enum": [
+              "percentage",
+              "fixed_usd"
+            ]
+          }
+        }
+      }
+    },
+    "expected_settlement_days": {
+      "type": "string",
+      "enum": [
+        "D+1",
+        "D+2",
+        "D+7",
+        "D+15"
+      ]
+    },
+    "target_markets": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "pipeline_status": {
+      "type": "string",
+      "enum": [
+        "leads",
+        "proposal_made",
+        "proposal_accepted",
+        "counter_proposal",
+        "proposal_lost"
+      ],
+      "default": "leads"
+    },
+    "proposal_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "contact_name",
+    "contact_email",
+    "company_name",
+    "monthly_tpv",
+    "average_ticket"
+  ],
+  "rls": {
+    "create": {},
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

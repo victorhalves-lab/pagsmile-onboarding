@@ -1,0 +1,63 @@
+{
+  "name": "GlobalInterchangeRate",
+  "type": "object",
+  "properties": {
+    "brand": {
+      "type": "string",
+      "enum": [
+        "visa",
+        "mastercard"
+      ]
+    },
+    "program_name": {
+      "type": "string"
+    },
+    "card_type": {
+      "type": "string"
+    },
+    "rate_percentage": {
+      "type": "number"
+    },
+    "rate_fixed": {
+      "type": "number"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "card_not_present"
+      ],
+      "default": "card_not_present"
+    },
+    "details": {
+      "type": "string"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "brand",
+    "program_name",
+    "rate_percentage",
+    "rate_fixed"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {},
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

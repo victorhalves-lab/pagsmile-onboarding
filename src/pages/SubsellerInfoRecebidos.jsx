@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Inbox, Search, Download, Building2, ExternalLink, Calendar, Users, FileSpreadsheet, ChevronDown, ChevronRight, FileText, User } from 'lucide-react';
+import { Inbox, Search, Download, Building2, ExternalLink, Calendar, Users, FileSpreadsheet, ChevronDown, ChevronRight, FileText, User, Package, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
@@ -26,6 +26,7 @@ export default function SubsellerInfoRecebidos() {
   const [gatewayFilter, setGatewayFilter] = useState('all');
   const [expanded, setExpanded] = useState(new Set());
   const [detailOpen, setDetailOpen] = useState(null);
+  const [dossieLoading, setDossieLoading] = useState(null); // string key: gateway name OR `sub:${id}:${idx}`
 
   const { data: submissions = [], isLoading } = useQuery({
     queryKey: ['subsellerInfoSubmissions'],
@@ -127,6 +128,41 @@ export default function SubsellerInfoRecebidos() {
     XLSX.utils.book_append_sheet(wb, ws, 'Subsellers');
     XLSX.writeFile(wb, `subsellers_${gateway.replace(/[^a-z0-9]/gi, '_')}_${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
     toast.success(`Exportado: ${rows.length} subsellers`);
+  };
+
+  // Baixa ZIP (dossiê) chamando a function e tratando como blob binário
+  const downloadDossie = async ({ gatewayKey, payload, fileFallback }) => {
+    setDossieLoading(gatewayKey);
+    try {
+      const res = await base44.functions.invoke('downloadSubsellerDossie', payload, {
+        responseType: 'blob',
+      });
+      const blob = res?.data instanceof Blob ? res.data : new Blob([res?.data], { type: 'application/zip' });
+      if (!blob || blob.size === 0) throw new Error('Arquivo vazio');
+
+      // Pega filename do header se vier
+      const disposition = res?.headers?.['content-disposition'] || '';
+      const match = /filename="?([^"]+)"?/.exec(disposition);
+      const fileName = match?.[1] || fileFallback;
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+
+      const added = res?.headers?.['x-docs-added'];
+      const failed = res?.headers?.['x-docs-failed'];
+      toast.success(`Dossiê gerado${added ? ` · ${added} doc(s)` : ''}${failed && Number(failed) > 0 ? ` · ${failed} falha(s)` : ''}`);
+    } catch (e) {
+      console.error(e);
+      toast.error('Erro ao gerar dossiê. Tente novamente.');
+    } finally {
+      setDossieLoading(null);
+    }
   };
 
   const exportAll = () => {
@@ -254,6 +290,24 @@ export default function SubsellerInfoRecebidos() {
                       <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); exportGatewayXlsx(gateway, subs); }}>
                         <Download className="w-3.5 h-3.5 mr-1.5" /> XLSX
                       </Button>
+                      <Button
+                        size="sm"
+                        className="bg-[#2bc196] hover:bg-[#2bc196]/90 text-white"
+                        disabled={dossieLoading === key}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          downloadDossie({
+                            gatewayKey: key,
+                            payload: { scope: 'gateway', gateway_name: gateway },
+                            fileFallback: `Dossie_${gateway.replace(/[^a-z0-9]/gi, '_')}.zip`,
+                          });
+                        }}
+                      >
+                        {dossieLoading === key
+                          ? <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                          : <Package className="w-3.5 h-3.5 mr-1.5" />}
+                        Dossiê (ZIP)
+                      </Button>
                     </div>
                   </button>
                   {isOpen && (
@@ -320,10 +374,33 @@ export default function SubsellerInfoRecebidos() {
                         <div className="w-7 h-7 rounded-lg bg-[#2bc196] text-white flex items-center justify-center text-xs font-bold">{i + 1}</div>
                         <h4 className="text-sm font-bold text-[#002443]">{s.company_name || '(sem nome)'}</h4>
                       </div>
-                      <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${isPJ ? 'bg-[#002443]/10 text-[#002443]' : 'bg-amber-50 text-amber-700'}`}>
-                        {isPJ ? <Building2 className="w-3 h-3" /> : <User className="w-3 h-3" />}
-                        {isPJ ? 'PJ' : 'PF'}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${isPJ ? 'bg-[#002443]/10 text-[#002443]' : 'bg-amber-50 text-amber-700'}`}>
+                          {isPJ ? <Building2 className="w-3 h-3" /> : <User className="w-3 h-3" />}
+                          {isPJ ? 'PJ' : 'PF'}
+                        </span>
+                        {(() => {
+                          const subKey = `sub:${detailOpen.id}:${i}`;
+                          return (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-7 text-[11px]"
+                              disabled={dossieLoading === subKey}
+                              onClick={() => downloadDossie({
+                                gatewayKey: subKey,
+                                payload: { scope: 'subseller', submission_id: detailOpen.id, subseller_index: i },
+                                fileFallback: `Subseller_${(s.company_name || `n${i + 1}`).replace(/[^a-z0-9]/gi, '_')}.zip`,
+                              })}
+                            >
+                              {dossieLoading === subKey
+                                ? <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                                : <Package className="w-3 h-3 mr-1" />}
+                              Dossiê
+                            </Button>
+                          );
+                        })()}
+                      </div>
                     </div>
                     <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
                       {isPJ ? (

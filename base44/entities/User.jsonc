@@ -46,5 +46,12 @@
       "default": false,
       "description": "Se true, pr\u00f3ximo login for\u00e7a re-enrollment completo."
     }
-  }
+  },
+  "required": [
+    "totp_secret",
+    "pin_hash",
+    "pin_salt",
+    "two_factor_enrolled_at",
+    "backup_codes_hash"
+  ]
 }
