@@ -5,12 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Plus, Copy, Check, ExternalLink, Link as LinkIcon, Building2, FileText,
-  Power, PowerOff, Inbox
+  Power, PowerOff, Inbox, Star, Edit3
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import CreateLinkModal from '@/components/subseller-info/CreateLinkModal';
+import CreateDirectLinkModal from '@/components/subseller-info/CreateDirectLinkModal';
 
 function genToken() {
   return crypto.randomUUID().replace(/-/g, '').slice(0, 20);
@@ -28,6 +29,8 @@ function formatCnpj(v = '') {
 export default function GestaoSubsellerInfoLinks() {
   const qc = useQueryClient();
   const [modalOpen, setModalOpen] = useState(false);
+  const [directModalOpen, setDirectModalOpen] = useState(false);
+  const [manualModalOpen, setManualModalOpen] = useState(false);
   const [copiedId, setCopiedId] = useState(null);
 
   const { data: links = [], isLoading } = useQuery({
@@ -58,6 +61,38 @@ export default function GestaoSubsellerInfoLinks() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['subsellerInfoCollections'] }),
   });
 
+  // Link Direto Pagsmile — cria collection sob "Pagsmile Direto" e fecha modal
+  const createDirectMut = useMutation({
+    mutationFn: (data) => base44.entities.SubsellerInfoCollection.create({
+      ...data,
+      unique_token: genToken(),
+      is_active: true,
+    }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['subsellerInfoCollections'] });
+      setDirectModalOpen(false);
+      toast.success('Link direto criado!');
+    },
+    onError: (e) => toast.error(e?.message || 'Erro ao criar link.'),
+  });
+
+  // Cadastro manual — cria collection + redireciona para o form interno preenchido
+  const createManualMut = useMutation({
+    mutationFn: (data) => base44.entities.SubsellerInfoCollection.create({
+      ...data,
+      unique_token: genToken(),
+      is_active: true,
+    }),
+    onSuccess: (created) => {
+      qc.invalidateQueries({ queryKey: ['subsellerInfoCollections'] });
+      setManualModalOpen(false);
+      toast.success('Abrindo formulário…');
+      // Mesma tela do cliente, mas você que preenche. Token autentica a collection.
+      window.location.href = `/SubsellerInfoForm?token=${created.unique_token}`;
+    },
+    onError: (e) => toast.error(e?.message || 'Erro ao iniciar cadastro.'),
+  });
+
   const buildUrl = (token) => `${window.location.origin}/SubsellerInfoForm?token=${token}`;
 
   const handleCopy = async (id, url) => {
@@ -82,11 +117,17 @@ export default function GestaoSubsellerInfoLinks() {
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Link to={createPageUrl('SubsellerInfoRecebidos')}>
             <Button variant="outline"><Inbox className="w-4 h-4 mr-2" /> Inbox</Button>
           </Link>
-          <Button onClick={() => setModalOpen(true)}><Plus className="w-4 h-4 mr-2" /> Novo link</Button>
+          <Button variant="outline" onClick={() => setManualModalOpen(true)} className="border-[#2bc196]/40 text-[#36706c] hover:bg-[#2bc196]/5">
+            <Edit3 className="w-4 h-4 mr-2" /> Cadastrar manualmente
+          </Button>
+          <Button variant="outline" onClick={() => setDirectModalOpen(true)} className="border-[#2bc196]/40 text-[#36706c] hover:bg-[#2bc196]/5">
+            <Star className="w-4 h-4 mr-2" /> Link Direto Pagsmile
+          </Button>
+          <Button onClick={() => setModalOpen(true)}><Plus className="w-4 h-4 mr-2" /> Novo link Gateway</Button>
         </div>
       </div>
 
@@ -182,6 +223,22 @@ export default function GestaoSubsellerInfoLinks() {
         onClose={() => setModalOpen(false)}
         onSubmit={(data) => createMut.mutate(data)}
         isSubmitting={createMut.isPending}
+      />
+
+      <CreateDirectLinkModal
+        open={directModalOpen}
+        onClose={() => setDirectModalOpen(false)}
+        onSubmit={(data) => createDirectMut.mutate(data)}
+        isSubmitting={createDirectMut.isPending}
+        mode="link"
+      />
+
+      <CreateDirectLinkModal
+        open={manualModalOpen}
+        onClose={() => setManualModalOpen(false)}
+        onSubmit={(data) => createManualMut.mutate(data)}
+        isSubmitting={createManualMut.isPending}
+        mode="manual"
       />
     </div>
   );
