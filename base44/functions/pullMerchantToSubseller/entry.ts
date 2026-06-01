@@ -119,16 +119,57 @@ function toNumber(v) {
   return Number.isFinite(n) ? n : undefined;
 }
 
-async function cloneDocToSubsellerNamespace(fileUri, fileName) {
-  if (!isSupabaseUri(fileUri)) {
-    return { fileUri, copied: false };
+/**
+ * Resolve qualquer fileUri/fileUrl (Supabase, Base44 privado "mp/private/...",
+ * URL HTTP pública/legada) em uma URL HTTP baixável temporária.
+ * Retorna null se não souber resolver (ex: string vazia).
+ */
+async function resolveDownloadUrl(base44, uri) {
+  if (!uri || typeof uri !== 'string') return null;
+
+  // Caso 1: Supabase URI → signed URL
+  if (isSupabaseUri(uri)) {
+    return await getSupabaseSignedUrl(uri, 300);
   }
-  const signed = await getSupabaseSignedUrl(fileUri, 300);
-  if (!signed) throw new Error('URL temporária indisponível');
-  const res = await fetch(signed);
+
+  // Caso 2: Base44 privado (formato antigo) → usa SDK pra gerar signed URL
+  if (uri.startsWith('mp/private/') || uri.includes('/private/')) {
+    try {
+      const res = await base44.asServiceRole.functions.invoke('getPrivateDocumentUrl', { fileUri: uri });
+      const signed = res?.data?.signed_url || res?.signed_url;
+      if (signed) return signed;
+    } catch { /* cai pro fallback abaixo */ }
+    return null;
+  }
+
+  // Caso 3: já é HTTP(S) público/legado → baixa direto
+  if (uri.startsWith('http://') || uri.startsWith('https://')) {
+    return uri;
+  }
+
+  return null;
+}
+
+/**
+ * Clona um documento (de qualquer origem) para o namespace `subseller-info/`
+ * no Supabase. Sempre retorna um `supabase://` novo, garantindo consistência
+ * com o resto do fluxo de coleta de subsellers (que sabe servir esse formato).
+ *
+ * Origens suportadas:
+ *   - supabase://...                       (Supabase atual)
+ *   - mp/private/... ou /private/...       (Base44 privado, formato antigo)
+ *   - http(s)://...                        (URL pública/legada)
+ */
+async function cloneDocToSubsellerNamespace(base44, fileUri, fileName) {
+  const downloadUrl = await resolveDownloadUrl(base44, fileUri);
+  if (!downloadUrl) {
+    throw new Error('Origem do arquivo não suportada');
+  }
+  const res = await fetch(downloadUrl);
   if (!res.ok) throw new Error(`Download ${res.status}`);
   const ct = res.headers.get('content-type') || 'application/octet-stream';
   const bytes = new Uint8Array(await res.arrayBuffer());
+  if (bytes.length === 0) throw new Error('Arquivo vazio na origem');
   const newUri = await uploadToSupabase(bytes, fileName || 'documento', ct);
   return { fileUri: newUri, copied: true, fileType: ct, fileSize: bytes.length };
 }
@@ -224,7 +265,7 @@ Deno.serve(async (req) => {
 
         try {
           const uri = doc.fileUri || doc.fileUrl;
-          const cloned = await cloneDocToSubsellerNamespace(uri, doc.fileName);
+          const cloned = await cloneDocToSubsellerNamespace(base44, uri, doc.fileName);
           subseller.documents.push({
             doc_type: slot,
             doc_label: typeName,
