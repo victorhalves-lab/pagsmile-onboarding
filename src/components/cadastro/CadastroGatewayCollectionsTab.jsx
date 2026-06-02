@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Inbox, LinkIcon, ExternalLink, Calendar, Users, FileCheck, Building2, Eye } from 'lucide-react';
+import CadastroGatewaySubsellersComplianceBlock from '@/components/cadastro/CadastroGatewaySubsellersComplianceBlock';
 
 /**
  * Aba "Coletas Gateway" — só visível quando o merchant é um gateway que recebeu submissions.
@@ -157,14 +158,18 @@ export default function CadastroGatewayCollectionsTab({ merchant }) {
 
   if (!collections.length) {
     return (
-      <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-10 text-center mt-4">
-        <Inbox className="w-10 h-10 mx-auto mb-3 text-[var(--pagsmile-blue)]/20" />
-        <p className="text-sm text-[var(--pagsmile-blue)]/50">Nenhum link de coleta de subsellers gerado para este gateway</p>
-        <Link to="/GestaoSubsellerInfoLinks" className="inline-block mt-3">
-          <Button variant="outline" size="sm" className="text-xs gap-2">
-            <LinkIcon className="w-3.5 h-3.5" /> Ir para Gestão de Coletas
-          </Button>
-        </Link>
+      <div className="space-y-4 mt-4">
+        <div className="bg-white rounded-xl border border-[var(--pagsmile-blue)]/8 p-10 text-center">
+          <Inbox className="w-10 h-10 mx-auto mb-3 text-[var(--pagsmile-blue)]/20" />
+          <p className="text-sm text-[var(--pagsmile-blue)]/50">Nenhum link de coleta batch (Gateway) gerado para este merchant</p>
+          <Link to="/GestaoSubsellerInfoLinks" className="inline-block mt-3">
+            <Button variant="outline" size="sm" className="text-xs gap-2">
+              <LinkIcon className="w-3.5 h-3.5" /> Ir para Gestão de Coletas
+            </Button>
+          </Link>
+        </div>
+        {/* Mesmo sem coleta Gateway, mostramos subsellers via Compliance individual */}
+        <CadastroGatewaySubsellersComplianceBlock parentMerchantId={merchant?.id} />
       </div>
     );
   }
@@ -253,6 +258,9 @@ export default function CadastroGatewayCollectionsTab({ merchant }) {
           })}
         </div>
       </Section>
+
+      {/* Subsellers via link de Compliance individual (não-batch) */}
+      <CadastroGatewaySubsellersComplianceBlock parentMerchantId={merchant?.id} />
 
       <SubmissionDetailModal
         submission={selectedSubmission}
