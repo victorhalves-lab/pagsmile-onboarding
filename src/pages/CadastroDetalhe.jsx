@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Building2, User, Mail, Phone, MapPin, Globe, Calendar, Shield, FileText, Users, FileCheck, Stamp, BarChart3, History, Database, Microscope, Handshake, Briefcase, Brain, ClipboardList, UserCheck, ShieldCheck, Rocket, GitBranch, Inbox } from 'lucide-react';
+import { ArrowLeft, Building2, User, Mail, Phone, MapPin, Globe, Calendar, Shield, FileText, Users, FileCheck, Stamp, BarChart3, History, Database, Microscope, Handshake, Briefcase, Brain, ClipboardList, UserCheck, ShieldCheck, Rocket, GitBranch, Inbox, Sparkles } from 'lucide-react';
 import CasePartnerAssignments from '@/components/partners-compliance/CasePartnerAssignments';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -34,6 +34,7 @@ import CadastroPartnerActivityBlock from '@/components/cadastro/CadastroPartnerA
 import EnterpriseExecutiveSummary from '@/components/cadastro/EnterpriseExecutiveSummary';
 import CadastroMonitoringEventsBlock from '@/components/cadastro/CadastroMonitoringEventsBlock';
 import CadastroMonitoringExtendedBlock from '@/components/cadastro/CadastroMonitoringExtendedBlock';
+import CadastroTimelineUnificadaTab from '@/components/cadastro/CadastroTimelineUnificadaTab';
 import DownloadDossieButton from '@/components/cadastro/DownloadDossieButton';
 import CadastroV5_2Banner from '@/components/cadastro/CadastroV5_2Banner';
 import CadastroV5_2Tab from '@/components/cadastro/CadastroV5_2Tab';
@@ -296,6 +297,35 @@ export default function CadastroDetalhe() {
     enabled: auditEntityIds.length > 0,
   });
 
+  // Dados extras para a Timeline Unificada (Sprint E)
+  const { data: timelineExtras = { findings: [], feedbacks: [], monitoringEvents: [], pendencies: [] } } = useQuery({
+    queryKey: ['cadastro-timeline-extras', allCaseIds, merchant?.cpfCnpj],
+    queryFn: async () => {
+      const cleanDoc = (merchant?.cpfCnpj || '').replace(/\D/g, '');
+      const [findingsRes, feedbacksRes, monitoringRes, pendenciesRes] = await Promise.all([
+        allCaseIds.length
+          ? Promise.all(allCaseIds.map(id => base44.entities.ComplianceFinding.filter({ onboarding_case_id: id }))).then(r => r.flat())
+          : Promise.resolve([]),
+        allCaseIds.length
+          ? Promise.all(allCaseIds.map(id => base44.entities.SentinelFeedback.filter({ onboarding_case_id: id }))).then(r => r.flat())
+          : Promise.resolve([]),
+        cleanDoc
+          ? base44.entities.BdcMonitoringEvent.filter({ document: cleanDoc }, '-receivedAt', 100)
+          : Promise.resolve([]),
+        allCaseIds.length
+          ? Promise.all(allCaseIds.map(id => base44.entities.PendencyRequest.filter({ onboardingCaseId: id }))).then(r => r.flat())
+          : Promise.resolve([]),
+      ]);
+      return {
+        findings: findingsRes,
+        feedbacks: feedbacksRes,
+        monitoringEvents: monitoringRes,
+        pendencies: pendenciesRes,
+      };
+    },
+    enabled: allCaseIds.length > 0 || !!merchant?.cpfCnpj,
+  });
+
   const handleMerchantUpdated = () => {
     queryClient.invalidateQueries({ queryKey: ['cadastro-merchant', merchantId] });
     queryClient.invalidateQueries({ queryKey: ['cadastro-audit'] });
@@ -408,6 +438,7 @@ export default function CadastroDetalhe() {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="bg-white border border-[var(--pagsmile-blue)]/8 p-1 rounded-xl flex-wrap h-auto">
           <TabsTrigger value="overview" className="text-xs gap-1"><BarChart3 className="w-3 h-3" />Visão Geral</TabsTrigger>
+          <TabsTrigger value="timeline" className="text-xs gap-1 data-[state=active]:bg-[#2bc196]/10 data-[state=active]:text-[#36706c]"><Sparkles className="w-3 h-3" />Timeline</TabsTrigger>
           <TabsTrigger value="dados" className="text-xs gap-1"><FileText className="w-3 h-3" />Dados Cadastrais</TabsTrigger>
           <TabsTrigger value="origem" className="text-xs gap-1"><GitBranch className="w-3 h-3" />Origem & Captação</TabsTrigger>
           <TabsTrigger value="comercial" className="text-xs gap-1"><Briefcase className="w-3 h-3" />Comercial</TabsTrigger>
@@ -438,6 +469,25 @@ export default function CadastroDetalhe() {
 
         <TabsContent value="overview">
           <CadastroOverviewTab merchant={merchant} latestCase={latestCase} lead={lead} latestProposal={latestProposal} latestContract={latestContract} latestScore={latestScore} documents={documents} subsellers={subsellers} allProposals={allProposals} allContracts={allContracts} allLeads={allLeads} allCases={cases} />
+        </TabsContent>
+        <TabsContent value="timeline">
+          <CadastroTimelineUnificadaTab
+            merchant={merchant}
+            allLeads={allLeads}
+            allProposals={allProposals}
+            allContracts={allContracts}
+            allCases={cases}
+            documents={documents}
+            validations={validations}
+            integrationLogs={integrationLogs}
+            scores={scores}
+            auditLogs={auditLogs}
+            findings={timelineExtras.findings}
+            feedbacks={timelineExtras.feedbacks}
+            monitoringEvents={timelineExtras.monitoringEvents}
+            pendencies={timelineExtras.pendencies}
+            subsellers={subsellers}
+          />
         </TabsContent>
         <TabsContent value="dados">
           <div className="space-y-4">
