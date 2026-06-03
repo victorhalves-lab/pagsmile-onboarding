@@ -136,7 +136,7 @@ export default function SubsellerInfoFormSimple({ collection, token }) {
             Olá, {collection.gateway_name}! 👋
           </h1>
           <p className="text-white/70 text-sm max-w-2xl">
-            Versão simplificada: informe apenas <strong className="text-white">CNPJ/CPF, nome e link da oferta</strong> de cada subseller.
+            Versão simplificada: informe apenas <strong className="text-white">CNPJ/CPF, nome e link do site/e-commerce</strong> de cada subseller.
             Levamos os detalhes adiante por outro canal, se necessário.
           </p>
         </div>
@@ -241,7 +241,7 @@ export default function SubsellerInfoFormSimple({ collection, token }) {
                   </div>
                   <div>
                     <Label className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50 flex items-center gap-1">
-                      <LinkIcon className="w-3 h-3" /> Link da oferta *
+                      <LinkIcon className="w-3 h-3" /> Link da oferta / site de venda / e-commerce *
                     </Label>
                     <Input
                       value={row.offer_url}
@@ -250,6 +250,9 @@ export default function SubsellerInfoFormSimple({ collection, token }) {
                       type="url"
                       className={`mt-0.5 ${!urlOk ? 'border-red-300' : ''}`}
                     />
+                    <p className="text-[10px] text-[#002443]/50 mt-0.5 leading-tight">
+                      É o site ou link online por onde o subseller faz a venda (e-commerce, marketplace, link de pagamento, perfil de loja etc).
+                    </p>
                     {!urlOk && (
                       <p className="text-[10px] text-red-500 mt-0.5">URL inválida — deve começar com http:// ou https://</p>
                     )}
