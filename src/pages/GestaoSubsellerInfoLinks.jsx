@@ -168,8 +168,11 @@ export default function GestaoSubsellerInfoLinks() {
                 <CardContent className="p-5">
                   <div className="flex items-start justify-between mb-3">
                     <div className="min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <h3 className="text-sm font-bold text-[#002443] truncate">{link.gateway_name}</h3>
+                        {link.collection_mode === 'simple' && (
+                          <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#2bc196]/10 text-[#36706c] font-bold uppercase tracking-wider">⚡ Simplificado</span>
+                        )}
                         {inactive && <span className="text-[9px] px-1.5 py-0.5 rounded bg-red-50 text-red-600 font-bold">OFF</span>}
                       </div>
                       {link.gateway_cnpj && (

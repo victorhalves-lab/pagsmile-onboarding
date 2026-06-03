@@ -43,6 +43,21 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Este link expirou' }, { status: 403 });
     }
 
+    const isSimpleMode = (collection.collection_mode || 'full') === 'simple';
+
+    // No modo simples: valida que cada subseller tem URL válida em offer_url
+    if (isSimpleMode) {
+      const urlRegex = /^https?:\/\/.+\..+/i;
+      for (let i = 0; i < subsellers.length; i++) {
+        const s = subsellers[i] || {};
+        if (!s.offer_url || !urlRegex.test(String(s.offer_url).trim())) {
+          return Response.json({
+            error: `Subseller #${i + 1}: link da oferta é obrigatório e deve ser uma URL válida (começando com http:// ou https://).`
+          }, { status: 400 });
+        }
+      }
+    }
+
     // Sanitiza subsellers (mantém só campos do schema)
     const allowedKeys = new Set([
       'person_type','company_name','cnpj','cpf','rg','cnae','business_model','business_model_other',

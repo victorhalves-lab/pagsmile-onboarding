@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Plus, Building2, Send, CheckCircle2, Sparkles, ArrowRight, Loader2, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import SubsellerCard from '@/components/subseller-info/SubsellerCard';
+import SubsellerInfoFormSimple from '@/components/subseller-info/SubsellerInfoFormSimple';
 
 const INITIAL_ROWS = 10;
 
@@ -189,6 +190,11 @@ export default function SubsellerInfoForm() {
         </CardContent></Card>
       </div>
     );
+  }
+
+  // Modo simplificado — renderiza componente enxuto
+  if (collection?.collection_mode === 'simple') {
+    return <SubsellerInfoFormSimple collection={collection} token={token} />;
   }
 
   if (done) {

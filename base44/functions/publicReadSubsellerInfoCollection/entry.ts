@@ -38,6 +38,7 @@ Deno.serve(async (req) => {
       collection: {
         id: c.id,
         gateway_name: c.gateway_name,
+        collection_mode: c.collection_mode || 'full',
       },
     });
   } catch (error) {

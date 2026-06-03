@@ -52,6 +52,15 @@
     "last_submission_at": {
       "type": "string",
       "format": "date-time"
+    },
+    "collection_mode": {
+      "type": "string",
+      "enum": [
+        "full",
+        "simple"
+      ],
+      "default": "full",
+      "description": "Modo de coleta. 'full' = formul\u00e1rio completo (CNPJ, modelo, volumetria, banco, documentos). 'simple' = apenas Tipo PF/PJ + Doc + Nome/Raz\u00e3o Social + URL da oferta (obrigat\u00f3ria). Default 'full' para retro-compat."
     }
   },
   "required": [

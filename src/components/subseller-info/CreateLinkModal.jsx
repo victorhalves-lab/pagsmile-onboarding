@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import {
-  X, Building2, UserPlus, Search, CheckCircle2, Loader2, ArrowLeft, Sparkles
+  X, Building2, UserPlus, Search, CheckCircle2, Loader2, ArrowLeft, Sparkles, Zap, Layers
 } from 'lucide-react';
 
 function formatCnpj(v = '') {
@@ -25,6 +25,7 @@ const emptyForm = {
   gateway_contact_email: '',
   notes: '',
   merchantId: null,
+  collection_mode: 'full',
 };
 
 /**
@@ -85,14 +86,15 @@ export default function CreateLinkModal({ open, onClose, onSubmit, isSubmitting 
   }, [merchants, search]);
 
   const selectMerchant = (m) => {
-    setForm({
+    setForm(prev => ({
+      ...prev,
       gateway_name: m.companyName || m.fullName || '',
       gateway_cnpj: m.cpfCnpj || '',
       gateway_contact_name: m.fullName || '',
       gateway_contact_email: m.email || '',
       notes: '',
       merchantId: m.id,
-    });
+    }));
   };
 
   const canSubmit = mode === 'existing'
@@ -163,6 +165,45 @@ export default function CreateLinkModal({ open, onClose, onSubmit, isSubmitting 
             >
               <UserPlus className="w-3.5 h-3.5" />
               Novo cliente
+            </button>
+          </div>
+        </div>
+
+        {/* Modo de coleta */}
+        <div className="px-6 pt-3 flex-shrink-0">
+          <Label className="text-[10px] font-bold uppercase tracking-wider text-[#002443]/50 mb-1.5 block">
+            Modo de coleta
+          </Label>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => setForm(prev => ({ ...prev, collection_mode: 'full' }))}
+              className={`flex items-start gap-2 p-2.5 rounded-xl border-2 text-left transition-all ${
+                form.collection_mode === 'full'
+                  ? 'border-[#2bc196] bg-[#2bc196]/5'
+                  : 'border-[#002443]/10 hover:border-[#002443]/20'
+              }`}
+            >
+              <Layers className={`w-4 h-4 mt-0.5 flex-shrink-0 ${form.collection_mode === 'full' ? 'text-[#2bc196]' : 'text-[#002443]/40'}`} />
+              <div className="min-w-0">
+                <div className="text-xs font-bold text-[#002443]">Completo</div>
+                <div className="text-[10px] text-[#002443]/50 leading-tight">CNPJ, modelo, volumetria, banco, documentos</div>
+              </div>
+            </button>
+            <button
+              type="button"
+              onClick={() => setForm(prev => ({ ...prev, collection_mode: 'simple' }))}
+              className={`flex items-start gap-2 p-2.5 rounded-xl border-2 text-left transition-all ${
+                form.collection_mode === 'simple'
+                  ? 'border-[#2bc196] bg-[#2bc196]/5'
+                  : 'border-[#002443]/10 hover:border-[#002443]/20'
+              }`}
+            >
+              <Zap className={`w-4 h-4 mt-0.5 flex-shrink-0 ${form.collection_mode === 'simple' ? 'text-[#2bc196]' : 'text-[#002443]/40'}`} />
+              <div className="min-w-0">
+                <div className="text-xs font-bold text-[#002443]">Simplificado</div>
+                <div className="text-[10px] text-[#002443]/50 leading-tight">Apenas Doc + Nome + URL da oferta</div>
+              </div>
             </button>
           </div>
         </div>
