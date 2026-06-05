@@ -478,6 +478,62 @@ function pixHero(state, rates) {
   state.y += 40;
 }
 
+// ─── MCC 8999 reclassification disclaimer (segments != Gateway) ───
+// Renderiza um aviso em destaque âmbar com as taxas do MCC 8999.
+// O cliente vê apenas "MCC 8999" — nunca a palavra "Gateway".
+function mcc8999Disclaimer(state, mccEsperado, gatewayRates) {
+  if (!gatewayRates) return;
+  const lines = [
+    `MDR à vista: ${pct(gatewayRates.mdrAvista)}`,
+    `MDR 2-6x: ${pct(gatewayRates.mdr2a6x)}`,
+    `MDR 7-12x: ${pct(gatewayRates.mdr7a12x)}`,
+    `MDR 13-21x: ${pct(gatewayRates.mdr13a21x)}`,
+    `Antecipação: ${pct(gatewayRates.percentualAntecipacao)} a.m.`,
+    `PIX: ${pct(gatewayRates.pixTaxaPercentual)} + ${money(gatewayRates.pixTaxaFixa)}`,
+    `Boleto: ${money(gatewayRates.boleto)}`,
+    `Antifraude: ${money(gatewayRates.antifraude)}`,
+    `Fee transação: ${money(gatewayRates.feeTransacao)}`,
+    `3DS: ${money(gatewayRates.taxa3ds)}`,
+  ];
+  const rowsCount = Math.ceil(lines.length / 2);
+  const totalH = 16 + rowsCount * 5 + 4;
+  ensureSpace(state, totalH + 4);
+  const { doc } = state;
+  const x = 14, w = 182;
+  // Background card (amber-50)
+  doc.setDrawColor(217, 119, 6);
+  doc.setFillColor(255, 251, 235);
+  doc.roundedRect(x, state.y, w, totalH, 3, 3, 'FD');
+  // Title
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.setTextColor(...BRAND.amber);
+  doc.text('Aviso sobre reclassificação de MCC', x + 5, state.y + 6);
+  // Body text
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8.5);
+  doc.setTextColor(...BRAND.text);
+  const mccTxt = mccEsperado
+    ? `As taxas desta proposta foram dimensionadas para o MCC ${mccEsperado} do seu segmento.`
+    : 'As taxas desta proposta foram dimensionadas para o MCC contratado do seu segmento.';
+  const body = `${mccTxt} Caso a Pagsmile identifique transações operadas em MCCs incompatíveis com o segmento contratado, essas transações específicas serão reclassificadas automaticamente para o MCC 8999 e cobradas com as taxas padrão abaixo:`;
+  const bodyLines = doc.splitTextToSize(body, w - 10);
+  doc.text(bodyLines, x + 5, state.y + 11);
+  // 2-column rates list
+  let cy = state.y + 11 + bodyLines.length * 3.5 + 2;
+  const colW = (w - 10) / 2;
+  doc.setFontSize(8);
+  lines.forEach((line, i) => {
+    const col = i % 2;
+    const row = Math.floor(i / 2);
+    doc.setTextColor(...BRAND.amber);
+    doc.text('•', x + 5 + col * colW, cy + row * 5);
+    doc.setTextColor(...BRAND.blue);
+    doc.text(line, x + 9 + col * colW, cy + row * 5);
+  });
+  state.y += totalH + 4;
+}
+
 // ─── Acceptance footer (only filled if proposal already accepted) ───
 function acceptanceFooter(state, p) {
   if (p.status !== 'aceita' || !p.acceptedDate) return;
@@ -501,7 +557,7 @@ function acceptanceFooter(state, p) {
 // PDF builders per type
 // ═══════════════════════════════════════════════════════════
 
-async function buildCustomProposalPdf(p) {
+async function buildCustomProposalPdf(p, gatewayRates) {
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
   const logoB64 = await fetchLogoBase64();
   const state = { doc, y: 30, pageCount: 1, logoB64 };
@@ -514,6 +570,10 @@ async function buildCustomProposalPdf(p) {
   // Page 2 — Online section
   sectionTitle(state, 'Pagamentos Online', 'Taxas e custos aplicados em vendas processadas pelo checkout, link de pagamento ou e-commerce.');
   cardRatesTable(state, p.rates || {}, p.hideRange13a21);
+  // Disclaimer MCC 8999 — só renderiza se o segmento NÃO for Gateway.
+  if (String(p.businessSubCategory || '').toLowerCase() !== 'gateway') {
+    mcc8999Disclaimer(state, p.clienteMcc, gatewayRates);
+  }
   installmentsTable(state, p.rates || {}, parseFloat(p.rates?.rav?.taxa) || 0, p.rates?.rav?.prazo);
   onlineCostsGrid(state, p.rates || {});
   recebimentoGrid(state, p.rates || {});
@@ -528,7 +588,7 @@ async function buildCustomProposalPdf(p) {
   return finalize(doc, state, p.codigo);
 }
 
-async function buildStandardProposalPdf(p) {
+async function buildStandardProposalPdf(p, gatewayRates) {
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
   const logoB64 = await fetchLogoBase64();
   const state = { doc, y: 30, pageCount: 1, logoB64 };
@@ -540,6 +600,10 @@ async function buildStandardProposalPdf(p) {
 
   sectionTitle(state, 'Pagamentos Online', 'Taxas e custos aplicados em vendas processadas pelo checkout, link de pagamento ou e-commerce.');
   cardRatesTable(state, p.rates || {}, false);
+  // Disclaimer MCC 8999 — StandardProposal usa label do segmento em "segment", não slug.
+  if (!/gateway/i.test(String(p.segment || ''))) {
+    mcc8999Disclaimer(state, p.mcc || p.clienteMcc, gatewayRates);
+  }
   installmentsTable(state, p.rates || {}, parseFloat(p.rates?.rav?.taxa) || 0, p.rates?.rav?.prazo);
   onlineCostsGrid(state, p.rates || {});
   recebimentoGrid(state, p.rates || {});
@@ -634,10 +698,33 @@ Deno.serve(async (req) => {
 
     if (!proposal) return Response.json({ error: 'Proposal not found' }, { status: 404 });
 
+    // Carrega taxas do MCC 8999 (vindas do SegmentDefaultRates "Gateway") para o disclaimer.
+    // Não é fatal se falhar — só omite o disclaimer.
+    let gatewayRates = null;
+    try {
+      const list = await base44.asServiceRole.entities.SegmentDefaultRates.filter({ segmentName: 'Gateway' });
+      if (list && list[0]) {
+        const g = list[0];
+        gatewayRates = {
+          mdrAvista: g.mdrAvista,
+          mdr2a6x: g.mdr2a6x,
+          mdr7a12x: g.mdr7a12x,
+          mdr13a21x: g.mdr13a21x,
+          percentualAntecipacao: g.percentualAntecipacao,
+          pixTaxaPercentual: g.pixTaxaPercentual,
+          pixTaxaFixa: g.pixTaxaFixa,
+          boleto: g.boleto,
+          antifraude: g.antifraude,
+          feeTransacao: g.feeTransacao,
+          taxa3ds: g.taxa3ds,
+        };
+      }
+    } catch (_) { /* segue sem disclaimer */ }
+
     // Build PDF
     let pdfBytes;
-    if (type === 'proposal') pdfBytes = await buildCustomProposalPdf(proposal);
-    else if (type === 'standard_proposal') pdfBytes = await buildStandardProposalPdf(proposal);
+    if (type === 'proposal') pdfBytes = await buildCustomProposalPdf(proposal, gatewayRates);
+    else if (type === 'standard_proposal') pdfBytes = await buildStandardProposalPdf(proposal, gatewayRates);
     else pdfBytes = await buildPixProposalPdf(proposal);
 
     const filename = `Pagsmile-${(proposal.codigo || 'proposta').replace(/[^A-Za-z0-9_-]/g, '_')}.pdf`;

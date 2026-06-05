@@ -17,6 +17,32 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
  *   - onboarding_case_for_doc_only { caseId, token } → returns case + template (validates docLinkToken)
  *   - standard_proposal_by_token { token } → returns StandardProposal (ativa only)
  */
+// Fetches the Gateway SegmentDefaultRates and returns the SAFE subset used to
+// render the "MCC 8999 reclassification" disclaimer on public proposal pages.
+// We never expose the word "Gateway" to the client — only the raw rates.
+async function getMcc8999RatesSnapshot(base44) {
+  try {
+    const list = await base44.asServiceRole.entities.SegmentDefaultRates.filter({ segmentName: 'Gateway' });
+    const g = list && list[0];
+    if (!g) return null;
+    return {
+      mdrAvista: g.mdrAvista,
+      mdr2a6x: g.mdr2a6x,
+      mdr7a12x: g.mdr7a12x,
+      mdr13a21x: g.mdr13a21x,
+      percentualAntecipacao: g.percentualAntecipacao,
+      pixTaxaPercentual: g.pixTaxaPercentual,
+      pixTaxaFixa: g.pixTaxaFixa,
+      boleto: g.boleto,
+      antifraude: g.antifraude,
+      feeTransacao: g.feeTransacao,
+      taxa3ds: g.taxa3ds,
+    };
+  } catch (_) {
+    return null;
+  }
+}
+
 Deno.serve(async (req) => {
   try {
     if (req.method !== 'POST') {
@@ -186,7 +212,9 @@ Deno.serve(async (req) => {
       if (!token) return Response.json({ error: 'token required' }, { status: 400 });
       let results = [];
       try { results = await base44.asServiceRole.entities.StandardProposal.filter({ tokenPublico: token }); } catch (_) {}
-      return Response.json({ proposal: results[0] || null });
+      const proposal = results[0] || null;
+      const mcc8999Rates = proposal ? await getMcc8999RatesSnapshot(base44) : null;
+      return Response.json({ proposal, mcc8999Rates });
     }
 
     // ── Proposal by token (resolves to CURRENT version when multiple exist) ──
@@ -208,23 +236,31 @@ Deno.serve(async (req) => {
       if (results.length > 1) {
         const current = results.find(r => r.isCurrentVersion === true);
         const picked = current || results.sort((a, b) => (b.version || 1) - (a.version || 1))[0];
-        return Response.json({ proposal: picked });
+        const mcc8999Rates = await getMcc8999RatesSnapshot(base44);
+        return Response.json({ proposal: picked, mcc8999Rates });
       }
       const p = results[0];
       // If this token belongs to an old version, try to resolve to the current one via rootId
       if (p.isCurrentVersion === false && p.rootProposalId) {
         try {
           const currentByRoot = await base44.asServiceRole.entities.Proposal.filter({ rootProposalId: p.rootProposalId, isCurrentVersion: true });
-          if (currentByRoot.length > 0) return Response.json({ proposal: currentByRoot[0] });
+          if (currentByRoot.length > 0) {
+            const mcc8999Rates = await getMcc8999RatesSnapshot(base44);
+            return Response.json({ proposal: currentByRoot[0], mcc8999Rates });
+          }
         } catch (_) {}
       }
       if (p.isCurrentVersion === false) {
         try {
           const childCurrent = await base44.asServiceRole.entities.Proposal.filter({ rootProposalId: p.id, isCurrentVersion: true });
-          if (childCurrent.length > 0) return Response.json({ proposal: childCurrent[0] });
+          if (childCurrent.length > 0) {
+            const mcc8999Rates = await getMcc8999RatesSnapshot(base44);
+            return Response.json({ proposal: childCurrent[0], mcc8999Rates });
+          }
         } catch (_) {}
       }
-      return Response.json({ proposal: p });
+      const mcc8999Rates = await getMcc8999RatesSnapshot(base44);
+      return Response.json({ proposal: p, mcc8999Rates });
     }
 
     // ── Template + Questions bundle (single round-trip for public compliance flows) ──
@@ -288,6 +324,8 @@ Deno.serve(async (req) => {
     }
 
     // ── PixProposal by token ──
+    // (PIX proposals don't carry card MDR, so we don't attach mcc8999Rates here —
+    //  the disclaimer only shows up on card-bearing proposals.)
     if (kind === 'pix_proposal_by_token') {
       const { token } = body;
       if (!token) return Response.json({ error: 'token required' }, { status: 400 });

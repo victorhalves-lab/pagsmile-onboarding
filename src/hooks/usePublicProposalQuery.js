@@ -46,7 +46,10 @@ async function fetchProposalByToken(type, token) {
   const kind = KIND_BY_TYPE[type];
   const res = await callPublicFunction('publicReadContext', { kind, token });
   if (res?.error) throw new Error(res.error);
-  return res?.proposal || null;
+  if (!res?.proposal) return null;
+  // Attach mcc8999Rates (used by the reclassification disclaimer) onto the proposal
+  // so existing consumers don't need to change their shape.
+  return { ...res.proposal, __mcc8999Rates: res.mcc8999Rates || null };
 }
 
 /**

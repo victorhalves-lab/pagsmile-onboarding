@@ -1,5 +1,6 @@
 import React from 'react';
 import { getOverridesForPrazo } from '@/lib/overridesUtils';
+import DisclaimerMcc8999 from './DisclaimerMcc8999';
 
 const BANDEIRAS = [
   { id: 'mastercard', label: 'Master' },
@@ -108,6 +109,14 @@ export default function PropostaPreview({ form, rates, selectedBrand, onBandeira
           </div>
         </div>
       )}
+
+      {/* Disclaimer MCC 8999 — só aparece se o segmento não for Gateway.
+          Mostra ao vendedor exatamente o que o cliente verá na proposta pública. */}
+      <DisclaimerMcc8999
+        businessSubCategory={form.businessSubCategory}
+        mccEsperado={form.clienteMcc}
+        compact
+      />
 
       {/* Footer Stats */}
       <div className="space-y-2">

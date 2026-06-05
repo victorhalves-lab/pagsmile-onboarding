@@ -17,6 +17,7 @@ import moment from 'moment';
 import { formatCNPJ } from '@/components/proposals/CnpjInput';
 import TaxasPorBandeiraPublic from '@/components/proposals/TaxasPorBandeiraPublic';
 import TaxasPorBandeiraPublicMulti from '@/components/proposals/TaxasPorBandeiraPublicMulti';
+import DisclaimerMcc8999 from '@/components/proposals/DisclaimerMcc8999';
 import TaxasMaquininhaPublic from '@/components/proposals/TaxasMaquininhaPublic';
 import AluguelEquipamentosPublic from '@/components/proposals/AluguelEquipamentosPublic';
 import ParcelasTableDetalhada from '@/components/proposals/ParcelasTableDetalhada';
@@ -482,6 +483,13 @@ export default function PropostaPublica() {
           </Card>
         </>
       )}
+
+      {/* Disclaimer de reclassificação MCC 8999 (segmentos não-Gateway) */}
+      <DisclaimerMcc8999
+        businessSubCategory={proposta.businessSubCategory}
+        mccEsperado={proposta.clienteMcc}
+        publicProvidedRates={proposta.__mcc8999Rates}
+      />
 
       {/* Custos adicionais por transação online */}
       <CustosOnlinePublic rates={rates} />

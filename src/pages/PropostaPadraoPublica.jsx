@@ -16,6 +16,7 @@ import { useTranslation } from '@/lib/i18n/LanguageContext';
 import SEGMENT_TO_COMPLIANCE from '@/components/fechamento/segmentComplianceMap';
 import InternationalPaymentsBanner from '@/components/landing/InternationalPaymentsBanner';
 import ReservaFinanceiraPublic from '@/components/proposals/ReservaFinanceiraPublic';
+import DisclaimerMcc8999 from '@/components/proposals/DisclaimerMcc8999';
 import { canonicalizeSlugUrl } from '@/lib/publicSlug';
 import { usePublicProposalQuery } from '@/hooks/usePublicProposalQuery';
 import PublicProposalErrorState from '@/components/proposals/PublicProposalErrorState';
@@ -218,6 +219,14 @@ export default function PropostaPadraoPublica() {
           <TaxasPorBandeiraPublic taxas={rates} />
         </CardContent>
       </Card>
+
+      {/* Disclaimer de reclassificação MCC 8999 (não-Gateway).
+          Detectamos Gateway por label do segmento (StandardProposal não usa slugs). */}
+      <DisclaimerMcc8999
+        businessSubCategory={/gateway/i.test(proposta.segment || '') ? 'gateway' : 'standard'}
+        mccEsperado={proposta.mcc || null}
+        publicProvidedRates={proposta.__mcc8999Rates}
+      />
 
       {/* Outros Métodos */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
