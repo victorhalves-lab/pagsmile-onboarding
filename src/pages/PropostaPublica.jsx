@@ -484,13 +484,6 @@ export default function PropostaPublica() {
         </>
       )}
 
-      {/* Disclaimer de reclassificação MCC 8999 (segmentos não-Gateway) */}
-      <DisclaimerMcc8999
-        businessSubCategory={proposta.businessSubCategory}
-        mccEsperado={proposta.clienteMcc}
-        publicProvidedRates={proposta.__mcc8999Rates}
-      />
-
       {/* Custos adicionais por transação online */}
       <CustosOnlinePublic rates={rates} />
 
@@ -528,6 +521,15 @@ export default function PropostaPublica() {
           </p>
         </div>
       )}
+
+      {/* Disclaimer de reclassificação MCC 8999 (segmentos não-Gateway).
+          Posicionado APÓS o bloco de recebimento/antecipação porque o aviso
+          informa qual tabela se aplica quando o MCC contratado não bate. */}
+      <DisclaimerMcc8999
+        businessSubCategory={proposta.businessSubCategory}
+        mccEsperado={proposta.clienteMcc}
+        publicProvidedRates={proposta.__mcc8999Rates}
+      />
 
       {/* ═════════════════════════════════════════════════════════════
            ZONA 2 — PAGAMENTOS PRESENCIAIS (Maquininha / POS)

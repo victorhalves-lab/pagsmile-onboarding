@@ -220,14 +220,6 @@ export default function PropostaPadraoPublica() {
         </CardContent>
       </Card>
 
-      {/* Disclaimer de reclassificação MCC 8999 (não-Gateway).
-          Detectamos Gateway por label do segmento (StandardProposal não usa slugs). */}
-      <DisclaimerMcc8999
-        businessSubCategory={/gateway/i.test(proposta.segment || '') ? 'gateway' : 'standard'}
-        mccEsperado={proposta.mcc || null}
-        publicProvidedRates={proposta.__mcc8999Rates}
-      />
-
       {/* Outros Métodos */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
         <Card>
@@ -305,6 +297,14 @@ export default function PropostaPadraoPublica() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Disclaimer de reclassificação MCC 8999 (não-Gateway).
+          Posicionado APÓS o bloco de Prazo/Antecipação, conforme padrão da proposta custom. */}
+      <DisclaimerMcc8999
+        businessSubCategory={/gateway/i.test(proposta.segment || '') ? 'gateway' : 'standard'}
+        mccEsperado={proposta.mcc || null}
+        publicProvidedRates={proposta.__mcc8999Rates}
+      />
 
       {/* CTA - Quero Contratar (fluxo fechamento → compliance) */}
       <div className="relative overflow-hidden bg-gradient-to-r from-[#2bc196] to-[#5cf7cf] rounded-3xl p-8 md:p-10 mb-8 text-center shadow-xl">

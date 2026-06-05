@@ -570,13 +570,13 @@ async function buildCustomProposalPdf(p, gatewayRates) {
   // Page 2 — Online section
   sectionTitle(state, 'Pagamentos Online', 'Taxas e custos aplicados em vendas processadas pelo checkout, link de pagamento ou e-commerce.');
   cardRatesTable(state, p.rates || {}, p.hideRange13a21);
-  // Disclaimer MCC 8999 — só renderiza se o segmento NÃO for Gateway.
-  if (String(p.businessSubCategory || '').toLowerCase() !== 'gateway') {
-    mcc8999Disclaimer(state, p.clienteMcc, gatewayRates);
-  }
   installmentsTable(state, p.rates || {}, parseFloat(p.rates?.rav?.taxa) || 0, p.rates?.rav?.prazo);
   onlineCostsGrid(state, p.rates || {});
   recebimentoGrid(state, p.rates || {});
+  // Disclaimer MCC 8999 — renderizado APÓS Recebimento/Antecipação (mesma ordem da UI).
+  if (String(p.businessSubCategory || '').toLowerCase() !== 'gateway') {
+    mcc8999Disclaimer(state, p.clienteMcc, gatewayRates);
+  }
 
   // Other services
   sectionTitle(state, 'Outros Serviços e Condições', 'PIX, Boleto e condições gerais aplicáveis ao contrato.');
@@ -600,13 +600,13 @@ async function buildStandardProposalPdf(p, gatewayRates) {
 
   sectionTitle(state, 'Pagamentos Online', 'Taxas e custos aplicados em vendas processadas pelo checkout, link de pagamento ou e-commerce.');
   cardRatesTable(state, p.rates || {}, false);
-  // Disclaimer MCC 8999 — StandardProposal usa label do segmento em "segment", não slug.
-  if (!/gateway/i.test(String(p.segment || ''))) {
-    mcc8999Disclaimer(state, p.mcc || p.clienteMcc, gatewayRates);
-  }
   installmentsTable(state, p.rates || {}, parseFloat(p.rates?.rav?.taxa) || 0, p.rates?.rav?.prazo);
   onlineCostsGrid(state, p.rates || {});
   recebimentoGrid(state, p.rates || {});
+  // Disclaimer MCC 8999 — APÓS Recebimento/Antecipação. StandardProposal usa label do segmento em "segment".
+  if (!/gateway/i.test(String(p.segment || ''))) {
+    mcc8999Disclaimer(state, p.mcc || p.clienteMcc, gatewayRates);
+  }
 
   sectionTitle(state, 'Outros Serviços e Condições', 'PIX, Boleto e condições gerais aplicáveis ao contrato.');
   pixBoletoCard(state, p.rates || {});
