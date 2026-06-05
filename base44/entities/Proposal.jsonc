@@ -81,6 +81,7 @@
       "properties": {
         "cartao": {
           "type": "object",
+          "description": "MDRs por bandeira \u00d7 faixa. Quando cartaoPorMcc tem itens, este campo representa o MCC principal (primeiro do array) para retro-compat.",
           "properties": {
             "visa": {
               "type": "object",
@@ -164,6 +165,113 @@
                 },
                 "de13a21x": {
                   "type": "number"
+                }
+              }
+            }
+          }
+        },
+        "cartaoPorMcc": {
+          "type": "array",
+          "description": "Multi-MCC: matriz de MDRs por MCC. Cada item tem { mcc, mccLabel, cartao: { visa, mastercard, elo, amex, outras } }. Quando vazio/ausente => proposta de MCC \u00fanico (usa rates.cartao). Aceita\u00e7\u00e3o \u00e9 sempre do pacote inteiro.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "mcc": {
+                "type": "string",
+                "description": "C\u00f3digo MCC (4 d\u00edgitos)"
+              },
+              "mccLabel": {
+                "type": "string",
+                "description": "Nome amig\u00e1vel do MCC (ex: 'Farm\u00e1cias')"
+              },
+              "cartao": {
+                "type": "object",
+                "properties": {
+                  "visa": {
+                    "type": "object",
+                    "properties": {
+                      "avista": {
+                        "type": "number"
+                      },
+                      "de2a6x": {
+                        "type": "number"
+                      },
+                      "de7a12x": {
+                        "type": "number"
+                      },
+                      "de13a21x": {
+                        "type": "number"
+                      }
+                    }
+                  },
+                  "mastercard": {
+                    "type": "object",
+                    "properties": {
+                      "avista": {
+                        "type": "number"
+                      },
+                      "de2a6x": {
+                        "type": "number"
+                      },
+                      "de7a12x": {
+                        "type": "number"
+                      },
+                      "de13a21x": {
+                        "type": "number"
+                      }
+                    }
+                  },
+                  "elo": {
+                    "type": "object",
+                    "properties": {
+                      "avista": {
+                        "type": "number"
+                      },
+                      "de2a6x": {
+                        "type": "number"
+                      },
+                      "de7a12x": {
+                        "type": "number"
+                      },
+                      "de13a21x": {
+                        "type": "number"
+                      }
+                    }
+                  },
+                  "amex": {
+                    "type": "object",
+                    "properties": {
+                      "avista": {
+                        "type": "number"
+                      },
+                      "de2a6x": {
+                        "type": "number"
+                      },
+                      "de7a12x": {
+                        "type": "number"
+                      },
+                      "de13a21x": {
+                        "type": "number"
+                      }
+                    }
+                  },
+                  "outras": {
+                    "type": "object",
+                    "properties": {
+                      "avista": {
+                        "type": "number"
+                      },
+                      "de2a6x": {
+                        "type": "number"
+                      },
+                      "de7a12x": {
+                        "type": "number"
+                      },
+                      "de13a21x": {
+                        "type": "number"
+                      }
+                    }
+                  }
                 }
               }
             }

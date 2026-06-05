@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import moment from 'moment';
 import { formatCNPJ } from '@/components/proposals/CnpjInput';
 import TaxasPorBandeiraPublic from '@/components/proposals/TaxasPorBandeiraPublic';
+import TaxasPorBandeiraPublicMulti from '@/components/proposals/TaxasPorBandeiraPublicMulti';
 import TaxasMaquininhaPublic from '@/components/proposals/TaxasMaquininhaPublic';
 import AluguelEquipamentosPublic from '@/components/proposals/AluguelEquipamentosPublic';
 import ParcelasTableDetalhada from '@/components/proposals/ParcelasTableDetalhada';
@@ -439,26 +440,48 @@ export default function PropostaPublica() {
         variant="online"
       />
 
-      {/* Taxas por Bandeira — Crédito Online */}
-      <Card className="mb-4">
-        <CardContent className="py-4">
-          <h3 className="font-bold text-sm text-[#002443] mb-3 uppercase tracking-wide flex items-center gap-2">
-            <CreditCard className="w-4 h-4 text-[#2bc196]" />
-            {t('pp.credit_card_rates')}
-          </h3>
-          <TaxasPorBandeiraPublic taxas={rates} hideRange13a21={proposta.hideRange13a21 || false} />
-        </CardContent>
-      </Card>
+      {/* Taxas por Bandeira — Crédito Online (single MCC ou multi MCC) */}
+      {Array.isArray(rates.cartaoPorMcc) && rates.cartaoPorMcc.length >= 2 ? (
+        <Card className="mb-4">
+          <CardContent className="py-4">
+            <h3 className="font-bold text-sm text-[#002443] mb-3 uppercase tracking-wide flex items-center gap-2">
+              <CreditCard className="w-4 h-4 text-[#2bc196]" />
+              {t('pp.credit_card_rates')} por MCC
+            </h3>
+            <TaxasPorBandeiraPublicMulti
+              cartaoPorMcc={rates.cartaoPorMcc}
+              rates={rates}
+              taxaRAV={taxaRAV}
+              prazo={prazo}
+              hideRange13a21={proposta.hideRange13a21 || false}
+              hideCalculationColumns={proposta.hideCalculationColumns || false}
+              taxaFinalOverrides={proposta.taxaFinalOverrides || {}}
+            />
+          </CardContent>
+        </Card>
+      ) : (
+        <>
+          <Card className="mb-4">
+            <CardContent className="py-4">
+              <h3 className="font-bold text-sm text-[#002443] mb-3 uppercase tracking-wide flex items-center gap-2">
+                <CreditCard className="w-4 h-4 text-[#2bc196]" />
+                {t('pp.credit_card_rates')}
+              </h3>
+              <TaxasPorBandeiraPublic taxas={rates} hideRange13a21={proposta.hideRange13a21 || false} />
+            </CardContent>
+          </Card>
 
-      {/* Tabela de Parcelas Detalhada */}
-      <Card className="mb-4">
-        <CardContent className="py-4">
-          <h3 className="font-bold text-sm text-[#002443] mb-3 uppercase tracking-wide">
-            {t('pp.installment_table')}
-          </h3>
-          <ParcelasTableDetalhada taxas={rates} taxaRAV={taxaRAV} prazo={prazo} showSimulator={!proposta.hideCalculationColumns} taxaFinalOverrides={proposta.taxaFinalOverrides || {}} hideCalculationColumns={proposta.hideCalculationColumns || false} hideRange13a21={proposta.hideRange13a21 || false} />
-        </CardContent>
-      </Card>
+          {/* Tabela de Parcelas Detalhada */}
+          <Card className="mb-4">
+            <CardContent className="py-4">
+              <h3 className="font-bold text-sm text-[#002443] mb-3 uppercase tracking-wide">
+                {t('pp.installment_table')}
+              </h3>
+              <ParcelasTableDetalhada taxas={rates} taxaRAV={taxaRAV} prazo={prazo} showSimulator={!proposta.hideCalculationColumns} taxaFinalOverrides={proposta.taxaFinalOverrides || {}} hideCalculationColumns={proposta.hideCalculationColumns || false} hideRange13a21={proposta.hideRange13a21 || false} />
+            </CardContent>
+          </Card>
+        </>
+      )}
 
       {/* Custos adicionais por transação online */}
       <CustosOnlinePublic rates={rates} />

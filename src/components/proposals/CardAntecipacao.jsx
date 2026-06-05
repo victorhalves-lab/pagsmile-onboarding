@@ -13,6 +13,8 @@ const PRAZOS = [
   { value: 'FLUXO', label: 'Fluxo' },
 ];
 
+const PCT_ANTECIPACAO_OPCOES = [0, 20, 40, 60, 80, 100];
+
 export default function CardAntecipacao({ form, onUpdate, readOnly = false }) {
   const labelCls = "text-[10px] text-[#2bc196]/70 font-semibold uppercase tracking-wider";
   const inputCls = "bg-white/5 border-white/10 text-white h-11 rounded-xl placeholder:text-white/15 focus:border-[#2bc196] focus:ring-1 focus:ring-[#2bc196]";
@@ -53,7 +55,27 @@ export default function CardAntecipacao({ form, onUpdate, readOnly = false }) {
       {form.usaAntecipacao && (
         <div className="space-y-1.5">
           <Label className={labelCls}>% do TPV Antecipado</Label>
-          <TaxaInput value={form.percentualAntecipacao || ''} onChange={(val) => !readOnly && onUpdate('percentualAntecipacao', val)} placeholder="100,00" suffix="%" disabled={readOnly} className={`${inputCls} text-right pr-10 ${readOnly ? 'opacity-60 cursor-not-allowed' : ''}`} />
+          <div className="grid grid-cols-6 gap-1.5">
+            {PCT_ANTECIPACAO_OPCOES.map(pct => {
+              const current = Number(form.percentualAntecipacao);
+              const isActive = current === pct;
+              return (
+                <button
+                  key={pct}
+                  type="button"
+                  onClick={() => !readOnly && onUpdate('percentualAntecipacao', pct)}
+                  disabled={readOnly}
+                  className={`py-2 rounded-lg text-xs font-bold transition-all ${
+                    isActive
+                      ? 'bg-[#2bc196] text-[#002443] shadow-lg shadow-[#2bc196]/20'
+                      : 'bg-white/5 text-white/30 hover:text-white/50 hover:bg-white/[0.08] border border-white/5'
+                  } ${readOnly ? 'opacity-60 cursor-not-allowed' : ''}`}
+                >
+                  {pct}%
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>

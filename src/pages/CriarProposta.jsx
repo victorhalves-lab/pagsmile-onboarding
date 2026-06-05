@@ -10,6 +10,8 @@ import { useTranslation } from '@/lib/i18n/LanguageContext';
 import CardDadosCliente from '@/components/proposals/CardDadosCliente';
 import PartnerSelector from '@/components/proposals/PartnerSelector';
 import CardTaxasCartao from '@/components/proposals/CardTaxasCartao';
+import MccTabsManager from '@/components/proposals/MccTabsManager';
+import { normalizeMccCartao } from '@/components/proposals/proposalMccHelpers';
 import CardAntecipacao from '@/components/proposals/CardAntecipacao';
 import CardOutrasTaxas from '@/components/proposals/CardOutrasTaxas';
 import CardTaxasMaquininha from '@/components/proposals/CardTaxasMaquininha';
@@ -47,7 +49,7 @@ export default function CriarProposta() {
   const [form, setForm] = useState({
     clienteNome: '', clienteCnpj: '', clienteMcc: '', clienteContato: '',
     businessSubCategory: '',
-    prazoRecebimento: 'D+1', usaAntecipacao: false, percentualAntecipacao: '',
+    prazoRecebimento: 'D+1', usaAntecipacao: false, percentualAntecipacao: 100,
     taxaAntecipacao: '',
     dataValidade: new Date(new Date().setDate(new Date().getDate() + 15)),
     taxaFinalOverrides: {},
@@ -57,6 +59,7 @@ export default function CriarProposta() {
 
   const [rates, setRates] = useState({
     cartao: {},
+    cartaoPorMcc: [],
     pix: { tipo: 'percentual', valor: '' },
     boleto: '', feeTransacao: '', antifraude: '', alertaPreChargeback: '', taxa3ds: '', setup: '', forex: '',
     minimoGarantido: { mes1: '', mes2: '', mes3: '' },
@@ -101,6 +104,7 @@ export default function CriarProposta() {
     );
     setRates({
       cartao: r.cartao || {},
+      cartaoPorMcc: Array.isArray(r.cartaoPorMcc) ? r.cartaoPorMcc : [],
       pix: r.pix || { tipo: 'percentual', valor: '' },
       boleto: r.boleto ?? '',
       feeTransacao: r.feeTransacao ?? '',
@@ -186,7 +190,7 @@ export default function CriarProposta() {
         businessSubCategory: existingProposal.businessSubCategory || '',
         prazoRecebimento: existingProposal.rates?.rav?.prazo || 'D+1',
         usaAntecipacao: !!existingProposal.rates?.rav?.taxa,
-        percentualAntecipacao: existingProposal.rates?.percentualAntecipacao || '',
+        percentualAntecipacao: existingProposal.rates?.percentualAntecipacao ?? 100,
         taxaAntecipacao: existingProposal.rates?.rav?.taxa || '',
         dataValidade: existingProposal.validUntil ? new Date(existingProposal.validUntil) : new Date(),
         taxaFinalOverrides: existingProposal.taxaFinalOverrides || {},
@@ -200,7 +204,9 @@ export default function CriarProposta() {
         Object.keys(r.maquininha.credito || {}).length > 0 || Object.keys(r.maquininha.debito || {}).length > 0
       );
       setRates({
-        cartao: r.cartao || {}, pix: r.pix || { tipo: 'percentual', valor: '' },
+        cartao: r.cartao || {},
+        cartaoPorMcc: Array.isArray(r.cartaoPorMcc) ? r.cartaoPorMcc : [],
+        pix: r.pix || { tipo: 'percentual', valor: '' },
         boleto: r.boleto || '', feeTransacao: r.feeTransacao || '',
         antifraude: r.antifraude || '', alertaPreChargeback: r.alertaPreChargeback || '',
         taxa3ds: r.taxa3ds || '', setup: r.setup || '', forex: r.forex || '',
@@ -316,6 +322,15 @@ export default function CriarProposta() {
       cartaoNumerico[b] = { avista: av, de2a6x: p26, de7a12x: p712, de13a21x: p1321 };
       credito_1x[b] = av; credito_2_6x[b] = p26; credito_7_12x[b] = p712; credito_13_21x[b] = p1321;
     });
+    // Multi-MCC: se houver cartaoPorMcc, normaliza cada entrada (string→number).
+    // Em modo single, fica array vazio. O array sempre é gravado para evitar lixo legado.
+    const cartaoPorMccNumerico = Array.isArray(rates.cartaoPorMcc)
+      ? rates.cartaoPorMcc.map(e => ({
+          mcc: String(e.mcc || ''),
+          mccLabel: e.mccLabel || '',
+          cartao: normalizeMccCartao(e.cartao, parseTaxa),
+        }))
+      : [];
     // Maquininha só é gravada se "Processamento com maquininha" estiver ativo.
     // Caso contrário, NÃO inventamos débito (era 60% da à vista — bug antigo).
     const usaMaquininha = !!rates.usaMaquininha;
@@ -362,7 +377,7 @@ export default function CriarProposta() {
       clienteNome: form.clienteNome, clienteCnpj: form.clienteCnpj.replace(/\D/g, ''),
       clienteContato: form.clienteContato, clienteMcc: form.clienteMcc,
       rates: {
-        cartao: cartaoNumerico, credito_1x, credito_2_6x, credito_7_12x, credito_13_21x,
+        cartao: cartaoNumerico, cartaoPorMcc: cartaoPorMccNumerico, credito_1x, credito_2_6x, credito_7_12x, credito_13_21x,
         // Maquininha (POS presencial) só vai junto se ativada — taxas próprias.
         usaMaquininha,
         ...(usaMaquininha && maquininhaPayload ? { maquininha: maquininhaPayload } : {}),
@@ -472,7 +487,16 @@ export default function CriarProposta() {
             leadBusinessType={form.businessSubCategory}
             leadTpv={lead?.tpvMensal}
           />
-          <CardTaxasCartao rates={rates} onUpdateRates={updateRates} selectedBrand={selectedBrand} setSelectedBrand={setSelectedBrand} partner={selectedPartner} clientMcc={form.clienteMcc} hideRange13a21={form.hideRange13a21 || false} onToggleHideRange13a21={(v) => updateForm('hideRange13a21', v)} />
+          <MccTabsManager
+            form={form}
+            rates={rates}
+            onUpdateRates={updateRates}
+            selectedBrand={selectedBrand}
+            setSelectedBrand={setSelectedBrand}
+            partner={selectedPartner}
+            hideRange13a21={form.hideRange13a21 || false}
+            onToggleHideRange13a21={(v) => updateForm('hideRange13a21', v)}
+          />
           <CardAntecipacao form={form} onUpdate={updateForm} />
           <CardReservaFinanceira rates={rates} onUpdateRates={updateRates} />
           <FinalRateOverridesEditor
