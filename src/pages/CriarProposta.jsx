@@ -49,7 +49,7 @@ export default function CriarProposta() {
   const [form, setForm] = useState({
     clienteNome: '', clienteCnpj: '', clienteMcc: '', clienteContato: '',
     businessSubCategory: '',
-    prazoRecebimento: 'D+1', usaAntecipacao: false, percentualAntecipacao: 100,
+    prazoRecebimento: 'D+1', usaAntecipacao: false, percentualAntecipacao: 80,
     taxaAntecipacao: '',
     dataValidade: new Date(new Date().setDate(new Date().getDate() + 15)),
     taxaFinalOverrides: {},
@@ -190,7 +190,7 @@ export default function CriarProposta() {
         businessSubCategory: existingProposal.businessSubCategory || '',
         prazoRecebimento: existingProposal.rates?.rav?.prazo || 'D+1',
         usaAntecipacao: !!existingProposal.rates?.rav?.taxa,
-        percentualAntecipacao: existingProposal.rates?.percentualAntecipacao ?? 100,
+        percentualAntecipacao: existingProposal.rates?.percentualAntecipacao ?? 80,
         taxaAntecipacao: existingProposal.rates?.rav?.taxa || '',
         dataValidade: existingProposal.validUntil ? new Date(existingProposal.validUntil) : new Date(),
         taxaFinalOverrides: existingProposal.taxaFinalOverrides || {},
