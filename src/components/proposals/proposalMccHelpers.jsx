@@ -28,6 +28,22 @@ export function makeMccEntry(mccCode, sourceCartao = null) {
   };
 }
 
+// Constrói um cartao{} (visa/master/elo/amex/outras × faixas) a partir de um registro
+// de SegmentDefaultRates. Aplica as mesmas 4 taxas (avista/2-6/7-12/13-21) em todas as
+// bandeiras — é o mesmo critério usado pelo SegmentRatesLoader.
+export function cartaoFromSegmentRates(segmentRates) {
+  if (!segmentRates) return emptyMccCartao();
+  const taxas = {
+    avista: segmentRates.mdrAvista ?? '',
+    de2a6x: segmentRates.mdr2a6x ?? '',
+    de7a12x: segmentRates.mdr7a12x ?? '',
+    de13a21x: segmentRates.mdr13a21x ?? '',
+  };
+  const out = {};
+  BANDEIRAS.forEach(b => { out[b] = { ...taxas }; });
+  return out;
+}
+
 // Tem multi-MCC ativo? (>= 2 itens)
 export function isMultiMcc(rates) {
   return Array.isArray(rates?.cartaoPorMcc) && rates.cartaoPorMcc.length >= 2;

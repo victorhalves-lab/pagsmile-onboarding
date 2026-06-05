@@ -3,9 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Plus, X, Layers, Copy, Search } from 'lucide-react';
 import { toast } from 'sonner';
-import MCCSearchModal from '@/components/leads/MCCSearchModal';
+import AddMccWithSourceModal from './AddMccWithSourceModal';
 import CardTaxasCartao from './CardTaxasCartao';
-import { getMccLabel, emptyMccCartao, makeMccEntry } from './proposalMccHelpers';
+import { getMccLabel, emptyMccCartao, makeMccEntry, cartaoFromSegmentRates } from './proposalMccHelpers';
 
 /**
  * Gerencia tabs de MCCs adicionais com taxas de cartão por MCC.
@@ -60,19 +60,33 @@ export default function MccTabsManager({
     toast.info('Multi-MCC desativado. As taxas do MCC ativo foram mantidas.');
   };
 
-  const addMcc = (mccCode) => {
+  // Recebe { mccCode, mccLabel, source, segmentRates } do AddMccWithSourceModal.
+  // - source='active'  → copia do MCC ativo
+  // - source='segment' → usa SegmentDefaultRates escolhido
+  // - source='blank'   → zerado
+  const addMcc = ({ mccCode, source = 'active', segmentRates = null }) => {
     if (!mccCode) return;
     if (cartaoPorMcc.some(e => e.mcc === String(mccCode))) {
       toast.error(`MCC ${mccCode} já adicionado.`);
       return;
     }
-    // Copia as taxas do MCC ativo como ponto de partida (UX: facilita ajustar diferença)
-    const baseCartao = cartaoPorMcc[activeIdx]?.cartao || emptyMccCartao();
+    let baseCartao;
+    let sourceLabel;
+    if (source === 'segment' && segmentRates) {
+      baseCartao = cartaoFromSegmentRates(segmentRates);
+      sourceLabel = `taxas padrão de ${segmentRates.segmentName}`;
+    } else if (source === 'blank') {
+      baseCartao = emptyMccCartao();
+      sourceLabel = 'em branco';
+    } else {
+      baseCartao = cartaoPorMcc[activeIdx]?.cartao || emptyMccCartao();
+      sourceLabel = `cópia do MCC ${cartaoPorMcc[activeIdx]?.mcc || ''}`;
+    }
     const newEntry = makeMccEntry(mccCode, baseCartao);
     const next = [...cartaoPorMcc, newEntry];
     onUpdateRates({ ...rates, cartaoPorMcc: next });
     setActiveIdx(next.length - 1);
-    toast.success(`MCC ${mccCode} – ${newEntry.mccLabel} adicionado.`);
+    toast.success(`MCC ${mccCode} – ${newEntry.mccLabel} adicionado (${sourceLabel}).`);
   };
 
   const removeMcc = (idx) => {
@@ -200,10 +214,10 @@ export default function MccTabsManager({
         onToggleHideRange13a21={onToggleHideRange13a21}
       />
 
-      <MCCSearchModal
+      <AddMccWithSourceModal
         isOpen={searchOpen}
         onClose={() => setSearchOpen(false)}
-        onSelect={(mcc) => addMcc(mcc)}
+        onConfirm={(payload) => addMcc(payload)}
       />
     </div>
   );
