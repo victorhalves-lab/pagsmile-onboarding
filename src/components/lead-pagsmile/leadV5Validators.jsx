@@ -88,6 +88,7 @@ const FIELD_LABELS = {
   tipoMpe: 'Tipo de negócio',
   oQueVendeMpe: 'O que vende',
   modalidadeCartao: 'Modalidade de cartão',
+  principaisSellers: 'Principais sellers',
   tpvMensal: 'TPV Mensal',
   ticketMedio: 'Ticket Médio',
   faturamentoAnual: 'Faturamento Anual',
@@ -193,6 +194,14 @@ export function validateStepV5(step, form) {
       const val = form[f];
       const isEmpty = Array.isArray(val) ? val.length === 0 : !val;
       if (isEmpty) out.push(err(f));
+    }
+    // Gateway: 3 a 5 principais sellers (nome + CNPJ válido nos 3 primeiros obrigatórios)
+    if (form.segmento === 'gateway') {
+      const sellers = Array.isArray(form.principaisSellers) ? form.principaisSellers : [];
+      const validCount = sellers.filter(s => s?.nome?.trim() && isValidCnpj(s?.cnpj)).length;
+      if (validCount < 3) {
+        out.push(err('principaisSellers', `Informe ao menos 3 sellers principais com nome e CNPJ válido (atual: ${validCount}/3)`));
+      }
     }
   }
 

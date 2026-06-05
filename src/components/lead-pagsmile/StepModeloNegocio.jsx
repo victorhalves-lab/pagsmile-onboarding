@@ -2,6 +2,7 @@ import React from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import ButtonSelector from './ButtonSelector';
 import StepProdutos from './StepProdutos';
+import PrincipaisSellersInput from './PrincipaisSellersInput';
 import {
   MODELO_COBRANCA_OPTIONS, SUB_SELLERS_OPTIONS, PLATAFORMA_OPTIONS,
   ANTIFRAUDE_OPTIONS, ANTIFRAUDE_SEGMENTS, LICENCA_BCB_OPTIONS, SPLIT_PAGAMENTO_OPTIONS,
@@ -90,6 +91,7 @@ export default function StepModeloNegocio({ form, updateField, errors }) {
             <label className="text-sm font-semibold text-[#002443]">Faz split de pagamento?</label>
             <ButtonSelector options={SPLIT_PAGAMENTO_OPTIONS} value={form.splitPagamento} onChange={(v) => updateField('splitPagamento', v)} columns={3} />
           </div>
+          <PrincipaisSellersInput form={form} updateField={updateField} errors={errors} />
         </>
       )}
 
