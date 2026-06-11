@@ -3,19 +3,31 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { FileText, Loader2, Eye, Archive, Lock, ClipboardList } from 'lucide-react';
 import { toast } from 'sonner';
-import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { base44 } from '@/api/base44Client';
 import CafDocsSection from './CafDocsSection';
 import RequestPendencyModal from './RequestPendencyModal';
 
-// Resolve a readable URL: for private docs, request a short-lived signed URL from backend.
+// Resolve a readable URL based on the URI scheme (NOT the isPrivate flag, which is
+// frequently incorrect in legacy records). Logic mirrors what the backend already does:
+//  - "supabase://..."        → Supabase Storage, needs signed URL
+//  - "mp/private/..." / "b44s://..." → Base44 legacy private, needs signed URL
+//  - anything else (https://...)    → already a public absolute URL
 async function resolveDocUrl(doc) {
   if (!doc) return null;
-  if (doc.isPrivate && (doc.fileUri || doc.fileUrl)) {
+  const raw = doc.fileUri || doc.fileUrl;
+  if (!raw) return null;
+  const needsSignedUrl =
+    typeof raw === 'string' && (
+      raw.startsWith('supabase://') ||
+      raw.startsWith('b44s://') ||
+      raw.startsWith('mp/private/') ||
+      raw.includes('/private/')
+    );
+  if (needsSignedUrl) {
     try {
       const res = await base44.functions.invoke('getPrivateDocumentUrl', {
-        file_uri: doc.fileUri || doc.fileUrl,
+        file_uri: raw,
         documentUploadId: doc.id,
         expiresIn: 600,
       });
@@ -34,55 +46,39 @@ export default function CaseDocumentsTab({ documents, caseId, merchantName, inte
   const canRequestPendency = onboardingCase &&
     ['Manual', 'Docs Solicitados'].includes(onboardingCase.status);
 
+  // ZIP é montado no backend (downloadCaseDocuments) — único lugar que sabe resolver
+  // os 3 tipos de armazenamento (Supabase, Base44 legado privado, Base44 público antigo).
+  // Antes o fetch era feito no browser, o que falhava para URIs supabase:// e mp/private/.
   const handleDownloadAllDocuments = async () => {
-    const docsWithUrl = documents.filter(d => d.fileUrl);
-    if (docsWithUrl.length === 0) {
-      toast.info('Nenhum documento com arquivo disponível para baixar.');
+    if (!caseId) {
+      toast.error('ID do caso indisponível.');
       return;
     }
-
     setIsDownloadingZip(true);
-    setDownloadProgress(`0 / ${docsWithUrl.length}`);
+    setDownloadProgress('Preparando arquivos no servidor…');
+    try {
+      const res = await base44.functions.invoke('downloadCaseDocuments', {
+        onboardingCaseId: caseId,
+      }, { responseType: 'blob' });
 
-    const zip = new JSZip();
-    let successCount = 0;
-    let failCount = 0;
-
-    for (let i = 0; i < docsWithUrl.length; i++) {
-      const doc = docsWithUrl[i];
-      setDownloadProgress(`${i + 1} / ${docsWithUrl.length}`);
-      try {
-        const response = await fetch(doc.fileUrl);
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const blob = await response.blob();
-        const fileName = doc.fileName || doc.documentName || `documento_${i + 1}`;
-        zip.file(fileName, blob);
-        successCount++;
-      } catch (err) {
-        console.warn(`Falha ao baixar ${doc.fileName || doc.documentName}:`, err);
-        failCount++;
+      // Algumas versões do SDK retornam blob direto; outras embrulham em { data }.
+      let blob = res?.data instanceof Blob ? res.data : res instanceof Blob ? res : null;
+      if (!blob && res?.data) {
+        // Fallback: arraybuffer/uint8array
+        blob = new Blob([res.data], { type: 'application/zip' });
       }
-    }
-
-    if (successCount === 0) {
-      toast.error('Não foi possível baixar nenhum documento.');
+      if (!blob || blob.size === 0) {
+        throw new Error('Servidor retornou ZIP vazio.');
+      }
+      saveAs(blob, `documentos_${merchantName || caseId}.zip`);
+      toast.success('ZIP baixado com sucesso!');
+    } catch (err) {
+      console.error('Falha ao baixar ZIP:', err);
+      toast.error(`Não foi possível baixar o ZIP: ${err?.message || 'erro desconhecido'}`);
+    } finally {
       setIsDownloadingZip(false);
       setDownloadProgress('');
-      return;
     }
-
-    setDownloadProgress('Gerando ZIP...');
-    const zipBlob = await zip.generateAsync({ type: 'blob' });
-    saveAs(zipBlob, `documentos_${merchantName || caseId}.zip`);
-
-    if (failCount > 0) {
-      toast.warning(`ZIP gerado! ${successCount} baixados, ${failCount} falharam.`);
-    } else {
-      toast.success(`ZIP com ${successCount} documentos baixado com sucesso!`);
-    }
-
-    setIsDownloadingZip(false);
-    setDownloadProgress('');
   };
 
   return (
