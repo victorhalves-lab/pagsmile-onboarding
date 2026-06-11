@@ -16,25 +16,26 @@ import RequestPendencyModal from './RequestPendencyModal';
 async function resolveDocUrl(doc) {
   if (!doc) return null;
   const raw = doc.fileUri || doc.fileUrl;
-  if (!raw) return null;
-  const needsSignedUrl =
-    typeof raw === 'string' && (
-      raw.startsWith('supabase://') ||
-      raw.startsWith('b44s://') ||
-      raw.startsWith('mp/private/') ||
-      raw.includes('/private/')
-    );
-  if (needsSignedUrl) {
-    try {
-      const res = await base44.functions.invoke('getPrivateDocumentUrl', {
-        file_uri: raw,
-        documentUploadId: doc.id,
-        expiresIn: 600,
-      });
-      return res.data?.signed_url || null;
-    } catch (e) { console.warn('Signed URL failed:', e?.message); return null; }
+  if (!raw || typeof raw !== 'string') return null;
+
+  // Caso 1: URL HTTP(S) absoluta — abre direto, não precisa do backend.
+  // Cobre os docs CAF SDK antigos salvos em https://base44.app/.../files/mp/public/...
+  if (raw.startsWith('http://') || raw.startsWith('https://')) {
+    return raw;
   }
-  return doc.fileUrl || null;
+
+  // Caso 2: URI privada (Supabase nova OU Base44 legada) — precisa signed URL.
+  try {
+    const res = await base44.functions.invoke('getPrivateDocumentUrl', {
+      file_uri: raw,
+      documentUploadId: doc.id,
+      expiresIn: 600,
+    });
+    return res.data?.signed_url || null;
+  } catch (e) {
+    console.warn('Signed URL failed:', e?.message);
+    return null;
+  }
 }
 
 export default function CaseDocumentsTab({ documents, caseId, merchantName, integrationLogs = [], onboardingCase, merchant, onRefetch }) {
