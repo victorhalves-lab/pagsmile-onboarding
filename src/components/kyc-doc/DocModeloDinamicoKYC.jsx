@@ -14,8 +14,9 @@ import { FileQuestion, FileCheck2, Layers, Filter, Download, Sparkles } from 'lu
  * como constam naquele questionário (campo `order` do próprio template).
  */
 
-// ─── Os 9 modelos V4 oficiais ──────────────────────────────────────────
-const V4_MODELS = {
+// ─── Rótulos curtos para os modelos conhecidos. Modelos novos aparecem
+//     automaticamente usando o `name` do próprio template como label. ───────
+const MODEL_LABELS = {
   ComplianceEcommerceV4: 'E-commerce',
   ComplianceGatewayV4: 'Gateway',
   ComplianceDropshippingV4: 'Dropshipping',
@@ -26,11 +27,15 @@ const V4_MODELS = {
   ComplianceSaaSV4: 'SaaS',
   ComplianceMarketplaceV4: 'Marketplace',
   CompliancePlataformaVerticalV4: 'Plataformas Verticais',
+  CompliancePixOnly: 'Pix Only',
+  CompliancePix: 'Pix Only',
+  subseller_pj_lite_v4: 'Subseller PJ (V4)',
+  subseller_pf_v4_simplificado: 'Subseller PF (V4)',
+  subseller_pf: 'Subseller PF (legado)',
+  subseller_v2: 'Subseller PJ (legado)',
 };
 
-const V4_MODEL_KEYS = new Set(Object.keys(V4_MODELS));
-
-// Ordem visual dos segmentos (maior risco/complexidade primeiro)
+// Ordem visual: sellers principais primeiro (Gateway → MPE), depois Pix, depois Subsellers.
 const SEGMENT_ORDER = [
   'ComplianceGatewayV4',
   'ComplianceMarketplaceV4',
@@ -42,17 +47,28 @@ const SEGMENT_ORDER = [
   'ComplianceLinkPagamentoV4',
   'ComplianceMPEV4',
   'ComplianceSaaSV4',
+  'CompliancePixOnly',
+  'CompliancePix',
+  'subseller_pj_lite_v4',
+  'subseller_v2',
+  'subseller_pf_v4_simplificado',
+  'subseller_pf',
 ];
 
 export default function DocModeloDinamicoKYC({ templates = [], questionsByTemplate = {} }) {
+  // Inclui TODOS os templates de compliance ativos (V4 + subseller + Pix),
+  // não apenas os 9 modelos hard-coded. Tudo o que está em produção entra aqui.
   const v4Templates = useMemo(() => {
     const filtered = templates.filter(t =>
-      t.category === 'COMPLIANCE' && t.isActive !== false && V4_MODEL_KEYS.has(t.model)
+      t.category === 'COMPLIANCE' && t.isActive !== false && t.isArchived !== true && t.model
     );
     return filtered.sort((a, b) => {
       const ia = SEGMENT_ORDER.indexOf(a.model);
       const ib = SEGMENT_ORDER.indexOf(b.model);
-      return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib);
+      const ra = ia === -1 ? 999 : ia;
+      const rb = ib === -1 ? 999 : ib;
+      if (ra !== rb) return ra - rb;
+      return (a.name || '').localeCompare(b.name || '', 'pt-BR');
     });
   }, [templates]);
 
@@ -80,7 +96,7 @@ export default function DocModeloDinamicoKYC({ templates = [], questionsByTempla
       />
 
       {v4Templates.length === 0 ? (
-        <EmptyBox message="Nenhum dos 9 questionários Compliance V4 foi encontrado ativo." />
+        <EmptyBox message="Nenhum questionário de Compliance ativo foi encontrado no momento." />
       ) : (
         <>
           <Legend segmentLabels={analysis.segmentLabels} segmentIds={analysis.segmentIds} />
@@ -162,8 +178,8 @@ function analyzeTemplates(templates, questionsByTemplate) {
   const segmentLabels = {};
   templates.forEach(t => {
     segmentLabels[t.id] = {
-      short: V4_MODELS[t.model] || t.name || t.model || '—',
-      full: t.name || V4_MODELS[t.model] || t.model || 'Sem nome',
+      short: MODEL_LABELS[t.model] || t.name || t.model || '—',
+      full: t.name || MODEL_LABELS[t.model] || t.model || 'Sem nome',
       model: t.model,
     };
   });
@@ -342,12 +358,13 @@ function Header({ activeTemplates, stats, onDownloadPdf }) {
               </span>
             </div>
             <h1 className="text-3xl font-black tracking-tight">
-              Perguntas & Documentos <span className="text-[#5cf7cf]">por Segmento V4</span>
+              Perguntas & Documentos <span className="text-[#5cf7cf]">por Questionário</span>
             </h1>
             <p className="text-white/70 text-sm mt-2 max-w-3xl leading-relaxed">
-              Análise dos <strong className="text-white">9 questionários oficiais V4</strong>.
-              Primeiro o que é <strong className="text-white">comum a todos</strong>, depois as
-              <strong className="text-white"> perguntas e documentos específicos</strong> de cada segmento.
+              Análise de <strong className="text-white">todos os questionários de Compliance ativos</strong> hoje
+              (sellers V4 por segmento, Pix Only e Subsellers PJ/PF). Primeiro o que é
+              <strong className="text-white"> comum a todos</strong>, depois as
+              <strong className="text-white"> perguntas e documentos específicos</strong> de cada um.
             </p>
           </div>
 
@@ -361,7 +378,7 @@ function Header({ activeTemplates, stats, onDownloadPdf }) {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
-          <StatBox label="Questionários V4" value={activeTemplates.length} hint="dos 9 esperados" />
+          <StatBox label="Questionários ativos" value={activeTemplates.length} hint="sellers + pix + subsellers" />
           <StatBox label="Perguntas únicas" value={stats.totalQuestions || 0} />
           <StatBox label="Documentos únicos" value={stats.totalDocs || 0} />
           <StatBox label="Base comum" value={`${stats.commonQuestionsPct ?? 0}% Q · ${stats.commonDocsPct ?? 0}% D`} />
@@ -389,7 +406,7 @@ function Legend({ segmentLabels, segmentIds }) {
   return (
     <div className="bg-white border border-[#e8e8e8] rounded-xl p-4">
       <p className="text-[10px] uppercase tracking-wider text-[#1a1a1a]/50 font-bold mb-2.5">
-        Questionários V4 incluídos · {segmentIds.length}
+        Questionários incluídos · {segmentIds.length}
       </p>
       <div className="flex flex-wrap gap-1.5">
         {segmentIds.map(id => {

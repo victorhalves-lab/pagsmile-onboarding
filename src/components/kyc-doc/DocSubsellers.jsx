@@ -2,8 +2,14 @@ import React from 'react';
 import { S, H1, H2, H3, P, Li, Bold, Table, InfoBox, QuestionTable } from './DocHelpers';
 
 export default function DocSubsellers({ templates, questionsByTemplate }) {
-  const subsellerPJ = templates.find(t => t.model === 'subseller_v2');
-  const subsellerPF = templates.find(t => t.model === 'subseller_pf');
+  // Resolve os templates de subseller ativos hoje. Prioriza os modelos V4
+  // atualizados (lite_v4 / v4_simplificado) e cai pros legados como fallback.
+  const subsellerPJ =
+    templates.find(t => t.model === 'subseller_pj_lite_v4' && t.isActive !== false) ||
+    templates.find(t => t.model === 'subseller_v2' && t.isActive !== false);
+  const subsellerPF =
+    templates.find(t => t.model === 'subseller_pf_v4_simplificado' && t.isActive !== false) ||
+    templates.find(t => t.model === 'subseller_pf' && t.isActive !== false);
 
   // Segmentos V4 disponíveis no SubsellerSegmentSelector (paridade com sellers diretos)
   const SUBSELLER_PJ_SEGMENTS = [
