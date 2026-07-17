@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Check, Layers, Copy, FileText, Sparkles } from 'lucide-react';
@@ -24,6 +24,9 @@ export default function AddMccWithSourceModal({ isOpen, onClose, onConfirm }) {
   const [segments, setSegments] = useState([]);
   const [loadingSegments, setLoadingSegments] = useState(false);
   const [mccSearchOpen, setMccSearchOpen] = useState(false);
+  // Ref síncrono: distingue "usuário fechou sem escolher" de "MCCSearchModal
+  // chamou onClose logo após onSelect" (state batched — picked ainda é null).
+  const justPickedRef = useRef(false);
 
   // Reset ao abrir
   useEffect(() => {
@@ -33,6 +36,7 @@ export default function AddMccWithSourceModal({ isOpen, onClose, onConfirm }) {
       setSource('active');
       setSegmentName('');
       setMccSearchOpen(true);
+      justPickedRef.current = false;
     }
   }, [isOpen]);
 
@@ -50,6 +54,7 @@ export default function AddMccWithSourceModal({ isOpen, onClose, onConfirm }) {
   // Passo 1: usamos o MCCSearchModal real (já existente). Quando o usuário escolhe um
   // MCC, capturamos e avançamos pro passo 2 — em vez de fechar o fluxo todo.
   const handleMccPicked = (mccCode) => {
+    justPickedRef.current = true;
     setPicked({ mcc: String(mccCode), label: getMccLabel(mccCode) });
     setMccSearchOpen(false);
     setStep(2);
@@ -57,8 +62,10 @@ export default function AddMccWithSourceModal({ isOpen, onClose, onConfirm }) {
 
   const handleMccSearchClose = () => {
     setMccSearchOpen(false);
-    // Se o usuário fechou o search sem escolher nada, encerra o fluxo todo.
-    if (!picked) onClose();
+    // Se o MCCSearchModal chamou onClose logo após onSelect, justPickedRef
+    // já estará true (refs são síncronos) → NÃO fecha o fluxo.
+    // Só fecha o fluxo se o usuário fechou sem escolher nenhum MCC.
+    if (!justPickedRef.current && !picked) onClose();
   };
 
   const handleConfirm = () => {

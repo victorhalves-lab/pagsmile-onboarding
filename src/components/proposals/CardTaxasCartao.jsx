@@ -38,7 +38,9 @@ export default function CardTaxasCartao({ rates, onUpdateRates, selectedBrand, s
 
   const updateTaxa = (bandeira, faixa, value) => {
     const newTaxas = { ...taxas };
-    const setVal = (b, f, v) => { if (!newTaxas[b]) newTaxas[b] = {}; newTaxas[b][f] = v; };
+    // Cria NOVO objeto aninhado antes de modificar — evita mutação direta
+    // do state (que cause inconsistência em modo Multi-MCC).
+    const setVal = (b, f, v) => { newTaxas[b] = { ...(newTaxas[b] || {}) }; newTaxas[b][f] = v; };
     if (syncAll) { BANDEIRAS.forEach(b => setVal(b.id, faixa, value)); }
     else { setVal(bandeira, faixa, value); }
     onUpdateRates({ ...rates, cartao: newTaxas });
