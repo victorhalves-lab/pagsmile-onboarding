@@ -70,10 +70,22 @@ export default function Layout({ children, currentPageName }) {
   const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
   const isPublicRoute = isPublicPath(pathname);
 
-  // App aberto — sem login necessário
-  const user = null;
-  const isAuthenticated = true;
-  const isAdmin = true;
+  const { data: authData } = useQuery({
+    queryKey: ['user'],
+    queryFn: async () => {
+      try {
+        const user = await base44.auth.me();
+        return { user, isAuthenticated: true };
+      } catch (error) {
+        return { user: null, isAuthenticated: false };
+      }
+    },
+    enabled: !isPublicRoute,
+  });
+
+  const user = isPublicRoute ? null : authData?.user;
+  const isAuthenticated = isPublicRoute ? false : !!authData?.isAuthenticated;
+  const isAdmin = user?.role === 'admin';
 
   const publicPages = [
     'IntroducerLandingPage','ContratoPublico','PropostaPadraoPublica','PropostaPixPublica',

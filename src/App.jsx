@@ -4,24 +4,23 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
 import NavigationTracker from '@/lib/NavigationTracker'
 import { pagesConfig } from './pages.config'
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation, Navigate } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
-import { AuthProvider, useAuth } from '@/lib/AuthContext';
+import { AuthProvider } from '@/lib/AuthContext';
 import { LanguageProvider } from '@/lib/i18n/LanguageContext';
 import { PermissionsProvider } from '@/lib/PermissionsProvider';
-import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ErrorBoundary from '@/components/ErrorBoundary';
-import { base44 } from '@/api/base44Client';
+import ProtectedRoute from '@/components/ProtectedRoute';
 // ── Eager imports: components that MUST be available immediately on every render ──
 // (auth screens, error states, redirect helpers — small components, no async load benefit)
+import Login from './pages/Login';
+import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import LegacyComplianceRedirect from './pages/LegacyComplianceRedirect';
 import ComplianceDocOnlyRedirect from './pages/ComplianceDocOnlyRedirect';
 import PublicSlugRedirect from './pages/PublicSlugRedirect';
 import SlugRedirect from './pages/SlugRedirect';
-import AccessDenied from './components/AccessDenied';
-import AdminLoginScreen from './components/admin/AdminLoginScreen';
-import TwoFactorEnrollScreen from './components/admin/TwoFactorEnrollScreen';
-import TwoFactorLoginScreen from './components/admin/TwoFactorLoginScreen';
 
 // ── Lazy imports: heavy pages loaded only when their route is visited ──
 // Each page becomes its own bundle chunk → smaller initial download.
@@ -137,6 +136,12 @@ import { PUBLIC_PATHS, isPublicPath } from '@/lib/publicRoutes';
 // --- Public pages are rendered without auth checks ---
 const PublicRoutes = () => (
   <Routes>
+    {/* Auth pages — standalone, no layout wrapper */}
+    <Route path="/login" element={<Login />} />
+    <Route path="/register" element={<Register />} />
+    <Route path="/forgot-password" element={<ForgotPassword />} />
+    <Route path="/reset-password" element={<ResetPassword />} />
+
     {/* Propostas Públicas */}
     {['PropostaPublica'].map(name => {
       const Page = Pages[name];
@@ -226,16 +231,10 @@ const PublicRoutes = () => (
   </Routes>
 );
 
-// --- Admin pages require authentication ---
-// ALLOWED ROLES: only users explicitly invited with these roles can access admin pages.
-// Users who self-register via Gmail on a public app get role 'user' and are BLOCKED.
-const ALLOWED_ADMIN_ROLES = new Set(['admin', 'introducer']);
-
-const ADMIN_TOKEN_KEY = 'base44_admin_jwt';
-
 const AuthenticatedApp = () => {
   return (
     <Routes>
+      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
       <Route path="/" element={<LayoutWrapper currentPageName={mainPageKey}><MainPage /></LayoutWrapper>} />
       {Object.entries(Pages).map(([path, Page]) => {
         // Skip pages that are handled by PublicRoutes
@@ -319,7 +318,8 @@ const AuthenticatedApp = () => {
       <Route path="/GlobalComoFunciona" element={<LayoutWrapper currentPageName="GlobalComoFunciona"><GlobalComoFunciona /></LayoutWrapper>} />
       <Route path="/GestaoSubsellerInfoLinks" element={<LayoutWrapper currentPageName="GestaoSubsellerInfoLinks"><GestaoSubsellerInfoLinks /></LayoutWrapper>} />
       <Route path="/SubsellerInfoRecebidos" element={<LayoutWrapper currentPageName="SubsellerInfoRecebidos"><SubsellerInfoRecebidos /></LayoutWrapper>} />
-      <Route path="*" element={<PageNotFound />} />
+        <Route path="*" element={<PageNotFound />} />
+      </Route>
     </Routes>
   );
 };
