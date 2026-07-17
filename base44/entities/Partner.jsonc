@@ -9,28 +9,28 @@
     "isPrincipal": {
       "type": "boolean",
       "default": false,
-      "description": "Indica se este \u00e9 o parceiro principal para c\u00e1lculo de taxas base"
+      "description": "Indica se este é o parceiro principal para cálculo de taxas base"
     },
     "isActive": {
       "type": "boolean",
       "default": true,
-      "description": "Se o parceiro est\u00e1 ativo"
+      "description": "Se o parceiro está ativo"
     },
     "modelo": {
       "type": "string",
-      "description": "Modelo de precifica\u00e7\u00e3o (ex: MDR fixo bandeira\u00d7MCC, Interchange + markup)"
+      "description": "Modelo de precificação (ex: MDR fixo bandeira×MCC, Interchange + markup)"
     },
     "parcelasMax": {
       "type": "string",
-      "description": "Parcelas m\u00e1ximas suportadas (ex: 12x, 21x, 24x)"
+      "description": "Parcelas máximas suportadas (ex: 12x, 21x, 24x)"
     },
     "notes": {
       "type": "string",
-      "description": "Observa\u00e7\u00f5es sobre o parceiro"
+      "description": "Observações sobre o parceiro"
     },
     "transactionFee": {
       "type": "number",
-      "description": "Fee por transa\u00e7\u00e3o (R$)"
+      "description": "Fee por transação (R$)"
     },
     "antifraudCost": {
       "type": "number",
@@ -42,25 +42,25 @@
     },
     "antecipacaoInfo": {
       "type": "string",
-      "description": "Informa\u00e7\u00f5es sobre antecipa\u00e7\u00e3o (texto livre)"
+      "description": "Informações sobre antecipação (texto livre)"
     },
     "percentualAntecipacao": {
       "type": "number",
-      "description": "Taxa de antecipa\u00e7\u00e3o global do parceiro (%)"
+      "description": "Taxa de antecipação global do parceiro (%)"
     },
     "mdrByMcc": {
       "type": "array",
-      "description": "Taxas MDR por MCC, cada item cont\u00e9m MCC, descri\u00e7\u00e3o e taxas por bandeira",
+      "description": "Taxas MDR por MCC, cada item contém MCC, descrição e taxas por bandeira",
       "items": {
         "type": "object",
         "properties": {
           "mccCode": {
             "type": "string",
-            "description": "C\u00f3digo MCC (ex: 4816, 5814, Demais)"
+            "description": "Código MCC (ex: 4816, 5814, Demais)"
           },
           "mccDescription": {
             "type": "string",
-            "description": "Descri\u00e7\u00e3o do MCC (ex: Rede de Computadores)"
+            "description": "Descrição do MCC (ex: Rede de Computadores)"
           },
           "rates": {
             "type": "object",
@@ -92,27 +92,5 @@
   },
   "required": [
     "name"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

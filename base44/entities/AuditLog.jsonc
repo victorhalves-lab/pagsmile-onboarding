@@ -21,28 +21,28 @@
         "REJECTION",
         "VALIDATION"
       ],
-      "description": "Tipo de a\u00e7\u00e3o realizada"
+      "description": "Tipo de ação realizada"
     },
     "actionDescription": {
       "type": "string",
-      "description": "Descri\u00e7\u00e3o detalhada da a\u00e7\u00e3o"
+      "description": "Descrição detalhada da ação"
     },
     "changedBy": {
       "type": "string",
-      "description": "E-mail ou ID do usu\u00e1rio que realizou a a\u00e7\u00e3o"
+      "description": "E-mail ou ID do usuário que realizou a ação"
     },
     "changeDate": {
       "type": "string",
       "format": "date-time",
-      "description": "Data e hora da a\u00e7\u00e3o"
+      "description": "Data e hora da ação"
     },
     "details": {
       "type": "object",
-      "description": "Detalhes adicionais sobre a mudan\u00e7a (ex: valores antes/depois)"
+      "description": "Detalhes adicionais sobre a mudança (ex: valores antes/depois)"
     },
     "ipAddress": {
       "type": "string",
-      "description": "Endere\u00e7o IP de onde a a\u00e7\u00e3o foi realizada"
+      "description": "Endereço IP de onde a ação foi realizada"
     },
     "userAgent": {
       "type": "string",
@@ -54,27 +54,5 @@
     "entityId",
     "actionType",
     "changedBy"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

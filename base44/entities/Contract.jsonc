@@ -37,7 +37,7 @@
     },
     "publicSlug": {
       "type": "string",
-      "description": "Slug p\u00fablico personalizado para URL amig\u00e1vel"
+      "description": "Slug público personalizado para URL amigável"
     },
     "ratesSourceType": {
       "type": "string",
@@ -281,27 +281,5 @@
   "required": [
     "clientCnpj",
     "status"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

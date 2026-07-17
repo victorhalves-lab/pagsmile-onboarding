@@ -1,11 +1,11 @@
 {
   "name": "Bloqueio",
   "type": "object",
-  "description": "[V5.2] Cat\u00e1logo can\u00f4nico dos ~72 bloqueios V5.2 (universais V4 evolu\u00eddos + Patch Financeiro V5.1 + PLD/FT V5.1 + 38 B-segmento-* dos 13 segmentos). Substitui a tabela hardcoded BLOCK_EXPLANATIONS de V4. Inclui mapeamento de datasets que alimentam + vari\u00e1veis V-* + decis\u00e3o associada + categoria de exce\u00e7\u00e3o. 10 bloqueios s\u00e3o ABSOLUTOS (sem exce\u00e7\u00e3o).",
+  "description": "[V5.2] Catálogo canônico dos ~72 bloqueios V5.2 (universais V4 evoluídos + Patch Financeiro V5.1 + PLD/FT V5.1 + 38 B-segmento-* dos 13 segmentos). Substitui a tabela hardcoded BLOCK_EXPLANATIONS de V4. Inclui mapeamento de datasets que alimentam + variáveis V-* + decisão associada + categoria de exceção. 10 bloqueios são ABSOLUTOS (sem exceção).",
   "properties": {
     "codigo": {
       "type": "string",
-      "description": "C\u00f3digo can\u00f4nico (B01-B10 universais V4, B-FIN-1 a B-FIN-4 Patch, B-PLD-1 a B-PLD-8, B-{SEGMENTO}-{TIPO}-N segmento-espec\u00edficos). Cr\u00edticos absolutos t\u00eam sufixo -CRIT (ex: B-MKT-PROD-CRIT-1, B-GW-PCI-CRIT-1, B-PV-LGPD-1-CRIT, B-LOC-SETOR-CRIT-1, B-CB-PAIS-CRIT-1, B-DS-FORN-CRIT-1)."
+      "description": "Código canônico (B01-B10 universais V4, B-FIN-1 a B-FIN-4 Patch, B-PLD-1 a B-PLD-8, B-{SEGMENTO}-{TIPO}-N segmento-específicos). Críticos absolutos têm sufixo -CRIT (ex: B-MKT-PROD-CRIT-1, B-GW-PCI-CRIT-1, B-PV-LGPD-1-CRIT, B-LOC-SETOR-CRIT-1, B-CB-PAIS-CRIT-1, B-DS-FORN-CRIT-1)."
     },
     "categoria": {
       "type": "string",
@@ -43,11 +43,11 @@
         "CNJ",
         "MORF"
       ],
-      "description": "Categoria do bloqueio. Universais (FIN, DOC, IDX, REP, KYC, KYB, CRC, CAF, BDC, SAN, PEP, FRA, OPE, NUC, ENRICH, PLD, CB, INT, CNJ) + segmento-espec\u00edficos (EC, MKT, GW, SAAS, INFO, PV, TUR, EVT, B2B, DS, LOC, EDU, MORF)."
+      "description": "Categoria do bloqueio. Universais (FIN, DOC, IDX, REP, KYC, KYB, CRC, CAF, BDC, SAN, PEP, FRA, OPE, NUC, ENRICH, PLD, CB, INT, CNJ) + segmento-específicos (EC, MKT, GW, SAAS, INFO, PV, TUR, EVT, B2B, DS, LOC, EDU, MORF)."
     },
     "titulo": {
       "type": "string",
-      "description": "T\u00edtulo curto do bloqueio"
+      "description": "Título curto do bloqueio"
     },
     "severidade": {
       "type": "string",
@@ -57,7 +57,7 @@
         "CONDICAO",
         "ALERTA"
       ],
-      "description": "BLOQUEIO=recusa direta, ESCALACAO=manual review obrigat\u00f3ria, CONDICAO=aprova com condi\u00e7\u00e3o, ALERTA=informativo"
+      "description": "BLOQUEIO=recusa direta, ESCALACAO=manual review obrigatória, CONDICAO=aprova com condição, ALERTA=informativo"
     },
     "decisao_padrao": {
       "type": "string",
@@ -68,12 +68,12 @@
         "alerta_informativo",
         "monitoramento_intensivo"
       ],
-      "description": "[V5.2] Decis\u00e3o associada padr\u00e3o quando este bloqueio dispara. Sobrescreve o score num\u00e9rico."
+      "description": "[V5.2] Decisão associada padrão quando este bloqueio dispara. Sobrescreve o score numérico."
     },
     "nucleo_duro_regulatorio": {
       "type": "boolean",
       "default": false,
-      "description": "[V5.2] Se true, pertence ao n\u00facleo duro regulat\u00f3rio que N\u00c3O ADMITE EXCE\u00c7\u00c3O de nenhum papel (nem Compliance Officer). Os 10 absolutos: B03, B04, B10, B-CB-1, B-INT-1, B-MKT-PROD-CRIT-1, B-PV-LGPD-1-CRIT, B-GW-PCI-CRIT-1, B-LOC-SETOR-CRIT-1, B-CB-PAIS-CRIT-1."
+      "description": "[V5.2] Se true, pertence ao núcleo duro regulatório que NÃO ADMITE EXCEÇÃO de nenhum papel (nem Compliance Officer). Os 10 absolutos: B03, B04, B10, B-CB-1, B-INT-1, B-MKT-PROD-CRIT-1, B-PV-LGPD-1-CRIT, B-GW-PCI-CRIT-1, B-LOC-SETOR-CRIT-1, B-CB-PAIS-CRIT-1."
     },
     "tiers_aplicaveis": {
       "type": "array",
@@ -94,59 +94,59 @@
       "items": {
         "type": "string"
       },
-      "description": "Segmentos onde este bloqueio \u00e9 avaliado. Array vazio ou ['all'] = todos os segmentos."
+      "description": "Segmentos onde este bloqueio é avaliado. Array vazio ou ['all'] = todos os segmentos."
     },
     "morfologias_aplicaveis": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "[V5.2] Morfologias espec\u00edficas (ex: ['A'] para B-PV-LGPD-1-CRIT que s\u00f3 aplica em PV Sa\u00fade Morf. A). ['all'] = qualquer morfologia."
+      "description": "[V5.2] Morfologias específicas (ex: ['A'] para B-PV-LGPD-1-CRIT que só aplica em PV Saúde Morf. A). ['all'] = qualquer morfologia."
     },
     "capabilities_relacionadas": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "Capabilities can\u00f4nicas V5.2 que disparam este bloqueio (splits/subseller, crossborder, recurrence, cap_financial_capacity_validation)"
+      "description": "Capabilities canônicas V5.2 que disparam este bloqueio (splits/subseller, crossborder, recurrence, cap_financial_capacity_validation)"
     },
     "datasets_consumidos": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "[V5.2] C\u00f3digos de Dataset que ALIMENTAM este bloqueio (ex: ['financial_market', 'ecf'] para B-FIN-1). Usado para mostrar trilha de evid\u00eancia na Aba 2."
+      "description": "[V5.2] Códigos de Dataset que ALIMENTAM este bloqueio (ex: ['financial_market', 'ecf'] para B-FIN-1). Usado para mostrar trilha de evidência na Aba 2."
     },
     "variaveis_alimentadoras": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "[V5.2] Vari\u00e1veis V-* que disparam este bloqueio (ex: ['v_financial_coherence'])."
+      "description": "[V5.2] Variáveis V-* que disparam este bloqueio (ex: ['v_financial_coherence'])."
     },
     "trigger_logic": {
       "type": "string",
-      "description": "Pseudo-c\u00f3digo da regra de disparo (ex: 'tpv_anual_declarado > capital_social * 12 AND patch_status != verde')"
+      "description": "Pseudo-código da regra de disparo (ex: 'tpv_anual_declarado > capital_social * 12 AND patch_status != verde')"
     },
     "mensagem_analista": {
       "type": "string",
-      "description": "Mensagem t\u00e9cnica exibida no painel do analista (Aba 2 \u2014 Bloqueios Detalhados) com causa raiz e a\u00e7\u00e3o recomendada"
+      "description": "Mensagem técnica exibida no painel do analista (Aba 2 — Bloqueios Detalhados) com causa raiz e ação recomendada"
     },
     "mensagem_cliente": {
       "type": "string",
-      "description": "Mensagem amig\u00e1vel ao cliente (quando aplic\u00e1vel \u2014 alguns bloqueios s\u00e3o internos)"
+      "description": "Mensagem amigável ao cliente (quando aplicável — alguns bloqueios são internos)"
     },
     "exibe_para_cliente": {
       "type": "boolean",
       "default": false,
-      "description": "Se true, a mensagem_cliente \u00e9 mostrada no email de recusa. Default false (bloqueio interno)."
+      "description": "Se true, a mensagem_cliente é mostrada no email de recusa. Default false (bloqueio interno)."
     },
     "documentos_para_resolver": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "Lista de IDs de DocumentType que, se enviados pelo cliente, podem resolver o bloqueio (usado em fluxo de Pend\u00eancias)"
+      "description": "Lista de IDs de DocumentType que, se enviados pelo cliente, podem resolver o bloqueio (usado em fluxo de Pendências)"
     },
     "exception_categoria": {
       "type": "string",
@@ -159,39 +159,39 @@
         "cat_5_monitoramento_intensivo"
       ],
       "default": "nenhuma",
-      "description": "Categoria de exce\u00e7\u00e3o V5.2 que pode liberar este bloqueio via aprova\u00e7\u00e3o manual. 'nenhuma' = bloqueio absoluto."
+      "description": "Categoria de exceção V5.2 que pode liberar este bloqueio via aprovação manual. 'nenhuma' = bloqueio absoluto."
     },
     "fundamentacao_regulatoria": {
       "type": "string",
-      "description": "[V5.2] Fundamenta\u00e7\u00e3o regulat\u00f3ria do bloqueio (ex: 'Lei 13.810/2019 + Lei 9.613/1998 Art. 11')"
+      "description": "[V5.2] Fundamentação regulatória do bloqueio (ex: 'Lei 13.810/2019 + Lei 9.613/1998 Art. 11')"
     },
     "tpv_cap_inicial_pct": {
       "type": "number",
-      "description": "[V5.2] % de cap inicial de TPV quando bloqueio \u00e9 mitigado via Categoria 5 (monitoramento intensivo)"
+      "description": "[V5.2] % de cap inicial de TPV quando bloqueio é mitigado via Categoria 5 (monitoramento intensivo)"
     },
     "rolling_reserve_adicional_pct": {
       "type": "number",
-      "description": "[V5.2] % adicional de Rolling Reserve quando bloqueio \u00e9 mitigado via Cat 5"
+      "description": "[V5.2] % adicional de Rolling Reserve quando bloqueio é mitigado via Cat 5"
     },
     "gatilhos_off_boarding_agil": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "[V5.2] Lista de gatilhos que ativam off-boarding \u00e1gil 24-48h quando bloqueio \u00e9 mitigado via Cat 5"
+      "description": "[V5.2] Lista de gatilhos que ativam off-boarding ágil 24-48h quando bloqueio é mitigado via Cat 5"
     },
     "nome_canonico_anterior": {
       "type": "string",
-      "description": "[V5.2] Para os 7 mapeamentos de nomenclatura (find&replace): nome usado nos docs originais antes da consolida\u00e7\u00e3o V5.2 (ex: 'B-MKT-PROD-1' para 'B-MKT-PROD-CRIT-1')."
+      "description": "[V5.2] Para os 7 mapeamentos de nomenclatura (find&replace): nome usado nos docs originais antes da consolidação V5.2 (ex: 'B-MKT-PROD-1' para 'B-MKT-PROD-CRIT-1')."
     },
     "ativo": {
       "type": "boolean",
       "default": true,
-      "description": "Se false, o bloqueio fica catalogado mas n\u00e3o dispara no pipeline (kill switch)"
+      "description": "Se false, o bloqueio fica catalogado mas não dispara no pipeline (kill switch)"
     },
     "fonte_documento": {
       "type": "string",
-      "description": "Refer\u00eancia ao documento V5.1/V5.2 que define este bloqueio (ex: 'DOC5 Cap. 32 + DELTA_SEGMENTOS Cap. 4')"
+      "description": "Referência ao documento V5.1/V5.2 que define este bloqueio (ex: 'DOC5 Cap. 32 + DELTA_SEGMENTOS Cap. 4')"
     }
   },
   "required": [
@@ -199,27 +199,5 @@
     "categoria",
     "titulo",
     "severidade"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

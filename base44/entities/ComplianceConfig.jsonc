@@ -4,11 +4,11 @@
   "properties": {
     "configKey": {
       "type": "string",
-      "description": "Chave \u00fanica da configura\u00e7\u00e3o (ex: face_match_threshold, rejection_reasons_visible)"
+      "description": "Chave única da configuração (ex: face_match_threshold, rejection_reasons_visible)"
     },
     "configValue": {
       "type": "string",
-      "description": "Valor da configura\u00e7\u00e3o (string, ser\u00e1 parseado conforme o tipo)"
+      "description": "Valor da configuração (string, será parseado conforme o tipo)"
     },
     "configType": {
       "type": "string",
@@ -30,11 +30,11 @@
         "REGULATORY",
         "GENERAL"
       ],
-      "description": "Categoria da configura\u00e7\u00e3o"
+      "description": "Categoria da configuração"
     },
     "description": {
       "type": "string",
-      "description": "Descri\u00e7\u00e3o leg\u00edvel da configura\u00e7\u00e3o"
+      "description": "Descrição legível da configuração"
     },
     "isActive": {
       "type": "boolean",
@@ -45,27 +45,5 @@
     "configKey",
     "configValue",
     "category"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

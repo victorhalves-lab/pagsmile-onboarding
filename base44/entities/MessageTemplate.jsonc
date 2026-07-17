@@ -38,34 +38,12 @@
     "isActive": {
       "type": "boolean",
       "default": true,
-      "description": "Se o template est\u00e1 ativo"
+      "description": "Se o template está ativo"
     }
   },
   "required": [
     "name",
     "body",
     "type"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

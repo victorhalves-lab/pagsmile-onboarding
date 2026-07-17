@@ -8,11 +8,11 @@
     },
     "onboardingLinkCode": {
       "type": "string",
-      "description": "C\u00f3digo \u00fanico do link"
+      "description": "Código único do link"
     },
     "sessionId": {
       "type": "string",
-      "description": "ID \u00fanico da sess\u00e3o do usu\u00e1rio"
+      "description": "ID único da sessão do usuário"
     },
     "eventType": {
       "type": "string",
@@ -28,11 +28,11 @@
     },
     "pageName": {
       "type": "string",
-      "description": "Nome da p\u00e1gina (ex: ComplianceOnboardingStart, CompliancePixOnly, Step1, Step2...)"
+      "description": "Nome da página (ex: ComplianceOnboardingStart, CompliancePixOnly, Step1, Step2...)"
     },
     "stepNumber": {
       "type": "number",
-      "description": "N\u00famero do step atual (1-11 para Pix, 1-19 para Full)"
+      "description": "Número do step atual (1-11 para Pix, 1-19 para Full)"
     },
     "totalSteps": {
       "type": "number",
@@ -48,11 +48,11 @@
     },
     "merchantId": {
       "type": "string",
-      "description": "ID do merchant se j\u00e1 criado"
+      "description": "ID do merchant se já criado"
     },
     "onboardingCaseId": {
       "type": "string",
-      "description": "ID do caso de onboarding se j\u00e1 criado"
+      "description": "ID do caso de onboarding se já criado"
     },
     "metadata": {
       "type": "object",
@@ -81,27 +81,5 @@
   },
   "required": [
     "eventType"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

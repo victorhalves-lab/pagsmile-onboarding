@@ -40,15 +40,15 @@
         "MANUAL_REVIEW",
         "REJECTED"
       ],
-      "description": "Decis\u00e3o da IA"
+      "description": "Decisão da IA"
     },
     "recommendation": {
       "type": "string",
-      "description": "Recomenda\u00e7\u00e3o resumida"
+      "description": "Recomendação resumida"
     },
     "justification": {
       "type": "string",
-      "description": "Justificativa detalhada da an\u00e1lise"
+      "description": "Justificativa detalhada da análise"
     },
     "breakdown": {
       "type": "object",
@@ -90,14 +90,14 @@
       "items": {
         "type": "string"
       },
-      "description": "Red flags cr\u00edticos"
+      "description": "Red flags críticos"
     },
     "data_sources_used": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "Fontes de dados utilizadas na an\u00e1lise"
+      "description": "Fontes de dados utilizadas na análise"
     },
     "caf_data_considered": {
       "type": "object",
@@ -109,14 +109,14 @@
     },
     "questionnaire_data_considered": {
       "type": "object",
-      "description": "Dados do question\u00e1rio considerados"
+      "description": "Dados do questionário considerados"
     },
     "processing_time_ms": {
       "type": "number"
     },
     "model_version": {
       "type": "string",
-      "description": "Vers\u00e3o do modelo/prompt usado"
+      "description": "Versão do modelo/prompt usado"
     },
     "analyst_feedback": {
       "type": "string",
@@ -125,7 +125,7 @@
         "disagree",
         "partial"
       ],
-      "description": "Feedback do analista sobre a an\u00e1lise"
+      "description": "Feedback do analista sobre a análise"
     },
     "analyst_feedback_notes": {
       "type": "string"
@@ -133,27 +133,5 @@
   },
   "required": [
     "onboarding_case_id"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

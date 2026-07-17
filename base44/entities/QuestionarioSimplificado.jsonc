@@ -4,7 +4,7 @@
   "properties": {
     "protocolo": {
       "type": "string",
-      "description": "C\u00f3digo \u00fanico do question\u00e1rio simplificado (PAG-QS-YYYY-NNNNN)"
+      "description": "Código único do questionário simplificado (PAG-QS-YYYY-NNNNN)"
     },
     "status": {
       "type": "string",
@@ -14,11 +14,11 @@
         "convertido"
       ],
       "default": "novo",
-      "description": "Status do question\u00e1rio"
+      "description": "Status do questionário"
     },
     "nome_empresa": {
       "type": "string",
-      "description": "Raz\u00e3o Social ou Nome Fantasia"
+      "description": "Razão Social ou Nome Fantasia"
     },
     "cnpj": {
       "type": "string",
@@ -43,7 +43,7 @@
     },
     "taxas_credito_1x": {
       "type": "object",
-      "description": "Taxas de cr\u00e9dito \u00e0 vista por bandeira",
+      "description": "Taxas de crédito à vista por bandeira",
       "properties": {
         "visa": {
           "type": "number"
@@ -61,7 +61,7 @@
     },
     "taxas_credito_2_6x": {
       "type": "object",
-      "description": "Taxas de cr\u00e9dito 2-6x por bandeira",
+      "description": "Taxas de crédito 2-6x por bandeira",
       "properties": {
         "visa": {
           "type": "number"
@@ -79,7 +79,7 @@
     },
     "taxas_credito_7_12x": {
       "type": "object",
-      "description": "Taxas de cr\u00e9dito 7-12x por bandeira",
+      "description": "Taxas de crédito 7-12x por bandeira",
       "properties": {
         "visa": {
           "type": "number"
@@ -98,7 +98,7 @@
     "usa_antecipacao": {
       "type": "boolean",
       "default": false,
-      "description": "Se utiliza antecipa\u00e7\u00e3o"
+      "description": "Se utiliza antecipação"
     },
     "percentual_antecipacao": {
       "type": "number",
@@ -106,19 +106,19 @@
     },
     "taxa_antecipacao": {
       "type": "number",
-      "description": "Taxa de antecipa\u00e7\u00e3o (% a.m.)"
+      "description": "Taxa de antecipação (% a.m.)"
     },
     "distribuicao_avista": {
       "type": "number",
-      "description": "Distribui\u00e7\u00e3o de pagamentos \u00e0 vista (%)"
+      "description": "Distribuição de pagamentos à vista (%)"
     },
     "distribuicao_2_6x": {
       "type": "number",
-      "description": "Distribui\u00e7\u00e3o de pagamentos 2-6x (%)"
+      "description": "Distribuição de pagamentos 2-6x (%)"
     },
     "distribuicao_7_12x": {
       "type": "number",
-      "description": "Distribui\u00e7\u00e3o de pagamentos 7-12x (%)"
+      "description": "Distribuição de pagamentos 7-12x (%)"
     },
     "pix_tipo": {
       "type": "string",
@@ -127,7 +127,7 @@
         "fixo"
       ],
       "default": "percentual",
-      "description": "Tipo de cobran\u00e7a PIX"
+      "description": "Tipo de cobrança PIX"
     },
     "pix_valor": {
       "type": "number",
@@ -140,11 +140,11 @@
     "usa_fee_transacao": {
       "type": "boolean",
       "default": false,
-      "description": "Se paga fee fixo por transa\u00e7\u00e3o"
+      "description": "Se paga fee fixo por transação"
     },
     "fee_transacao_centavos": {
       "type": "number",
-      "description": "Valor do fee por transa\u00e7\u00e3o em centavos"
+      "description": "Valor do fee por transação em centavos"
     },
     "lead_id": {
       "type": "string",
@@ -152,7 +152,7 @@
     },
     "onboarding_link_code": {
       "type": "string",
-      "description": "C\u00f3digo do link de onboarding usado"
+      "description": "Código do link de onboarding usado"
     }
   },
   "required": [
@@ -162,27 +162,5 @@
     "contato_email",
     "contato_telefone",
     "contato_cargo"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

@@ -4,7 +4,7 @@
   "properties": {
     "onboardingCaseId": {
       "type": "string",
-      "description": "ID do OnboardingCase ao qual este registro banc\u00e1rio est\u00e1 vinculado"
+      "description": "ID do OnboardingCase ao qual este registro bancário está vinculado"
     },
     "merchantId": {
       "type": "string",
@@ -16,7 +16,7 @@
     },
     "token": {
       "type": "string",
-      "description": "Token \u00fanico do link p\u00fablico (N\u00c3O exp\u00f5e o ID da case)"
+      "description": "Token único do link público (NÃO expõe o ID da case)"
     },
     "status": {
       "type": "string",
@@ -40,7 +40,7 @@
     },
     "banco": {
       "type": "string",
-      "description": "Nome ou c\u00f3digo do banco"
+      "description": "Nome ou código do banco"
     },
     "agencia": {
       "type": "string"
@@ -62,27 +62,5 @@
   "required": [
     "onboardingCaseId",
     "token"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

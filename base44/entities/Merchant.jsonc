@@ -8,7 +8,7 @@
         "PF",
         "PJ"
       ],
-      "description": "Tipo de merchant: Pessoa F\u00edsica ou Pessoa Jur\u00eddica"
+      "description": "Tipo de merchant: Pessoa Física ou Pessoa Jurídica"
     },
     "cpfCnpj": {
       "type": "string",
@@ -16,7 +16,7 @@
     },
     "fullName": {
       "type": "string",
-      "description": "Nome completo (PF) ou Raz\u00e3o Social (PJ)"
+      "description": "Nome completo (PF) ou Razão Social (PJ)"
     },
     "companyName": {
       "type": "string",
@@ -42,13 +42,13 @@
     },
     "motherName": {
       "type": "string",
-      "description": "Nome da m\u00e3e (apenas para PF)"
+      "description": "Nome da mãe (apenas para PF)"
     },
     "onboardingStatus": {
       "type": "string",
       "enum": [
         "Pendente",
-        "Em An\u00e1lise",
+        "Em Análise",
         "Aprovado",
         "Manual",
         "Recusado"
@@ -66,10 +66,10 @@
         "type": "string",
         "enum": [
           "Pix",
-          "Cart\u00e3o"
+          "Cartão"
         ]
       },
-      "description": "Servi\u00e7os de pagamento solicitados pelo merchant"
+      "description": "Serviços de pagamento solicitados pelo merchant"
     },
     "parentMerchantId": {
       "type": "string",
@@ -78,7 +78,7 @@
     "isSubseller": {
       "type": "boolean",
       "default": false,
-      "description": "Indica se este Merchant \u00e9 um subseller vinculado a um seller principal"
+      "description": "Indica se este Merchant é um subseller vinculado a um seller principal"
     }
   },
   "required": [
@@ -86,27 +86,5 @@
     "cpfCnpj",
     "fullName",
     "email"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

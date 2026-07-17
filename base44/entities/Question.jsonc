@@ -8,7 +8,7 @@
     },
     "order": {
       "type": "number",
-      "description": "Ordem de exibi\u00e7\u00e3o da pergunta no question\u00e1rio"
+      "description": "Ordem de exibição da pergunta no questionário"
     },
     "text": {
       "type": "string",
@@ -36,21 +36,21 @@
       "items": {
         "type": "string"
       },
-      "description": "Op\u00e7\u00f5es dispon\u00edveis (para SELECT e MULTI_SELECT)"
+      "description": "Opções disponíveis (para SELECT e MULTI_SELECT)"
     },
     "isRequired": {
       "type": "boolean",
       "default": false,
-      "description": "Indica se a pergunta \u00e9 obrigat\u00f3ria"
+      "description": "Indica se a pergunta é obrigatória"
     },
     "isLibraryQuestion": {
       "type": "boolean",
       "default": false,
-      "description": "Indica se \u00e9 uma pergunta da biblioteca reutiliz\u00e1vel"
+      "description": "Indica se é uma pergunta da biblioteca reutilizável"
     },
     "conditionalLogic": {
       "type": "object",
-      "description": "L\u00f3gica condicional para exibi\u00e7\u00e3o da pergunta",
+      "description": "Lógica condicional para exibição da pergunta",
       "properties": {
         "dependsOn": {
           "type": "string"
@@ -111,7 +111,7 @@
     },
     "sourceEntityPath": {
       "type": "string",
-      "description": "Caminho para pr\u00e9-preenchimento"
+      "description": "Caminho para pré-preenchimento"
     },
     "categoria_funcional": {
       "type": "string",
@@ -142,15 +142,15 @@
         "modalidade_d_derivado",
         "modalidade_e_documento_upload"
       ],
-      "description": "[V5.2] Modalidade de coleta \u2014 A: confirmar dado BDC, B: input h\u00edbrido (sugere mas aceita override), C: input puro (sem BDC), D: derivado automaticamente, E: upload de documento."
+      "description": "[V5.2] Modalidade de coleta — A: confirmar dado BDC, B: input híbrido (sugere mas aceita override), C: input puro (sem BDC), D: derivado automaticamente, E: upload de documento."
     },
     "cross_check_bdc": {
       "type": "object",
-      "description": "[V5.2] Configura\u00e7\u00e3o de cross-check com BDC quando aplic\u00e1vel (Modalidade A/B).",
+      "description": "[V5.2] Configuração de cross-check com BDC quando aplicável (Modalidade A/B).",
       "properties": {
         "dataset": {
           "type": "string",
-          "description": "C\u00f3digo can\u00f4nico do dataset BDC (ex: 'basic_data', 'kyc_owners')"
+          "description": "Código canônico do dataset BDC (ex: 'basic_data', 'kyc_owners')"
         },
         "campo_bdc": {
           "type": "string",
@@ -158,7 +158,7 @@
         },
         "tolerancia_divergencia_pct": {
           "type": "number",
-          "description": "% de toler\u00e2ncia (0-1) para valores num\u00e9ricos antes de marcar diverg\u00eancia"
+          "description": "% de tolerância (0-1) para valores numéricos antes de marcar divergência"
         },
         "field_id_cv16": {
           "type": "string",
@@ -171,25 +171,25 @@
       "items": {
         "type": "string"
       },
-      "description": "[V5.2] C\u00f3digos das vari\u00e1veis V-* (V01-V60+) que esta pergunta alimenta no Risk Score."
+      "description": "[V5.2] Códigos das variáveis V-* (V01-V60+) que esta pergunta alimenta no Risk Score."
     },
     "b_series_disparados": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "[V5.2] C\u00f3digos de Bloqueio B-* que esta pergunta pode disparar (avalia\u00e7\u00e3o real-time durante o fluxo)."
+      "description": "[V5.2] Códigos de Bloqueio B-* que esta pergunta pode disparar (avaliação real-time durante o fluxo)."
     },
     "norma_regulatoria": {
       "type": "string",
-      "description": "[V5.2] Fundamenta\u00e7\u00e3o regulat\u00f3ria que justifica esta pergunta (ex: 'Circ. BCB 3.978 Art. 19', 'Lei 9.613/1998 Art. 11', 'Resol. BCB 403/2024')."
+      "description": "[V5.2] Fundamentação regulatória que justifica esta pergunta (ex: 'Circ. BCB 3.978 Art. 19', 'Lei 9.613/1998 Art. 11', 'Resol. BCB 403/2024')."
     },
     "documentos_relacionados": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "[V5.2] IDs de DocumentType que se tornam exigidos quando esta pergunta \u00e9 respondida de determinada forma. Para tipo COMPOSITE, o(s) documento(s) \u00e9(s\u00e3o) obrigat\u00f3rio(s) no mesmo step."
+      "description": "[V5.2] IDs de DocumentType que se tornam exigidos quando esta pergunta é respondida de determinada forma. Para tipo COMPOSITE, o(s) documento(s) é(são) obrigatório(s) no mesmo step."
     },
     "framework_version_intro": {
       "type": "string",
@@ -199,7 +199,7 @@
         "v5.2"
       ],
       "default": "v5.2",
-      "description": "[V5.2] Vers\u00e3o do framework em que esta pergunta foi introduzida. Permite versionamento + retrocompat."
+      "description": "[V5.2] Versão do framework em que esta pergunta foi introduzida. Permite versionamento + retrocompat."
     },
     "framework_version_removed": {
       "type": "string",
@@ -208,7 +208,7 @@
         "v5.1",
         "v5.2"
       ],
-      "description": "[V5.2] Se preenchido, indica a vers\u00e3o a partir da qual esta pergunta N\u00c3O deve mais ser usada (preserva o hist\u00f3rico mas para de exibir em fluxos novos)."
+      "description": "[V5.2] Se preenchido, indica a versão a partir da qual esta pergunta NÃO deve mais ser usada (preserva o histórico mas para de exibir em fluxos novos)."
     },
     "tiers_aplicaveis": {
       "type": "array",
@@ -229,18 +229,18 @@
       "items": {
         "type": "string"
       },
-      "description": "[V5.2] Segmentos can\u00f4nicos em que esta pergunta aparece (vazio ou ['all'] = todos)."
+      "description": "[V5.2] Segmentos canônicos em que esta pergunta aparece (vazio ou ['all'] = todos)."
     },
     "capabilities_ativam": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "[V5.2] Capabilities cuja ativa\u00e7\u00e3o dispara a exibi\u00e7\u00e3o desta pergunta (ex: ['crossborder'], ['splits/subseller'])."
+      "description": "[V5.2] Capabilities cuja ativação dispara a exibição desta pergunta (ex: ['crossborder'], ['splits/subseller'])."
     },
     "id_canonico": {
       "type": "string",
-      "description": "[V5.2] ID can\u00f4nico est\u00e1vel da pergunta no cat\u00e1logo V5.2 (ex: 'q_t2_revenue_proof', 'q_t3_marketplace_splits_kyc'). Independente do ID Base44."
+      "description": "[V5.2] ID canônico estável da pergunta no catálogo V5.2 (ex: 'q_t2_revenue_proof', 'q_t3_marketplace_splits_kyc'). Independente do ID Base44."
     }
   },
   "required": [
@@ -248,27 +248,5 @@
     "order",
     "text",
     "type"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

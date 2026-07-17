@@ -22,7 +22,7 @@
         "PortalTransparencia",
         "Outro"
       ],
-      "description": "Provedor da integra\u00e7\u00e3o (V5.2 expandido)"
+      "description": "Provedor da integração (V5.2 expandido)"
     },
     "service_type": {
       "type": "string",
@@ -74,19 +74,19 @@
         "caf_webhook_received",
         "caf_post_capture_full"
       ],
-      "description": "Tipo de servi\u00e7o chamado"
+      "description": "Tipo de serviço chamado"
     },
     "dataset_codigo": {
       "type": "string",
-      "description": "[V5.2] C\u00f3digo can\u00f4nico do Dataset consultado (refer\u00eancia cruzada com entidade Dataset). Pode ser usado em vez de service_type para datasets BDC novos V5.2."
+      "description": "[V5.2] Código canônico do Dataset consultado (referência cruzada com entidade Dataset). Pode ser usado em vez de service_type para datasets BDC novos V5.2."
     },
     "request_id": {
       "type": "string",
-      "description": "ID da requisi\u00e7\u00e3o no provedor"
+      "description": "ID da requisição no provedor"
     },
     "transaction_id": {
       "type": "string",
-      "description": "ID da transa\u00e7\u00e3o no provedor"
+      "description": "ID da transação no provedor"
     },
     "onboarding_id": {
       "type": "string",
@@ -106,7 +106,7 @@
         "not_consulted"
       ],
       "default": "pending",
-      "description": "[V5.2] Status estendido. Novos estados: 'empty' (consultado mas sem dados \u2014 n\u00e3o \u00e9 erro), 'error' (falha no provedor), 'not_consulted' (n\u00e3o aplic\u00e1vel neste caso conforme l\u00f3gica condicional)."
+      "description": "[V5.2] Status estendido. Novos estados: 'empty' (consultado mas sem dados — não é erro), 'error' (falha no provedor), 'not_consulted' (não aplicável neste caso conforme lógica condicional)."
     },
     "not_consulted_reason": {
       "type": "string",
@@ -123,7 +123,7 @@
         "dataset_not_contracted",
         "other"
       ],
-      "description": "[V5.2] Raz\u00e3o pela qual o dataset N\u00c3O foi consultado. 10 raz\u00f5es catalogadas. Usado para renderizar tooltip explicativo no DatasetCard estado 'not_consulted'."
+      "description": "[V5.2] Razão pela qual o dataset NÃO foi consultado. 10 razões catalogadas. Usado para renderizar tooltip explicativo no DatasetCard estado 'not_consulted'."
     },
     "dimensao_analitica": {
       "type": "string",
@@ -142,7 +142,7 @@
         "caf_biometria_screening",
         "outras_integracoes"
       ],
-      "description": "[V5.2] Dimens\u00e3o anal\u00edtica prim\u00e1ria do dataset (denormalizado para queries r\u00e1pidas na Aba 3)."
+      "description": "[V5.2] Dimensão analítica primária do dataset (denormalizado para queries rápidas na Aba 3)."
     },
     "result_status": {
       "type": "string",
@@ -152,11 +152,11 @@
         "PENDING_REVIEW",
         "NOT_APPLICABLE"
       ],
-      "description": "Status do resultado da valida\u00e7\u00e3o"
+      "description": "Status do resultado da validação"
     },
     "request_payload": {
       "type": "object",
-      "description": "Payload enviado na requisi\u00e7\u00e3o"
+      "description": "Payload enviado na requisição"
     },
     "response_payload": {
       "type": "object",
@@ -164,7 +164,7 @@
     },
     "score": {
       "type": "number",
-      "description": "Score retornado (se aplic\u00e1vel)"
+      "description": "Score retornado (se aplicável)"
     },
     "similarity": {
       "type": "number",
@@ -191,11 +191,11 @@
     },
     "error_code": {
       "type": "string",
-      "description": "C\u00f3digo de erro"
+      "description": "Código de erro"
     },
     "duration_ms": {
       "type": "number",
-      "description": "Dura\u00e7\u00e3o da chamada em ms (alias para elapsed_ms)"
+      "description": "Duração da chamada em ms (alias para elapsed_ms)"
     },
     "image_urls": {
       "type": "array",
@@ -217,27 +217,5 @@
   "required": [
     "provider",
     "service_type"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

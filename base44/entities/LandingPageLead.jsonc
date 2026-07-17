@@ -8,7 +8,7 @@
     },
     "razaoSocial": {
       "type": "string",
-      "description": "Raz\u00e3o Social"
+      "description": "Razão Social"
     },
     "nomeFantasia": {
       "type": "string",
@@ -29,15 +29,15 @@
     },
     "contactName": {
       "type": "string",
-      "description": "Nome do respons\u00e1vel"
+      "description": "Nome do responsável"
     },
     "contactRole": {
       "type": "string",
-      "description": "Cargo do respons\u00e1vel"
+      "description": "Cargo do responsável"
     },
     "endereco": {
       "type": "object",
-      "description": "Endere\u00e7o completo",
+      "description": "Endereço completo",
       "properties": {
         "cep": {
           "type": "string"
@@ -68,7 +68,7 @@
     },
     "distribuicaoTpv": {
       "type": "object",
-      "description": "Distribui\u00e7\u00e3o do TPV",
+      "description": "Distribuição do TPV",
       "properties": {
         "cartao": {
           "type": "number"
@@ -83,7 +83,7 @@
     },
     "modeloNegocio": {
       "type": "string",
-      "description": "Descri\u00e7\u00e3o do modelo de neg\u00f3cio"
+      "description": "Descrição do modelo de negócio"
     },
     "sellersDescription": {
       "type": "string"
@@ -109,7 +109,7 @@
     },
     "introducerReferralCode": {
       "type": "string",
-      "description": "C\u00f3digo de refer\u00eancia do introducer"
+      "description": "Código de referência do introducer"
     },
     "leadId": {
       "type": "string",
@@ -139,7 +139,7 @@
         "plataformas_verticais",
         "link_pagamento"
       ],
-      "description": "Segmento de neg\u00f3cio"
+      "description": "Segmento de negócio"
     },
     "status": {
       "type": "string",
@@ -157,27 +157,5 @@
     "cnpj",
     "razaoSocial",
     "email"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

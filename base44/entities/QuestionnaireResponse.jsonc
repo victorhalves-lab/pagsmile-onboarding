@@ -16,7 +16,7 @@
     },
     "valueNumber": {
       "type": "number",
-      "description": "Valor da resposta em formato num\u00e9rico"
+      "description": "Valor da resposta em formato numérico"
     },
     "valueBoolean": {
       "type": "boolean",
@@ -27,41 +27,19 @@
       "items": {
         "type": "string"
       },
-      "description": "Valor da resposta em formato array (para m\u00faltiplas escolhas)"
+      "description": "Valor da resposta em formato array (para múltiplas escolhas)"
     },
     "questionText": {
       "type": "string",
-      "description": "C\u00f3pia do texto da pergunta para refer\u00eancia hist\u00f3rica"
+      "description": "Cópia do texto da pergunta para referência histórica"
     },
     "questionType": {
       "type": "string",
-      "description": "C\u00f3pia do tipo da pergunta para refer\u00eancia hist\u00f3rica"
+      "description": "Cópia do tipo da pergunta para referência histórica"
     }
   },
   "required": [
     "onboardingCaseId",
     "questionId"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

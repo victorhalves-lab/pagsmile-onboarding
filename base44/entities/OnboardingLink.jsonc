@@ -16,15 +16,15 @@
     },
     "questionnaireTemplateId": {
       "type": "string",
-      "description": "ID do template de question\u00e1rio associado"
+      "description": "ID do template de questionário associado"
     },
     "uniqueCode": {
       "type": "string",
-      "description": "C\u00f3digo \u00fanico do link"
+      "description": "Código único do link"
     },
     "customSlug": {
       "type": "string",
-      "description": "Slug personalizado amig\u00e1vel para URL curta (ex: loja-xyz)"
+      "description": "Slug personalizado amigável para URL curta (ex: loja-xyz)"
     },
     "commercialAgentId": {
       "type": "string",
@@ -40,15 +40,15 @@
     },
     "introducerReferralCode": {
       "type": "string",
-      "description": "C\u00f3digo de refer\u00eancia do Introducer para rastreamento"
+      "description": "Código de referência do Introducer para rastreamento"
     },
     "parentMerchantId": {
       "type": "string",
-      "description": "ID do Merchant principal (seller) ao qual este link de subseller est\u00e1 vinculado"
+      "description": "ID do Merchant principal (seller) ao qual este link de subseller está vinculado"
     },
     "parentMerchantName": {
       "type": "string",
-      "description": "Nome do Merchant principal para exibi\u00e7\u00e3o r\u00e1pida"
+      "description": "Nome do Merchant principal para exibição rápida"
     },
     "utmSource": {
       "type": "string"
@@ -65,7 +65,7 @@
     "expiresAt": {
       "type": "string",
       "format": "date-time",
-      "description": "Data de expira\u00e7\u00e3o"
+      "description": "Data de expiração"
     },
     "isActive": {
       "type": "boolean",
@@ -97,7 +97,7 @@
     },
     "brandName": {
       "type": "string",
-      "description": "Nome de exibi\u00e7\u00e3o do cliente para white-label (ex: Loja XYZ)"
+      "description": "Nome de exibição do cliente para white-label (ex: Loja XYZ)"
     },
     "brandLogoUrl": {
       "type": "string",
@@ -105,11 +105,11 @@
     },
     "brandPrimaryColor": {
       "type": "string",
-      "description": "Cor prim\u00e1ria hex do cliente (ex: #FF6600)"
+      "description": "Cor primária hex do cliente (ex: #FF6600)"
     },
     "brandSecondaryColor": {
       "type": "string",
-      "description": "Cor secund\u00e1ria hex do cliente (ex: #1A1A1A)"
+      "description": "Cor secundária hex do cliente (ex: #1A1A1A)"
     },
     "framework_version": {
       "type": "string",
@@ -118,33 +118,11 @@
         "v5.2"
       ],
       "default": "v4.0",
-      "description": "[V5.2 Fase 6.5.2] Framework de risco usado pelos casos gerados a partir deste link. v4.0 = trilho legado (templates por segmento). v5.2 = trilho novo (template \u00fanico din\u00e2mico tier-aware). Casos herdam imutavelmente esta vers\u00e3o na cria\u00e7\u00e3o."
+      "description": "[V5.2 Fase 6.5.2] Framework de risco usado pelos casos gerados a partir deste link. v4.0 = trilho legado (templates por segmento). v5.2 = trilho novo (template único dinâmico tier-aware). Casos herdam imutavelmente esta versão na criação."
     }
   },
   "required": [
     "uniqueCode",
     "linkType"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

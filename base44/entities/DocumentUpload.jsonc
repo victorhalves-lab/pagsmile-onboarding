@@ -12,7 +12,7 @@
     },
     "documentName": {
       "type": "string",
-      "description": "Nome do tipo de documento para refer\u00eancia hist\u00f3rica"
+      "description": "Nome do tipo de documento para referência histórica"
     },
     "fileUrl": {
       "type": "string",
@@ -20,12 +20,12 @@
     },
     "fileUri": {
       "type": "string",
-      "description": "URI privado (quando isPrivate=true). Use getPrivateDocumentUrl para gerar signed URL tempor\u00e1ria."
+      "description": "URI privado (quando isPrivate=true). Use getPrivateDocumentUrl para gerar signed URL temporária."
     },
     "isPrivate": {
       "type": "boolean",
       "default": false,
-      "description": "Se true, o fileUrl \u00e9 um URI privado e precisa de signed URL para download. Documentos KYC s\u00e3o privados por padr\u00e3o (LGPD)."
+      "description": "Se true, o fileUrl é um URI privado e precisa de signed URL para download. Documentos KYC são privados por padrão (LGPD)."
     },
     "fileName": {
       "type": "string",
@@ -53,20 +53,20 @@
         "Erro"
       ],
       "default": "Pendente",
-      "description": "Status da valida\u00e7\u00e3o do documento"
+      "description": "Status da validação do documento"
     },
     "validationNotes": {
       "type": "string",
-      "description": "Notas sobre a valida\u00e7\u00e3o do documento"
+      "description": "Notas sobre a validação do documento"
     },
     "notAvailable": {
       "type": "boolean",
       "default": false,
-      "description": "Se true, o cliente declarou que n\u00e3o possui este documento. fileUrl fica vazio. Uma justificativa \u00e9 obrigat\u00f3ria em notAvailableReason."
+      "description": "Se true, o cliente declarou que não possui este documento. fileUrl fica vazio. Uma justificativa é obrigatória em notAvailableReason."
     },
     "notAvailableReason": {
       "type": "string",
-      "description": "Justificativa do cliente para n\u00e3o ter o documento. Revisada pelo analista de compliance."
+      "description": "Justificativa do cliente para não ter o documento. Revisada pelo analista de compliance."
     },
     "notAvailableReviewStatus": {
       "type": "string",
@@ -76,7 +76,7 @@
         "Rejeitado"
       ],
       "default": "Pendente",
-      "description": "Status da revis\u00e3o do analista sobre a justificativa. Pendente = aguardando an\u00e1lise. Aceito = justificativa v\u00e1lida, sem penaliza\u00e7\u00e3o de score. Rejeitado = cliente precisa enviar o documento ou perde pontos no score."
+      "description": "Status da revisão do analista sobre a justificativa. Pendente = aguardando análise. Aceito = justificativa válida, sem penalização de score. Rejeitado = cliente precisa enviar o documento ou perde pontos no score."
     },
     "notAvailableReviewedBy": {
       "type": "string",
@@ -85,37 +85,15 @@
     "notAvailableReviewedAt": {
       "type": "string",
       "format": "date-time",
-      "description": "Data/hora da revis\u00e3o da justificativa pelo analista"
+      "description": "Data/hora da revisão da justificativa pelo analista"
     },
     "notAvailableReviewNotes": {
       "type": "string",
-      "description": "Notas do analista sobre a justificativa (ex: 'aceito mediante balan\u00e7o cont\u00e1bil alternativo')"
+      "description": "Notas do analista sobre a justificativa (ex: 'aceito mediante balanço contábil alternativo')"
     }
   },
   "required": [
     "onboardingCaseId",
     "documentTypeId"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

@@ -8,16 +8,16 @@
         "CAF",
         "BigDataCorp"
       ],
-      "description": "Provedor da integra\u00e7\u00e3o"
+      "description": "Provedor da integração"
     },
     "name": {
       "type": "string",
-      "description": "Nome da configura\u00e7\u00e3o"
+      "description": "Nome da configuração"
     },
     "is_active": {
       "type": "boolean",
       "default": false,
-      "description": "Se a integra\u00e7\u00e3o est\u00e1 ativa"
+      "description": "Se a integração está ativa"
     },
     "environment": {
       "type": "string",
@@ -26,7 +26,7 @@
         "production"
       ],
       "default": "sandbox",
-      "description": "Ambiente da integra\u00e7\u00e3o"
+      "description": "Ambiente da integração"
     },
     "api_base_url": {
       "type": "string",
@@ -49,11 +49,11 @@
       "items": {
         "type": "string"
       },
-      "description": "Lista de servi\u00e7os habilitados (liveness, facematch, ocr, kyc, etc)"
+      "description": "Lista de serviços habilitados (liveness, facematch, ocr, kyc, etc)"
     },
     "settings": {
       "type": "object",
-      "description": "Configura\u00e7\u00f5es espec\u00edficas do provedor",
+      "description": "Configurações específicas do provedor",
       "properties": {
         "auto_approve_threshold": {
           "type": "number"
@@ -85,27 +85,5 @@
   "required": [
     "provider",
     "name"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

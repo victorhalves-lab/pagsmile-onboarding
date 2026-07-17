@@ -8,11 +8,11 @@
     },
     "userEmail": {
       "type": "string",
-      "description": "Email do usu\u00e1rio (desnormalizado para queries r\u00e1pidas)"
+      "description": "Email do usuário (desnormalizado para queries rápidas)"
     },
     "userFullName": {
       "type": "string",
-      "description": "Nome completo do usu\u00e1rio (desnormalizado)"
+      "description": "Nome completo do usuário (desnormalizado)"
     },
     "partnerId": {
       "type": "string",
@@ -30,7 +30,7 @@
         "manager"
       ],
       "default": "analyst",
-      "description": "Papel do usu\u00e1rio dentro do parceiro"
+      "description": "Papel do usuário dentro do parceiro"
     },
     "isActive": {
       "type": "boolean",
@@ -61,23 +61,5 @@
   "required": [
     "userId",
     "partnerId"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": true,
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

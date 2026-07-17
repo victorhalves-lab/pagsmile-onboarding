@@ -8,7 +8,7 @@
     },
     "versao_agente": {
       "type": "string",
-      "description": "Vers\u00e3o do agente SENTINEL"
+      "description": "Versão do agente SENTINEL"
     },
     "framework_version": {
       "type": "string",
@@ -18,7 +18,7 @@
         "v5.2"
       ],
       "default": "v4.0",
-      "description": "DNA do score. Casos sem o campo s\u00e3o v4.0. v5.2 adiciona cross_validation_results estruturado + impact_score_top_alerts."
+      "description": "DNA do score. Casos sem o campo são v4.0. v5.2 adiciona cross_validation_results estruturado + impact_score_top_alerts."
     },
     "segmento": {
       "type": "string",
@@ -56,7 +56,7 @@
     },
     "score_variaveis": {
       "type": "number",
-      "description": "[V4] Camada 2: Soma das vari\u00e1veis aplicadas"
+      "description": "[V4] Camada 2: Soma das variáveis aplicadas"
     },
     "score_enriquecimento": {
       "type": "number",
@@ -64,7 +64,7 @@
     },
     "score_final": {
       "type": "number",
-      "description": "[V4] Score V4 final 0-849 (FONTE \u00daNICA \u2014 bdcEnrichCase)"
+      "description": "[V4] Score V4 final 0-849 (FONTE ÚNICA — bdcEnrichCase)"
     },
     "subfaixa": {
       "type": "string",
@@ -78,7 +78,7 @@
         "4",
         "5"
       ],
-      "description": "[V4] Subfaixa V4 de decis\u00e3o"
+      "description": "[V4] Subfaixa V4 de decisão"
     },
     "subfaixa_nome": {
       "type": "string"
@@ -95,8 +95,8 @@
       "type": "string",
       "enum": [
         "PADRAO",
-        "REFOR\u00c7ADO_LEVE",
-        "REFOR\u00c7ADO",
+        "REFORÇADO_LEVE",
+        "REFORÇADO",
         "INTENSO",
         "INTENSO_PLUS",
         "MAXIMO"
@@ -133,8 +133,8 @@
       "type": "string",
       "enum": [
         "Aprovado",
-        "Aprovado com Condi\u00e7\u00f5es",
-        "Revis\u00e3o Manual",
+        "Aprovado com Condições",
+        "Revisão Manual",
         "Recusado"
       ]
     },
@@ -142,8 +142,8 @@
       "type": "string",
       "enum": [
         "Aprovado",
-        "Aprovado com Condi\u00e7\u00f5es",
-        "Revis\u00e3o Manual",
+        "Aprovado com Condições",
+        "Revisão Manual",
         "Recusado"
       ]
     },
@@ -315,11 +315,11 @@
     },
     "score_camada_2_morfologia": {
       "type": "number",
-      "description": "[V5.1] Camada 2: Ajuste Morfol\u00f3gico"
+      "description": "[V5.1] Camada 2: Ajuste Morfológico"
     },
     "score_camada_3_variaveis": {
       "type": "number",
-      "description": "[V5.1] Camada 3: Vari\u00e1veis declaradas+confirmadas"
+      "description": "[V5.1] Camada 3: Variáveis declaradas+confirmadas"
     },
     "score_camada_4_capabilities": {
       "type": "number",
@@ -346,7 +346,7 @@
         "cat_4_block",
         "cat_5_intensive_monitoring"
       ],
-      "description": "[V5.1] Categoria de decis\u00e3o da Matriz Can\u00f4nica V5.1"
+      "description": "[V5.1] Categoria de decisão da Matriz Canônica V5.1"
     },
     "patch_financeiro_status": {
       "type": "string",
@@ -360,7 +360,7 @@
     },
     "patch_financeiro_dimensoes": {
       "type": "object",
-      "description": "[V5.1/V5.2] Detalhe das 5 dimens\u00f5es do Patch Financeiro: tpv_declarado_vs_bdc, faturamento_doc_vs_ecf, crc_status, fluxo_caixa_open_finance, coerencia_setor. Cada dimens\u00e3o tem {valor_declarado, valor_observado, divergencia_pct, bloqueio_disparado}."
+      "description": "[V5.1/V5.2] Detalhe das 5 dimensões do Patch Financeiro: tpv_declarado_vs_bdc, faturamento_doc_vs_ecf, crc_status, fluxo_caixa_open_finance, coerencia_setor. Cada dimensão tem {valor_declarado, valor_observado, divergencia_pct, bloqueio_disparado}."
     },
     "v_financial_coherence": {
       "type": "number"
@@ -370,14 +370,14 @@
       "items": {
         "type": "string"
       },
-      "description": "[V5.1] C\u00f3digos de bloqueio V5.1 (B-XXX-NN)"
+      "description": "[V5.1] Códigos de bloqueio V5.1 (B-XXX-NN)"
     },
     "cross_validation_16_fields": {
       "type": "array",
       "items": {
         "type": "object"
       },
-      "description": "[V5.1] Cross-validation dos 16 campos can\u00f4nicos V5.1 (legado \u2014 manter)"
+      "description": "[V5.1] Cross-validation dos 16 campos canônicos V5.1 (legado — manter)"
     },
     "cross_validation_results": {
       "type": "object",
@@ -388,7 +388,7 @@
       "items": {
         "type": "object"
       },
-      "description": "[V5.2] Top 3 alertas priorizados por impact_score (determin\u00edstico: severidade \u00d7 peso_regulat\u00f3rio \u00d7 custo_financeiro_estimado). Renderizado em Smart Summary Card 1. Schema: [{red_flag_id, title, severity, source, impact_score, why_it_matters, suggested_action}]"
+      "description": "[V5.2] Top 3 alertas priorizados por impact_score (determinístico: severidade × peso_regulatório × custo_financeiro_estimado). Renderizado em Smart Summary Card 1. Schema: [{red_flag_id, title, severity, source, impact_score, why_it_matters, suggested_action}]"
     },
     "top_positivos": {
       "type": "array",
@@ -399,36 +399,14 @@
     },
     "cross_validation_summary": {
       "type": "object",
-      "description": "[V5.2] Sum\u00e1rio compacto do Cross-Val 16 campos para Smart Summary Card 3 (counts + diverg\u00eancias/mismatches list)"
+      "description": "[V5.2] Sumário compacto do Cross-Val 16 campos para Smart Summary Card 3 (counts + divergências/mismatches list)"
     },
     "snapshot_id": {
       "type": "string",
-      "description": "[V5.1] ID do Snapshot imut\u00e1vel que arquiva todo input/output desta an\u00e1lise"
+      "description": "[V5.1] ID do Snapshot imutável que arquiva todo input/output desta análise"
     }
   },
   "required": [
     "onboarding_case_id"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

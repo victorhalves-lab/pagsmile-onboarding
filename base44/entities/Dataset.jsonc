@@ -1,19 +1,19 @@
 {
   "name": "Dataset",
   "type": "object",
-  "description": "[V5.2] Cat\u00e1logo unificado dos ~58 datasets de enriquecimento (BDC + CFC + Open Finance + ECF + BrasilAPI + CAF). Versiona a fonte, custo, mapeamento para o framework + onde aparece visualmente nas 13 dimens\u00f5es anal\u00edticas da Aba 3 da tela de An\u00e1lise de Risco. Casos V4 N\u00c3O usam esta entidade.",
+  "description": "[V5.2] Catálogo unificado dos ~58 datasets de enriquecimento (BDC + CFC + Open Finance + ECF + BrasilAPI + CAF). Versiona a fonte, custo, mapeamento para o framework + onde aparece visualmente nas 13 dimensões analíticas da Aba 3 da tela de Análise de Risco. Casos V4 NÃO usam esta entidade.",
   "properties": {
     "codigo": {
       "type": "string",
-      "description": "C\u00f3digo can\u00f4nico do dataset (ex: basic_data, owners_kyc, cadastur_active, country_risk_index, conselhos_profissionais)"
+      "description": "Código canônico do dataset (ex: basic_data, owners_kyc, cadastur_active, country_risk_index, conselhos_profissionais)"
     },
     "nome": {
       "type": "string",
-      "description": "Nome t\u00e9cnico interno (ex: 'BDC - KYC Pessoa F\u00edsica')"
+      "description": "Nome técnico interno (ex: 'BDC - KYC Pessoa Física')"
     },
     "nome_amigavel": {
       "type": "string",
-      "description": "[V5.2] Nome amig\u00e1vel exibido em TODA a UI (Aba 3, Aba 4, sidebar, modal, PDF). DEVE ser uniforme \u2014 n\u00e3o usar 'Dados Cadastrais' em uma tela e 'Cadastro PJ' em outra."
+      "description": "[V5.2] Nome amigável exibido em TODA a UI (Aba 3, Aba 4, sidebar, modal, PDF). DEVE ser uniforme — não usar 'Dados Cadastrais' em uma tela e 'Cadastro PJ' em outra."
     },
     "fonte": {
       "type": "string",
@@ -43,14 +43,14 @@
         "subseller_pj",
         "subseller_pf"
       ],
-      "description": "Tier m\u00ednimo onde este dataset \u00e9 consultado automaticamente"
+      "description": "Tier mínimo onde este dataset é consultado automaticamente"
     },
     "obrigatorio_tiers": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "Tiers onde o dataset \u00e9 OBRIGAT\u00d3RIO (falha = bloqueio fail-fast pipeline)"
+      "description": "Tiers onde o dataset é OBRIGATÓRIO (falha = bloqueio fail-fast pipeline)"
     },
     "categoria_v5_1": {
       "type": "string",
@@ -84,14 +84,14 @@
         "caf_biometria_screening",
         "outras_integracoes"
       ],
-      "description": "[V5.2] Dimens\u00e3o anal\u00edtica prim\u00e1ria da Aba 3 (1 das 13). PLD/FT e risco_pais_internacional s\u00e3o NOVAS V5.2."
+      "description": "[V5.2] Dimensão analítica primária da Aba 3 (1 das 13). PLD/FT e risco_pais_internacional são NOVAS V5.2."
     },
     "capabilities_que_usam": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "Capabilities V5.2 que dependem deste dataset (can\u00f4nicas: splits/subseller, crossborder, recurrence, cap_financial_capacity_validation)"
+      "description": "Capabilities V5.2 que dependem deste dataset (canônicas: splits/subseller, crossborder, recurrence, cap_financial_capacity_validation)"
     },
     "segmentos_ativam": {
       "type": "array",
@@ -105,7 +105,7 @@
       "items": {
         "type": "string"
       },
-      "description": "[V5.2] Morfologias espec\u00edficas que ativam (ex: ['A'] para PV Sa\u00fade). ['all'] = qualquer morfologia."
+      "description": "[V5.2] Morfologias específicas que ativam (ex: ['A'] para PV Saúde). ['all'] = qualquer morfologia."
     },
     "capabilities_ativam": {
       "type": "array",
@@ -117,21 +117,21 @@
     "requires_trigger": {
       "type": "boolean",
       "default": false,
-      "description": "[V5.2] Se true, dataset s\u00f3 \u00e9 consultado quando trigger especial \u00e9 atendido (ex: first_level_relatives_kyc s\u00f3 se UBO PEP/sancionado)."
+      "description": "[V5.2] Se true, dataset só é consultado quando trigger especial é atendido (ex: first_level_relatives_kyc só se UBO PEP/sancionado)."
     },
     "variaveis_que_alimenta": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "Vari\u00e1veis V-* alimentadas (V01-V60+) (ex: v_qsa_coherence, v_financial_coherence)"
+      "description": "Variáveis V-* alimentadas (V01-V60+) (ex: v_qsa_coherence, v_financial_coherence)"
     },
     "bloqueios_que_alimenta": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "[V5.2] C\u00f3digos can\u00f4nicos de Bloqueios B-* que este dataset pode alimentar (ex: ['B-FIN-1', 'B03'])."
+      "description": "[V5.2] Códigos canônicos de Bloqueios B-* que este dataset pode alimentar (ex: ['B-FIN-1', 'B03'])."
     },
     "campo_cross_val": {
       "type": "string",
@@ -144,63 +144,41 @@
     },
     "glossario_tooltip": {
       "type": "string",
-      "description": "[V5.2] Texto did\u00e1tico do gloss\u00e1rio inline (\u00edcone \u24d8) exibido em todos os locais onde o dataset aparece (Aba 3 + Aba 2 + modal). Uniforme."
+      "description": "[V5.2] Texto didático do glossário inline (ícone ⓘ) exibido em todos os locais onde o dataset aparece (Aba 3 + Aba 2 + modal). Uniforme."
     },
     "custo_credito": {
       "type": "number",
       "default": 0,
-      "description": "Custo aproximado em cr\u00e9ditos por consulta"
+      "description": "Custo aproximado em créditos por consulta"
     },
     "ttl_revalidacao_dias": {
       "type": "number",
       "default": 180,
-      "description": "Ap\u00f3s quantos dias o dataset deve ser revalidado para casos em monitoramento cont\u00ednuo"
+      "description": "Após quantos dias o dataset deve ser revalidado para casos em monitoramento contínuo"
     },
     "ativo": {
       "type": "boolean",
       "default": true,
-      "description": "Se false, dataset fica catalogado mas n\u00e3o dispara no pipeline (kill switch + use para datasets ainda n\u00e3o contratados com BDC)"
+      "description": "Se false, dataset fica catalogado mas não dispara no pipeline (kill switch + use para datasets ainda não contratados com BDC)"
     },
     "contratado": {
       "type": "boolean",
       "default": true,
-      "description": "[V5.2] Status comercial \u2014 se false, indica que o dataset existe no cat\u00e1logo mas ainda n\u00e3o est\u00e1 contratado com o provedor. Pipeline pula automaticamente (not_consulted)."
+      "description": "[V5.2] Status comercial — se false, indica que o dataset existe no catálogo mas ainda não está contratado com o provedor. Pipeline pula automaticamente (not_consulted)."
     },
     "novo_em_v5_1": {
       "type": "boolean",
       "default": false,
-      "description": "Se true, \u00e9 um dataset NOVO introduzido em V5.1+ (n\u00e3o existia em V4)."
+      "description": "Se true, é um dataset NOVO introduzido em V5.1+ (não existia em V4)."
     },
     "fonte_documento": {
       "type": "string",
-      "description": "Refer\u00eancia ao documento V5.1/V5.2 (ex: 'V5.2 - Cat\u00e1logo de Datasets, Tabela 3.1')"
+      "description": "Referência ao documento V5.1/V5.2 (ex: 'V5.2 - Catálogo de Datasets, Tabela 3.1')"
     }
   },
   "required": [
     "codigo",
     "nome",
     "fonte"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

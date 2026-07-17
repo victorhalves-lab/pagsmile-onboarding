@@ -32,7 +32,7 @@
         "V5_2_DYNAMIC"
       ],
       "default": "GENERAL",
-      "description": "V5_2_DYNAMIC marca o template \u00fanico din\u00e2mico tier-aware V5.2."
+      "description": "V5_2_DYNAMIC marca o template único dinâmico tier-aware V5.2."
     },
     "linkedComplianceTemplateId": {
       "type": "string"
@@ -104,7 +104,7 @@
         "v5.2"
       ],
       "default": "v4.0",
-      "description": "DNA do template. v4.0 = legado. v5.2 = novo padr\u00e3o (template \u00fanico din\u00e2mico tier-aware). v5.1 mantido por retro-compat (n\u00e3o usado em prod)."
+      "description": "DNA do template. v4.0 = legado. v5.2 = novo padrão (template único dinâmico tier-aware). v5.1 mantido por retro-compat (não usado em prod)."
     },
     "tier_v5_1": {
       "type": "string",
@@ -115,38 +115,16 @@
         "subseller_pj",
         "subseller_pf"
       ],
-      "description": "[V5.1/V5.2] Tier alvo. No V5.2 din\u00e2mico, este campo fica vazio (engine resolve em runtime)."
+      "description": "[V5.1/V5.2] Tier alvo. No V5.2 dinâmico, este campo fica vazio (engine resolve em runtime)."
     },
     "segmento_v5_1": {
       "type": "string",
-      "description": "[V5.1/V5.2] Segmento alvo. No V5.2 din\u00e2mico, vazio (engine resolve em runtime)."
+      "description": "[V5.1/V5.2] Segmento alvo. No V5.2 dinâmico, vazio (engine resolve em runtime)."
     }
   },
   "required": [
     "name",
     "merchantType",
     "category"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

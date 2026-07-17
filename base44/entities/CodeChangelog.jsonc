@@ -4,7 +4,7 @@
   "properties": {
     "title": {
       "type": "string",
-      "description": "T\u00edtulo curto e claro da mudan\u00e7a"
+      "description": "Título curto e claro da mudança"
     },
     "category": {
       "type": "string",
@@ -21,7 +21,7 @@
         "DATA_MODEL",
         "INFRA"
       ],
-      "description": "Categoria da mudan\u00e7a"
+      "description": "Categoria da mudança"
     },
     "severity": {
       "type": "string",
@@ -32,23 +32,23 @@
         "CRITICAL"
       ],
       "default": "MEDIUM",
-      "description": "Impacto da mudan\u00e7a no sistema"
+      "description": "Impacto da mudança no sistema"
     },
     "userRequest": {
       "type": "string",
-      "description": "O pedido original do usu\u00e1rio (verbatim)"
+      "description": "O pedido original do usuário (verbatim)"
     },
     "summary": {
       "type": "string",
-      "description": "Resumo executivo do que foi implementado (1-2 par\u00e1grafos)"
+      "description": "Resumo executivo do que foi implementado (1-2 parágrafos)"
     },
     "technicalDetails": {
       "type": "string",
-      "description": "Explica\u00e7\u00e3o t\u00e9cnica profunda: arquitetura, decis\u00f5es, l\u00f3gica, fluxo. Markdown permitido."
+      "description": "Explicação técnica profunda: arquitetura, decisões, lógica, fluxo. Markdown permitido."
     },
     "businessImpact": {
       "type": "string",
-      "description": "Impacto de neg\u00f3cio, por que importa, qual problema resolve"
+      "description": "Impacto de negócio, por que importa, qual problema resolve"
     },
     "filesChanged": {
       "type": "array",
@@ -92,20 +92,20 @@
       "items": {
         "type": "string"
       },
-      "description": "P\u00e1ginas afetadas"
+      "description": "Páginas afetadas"
     },
     "breakingChanges": {
       "type": "boolean",
       "default": false,
-      "description": "Se a mudan\u00e7a quebra compatibilidade"
+      "description": "Se a mudança quebra compatibilidade"
     },
     "rollbackInstructions": {
       "type": "string",
-      "description": "Como reverter caso necess\u00e1rio"
+      "description": "Como reverter caso necessário"
     },
     "testingNotes": {
       "type": "string",
-      "description": "Como testar/validar a mudan\u00e7a"
+      "description": "Como testar/validar a mudança"
     },
     "implementedBy": {
       "type": "string",
@@ -114,7 +114,7 @@
     "implementedAt": {
       "type": "string",
       "format": "date-time",
-      "description": "Timestamp da implementa\u00e7\u00e3o"
+      "description": "Timestamp da implementação"
     },
     "tags": {
       "type": "array",
@@ -125,34 +125,12 @@
     },
     "relatedChangelogId": {
       "type": "string",
-      "description": "ID de changelog relacionado (continua\u00e7\u00e3o/corre\u00e7\u00e3o)"
+      "description": "ID de changelog relacionado (continuação/correção)"
     }
   },
   "required": [
     "title",
     "category",
     "summary"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

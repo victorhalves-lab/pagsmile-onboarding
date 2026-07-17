@@ -1,18 +1,18 @@
 {
   "name": "Exception",
   "type": "object",
-  "description": "[V5.2] Cat\u00e1logo das categorias de exce\u00e7\u00e3o. V5.2 adiciona cat_5_monitoramento_intensivo (Categoria 5 da Matriz de Decis\u00e3o DOC5 V5.2). V5.1 tinha apenas 4 categorias (documental/operacional/estrutural/estrat\u00e9gica). A Cat 5 \u00e9 uma exce\u00e7\u00e3o especial \u2014 em vez de simplesmente liberar o bloqueio, ativa um PlanoMonitoramento com TPV cap, rolling reserve adicional e gatilhos de off-boarding \u00e1gil.",
+  "description": "[V5.2] Catálogo das categorias de exceção. V5.2 adiciona cat_5_monitoramento_intensivo (Categoria 5 da Matriz de Decisão DOC5 V5.2). V5.1 tinha apenas 4 categorias (documental/operacional/estrutural/estratégica). A Cat 5 é uma exceção especial — em vez de simplesmente liberar o bloqueio, ativa um PlanoMonitoramento com TPV cap, rolling reserve adicional e gatilhos de off-boarding ágil.",
   "properties": {
     "codigo": {
       "type": "string",
-      "description": "C\u00f3digo (cat_1_documental, cat_2_operacional, cat_3_estrutural, cat_4_estrategica, cat_5_monitoramento_intensivo)"
+      "description": "Código (cat_1_documental, cat_2_operacional, cat_3_estrutural, cat_4_estrategica, cat_5_monitoramento_intensivo)"
     },
     "nome": {
       "type": "string"
     },
     "descricao": {
       "type": "string",
-      "description": "Quando esta categoria de exce\u00e7\u00e3o \u00e9 aplic\u00e1vel"
+      "description": "Quando esta categoria de exceção é aplicável"
     },
     "papel_requerido": {
       "type": "string",
@@ -22,23 +22,23 @@
         "cco",
         "comite_credito"
       ],
-      "description": "Papel m\u00ednimo necess\u00e1rio para aprovar exce\u00e7\u00e3o desta categoria. Cat 5 exige no m\u00ednimo head_compliance."
+      "description": "Papel mínimo necessário para aprovar exceção desta categoria. Cat 5 exige no mínimo head_compliance."
     },
     "documentos_justificativa": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "Documentos que o cliente DEVE enviar antes da exce\u00e7\u00e3o ser aplicada"
+      "description": "Documentos que o cliente DEVE enviar antes da exceção ser aplicada"
     },
     "duracao_dias": {
       "type": "number",
-      "description": "Validade da exce\u00e7\u00e3o em dias (ap\u00f3s esse prazo precisa ser revalidada)"
+      "description": "Validade da exceção em dias (após esse prazo precisa ser revalidada)"
     },
     "registra_em_snapshot": {
       "type": "boolean",
       "default": true,
-      "description": "Se true, qualquer uso desta exce\u00e7\u00e3o cria registro imut\u00e1vel em Snapshot"
+      "description": "Se true, qualquer uso desta exceção cria registro imutável em Snapshot"
     },
     "exige_termo_adicional": {
       "type": "boolean",
@@ -52,11 +52,11 @@
     },
     "tpv_cap_inicial_pct_padrao": {
       "type": "number",
-      "description": "[V5.2] % padr\u00e3o de cap TPV inicial para esta categoria"
+      "description": "[V5.2] % padrão de cap TPV inicial para esta categoria"
     },
     "rolling_reserve_adicional_pct_padrao": {
       "type": "number",
-      "description": "[V5.2] % padr\u00e3o adicional de rolling reserve"
+      "description": "[V5.2] % padrão adicional de rolling reserve"
     },
     "framework_version": {
       "type": "string",
@@ -65,7 +65,7 @@
         "v5.2"
       ],
       "default": "v5.2",
-      "description": "Vers\u00e3o do framework que introduziu esta categoria. cat_5 nasceu em v5.2."
+      "description": "Versão do framework que introduziu esta categoria. cat_5 nasceu em v5.2."
     },
     "ativo": {
       "type": "boolean",
@@ -79,27 +79,5 @@
     "codigo",
     "nome",
     "papel_requerido"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

@@ -44,7 +44,7 @@
         "hybrid"
       ],
       "default": "cross_border_interchange",
-      "description": "cross_border_interchange = USD Interchange++ (legado). local_payments = pricing por pa\u00eds \u00d7 canal \u00d7 m\u00e9todo. hybrid = ambos."
+      "description": "cross_border_interchange = USD Interchange++ (legado). local_payments = pricing por país × canal × método. hybrid = ambos."
     },
     "base_cost_percentage": {
       "type": "number",
@@ -86,13 +86,13 @@
     },
     "country_pricing": {
       "type": "array",
-      "description": "Pricing por pa\u00eds quando pricing_model = local_payments ou hybrid. Cada item representa um pa\u00eds com seus m\u00e9todos.",
+      "description": "Pricing por país quando pricing_model = local_payments ou hybrid. Cada item representa um país com seus métodos.",
       "items": {
         "type": "object",
         "properties": {
           "country": {
             "type": "string",
-            "description": "C\u00f3digo ISO-2"
+            "description": "Código ISO-2"
           },
           "country_name": {
             "type": "string"
@@ -104,7 +104,7 @@
               "properties": {
                 "channel_id": {
                   "type": "string",
-                  "description": "ID do GlobalCountryChannel de refer\u00eancia (opcional, pode ser custom)"
+                  "description": "ID do GlobalCountryChannel de referência (opcional, pode ser custom)"
                 },
                 "method_category": {
                   "type": "string",
@@ -112,7 +112,7 @@
                 },
                 "method_label": {
                   "type": "string",
-                  "description": "Label vis\u00edvel na proposta (ex: 'Debit and Credit Cards')"
+                  "description": "Label visível na proposta (ex: 'Debit and Credit Cards')"
                 },
                 "description": {
                   "type": "string",
@@ -144,7 +144,7 @@
                 },
                 "amount_range_label": {
                   "type": "string",
-                  "description": "Texto vis\u00edvel para limites (ex: '1 MXN - 200,000 MXN')"
+                  "description": "Texto visível para limites (ex: '1 MXN - 200,000 MXN')"
                 }
               }
             }
@@ -172,7 +172,7 @@
             "items": {
               "type": "string"
             },
-            "description": "Avisos regulat\u00f3rios vis\u00edveis ao cliente (ex: 'Mandatory local license for Sports Betting')"
+            "description": "Avisos regulatórios visíveis ao cliente (ex: 'Mandatory local license for Sports Betting')"
           },
           "notes": {
             "type": "string"
@@ -191,7 +191,7 @@
     },
     "risk_control_fee": {
       "type": "number",
-      "description": "USD por transa\u00e7\u00e3o aprovada de cart\u00e3o (default 0.1)"
+      "description": "USD por transação aprovada de cartão (default 0.1)"
     },
     "settlement_fee_usd": {
       "type": "number",
@@ -204,7 +204,7 @@
     "settlement_frequency_days": {
       "type": "number",
       "default": 30,
-      "description": "Frequ\u00eancia de settlement em dias (30 = mensal)"
+      "description": "Frequência de settlement em dias (30 = mensal)"
     },
     "settlement_currency": {
       "type": "string",
@@ -267,27 +267,5 @@
     "client_name",
     "contact_name",
     "contact_email"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

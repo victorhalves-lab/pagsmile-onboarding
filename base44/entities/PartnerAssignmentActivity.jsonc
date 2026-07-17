@@ -29,7 +29,7 @@
     },
     "performedBy": {
       "type": "string",
-      "description": "Email do usu\u00e1rio/admin (ou 'system')"
+      "description": "Email do usuário/admin (ou 'system')"
     },
     "performedByName": {
       "type": "string"
@@ -53,19 +53,5 @@
   "required": [
     "assignmentId",
     "activityType"
-  ],
-  "rls": {
-    "create": true,
-    "read": true,
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

@@ -1,7 +1,7 @@
 {
   "name": "SubsellerInfoSubmission",
   "type": "object",
-  "description": "Cada submiss\u00e3o de um Gateway: cont\u00e9m uma lista de subsellers preenchidos no link p\u00fablico.",
+  "description": "Cada submissão de um Gateway: contém uma lista de subsellers preenchidos no link público.",
   "properties": {
     "collection_id": {
       "type": "string",
@@ -9,7 +9,7 @@
     },
     "gateway_name": {
       "type": "string",
-      "description": "Snapshot do nome do gateway no momento da submiss\u00e3o"
+      "description": "Snapshot do nome do gateway no momento da submissão"
     },
     "submitter_name": {
       "type": "string",
@@ -32,11 +32,11 @@
               "PF"
             ],
             "default": "PJ",
-            "description": "Tipo do subseller: PJ (empresa) ou PF (pessoa f\u00edsica)"
+            "description": "Tipo do subseller: PJ (empresa) ou PF (pessoa física)"
           },
           "company_name": {
             "type": "string",
-            "description": "Raz\u00e3o Social / Nome Fantasia (PJ) ou Nome Completo (PF)"
+            "description": "Razão Social / Nome Fantasia (PJ) ou Nome Completo (PF)"
           },
           "cnpj": {
             "type": "string",
@@ -52,15 +52,15 @@
           },
           "cnae": {
             "type": "string",
-            "description": "C\u00f3digo CNAE da atividade principal (PJ)"
+            "description": "Código CNAE da atividade principal (PJ)"
           },
           "business_model": {
             "type": "string",
-            "description": "Modelo de neg\u00f3cio (ex: e-commerce, marketplace, SaaS, link de pagamento)"
+            "description": "Modelo de negócio (ex: e-commerce, marketplace, SaaS, link de pagamento)"
           },
           "business_model_other": {
             "type": "string",
-            "description": "Descri\u00e7\u00e3o obrigat\u00f3ria quando business_model = 'outro'"
+            "description": "Descrição obrigatória quando business_model = 'outro'"
           },
           "what_they_sell": {
             "type": "string",
@@ -72,7 +72,7 @@
           },
           "offer_explanation": {
             "type": "string",
-            "description": "Explica\u00e7\u00e3o clara da oferta quando n\u00e3o h\u00e1 site"
+            "description": "Explicação clara da oferta quando não há site"
           },
           "monthly_tpv": {
             "type": "number",
@@ -80,7 +80,7 @@
           },
           "average_ticket": {
             "type": "number",
-            "description": "Ticket m\u00e9dio em BRL"
+            "description": "Ticket médio em BRL"
           },
           "bank_name": {
             "type": "string"
@@ -115,7 +115,7 @@
               "properties": {
                 "doc_type": {
                   "type": "string",
-                  "description": "C\u00f3digo do tipo de documento. PJ: contrato_social | doc_socio | selfie_socio | comprovante_endereco_empresa. PF: documento_id | selfie_documento | comprovante_residencia."
+                  "description": "Código do tipo de documento. PJ: contrato_social | doc_socio | selfie_socio | comprovante_endereco_empresa. PF: documento_id | selfie_documento | comprovante_residencia."
                 },
                 "doc_label": {
                   "type": "string"
@@ -170,23 +170,5 @@
   "required": [
     "collection_id",
     "subsellers"
-  ],
-  "rls": {
-    "create": {},
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

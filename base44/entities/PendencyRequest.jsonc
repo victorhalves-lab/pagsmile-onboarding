@@ -1,7 +1,7 @@
 {
   "name": "PendencyRequest",
   "type": "object",
-  "description": "Solicita\u00e7\u00e3o de pend\u00eancias (documentos + perguntas) enviada pelo analista ao cliente quando o caso cai em Revis\u00e3o Manual. Cliente acessa via link p\u00fablico com token para preencher.",
+  "description": "Solicitação de pendências (documentos + perguntas) enviada pelo analista ao cliente quando o caso cai em Revisão Manual. Cliente acessa via link público com token para preencher.",
   "properties": {
     "onboardingCaseId": {
       "type": "string",
@@ -9,7 +9,7 @@
     },
     "merchantId": {
       "type": "string",
-      "description": "ID do Merchant (para denormaliza\u00e7\u00e3o)"
+      "description": "ID do Merchant (para denormalização)"
     },
     "status": {
       "type": "string",
@@ -20,21 +20,21 @@
         "expired"
       ],
       "default": "open",
-      "description": "Status da solicita\u00e7\u00e3o"
+      "description": "Status da solicitação"
     },
     "round": {
       "type": "number",
       "default": 1,
-      "description": "Qual rodada de rean\u00e1lise \u00e9 esta (1, 2, 3...)"
+      "description": "Qual rodada de reanálise é esta (1, 2, 3...)"
     },
     "requestedBy": {
       "type": "string",
-      "description": "Email do analista que criou a solicita\u00e7\u00e3o"
+      "description": "Email do analista que criou a solicitação"
     },
     "requestedAt": {
       "type": "string",
       "format": "date-time",
-      "description": "Data de cria\u00e7\u00e3o da solicita\u00e7\u00e3o"
+      "description": "Data de criação da solicitação"
     },
     "fulfilledAt": {
       "type": "string",
@@ -48,7 +48,7 @@
     },
     "publicToken": {
       "type": "string",
-      "description": "Token UUID \u00fanico para acesso p\u00fablico (link enviado ao cliente)"
+      "description": "Token UUID único para acesso público (link enviado ao cliente)"
     },
     "generalMessage": {
       "type": "string",
@@ -56,7 +56,7 @@
     },
     "items": {
       "type": "array",
-      "description": "Lista de pend\u00eancias (cada item pode ser documento OU pergunta)",
+      "description": "Lista de pendências (cada item pode ser documento OU pergunta)",
       "items": {
         "type": "object",
         "properties": {
@@ -74,11 +74,11 @@
           },
           "label": {
             "type": "string",
-            "description": "Nome/t\u00edtulo do item vis\u00edvel ao cliente"
+            "description": "Nome/título do item visível ao cliente"
           },
           "description": {
             "type": "string",
-            "description": "Descri\u00e7\u00e3o/instru\u00e7\u00f5es adicionais"
+            "description": "Descrição/instruções adicionais"
           },
           "isRequired": {
             "type": "boolean",
@@ -106,7 +106,7 @@
           "requiredQuantity": {
             "type": "number",
             "default": 1,
-            "description": "[document] Quantidade m\u00ednima de arquivos exigidos"
+            "description": "[document] Quantidade mínima de arquivos exigidos"
           },
           "isOther": {
             "type": "boolean",
@@ -140,38 +140,16 @@
     },
     "submittedFromIp": {
       "type": "string",
-      "description": "IP de onde o cliente finalizou a submiss\u00e3o (auditoria)"
+      "description": "IP de onde o cliente finalizou a submissão (auditoria)"
     },
     "submittedUserAgent": {
       "type": "string",
-      "description": "User-Agent na finaliza\u00e7\u00e3o"
+      "description": "User-Agent na finalização"
     }
   },
   "required": [
     "onboardingCaseId",
     "publicToken",
     "items"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

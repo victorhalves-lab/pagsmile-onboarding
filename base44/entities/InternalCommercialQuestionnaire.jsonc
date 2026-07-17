@@ -8,11 +8,11 @@
     },
     "leadId": {
       "type": "string",
-      "description": "ID do Lead criado a partir deste question\u00e1rio"
+      "description": "ID do Lead criado a partir deste questionário"
     },
     "protocolo": {
       "type": "string",
-      "description": "Protocolo \u00fanico gerado automaticamente"
+      "description": "Protocolo único gerado automaticamente"
     },
     "status": {
       "type": "string",
@@ -24,20 +24,20 @@
         "proposta_gerada"
       ],
       "default": "preenchido",
-      "description": "Status do question\u00e1rio"
+      "description": "Status do questionário"
     },
     "origemIA": {
       "type": "boolean",
       "default": false,
-      "description": "Indica se o question\u00e1rio foi gerado por IA a partir de notas de reuni\u00e3o"
+      "description": "Indica se o questionário foi gerado por IA a partir de notas de reunião"
     },
     "textoOriginalIA": {
       "type": "string",
-      "description": "Texto original das notas/transcri\u00e7\u00e3o que a IA processou"
+      "description": "Texto original das notas/transcrição que a IA processou"
     },
     "clientFullName": {
       "type": "string",
-      "description": "Nome completo ou Raz\u00e3o Social"
+      "description": "Nome completo ou Razão Social"
     },
     "clientCpfCnpj": {
       "type": "string",
@@ -71,11 +71,11 @@
         "GATEWAY",
         "MARKETPLACE"
       ],
-      "description": "Tipo de neg\u00f3cio"
+      "description": "Tipo de negócio"
     },
     "businessDescription": {
       "type": "string",
-      "description": "Descri\u00e7\u00e3o detalhada do neg\u00f3cio e produtos/servi\u00e7os"
+      "description": "Descrição detalhada do negócio e produtos/serviços"
     },
     "revenueBreakdown": {
       "type": "array",
@@ -90,11 +90,11 @@
           }
         }
       },
-      "description": "Percentual de receita por produto/servi\u00e7o"
+      "description": "Percentual de receita por produto/serviço"
     },
     "salesChannels": {
       "type": "string",
-      "description": "Canais de venda (e-commerce, loja f\u00edsica, etc.)"
+      "description": "Canais de venda (e-commerce, loja física, etc.)"
     },
     "monthlyTpv": {
       "type": "number",
@@ -102,11 +102,11 @@
     },
     "averageTicket": {
       "type": "number",
-      "description": "Ticket m\u00e9dio"
+      "description": "Ticket médio"
     },
     "monthlyTransactions": {
       "type": "number",
-      "description": "Transa\u00e7\u00f5es por m\u00eas"
+      "description": "Transações por mês"
     },
     "growthExpectation": {
       "type": "string",
@@ -117,19 +117,19 @@
       "items": {
         "type": "string"
       },
-      "description": "M\u00e9todos de pagamento priorit\u00e1rios"
+      "description": "Métodos de pagamento prioritários"
     },
     "currentMdr1x": {
       "type": "number",
-      "description": "MDR atual cr\u00e9dito 1x (%)"
+      "description": "MDR atual crédito 1x (%)"
     },
     "currentMdr2to6x": {
       "type": "number",
-      "description": "MDR atual cr\u00e9dito 2-6x (%)"
+      "description": "MDR atual crédito 2-6x (%)"
     },
     "currentMdr7to12x": {
       "type": "number",
-      "description": "MDR atual cr\u00e9dito 7-12x (%)"
+      "description": "MDR atual crédito 7-12x (%)"
     },
     "currentPixRate": {
       "type": "number",
@@ -141,15 +141,15 @@
     },
     "anticipationType": {
       "type": "string",
-      "description": "Tipo de antecipa\u00e7\u00e3o (D+1, D+2, etc.)"
+      "description": "Tipo de antecipação (D+1, D+2, etc.)"
     },
     "anticipationRate": {
       "type": "number",
-      "description": "Taxa de antecipa\u00e7\u00e3o atual (%)"
+      "description": "Taxa de antecipação atual (%)"
     },
     "transactionFee": {
       "type": "number",
-      "description": "Fee por transa\u00e7\u00e3o (R$)"
+      "description": "Fee por transação (R$)"
     },
     "antiFraudProvider": {
       "type": "string",
@@ -161,19 +161,19 @@
     },
     "currentChallenges": {
       "type": "string",
-      "description": "Desafios com a solu\u00e7\u00e3o atual"
+      "description": "Desafios com a solução atual"
     },
     "criticalFeatures": {
       "type": "string",
-      "description": "Funcionalidades cr\u00edticas necess\u00e1rias"
+      "description": "Funcionalidades críticas necessárias"
     },
     "implementationTimeline": {
       "type": "string",
-      "description": "Prazo para implementa\u00e7\u00e3o"
+      "description": "Prazo para implementação"
     },
     "notes": {
       "type": "string",
-      "description": "Observa\u00e7\u00f5es adicionais da reuni\u00e3o"
+      "description": "Observações adicionais da reunião"
     }
   },
   "required": [
@@ -181,27 +181,5 @@
     "clientFullName",
     "clientEmail",
     "businessType"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

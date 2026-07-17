@@ -1,15 +1,15 @@
 {
   "name": "GlobalCountryChannel",
   "type": "object",
-  "description": "Cat\u00e1logo mestre de canais de pagamento por pa\u00eds no m\u00f3dulo Global. Uma linha = um pa\u00eds \u00d7 provider \u00d7 m\u00e9todo. Importado da planilha GLOBAL PAYMENTS PUBLIC VERSION.",
+  "description": "Catálogo mestre de canais de pagamento por país no módulo Global. Uma linha = um país × provider × método. Importado da planilha GLOBAL PAYMENTS PUBLIC VERSION.",
   "properties": {
     "country": {
       "type": "string",
-      "description": "C\u00f3digo ISO-2 do pa\u00eds (AR, MX, CO, CL, PE, EC, BO, CR, GT, PA, UY, PY, SV, NG, KE, GH, SA, AE, TR, KR, TH, ID, PH, VN, MY, JP, CN, SG, AU)"
+      "description": "Código ISO-2 do país (AR, MX, CO, CL, PE, EC, BO, CR, GT, PA, UY, PY, SV, NG, KE, GH, SA, AE, TR, KR, TH, ID, PH, VN, MY, JP, CN, SG, AU)"
     },
     "country_name": {
       "type": "string",
-      "description": "Nome do pa\u00eds em ingl\u00eas (para busca r\u00e1pida)"
+      "description": "Nome do país em inglês (para busca rápida)"
     },
     "region": {
       "type": "string",
@@ -21,15 +21,15 @@
         "MEA",
         "TURKEY"
       ],
-      "description": "Regi\u00e3o geogr\u00e1fica para agrupamento"
+      "description": "Região geográfica para agrupamento"
     },
     "provider": {
       "type": "string",
-      "description": "Nome do provider/parceiro Pagsmile (KUSHKI, KHIPU, MONNET, IZIPAY, ETPAY, etc). Confidencial \u2014 vai pra interno, N\u00c3O aparece em proposta p\u00fablica."
+      "description": "Nome do provider/parceiro Pagsmile (KUSHKI, KHIPU, MONNET, IZIPAY, ETPAY, etc). Confidencial — vai pra interno, NÃO aparece em proposta pública."
     },
     "payment_method": {
       "type": "string",
-      "description": "M\u00e9todo de pagamento: Credit/Debit Card, Cash, Bank Transfer, QR Code, Wallet, PIX, OXXO, SPEI, PSE, DEBIN, Webpay, etc."
+      "description": "Método de pagamento: Credit/Debit Card, Cash, Bank Transfer, QR Code, Wallet, PIX, OXXO, SPEI, PSE, DEBIN, Webpay, etc."
     },
     "method_category": {
       "type": "string",
@@ -42,7 +42,7 @@
         "carrier_billing",
         "other"
       ],
-      "description": "Categoria normalizada do m\u00e9todo"
+      "description": "Categoria normalizada do método"
     },
     "integration_type": {
       "type": "string",
@@ -68,11 +68,11 @@
     },
     "transaction_limits": {
       "type": "string",
-      "description": "Limites de transa\u00e7\u00e3o no formato original (ex: '1 ~ 30,000 PEN' ou 'tied to bank authorization')"
+      "description": "Limites de transação no formato original (ex: '1 ~ 30,000 PEN' ou 'tied to bank authorization')"
     },
     "confirmation_time": {
       "type": "string",
-      "description": "Tempo de confirma\u00e7\u00e3o (Real time, 1H, etc)"
+      "description": "Tempo de confirmação (Real time, 1H, etc)"
     },
     "operational_status": {
       "type": "string",
@@ -91,7 +91,7 @@
         "DEPRECATED"
       ],
       "default": "PRIMARY",
-      "description": "PRIMARY = canal principal em produ\u00e7\u00e3o. BACK UP = conting\u00eancia."
+      "description": "PRIMARY = canal principal em produção. BACK UP = contingência."
     },
     "requires_onboarding": {
       "type": "boolean",
@@ -123,30 +123,30 @@
           "adult_content"
         ]
       },
-      "description": "Ind\u00fastrias HR (High Risk) que ESTE canal aceita processar"
+      "description": "Indústrias HR (High Risk) que ESTE canal aceita processar"
     },
     "prohibited_industries": {
       "type": "array",
       "items": {
         "type": "string"
       },
-      "description": "Ind\u00fastrias estritamente proibidas neste canal"
+      "description": "Indústrias estritamente proibidas neste canal"
     },
     "regulatory_requirements": {
       "type": "string",
-      "description": "Requisitos regulat\u00f3rios (ex: 'Casino requires COLJUEGOS license', 'CNVB authorization for microcredit')"
+      "description": "Requisitos regulatórios (ex: 'Casino requires COLJUEGOS license', 'CNVB authorization for microcredit')"
     },
     "comments": {
       "type": "string",
-      "description": "Coment\u00e1rios adicionais da planilha"
+      "description": "Comentários adicionais da planilha"
     },
     "default_payin_rate_pct": {
       "type": "number",
-      "description": "Taxa percentual default para payin (vem da \u00faltima proposta calibrada para este canal)"
+      "description": "Taxa percentual default para payin (vem da última proposta calibrada para este canal)"
     },
     "default_payin_fixed": {
       "type": "number",
-      "description": "Fixo default por transa\u00e7\u00e3o (na moeda local)"
+      "description": "Fixo default por transação (na moeda local)"
     },
     "default_payin_fixed_currency": {
       "type": "string",
@@ -154,7 +154,7 @@
     },
     "default_payin_min": {
       "type": "number",
-      "description": "M\u00ednimo por transa\u00e7\u00e3o (ex: Min 4 PEN)"
+      "description": "Mínimo por transação (ex: Min 4 PEN)"
     },
     "default_payout_rate_pct": {
       "type": "number"
@@ -179,7 +179,7 @@
         "Compliance",
         "Multiple"
       ],
-      "description": "Time interno respons\u00e1vel pelo onboarding deste canal"
+      "description": "Time interno responsável pelo onboarding deste canal"
     },
     "internal_responsible_emails": {
       "type": "array",
@@ -190,7 +190,7 @@
     "is_active": {
       "type": "boolean",
       "default": true,
-      "description": "Se false, o canal n\u00e3o aparece no construtor de propostas (n\u00e3o dispon\u00edvel para novas propostas)"
+      "description": "Se false, o canal não aparece no construtor de propostas (não disponível para novas propostas)"
     },
     "imported_from": {
       "type": "string",
@@ -201,27 +201,5 @@
     "country",
     "provider",
     "payment_method"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

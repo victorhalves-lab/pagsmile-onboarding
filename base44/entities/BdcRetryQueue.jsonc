@@ -12,7 +12,7 @@
     },
     "document": {
       "type": "string",
-      "description": "CPF ou CNPJ limpo (apenas d\u00edgitos)"
+      "description": "CPF ou CNPJ limpo (apenas dígitos)"
     },
     "document_type": {
       "type": "string",
@@ -24,7 +24,7 @@
     },
     "template_model": {
       "type": "string",
-      "description": "Modelo do question\u00e1rio usado (para determinar datasets)"
+      "description": "Modelo do questionário usado (para determinar datasets)"
     },
     "dataset_group": {
       "type": "string",
@@ -79,7 +79,7 @@
       "items": {
         "type": "string"
       },
-      "description": "IDs dos lotes que j\u00e1 obtiveram sucesso"
+      "description": "IDs dos lotes que já obtiveram sucesso"
     },
     "attempt_count": {
       "type": "number",
@@ -89,7 +89,7 @@
     "next_retry_at": {
       "type": "string",
       "format": "date-time",
-      "description": "Quando a pr\u00f3xima tentativa deve rodar"
+      "description": "Quando a próxima tentativa deve rodar"
     },
     "first_attempt_at": {
       "type": "string",
@@ -99,7 +99,7 @@
     "last_success_at": {
       "type": "string",
       "format": "date-time",
-      "description": "Quando o \u00faltimo lote obteve sucesso"
+      "description": "Quando o último lote obteve sucesso"
     },
     "status": {
       "type": "string",
@@ -114,7 +114,7 @@
     },
     "last_error": {
       "type": "string",
-      "description": "\u00daltima mensagem de erro global"
+      "description": "Última mensagem de erro global"
     },
     "merged_result": {
       "type": "object",
@@ -125,27 +125,5 @@
     "onboarding_case_id",
     "document",
     "document_type"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

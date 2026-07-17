@@ -1,7 +1,7 @@
 {
   "name": "SentinelFeedback",
   "type": "object",
-  "description": "[V5.2] Feedback estruturado do analista sobre a recomenda\u00e7\u00e3o SENTINEL ap\u00f3s decis\u00e3o final. Alimenta o loop de melhoria cont\u00ednua da IA (DOC4 Cap. 19.8). Persistido ap\u00f3s cada decis\u00e3o para an\u00e1lise de drift, precis\u00e3o e calibra\u00e7\u00e3o dos prompts especializados.",
+  "description": "[V5.2] Feedback estruturado do analista sobre a recomendação SENTINEL após decisão final. Alimenta o loop de melhoria contínua da IA (DOC4 Cap. 19.8). Persistido após cada decisão para análise de drift, precisão e calibração dos prompts especializados.",
   "properties": {
     "onboarding_case_id": {
       "type": "string",
@@ -9,7 +9,7 @@
     },
     "compliance_score_id": {
       "type": "string",
-      "description": "ID do ComplianceScore que gerou a recomenda\u00e7\u00e3o avaliada"
+      "description": "ID do ComplianceScore que gerou a recomendação avaliada"
     },
     "analyst_email": {
       "type": "string",
@@ -30,25 +30,25 @@
       "type": "string",
       "enum": [
         "Aprovado",
-        "Aprovado com Condi\u00e7\u00f5es",
-        "Revis\u00e3o Manual",
+        "Aprovado com Condições",
+        "Revisão Manual",
         "Recusado"
       ],
-      "description": "Recomenda\u00e7\u00e3o que o SENTINEL deu"
+      "description": "Recomendação que o SENTINEL deu"
     },
     "final_decision": {
       "type": "string",
       "enum": [
         "Aprovado",
-        "Aprovado com Condi\u00e7\u00f5es",
-        "Revis\u00e3o Manual",
+        "Aprovado com Condições",
+        "Revisão Manual",
         "Recusado"
       ],
-      "description": "Decis\u00e3o final do analista (humano)"
+      "description": "Decisão final do analista (humano)"
     },
     "decision_match": {
       "type": "boolean",
-      "description": "True se sentinel_recommendation == final_decision. M\u00e9trica prim\u00e1ria de precis\u00e3o da IA."
+      "description": "True se sentinel_recommendation == final_decision. Métrica primária de precisão da IA."
     },
     "feedback_type": {
       "type": "string",
@@ -57,19 +57,19 @@
         "errou",
         "parcialmente"
       ],
-      "description": "Tipo de feedback: \ud83d\udc4d acertou / \ud83d\udc4e errou / \ud83e\udd14 parcialmente correto (bot\u00f5es do FeedbackSentinelPanel)"
+      "description": "Tipo de feedback: 👍 acertou / 👎 errou / 🤔 parcialmente correto (botões do FeedbackSentinelPanel)"
     },
     "comment": {
       "type": "string",
-      "description": "Coment\u00e1rio livre do analista (obrigat\u00f3rio se feedback_type=errou ou parcialmente)"
+      "description": "Comentário livre do analista (obrigatório se feedback_type=errou ou parcialmente)"
     },
     "sentinel_version": {
       "type": "string",
-      "description": "Vers\u00e3o do SENTINEL que gerou a recomenda\u00e7\u00e3o avaliada (ex: 'gemini_3_1_pro_tier3', 'sentinel_marketplace_tier3_splits_v5_1')"
+      "description": "Versão do SENTINEL que gerou a recomendação avaliada (ex: 'gemini_3_1_pro_tier3', 'sentinel_marketplace_tier3_splits_v5_1')"
     },
     "prompt_especializado_id": {
       "type": "string",
-      "description": "ID can\u00f4nico do prompt especializado usado (ex: 'sentinel_gateway_tier3_baas_v5_1'). Usado para an\u00e1lise de drift por prompt."
+      "description": "ID canônico do prompt especializado usado (ex: 'sentinel_gateway_tier3_baas_v5_1'). Usado para análise de drift por prompt."
     },
     "framework_version": {
       "type": "string",
@@ -89,11 +89,11 @@
         "subseller_pj",
         "subseller_pf"
       ],
-      "description": "Tier do caso (denormalizado para queries anal\u00edticas)"
+      "description": "Tier do caso (denormalizado para queries analíticas)"
     },
     "segmento": {
       "type": "string",
-      "description": "Segmento V5.1/V5.2 do caso (denormalizado para queries anal\u00edticas)"
+      "description": "Segmento V5.1/V5.2 do caso (denormalizado para queries analíticas)"
     },
     "morfologia": {
       "type": "string",
@@ -115,7 +115,7 @@
           "outro"
         ]
       },
-      "description": "Categorias espec\u00edficas de erro/acerto. \u00datil para tagging anal\u00edtico."
+      "description": "Categorias específicas de erro/acerto. Útil para tagging analítico."
     }
   },
   "required": [
@@ -123,27 +123,5 @@
     "feedback_type",
     "sentinel_recommendation",
     "final_decision"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }

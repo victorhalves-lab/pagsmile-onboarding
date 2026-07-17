@@ -4,15 +4,15 @@
   "properties": {
     "name": {
       "type": "string",
-      "description": "Nome amig\u00e1vel do perfil (ex: 'Analista de Compliance')"
+      "description": "Nome amigável do perfil (ex: 'Analista de Compliance')"
     },
     "slug": {
       "type": "string",
-      "description": "Identificador \u00fanico do perfil, usado como user.role (ex: 'compliance_analyst')"
+      "description": "Identificador único do perfil, usado como user.role (ex: 'compliance_analyst')"
     },
     "description": {
       "type": "string",
-      "description": "Descri\u00e7\u00e3o do perfil"
+      "description": "Descrição do perfil"
     },
     "color": {
       "type": "string",
@@ -20,12 +20,12 @@
     },
     "icon": {
       "type": "string",
-      "description": "Nome do \u00edcone lucide-react"
+      "description": "Nome do ícone lucide-react"
     },
     "isSystem": {
       "type": "boolean",
       "default": false,
-      "description": "Perfis do sistema n\u00e3o podem ser deletados (admin, introducer)"
+      "description": "Perfis do sistema não podem ser deletados (admin, introducer)"
     },
     "isActive": {
       "type": "boolean",
@@ -38,11 +38,11 @@
     },
     "homePage": {
       "type": "string",
-      "description": "pageId padr\u00e3o ao logar (ex: 'DashboardComercial')"
+      "description": "pageId padrão ao logar (ex: 'DashboardComercial')"
     },
     "pagePermissions": {
       "type": "array",
-      "description": "Permiss\u00f5es granulares por p\u00e1gina (default deny para n\u00e3o listadas)",
+      "description": "Permissões granulares por página (default deny para não listadas)",
       "items": {
         "type": "object",
         "properties": {
@@ -55,7 +55,7 @@
           },
           "tabs": {
             "type": "object",
-            "description": "Map de tabId \u2192 { canView, canEdit, subTabs }",
+            "description": "Map de tabId → { canView, canEdit, subTabs }",
             "additionalProperties": {
               "type": "object",
               "properties": {
@@ -84,7 +84,7 @@
           },
           "actions": {
             "type": "object",
-            "description": "Map de actionId \u2192 boolean",
+            "description": "Map de actionId → boolean",
             "additionalProperties": {
               "type": "boolean"
             }
@@ -96,27 +96,5 @@
   "required": [
     "name",
     "slug"
-  ],
-  "rls": {
-    "create": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "read": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "update": {
-      "user_condition": {
-        "role": "admin"
-      }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
-    }
-  }
+  ]
 }
