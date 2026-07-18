@@ -21,7 +21,7 @@ import { canonicalizeSlugUrl } from '@/lib/publicSlug';
 import { usePublicProposalQuery } from '@/hooks/usePublicProposalQuery';
 import PublicProposalErrorState from '@/components/proposals/PublicProposalErrorState';
 
-const QUESTIONNAIRE_URL = 'https://pagsmilecompliance.base44.app/QuestionarioLeadsPagsmile';
+const QUESTIONNAIRE_URL = `${window.location.origin}/QuestionarioLeadsPagsmile`;
 
 export default function PropostaPadraoPublica() {
   const { t } = useTranslation();

@@ -106,7 +106,7 @@ export default function InternationalPaymentsBanner() {
             Quer receber uma proposta personalizada para pagamentos internacionais?
           </p>
           <a
-            href="https://pagsmile-international-card-proposals.base44.app/QuestionnaireForm"
+            href={`${window.location.origin}/GlobalQuestionnaireForm`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-[#2bc196] hover:bg-[#2bc196]/90 text-white font-bold text-sm px-8 py-3 rounded-xl shadow-lg shadow-[#2bc196]/20 hover:scale-[1.02] transition-all"

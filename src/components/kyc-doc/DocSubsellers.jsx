@@ -41,7 +41,7 @@ export default function DocSubsellers({ templates, questionsByTemplate }) {
         <Li><Bold>Branding:</Bold> Padrão PagSmile OU Personalizado (white-label) com logo do seller, cor primária, cor secundária e slug amigável.</Li>
         <Li><Bold>Expiração:</Bold> opcional (null = sem expiração).</Li>
       </ul>
-      <P>O link gerado tem formato: <code>https://app.pagsmile.com/SubsellerQuestionnaire?ref=SUB_XXXXXXXXXXX</code> (ou <code>/s/slug-personalizado</code> quando branding custom). Cada link contém: <code>parentMerchantId</code>, branding opcional (logo, cores), código único, template padrão vinculado, e contadores de cliques/submissões.</P>
+      <P>O link gerado tem formato: <code>{window.location.origin}/SubsellerQuestionnaire?ref=SUB_XXXXXXXXXXX</code> (ou <code>/s/slug-personalizado</code> quando branding custom). Cada link contém: <code>parentMerchantId</code>, branding opcional (logo, cores), código único, template padrão vinculado, e contadores de cliques/submissões.</P>
 
       <H2>10.2. Passo 1 — Seleção PF vs PJ (MerchantTypeSelector)</H2>
       <P>Quando o subseller abre o link, a página <code>SubsellerQuestionnaire</code> carrega o contexto via <code>publicReadContext</code>, valida que o link está ativo e não expirado, e aplica o branding customizado (se houver). Em seguida, apresenta o seletor:</P>
